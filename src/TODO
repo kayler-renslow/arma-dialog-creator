@@ -1,0 +1,3 @@
+instead of having tabs, have a window of the data that has an update linker to the designer
+select many things in tree view and drag into folder
+fix "custom color" null pointer for main menu > colors (possibly put all of them into a separate window?)
