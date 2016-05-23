@@ -1,19 +1,25 @@
 package com.kaylerrenslow.armaDialogCreator.arma.dialog;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.header.IHeaderEntry;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
  The base class for all dialogs
- Created on 05/21/2016.
- */
+ Created on 05/21/2016. */
 public class ArmaDialog {
 	protected int idd;
 	protected boolean movingEnable, enableSimulation;
-	protected IHeaderEntry controlsBackground, controls, objects;
+	private List<ArmaControl> controls, objects, backgroundControls;
 
 	public ArmaDialog(int idd) {
 		this.idd = idd;
+		controls = new ArrayList<>();
+		objects = new ArrayList<>();
+		backgroundControls = new ArrayList<>();
 	}
 
 	public int getIdd() {
@@ -38,5 +44,17 @@ public class ArmaDialog {
 
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
+	}
+
+	public List<ArmaControl> getControls() {
+		return controls;
+	}
+
+	public List<ArmaControl> getObjects() {
+		return objects;
+	}
+
+	public List<ArmaControl> getBackgroundControls() {
+		return backgroundControls;
 	}
 }

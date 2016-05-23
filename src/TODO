@@ -1,3 +1,6 @@
 instead of having tabs, have a window of the data that has an update linker to the designer
 select many things in tree view and drag into folder
 fix "custom color" null pointer for main menu > colors (possibly put all of them into a separate window?)
+
+for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
+    There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and value(s)

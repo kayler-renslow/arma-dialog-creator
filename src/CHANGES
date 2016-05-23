@@ -1,6 +1,9 @@
 Dialog Creator
 	ADDED:
-        none
+        property defining (optional and required)
+        inheritance of properties
+        some predefined control properties
+        ASound, AFont, and AColor classes
     CHANGED:
         none
     FIXED:

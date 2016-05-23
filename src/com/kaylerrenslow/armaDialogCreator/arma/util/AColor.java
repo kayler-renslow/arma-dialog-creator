@@ -1,0 +1,149 @@
+package com.kaylerrenslow.armaDialogCreator.arma.util;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ @author Kayler
+ Defines a color.
+ Created on 05/22/2016. */
+public class AColor {
+	private double[] color = new double[4];
+
+	/**
+	 Creates a color
+
+	 @param r red (range 0-1.0)
+	 @param g green (range 0-1.0)
+	 @param b blue (range 0-1.0)
+	 @param a alpha (range 0-1.0)
+	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
+	 */
+	public AColor(double r, double g, double b, double a) {
+		setRed(r);
+		setGreen(g);
+		setBlue(b);
+		setAlpha(a);
+	}
+
+	/**
+	 Creates a color from a double array of length 4
+
+	 @param c the color array that must have length=4
+	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when c.length != 4
+	 */
+	public AColor(double[] c) {
+		if (c.length != 4) {
+			throw new IllegalArgumentException("array length must be 4");
+		}
+		setRed(c[0]);
+		setGreen(c[1]);
+		setBlue(c[2]);
+		setAlpha(c[3]);
+	}
+
+	private void boundCheck(double c) {
+		if (c < 0.0 || c > 1.0) {
+			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=1): " + c);
+		}
+	}
+
+	public double getRed() {
+		return color[0];
+	}
+
+	/**
+	 Set red.
+
+	 @throws IllegalArgumentException when value is less than 0 or greater than 1
+	 */
+	public void setRed(double r) {
+		boundCheck(r);
+		color[0] = r;
+	}
+
+	public double getGreen() {
+		return color[1];
+	}
+
+	/**
+	 Set green.
+
+	 @throws IllegalArgumentException when value is less than 0 or greater than 1
+	 */
+	public void setGreen(double g) {
+		boundCheck(g);
+		color[1] = g;
+	}
+
+	public double getBlue() {
+		return color[2];
+	}
+
+	/**
+	 Set blue.
+
+	 @throws IllegalArgumentException when value is less than 0 or greater than 1
+	 */
+	public void setBlue(double b) {
+		boundCheck(b);
+		color[2] = b;
+	}
+
+	public double getAlpha() {
+		return color[3];
+	}
+
+	/**
+	 Set alpha.
+
+	 @throws IllegalArgumentException when value is less than 0 or greater than 1
+	 */
+	public void setAlpha(double a) {
+		boundCheck(a);
+		color[3] = a;
+	}
+
+	public double[] getColors() {
+		return color;
+	}
+
+	/** Get the colors as a string array formatted like so: {red, green, blue, alpha} */
+	public String[] getAsStringArray() {
+		String[] str = new String[4];
+		str[0] = color[0] + "";
+		str[1] = color[1] + "";
+		str[2] = color[2] + "";
+		str[3] = color[3] + "";
+		return str;
+	}
+
+	/** Serializes the color array into a String. Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}" */
+	public String toArrayString() {
+		String str = "{" + color[0];
+		str += color[1]; //don't want to add the colors together as mathematically
+		str += color[2];
+		str += color[3];
+		return str + "}";
+	}
+
+	@Nullable
+	/** Takes a serialized color array String and converts it into a double array. Example (both curly braces and square brackets are allowed): "{0.0,0.1,0.2,0.3}"  becomes  0 red, 0.1 green, 0.2 blue, 0.3 alpha
+	 @returns null when string is improperly formatted, otherwise will return a double array of dimension 4*/
+	public double[] arrayFromText(@NotNull String colorAsArray) {
+		try {
+			String[] split = colorAsArray.replaceAll("\\[|\\]|\\{|\\}", "").split(",");
+
+			double[] d = new double[4];
+			for (int i = 0; i < d.length; i++) {
+				d[i] = Double.parseDouble(split[i].trim());
+				if (d[i] < 0 || d[i] > 1) {
+					return null;
+				}
+			}
+			return d;
+		} catch (Exception e) {
+			return null;
+		}
+	}
+}
