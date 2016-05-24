@@ -33,13 +33,7 @@ public class AColor {
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when c.length != 4
 	 */
 	public AColor(double[] c) {
-		if (c.length != 4) {
-			throw new IllegalArgumentException("array length must be 4");
-		}
-		setRed(c[0]);
-		setGreen(c[1]);
-		setBlue(c[2]);
-		setAlpha(c[3]);
+		setColor(c);
 	}
 
 	private void boundCheck(double c) {
@@ -106,6 +100,17 @@ public class AColor {
 
 	public double[] getColors() {
 		return color;
+	}
+
+	/**Takes out the color values 1 by 1 and injects them into this instances' color array.*/
+	public void setColor(double[] c) {
+		if (c.length != 4) {
+			throw new IllegalArgumentException("array length must be 4");
+		}
+		setRed(c[0]);
+		setGreen(c[1]);
+		setBlue(c[2]);
+		setAlpha(c[3]);
 	}
 
 	/** Get the colors as a string array formatted like so: {red, green, blue, alpha} */

@@ -14,7 +14,6 @@ public class PositionCalculator {
 	 @return screen x position
 	 */
 	public static int getScreenX(Resolution resolution, double percentX) {
-		System.out.println("positionCalc, viewport::" + resolution.getViewportX() + ", " + resolution.getViewportY());
 		return (int) (resolution.getViewportX() + percentX * resolution.getViewportWidth());
 	}
 

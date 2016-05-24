@@ -102,6 +102,11 @@ public abstract class UICanvas extends AnchorPane {
 	public void paint() {
 		gc.save();
 		paintBackground();
+		paintComponents();
+		gc.restore();
+	}
+
+	protected void paintComponents(){
 		this.components.sort(PaintedRegion.RENDER_PRIORITY_COMPARATOR);
 		for (Component component : components) {
 			if (component.isGhost()) {
@@ -109,7 +114,6 @@ public abstract class UICanvas extends AnchorPane {
 			}
 			paintComponent(component);
 		}
-		gc.restore();
 	}
 
 	protected void paintBackground() {

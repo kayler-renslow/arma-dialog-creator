@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
+import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,12 +10,32 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 05/22/2016.
  */
 public class ControlProperty {
+	public static final ControlProperty[] EMPTY = new ControlProperty[0];
+
 	private final String name;
 	private final PropertyType type;
 	private String[] values;
 
 	public enum PropertyType {
-		INT, FLOAT, BOOLEAN, STRING, ARRAY, COLOR, SOUND, FONT
+		INT,
+		FLOAT,
+		/** Float between 0 and 1 inclusively */
+		FLOAT_RANGE,
+		BOOLEAN,
+		STRING,
+		ARRAY,
+		COLOR,
+		SOUND,
+		FONT,
+		/**Denotes a file name inside a String*/
+		FILE_NAME,
+		/**Denotes an image path inside a String*/
+		IMAGE,
+		/** Color is set to a hex string like #ffffff or #ffffffff */
+		HEX_COLOR_STRING,
+		/**example: #(argb,8,8,3)color(1,1,1,1)*/
+		TEXTURE,
+		CUSTOM /** The type can be anything and/or can vary */
 	}
 
 	/**
@@ -32,11 +53,35 @@ public class ControlProperty {
 	}
 
 	/**
+	 Creates a control property of type Object (the value will be the .toString() value of the object)<br>
+	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 */
+	public ControlProperty(@NotNull String name, @NotNull PropertyType type, @NotNull Object value) {
+		this(name, type, new String[]{value.toString()});
+	}
+
+	/**
+	 Creates a control property of type Object (the value will be the .toString() value of the object)<br>
+	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 */
+	public ControlProperty(@NotNull String name, @NotNull Object value) {
+		this(name, PropertyType.CUSTOM, new String[]{value.toString()});
+	}
+
+	/**
 	 Creates a control property of type String<br>
 	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
 	 */
 	public ControlProperty(@NotNull String name, @NotNull String value) {
 		this(name, PropertyType.STRING, new String[]{value});
+	}
+
+	/**
+	 Creates a control property of type String<br>
+	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 */
+	public ControlProperty(@NotNull String name, @NotNull AHexColor value) {
+		this(name, PropertyType.STRING, new String[]{value.getHexColor()});
 	}
 
 	/**
@@ -102,23 +147,54 @@ public class ControlProperty {
 		return values;
 	}
 
-	void setValues(String[] values) {
+	public String getStringValue() {
+		if (type != PropertyType.STRING) {
+			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		}
+		return values[0];
+	}
+
+	public int getIntValue() {
+		try {
+			return Integer.valueOf(values[0]);
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		}
+	}
+
+	public double getFloatValue() {
+		try {
+			return Double.valueOf(values[0]);
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		}
+	}
+
+	public boolean getBooleanValue() {
+		try {
+			return Boolean.valueOf(values[0]);
+		} catch (NumberFormatException e) {
+			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		}
+	}
+
+	protected void setValues(String[] values) {
 		this.values = values;
 	}
 
-	void setValues(String v) {
+	protected void setValue(String v) {
 		this.values[0] = v;
 	}
 
-	void setValues(int v) {
+	protected void setValue(int v) {
 		this.values[0] = v + "";
 	}
 
-	void setValues(double v) {
+	protected void setValue(double v) {
 		this.values[0] = v + "";
 	}
 
-	void setValues(boolean v) {
+	protected void setValue(boolean v) {
 		this.values[0] = v + "";
 	}
 
@@ -131,7 +207,7 @@ public class ControlProperty {
 			return false;
 		}
 		ControlProperty other = (ControlProperty) o;
-		return getName().equals(other.getName());
+		return getName().equals(other.getName()) && type == other.type;
 	}
 
 	ControlProperty deepCopy() {

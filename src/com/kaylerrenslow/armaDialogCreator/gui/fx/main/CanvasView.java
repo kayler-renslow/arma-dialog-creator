@@ -1,5 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
 import javafx.event.EventHandler;
@@ -13,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  Created by Kayler on 05/15/2016.
  */
-class CanvasView extends HBox implements ICanvasView{
+class CanvasView extends HBox implements ICanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
 	private Resolution resolution;
@@ -26,7 +30,7 @@ class CanvasView extends HBox implements ICanvasView{
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
 
 		setOnMouseMoved(new CanvasViewMouseEvent(this));
-
+		uiCanvasEditor.addComponent(new ArmaControl(0, ControlType.ANIMATED_TEXTURE, ControlStyle.SINGLE, 0, 0, 1, 1, resolution, ArmaControlRenderer.class, null, null).getRenderer());
 		focusToCanvas(true);
 	}
 
@@ -54,7 +58,7 @@ class CanvasView extends HBox implements ICanvasView{
 
 	@Override
 	public void setCanvasBackgroundToImage(@Nullable String imgPath) {
-		if(imgPath == null){
+		if (imgPath == null) {
 			uiCanvasEditor.setCanvasBackgroundImage(null);
 			return;
 		}

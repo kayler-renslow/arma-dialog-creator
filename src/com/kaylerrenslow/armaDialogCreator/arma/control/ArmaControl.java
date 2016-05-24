@@ -11,75 +11,103 @@ import java.util.ArrayList;
  @author Kayler
  The base class for all controls
  Created on 05/20/2016. */
-public abstract class ArmaControl {
-	protected final ControlType myType;
-	protected final ArmaControlRenderer renderer;
+public class ArmaControl extends ArmaControlClass {
 	protected final Resolution resolution;
-	private final ControlStyle style;
-	private final ControlProperty idcProperty, styleProperty, xProperty, yProperty, wProperty, hProperty;
-
+	protected ControlType type = ControlType.STATIC;
+	protected ControlStyle style = ControlStyle.CENTER;
+	protected ArmaControlRenderer renderer;
 	protected double x, y, width, height;
-	protected int idc;
+	protected int idc = -1;
 
-	private ArmaControl extend;
+	private final ControlProperty idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty, accessProperty;
 
-	private final ArrayList<ControlProperty> requiredProperties = new ArrayList<>();
-	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
-	private final ArrayList<ControlProperty> definedProperties = new ArrayList<>();
-
-	public ArmaControl(ControlType type, int idc, ControlStyle style, double x, double y, double width, double height, Resolution resolution, ArmaControlRenderer renderer) {
-		this.myType = type;
-		this.renderer = renderer;
+	public ArmaControl(@NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlSubClass[] requiredSubClasses, @Nullable ArmaControlSubClass[] optionalSubClasses) {
 		this.resolution = resolution;
-		this.idc = idc;
-		this.style = style;
+		try {
+			this.renderer = renderer.newInstance();
+			this.renderer.setMyControl(this);
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+			throw new RuntimeException("Class " + renderer.getName() + " couldn't be instantiated.");
+		}
+		if (requiredSubClasses != null) {
+			addRequiredSubClasses(requiredSubClasses);
+		}
+		if (optionalSubClasses != null) {
+			addOptionalSubClasses(optionalSubClasses);
+		}
 		idcProperty = new ControlProperty("idc", idc);
+		typeProperty = new ControlProperty("type", type.typeId);
 		styleProperty = new ControlProperty("style", style.styleId);
-		xProperty = new ControlProperty("x", x);
-		yProperty = new ControlProperty("y", y);
-		wProperty = new ControlProperty("w", width);
-		hProperty = new ControlProperty("h", height);
-		definedProperties.add(idcProperty);
-		definedProperties.add(styleProperty);
-		definedProperties.add(xProperty);
-		definedProperties.add(yProperty);
-		definedProperties.add(wProperty);
-		definedProperties.add(hProperty);
-
-		this.x = x;
-		this.y = y;
-		this.width = width;
-		this.height = height;
+		xProperty = new ControlProperty("x", ControlProperty.PropertyType.FLOAT_RANGE, x);
+		yProperty = new ControlProperty("y", ControlProperty.PropertyType.FLOAT_RANGE, y);
+		wProperty = new ControlProperty("w", ControlProperty.PropertyType.FLOAT_RANGE, width);
+		hProperty = new ControlProperty("h", ControlProperty.PropertyType.FLOAT_RANGE, height);
+		accessProperty = new ControlProperty(ControlPropertiesLookup.ACCESS.propertyName, ControlPropertiesLookup.ACCESS.propertyType, "0");
+		addRequiredProperties(idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty);
+		addOptionalProperties(accessProperty);
+		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
 
-	public final void extend(@Nullable ArmaControl armaControl) {
-		this.extend = armaControl;
+	public ArmaControl(int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlSubClass[] requiredSubClasses, @Nullable ArmaControlSubClass[] optionalSubClasses) {
+		this(resolution, renderer, requiredSubClasses, optionalSubClasses);
+		setType(type);
+		setIdc(idc);
+		setStyle(style);
+		setX(x);
+		setY(y);
+		setWidth(width);
+		setHeight(height);
 	}
 
 	public void setX(double x) {
 		this.x = x;
-		xProperty.setValues(x);
+		xProperty.setValue(x);
+		defineProperty(xProperty);
 		renderer.setX1(PositionCalculator.getScreenX(resolution, x));
 	}
 
 	public void setY(double y) {
 		this.y = y;
-		yProperty.setValues(y);
+		yProperty.setValue(y);
+		defineProperty(yProperty);
 		renderer.setY1(PositionCalculator.getScreenY(resolution, y));
 	}
 
 	public void setWidth(double width) {
 		this.width = width;
-		wProperty.setValues(width);
+		wProperty.setValue(width);
+		defineProperty(wProperty);
 		int w = PositionCalculator.getScreenWidth(resolution, width);
 		renderer.setX2(renderer.getX1() + w);
 	}
 
 	public void setHeight(double height) {
 		this.height = height;
-		hProperty.setValues(height);
+		hProperty.setValue(height);
+		defineProperty(hProperty);
 		int h = PositionCalculator.getScreenHeight(resolution, height);
 		renderer.setY2(renderer.getY1() + h);
+	}
+
+	public void setIdc(int idc) {
+		this.idc = idc;
+		idcProperty.setValue(idc);
+		defineProperty(idcProperty);
+	}
+
+	public void setType(ControlType type) {
+		this.type = type;
+		defineProperty(typeProperty);
+	}
+
+	public void setStyle(ControlStyle style) {
+		this.style = style;
+		defineProperty(styleProperty);
+	}
+
+	public void setAccess(int access){
+		this.accessProperty.setValue(access);
 	}
 
 	public void updateResolution(Resolution r) {
@@ -90,13 +118,12 @@ public abstract class ArmaControl {
 		setHeight(this.height);
 	}
 
-	public void setIdc(int idc) {
-		this.idc = idc;
-		idcProperty.setValues(idc);
-	}
-
 	public int getIdc() {
 		return idc;
+	}
+
+	public ControlType getType() {
+		return type;
 	}
 
 	public ControlStyle getStyle() {
@@ -119,101 +146,21 @@ public abstract class ArmaControl {
 		return height;
 	}
 
-	public final ArmaControl getExtendControl() {
-		return extend;
+	public ArmaControlRenderer getRenderer() {
+		return renderer;
 	}
 
-	public final ControlProperty[] getMissingRequiredProperties() {
-		ArrayList<ControlProperty> missing = new ArrayList<>();
-		ControlProperty[] defined = getDefinedProperties();
-
-		boolean found = false;
-		for (ControlProperty req : requiredProperties) {
-			found = false;
-			for (ControlProperty d : defined) {
-				if (req.equals(d)) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				missing.add(req);
-			}
-		}
-		return missing.toArray(new ControlProperty[missing.size()]);
+	protected void calcPositionFromRenderer() {
+		this.x = PositionCalculator.getPercentX(this.resolution, renderer.getX1());
+		this.y = PositionCalculator.getPercentY(this.resolution, renderer.getY1());
+		xProperty.setValue(x);
+		yProperty.setValue(y);
 	}
 
-	public final void addDefinedProperty(ControlProperty c) {
-		if (!definedProperties.contains(c)) {
-			definedProperties.add(c);
-		}
+	protected void calcSizeFromRenderer() {
+		this.width = PositionCalculator.getPercentWidth(this.resolution, renderer.getWidth());
+		this.height = PositionCalculator.getPercentHeight(this.resolution, renderer.getHeight());
+		wProperty.setValue(width);
+		hProperty.setValue(height);
 	}
-
-	public final void removeDefinedProperty(ControlProperty c) {
-		definedProperties.remove(c);
-	}
-
-	protected final void addRequiredProperty(ControlProperty c) {
-		if (!requiredProperties.contains(c)) {
-			requiredProperties.add(c);
-		}
-	}
-
-	protected final void addOptionalProperty(ControlProperty c) {
-		if (!optionalProperties.contains(c)) {
-			optionalProperties.add(c);
-		}
-	}
-
-	@NotNull
-	public final ControlProperty[] getRequiredProperties() {
-		return requiredProperties.toArray(new ControlProperty[definedProperties.size()]);
-	}
-
-	@NotNull
-	public final ControlProperty[] getOptionalProperties() {
-		return optionalProperties.toArray(new ControlProperty[definedProperties.size()]);
-	}
-
-	@NotNull
-	public final ControlProperty[] getDefinedProperties() {
-		boolean hasInherited = getInheritedProperties() != null;
-		int inheritedNum = (hasInherited ? getInheritedProperties().length : 0);
-		ControlProperty[] arr = new ControlProperty[inheritedNum + definedProperties.size()];
-		int i = 0;
-		if (hasInherited) {
-			for (ControlProperty inherit : getInheritedProperties()) {
-				arr[i++] = inherit;
-			}
-		}
-		for (ControlProperty defined : definedProperties) {
-			arr[i++] = defined;
-		}
-		return arr;
-	}
-
-	@Nullable
-	private ControlProperty[] getInheritedProperties() {
-		if (extend == null) {
-			return null;
-		}
-		ArrayList<ControlProperty> list = new ArrayList<>();
-		appendInheritedProperties(extend, list);
-		return list.toArray(new ControlProperty[list.size()]);
-	}
-
-	private void appendInheritedProperties(@NotNull ArmaControl extend, ArrayList<ControlProperty> list) {
-		for (ControlProperty c : extend.getDefinedProperties()) {
-			list.add(c);
-		}
-		if (extend.extend != null) {
-			if (extend.extend.getInheritedProperties() != null) {
-				for (ControlProperty c : extend.extend.getInheritedProperties()) {
-					list.add(c);
-				}
-			}
-			appendInheritedProperties(extend.extend, list);
-		}
-	}
-
 }

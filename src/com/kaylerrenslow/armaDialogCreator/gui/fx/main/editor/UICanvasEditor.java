@@ -157,13 +157,6 @@ public class UICanvasEditor extends UICanvas {
 	/** Paint the canvas */
 	public void paint() {
 		super.paint();
-		gc.save();
-		for (Component component : selection.getSelected()) {
-			gc.setStroke(component.getBackgroundColor());
-			component.drawRectangle(gc);
-		}
-		gc.restore();
-
 		if (selection.isSelecting()) {
 			gc.save();
 			gc.setStroke(selectionColor);
@@ -171,6 +164,17 @@ public class UICanvasEditor extends UICanvas {
 			selection.drawRectangle(gc);
 			gc.restore();
 		}
+	}
+
+	@Override
+	protected void paintComponents() {
+		gc.save();
+		for (Component component : selection.getSelected()) {
+			gc.setStroke(component.getBackgroundColor());
+			component.drawRectangle(gc);
+		}
+		gc.restore();
+		super.paintComponents();
 	}
 
 	@Override
@@ -462,7 +466,6 @@ public class UICanvasEditor extends UICanvas {
 				moveY = component.getTopY();
 				nearestGridX = moveX - moveX % snapX;
 				nearestGridY = moveY - moveY % snapY;
-				System.out.println("nearest grid:" + nearestGridX + "," + nearestGridY);
 				dx1 = nearestGridX - moveX;
 				dy1 = nearestGridY - moveY;
 			}

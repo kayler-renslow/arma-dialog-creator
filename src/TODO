@@ -4,3 +4,8 @@ fix "custom color" null pointer for main menu > colors (possibly put all of them
 
 for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
     There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and value(s)
+
+for extend classes in controls, check if x and y and things were inherited. do not cache the old values. possible have the renderer have a listener on the control properties for x and y
+    think about how these data structures are going to be created from description.ext and how they will be saved. this could be an issue
+
+check access property for controls and see if properties can be inherited and such https://community.bistudio.com/wiki/Dialog_Control#Dialogs

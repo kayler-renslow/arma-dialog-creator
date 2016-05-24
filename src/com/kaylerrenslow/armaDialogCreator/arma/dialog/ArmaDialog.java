@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.dialog;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.header.IHeaderEntry;
 
 import java.util.ArrayList;
 import java.util.List;
