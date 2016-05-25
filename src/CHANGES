@@ -1,7 +1,7 @@
 ADDED:
-    hardcoded in some control properties
+    dark theme capability
+    more hardcoded control properties
 CHANGED:
-    redid control class infrastructure
-    control sub classes
+    none
 FIXED:
     none

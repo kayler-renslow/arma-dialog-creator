@@ -5,49 +5,78 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
  */
 public enum ControlType {
 	//@formatter:off
-	STATIC(0, "Static"),
-	BUTTON(1, "Button"),
-	EDIT(2, "Edit"),
-	SLIDER(3, "Slider"),
-	COMBO(4, "Combo"),
-	LISTBOX(5, "List Box"),
-	TOOLBOX(6, "Tool Box"),
-	CHECKBOXES(7, "Check Boxes"),
-	PROGRESS(8, "Progress Bar"),
-	HTML(9, "HTML"),
-	STATIC_SKEW(10, "Static Skew"),
-	ACTIVETEXT(11, "Active Text"),
-	TREE(12, "Tree"),
-	STRUCTURED_TEXT(13, "Structured Text"),
-	CONTEXT_MENU(14, "Context Menu"),
-	CONTROLS_GROUP(15, "Controls Group"),
-	SHORTCUTBUTTON(16, "Shortcut Button"),
-	XKEYDESC(40, "XKEYDESC"),
-	XBUTTON(41, "XButton"),
-	XLISTBOX(42, "XList Box"),
-	XSLIDER(43, "XSlider"),
-	XCOMBO(44, "XCombo"),
-	ANIMATED_TEXTURE(45, "Animated Texture"),
-	MENU(46, "Menu"),
-	MENU_STRIP(47, "Menu Strip"),
-	CHECKBOX(77, "Check Box"),
-	OBJECT(80, "Object"),
-	OBJECT_ZOOM(81, "Object Zoom"),
-	OBJECT_CONTAINER(82, "Object Container"),
-	OBJECT_CONT_ANIM(83, "Object Container Animation"),
-	LINEBREAK(98, "Line Break"),
-	ANIMATED_USER(99, "Animated User"),
-	MAP(100, "Map"),
-	MAP_MAIN(101, "Map Main"),
-	LISTNBOX(102, "ListNBox"),
-	ITEMSLOT(103, "Item Slot");
+	STATIC(0, "Static", TypeGroup.TEXT),
+	HTML(9, "HTML", TypeGroup.TEXT),
+	EDIT(2, "Edit", TypeGroup.TEXT),
+	STRUCTURED_TEXT(13, "Structured Text", TypeGroup.TEXT),
+	ACTIVETEXT(11, "Active Text", TypeGroup.TEXT),
+
+	BUTTON(1, "Button", TypeGroup.BUTTON),
+	SHORTCUTBUTTON(16, "Shortcut Button", TypeGroup.BUTTON),
+	XBUTTON(41, "X Button", TypeGroup.BUTTON),
+
+	PROGRESS(8, "Progress Bar", TypeGroup.MISC),
+	STATIC_SKEW(10, "Static Skew", TypeGroup.MISC),
+	LINEBREAK(98, "Line Break", TypeGroup.MISC),
+	TREE(12, "Tree", TypeGroup.MISC),
+	CONTROLS_GROUP(15, "Controls Group", TypeGroup.MISC),
+	XKEYDESC(40, "XKEYDESC", TypeGroup.MISC),
+	ANIMATED_TEXTURE(45, "Animated Texture", TypeGroup.MISC),
+	ANIMATED_USER(99, "Animated User", TypeGroup.MISC),
+	ITEMSLOT(103, "Item Slot", TypeGroup.MISC),
+
+	SLIDER(3, "Slider", TypeGroup.SLIDER, true),
+	XSLIDER(43, "X Slider", TypeGroup.SLIDER),
+
+	COMBO(4, "Combo", TypeGroup.COMBO),
+	XCOMBO(44, "X Combo", TypeGroup.COMBO),
+
+	LISTBOX(5, "List Box", TypeGroup.LIST_BOX),
+	XLISTBOX(42, "X List Box", TypeGroup.LIST_BOX),
+	LISTNBOX(102, "List N Box", TypeGroup.LIST_BOX),
+
+	TOOLBOX(6, "Tool Box", TypeGroup.CHECK_BOX),
+	CHECKBOXES(7, "Check Boxes", TypeGroup.CHECK_BOX),
+	CHECKBOX(77, "Check Box", TypeGroup.CHECK_BOX),
+
+	CONTEXT_MENU(14, "Context Menu", TypeGroup.MENU),
+	MENU(46, "Menu", TypeGroup.MENU),
+	MENU_STRIP(47, "Menu Strip", TypeGroup.MENU),
+
+	OBJECT(80, "Object", TypeGroup.OBJECT),
+	OBJECT_ZOOM(81, "Object Zoom", TypeGroup.OBJECT),
+	OBJECT_CONTAINER(82, "Object Container", TypeGroup.OBJECT),
+	OBJECT_CONT_ANIM(83, "Object Container Animation", TypeGroup.OBJECT),
+
+	MAP(100, "Map", TypeGroup.MAP),
+	MAP_MAIN(101, "Map Main", TypeGroup.MAP);
 	//@formatter:on
+
+	public enum TypeGroup {
+		TEXT("Text"), BUTTON("Button"), COMBO("Combo Box"), SLIDER("Slider"), LIST_BOX("List Box"), CHECK_BOX("Check Box"), MENU("Menu"), OBJECT("Object"), MAP("Map"), MISC("Misc");
+
+		public final String name;
+
+		TypeGroup(String name) {
+			this.name = name;
+		}
+	}
 
 	public final int typeId;
 	public final String displayName;
+	/** If true, the type should be avoided. */
+	public final boolean deprecated;
+	public final TypeGroup group;
 
-	ControlType(int typeId, String displayName) {
+	ControlType(int typeId, String displayName, TypeGroup group) {
+		this(typeId, displayName, group, false);
+	}
+
+	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type STATIC)
+	ControlType(int typeId, String displayName, TypeGroup group, boolean deprecated) {
 		this.typeId = typeId;
 		this.displayName = displayName;
+		this.group = group;
+		this.deprecated = deprecated;
 	}
 }

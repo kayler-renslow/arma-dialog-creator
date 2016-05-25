@@ -9,3 +9,7 @@ for extend classes in controls, check if x and y and things were inherited. do n
     think about how these data structures are going to be created from description.ext and how they will be saved. this could be an issue
 
 check access property for controls and see if properties can be inherited and such https://community.bistudio.com/wiki/Dialog_Control#Dialogs
+
+have a color theme maker so that you don't need to constantly have to set colors to a macro. Maybe even have a big default archive for all attributes? Maybe just place them inside the lookup thingy?
+
+go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls

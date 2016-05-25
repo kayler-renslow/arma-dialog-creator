@@ -34,4 +34,8 @@ public class ArmaDialogCreator extends Application {
 	public static Stage getPrimaryStage() {
 		return primaryStage;
 	}
+
+	public static ADCWindow getWindow() {
+		return mainWindow;
+	}
 }

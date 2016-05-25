@@ -1,0 +1,12 @@
+.root {
+    -fx-base: #2f2f2f;
+    -fx-background: #0b0b0b;
+    -fx-control-inner-background: #161616;
+    -fx-dark-text-color: black;
+    -fx-mid-text-color: #3a3a3a;
+    -fx-light-text-color: #dcdcdc;
+
+}
+.text-field{
+	-fx-prompt-text-fill: #636363;
+}

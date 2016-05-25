@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,12 +18,28 @@ public class ArmaControlClass {
 	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
 	private final ArrayList<ControlProperty> definedProperties = new ArrayList<>();
 
-	private final ArrayList<ArmaControlSubClass> definedSubClasses = new ArrayList<>();
-	private final ArrayList<ArmaControlSubClass> requiredSubClasses = new ArrayList<>();
-	private final ArrayList<ArmaControlSubClass> optionalSubClasses = new ArrayList<>();
+	private final ArrayList<ArmaControlClass> definedSubClasses = new ArrayList<>();
+	private final ArrayList<ArmaControlClass> requiredSubClasses = new ArrayList<>();
+	private final ArrayList<ArmaControlClass> optionalSubClasses = new ArrayList<>();
 
+	protected String className;
+
+	public ArmaControlClass(@NotNull String name) {
+		this.className = name;
+	}
+
+	public void setClassName(String className) {
+		this.className = className;
+	}
+
+	public String getClassName() {
+		return className;
+	}
 
 	public final void extendControlClass(@Nullable ArmaControlClass armaControl) {
+		if (armaControl == this) {
+			throw new IllegalArgumentException("Extend class can't extend itself!");
+		}
 		this.extend = armaControl;
 	}
 
@@ -33,41 +48,50 @@ public class ArmaControlClass {
 		return extend;
 	}
 
-	public final void defineSubClass(@NotNull ArmaControlSubClass subClass){
-		if(!definedSubClasses.contains(subClass)){
+	public final void defineSubClass(@NotNull ArmaControlClass subClass) {
+		if (subClass == this) {
+			throw new IllegalArgumentException("Can't define a class as a subclass of itself");
+		}
+		if (!definedSubClasses.contains(subClass)) {
 			definedSubClasses.add(subClass);
 		}
 	}
 
-	public final boolean undefineSubClass(@NotNull ArmaControlSubClass subClass){
+	public final boolean undefineSubClass(@NotNull ArmaControlClass subClass) {
 		return definedSubClasses.remove(subClass);
 	}
 
-	protected final void addRequiredSubClasses(@NotNull ArmaControlSubClass...subClasses){
-		for(ArmaControlSubClass subClass : subClasses){
+	protected final void addRequiredSubClasses(@NotNull ArmaControlClass... subClasses) {
+		for (ArmaControlClass subClass : subClasses) {
+			if (subClass == this) {
+				throw new IllegalArgumentException("Can't require a class as a subclass of itself");
+			}
 			requiredSubClasses.add(subClass);
 		}
 	}
 
-	protected final void addOptionalSubClasses(@NotNull ArmaControlSubClass...subClasses){
-		for(ArmaControlSubClass subClass : subClasses){
+	protected final void addOptionalSubClasses(@NotNull ArmaControlClass... subClasses) {
+		for (ArmaControlClass subClass : subClasses) {
+			if (subClass == this) {
+				throw new IllegalArgumentException("Can't make a class as a subclass of itself");
+			}
 			optionalSubClasses.add(subClass);
 		}
 	}
 
 	@NotNull
-	public final ArmaControlSubClass[] getDefinedSubClasses(){
-		return this.definedSubClasses.toArray(new ArmaControlSubClass[definedSubClasses.size()]);
+	public final ArmaControlClass[] getDefinedSubClasses() {
+		return this.definedSubClasses.toArray(new ArmaControlClass[definedSubClasses.size()]);
 	}
 
 	@NotNull
-	public ArmaControlSubClass[] getRequiredSubClasses() {
-		return requiredSubClasses.toArray(new ArmaControlSubClass[requiredSubClasses.size()]);
+	public ArmaControlClass[] getRequiredSubClasses() {
+		return requiredSubClasses.toArray(new ArmaControlClass[requiredSubClasses.size()]);
 	}
 
 	@NotNull
-	public ArmaControlSubClass[] getOptionalSubClasses() {
-		return optionalSubClasses.toArray(new ArmaControlSubClass[optionalSubClasses.size()]);
+	public ArmaControlClass[] getOptionalSubClasses() {
+		return optionalSubClasses.toArray(new ArmaControlClass[optionalSubClasses.size()]);
 	}
 
 	@NotNull
@@ -97,7 +121,7 @@ public class ArmaControlClass {
 		}
 	}
 
-	public final boolean propertyIsDefined(ControlProperty c){
+	public final boolean propertyIsDefined(ControlProperty c) {
 		return definedProperties.contains(c);
 	}
 

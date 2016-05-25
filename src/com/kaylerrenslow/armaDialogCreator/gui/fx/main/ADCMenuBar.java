@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PopupColorPicker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.ViewDarkThemeAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
@@ -37,7 +38,8 @@ class ADCMenuBar extends MenuBar {
 
 	/*View*/
 	private final PresetCheckMenuItem view_showGrid = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(MainMenuBar.VIEW_SHOW_GRID, true), new ViewShowGridAction());
-	private final MenuItem view_colors = addOnAction(new MenuItem(MainMenuBar.VIEW_COLORS), new ViewColorsAction());
+	private final MenuItem view_darkTheme = addOnAction(new CheckMenuItem(MainMenuBar.VIEW_DARK_THEME), new ViewDarkThemeAction());
+	private final MenuItem view_colors = addOnAction(new MenuItem(MainMenuBar.VIEW_CHANGE_COLORS), new ViewColorsAction());
 	/*abs region*/
 	private final PresetCheckMenuItem view_absRegion_show = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(MainMenuBar.VIEW_ABS_REGION_SHOW, true), new ViewAbsRegionShowAction());
 	private final PresetCheckMenuItem view_absRegion_alwaysFront = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(MainMenuBar.VIEW_ABS_REGION_ALWAYS_FRONT, true), new ViewAbsRegionAlwaysFrontAction());
@@ -49,6 +51,7 @@ class ADCMenuBar extends MenuBar {
 	private final RadioMenuItem view_bg_custom = (RadioMenuItem) addOnAction(new RadioMenuItem(MainMenuBar.VIEW_CHANGE_BACKGROUND_IMAGE_CUSTOM), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_CUSTOM));
 	private final RadioMenuItem view_bg_noImage = (RadioMenuItem) addOnAction(new RadioMenuItem(MainMenuBar.VIEW_CHANGE_BACKGROUND_NONE), new ViewBackgroundAction(ViewBackgroundAction.NO_IMAGE));
 	private final ToggleGroup view_bg_toggleGroup = new ToggleGroup();
+
 	{
 		view_bg_img1.setToggleGroup(view_bg_toggleGroup);
 		view_bg_img2.setToggleGroup(view_bg_toggleGroup);
@@ -62,7 +65,7 @@ class ADCMenuBar extends MenuBar {
 
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
-	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_showGrid, view_colors, view_absRegionAll, backgroundAll);
+	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll);
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView);

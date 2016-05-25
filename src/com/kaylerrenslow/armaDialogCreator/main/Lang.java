@@ -32,7 +32,7 @@ public class Lang {
 
 		public static final String VIEW = "View";
 		public static final String VIEW_SHOW_GRID = "Show Grid";
-		public static final String VIEW_COLORS = "Colors";
+		public static final String VIEW_CHANGE_COLORS = "Change Colors";
 		public static final String VIEW_BACKGROUND_IMAGE = "Background Image";
 		public static final String VIEW_CHANGE_BACKGROUND_IMAGE1 = "VR";
 		public static final String VIEW_CHANGE_BACKGROUND_IMAGE2 = "Altis";
@@ -42,6 +42,7 @@ public class Lang {
 		public static final String VIEW_ABS_REGION = "Absolute Coordinate Region";
 		public static final String VIEW_ABS_REGION_SHOW = "Show";
 		public static final String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
+		public static final String VIEW_DARK_THEME = "Use Dark Theme";
 	}
 
 	public static class ColorsPopup {
@@ -49,7 +50,7 @@ public class Lang {
 		public static final String SELECTION = "Selection";
 		public static final String GRID = "Grid";
 		public static final String ABS_REGION = "Absolute Region";
-		public static final String BACKGROUND = "Background Color";
+		public static final String BACKGROUND = "Canvas Background Color";
 	}
 
 	public static class Misc {

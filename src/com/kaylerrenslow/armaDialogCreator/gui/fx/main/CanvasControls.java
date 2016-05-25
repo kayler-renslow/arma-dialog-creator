@@ -65,10 +65,7 @@ class CanvasControls extends VBox implements ISnapConfiguration {
 	}
 
 	private void initializeStepChoiceboxes() {
-		cbStep.getItems().add(new Percentage(1));
-		for (int i = 5; i <= 20; i += 5) {
-			cbStep.getItems().add(new Percentage(i));
-		}
+		cbStep.getItems().addAll(new Percentage(1), new Percentage(5), new Percentage(10));
 		cbAltStep.getItems().addAll(new Percentage(0.5), new Percentage(1), new Percentage(2), new Percentage(3), new Percentage(4), new Percentage(5));
 		cbStep.getSelectionModel().select(0);
 		cbAltStep.getSelectionModel().select(0);

@@ -9,6 +9,9 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import static javafx.application.Application.STYLESHEET_CASPIAN;
+import static javafx.application.Application.STYLESHEET_MODENA;
+
 /**
  Created by Kayler on 05/11/2016.
  */
@@ -23,7 +26,7 @@ public class ADCWindow {
 
 	public ADCWindow(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		if(resolution.getScreenWidth() == ScreenDimension.D1920.width){
+		if (resolution.getScreenWidth() == ScreenDimension.D1920.width) {
 			primaryStage.setFullScreen(true);
 			dontAddMenuBar = true;
 		}
@@ -36,7 +39,7 @@ public class ADCWindow {
 	}
 
 	private void initialize(Scene scene) {
-		if(!dontAddMenuBar){
+		if (!dontAddMenuBar) {
 			rootElement.getChildren().add(mainMenuBar);
 		}
 		rootElement.getChildren().addAll(canvasView);
@@ -60,5 +63,19 @@ public class ADCWindow {
 
 	public ICanvasView getCanvasView() {
 		return canvasView;
+	}
+
+	public void setToDarkTheme(boolean set) {
+		String DARK_THEME = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
+		if (set) {
+			CanvasViewColors.EDITOR_BG = CanvasViewColors.Default.DARK_THEME_EDITOR_BG;
+			CanvasViewColors.GRID = CanvasViewColors.Default.DARK_THEME_GRID;
+			primaryStage.getScene().getStylesheets().add(DARK_THEME);
+		} else {
+			CanvasViewColors.EDITOR_BG = CanvasViewColors.Default.EDITOR_BG;
+			CanvasViewColors.GRID = CanvasViewColors.Default.GRID;
+			primaryStage.getScene().getStylesheets().remove(DARK_THEME);
+		}
+		canvasView.updateCanvas();
 	}
 }

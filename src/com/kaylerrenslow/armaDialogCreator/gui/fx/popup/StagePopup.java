@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -32,6 +33,14 @@ public abstract class StagePopup {
 		myStage.setTitle(title);
 		myStage.initOwner(primaryStage);
 		myStage.getIcons().add(primaryStage.getIcons().get(0));
+		myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+		primaryStage.getScene().getStylesheets().addListener(new ListChangeListener<String>() {
+			@Override
+			public void onChanged(Change<? extends String> c) {
+				myStage.getScene().getStylesheets().clear();
+				myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+			}
+		});
 
 		myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override

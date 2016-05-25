@@ -15,38 +15,40 @@ public class ControlProperty {
 	private final String name;
 	private final PropertyType type;
 	private String[] values;
-
+	private final int propertyId;
+	
 	public enum PropertyType {
 		INT,
 		FLOAT,
-		/** Float between 0 and 1 inclusively */
-		FLOAT_RANGE,
 		BOOLEAN,
 		STRING,
 		ARRAY,
 		COLOR,
 		SOUND,
 		FONT,
-		/**Denotes a file name inside a String*/
+		/** Denotes a file name inside a String */
 		FILE_NAME,
-		/**Denotes an image path inside a String*/
+		/** Denotes an image path inside a String */
 		IMAGE,
 		/** Color is set to a hex string like #ffffff or #ffffffff */
 		HEX_COLOR_STRING,
-		/**example: #(argb,8,8,3)color(1,1,1,1)*/
+		/** example: #(argb,8,8,3)color(1,1,1,1) */
 		TEXTURE,
-		CUSTOM /** The type can be anything and/or can vary */
+		/** The type can be anything and/or can vary */
+		CUSTOM
 	}
 
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation puts all values inside a String array so that array serialization isn't needed.<br>
 	 For types that aren't array, only 1 entry will be inside the array and that is the value.
 
+	 @param propertyId unique id for the property. This comes from ControlPropertiesLookup.propertyId
 	 @param name name of the property
 	 @param type type of the property (integer, float, array, String)
 	 @param values values of the property. (if non-array, just create a String array of dimension 1 with value at index 0)
 	 */
-	public ControlProperty(@NotNull String name, @NotNull PropertyType type, @NotNull String[] values) {
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, @NotNull String[] values) {
+		this.propertyId = propertyId;
 		this.name = name;
 		this.type = type;
 		this.values = values;
@@ -54,82 +56,86 @@ public class ControlProperty {
 
 	/**
 	 Creates a control property of type Object (the value will be the .toString() value of the object)<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, @NotNull PropertyType type, @NotNull Object value) {
-		this(name, type, new String[]{value.toString()});
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, @NotNull Object value) {
+		this(propertyId, name, type, new String[]{value.toString()});
 	}
 
 	/**
 	 Creates a control property of type Object (the value will be the .toString() value of the object)<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, @NotNull Object value) {
-		this(name, PropertyType.CUSTOM, new String[]{value.toString()});
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull Object value) {
+		this(propertyId, name, PropertyType.CUSTOM, new String[]{value.toString()});
 	}
 
 	/**
 	 Creates a control property of type String<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, @NotNull String value) {
-		this(name, PropertyType.STRING, new String[]{value});
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull String value) {
+		this(propertyId, name, PropertyType.STRING, new String[]{value});
 	}
 
 	/**
 	 Creates a control property of type String<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, @NotNull AHexColor value) {
-		this(name, PropertyType.STRING, new String[]{value.getHexColor()});
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull AHexColor value) {
+		this(propertyId, name, PropertyType.STRING, new String[]{value.getHexColor()});
 	}
 
 	/**
 	 Creates a control property of type Int<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, int value) {
-		this(name, PropertyType.INT, new String[]{value + ""});
+	public ControlProperty(int propertyId, @NotNull String name, int value) {
+		this(propertyId, name, PropertyType.INT, new String[]{value + ""});
 	}
 
 	/**
 	 Creates a control property of type Float<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, double value) {
-		this(name, PropertyType.FLOAT, new String[]{value + ""});
+	public ControlProperty(int propertyId, @NotNull String name, double value) {
+		this(propertyId, name, PropertyType.FLOAT, new String[]{value + ""});
 	}
 
 	/**
 	 Creates a control property of type Boolean<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, boolean value) {
-		this(name, PropertyType.BOOLEAN, new String[]{value + ""});
+	public ControlProperty(int propertyId, @NotNull String name, boolean value) {
+		this(propertyId, name, PropertyType.BOOLEAN, new String[]{value + ""});
 	}
 
 	/**
 	 Creates a control property of type Color<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, AColor value) {
-		this(name, PropertyType.COLOR, value.getAsStringArray());
+	public ControlProperty(int propertyId, @NotNull String name, AColor value) {
+		this(propertyId, name, PropertyType.COLOR, value.getAsStringArray());
 	}
 
 	/**
 	 Creates a control property of type Sound<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, ASound value) {
-		this(name, PropertyType.SOUND, value.getAsStringArray());
+	public ControlProperty(int propertyId, @NotNull String name, ASound value) {
+		this(propertyId, name, PropertyType.SOUND, value.getAsStringArray());
 	}
 
 	/**
 	 Creates a control property of type Font<br>
-	 See constructor ControlProperty(String name, PropertyType type, String[] values) for more information
+	 See constructor ControlProperty(int propertyId, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(@NotNull String name, AFont value) {
-		this(name, PropertyType.FONT, new String[]{value.name()});
+	public ControlProperty(int propertyId, @NotNull String name, AFont value) {
+		this(propertyId, name, PropertyType.FONT, new String[]{value.name()});
+	}
+
+	public int getPropertyId() {
+		return propertyId;
 	}
 
 	@NotNull
@@ -210,11 +216,4 @@ public class ControlProperty {
 		return getName().equals(other.getName()) && type == other.type;
 	}
 
-	ControlProperty deepCopy() {
-		String[] values = new String[this.values.length];
-		for (int i = 0; i < values.length; i++) {
-			values[i] = this.values[i]; //strings are immutable
-		}
-		return new ControlProperty(this.name, this.type, values);
-	}
 }

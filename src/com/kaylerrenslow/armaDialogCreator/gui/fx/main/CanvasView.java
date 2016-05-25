@@ -30,7 +30,7 @@ class CanvasView extends HBox implements ICanvasView {
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
 
 		setOnMouseMoved(new CanvasViewMouseEvent(this));
-		uiCanvasEditor.addComponent(new ArmaControl(0, ControlType.ANIMATED_TEXTURE, ControlStyle.SINGLE, 0, 0, 1, 1, resolution, ArmaControlRenderer.class, null, null).getRenderer());
+		uiCanvasEditor.addComponent(new ArmaControl("Sample",0, ControlType.ANIMATED_TEXTURE, ControlStyle.SINGLE, 0, 0, 1, 1, resolution, ArmaControlRenderer.class, null, null).getRenderer());
 		focusToCanvas(true);
 	}
 

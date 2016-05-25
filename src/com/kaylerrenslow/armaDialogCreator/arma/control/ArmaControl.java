@@ -21,7 +21,8 @@ public class ArmaControl extends ArmaControlClass {
 
 	private final ControlProperty idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty, accessProperty;
 
-	public ArmaControl(@NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlSubClass[] requiredSubClasses, @Nullable ArmaControlSubClass[] optionalSubClasses) {
+	public ArmaControl(@NotNull String name, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+		super(name);
 		this.resolution = resolution;
 		try {
 			this.renderer = renderer.newInstance();
@@ -36,21 +37,21 @@ public class ArmaControl extends ArmaControlClass {
 		if (optionalSubClasses != null) {
 			addOptionalSubClasses(optionalSubClasses);
 		}
-		idcProperty = new ControlProperty("idc", idc);
-		typeProperty = new ControlProperty("type", type.typeId);
-		styleProperty = new ControlProperty("style", style.styleId);
-		xProperty = new ControlProperty("x", ControlProperty.PropertyType.FLOAT_RANGE, x);
-		yProperty = new ControlProperty("y", ControlProperty.PropertyType.FLOAT_RANGE, y);
-		wProperty = new ControlProperty("w", ControlProperty.PropertyType.FLOAT_RANGE, width);
-		hProperty = new ControlProperty("h", ControlProperty.PropertyType.FLOAT_RANGE, height);
-		accessProperty = new ControlProperty(ControlPropertiesLookup.ACCESS.propertyName, ControlPropertiesLookup.ACCESS.propertyType, "0");
+		idcProperty = ControlPropertiesLookup.IDC.getIntProperty(idc);
+		typeProperty = ControlPropertiesLookup.TYPE.getIntProperty(idc);
+		styleProperty = ControlPropertiesLookup.STYLE.getIntProperty(idc);
+		xProperty = ControlPropertiesLookup.X.getFloatProperty(x);
+		yProperty = ControlPropertiesLookup.Y.getFloatProperty(y);
+		wProperty = ControlPropertiesLookup.W.getFloatProperty(width);
+		hProperty = ControlPropertiesLookup.H.getFloatProperty(height);
+		accessProperty = ControlPropertiesLookup.ACCESS.getProperty("0");
 		addRequiredProperties(idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty);
 		addOptionalProperties(accessProperty);
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
 
-	public ArmaControl(int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlSubClass[] requiredSubClasses, @Nullable ArmaControlSubClass[] optionalSubClasses) {
-		this(resolution, renderer, requiredSubClasses, optionalSubClasses);
+	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+		this(name, resolution, renderer, requiredSubClasses, optionalSubClasses);
 		setType(type);
 		setIdc(idc);
 		setStyle(style);
@@ -106,7 +107,7 @@ public class ArmaControl extends ArmaControlClass {
 		defineProperty(styleProperty);
 	}
 
-	public void setAccess(int access){
+	public void setAccess(int access) {
 		this.accessProperty.setValue(access);
 	}
 

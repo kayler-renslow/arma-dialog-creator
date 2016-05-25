@@ -27,6 +27,23 @@ public class AColor {
 	}
 
 	/**
+	 Creates a color
+
+	 @param r red (range 0-255)
+	 @param g green (range 0-255)
+	 @param b blue (range 0-255)
+	 @param a alpha (range 0-255)
+	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
+	 */
+	public AColor(int r, int g, int b, int a) {
+		final double f = 255.0;
+		setRed(r / f);
+		setGreen(g / f);
+		setBlue(b / f);
+		setAlpha(a / f);
+	}
+
+	/**
 	 Creates a color from a double array of length 4
 
 	 @param c the color array that must have length=4
@@ -102,7 +119,7 @@ public class AColor {
 		return color;
 	}
 
-	/**Takes out the color values 1 by 1 and injects them into this instances' color array.*/
+	/** Takes out the color values 1 by 1 and injects them into this instances' color array. */
 	public void setColor(double[] c) {
 		if (c.length != 4) {
 			throw new IllegalArgumentException("array length must be 4");
