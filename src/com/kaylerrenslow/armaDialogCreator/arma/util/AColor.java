@@ -8,7 +8,10 @@ import org.jetbrains.annotations.Nullable;
  Defines a color.
  Created on 05/22/2016. */
 public class AColor {
-	private double[] color = new double[4];
+	/** Number of values stored inside a color array. This is blatantly obvious, but serves as clarity and mitigates hard-coding. */
+	public static final int ARRAY_SIZE = 4;
+
+	private double[] color = new double[ARRAY_SIZE];
 
 	/**
 	 Creates a color

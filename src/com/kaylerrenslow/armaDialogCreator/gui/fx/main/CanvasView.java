@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
 import javafx.event.EventHandler;
@@ -30,7 +31,7 @@ class CanvasView extends HBox implements ICanvasView {
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
 
 		setOnMouseMoved(new CanvasViewMouseEvent(this));
-		uiCanvasEditor.addComponent(new ArmaControl("Sample",0, ControlType.ANIMATED_TEXTURE, ControlStyle.SINGLE, 0, 0, 1, 1, resolution, ArmaControlRenderer.class, null, null).getRenderer());
+		uiCanvasEditor.addComponent(new StaticControl("Sample", 0, ControlStyle.SINGLE, 0, 0, 1, 1, resolution).getRenderer());
 		focusToCanvas(true);
 	}
 

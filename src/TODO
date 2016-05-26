@@ -13,3 +13,7 @@ check access property for controls and see if properties can be inherited and su
 have a color theme maker so that you don't need to constantly have to set colors to a macro. Maybe even have a big default archive for all attributes? Maybe just place them inside the lookup thingy?
 
 go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls
+
+for preview, have a control state toggler. Also, for action on buttons, have popup window show with action text.
+
+add properties for event handlers - https://community.bistudio.com/wiki/User_Interface_Event_Handlers

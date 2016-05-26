@@ -16,7 +16,7 @@ public class ControlProperty {
 	private final PropertyType type;
 	private String[] values;
 	private final int propertyId;
-	
+
 	public enum PropertyType {
 		INT,
 		FLOAT,
@@ -45,13 +45,31 @@ public class ControlProperty {
 	 @param propertyId unique id for the property. This comes from ControlPropertiesLookup.propertyId
 	 @param name name of the property
 	 @param type type of the property (integer, float, array, String)
-	 @param values values of the property. (if non-array, just create a String array of dimension 1 with value at index 0)
+	 @param values current values of the property. (if non-array, just create a String array of dimension 1 with value at index 0). If values are currently not set, use the constructor ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, int numValues)
 	 */
 	public ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, @NotNull String[] values) {
 		this.propertyId = propertyId;
 		this.name = name;
 		this.type = type;
 		this.values = values;
+	}
+
+	/**
+	 This constructor is used for when the values of the property are not set but the number of values stored is determined. For more information on this class, see constructor ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, @NotNull String[] values)
+
+	 @param propertyId propertyId
+	 @param name name of property
+	 @param type type of property
+	 @param numValues number of values that will be stored in the property (must be >=1).
+	 */
+	public ControlProperty(int propertyId, @NotNull String name, @NotNull PropertyType type, int numValues) {
+		if (numValues <= 0) {
+			throw new IllegalArgumentException("Number of values must be >= 1");
+		}
+		this.propertyId = propertyId;
+		this.name = name;
+		this.type = type;
+		this.values = new String[numValues];
 	}
 
 	/**
@@ -136,6 +154,16 @@ public class ControlProperty {
 
 	public int getPropertyId() {
 		return propertyId;
+	}
+
+	/** Get whether or not all values are set inside the property. */
+	public boolean valuesSet() {
+		for (String s : values) {
+			if (s == null) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	@NotNull

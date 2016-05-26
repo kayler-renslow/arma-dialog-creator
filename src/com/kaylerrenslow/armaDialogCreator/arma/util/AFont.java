@@ -13,5 +13,5 @@ public enum AFont {
 	EtelkaMonospacePro,
 	EtelkaMonospaceProBold,
 	EtelkaNarrowMediumPro,
-	TahomaB
+	TahomaB,
 }

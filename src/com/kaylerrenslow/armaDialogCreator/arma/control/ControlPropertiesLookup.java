@@ -25,7 +25,9 @@ public enum ControlPropertiesLookup {
 	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new Option("0", "Read and Write (default case where properties can still be added or overridden)."), new Option("1", "Read and Create (only allows creating new properties)."), new Option("2", "Read only (does not allow to do anything in deriving classes)."), new Option("3", "Read only verified (does not allow to do anything either in deriving classes, and a CRC check will be performed).")),
 
 	/*Common*/
+	/** moving: boolean. Set whether control can be dragged */
 	MOVING(8, "moving", PropertyType.BOOLEAN, "Whether or not this control can be dragged."),
+	/**sizeEx: float. Set font size*/
 	SIZE_EX(9, "sizeEx", PropertyType.FLOAT, "Font size of text."),
 	FONT(10, "font", PropertyType.FONT, "Font for text."),
 	COLOR_TEXT(11, "colorText", PropertyType.COLOR, "Color of text."),
@@ -219,6 +221,9 @@ public enum ControlPropertiesLookup {
 			}
 			throw new IllegalStateException("id '" + propertyId + "' is already taken for property enum name:" + name() + ". Here is an unused id for your convenience: " + canUse);
 		}
+		if (propertyId == -1) {
+			throw new IllegalStateException("-1 propertyId is reserved for user-defined properties");
+		}
 		PropertiesLookupDataVerifier.usedIds.add(propertyId);
 		this.propertyId = propertyId;
 		this.propertyName = propertyName;
@@ -267,11 +272,22 @@ public enum ControlPropertiesLookup {
 		if (defaultValue instanceof String[]) {
 			throw new IllegalArgumentException("Use getProperty(String[] defaultValues) instead");
 		}
+		if (defaultValue instanceof Option[]) {
+			throw new IllegalArgumentException("Use getProperty(Option[] defaultValues) instead");
+		}
 		return new ControlProperty(propertyId, propertyName, propertyType, defaultValue);
 	}
 
 	public ControlProperty getProperty(String[] defaultValues) {
 		return new ControlProperty(propertyId, propertyName, propertyType, defaultValues);
+	}
+
+	public ControlProperty getPropertyFromOption(int optionNum) {
+		return new ControlProperty(propertyId, propertyName, propertyType, options[optionNum].value);
+	}
+
+	public ControlProperty getPropertyWithNoData(int numValues){
+		return new ControlProperty(propertyId, propertyName, propertyType, numValues);
 	}
 
 	private static class PropertiesLookupDataVerifier {

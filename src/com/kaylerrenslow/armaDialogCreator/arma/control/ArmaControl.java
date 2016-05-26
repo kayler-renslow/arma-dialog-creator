@@ -21,7 +21,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	private final ControlProperty idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty, accessProperty;
 
-	public ArmaControl(@NotNull String name, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControl(@NotNull String name, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		super(name);
 		this.resolution = resolution;
 		try {
@@ -50,7 +50,7 @@ public class ArmaControl extends ArmaControlClass {
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
 
-	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		this(name, resolution, renderer, requiredSubClasses, optionalSubClasses);
 		setType(type);
 		setIdc(idc);
@@ -97,7 +97,7 @@ public class ArmaControl extends ArmaControlClass {
 		defineProperty(idcProperty);
 	}
 
-	public void setType(ControlType type) {
+	protected void setType(ControlType type) {
 		this.type = type;
 		defineProperty(typeProperty);
 	}
