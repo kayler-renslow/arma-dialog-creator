@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PopupColorPicker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.ViewDarkThemeAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
@@ -63,12 +64,16 @@ class ADCMenuBar extends MenuBar {
 
 	private final Menu backgroundAll = new Menu(MainMenuBar.VIEW_BACKGROUND_IMAGE, null, view_bg_img1, view_bg_img2, view_bg_img3, view_bg_custom, view_bg_noImage);
 
+	/*settings*/
+	private final MenuItem setings_configureDirs = addOnAction(new MenuItem(MainMenuBar.SETTINGS_CONFIGURE_DIRS), new SettingsChangeSaveDirAction());
+
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll);
+	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, setings_configureDirs);
 
 	ADCMenuBar() {
-		this.getMenus().addAll(menuFile, menuEdit, menuView);
+		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings);
 	}
 
 	private class ColorPickerButtonEvent implements EventHandler<ActionEvent> {

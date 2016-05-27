@@ -1,6 +1,6 @@
 ADDED:
-    dark theme capability
-    more hardcoded control properties
+    file data save directory setting (even though there is nothing to save yet...lol)
+    error catching functionality in ArmaDialogCreator class
 CHANGED:
     none
 FIXED:

@@ -17,3 +17,6 @@ go back through the lookup table and remove redundant entries after you figure o
 for preview, have a control state toggler. Also, for action on buttons, have popup window show with action text.
 
 add properties for event handlers - https://community.bistudio.com/wiki/User_Interface_Event_Handlers
+
+
+ARMA 3 TOOLS LOCATION WILL NEVER SAVE AND LOAD CORRECTLY AFTER CLOSING THE APPLICATION.

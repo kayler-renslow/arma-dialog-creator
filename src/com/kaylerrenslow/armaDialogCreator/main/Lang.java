@@ -43,14 +43,30 @@ public class Lang {
 		public static final String VIEW_ABS_REGION_SHOW = "Show";
 		public static final String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
 		public static final String VIEW_DARK_THEME = "Use Dark Theme";
+
+		public static final String SETTINGS = "Settings";
+		public static final String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
 	}
 
-	public static class ColorsPopup {
-		public static final String POPUP_TITLE = "Change Canvas Colors";
-		public static final String SELECTION = "Selection";
-		public static final String GRID = "Grid";
-		public static final String ABS_REGION = "Absolute Region";
-		public static final String BACKGROUND = "Canvas Background Color";
+	public static class Popups{
+		public static final String BTN_HELP = "Help";
+		public static final String BTN_CANCEL = "Cancel";
+		public static final String BTN_OK = "OK";
+
+		public static class Colors {
+			public static final String POPUP_TITLE = "Change Canvas Colors";
+			public static final String SELECTION = "Selection";
+			public static final String GRID = "Grid";
+			public static final String ABS_REGION = "Absolute Region";
+			public static final String BACKGROUND = "Canvas Background Color";
+		}
+
+		public static class SelectSaveLocation {
+			public static final String POPUP_TITLE = "Configure Directories";
+			public static final String LBL_APP_DATA_SAVE_DIR = "Application data save directory:";
+			public static final String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
+			public static final String BTN_CHANGE = "Change";
+		}
 	}
 
 	public static class Misc {

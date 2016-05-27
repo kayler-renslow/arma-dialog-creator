@@ -7,40 +7,44 @@ import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
  Basis for a popup window that uses a JavaFX Stage as its host thingy majig
  Created on 05/20/2016. */
-public abstract class StagePopup {
+public class StagePopup {
 
 	protected final Scene myScene;
 	protected final Stage myStage;
 	protected final Parent myRootElement;
 
 	/**
-	 Creates a new JavaFX Stage based popup window.
+	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
+	 The stylesheets will also update whenever the primary stage's stylesheets get updated.
 
-	 @param primaryStage the stage of the JavaFX application
+	 @param primaryStage the primary stage of the JavaFX application (should be the one from the class that extends Application). Can also be null (won't inherit icons or stylesheets).
 	 @param rootElement the root element of the scene
 	 @param title title of the popup window
 	 */
-	public StagePopup(Stage primaryStage, Parent rootElement, String title) {
+	public StagePopup(@Nullable Stage primaryStage, Parent rootElement, String title) {
 		myRootElement = rootElement;
 		myStage = new Stage();
 		myScene = new Scene(rootElement);
 		myStage.setScene(myScene);
 		myStage.setTitle(title);
-		myStage.initOwner(primaryStage);
-		myStage.getIcons().add(primaryStage.getIcons().get(0));
-		myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-		primaryStage.getScene().getStylesheets().addListener(new ListChangeListener<String>() {
-			@Override
-			public void onChanged(Change<? extends String> c) {
-				myStage.getScene().getStylesheets().clear();
-				myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-			}
-		});
+		if (primaryStage != null) {
+			myStage.initOwner(primaryStage);
+			myStage.getIcons().add(primaryStage.getIcons().get(0));
+			myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+			primaryStage.getScene().getStylesheets().addListener(new ListChangeListener<String>() {
+				@Override
+				public void onChanged(Change<? extends String> c) {
+					myStage.getScene().getStylesheets().clear();
+					myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+				}
+			});
+		}
 
 		myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
 			@Override
@@ -55,7 +59,7 @@ public abstract class StagePopup {
 		myStage.show();
 	}
 
-	/** Force close the popup */
+	/** Force close the popup. This will also call the method closing() */
 	public void close() {
 		closing();
 		myStage.close();
@@ -66,7 +70,7 @@ public abstract class StagePopup {
 		closing();
 	}
 
-	/** Window is definitely closing now */
+	/** Window is definitely closing now. Default implementation is empty. */
 	protected void closing() {
 
 	}
