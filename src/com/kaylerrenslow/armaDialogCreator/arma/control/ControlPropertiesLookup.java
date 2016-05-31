@@ -27,7 +27,7 @@ public enum ControlPropertiesLookup {
 	/*Common*/
 	/** moving: boolean. Set whether control can be dragged */
 	MOVING(8, "moving", PropertyType.BOOLEAN, "Whether or not this control can be dragged."),
-	/**sizeEx: float. Set font size*/
+	/** sizeEx: float. Set font size */
 	SIZE_EX(9, "sizeEx", PropertyType.FLOAT, "Font size of text."),
 	FONT(10, "font", PropertyType.FONT, "Font for text."),
 	COLOR_TEXT(11, "colorText", PropertyType.COLOR, "Color of text."),
@@ -72,7 +72,7 @@ public enum ControlPropertiesLookup {
 	HTML_NEXT_PAGE(40, "nextPage", PropertyType.IMAGE, "File name of image which is used for right arrow."),
 
 	/*Button*/
-	BTN_ACTION(41, "action", PropertyType.STRING, "Script command(s) to execute when button is pressed. Variable 'this' contains unit that pressed button."),
+	BTN_ACTION(41, "action", PropertyType.SQF, "Script command(s) to execute when button is pressed. Variable 'this' contains unit that pressed button."),
 	BTN_BORDER_SIZE(42, "borderSize", PropertyType.FLOAT, "If > 0 then a background (in the color defined in 'colorBorder') is drawn behind the button. It extends to the left by the distance defined here, its height is slightly less than that of the button, and it is vertically centered. The width extends to the right, to where the drop shadow starts. Stays static when button is pressed."),
 	BTN_COLOR_BACKGROUND_ACTIVE(43, "colorBackgroundActive", PropertyType.COLOR, "Button's background color if 'active' (mouse pointer is over it)."),
 	BTN_COLOR_BACKGROUND_DISABLED(44, "colorBackgroundDisabled", PropertyType.COLOR, "Button's background color if disabled."),
@@ -101,7 +101,7 @@ public enum ControlPropertiesLookup {
 	BTN_PERIOD_OVER(69, "periodOver", PropertyType.FLOAT, null),
 
 	/*Active Text*/
-	AT_ACTION(70, "action", PropertyType.STRING, "Script command(s) to execute when text is clicked."),
+	AT_ACTION(70, "action", PropertyType.SQF, "Script command(s) to execute when text is clicked."),
 	AT_CAN_DRAG(71, "canDrag", PropertyType.BOOLEAN, null),
 	AT_COLOR(72, "color", PropertyType.COLOR, "Text color and underline color."),
 	AT_COLOR_ACTIVE(73, "colorActive", PropertyType.COLOR, "Text and underline color when mouse is over the active text."),
@@ -181,7 +181,58 @@ public enum ControlPropertiesLookup {
 	LB_ROW_HEIGHT(140, "rowHeight", PropertyType.FLOAT, "The height of a single row in the elapsed box."),
 	LB_ROWS(141, "rows", PropertyType.INT, null),
 
-
+	/*event handlers*/
+	EVENT_ON_LOAD(1000, "onLoad", PropertyType.EVENT, strArr("Display and all controls are created, but no action on any is taken.", "Returns the display.", priority(1), "Display")),
+	EVENT_ON_UNLOAD(1001, "onUnload", PropertyType.EVENT, strArr("Display is closed, but no controls are destroyed yet.", "Returns the display and exit code.", priority(1), "Display")),
+	EVENT_ON_CHILD_DESTROYED(1002, "onChildDestroyed", PropertyType.EVENT, strArr("Child display is closed.", "Returns the display, which child display was closed and exit code.", priority(1), "Display")),
+	EVENT_ON_MOUSE_ENTER(1003, "onMouseEnter", PropertyType.EVENT, strArr("The mouse pointer enters the control area.", "Returns control.", priority(1), "Control")),
+	EVENT_ON_MOUSE_EXIT(1004, "onMouseExit", PropertyType.EVENT, strArr("The mouse pointer exits the control area.", "Returns control.", priority(1), "Control")),
+	EVENT_ON_SET_FOCUS(1005, "onSetFocus", PropertyType.EVENT, strArr("Input focus is on control. It now begins to accept keyboard input.", "Returns control.", priority(2), "Control")),
+	EVENT_ON_KILL_FOCUS(1006, "onKillFocus", PropertyType.EVENT, strArr("Input focus is no longer on control. It no longer accepts keyboard input.", "Returns control.", priority(2), "Control")),
+	EVENT_ON_TIMER(1007, "onTimer", PropertyType.EVENT, strArr("After amount of time given by setTimer function.", "Returns control.", priority(3), "Control")),
+	EVENT_ON_KEY_DOWN(1008, "onKeyDown", PropertyType.EVENT, strArr("Pressing any keyboard key. Fired before the onKeyUp event.", "Returns the control, the keyboard code and the state of Shift, Ctrl and Alt.", priority(2), "Display, Control")),
+	EVENT_ON_KEY_UP(1009, "onKeyUp", PropertyType.EVENT, strArr("Releasing any keyboard key. Fired after the onKeyDown event.", "Returns the control, the keyboard code and the state of Shift, Ctrl and Alt.", priority(2), "Display, Control")),
+	EVENT_ON_CHAR(1010, "onChar", PropertyType.EVENT, strArr("When some readable characters is recognised.", "Returns the control and the char code.", priority(2), "Control")),
+	EVENT_ON_IME_CHAR(1011, "onIMEChar", PropertyType.EVENT, strArr("When IME character is recognized (used in Korean and other eastern languages).", "Returns the control and the char code.", priority(2), "Control")),
+	EVENT_ON_IME_COMPOSITION(1012, "onIMEComposition", PropertyType.EVENT, strArr("When partial IME character is recognized (used in Korean and other eastern languages).", "Returns the control and the char code.", priority(2), "Control")),
+	EVENT_ON_JOYSTICK_BUTTON(1013, "onJoystickButton", PropertyType.EVENT, strArr("Pressing and releasing any joystick button.", "Not in Arma 2 or Arma 3 Returns the control and the the pressed button.", priority(3), "Control")),
+	EVENT_ON_MOUSE_BUTTON_DOWN(1014, "onMouseButtonDown", PropertyType.EVENT, strArr("Pressing a mouse button. Followed by the onMouseButtonUp event.", "Returns the control, the pressed button, the x and y coordinates and the state of Shift, Ctrl and Alt.", priority(2), "Control")),
+	EVENT_ON_MOUSE_BUTTON_UP(1015, "onMouseButtonUp", PropertyType.EVENT, strArr("Releasing a mouse button. Follows the onMouseButtonDown event.", "Returns the control, the pressed button, the x and y coordinates and the state of Shift, Ctrl and Alt.", priority(2), "Control")),
+	EVENT_ON_MOUSE_BUTTON_CLICK(1016, "onMouseButtonClick", PropertyType.EVENT, strArr("Pressing and releasing a mouse button.", "Returns the control, the pressed button, the x and y coordinates and the state of Shift, Ctrl and Alt.", priority(2), "ListBox, ComboBox, TextBox, Button, ActiveText")),
+	EVENT_ON_MOUSE_BUTTON_DBL_CLICK(1017, "onMouseButtonDblClick", PropertyType.EVENT, strArr("Pressing and releasing a mouse button twice within very short time.", "Returns the control, the pressed button, the x and y coordinates and the state of Shift, Ctrl and Alt.", priority(2), "Control")),
+	EVENT_ON_MOUSE_MOVING(1018, "onMouseMoving", PropertyType.EVENT, strArr("Fires continuously while moving the mouse with a certain interval.", "Returns the control, the x and y coordinates relative to control and mouseOver.", priority(2), "Control")),
+	EVENT_ON_MOUSE_HOLDING(1019, "onMouseHolding", PropertyType.EVENT, strArr("Fires continuously while mouse is not moving with a certain interval.", "Returns the display, the some kind of x and y delta position.", priority(2), "Display")),
+	EVENT_ON_MOUSE_ZCHANGED(1020, "onMouseZChanged", PropertyType.EVENT, strArr("Fires when mouse wheel position is changed. Does not fire on disabled control. Checked with CT_EDIT type in v1.50.", "Returns the control, the x and y coordinates and mouseOver. If used with a display, the mouseOver parameter is excluded.", priority(2), "Control")),
+	EVENT_ON_CAN_DESTROY(1021, "onCanDestroy", PropertyType.EVENT, strArr("Ask this control if dialog can be closed (used for validation of contained data).", "Returns the control and the change of the scrollbar.", priority(3), "Control only")),
+	EVENT_ON_DESTROY(1022, "onDestroy", PropertyType.EVENT, strArr("Destroying control", "Returns the control and exit code.", priority(3), "Control")),
+	EVENT_ON_BUTTON_CLICK(1023, "onButtonClick", PropertyType.EVENT, strArr("The attached button action is performed. When returned value is true, button's display remains opened.", "Returns the control and exit code.", priority(1), "Control")),
+	EVENT_ON_BUTTON_DBL_CLICK(1024, "onButtonDblClick", PropertyType.EVENT, strArr("?", "Returns control.", priority(-1), "Button")),
+	EVENT_ON_BUTTON_DOWN(1025, "onButtonDown", PropertyType.EVENT, strArr("The left mouse button is pressed over the button area or a key on the keyboard is pressed.", "Arma 3", priority(1), "Button")),
+	EVENT_ON_BUTTON_UP(1026, "onButtonUp", PropertyType.EVENT, strArr("The left mouse buttons is released outside the button area and the attached button action is not performed.", "Returns control.", priority(1), "Button")),
+	EVENT_ON_LB_SEL_CHANGED(1027, "onLBSelChanged", PropertyType.EVENT, strArr("The selection in a listbox is changed. The left mouse button has been released and the new selection is fully made.", "Returns control.", priority(2), "Button")),
+	EVENT_ON_LB_LIST_SEL_CHANGED(1028, "onLBListSelChanged", PropertyType.EVENT, strArr("Selection in XCombo box changed (but value is not stored yet).", "Returns the control and the selected element index.", priority(2), "Listbox")),
+	EVENT_ON_LB_DBL_CLICK(1029, "onLBDblClick", PropertyType.EVENT, strArr("Double click on some row in listbox.", "Returns the control and the selected element index.", priority(2), "Listbox")),
+	EVENT_ON_LB_DRAG(1030, "onLBDrag", PropertyType.EVENT, strArr("Drag & drop operation started.", "Returns the control and the selected element index.", priority(2), "Listbox")),
+	EVENT_ON_LB_DRAGGING(1031, "onLBDragging", PropertyType.EVENT, strArr("Drag & drop operation is in progress.", "Returns the control and the selected element index.", priority(2), "Listbox")),
+	EVENT_ON_LB_DROP(1032, "onLBDrop", PropertyType.EVENT, strArr("Drag & drop operation finished.", "Returns the control and the x and y coordinates.", priority(2), "Listbox")),
+	EVENT_ON_TREE_SEL_CHANGED(1033, "onTreeSelChanged", PropertyType.EVENT, strArr("Changing the selection in a tree.", "Returns the control and the x and y coordinates.", priority(2), "Listbox, Combobox, Textbox, ActiveText, Button")),
+	EVENT_ON_TREE_LBUTTON_DOWN(1034, "onTreeLButtonDown", PropertyType.EVENT, strArr("Pressing and releasing left mouse button on a tree.", "Returns the control and the new selection path.", priority(2), "Tree")),
+	EVENT_ON_TREE_DBL_CLICK(1035, "onTreeDblClick", PropertyType.EVENT, strArr("Pressing and releasing twice on a tree entry.", "Returns the control.", priority(2), "Tree")),
+	EVENT_ON_TREE_EXPANDED(1036, "onTreeExpanded", PropertyType.EVENT, strArr("The tree folder structure has been expanded.", "Returns the control and the current selection path.", priority(3), "Tree")),
+	EVENT_ON_TREE_COLLAPSED(1037, "onTreeCollapsed", PropertyType.EVENT, strArr("The tree folder structure has been collapsed.", "Returns the control.", priority(3), "Tree")),
+	EVENT_ON_TREE_MOUSE_MOVE(1038, "onTreeMouseMove", PropertyType.EVENT, strArr("Fires continuously while moving the mouse with a certain interval.", "Returns the control.", priority(2), "Tree")),
+	EVENT_ON_TREE_MOUSE_HOLD(1039, "onTreeMouseHold", PropertyType.EVENT, strArr("Fires continuously while mouse is not moving with a certain interval.", "Returns the control.", priority(2), "Tree")),
+	EVENT_ON_TREE_MOUSE_EXIT(1040, "onTreeMouseExit", PropertyType.EVENT, strArr("The mouse pointer exits the tree control area", "Returns the control.", priority(2), "Tree")),
+	EVENT_ON_TOOL_BOX_SEL_CHANGED(1041, "onToolBoxSelChanged", PropertyType.EVENT, strArr("Changed the selection in a toolbox.", "Returns the control.", priority(2), "Tree")),
+	EVENT_ON_CHECKED(1042, "onChecked", PropertyType.EVENT, strArr("?", "Returns the control and the selected element index.", priority(-1), "Toolbox")),
+	EVENT_ON_CHECKED_CHANGED(1043, "onCheckedChanged", PropertyType.EVENT, strArr("Checked state of CheckBox changed.", "Arma 3", priority(-1), "Checkbox")),
+	EVENT_ON_CHECK_BOXES_SEL_CHANGED(1044, "onCheckBoxesSelChanged", PropertyType.EVENT, strArr("Changed the selection in a checkbox.", "Arma 3. Returns control and the checked state.", priority(2), "Checkbox")),
+	EVENT_ON_HTML_LINK(1045, "onHTMLLink", PropertyType.EVENT, strArr("Pressing and releasing a HTML link.", "Returns the control, the selected element index and the current state.", priority(2), "Checkbox")),
+	EVENT_ON_SLIDER_POS_CHANGED(1046, "onSliderPosChanged", PropertyType.EVENT, strArr("Changing the position of a slider.", "Returns the control and href.", priority(2), "HTML")),
+	EVENT_ON_OBJECT_MOVED(1047, "onObjectMoved", PropertyType.EVENT, strArr("Moving an object.", "Returns the control and the change.", priority(2), "Slider")),
+	EVENT_ON_MENU_SELECTED(1048, "onMenuSelected", PropertyType.EVENT, strArr("Some item in context menu (used now only in new mission editor) was selected.", "Returns the control and the offset on the x, y and z axes.", priority(2), "Object")),
+	EVENT_ON_DRAW(1049, "onDraw", PropertyType.EVENT, strArr("Fires when the map is drawn (can occur more than once per second).", "Returns the control and the command id.", priority(-1), "Context menu")),
+	EVENT_ON_VIDEO_STOPPED(1050, "onVideoStopped", PropertyType.EVENT, strArr("1.56 Activated every time video ends (when looped, handler is executed after every finished loop).", "Returns the map control.", priority(2), "Map")),
 
 
 	/*HitZone and TextPos classes*/
@@ -199,18 +250,14 @@ public enum ControlPropertiesLookup {
 	public final @Nullable Option[] options;
 	public final String propertyName;
 	public final PropertyType propertyType;
-	public final String about;
+	public final String[] about;
 	/**
 	 A unique id for the lookup item to guarantee a match by despite order change or property name change, or some other change.
 	 <br>When the loopup item is written, the propertyId must <b>NEVER</b> change.
 	 */
 	public final int propertyId;
 
-	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about) {
-		this(propertyId, propertyName, propertyType, about, (Option[]) null);
-	}
-
-	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable Option... options) {
+	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable Option... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
 			int canUse;
 			for (int i = 0; true; i++) {
@@ -228,12 +275,36 @@ public enum ControlPropertiesLookup {
 		this.propertyId = propertyId;
 		this.propertyName = propertyName;
 		this.propertyType = propertyType;
-		this.about = (about != null ? about : "No documentation.");
+		this.about = about;
 		this.options = options;
+	}
+
+	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about) {
+		this(propertyId, propertyName, propertyType, about, (Option[]) null);
+	}
+
+	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable Option... options) {
+		this(propertyId, propertyName, propertyType, about == null ? strArr("No documentation.") : strArr(about), options);
+	}
+
+
+	private static String[] strArr(String... vals) {
+		return vals;
+	}
+
+	private static String priority(int i) {
+		if (i < 0) {
+			return "unknown";
+		}
+		return i + "";
 	}
 
 	public boolean matches(ControlProperty property) {
 		return propertyId == property.getPropertyId();
+	}
+
+	public ControlProperty getEventProperty(String defaultEventValue) {
+		return new ControlProperty(propertyId, propertyName, propertyType, defaultEventValue);
 	}
 
 	public ControlProperty getIntProperty(int defaultValue) {
@@ -286,11 +357,12 @@ public enum ControlPropertiesLookup {
 		return new ControlProperty(propertyId, propertyName, propertyType, options[optionNum].value);
 	}
 
-	public ControlProperty getPropertyWithNoData(int numValues){
+	public ControlProperty getPropertyWithNoData(int numValues) {
 		return new ControlProperty(propertyId, propertyName, propertyType, numValues);
 	}
 
 	private static class PropertiesLookupDataVerifier {
 		static ArrayList<Integer> usedIds = new ArrayList<>();
 	}
+
 }

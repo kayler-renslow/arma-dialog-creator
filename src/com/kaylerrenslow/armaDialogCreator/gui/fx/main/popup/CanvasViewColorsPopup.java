@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import static com.kaylerrenslow.armaDialogCreator.main.Lang.Popups.Colors;
 
@@ -41,6 +42,7 @@ public class CanvasViewColorsPopup extends StagePopup {
 
 	public CanvasViewColorsPopup(Stage primaryStage) {
 		super(primaryStage, new VBox(10), Colors.POPUP_TITLE);
+		myStage.initStyle(StageStyle.UTILITY);
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		setupColorPickers();
 		VBox root = (VBox) myRootElement;

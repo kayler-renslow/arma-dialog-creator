@@ -16,10 +16,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,7 +41,7 @@ public class SelectSaveLocationPopup extends StagePopup {
 	private boolean a3AppSaveDirGood = false;
 	private boolean a3ToolsDirGood = true;
 
-	/**True if the popup is closing and no action should be performed on exit, false otherwise.*/
+	/** True if the popup is closing and no action should be performed on exit, false otherwise. */
 	private boolean cancel = false;
 
 	/**
@@ -57,13 +54,14 @@ public class SelectSaveLocationPopup extends StagePopup {
 		initialize((VBox) myRootElement, initialDirectoryAppDataSave, a3ToolsDir);
 		myStage.setMinWidth(600d);
 		myStage.initModality(Modality.APPLICATION_MODAL);
+		myStage.initStyle(StageStyle.UTILITY);
 	}
 
 	private void initialize(@NotNull VBox root, @NotNull File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
 		tfA3ToolsDir.setEditable(false);
 		tfAppDataSaveDir.setEditable(false);
 
-		if(a3ToolsDir != null){
+		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
 		a3AppSaveDirGood = initialAppSaveDirectory.exists();
@@ -138,6 +136,7 @@ public class SelectSaveLocationPopup extends StagePopup {
 
 		root.getChildren().addAll(lblAppDataSaveDir, hbTop, lblA3ToolsDir, hbMid, getHorizontalSeparator(), hbBot);
 		root.setPadding(new Insets(5, 5, 5, 5));
+		root.setMinHeight(165d);
 	}
 
 	private void chooseA3ToolsSaveDir(File f) {

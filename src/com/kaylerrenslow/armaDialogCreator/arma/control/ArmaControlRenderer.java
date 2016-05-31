@@ -9,7 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
  Created on 05/20/2016.
  */
 public class ArmaControlRenderer extends Component {
-	private ArmaControl myControl;
+	protected ArmaControl myControl;
 
 	public ArmaControlRenderer() {
 		super(0, 0, 0, 0);
@@ -17,6 +17,10 @@ public class ArmaControlRenderer extends Component {
 
 	final void setMyControl(ArmaControl myControl) {
 		this.myControl = myControl;
+	}
+
+	public ArmaControl getMyControl(){
+		return myControl;
 	}
 
 	@Override

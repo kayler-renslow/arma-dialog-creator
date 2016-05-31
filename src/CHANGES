@@ -1,6 +1,6 @@
 ADDED:
-    file data save directory setting (even though there is nothing to save yet...lol)
-    error catching functionality in ArmaDialogCreator class
+    event handlers to properties lookup
+    kind of prototype code for control properties window. Need to change the border color to color of component it's linked to and have a line follow it for maximum clarity.
 CHANGED:
     none
 FIXED:

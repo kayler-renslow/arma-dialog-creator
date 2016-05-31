@@ -126,7 +126,7 @@ public class UICanvasEditor extends UICanvas {
 	/**
 	 @param ccm the context menu creator that is used to give Components context menus
 	 */
-	public void setMenuCreator(@Nullable IComponentContextMenuCreator ccm) {
+	public void setComponentMenuCreator(@Nullable IComponentContextMenuCreator ccm) {
 		this.menuCreator = ccm;
 	}
 

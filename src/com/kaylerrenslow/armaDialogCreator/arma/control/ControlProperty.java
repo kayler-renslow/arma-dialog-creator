@@ -18,13 +18,21 @@ public class ControlProperty {
 	private final int propertyId;
 
 	public enum PropertyType {
+		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
 		INT,
+		/** Is a floating point value. The current implementation uses 32 bit floating point (java double) */
 		FLOAT,
+		/** Is a boolean (0 for false, 1 for true) */
 		BOOLEAN,
+		/** Is a String */
 		STRING,
+		/** Generic array property type */
 		ARRAY,
+		/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
 		COLOR,
+		/** Is an array that is formatted to fit a sound and its params */
 		SOUND,
+		/** Is font name */
 		FONT,
 		/** Denotes a file name inside a String */
 		FILE_NAME,
@@ -34,6 +42,10 @@ public class ControlProperty {
 		HEX_COLOR_STRING,
 		/** example: #(argb,8,8,3)color(1,1,1,1) */
 		TEXTURE,
+		/** Is an SQF code string, but this propertyType is an easy way to categorize all event handlers. */
+		EVENT,
+		/** SQF code String */
+		SQF,
 		/** The type can be anything and/or can vary */
 		CUSTOM
 	}
@@ -169,6 +181,11 @@ public class ControlProperty {
 	@NotNull
 	public String getName() {
 		return name;
+	}
+
+	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getType() == PropertyType.something) */
+	public boolean isType(PropertyType type) {
+		return this.type == type;
 	}
 
 	@NotNull
