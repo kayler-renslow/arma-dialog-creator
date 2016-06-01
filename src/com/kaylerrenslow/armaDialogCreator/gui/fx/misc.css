@@ -1,0 +1,11 @@
+/*Makes the node have rounded edges*/
+.rounded-node{
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-width: 2;
+}
+/*Used for when input in a text field is bad*/
+.bad-input-text-field{
+    -fx-background-color: red;
+    -fx-text-fill:white;
+}

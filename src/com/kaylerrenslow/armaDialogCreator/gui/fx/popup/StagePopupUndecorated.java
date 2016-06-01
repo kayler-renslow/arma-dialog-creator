@@ -1,10 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.scene.Cursor;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -14,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  Created by Kayler on 05/30/2016.
  */
-public class StagePopupUndecorated extends StagePopup {
+public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 	private double xOffset = 0;
 	private double yOffset = 0;
 
@@ -24,7 +20,7 @@ public class StagePopupUndecorated extends StagePopup {
 
 	 @see StagePopup
 	 */
-	public StagePopupUndecorated(@Nullable Stage primaryStage, Parent rootElement, String title) {
+	public StagePopupUndecorated(@Nullable Stage primaryStage, E rootElement, String title) {
 		super(primaryStage, rootElement, title);
 		myStage.initStyle(StageStyle.UNDECORATED);
 		rootElement.setOnMousePressed(new EventHandler<MouseEvent>() {

@@ -22,7 +22,7 @@ import static com.kaylerrenslow.armaDialogCreator.main.Lang.Popups.Colors;
  @author Kayler
  Creates a popup for changing the canvas colors
  Created on 05/20/2016. */
-public class CanvasViewColorsPopup extends StagePopup {
+public class CanvasViewColorsPopup extends StagePopup<VBox> {
 
 	private final ColorPicker cpSelection = new ColorPicker(CanvasViewColors.SELECTION);
 	private final ColorPicker cpGrid = new ColorPicker(CanvasViewColors.GRID);
@@ -45,11 +45,10 @@ public class CanvasViewColorsPopup extends StagePopup {
 		myStage.initStyle(StageStyle.UTILITY);
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		setupColorPickers();
-		VBox root = (VBox) myRootElement;
 		myStage.setMinWidth(400);
-		root.setPadding(new Insets(5, 5, 5, 5));
-		root.setAlignment(Pos.TOP_LEFT);
-		root.getChildren().addAll(colorOption(Colors.SELECTION, cpSelection), colorOption(Colors.ABS_REGION, cpAbsRegion), colorOption(Colors.GRID, cpGrid), colorOption(Colors.BACKGROUND, cpEditorBg));
+		myRootElement.setPadding(new Insets(5, 5, 5, 5));
+		myRootElement.setAlignment(Pos.TOP_LEFT);
+		myRootElement.getChildren().addAll(colorOption(Colors.SELECTION, cpSelection), colorOption(Colors.ABS_REGION, cpAbsRegion), colorOption(Colors.GRID, cpGrid), colorOption(Colors.BACKGROUND, cpEditorBg));
 	}
 
 	private void setupColorPickers() {

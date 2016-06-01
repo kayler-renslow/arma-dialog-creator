@@ -42,6 +42,7 @@ public class ADCWindow {
 		if (!dontAddMenuBar) {
 			rootElement.getChildren().add(mainMenuBar);
 		}
+		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/misc.css");
 		rootElement.getChildren().addAll(canvasView);
 		rootElement.minWidth(resolution.getScreenWidth() + 250.0);
 		rootElement.minHeight(resolution.getScreenHeight() + 50.0);

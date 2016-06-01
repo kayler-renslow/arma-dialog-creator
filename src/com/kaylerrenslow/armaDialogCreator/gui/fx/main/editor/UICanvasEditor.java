@@ -1,5 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
@@ -8,6 +11,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Edge;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -74,6 +78,14 @@ public class UICanvasEditor extends UICanvas {
 	private final Resolution resolution;
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
 
+	private final ValueListener<ArmaControl> CONTROL_LISTENER = new ValueListener<ArmaControl>() {
+		@Override
+		public void valueUpdated(ArmaControl oldValue, ArmaControl newValue) {
+			paint();
+		}
+	};
+
+
 	public UICanvasEditor(Resolution resolution, ISnapConfiguration calculator) {
 		super(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.resolution = resolution;
@@ -95,8 +107,17 @@ public class UICanvasEditor extends UICanvas {
 		addComponent(absRegionComponent);
 	}
 
+	@Override
+	public void addComponent(@NotNull Component component) {
+		super.addComponent(component);
+		if(component instanceof ArmaControlRenderer){
+			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
+			renderer.getMyControl().getControlListener().addValueListener(CONTROL_LISTENER);
+		}
+	}
+
 	/**
-	 Removes the given component from the canvas render and user interaction.
+	 Removes the given component from the canvas render and user interaction. This also removes the component from the selection
 
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
@@ -105,6 +126,10 @@ public class UICanvasEditor extends UICanvas {
 		boolean removed = super.removeComponent(component);
 		if (removed) {
 			this.selection.removeFromSelection(component);
+			if(component instanceof ArmaControlRenderer){
+				ArmaControlRenderer renderer = (ArmaControlRenderer) component;
+				renderer.getMyControl().getControlListener().removeListener(CONTROL_LISTENER);
+			}
 		}
 		return removed;
 	}

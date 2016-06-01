@@ -1,12 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlPropertiesLookup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.arma.control.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -17,7 +15,9 @@ public class StaticControl extends ArmaControl {
 
 	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution) {
 		super(name, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class, null, null);
-		addRequiredProperties(ControlPropertiesLookup.COLOR_BACKGROUND.getColorProperty(new AColor(1d, 1d, 1d, 1d)));
+		ControlProperty backgroundColorProperty = ControlPropertiesLookup.COLOR_BACKGROUND.getColorProperty(new AColor(1d, 1d, 1d, 1d));
+
+		addRequiredProperties(backgroundColorProperty);
 		addRequiredProperties(ControlPropertiesLookup.COLOR_TEXT.getColorProperty(new AColor(0d, 0d, 0d, 1d)));
 		addRequiredProperties(ControlPropertiesLookup.FONT.getFontProperty(AFont.PuristaMedium));
 		addRequiredProperties(ControlPropertiesLookup.TEXT.getStringProperty(""));
@@ -30,6 +30,13 @@ public class StaticControl extends ArmaControl {
 		addOptionalProperties(ControlPropertiesLookup.STATIC_FIXED_WIDTH.getFloatProperty(0));
 		addOptionalProperties(ControlPropertiesLookup.STATIC_LINE_SPACING.getFloatProperty(0));
 		addOptionalProperties(ControlPropertiesLookup.BLINKING_PERIOD.getFloatProperty(0));
+
+		backgroundColorProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			@Override
+			public void valueUpdated(String[] oldValue, String[] newValue) {
+				getRenderer().getBackgroundColorObserver().updateValue(new AColor(newValue));
+			}
+		});
 	}
 
 }

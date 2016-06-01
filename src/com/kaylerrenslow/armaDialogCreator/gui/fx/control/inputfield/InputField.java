@@ -1,0 +1,76 @@
+package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
+
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.event.EventHandler;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyEvent;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ @author Kayler
+ Base class for a text field control that checks if the inputted data is correct and returns the data as an object with type V
+ Created on 05/31/2016. */
+public class InputField<E extends IInputFieldDataChecker<V>, V> extends TextField {
+	private static final String BAD_FIELD = "bad-input-text-field";
+	private final E fieldData;
+	private boolean valid = true;
+	private ValueObserver<V> observer = new ValueObserver<>(null);
+
+	/** Creates a new InputField (TextField with additional features). Avoid using setText and instead use setValue */
+	public InputField(@NotNull E fieldDataChecker) {
+		this.fieldData = fieldDataChecker;
+		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
+			@Override
+			public void handle(javafx.scene.input.KeyEvent event) {
+				setValueFromText(getText());
+			}
+		};
+		setPromptText(fieldDataChecker.getTypeName());
+		setTooltip(new Tooltip(fieldDataChecker.getTypeName()));
+		this.setOnKeyReleased(keyEvent);
+		this.setOnKeyTyped(keyEvent);
+	}
+
+	/** Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data) */
+	public V getValue() {
+		return fieldData.parse(this.getText());
+	}
+
+	/** Return true if the data inside the text field is valid, false otherwise */
+	public boolean hasValidData() {
+		return valid;
+	}
+
+	/** Set the value from an object. The text in the control is set to whatever V.toString() (generic type V) returns. */
+	public void setValue(V value) {
+		this.setText(value.toString());
+		observer.updateValue(value);
+		valid = true;
+	}
+
+	/** Set the value from text. The value will only be set if the text is valid. */
+	public void setValueFromText(String text) {
+		checkIfValid(text);
+		if (valid) {
+			setValue(getValue());
+			setText(text); //prevent anything additional being tacked on like '.0' for doubles
+		}
+	}
+
+	/** Get the value observer */
+	public ValueObserver<V> getValueObserver() {
+		return observer;
+	}
+
+	private void checkIfValid(String text) {
+		if (fieldData.validData(text)) {
+			getStyleClass().removeAll(BAD_FIELD);
+			this.applyCss();
+			valid = true;
+			return;
+		}
+		valid = false;
+		getStyleClass().add(BAD_FIELD);
+	}
+}

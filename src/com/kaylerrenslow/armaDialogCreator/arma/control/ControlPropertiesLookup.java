@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  Created by Kayler on 05/22/2016.
@@ -22,7 +21,7 @@ public enum ControlPropertiesLookup {
 	H(4, "h", PropertyType.FLOAT, "Height of control."),
 	TYPE(5, "type", PropertyType.INT, "Type of the control."),
 	STYLE(6, "style", PropertyType.INT, "Style of the control."),
-	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new Option("0", "Read and Write (default case where properties can still be added or overridden)."), new Option("1", "Read and Create (only allows creating new properties)."), new Option("2", "Read only (does not allow to do anything in deriving classes)."), new Option("3", "Read only verified (does not allow to do anything either in deriving classes, and a CRC check will be performed).")),
+	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new Option("Read and Write", "0", "Default case where properties can still be added or overridden."), new Option("Read and Create", "1", "Only allows creating new properties."), new Option("Read Only", "2", "Does not allow to do anything in deriving classes."), new Option("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")),
 
 	/*Common*/
 	/** moving: boolean. Set whether control can be dragged */
@@ -33,13 +32,13 @@ public enum ControlPropertiesLookup {
 	COLOR_TEXT(11, "colorText", PropertyType.COLOR, "Color of text."),
 	COLOR_BACKGROUND(12, "colorBackground", PropertyType.COLOR, "Background color of control."),
 	TEXT(13, "text", PropertyType.STRING, "Text to show."),
-	SHADOW(14, "shadow", PropertyType.INT, "Shadow for control.", new Option("0", "No shadow."), new Option("1", "Drop shadow with soft edges."), new Option("2", "Stroke")), //does absolutely nothing inside the Attributes class for structured text
-	TOOLTIP(15, "tooltip", PropertyType.STRING, "Text to display when most hovers over this control."),
+	SHADOW(14, "shadow", PropertyType.INT, "Shadow for control.", new Option("No", "0", "No shadow."), new Option("Yes", "1", "Drop shadow with soft edges."), new Option("Stroke", "2", "Stroke")), //does absolutely nothing inside the Attributes class for structured text
+	TOOLTIP(15, "tooltip", PropertyType.STRING, "Text to display when mouse hovers over this control."),
 	TOOLTIP_COLOR_SHADE(16, "tooltipColorShade", PropertyType.COLOR, "Tooltip background color."),
 	TOOLTIP_COLOR_TEXT(17, "tooltipColorText", PropertyType.COLOR, "Tooltip text color."),
 	TOOLTIP_COLOR_BOX(18, "tooltipColorBox", PropertyType.COLOR, "Tooltip border color."),
-	ALIGN(19, "align", PropertyType.STRING, "Horizontal align of text.", new Option("left", "Left align."), new Option("center", "Center align."), new Option("right", "Right align.")),
-	VALIGN(20, "valign", PropertyType.STRING, "Vertical align of text.", new Option("top", "Top align."), new Option("middle", "Middle align."), new Option("bottom", "Bottom align.")),
+	ALIGN(19, "align", PropertyType.STRING, "Horizontal align of text.", new Option("Left", "left", "Left align."), new Option("Center", "center", "Center align."), new Option("Right", "right", "Right align.")),
+	VALIGN(20, "valign", PropertyType.STRING, "Vertical align of text.", new Option("Top", "top", "Top align."), new Option("Middle", "middle", "Middle align."), new Option("Bottom", "bottom", "Bottom align.")),
 	COLOR_HEX(21, "color", PropertyType.HEX_COLOR_STRING, "Text color."),
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HEX_COLOR_STRING, "Shadow color."), //default shadow color
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.FLOAT, "Makes the text start transparent, go to full opacity and back to full transparent in the amount of seconds specified."),
@@ -118,7 +117,7 @@ public enum ControlPropertiesLookup {
 	AT_TEXT_HEIGHT(84, "textHeight", PropertyType.FLOAT, null),
 
 	/*Edit*/
-	EDIT_AUTO_COMPLETE(85, "autocomplete", PropertyType.STRING, "Auto-completion option.", new Option("", "No auto-completion."), new Option("scripting", "Auto-completion set for scripting."), new Option("general", "I'm not sure what this does. If you know, tell me.")),
+	EDIT_AUTO_COMPLETE(85, "autocomplete", PropertyType.STRING, "Auto-completion option.", new Option("None", "", "No auto-completion."), new Option("Script", "scripting", "Auto-completion set for scripting."), new Option("General", "general", "Auto-completion on normal words.")),
 	EDIT_HTML_CONTROL(86, "htmlControl", PropertyType.BOOLEAN, "If used together with style=ST_MULTI, allows multi-line editable text fields."),
 	EDIT_LINE_SPACING(87, "lineSpacing", PropertyType.FLOAT, "Line spacing and this is required if style is MULTI (16)"),
 	EDIT_COLOR_SELECTION(88, "colorSelection", PropertyType.COLOR, null),
@@ -288,6 +287,68 @@ public enum ControlPropertiesLookup {
 	}
 
 
+	public ControlProperty getEventProperty(String defaultEventValue) {
+		return new ControlProperty(this, propertyName, propertyType, defaultEventValue);
+	}
+
+	public ControlProperty getIntProperty(int defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getFloatProperty(double defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getBooleanProperty(boolean defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getStringProperty(String defaultValue) {
+		return new ControlProperty(this, propertyName, PropertyType.STRING, defaultValue);
+	}
+
+	public ControlProperty getArrayProperty(String[] defaultValue) {
+		return new ControlProperty(this, propertyName, PropertyType.ARRAY, defaultValue);
+	}
+
+	public ControlProperty getColorProperty(AColor defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getFontProperty(AFont defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getHexColorProperty(AHexColor defaultValue) {
+		return new ControlProperty(this, propertyName, defaultValue);
+	}
+
+	public ControlProperty getProperty(Object defaultValue) {
+		if (defaultValue instanceof String[]) {
+			throw new IllegalArgumentException("Use getProperty(String[] defaultValues) instead");
+		}
+		if (defaultValue instanceof Option[]) {
+			throw new IllegalArgumentException("Use getProperty(Option[] defaultValues) instead");
+		}
+		return new ControlProperty(this, propertyName, propertyType, defaultValue);
+	}
+
+	public ControlProperty getProperty(String[] defaultValues) {
+		return new ControlProperty(this, propertyName, propertyType, defaultValues);
+	}
+
+	public ControlProperty getPropertyFromOption(int optionNum) {
+		return new ControlProperty(this, propertyName, propertyType, options[optionNum].value);
+	}
+
+	public ControlProperty getPropertyWithNoData(int numValues) {
+		return new ControlProperty(this, propertyName, propertyType, numValues);
+	}
+
+	private static class PropertiesLookupDataVerifier {
+		static ArrayList<Integer> usedIds = new ArrayList<>();
+	}
+
 	private static String[] strArr(String... vals) {
 		return vals;
 	}
@@ -299,70 +360,5 @@ public enum ControlPropertiesLookup {
 		return i + "";
 	}
 
-	public boolean matches(ControlProperty property) {
-		return propertyId == property.getPropertyId();
-	}
-
-	public ControlProperty getEventProperty(String defaultEventValue) {
-		return new ControlProperty(propertyId, propertyName, propertyType, defaultEventValue);
-	}
-
-	public ControlProperty getIntProperty(int defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getFloatProperty(double defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getBooleanProperty(boolean defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getStringProperty(String defaultValue) {
-		return new ControlProperty(propertyId, propertyName, PropertyType.STRING, defaultValue);
-	}
-
-	public ControlProperty getArrayProperty(String[] defaultValue) {
-		return new ControlProperty(propertyId, propertyName, PropertyType.ARRAY, defaultValue);
-	}
-
-	public ControlProperty getColorProperty(AColor defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getFontProperty(AFont defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getHexColorProperty(AHexColor defaultValue) {
-		return new ControlProperty(propertyId, propertyName, defaultValue);
-	}
-
-	public ControlProperty getProperty(Object defaultValue) {
-		if (defaultValue instanceof String[]) {
-			throw new IllegalArgumentException("Use getProperty(String[] defaultValues) instead");
-		}
-		if (defaultValue instanceof Option[]) {
-			throw new IllegalArgumentException("Use getProperty(Option[] defaultValues) instead");
-		}
-		return new ControlProperty(propertyId, propertyName, propertyType, defaultValue);
-	}
-
-	public ControlProperty getProperty(String[] defaultValues) {
-		return new ControlProperty(propertyId, propertyName, propertyType, defaultValues);
-	}
-
-	public ControlProperty getPropertyFromOption(int optionNum) {
-		return new ControlProperty(propertyId, propertyName, propertyType, options[optionNum].value);
-	}
-
-	public ControlProperty getPropertyWithNoData(int numValues) {
-		return new ControlProperty(propertyId, propertyName, propertyType, numValues);
-	}
-
-	private static class PropertiesLookupDataVerifier {
-		static ArrayList<Integer> usedIds = new ArrayList<>();
-	}
 
 }

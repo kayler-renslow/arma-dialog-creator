@@ -13,11 +13,11 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  Basis for a popup window that uses a JavaFX Stage as its host thingy majig
  Created on 05/20/2016. */
-public class StagePopup {
+public class StagePopup<E extends Parent> {
 
 	protected final Scene myScene;
 	protected final Stage myStage;
-	protected final Parent myRootElement;
+	protected final E myRootElement;
 
 	/**
 	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
@@ -27,7 +27,7 @@ public class StagePopup {
 	 @param rootElement the root element of the scene
 	 @param title title of the popup window
 	 */
-	public StagePopup(@Nullable Stage primaryStage, Parent rootElement, String title) {
+	public StagePopup(@Nullable Stage primaryStage, E rootElement, String title) {
 		myRootElement = rootElement;
 		myStage = new Stage();
 		myScene = new Scene(rootElement);

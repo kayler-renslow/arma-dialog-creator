@@ -26,7 +26,7 @@ import java.io.File;
 /**
  Created by Kayler on 05/26/2016.
  */
-public class SelectSaveLocationPopup extends StagePopup {
+public class SelectSaveLocationPopup extends StagePopup<VBox> {
 
 	private TextField tfAppDataSaveDir = new TextField();
 	private TextField tfA3ToolsDir = new TextField();
@@ -51,13 +51,13 @@ public class SelectSaveLocationPopup extends StagePopup {
 	 */
 	public SelectSaveLocationPopup(@NotNull Stage primaryStage, @NotNull File initialDirectoryAppDataSave, @Nullable File a3ToolsDir) {
 		super(primaryStage, new VBox(5), Lang.Popups.SelectSaveLocation.POPUP_TITLE);
-		initialize((VBox) myRootElement, initialDirectoryAppDataSave, a3ToolsDir);
+		initialize(initialDirectoryAppDataSave, a3ToolsDir);
 		myStage.setMinWidth(600d);
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
 	}
 
-	private void initialize(@NotNull VBox root, @NotNull File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
+	private void initialize(@NotNull File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
 		tfA3ToolsDir.setEditable(false);
 		tfAppDataSaveDir.setEditable(false);
 
@@ -134,9 +134,9 @@ public class SelectSaveLocationPopup extends StagePopup {
 		hbBot.getChildren().addAll(btnHelp, btnCancel, btnOk);
 		hbBot.setAlignment(Pos.TOP_RIGHT);
 
-		root.getChildren().addAll(lblAppDataSaveDir, hbTop, lblA3ToolsDir, hbMid, getHorizontalSeparator(), hbBot);
-		root.setPadding(new Insets(5, 5, 5, 5));
-		root.setMinHeight(165d);
+		myRootElement.getChildren().addAll(lblAppDataSaveDir, hbTop, lblA3ToolsDir, hbMid, getHorizontalSeparator(), hbBot);
+		myRootElement.setPadding(new Insets(5, 5, 5, 5));
+		myRootElement.setMinHeight(165d);
 	}
 
 	private void chooseA3ToolsSaveDir(File f) {

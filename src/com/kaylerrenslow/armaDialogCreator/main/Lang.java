@@ -67,6 +67,13 @@ public class Lang {
 			public static final String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
 			public static final String BTN_CHANGE = "Change";
 		}
+
+		public class ControlPropertiesConfig {
+			public static final String SQF_CODE = "SQF Code to Execute";
+			public static final String TEXTURE = "Texture String";
+			public static final String IMAGE_PATH = "Image Path String";
+			public static final String FILE_NAME = "File Path String";
+		}
 	}
 
 	public static class Misc {

@@ -1,7 +1,6 @@
 ADDED:
-    event handlers to properties lookup
-    kind of prototype code for control properties window. Need to change the border color to color of component it's linked to and have a line follow it for maximum clarity.
+    input field (text field with additional features)
 CHANGED:
-    none
+    control properties popup to be more useful
 FIXED:
     none

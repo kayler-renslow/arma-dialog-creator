@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -54,6 +55,21 @@ public class AColor {
 	 */
 	public AColor(double[] c) {
 		setColor(c);
+	}
+
+	/** Set the color from a JavaFX Color instance */
+	public AColor(Color newValue) {
+		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
+	}
+
+	/**
+	 Create a new color from String array that is formatted like so: {r,g,b,a} where r,g,b,a are between 0.0 and 1.0 inclusively
+
+	 @throws NumberFormatException     when the string array is not formatted correctly
+	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
+	 */
+	public AColor(String[] newValue) throws NumberFormatException {
+		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 
 	private void boundCheck(double c) {
@@ -170,5 +186,10 @@ public class AColor {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	/**Conver this color into a JavaFX color*/
+	public Color toJavaFXColor() {
+		return Color.color(getRed(), getGreen(), getBlue(), getAlpha());
 	}
 }
