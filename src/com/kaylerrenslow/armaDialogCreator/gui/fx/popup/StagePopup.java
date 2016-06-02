@@ -9,6 +9,8 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+
 /**
  @author Kayler
  Basis for a popup window that uses a JavaFX Stage as its host thingy majig
@@ -59,6 +61,10 @@ public class StagePopup<E extends Parent> {
 		myStage.show();
 	}
 
+	public boolean isShowing() {
+		return myStage.isShowing();
+	}
+
 	/** Force close the popup. This will also call the method closing() */
 	public void close() {
 		closing();
@@ -73,5 +79,16 @@ public class StagePopup<E extends Parent> {
 	/** Window is definitely closing now. Default implementation is empty. */
 	protected void closing() {
 
+	}
+
+	/** Make the popup request focus */
+	public void requestFocus() {
+		myStage.requestFocus();
+	}
+
+	/** Request focus and make a beep */
+	public void beepFocus() {
+		requestFocus();
+		Toolkit.getDefaultToolkit().beep();
 	}
 }

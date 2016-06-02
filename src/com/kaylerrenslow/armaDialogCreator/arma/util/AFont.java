@@ -13,5 +13,8 @@ public enum AFont {
 	EtelkaMonospacePro,
 	EtelkaMonospaceProBold,
 	EtelkaNarrowMediumPro,
-	TahomaB,
+	TahomaB;
+
+	/** Default Arma 3 font */
+	public static AFont DEFAULT = PuristaMedium;
 }

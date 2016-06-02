@@ -2,8 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.EventHandler;
+import javafx.scene.control.IndexRange;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,13 +19,15 @@ public class InputField<E extends IInputFieldDataChecker<V>, V> extends TextFiel
 	private boolean valid = true;
 	private ValueObserver<V> observer = new ValueObserver<>(null);
 
-	/** Creates a new InputField (TextField with additional features). Avoid using setText and instead use setValue */
+	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns */
 	public InputField(@NotNull E fieldDataChecker) {
 		this.fieldData = fieldDataChecker;
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
-				setValueFromText(getText());
+				if (event.getCode() == KeyCode.ENTER) {
+					setValueFromText(getText());
+				}
 			}
 		};
 		setPromptText(fieldDataChecker.getTypeName());
@@ -39,6 +43,7 @@ public class InputField<E extends IInputFieldDataChecker<V>, V> extends TextFiel
 
 	/** Return true if the data inside the text field is valid, false otherwise */
 	public boolean hasValidData() {
+		checkIfValid(getText());
 		return valid;
 	}
 
@@ -51,11 +56,15 @@ public class InputField<E extends IInputFieldDataChecker<V>, V> extends TextFiel
 
 	/** Set the value from text. The value will only be set if the text is valid. */
 	public void setValueFromText(String text) {
+		int cursorPosition = getCaretPosition();
+		IndexRange selection = getSelection();
 		checkIfValid(text);
 		if (valid) {
+			setText(text);
 			setValue(getValue());
-			setText(text); //prevent anything additional being tacked on like '.0' for doubles
 		}
+		positionCaret(cursorPosition);
+		selectRange(selection.getStart(), selection.getEnd());
 	}
 
 	/** Get the value observer */

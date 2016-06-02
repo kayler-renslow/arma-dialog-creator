@@ -9,3 +9,12 @@
     -fx-background-color: red;
     -fx-text-fill:white;
 }
+.close-button{
+    -fx-background-color: red;
+    -fx-text-fill:white;
+    -fx-background-radius:0px;
+    -fx-font-size: 10px;
+}
+.hyper-link-fixed-color{
+    -fx-text-fill:gray;
+}

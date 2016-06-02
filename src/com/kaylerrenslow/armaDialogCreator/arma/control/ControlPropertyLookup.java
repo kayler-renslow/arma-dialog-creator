@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  Created by Kayler on 05/22/2016.
  */
-public enum ControlPropertiesLookup {
+public enum ControlPropertyLookup {
 	IDC(0, "idc", PropertyType.INT, "Control id, or -1 if doesn't matter."),
 	X(1, "x", PropertyType.FLOAT, "X position."),
 	Y(2, "y", PropertyType.FLOAT, "Y position."),
@@ -256,7 +256,7 @@ public enum ControlPropertiesLookup {
 	 */
 	public final int propertyId;
 
-	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable Option... options) {
+	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable Option... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
 			int canUse;
 			for (int i = 0; true; i++) {
@@ -278,11 +278,11 @@ public enum ControlPropertiesLookup {
 		this.options = options;
 	}
 
-	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about) {
+	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about) {
 		this(propertyId, propertyName, propertyType, about, (Option[]) null);
 	}
 
-	ControlPropertiesLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable Option... options) {
+	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable Option... options) {
 		this(propertyId, propertyName, propertyType, about == null ? strArr("No documentation.") : strArr(about), options);
 	}
 
@@ -341,12 +341,19 @@ public enum ControlPropertiesLookup {
 		return new ControlProperty(this, propertyName, propertyType, options[optionNum].value);
 	}
 
-	public ControlProperty getPropertyWithNoData(int numValues) {
-		return new ControlProperty(this, propertyName, propertyType, numValues);
+	public ControlProperty getPropertyWithNoData() {
+		return new ControlProperty(this, propertyName, propertyType);
 	}
 
-	private static class PropertiesLookupDataVerifier {
-		static ArrayList<Integer> usedIds = new ArrayList<>();
+	/** Get all lookup enums where their property type is equal to find */
+	public static ControlPropertyLookup[] getAllOfTypeControlProperties(PropertyType find) {
+		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
+		for (ControlPropertyLookup controlProperty : values()) {
+			if (controlProperty.propertyType == find) {
+				props.add(controlProperty);
+			}
+		}
+		return props.toArray(new ControlPropertyLookup[props.size()]);
 	}
 
 	private static String[] strArr(String... vals) {
@@ -360,5 +367,8 @@ public enum ControlPropertiesLookup {
 		return i + "";
 	}
 
+	private static class PropertiesLookupDataVerifier {
+		static ArrayList<Integer> usedIds = new ArrayList<>();
+	}
 
 }

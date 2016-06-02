@@ -1,6 +1,8 @@
 ADDED:
-    input field (text field with additional features)
+    counter control
+    automatic updates to control properties in control properties config popup
+    default values for control properties
 CHANGED:
-    control properties popup to be more useful
+    none
 FIXED:
     none

@@ -43,6 +43,7 @@ public class Lang {
 		public static final String VIEW_ABS_REGION_SHOW = "Show";
 		public static final String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
 		public static final String VIEW_DARK_THEME = "Use Dark Theme";
+		public static final String VIEW_FULL_SCREEN = "Full Screen";
 
 		public static final String SETTINGS = "Settings";
 		public static final String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
@@ -73,10 +74,20 @@ public class Lang {
 			public static final String TEXTURE = "Texture String";
 			public static final String IMAGE_PATH = "Image Path String";
 			public static final String FILE_NAME = "File Path String";
+			public static final String NO_PROPERTIES_AVAILABLE = "No properties available.";
+			public static final String STRING = "String";
+			public static final String RESET = "Reset";
 		}
 	}
 
 	public static class Misc {
 		public static final String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
+	}
+
+	public static class ContextMenu {
+		public static class DefaultComponent {
+			public static final String CONFIGURE = "Configure Properties";
+			public static final String RENDER_QUEUE = "Render Queue";
+		}
 	}
 }

@@ -59,7 +59,6 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<?>> {
 
 			}
 		});
-
 		this.setOnDragOver(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(DragEvent event) {
@@ -102,7 +101,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<?>> {
 
 				// when it reaches this point, the tree item is okay to move
 				event.acceptTransferModes(TransferMode.MOVE);
-				setEffect(new InnerShadow(1.0, 0.0, 2.0, COLOR_TREE_VIEW_DRAG));
+				setEffect(new InnerShadow(1.0, 0, 2.0, COLOR_TREE_VIEW_DRAG));
 			}
 		});
 

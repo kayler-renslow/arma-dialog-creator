@@ -13,8 +13,17 @@ import java.util.Comparator;
  Created by Kayler on 05/11/2016.
  */
 public class PaintedRegion extends Region {
-	protected Color backgroundColor = Color.ORANGE;
-	protected Color textColor = Color.WHITE;
+	private static Color randomColor() {
+		int argb = (int) (System.currentTimeMillis() + System.nanoTime());
+		int r = (argb) & 0xFF;
+		int g = (argb >> 8) & 0xFF;
+		int b = (argb >> 16) & 0xFF;
+		final double d = 255.0;
+		return Color.color(r / d, g / d, b / d, 1);
+	}
+
+	protected Color backgroundColor = randomColor();
+	protected Color textColor = backgroundColor.invert();
 	private Border border;
 
 	private Text textObj = new Text();
@@ -83,6 +92,10 @@ public class PaintedRegion extends Region {
 
 	public void setTextColor(@NotNull Color color) {
 		this.textColor = color;
+	}
+
+	public Color getTextColor() {
+		return textColor;
 	}
 
 	public int getRenderPriority() {

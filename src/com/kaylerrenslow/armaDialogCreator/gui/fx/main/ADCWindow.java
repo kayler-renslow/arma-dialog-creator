@@ -3,6 +3,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.UIScale;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
@@ -22,15 +24,14 @@ public class ADCWindow {
 	private final CanvasView canvasView = new CanvasView(resolution);
 	private final ADCMenuBar mainMenuBar = new ADCMenuBar();
 
-	private boolean dontAddMenuBar;
-
 	public ADCWindow(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		if (resolution.getScreenWidth() == ScreenDimension.D1920.width) {
-			primaryStage.setFullScreen(true);
-			dontAddMenuBar = true;
-		}
-
+		primaryStage.fullScreenProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				setToFullScreen(newValue);
+			}
+		});
 		Scene scene = new Scene(rootElement);
 		this.primaryStage.setScene(scene);
 		initialize(scene);
@@ -39,11 +40,8 @@ public class ADCWindow {
 	}
 
 	private void initialize(Scene scene) {
-		if (!dontAddMenuBar) {
-			rootElement.getChildren().add(mainMenuBar);
-		}
 		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/misc.css");
-		rootElement.getChildren().addAll(canvasView);
+		rootElement.getChildren().addAll(mainMenuBar, canvasView);
 		rootElement.minWidth(resolution.getScreenWidth() + 250.0);
 		rootElement.minHeight(resolution.getScreenHeight() + 50.0);
 		EventHandler<KeyEvent> keyEvent = new EventHandler<KeyEvent>() {
@@ -78,5 +76,14 @@ public class ADCWindow {
 			primaryStage.getScene().getStylesheets().remove(DARK_THEME);
 		}
 		canvasView.updateCanvas();
+	}
+
+	public void setToFullScreen(boolean fullScreen) {
+		primaryStage.setFullScreen(fullScreen);
+		if (fullScreen) {
+			rootElement.getChildren().remove(mainMenuBar);
+		} else {
+			rootElement.getChildren().add(0, mainMenuBar);
+		}
 	}
 }

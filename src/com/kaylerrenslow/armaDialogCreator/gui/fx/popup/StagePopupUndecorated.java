@@ -35,9 +35,12 @@ public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 			public void handle(MouseEvent event) {
 				myStage.setX(event.getScreenX() - xOffset);
 				myStage.setY(event.getScreenY() - yOffset);
+				stageMoved();
 			}
 		});
-
 	}
+
+	/** Invoked whenever the stage is moved by user. Default implementation does nothing. */
+	protected void stageMoved() {}
 
 }

@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
@@ -11,7 +10,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.IComponentContextM
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;

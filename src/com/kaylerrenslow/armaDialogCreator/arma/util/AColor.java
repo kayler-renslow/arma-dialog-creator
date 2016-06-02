@@ -4,15 +4,16 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.text.DecimalFormat;
+
 /**
  @author Kayler
  Defines a color.
  Created on 05/22/2016. */
 public class AColor {
-	/** Number of values stored inside a color array. This is blatantly obvious, but serves as clarity and mitigates hard-coding. */
-	public static final int ARRAY_SIZE = 4;
+	private static DecimalFormat format = new DecimalFormat("#.####");
 
-	private double[] color = new double[ARRAY_SIZE];
+	private double[] color = new double[4];
 
 	/**
 	 Creates a color
@@ -152,20 +153,16 @@ public class AColor {
 	/** Get the colors as a string array formatted like so: {red, green, blue, alpha} */
 	public String[] getAsStringArray() {
 		String[] str = new String[4];
-		str[0] = color[0] + "";
-		str[1] = color[1] + "";
-		str[2] = color[2] + "";
-		str[3] = color[3] + "";
+		str[0] = format.format(color[0]);
+		str[1] = format.format(color[1]);
+		str[2] = format.format(color[2]);
+		str[3] = format.format(color[3]);
 		return str;
 	}
 
 	/** Serializes the color array into a String. Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}" */
 	public String toArrayString() {
-		String str = "{" + color[0];
-		str += color[1]; //don't want to add the colors together as mathematically
-		str += color[2];
-		str += color[3];
-		return str + "}";
+		return "{" + format.format(color[0]) + "," + format.format(color[1]) + "," + format.format(color[2]) + "," + format.format(color[3]) + "}";
 	}
 
 	@Nullable
@@ -188,8 +185,18 @@ public class AColor {
 		}
 	}
 
-	/**Conver this color into a JavaFX color*/
+	/** Convert this color into a JavaFX color */
 	public Color toJavaFXColor() {
 		return Color.color(getRed(), getGreen(), getBlue(), getAlpha());
+	}
+
+	/**
+	 Create a new JavaFX Color from String array that is formatted like so: {r,g,b,a} where r,g,b,a are between 0.0 and 1.0 inclusively
+
+	 @throws NumberFormatException     when the string array is not formatted correctly
+	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
+	 */
+	public static Color toJavaFXColor(String[] newValue) throws NumberFormatException {
+		return Color.color(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 }

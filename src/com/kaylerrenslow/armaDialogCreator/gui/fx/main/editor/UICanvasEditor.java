@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
@@ -78,9 +79,9 @@ public class UICanvasEditor extends UICanvas {
 	private final Resolution resolution;
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
 
-	private final ValueListener<ArmaControl> CONTROL_LISTENER = new ValueListener<ArmaControl>() {
+	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
-		public void valueUpdated(ArmaControl oldValue, ArmaControl newValue) {
+		public void valueUpdated(ArmaControlClass oldValue, ArmaControlClass newValue) {
 			paint();
 		}
 	};

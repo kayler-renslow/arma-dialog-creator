@@ -5,6 +5,9 @@ package com.kaylerrenslow.armaDialogCreator.arma.util;
  Specifies a sound
  Created on 05/22/2016. */
 public class ASound {
+	/** Number of values stored inside a sound array. This is blatantly obvious, but serves as clarity and mitigates hard-coding. */
+	public static final int ARRAY_SIZE = 3;
+
 	private String soundName;
 	private int db;
 	private double pitch;
