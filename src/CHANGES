@@ -1,8 +1,6 @@
 ADDED:
-    counter control
-    automatic updates to control properties in control properties config popup
-    default values for control properties
-CHANGED:
     none
+CHANGED:
+    input field - button state when nothing is entered
 FIXED:
     none

@@ -39,4 +39,9 @@ public class ValueObserver<V> {
 	public V getValue() {
 		return value;
 	}
+
+	/** Sets the value without telling value listener */
+	public void updateValueSilent(V value) {
+		this.value = value;
+	}
 }

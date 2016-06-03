@@ -17,3 +17,6 @@ for preview, have a control state toggler. Also, for action on buttons, have pop
 
 
 ARMA 3 TOOLS LOCATION WILL NEVER SAVE AND LOAD CORRECTLY AFTER CLOSING THE APPLICATION.
+
+
+FIX ENTERING IN NO VALUE FOR DOUBLE INPUT FIELDS, pressing enter, backspace all inputted text, press enter, then reset the value from resetToDefault()

@@ -16,5 +16,5 @@
     -fx-font-size: 10px;
 }
 .hyper-link-fixed-color{
-    -fx-text-fill:gray;
+    -fx-text-fill:-fx-text-background-color;
 }

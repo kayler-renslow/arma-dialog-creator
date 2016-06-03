@@ -4,11 +4,11 @@ package com.kaylerrenslow.armaDialogCreator.main;
  Created by Kayler on 05/15/2016.
  */
 public class Lang {
-	public static class Application {
+	public class Application {
 		public static final String APPLICATION_TITLE = "Arma Dialog Creator - V1.0.0";
 	}
 
-	public static class CanvasControls {
+	public class CanvasControls {
 		public static final String BACKGROUND_COLOR = "Background Color:";
 		public static final String TEXT_COLOR = "Text Color:";
 		public static final String OPACITY = "Opacity:";
@@ -16,7 +16,7 @@ public class Lang {
 		public static final String STEP = "Step:";
 	}
 
-	public static class MainMenuBar {
+	public class MainMenuBar {
 		public static final String FILE = "File";
 		public static final String FILE_NEW = "New";
 		public static final String FILE_OPEN = "Open";
@@ -49,12 +49,12 @@ public class Lang {
 		public static final String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
 	}
 
-	public static class Popups{
+	public class Popups{
 		public static final String BTN_HELP = "Help";
 		public static final String BTN_CANCEL = "Cancel";
 		public static final String BTN_OK = "OK";
 
-		public static class Colors {
+		public class Colors {
 			public static final String POPUP_TITLE = "Change Canvas Colors";
 			public static final String SELECTION = "Selection";
 			public static final String GRID = "Grid";
@@ -62,7 +62,7 @@ public class Lang {
 			public static final String BACKGROUND = "Canvas Background Color";
 		}
 
-		public static class SelectSaveLocation {
+		public class SelectSaveLocation {
 			public static final String POPUP_TITLE = "Configure Directories";
 			public static final String LBL_APP_DATA_SAVE_DIR = "Application data save directory:";
 			public static final String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
@@ -76,16 +76,20 @@ public class Lang {
 			public static final String FILE_NAME = "File Path String";
 			public static final String NO_PROPERTIES_AVAILABLE = "No properties available.";
 			public static final String STRING = "String";
-			public static final String RESET = "Reset";
+			public static final String EXTEND_CLASS = "Extend Class";
+		}
+
+		public class MissingControlPropertiesConfig {
+			public static final String POPUP_TITLE = "Missing Control Properties";
 		}
 	}
 
-	public static class Misc {
+	public class Misc {
 		public static final String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 	}
 
-	public static class ContextMenu {
-		public static class DefaultComponent {
+	public class ContextMenu {
+		public class DefaultComponent {
 			public static final String CONFIGURE = "Configure Properties";
 			public static final String RENDER_QUEUE = "Render Queue";
 		}

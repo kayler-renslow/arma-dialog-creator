@@ -234,12 +234,13 @@ public class ArmaControl extends ArmaControlClass {
 	protected void calcPositionFromRenderer() {
 		this.x = PositionCalculator.getPercentX(this.resolution, renderer.getX1());
 		this.y = PositionCalculator.getPercentY(this.resolution, renderer.getY1());
-		xProperty.setValue(x);
-		yProperty.setValue(y);
+		xProperty.setValueSilent(x);
+		yProperty.setValueSilent(y);
+
 		this.width = PositionCalculator.getPercentWidth(this.resolution, renderer.getWidth());
 		this.height = PositionCalculator.getPercentHeight(this.resolution, renderer.getHeight());
-		wProperty.setValue(width);
-		hProperty.setValue(height);
+		wProperty.setValueSilent(width);
+		hProperty.setValueSilent(height);
 
 		getControlListener().updateValue(null); //don't execute updateProperties
 	}

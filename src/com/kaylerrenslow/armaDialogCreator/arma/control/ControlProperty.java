@@ -248,6 +248,7 @@ public class ControlProperty {
 	}
 
 	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
+	@NotNull
 	public ValueObserver<String[]> getValuesObserver() {
 		return valuesObserver;
 	}
@@ -296,6 +297,52 @@ public class ControlProperty {
 	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR) */
 	public void setValue(AColor color) {
 		valuesObserver.updateValue(color.getAsStringArray());
+	}
+
+	/** Sets the first value equal to object.toString(). The value is set without notifying listeners */
+	public void setFirstValueSilent(@Nullable Object object) {
+		valuesObserver.getValue()[0] = object == null ? null : object.toString();
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set all values (if a value is intended to be empty (need to be filled), use null). The value is set without notifying listeners */
+	public void setValuesSilent(String[] values) {
+		valuesObserver.updateValueSilent(values);
+	}
+
+	/** Update values but only set the value at index valueInd. The value is set without notifying listeners */
+	public void setValueSilent(String v, int valueInd) {
+		valuesObserver.getValue()[valueInd] = v;
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set the first value to String (use this whenever the type has values length == 1 (e.g. STRING, INT, FONT but not ARRAY or SOUND)). The value is set without notifying listeners */
+	public void setValueSilent(String v) {
+		valuesObserver.getValue()[0] = v;
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set the first value to int (use this if type==INT). The value is set without notifying listeners */
+	public void setValueSilent(int v) {
+		valuesObserver.getValue()[0] = v + "";
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set the first value to double (use this if type==FLOAT). The value is set without notifying listeners */
+	public void setValueSilent(double v) {
+		valuesObserver.getValue()[0] = v + "";
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set the first value to boolean (use this if type==BOOLEAN). The value is set without notifying listeners*/
+	public void setValueSilent(boolean v) {
+		valuesObserver.getValue()[0] = v + "";
+		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	}
+
+	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR). The value is set without notifying listeners*/
+	public void setValueSilent(AColor color) {
+		valuesObserver.updateValueSilent(color.getAsStringArray());
 	}
 
 	@Override

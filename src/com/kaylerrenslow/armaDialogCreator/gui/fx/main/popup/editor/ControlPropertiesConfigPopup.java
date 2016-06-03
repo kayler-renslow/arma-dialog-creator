@@ -6,22 +6,21 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.Option;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -54,7 +53,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		myScene.setFill(Color.TRANSPARENT);
 		final double padding = 20.0;
-		myRootElement.setPadding(new Insets(padding / 2, padding, padding, padding));
+		myRootElement.setPadding(new Insets(padding, padding, padding, padding));
 	}
 
 	/**
@@ -94,6 +93,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		List<ControlProperty> properties = new ArrayList<>();
 		for (ControlPropertyInput input : propertyInputs) {
 			if (!input.hasValidData() && !input.isOptional()) {
+				System.out.printf("%-20s: validData:%b optional:%b valuesSet:%b\n", input.getControlProperty().getName(), input.hasValidData(), input.isOptional(), input.getControlProperty().valuesAreSet());
 				properties.add(input.getControlProperty());
 			}
 		}
@@ -101,8 +101,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 	private void addCloseButton() {
-		Button closeBtn = new Button("x");
-		closeBtn.setOnAction(new EventHandler<ActionEvent>() {
+		Button btnClose = new Button("x");
+		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				WindowEvent windowEvent = new WindowEvent(myStage, WindowEvent.WINDOW_CLOSE_REQUEST);
@@ -113,14 +113,17 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					close();
 				}
 				if (!goodValues) {
-					System.out.println(Arrays.toString(missing.toArray()));
-					beepFocus();
+					StagePopup popup = new MissingControlPropertiesConfigPopup(myStage, missing);
+					popup.show();
+					popup.beepFocus();
 				}
 			}
 		});
-		closeBtn.getStyleClass().add("close-button");
-		ComboBox<String> test = new ComboBox<>();
-		myRootElement.getChildren().add(new BorderPane(null, null, closeBtn, null, test));
+		btnClose.getStyleClass().add("close-button");
+		ComboBox<String> cbExtendClass = new ComboBox<>(FXCollections.observableArrayList("-", "RscStatic", "RscPicture"));
+		cbExtendClass.getSelectionModel().select(0);
+		Label lblExtendClass = new Label(Lang.Popups.ControlPropertiesConfig.EXTEND_CLASS, cbExtendClass);
+		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
 
 	private void addPropertiesAccordion() {
@@ -168,16 +171,16 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		Node propertyInputNode = (Node) propertyInput;
 		propertyInputNode.setDisable(ControlPropertyLookup.TYPE == c.getPropertyLookup());
 
-		Hyperlink hyperReset = new Hyperlink(Lang.Popups.ControlPropertiesConfig.RESET);
-		hyperReset.getStyleClass().add("hyper-link-fixed-color");
-		hyperReset.setOnAction(new EventHandler<ActionEvent>() {
+		Hyperlink hyperlinkLabel = new Hyperlink(c.getName());
+		hyperlinkLabel.getStyleClass().add("hyper-link-fixed-color");
+		hyperlinkLabel.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				propertyInput.resetToDefault();
 			}
 		});
 
-		pane.getChildren().addAll(hyperReset, new Label(c.getName()), propertyInputNode);
+		pane.getChildren().addAll(hyperlinkLabel, propertyInputNode);
 
 		return pane;
 	}
@@ -222,7 +225,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		throw new IllegalStateException("Should have made a match");
 	}
 
-	private static void placeTooltip(Control c, ControlPropertyLookup lookup) {
+	private static Tooltip getTooltip(ControlPropertyLookup lookup) {
 		String tooltip = "";
 		for (int i = 0; i < lookup.about.length; i++) {
 			if (lookup.propertyType == ControlProperty.PropertyType.EVENT) {
@@ -236,15 +239,20 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 			tooltip += "\n";
 		}
-		setTooltip(c, tooltip);
-	}
-
-	private static void setTooltip(Control c, String tooltip) {
 		Tooltip tp = new Tooltip(tooltip);
 		tp.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20));
-		c.setTooltip(tp);
 		FXUtil.hackTooltipStartTiming(tp, 0);
+		return tp;
 	}
+
+	private static void placeTooltip(Control c, ControlPropertyLookup lookup) {
+		c.setTooltip(getTooltip(lookup));
+	}
+
+	private static void placeTooltip(InputField inputField, ControlPropertyLookup lookup) {
+		inputField.setTooltip(getTooltip(lookup));
+	}
+
 
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
@@ -286,7 +294,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			for (Option option : lookup.options) {
 				radioButton = new RadioButton(option.displayName);
 				radioButton.setUserData(option.value);
-				setTooltip(radioButton, option.description);
+				radioButton.setTooltip(new Tooltip(option.description));
 				radioButton.setToggleGroup(toggleGroup);
 				getChildren().add(radioButton);
 				if (validData && controlProperty.getStringValue().equals(option.value)) {
@@ -325,7 +333,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public boolean hasValidData() {
-			return controlProperty.valuesAreSet();
+			return toggleGroup.getSelectedToggle() != null;
 		}
 
 		@Override
@@ -367,7 +375,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			getValueObserver().addValueListener(new ValueListener() {
 				@Override
 				public void valueUpdated(Object oldValue, Object newValue) {
-					controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
+					if (newValue == null) {
+						controlProperty.getValuesObserver().updateValue(new String[]{null});
+					} else {
+						controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
+					}
 					control.getControlListener().updateValue(control);
 				}
 			});
@@ -384,6 +396,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					}
 				}
 			});
+			HBox.setHgrow(this, Priority.ALWAYS);
 		}
 
 		ControlPropertyInputField(ArmaControl control, ControlProperty controlProperty, IInputFieldDataChecker checker) {
@@ -402,7 +415,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public void resetToDefault() {
-			setText(controlProperty.getStringValue());
+			if (controlProperty.getDefaultValues()[0] == null) {
+				clear();
+			} else {
+				setText(controlProperty.getStringValue());
+			}
 		}
 
 		private boolean isOptional;
@@ -425,15 +442,22 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		ControlPropertyColorPicker(ArmaControl control, ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
+
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			boolean validData = controlProperty.valuesAreSet();
 			if (validData) {
 				setValue(AColor.toJavaFXColor(controlProperty.getValues()));
+			} else {
+				setValue(null);
 			}
 			valueProperty().addListener(new ChangeListener<Color>() {
 				@Override
 				public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
-					controlProperty.setValue(new AColor(newValue));
+					if (newValue == null) {
+						controlProperty.setFirstValue(null);
+					} else {
+						controlProperty.setValue(new AColor(newValue));
+					}
 					control.getControlListener().updateValue(control);
 				}
 			});
@@ -451,7 +475,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public boolean hasValidData() {
-			return controlProperty.valuesAreSet();
+			return getValue() != null;
 		}
 
 		@Override
@@ -461,7 +485,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public void resetToDefault() {
-			setValue(AColor.toJavaFXColor(controlProperty.getDefaultValues()));
+			try {
+				setValue(AColor.toJavaFXColor(controlProperty.getDefaultValues()));
+			} catch (NullPointerException e) {
+				setValue(null);
+			}
 		}
 
 		private boolean isOptional;
@@ -515,7 +543,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public boolean hasValidData() {
-			return controlProperty.valuesAreSet();
+			return !getSelectionModel().isEmpty();
 		}
 
 		@Override
@@ -614,8 +642,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public void resetToDefault() {
+			String[] defaultValues = controlProperty.getDefaultValues();
 			for (int i = 0; i < fields.size(); i++) {
-				fields.get(i).setText(controlProperty.getDefaultValues()[i]);
+				if (defaultValues[i] == null) {
+					fields.get(i).clear();
+				} else {
+					fields.get(i).setText(defaultValues[i]);
+				}
 			}
 		}
 
@@ -670,7 +703,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		@Override
 		public boolean hasValidData() {
-			return controlProperty.valuesAreSet();
+			return !getSelectionModel().isEmpty();
 		}
 
 		@Override
