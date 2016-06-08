@@ -1,6 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.*;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.Option;
@@ -30,7 +33,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -378,7 +380,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					if (newValue == null) {
 						controlProperty.getValuesObserver().updateValue(new String[]{null});
 					} else {
-						controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
+						if (checker instanceof StringFieldDataChecker) {
+							controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString().replaceAll("\"\"", "\"")});
+						} else {
+							controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
+						}
 					}
 					control.getControlListener().updateValue(control);
 				}
@@ -392,7 +398,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				@Override
 				public void valueUpdated(ArmaControlClass oldValue, ArmaControlClass newValue) {
 					if (controlProperty.valuesAreSet()) {
-						myself.setText(controlProperty.getStringValue());
+						myself.setText(controlProperty.getStringValue().replaceAll("\"", "\"\""));
 					}
 				}
 			});
@@ -418,7 +424,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			if (controlProperty.getDefaultValues()[0] == null) {
 				clear();
 			} else {
-				setText(controlProperty.getStringValue());
+				setText(controlProperty.getStringValue().replaceAll("\"", "\"\""));
 			}
 		}
 

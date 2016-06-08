@@ -1,6 +1,6 @@
 ADDED:
-    none
+    basis for application data
 CHANGED:
-    input field - button state when nothing is entered
+    string input field check for quote canceling ("") (buggy)
 FIXED:
     none

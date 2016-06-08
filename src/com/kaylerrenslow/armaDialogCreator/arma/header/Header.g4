@@ -1,30 +1,30 @@
 grammar Header;
 
-file_entries : file_entry*;
-file_entry : BlockComment | InlineComment | statement;
-statement : (assignment | class_declaration) Semicolon;
+fileEntries : fileEntry*;
+fileEntry : BlockComment | InlineComment | statement;
+statement : (assignment | classDeclaration) Semicolon;
 
-assignment : basic_assignment | array_assignment;
-basic_assignment : Identifier Equal expression ;
-array_assignment : Identifier BracketPair Equal array;
+assignment : basicAssignment | arrayAssignment;
+basicAssignment : Identifier Equal expression ;
+arrayAssignment : Identifier BracketPair Equal array;
 
-expression : add_expression;
-add_expression : mult_expression Plus add_expression
-    | mult_expression Minus add_expression
-    | mult_expression
+expression : addExpression;
+addExpression : multExpression Plus addExpression
+    | multExpression Minus addExpression
+    | multExpression
     ;
-mult_expression : term Asterisk mult_expression
-    | term FSlash mult_expression
+multExpression : term Asterisk multExpression
+    | term FSlash multExpression
     | term
     ;
 term : (Plus | Minus)? (IntegerLiteral | FloatLiteral | Identifier | LParen expression RParen);
 
-array : LBrace array_item (Comma array_item)* RBrace;
-array_item : Identifier | String | IntegerLiteral | FloatLiteral;
+array : LBrace arrayItem (Comma arrayItem)* RBrace;
+arrayItem : Identifier | String | IntegerLiteral | FloatLiteral;
 
-class_declaration : Class Identifier class_extend? class_content?;
-class_extend : Colon Identifier;
-class_content : LBrace file_entries RBrace;
+classDeclaration : Class Identifier classExtend? classContent?;
+classExtend : Colon Identifier;
+classContent : LBrace fileEntries RBrace;
 
 
 Define :'#define';

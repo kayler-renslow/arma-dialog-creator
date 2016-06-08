@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Label;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -15,8 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
-import static com.kaylerrenslow.armaDialogCreator.main.Lang.Popups.Colors;
 
 /**
  @author Kayler
@@ -41,14 +40,14 @@ public class CanvasViewColorsPopup extends StagePopup<VBox> {
 	};
 
 	public CanvasViewColorsPopup(Stage primaryStage) {
-		super(primaryStage, new VBox(10), Colors.POPUP_TITLE);
+		super(primaryStage, new VBox(10), Lang.Popups.Colors.POPUP_TITLE);
 		myStage.initStyle(StageStyle.UTILITY);
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		setupColorPickers();
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
-		myRootElement.getChildren().addAll(colorOption(Colors.SELECTION, cpSelection), colorOption(Colors.ABS_REGION, cpAbsRegion), colorOption(Colors.GRID, cpGrid), colorOption(Colors.BACKGROUND, cpEditorBg));
+		myRootElement.getChildren().addAll(colorOption(Lang.Popups.Colors.SELECTION, cpSelection), colorOption(Lang.Popups.Colors.ABS_REGION, cpAbsRegion), colorOption(Lang.Popups.Colors.GRID, cpGrid), colorOption(Lang.Popups.Colors.BACKGROUND, cpEditorBg));
 	}
 
 	private void setupColorPickers() {
