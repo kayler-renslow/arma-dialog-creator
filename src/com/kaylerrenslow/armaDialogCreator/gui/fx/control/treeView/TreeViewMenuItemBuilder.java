@@ -1,38 +1,63 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.IGraphicCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 05/15/2016.
  */
 public class TreeViewMenuItemBuilder {
 
-	private static <E> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView treeView, @NotNull String text, @NotNull E data, @NotNull CellType cellType, @Nullable IGraphicCreator creator) {
+	private static <E> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, CellType cellType) {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				TreeItemData<E> treeItemData = new TreeItemData<E>(text, cellType, data, creator);
+				TreeItemData<E> treeItemData = creator.createNew(cellType);
+				if (treeItemData.getCellType() != cellType) {
+					throw new IllegalStateException("Cell type doesn't match. Current type:" + treeItemData.getCellType() + ". Requested type:" + cellType);
+				}
 				addChild(treeView, treeItemData);
 			}
 		};
 	}
 
-	public static <E> void setNewFolderAction(@NotNull EditableTreeView treeView, @NotNull MenuItem menuItem, @NotNull String defaultFolderName, @NotNull E data, @Nullable IGraphicCreator creator) {
-		menuItem.setOnAction(createEvent(treeView, defaultFolderName, data, CellType.FOLDER, creator));
+	/**
+	 Adds a "new folder" action.
+
+	 @param treeView tree view the action is linked to
+	 @param creator data creator that returns a new instance for each folder requested to be created
+	 @param menuItem menu item that links the click action to the new folder action
+	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
+	 */
+	public static <E> void setNewFolderAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+		menuItem.setOnAction(createEvent(treeView, creator, CellType.FOLDER));
 	}
 
-	public static <E> void setNewItemAction(@NotNull EditableTreeView treeView, @NotNull MenuItem menuItem, @NotNull String itemName, @NotNull E data, @Nullable IGraphicCreator creator) {
-		menuItem.setOnAction(createEvent(treeView, itemName, data, CellType.LEAF, creator));
+	/**
+	 Adds a "new item" action.
+
+	 @param treeView tree view the action is linked to
+	 @param creator data creator that returns a new instance for each item requested to be created
+	 @param menuItem menu item that links the click action to the new item action
+	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
+	 */
+	public static <E> void setNewItemAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+		menuItem.setOnAction(createEvent(treeView, creator, CellType.LEAF));
 	}
 
-	public static <E> void setNewCompositeItemAction(@NotNull EditableTreeView treeView, @NotNull MenuItem menuItem, @NotNull String itemName, @NotNull E data, @Nullable IGraphicCreator creator) {
-		menuItem.setOnAction(createEvent(treeView, itemName, data, CellType.COMPOSITE, creator));
+	/**
+	 Adds a "new composite item" action.
+
+	 @param treeView tree view the action is linked to
+	 @param creator data creator that returns a new instance for each folder requested to be created
+	 @param menuItem menu item that links the click action to the new folder action
+	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
+	 */
+	public static <E> void setNewCompositeItemAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+		menuItem.setOnAction(createEvent(treeView, creator, CellType.COMPOSITE));
 	}
 
 	private static void addChild(@NotNull EditableTreeView treeView, @NotNull TreeItemData<?> treeItemData) {

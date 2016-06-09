@@ -155,7 +155,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 
 
 	@Nullable
-	TreeItem<TreeItemData<E>> getSelectedItem() {
+	protected TreeItem<TreeItemData<E>> getSelectedItem() {
 		return getSelectionModel().getSelectedItem();
 	}
 

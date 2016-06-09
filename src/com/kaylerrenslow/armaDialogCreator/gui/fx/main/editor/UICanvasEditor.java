@@ -3,16 +3,16 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Edge;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
+import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -81,7 +81,7 @@ public class UICanvasEditor extends UICanvas {
 
 	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
-		public void valueUpdated(ArmaControlClass oldValue, ArmaControlClass newValue) {
+		public void valueUpdated(ValueObserver observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
 			paint();
 		}
 	};
@@ -115,6 +115,10 @@ public class UICanvasEditor extends UICanvas {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
 			renderer.getMyControl().getControlListener().addValueListener(CONTROL_LISTENER);
 		}
+	}
+
+	public void addControl(@NotNull ArmaControl control){
+		addComponent(control.getRenderer());
 	}
 
 	/**

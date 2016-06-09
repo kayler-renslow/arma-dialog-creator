@@ -1,6 +1,7 @@
 ADDED:
-    basis for application data
+    beginning of adding components through tree view
+    control group class
 CHANGED:
-    string input field check for quote canceling ("") (buggy)
+    none
 FIXED:
     none

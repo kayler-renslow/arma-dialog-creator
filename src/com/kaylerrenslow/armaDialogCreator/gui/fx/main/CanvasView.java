@@ -19,8 +19,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 05/15/2016.
- */
+ @author Kayler
+ Used to hold the canvas editor itself and canvas controls (tree view, step, etc). This class is also used to update the editor when need be.
+ Created on 05/15/2016. */
 class CanvasView extends HBox implements ICanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
@@ -86,16 +87,22 @@ class CanvasView extends HBox implements ICanvasView {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
 	}
 
+	@Override
+	public Resolution getCurrentResolution() {
+		return resolution;
+	}
+
+	@Override
+	public UICanvasEditor getUiCanvasEditor() {
+		return uiCanvasEditor;
+	}
+
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {
 		uiCanvasEditor.keyEvent(text, keyDown, shiftDown, controlDown, altDown);
 	}
 
 	void repaintCanvas() {
 		uiCanvasEditor.paint();
-	}
-
-	UICanvasEditor getUiCanvasEditor() {
-		return uiCanvasEditor;
 	}
 
 

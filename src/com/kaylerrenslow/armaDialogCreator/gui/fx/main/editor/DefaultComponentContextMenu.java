@@ -11,7 +11,6 @@ import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
-import java.awt.*;
 import java.util.ArrayList;
 
 /**
@@ -40,7 +39,7 @@ public class DefaultComponentContextMenu extends ContextMenu {
 						popup.beepFocus();
 						return;
 					} else if (!popup.isShowing() && popup.getControl() == c) {
-						popup.initialize(c);
+						popup.initializeToControl(c);
 					}
 				}
 				ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);

@@ -2,8 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -227,6 +225,11 @@ public class ArmaControl extends ArmaControlClass {
 
 	public ArmaControlRenderer getRenderer() {
 		return renderer;
+	}
+
+	/** Get the text used for render. */
+	public String getRenderText() {
+		return renderer.getText();
 	}
 
 

@@ -1,67 +1,43 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.IGraphicCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Label;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeViewMenuItemBuilder;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ISnapConfiguration;
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 05/15/2016.
- */
+ @author Kayler
+ Holds the step configuration contorls and the tree view for editor components.
+ Created on 05/15/2016. */
 class CanvasControls extends VBox implements ISnapConfiguration {
 
-	private final EditableTreeView treeView = new EditableTreeView(null);
-
-	private final Label lblBackgroundColor = new Label(Lang.CanvasControls.BACKGROUND_COLOR);
-	private final ColorPicker cpBackgroundColor = new ColorPicker();
-
-	private final Label lblTextColor = new Label(Lang.CanvasControls.TEXT_COLOR);
-	private final ColorPicker cpTextColor = new ColorPicker();
-
-	private final Label lblOpacity = new Label(Lang.CanvasControls.OPACITY);
-	private final ComboBox<Integer> cbOpacity = new ComboBox<>();
-
-	private final Label lblAltStep = new Label(Lang.CanvasControls.ALT_STEP);
-	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
-
-	private final Label lblStep = new Label(Lang.CanvasControls.STEP);
-	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
-
 	private final CanvasView canvasView;
-
-
-	private MenuItem newFolder = new MenuItem("New Folder", createFolderIcon());
-	private MenuItem newItem = new MenuItem("New Item");
-	private MenuItem newComp = new MenuItem("New Composite");
-
-	private ContextMenu cm = new ContextMenu(newFolder, newItem, newComp);
-
+	private final EditorComponentTreeView editorComponentTreeView = new EditorComponentTreeView();
+	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
+	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
 
 	CanvasControls(CanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
+		initializeUI();
+	}
+
+	private void initializeUI() {
 		initializeStepChoiceboxes();
 		HBox hboxStep = new HBox(5);
-		hboxStep.getChildren().addAll(lblStep, cbStep, lblAltStep, cbAltStep);
+		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
 
-		getChildren().addAll(hboxStep, treeView);
-		setupTreeViewContextMenu();
+		getChildren().addAll(hboxStep, editorComponentTreeView);
 		this.setPadding(new Insets(5, 5, 0, 5));
 
-		VBox.setVgrow(treeView, Priority.ALWAYS);
+		VBox.setVgrow(editorComponentTreeView, Priority.ALWAYS);
 	}
 
 	private void initializeStepChoiceboxes() {
@@ -77,24 +53,6 @@ class CanvasControls extends VBox implements ISnapConfiguration {
 		});
 	}
 
-	private void setupTreeViewContextMenu() {
-		treeView.setContextMenu(cm);
-		TreeViewMenuItemBuilder.setNewFolderAction(treeView, newFolder, "New Folder", new Object(), new IGraphicCreator() {
-			@Nullable
-			@Override
-			public Node createGraphic() {
-				return createFolderIcon();
-			}
-		});
-		TreeViewMenuItemBuilder.setNewItemAction(treeView, newItem, "New Item", new Object(), new IGraphicCreator() {
-			@Nullable
-			@Override
-			public Node createGraphic() {
-				return new RadioButton(""/*, new ImageView("/com/kaylerrenslow/armaDialogCreator/icons/eye.png")*/);
-			}
-		});
-		TreeViewMenuItemBuilder.setNewCompositeItemAction(treeView, newComp, "Composite Item", new Object(), null);
-	}
 
 	@Override
 	public double alternateSnapPercentage() {
@@ -106,14 +64,10 @@ class CanvasControls extends VBox implements ISnapConfiguration {
 		return cbStep.getSelectionModel().getSelectedItem().value;
 	}
 
-	private ImageView createFolderIcon() {
-		return new ImageView(ImagePaths.ICON_FOLDER);
-	}
-
 	private static class Percentage {
 		private final double value;
 
-		public Percentage(double value) {
+		Percentage(double value) {
 			this.value = value;
 		}
 

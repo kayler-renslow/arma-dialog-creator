@@ -1,9 +1,16 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 06/07/2016.
  */
-public abstract class TreeItemEntry {
-	/** Returns true if the entry is only structural for the data and not representable */
-	public abstract boolean isStructural();
+public interface TreeItemEntry {
+	/** Get the text to display in the tree */
+	@NotNull
+	String getTreeItemText();
+
+	/** Return true if the tree item is used only as a visual indicator and doesn't represent the end product. */
+	boolean isPhantom();
+
 }

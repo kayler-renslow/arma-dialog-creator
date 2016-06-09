@@ -1,97 +1,92 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
-/**
- Created by Kayler on 05/15/2016.
- */
-public class Lang {
-	public class Application {
-		public static final String APPLICATION_TITLE = "Arma Dialog Creator - V1.0.0";
+public interface Lang {
+	interface Application {
+		String APPLICATION_TITLE = "Arma Dialog Creator - V1.0.0";
 	}
 
-	public class CanvasControls {
-		public static final String BACKGROUND_COLOR = "Background Color:";
-		public static final String TEXT_COLOR = "Text Color:";
-		public static final String OPACITY = "Opacity:";
-		public static final String ALT_STEP = "Alternate Step:";
-		public static final String STEP = "Step:";
+	interface CanvasControls {
+		String ALT_STEP = "Alternate Step:";
+		String STEP = "Step:";
 	}
 
-	public class MainMenuBar {
-		public static final String FILE = "File";
-		public static final String FILE_NEW = "New";
-		public static final String FILE_OPEN = "Open";
-		public static final String FILE_SAVE = "Save";
-		public static final String FILE_SAVE_AS = "Save As";
+	interface MainMenuBar {
+		String FILE = "File";
+		String FILE_NEW = "New";
+		String FILE_OPEN = "Open";
+		String FILE_SAVE = "Save";
+		String FILE_SAVE_AS = "Save As";
 
-		public static final String EDIT = "Edit";
-		public static final String EDIT_CHANGES = "View Changes";
-		public static final String EDIT_UNDO = "Undo";
-		public static final String EDIT_REDO = "Redo";
-		public static final String EDIT_UNDO_F = "Undo %s";
-		public static final String EDIT_REDO_F = "Redo %s";
+		String EDIT = "Edit";
+		String EDIT_CHANGES = "View Changes";
+		String EDIT_UNDO = "Undo";
+		String EDIT_REDO = "Redo";
+		String EDIT_UNDO_F = "Undo %s";
+		String EDIT_REDO_F = "Redo %s";
 
-		public static final String VIEW = "View";
-		public static final String VIEW_SHOW_GRID = "Show Grid";
-		public static final String VIEW_CHANGE_COLORS = "Change Colors";
-		public static final String VIEW_BACKGROUND_IMAGE = "Background Image";
-		public static final String VIEW_CHANGE_BACKGROUND_IMAGE1 = "VR";
-		public static final String VIEW_CHANGE_BACKGROUND_IMAGE2 = "Altis";
-		public static final String VIEW_CHANGE_BACKGROUND_IMAGE3 = "Altis Late";
-		public static final String VIEW_CHANGE_BACKGROUND_IMAGE_CUSTOM = "Custom";
-		public static final String VIEW_CHANGE_BACKGROUND_NONE = "None";
-		public static final String VIEW_ABS_REGION = "Absolute Coordinate Region";
-		public static final String VIEW_ABS_REGION_SHOW = "Show";
-		public static final String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
-		public static final String VIEW_DARK_THEME = "Use Dark Theme";
-		public static final String VIEW_FULL_SCREEN = "Full Screen";
+		String VIEW = "View";
+		String VIEW_SHOW_GRID = "Show Grid";
+		String VIEW_CHANGE_COLORS = "Change Colors";
+		String VIEW_BACKGROUND_IMAGE = "Background Image";
+		String VIEW_CHANGE_BACKGROUND_IMAGE1 = "VR";
+		String VIEW_CHANGE_BACKGROUND_IMAGE2 = "Altis";
+		String VIEW_CHANGE_BACKGROUND_IMAGE3 = "Altis Late";
+		String VIEW_CHANGE_BACKGROUND_IMAGE_CUSTOM = "Custom";
+		String VIEW_CHANGE_BACKGROUND_NONE = "None";
+		String VIEW_ABS_REGION = "Absolute Coordinate Region";
+		String VIEW_ABS_REGION_SHOW = "Show";
+		String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
+		String VIEW_DARK_THEME = "Use Dark Theme";
+		String VIEW_FULL_SCREEN = "Full Screen";
 
-		public static final String SETTINGS = "Settings";
-		public static final String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
+		String SETTINGS = "Settings";
+		String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
 	}
 
-	public class Popups{
-		public static final String BTN_HELP = "Help";
-		public static final String BTN_CANCEL = "Cancel";
-		public static final String BTN_OK = "OK";
+	interface Popups{
+		String BTN_HELP = "Help";
+		String BTN_CANCEL = "Cancel";
+		String BTN_OK = "OK";
 
-		public class Colors {
-			public static final String POPUP_TITLE = "Change Canvas Colors";
-			public static final String SELECTION = "Selection";
-			public static final String GRID = "Grid";
-			public static final String ABS_REGION = "Absolute Region";
-			public static final String BACKGROUND = "Canvas Background Color";
+		interface Colors {
+			String POPUP_TITLE = "Change Canvas Colors";
+			String SELECTION = "Selection";
+			String GRID = "Grid";
+			String ABS_REGION = "Absolute Region";
+			String BACKGROUND = "Canvas Background Color";
 		}
 
-		public class SelectSaveLocation {
-			public static final String POPUP_TITLE = "Configure Directories";
-			public static final String LBL_APP_DATA_SAVE_DIR = "Application data save directory:";
-			public static final String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
-			public static final String BTN_CHANGE = "Change";
+		interface SelectSaveLocation {
+			String POPUP_TITLE = "Configure Directories";
+			String LBL_APP_DATA_SAVE_DIR = "Application data save directory:";
+			String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
+			String BTN_CHANGE = "Change";
 		}
 
-		public class ControlPropertiesConfig {
-			public static final String SQF_CODE = "SQF Code to Execute";
-			public static final String TEXTURE = "Texture String";
-			public static final String IMAGE_PATH = "Image Path String";
-			public static final String FILE_NAME = "File Path String";
-			public static final String NO_PROPERTIES_AVAILABLE = "No properties available.";
-			public static final String STRING = "String";
-			public static final String EXTEND_CLASS = "Extend Class";
+		interface ControlPropertiesConfig {
+			String SQF_CODE = "SQF Code to Execute";
+			String TEXTURE = "Texture String";
+			String IMAGE_PATH = "Image Path String";
+			String FILE_NAME = "File Path String";
+			String NO_PROPERTIES_AVAILABLE = "No properties available.";
+			String STRING = "String";
+			String EXTEND_CLASS = "Extend Class";
+			String IS_BACKGROUND_CONTROL = "Background Control";
 		}
 
-		public class MissingControlPropertiesConfig {
-			public static final String POPUP_TITLE = "Missing Control Properties";
+		interface MissingControlPropertiesConfig {
+			String POPUP_TITLE = "Missing Control Properties";
 		}
 	}
 
-	public class Misc {
-		public static final String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
+	interface Misc {
+		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 	}
 
-	public class ContextMenu {
-		public class DefaultComponent {
-			public static final String CONFIGURE = "Configure Properties";
-			public static final String RENDER_QUEUE = "Render Queue";
+	interface ContextMenu {
+		interface DefaultComponent {
+			String CONFIGURE = "Configure Properties";
+			String RENDER_QUEUE = "Render Queue";
 		}
 	}
 }

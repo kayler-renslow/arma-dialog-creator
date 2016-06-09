@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView;
 
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.IGraphicCreator;
 import javafx.scene.Node;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -14,7 +13,7 @@ public class TreeItemData<E> {
 
 	private final int ID = lastId++;
 
-	private final E data;
+	private E data;
 	private final CellType cellType;
 	private final ITreeNodeUpdateListener updateListener;
 
@@ -43,9 +42,9 @@ public class TreeItemData<E> {
 		this.graphic = lbl;
 	}
 
-	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @NotNull E data, @Nullable IGraphicCreator creator, @Nullable ITreeNodeUpdateListener updateListener) {
+	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic, @Nullable ITreeNodeUpdateListener updateListener) {
 		this.isPlaceholder = false;
-		this.graphic = (creator != null ? creator.createGraphic() : null);
+		this.graphic = graphic;
 		this.text = text;
 		this.cellType = cellType;
 		this.data = data;
@@ -53,8 +52,8 @@ public class TreeItemData<E> {
 	}
 
 
-	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @NotNull E data, @Nullable IGraphicCreator creator) {
-		this(text, cellType, data, creator, null);
+	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic) {
+		this(text, cellType, data, graphic, null);
 	}
 
 	public ITreeNodeUpdateListener getUpdateListener() {
@@ -65,8 +64,13 @@ public class TreeItemData<E> {
 		return graphic;
 	}
 
+	@Nullable
 	public E getData() {
 		return data;
+	}
+
+	public void setData(@Nullable E data) {
+		this.data = data;
 	}
 
 	public final CellType getCellType() {

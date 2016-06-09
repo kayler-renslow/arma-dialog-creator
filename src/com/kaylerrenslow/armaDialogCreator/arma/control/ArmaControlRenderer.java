@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -19,7 +20,7 @@ public class ArmaControlRenderer extends Component {
 		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
 		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
-			public void valueUpdated(AColor oldValue, AColor newValue) {
+			public void valueUpdated(@NotNull ValueObserver<?> observer, AColor newValue, AColor oldValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
 				}
@@ -91,5 +92,11 @@ public class ArmaControlRenderer extends Component {
 	public void setY2(int y2) {
 		super.setY2(y2);
 		myControl.calcPositionFromRenderer();
+	}
+
+	@Override
+	public void setGhost(boolean ghost) {
+		super.setGhost(ghost);
+		myControl.getControlListener().updateValue(null);
 	}
 }
