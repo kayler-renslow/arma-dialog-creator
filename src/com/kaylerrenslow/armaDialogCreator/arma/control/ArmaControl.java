@@ -140,6 +140,14 @@ public class ArmaControl extends ArmaControlClass {
 		renderer.setY2(renderer.getY1() + h);
 	}
 
+	protected void setPositionWH(double x, double y, double w, double h) {
+		this.x = x;
+		this.y = y;
+		this.width = w;
+		this.height = h;
+		renderer.setPositionWHSilent(PositionCalculator.getScreenX(resolution, x), PositionCalculator.getScreenY(resolution, y), PositionCalculator.getScreenWidth(resolution, w), PositionCalculator.getScreenHeight(resolution, h));
+	}
+
 	/** Set idc and define the idc control property */
 	public void defineIdc(int idc) {
 		setIdc(idc);
@@ -192,10 +200,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	@Override
 	protected void updateProperties() {
-		setX(xProperty.getFloatValue());
-		setY(yProperty.getFloatValue());
-		setW(wProperty.getFloatValue());
-		setH(hProperty.getFloatValue());
+		setPositionWH(xProperty.getFloatValue(), yProperty.getFloatValue(), wProperty.getFloatValue(), hProperty.getFloatValue());
 		//		defineStyle(styleProperty.);
 	}
 
@@ -247,7 +252,6 @@ public class ArmaControl extends ArmaControlClass {
 
 		getControlListener().updateValue(null); //don't execute updateProperties
 	}
-
 
 	public ControlProperty[] getEventProperties() {
 		return ControlProperty.EMPTY;

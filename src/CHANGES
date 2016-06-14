@@ -1,6 +1,6 @@
 ADDED:
-    none
+    beginning of preview window (doesn't work yet. Need to figure out initialization steps for application)
 CHANGED:
     none
 FIXED:
-    none
+    not being able to set y,w,h in properties popup

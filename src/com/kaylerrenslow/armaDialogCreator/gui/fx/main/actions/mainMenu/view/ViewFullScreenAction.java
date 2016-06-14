@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view;
 
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;

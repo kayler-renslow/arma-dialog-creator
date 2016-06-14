@@ -3,8 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PopupColorPicker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.ViewDarkThemeAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.ViewFullScreenAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
@@ -39,6 +37,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem edit_redo = addOnAction(new MenuItem(MainMenuBar.EDIT_REDO), new EditRedoAction());
 
 	/*View*/
+	private final MenuItem view_preview = addOnAction(new MenuItem(MainMenuBar.VIEW_PREVIEW, null), new ViewPreviewAction());
 	private final PresetCheckMenuItem view_showGrid = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(MainMenuBar.VIEW_SHOW_GRID, true), new ViewShowGridAction());
 	private final MenuItem view_darkTheme = addOnAction(new CheckMenuItem(MainMenuBar.VIEW_DARK_THEME), new ViewDarkThemeAction());
 	private final MenuItem view_colors = addOnAction(new MenuItem(MainMenuBar.VIEW_CHANGE_COLORS), new ViewColorsAction());
@@ -71,7 +70,7 @@ class ADCMenuBar extends MenuBar {
 
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
-	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_fullScreen);
+	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_fullScreen);
 	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, setings_configureDirs);
 
 	ADCMenuBar() {

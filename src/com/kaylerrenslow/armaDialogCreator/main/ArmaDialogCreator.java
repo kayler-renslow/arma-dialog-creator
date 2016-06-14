@@ -70,7 +70,7 @@ public class ArmaDialogCreator extends Application {
 
 	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use ArmaDialogCreator.fatal() */
 	public static void error(Exception e) {
-		new StagePopup(primaryStage, getExceptionTextArea(e), "An internal error occurred.").show();
+		new StagePopup<>(primaryStage, getExceptionTextArea(e), "An internal error occurred.").show();
 	}
 
 	/** Makes an error window popup with the stack trace printed. This method should be used when a non-recoverable error occurred. After the error window is closed, the application will also close. */
@@ -79,11 +79,11 @@ public class ArmaDialogCreator extends Application {
 			JOptionPane.showMessageDialog(null, getExceptionString(e), "FATAL ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		StagePopup sp = new StagePopup(primaryStage, getExceptionTextArea(e), "A FATAL error occurred.") {
+		StagePopup sp = new StagePopup<TextArea>(primaryStage, getExceptionTextArea(e), "A FATAL error occurred.") {
 			@Override
 			protected void onCloseRequest(WindowEvent event) {
 				boolean good = saveManager.forceSave();
-				new StagePopup(primaryStage, new TextArea(good ? "Your data was successfully saved regardless of the error." : "Your data couldn't be saved."), "Save notification") {
+				new StagePopup<TextArea>(primaryStage, new TextArea(good ? "Your data was successfully saved regardless of the error." : "Your data couldn't be saved."), "Save notification") {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {
 						primaryStage.close();

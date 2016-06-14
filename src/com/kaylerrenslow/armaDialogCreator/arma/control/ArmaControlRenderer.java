@@ -20,7 +20,7 @@ public class ArmaControlRenderer extends Component {
 		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
 		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<?> observer, AColor newValue, AColor oldValue) {
+			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor newValue, AColor oldValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
 				}
@@ -68,6 +68,11 @@ public class ArmaControlRenderer extends Component {
 	public void setPositionWH(int x1, int y1, int width, int height) {
 		super.setPositionWH(x1, y1, width, height);
 		myControl.calcPositionFromRenderer();
+	}
+
+	/** Set the position without telling the control */
+	public void setPositionWHSilent(int x1, int y1, int width, int height) {
+		super.setPositionWH(x1, y1, width, height);
 	}
 
 	@Override

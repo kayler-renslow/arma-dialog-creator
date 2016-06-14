@@ -3,14 +3,16 @@ clicking on components:
     ctrl+click: toggle the component from the selection
     holding space: will select the highest component that is enabled (if space wasn't held and a selected component was beneath a non-selected component, clicking the non-selected component would not change the selection)
 
+while holding z and x together for half a second, will disable the selected components
 
 while moving component:
     holding shift: move by smallest possible snap
-    alt alt: move to nearest snap
+    holding alt: translate without snap
     holding x : prevent vertical movement
     holding z : prevent horizontal movement
 
 while scaling component:
     holding shift: snap scale by smallest possible snap
-    holding alt: scale to nearest snap position
+    holding alt: scale without snap
     holding ctrl: mirror the scale
+    holding s: scale as a square

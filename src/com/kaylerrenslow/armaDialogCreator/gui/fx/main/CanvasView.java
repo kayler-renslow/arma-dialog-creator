@@ -1,13 +1,14 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
+import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.IComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
+import com.kaylerrenslow.armaDialogCreator.io.ApplicationDataManager;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.Image;
@@ -40,13 +41,26 @@ class CanvasView extends HBox implements ICanvasView {
 
 	private void initializeUICanvasEditor(Resolution r) {
 		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
-		uiCanvasEditor.addComponent(new StaticControl("Sample", 0, ControlStyle.SINGLE, 0, 0, 1, 1, resolution).getRenderer());
+		setToDisplay(ApplicationDataManager.applicationData.getEditingDisplay());
 		uiCanvasEditor.setComponentMenuCreator(new IComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(Component component) {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
+	}
+
+	private void setToDisplay(@NotNull ArmaDisplay display) {
+		for (ArmaControl control : display.getBackgroundControls()) {
+			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
+		}
+		for (ArmaControl control : display.getControls()) {
+			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
+		}
+		for (ArmaControl control : display.getObjects()) {
+			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
+		}
+		uiCanvasEditor.paint();
 	}
 
 	private void focusToCanvas(boolean focusToCanvas) {

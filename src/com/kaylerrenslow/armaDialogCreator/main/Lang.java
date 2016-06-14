@@ -25,6 +25,7 @@ public interface Lang {
 		String EDIT_REDO_F = "Redo %s";
 
 		String VIEW = "View";
+		String VIEW_PREVIEW = "Preview";
 		String VIEW_SHOW_GRID = "Show Grid";
 		String VIEW_CHANGE_COLORS = "Change Colors";
 		String VIEW_BACKGROUND_IMAGE = "Background Image";
@@ -43,7 +44,7 @@ public interface Lang {
 		String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
 	}
 
-	interface Popups{
+	interface Popups {
 		String BTN_HELP = "Help";
 		String BTN_CANCEL = "Cancel";
 		String BTN_OK = "OK";
@@ -88,5 +89,9 @@ public interface Lang {
 			String CONFIGURE = "Configure Properties";
 			String RENDER_QUEUE = "Render Queue";
 		}
+	}
+
+	interface PreviewWindow {
+		String POPUP_TITLE = "Arma Dialog Creator - Preview Window";
 	}
 }

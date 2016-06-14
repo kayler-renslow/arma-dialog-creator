@@ -79,9 +79,12 @@ public class UICanvasEditor extends UICanvas {
 	private final Resolution resolution;
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
 
+	private boolean waitingForZXRelease = false;
+	private long zxPressStartTimeMillis;
+
 	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
-		public void valueUpdated(ValueObserver observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
+		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
 			paint();
 		}
 	};
@@ -104,16 +107,50 @@ public class UICanvasEditor extends UICanvas {
 			}
 		});
 
+		keys.getKeyStateObserver().addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean newValue, Boolean oldValue) {
+				keyUpdate(newValue);
+			}
+		});
+
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
 	}
 
+	private void keyUpdate(boolean keyIsDown) {
+		if (keyIsDown) {
+			if (keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+				zxPressStartTimeMillis = System.currentTimeMillis();
+				waitingForZXRelease = true;
+			}
+		} else {
+			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
+					for (Component component : selection.getSelected()) {
+						component.setEnabled(false);
+					}
+					selection.clearSelected();
+					mouseOverComponent = scaleComponent = null;
+					changeCursorToDefault();
+					waitingForZXRelease = false;
+				}
+			}
+		}
+	}
+
 	@Override
-	public void addComponent(@NotNull Component component) {
-		super.addComponent(component);
+	public void addComponentNoPaint(@NotNull Component component) {
+		super.addComponentNoPaint(component);
 		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
 			renderer.getMyControl().getControlListener().addValueListener(CONTROL_LISTENER);
 		}
+	}
+
+	@Override
+	public void addComponent(@NotNull Component component) {
+		super.addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
+		paint();
 	}
 
 	public void addControl(@NotNull ArmaControl control) {
@@ -476,40 +513,36 @@ public class UICanvasEditor extends UICanvas {
 		}
 		int dx1 = 0; //change in x that will be used for translation or scaling
 		int dy1 = 0; //change in y that will be used for translation or scaling
-		int ddx = dx < 0 ? -1 : 1; //change in direction for x
-		int ddy = dy < 0 ? -1 : 1; //change in direction for y
-		int snapX = getSnapPixelsWidth(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
-		int snapY = getSnapPixelsHeight(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
+		if (!keys.isAltDown()) {
+			int ddx = dx < 0 ? -1 : 1; //change in direction for x
+			int ddy = dy < 0 ? -1 : 1; //change in direction for y
+			int snapX = getSnapPixelsWidth(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
+			int snapY = getSnapPixelsHeight(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
 
-		dxAmount += dx;
-		dyAmount += dy;
-		int dxAmountAbs = Math.abs(dxAmount);
-		int dyAmountAbs = Math.abs(dyAmount);
-		if (dxAmountAbs >= snapX) {
-			dx1 = snapX * ddx * (dxAmountAbs / snapX);
-			dxAmount = (dxAmountAbs - Math.abs(dx1)) * ddx;
-		}
-		if (dyAmountAbs >= snapY) {
-			dy1 = snapY * ddy * (dyAmountAbs / snapY);
-			dyAmount = (dyAmountAbs - Math.abs(dy1)) * ddy;
+			dxAmount += dx;
+			dyAmount += dy;
+			int dxAmountAbs = Math.abs(dxAmount);
+			int dyAmountAbs = Math.abs(dyAmount);
+			if (dxAmountAbs >= snapX) {
+				dx1 = snapX * ddx * (dxAmountAbs / snapX);
+				dxAmount = (dxAmountAbs - Math.abs(dx1)) * ddx;
+			}
+			if (dyAmountAbs >= snapY) {
+				dy1 = snapY * ddy * (dyAmountAbs / snapY);
+				dyAmount = (dyAmountAbs - Math.abs(dy1)) * ddy;
+			}
+		} else {//translate or scale how much the mouse moved
+			dx1 = dx;
+			dy1 = dy;
 		}
 
 		if (scaleComponent != null) { //scaling
-			doScaleOnComponent(dx1, dy1, snapX, snapY);
+			doScaleOnComponent(dx1, dy1);
 			return;
 		}
 		//not scaling and simply translating (moving)
-		int moveX, moveY, nearestGridX, nearestGridY;
 		for (Component component : selection.getSelected()) {
 			//only moveable components should be inside selection
-			if (keys.isAltDown()) {
-				moveX = component.getLeftX();
-				moveY = component.getTopY();
-				nearestGridX = moveX - moveX % snapX;
-				nearestGridY = moveY - moveY % snapY;
-				dx1 = nearestGridX - moveX;
-				dy1 = nearestGridY - moveY;
-			}
 			if (!safeMovement) {
 				component.translate(dx1, dy1);
 			} else {
@@ -518,84 +551,67 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 
-	private void doScaleOnComponent(int dx1, int dy1, int snapX, int snapY) {
+	private void doScaleOnComponent(int dx, int dy) {
 		int dxl = 0; //change in x left
 		int dxr = 0; //change in x right
 		int dyt = 0; //change in y top
 		int dyb = 0; //change in y bottom
-		if (scaleEdge == Edge.TOP_LEFT) {
-			dyt = dy1;
-			dxl = dx1;
-			if (keys.isCtrlDown()) {
-				dyb = -dy1;
-				dxr = -dx1;
-			}
-		} else if (scaleEdge == Edge.TOP_RIGHT) {
-			dyt = dy1;
-			dxr = dx1;
-			if (keys.isCtrlDown()) {
-				dyb = -dy1;
-				dxl = -dx1;
-			}
-		} else if (scaleEdge == Edge.BOTTOM_LEFT) {
-			dyb = dy1;
-			dxl = dx1;
-			if (keys.isCtrlDown()) {
-				dyt = -dy1;
-				dxr = -dx1;
-			}
-		} else if (scaleEdge == Edge.BOTTOM_RIGHT) {
-			dyb = dy1;
-			dxr = dx1;
-			if (keys.isCtrlDown()) {
-				dyt = -dy1;
-				dxl = -dx1;
-			}
-		} else if (scaleEdge == Edge.TOP) {
-			dyt = dy1;
-			if (keys.isCtrlDown()) {
-				dyb = -dy1;
-			}
-		} else if (scaleEdge == Edge.RIGHT) {
-			dxr = dx1;
-			if (keys.isCtrlDown()) {
-				dxl = -dx1;
-			}
-		} else if (scaleEdge == Edge.BOTTOM) {
-			dyb = dy1;
-			if (keys.isCtrlDown()) {
-				dyt = -dy1;
-			}
-		} else if (scaleEdge == Edge.LEFT) {
-			dxl = dx1;
-			if (keys.isCtrlDown()) {
-				dxr = -dx1;
+		boolean symmetricScale = keys.isCtrlDown() || keys.keyIsDown(keyMap.SCALE_SQUARE);
+		if (keys.keyIsDown(keyMap.SCALE_SQUARE)) {//scale only as a square (all changes are equal)
+			//set them equal to the biggest value
+			if (Math.abs(dx) > Math.abs(dy)) {
+				dy = dx;
+			} else {
+				dx = dy;
 			}
 		}
-		if (keys.isAltDown()) { //scale only to the nearest grid size
-			int leftX = scaleComponent.getLeftX();
-			int rightX = scaleComponent.getRightX();
-			int topY = scaleComponent.getTopY();
-			int botY = scaleComponent.getBottomY();
-			if (dxl != 0) {
-				int p = leftX + dxl;
-				int nearestGridLeftX = p - p % snapX;
-				dxl = nearestGridLeftX - p;
+		if (scaleEdge == Edge.TOP_LEFT) {
+			dyt = dy;
+			dxl = dx;
+			if (symmetricScale) {
+				dyb = -dy;
+				dxr = -dx;
 			}
-			if (dxr != 0) {
-				int p = rightX + dxr;
-				int nearestGridRightX = p - p % snapX;
-				dxr = nearestGridRightX - p;
+		} else if (scaleEdge == Edge.TOP_RIGHT) {
+			dyt = dy;
+			dxr = dx;
+			if (symmetricScale) {
+				dyb = -dy;
+				dxl = -dx;
 			}
-			if (dyt != 0) {
-				int p = topY + dyt;
-				int nearestGridTopY = p - p % snapY;
-				dyt = nearestGridTopY - p;
+		} else if (scaleEdge == Edge.BOTTOM_LEFT) {
+			dyb = dy;
+			dxl = dx;
+			if (symmetricScale) {
+				dyt = -dy;
+				dxr = -dx;
 			}
-			if (dyb != 0) {
-				int p = botY + dyb;
-				int nearestGridBotY = p - p % snapY;
-				dyb = nearestGridBotY - p;
+		} else if (scaleEdge == Edge.BOTTOM_RIGHT) {
+			dyb = dy;
+			dxr = dx;
+			if (symmetricScale) {
+				dyt = -dy;
+				dxl = -dx;
+			}
+		} else if (scaleEdge == Edge.TOP) {
+			dyt = dy;
+			if (symmetricScale) {
+				dyb = -dy;
+			}
+		} else if (scaleEdge == Edge.RIGHT) {
+			dxr = dx;
+			if (symmetricScale) {
+				dxl = -dx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM) {
+			dyb = dy;
+			if (symmetricScale) {
+				dyt = -dy;
+			}
+		} else if (scaleEdge == Edge.LEFT) {
+			dxl = dx;
+			if (symmetricScale) {
+				dxr = -dx;
 			}
 		}
 		if (!safeMovement || boundUpdateSafe(scaleComponent, dxl, dxr, dyt, dyb)) {
@@ -838,6 +854,7 @@ public class UICanvasEditor extends UICanvas {
 
 
 	private static class KeyMap {
+		String SCALE_SQUARE = "s";
 		String PREVENT_VERTICAL_MOVEMENT = "x";
 		String PREVENT_HORIZONTAL_MOVEMENT = "z";
 	}

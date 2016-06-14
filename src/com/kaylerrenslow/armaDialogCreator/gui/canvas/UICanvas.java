@@ -79,7 +79,12 @@ public abstract class UICanvas extends AnchorPane {
 		this.canvas.setHeight(height);
 	}
 
-	/** Adds a component to the canvas */
+	/** Adds component without repainting the canvas */
+	public void addComponentNoPaint(@NotNull Component component) {
+		this.components.add(component);
+	}
+
+	/** Adds a component to the canvas and repaints the canvas */
 	public void addComponent(@NotNull Component component) {
 		this.components.add(component);
 		paint();
@@ -97,6 +102,12 @@ public abstract class UICanvas extends AnchorPane {
 		return removed;
 	}
 
+	/** Removes all components form the canvas */
+	public void removeAllComponents() {
+		this.components.clear();
+		paint();
+	}
+
 
 	/** Paint the canvas */
 	public void paint() {
@@ -106,7 +117,7 @@ public abstract class UICanvas extends AnchorPane {
 		gc.restore();
 	}
 
-	protected void paintComponents(){
+	protected void paintComponents() {
 		this.components.sort(PaintedRegion.RENDER_PRIORITY_COMPARATOR);
 		for (Component component : components) {
 			if (component.isGhost()) {
@@ -139,7 +150,7 @@ public abstract class UICanvas extends AnchorPane {
 		this.backgroundImage = background;
 	}
 
-	/** Sets canvas background color and repaints the canvas*/
+	/** Sets canvas background color and repaints the canvas */
 	public void setCanvasBackgroundColor(@NotNull Color color) {
 		this.backgroundColor = color;
 		paint();

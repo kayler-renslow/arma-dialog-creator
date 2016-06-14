@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.dialog;
+package com.kaylerrenslow.armaDialogCreator.arma.display;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 
@@ -7,14 +7,14 @@ import java.util.List;
 
 /**
  @author Kayler
- The base class for all dialogs
- Created on 05/21/2016. */
-public class ArmaDialog {
+ Interface that specifies something that is displayable in preview and in Arma 3 (title, dialog, display)
+ Created on 06/14/2016. */
+public class ArmaDisplay {
 	protected int idd;
 	protected boolean movingEnable, enableSimulation;
 	private List<ArmaControl> controls, objects, backgroundControls;
 
-	public ArmaDialog(int idd) {
+	public ArmaDisplay(int idd) {
 		this.idd = idd;
 		controls = new ArrayList<>();
 		objects = new ArrayList<>();
@@ -29,7 +29,8 @@ public class ArmaDialog {
 		this.idd = idd;
 	}
 
-	public boolean isMovingEnable() {
+	/** Return true if the display/dialog is allowed to move. If it isn't, return false. */
+	public boolean movingEnabled() {
 		return movingEnable;
 	}
 
@@ -37,7 +38,8 @@ public class ArmaDialog {
 		this.movingEnable = movingEnable;
 	}
 
-	public boolean isEnableSimulation() {
+	/** Return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
+	public boolean simulationEnabled() {
 		return enableSimulation;
 	}
 
@@ -45,15 +47,19 @@ public class ArmaDialog {
 		this.enableSimulation = enableSimulation;
 	}
 
+	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
 	public List<ArmaControl> getControls() {
 		return controls;
 	}
 
+	/** Get all objects. */
 	public List<ArmaControl> getObjects() {
 		return objects;
 	}
 
+	/** Get all controls that will always not have simulation/interaction (these are rendered before controls) */
 	public List<ArmaControl> getBackgroundControls() {
 		return backgroundControls;
 	}
+
 }

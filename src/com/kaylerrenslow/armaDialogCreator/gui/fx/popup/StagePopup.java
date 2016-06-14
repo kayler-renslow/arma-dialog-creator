@@ -4,7 +4,6 @@ import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.Nullable;
@@ -69,6 +68,11 @@ public class StagePopup<E extends Parent> {
 	public void close() {
 		closing();
 		myStage.close();
+	}
+
+	/** Hides the popup */
+	public void hide() {
+		myStage.hide();
 	}
 
 	/** The window's X was clicked */
