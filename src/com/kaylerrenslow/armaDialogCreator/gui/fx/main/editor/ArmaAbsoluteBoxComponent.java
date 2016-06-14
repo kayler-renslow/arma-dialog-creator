@@ -44,4 +44,8 @@ class ArmaAbsoluteBoxComponent extends Component {
 		}
 		return Integer.MIN_VALUE;
 	}
+
+	public boolean alwaysRenderAtFront() {
+		return alwaysFront;
+	}
 }

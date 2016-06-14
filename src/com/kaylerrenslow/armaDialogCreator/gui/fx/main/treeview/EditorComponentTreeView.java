@@ -49,7 +49,7 @@ public class EditorComponentTreeView extends EditableTreeView {
 				StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, 0, 0, 1, 1, canvasView.getCurrentResolution());
 				id++;
 				ControlTreeItemEntry entry = new ControlTreeItemEntry(control);
-				ApplicationDataManager.applicationData.getTreeItemList().add(entry);
+				ApplicationDataManager.applicationData.treeViewData.addTreeItemEntry(entry);
 
 				canvasView.getUiCanvasEditor().addControl(control);
 				return new ControlTreeItem(entry);
@@ -57,6 +57,8 @@ public class EditorComponentTreeView extends EditableTreeView {
 		}, newItem);
 		//		TreeViewMenuItemBuilder.setNewCompositeItemAction(this, newComp, "Composite Item", new Object(), null);
 	}
+
+
 
 	static ImageView createFolderIcon() {
 		return new ImageView(ImagePaths.ICON_FOLDER);

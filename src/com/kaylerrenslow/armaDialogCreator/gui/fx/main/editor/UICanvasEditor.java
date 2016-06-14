@@ -105,19 +105,18 @@ public class UICanvasEditor extends UICanvas {
 		});
 
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
-		addComponent(absRegionComponent);
 	}
 
 	@Override
 	public void addComponent(@NotNull Component component) {
 		super.addComponent(component);
-		if(component instanceof ArmaControlRenderer){
+		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
 			renderer.getMyControl().getControlListener().addValueListener(CONTROL_LISTENER);
 		}
 	}
 
-	public void addControl(@NotNull ArmaControl control){
+	public void addControl(@NotNull ArmaControl control) {
 		addComponent(control.getRenderer());
 	}
 
@@ -131,7 +130,7 @@ public class UICanvasEditor extends UICanvas {
 		boolean removed = super.removeComponent(component);
 		if (removed) {
 			this.selection.removeFromSelection(component);
-			if(component instanceof ArmaControlRenderer){
+			if (component instanceof ArmaControlRenderer) {
 				ArmaControlRenderer renderer = (ArmaControlRenderer) component;
 				renderer.getMyControl().getControlListener().removeListener(CONTROL_LISTENER);
 			}
@@ -194,17 +193,23 @@ public class UICanvasEditor extends UICanvas {
 			selection.drawRectangle(gc);
 			gc.restore();
 		}
+		if (absRegionComponent.alwaysRenderAtFront()) {
+			paintAbsRegionComponent();
+		}
 	}
 
 	@Override
 	protected void paintComponents() {
+		if (!absRegionComponent.alwaysRenderAtFront()) {
+			paintAbsRegionComponent();
+		}
+		super.paintComponents();
 		gc.save();
 		for (Component component : selection.getSelected()) {
 			gc.setStroke(component.getBackgroundColor());
 			component.drawRectangle(gc);
 		}
 		gc.restore();
-		super.paintComponents();
 	}
 
 	@Override
@@ -245,6 +250,12 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 		super.paintComponent(component);
+	}
+
+	protected void paintAbsRegionComponent() {
+		if (!absRegionComponent.isGhost()) {
+			absRegionComponent.paint(gc);
+		}
 	}
 
 	private void drawGrid() {

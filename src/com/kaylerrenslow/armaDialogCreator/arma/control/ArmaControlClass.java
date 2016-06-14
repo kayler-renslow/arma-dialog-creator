@@ -190,7 +190,7 @@ public class ArmaControlClass {
 		return myselfListener;
 	}
 
-	/** Called when myselfObserver has been notified of an update. This is explicitly called and not called by a listener. Default implementation is nothing */
+	/** Called when myselfObserver has been notified of an update and the new value is not null. Default implementation is nothing */
 	protected void updateProperties() {
 
 	}
