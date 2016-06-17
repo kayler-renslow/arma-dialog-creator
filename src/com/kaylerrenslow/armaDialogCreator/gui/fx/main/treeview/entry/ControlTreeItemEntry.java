@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import org.jetbrains.annotations.NotNull;
@@ -30,7 +30,7 @@ public class ControlTreeItemEntry implements TreeItemEntry {
 		myArmaControl.getRenderer().setEnabled(enabled);
 	}
 
-	protected ArmaControl getMyArmaControl() {
+	public ArmaControl getMyArmaControl() {
 		return myArmaControl;
 	}
 

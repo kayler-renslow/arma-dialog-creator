@@ -1,13 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Label;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ISnapConfiguration;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.SnapConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -16,14 +16,14 @@ import javafx.scene.layout.VBox;
  @author Kayler
  Holds the step configuration contorls and the tree view for editor components.
  Created on 05/15/2016. */
-class CanvasControls extends VBox implements ISnapConfiguration {
+class CanvasControls extends VBox implements SnapConfiguration {
 
-	private final CanvasView canvasView;
+	private final ADCCanvasView canvasView;
 	private final EditorComponentTreeView editorComponentTreeView = new EditorComponentTreeView();
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
 
-	CanvasControls(CanvasView canvasView) {
+	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
 		initializeUI();

@@ -64,12 +64,12 @@ public class TreeViewMenuItemBuilder {
 		TreeItem<TreeItemData> selected = treeView.getSelectedItem();
 		if (selected != null) {
 			if (selected.getValue().canHaveChildren()) {
-				treeView.addChildToParent(selected, treeItemData);
+				treeView.addChildDataToParent(selected, treeItemData);
 			} else {
-				treeView.addChildToParent(selected.getParent(), treeItemData);
+				treeView.addChildDataToParent(selected.getParent(), treeItemData);
 			}
 		} else {
-			treeView.addChildToRoot(treeView.getSelectedIndex(), treeItemData);
+			treeView.addChildDataToRoot(treeView.getSelectedIndex(), treeItemData);
 		}
 	}
 }

@@ -44,7 +44,7 @@ public class UICanvasEditor extends UICanvas {
 	/** True if grid is being shown, false otherwise */
 	private boolean showGrid = true;
 
-	private Selection selection = new Selection();
+	private CanvasSelection selection = new CanvasSelection();
 
 	/** Mouse button that is currently down */
 	private MouseButton mouseButtonDown = MouseButton.NONE;
@@ -63,10 +63,10 @@ public class UICanvasEditor extends UICanvas {
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
 	private Component contextMenuComponent;
 
-	private ISnapConfiguration calc;
+	private SnapConfiguration calc;
 
 	/** Class that generates context menus for the components */
-	private IComponentContextMenuCreator menuCreator;
+	private ComponentContextMenuCreator menuCreator;
 	/** Context menu to show when user right clicks and no component is selected */
 	private ContextMenu canvasContextMenu;
 	/** The context menu that wants to be shown */
@@ -90,7 +90,7 @@ public class UICanvasEditor extends UICanvas {
 	};
 
 
-	public UICanvasEditor(Resolution resolution, ISnapConfiguration calculator) {
+	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator) {
 		super(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.resolution = resolution;
 
@@ -175,24 +175,22 @@ public class UICanvasEditor extends UICanvas {
 		return removed;
 	}
 
-	public void setPositionCalculator(@NotNull ISnapConfiguration positionCalculator) {
+	public void setPositionCalculator(@NotNull SnapConfiguration positionCalculator) {
 		this.calc = positionCalculator;
 	}
 
-	@NotNull
-	public ISnapConfiguration getSnapConfig() {
+	public @NotNull SnapConfiguration getSnapConfig() {
 		return this.calc;
 	}
 
-	@NotNull
-	public ISelection getSelection() {
+	public @NotNull Selection getSelection() {
 		return selection;
 	}
 
 	/**
 	 @param ccm the context menu creator that is used to give Components context menus
 	 */
-	public void setComponentMenuCreator(@Nullable IComponentContextMenuCreator ccm) {
+	public void setComponentMenuCreator(@Nullable ComponentContextMenuCreator ccm) {
 		this.menuCreator = ccm;
 	}
 
@@ -758,7 +756,7 @@ public class UICanvasEditor extends UICanvas {
 	 @author Kayler
 	 Created on 05/13/2016.
 	 */
-	private static class Selection extends Region implements ISelection {
+	private static class CanvasSelection extends Region implements Selection {
 		private ArrayList<Component> selected = new ArrayList<>();
 		private boolean isSelecting;
 
@@ -834,7 +832,7 @@ public class UICanvasEditor extends UICanvas {
 			this.selected.add(toAdd);
 		}
 
-		Selection() {
+		CanvasSelection() {
 			super(0, 0, 0, 0);
 		}
 

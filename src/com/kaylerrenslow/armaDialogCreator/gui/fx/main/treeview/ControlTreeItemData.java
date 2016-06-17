@@ -1,18 +1,18 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.data.ControlTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.data.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemData;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
 
 /**
  Created by Kayler on 06/08/2016.
  */
-class ControlTreeItem extends TreeItemData<TreeItemEntry> {
+class ControlTreeItemData extends TreeItemData<TreeItemEntry> {
 	private TreeItemControlGraphic graphic = (TreeItemControlGraphic) getGraphic();
 	private ControlTreeItemEntry controlTreeItemEntry;
 
-	ControlTreeItem(ControlTreeItemEntry controlTreeItemEntry) {
+	ControlTreeItemData(ControlTreeItemEntry controlTreeItemEntry) {
 		super(controlTreeItemEntry.getTreeItemText(), CellType.LEAF, controlTreeItemEntry, new TreeItemControlGraphic());
 		this.controlTreeItemEntry = controlTreeItemEntry;
 		graphic.init(this);

@@ -1,6 +1,6 @@
 ADDED:
-    beginning of preview window (doesn't work yet. Need to figure out initialization steps for application)
-CHANGED:
     none
+CHANGED:
+    removed Label class because I figured out why the label class wasn't showing in the import window
 FIXED:
-    not being able to set y,w,h in properties popup
+    none

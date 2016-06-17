@@ -1,9 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Label;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -22,7 +22,7 @@ class TreeItemControlGraphic extends HBox {
 		setAlignment(Pos.CENTER_LEFT);
 	}
 
-	void init(ControlTreeItem treeItem) {
+	void init(ControlTreeItemData treeItem) {
 		rbSelected.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {

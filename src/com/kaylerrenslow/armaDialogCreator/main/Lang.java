@@ -59,7 +59,7 @@ public interface Lang {
 
 		interface SelectSaveLocation {
 			String POPUP_TITLE = "Configure Directories";
-			String LBL_APP_DATA_SAVE_DIR = "Application data save directory:";
+			String LBL_APP_DATA_SAVE_DIR = "Application entry save directory:";
 			String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
 			String BTN_CHANGE = "Change";
 		}

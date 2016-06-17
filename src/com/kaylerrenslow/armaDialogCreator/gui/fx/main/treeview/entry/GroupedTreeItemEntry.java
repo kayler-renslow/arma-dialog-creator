@@ -1,6 +1,7 @@
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry;
 
 import com.kaylerrenslow.armaDialogCreator.data.exception.ItemDoesNotExistException;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,8 +27,8 @@ public abstract class GroupedTreeItemEntry implements TreeItemEntry {
 	}
 
 	/** Returns a read only list. The internal tree items' list is passed by reference so that when an item to moved in the folder, it will be moved in the read only list. */
-	public ReadOnlyDataList<TreeItemEntry> getTreeItems() {
-		return new ReadOnlyDataList<>(treeItems);
+	public ReadOnlyList<TreeItemEntry> getTreeItems() {
+		return new ReadOnlyList<>(treeItems);
 	}
 
 	/**

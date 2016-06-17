@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PopupColorPicker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
@@ -12,10 +11,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.Fil
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAsAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
 import com.kaylerrenslow.armaDialogCreator.main.Lang.MainMenuBar;
-import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.control.MenuUtil.addOnAction;
@@ -75,33 +70,6 @@ class ADCMenuBar extends MenuBar {
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings);
-	}
-
-	private class ColorPickerButtonEvent implements EventHandler<ActionEvent> {
-
-		private final ColorPicker picker;
-		private final CanvasView view;
-		private final MenuItem menuItem;
-
-		public ColorPickerButtonEvent(CanvasView view, ColorPicker picker, MenuItem menuItem) {
-			this.picker = picker;
-			this.view = view;
-			this.menuItem = menuItem;
-		}
-
-		@Override
-		public void handle(ActionEvent event) {
-			PopupColorPicker popup = new PopupColorPicker(picker);
-			Point2D p = view.getUiCanvasEditor().localToScreen(0, 0);
-			popup.show(view.getUiCanvasEditor(), p.getX(), p.getY());
-			popup.getPicker().setOnHidden(new EventHandler<Event>() {
-				@Override
-				public void handle(Event event) {
-					popup.hide();
-					menuItem.fire();
-				}
-			});
-		}
 	}
 
 }

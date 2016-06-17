@@ -9,7 +9,7 @@ import java.util.ArrayList;
 /**
  Created by Kayler on 05/14/2016.
  */
-public interface ISelection {
+public interface Selection {
 
 	@NotNull
 	ArrayList<Component> getSelected();

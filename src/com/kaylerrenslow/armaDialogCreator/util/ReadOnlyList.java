@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -7,10 +7,10 @@ import java.util.List;
  @author Kayler
  Creates a wrapper around a list such that it is read only
  Created on 06/07/2016. */
-public class ReadOnlyDataList<E> {
+public class ReadOnlyList<E> {
 	private final List<E> dataList;
 
-	public ReadOnlyDataList(List<E> dataList) {
+	public ReadOnlyList(List<E> dataList) {
 		this.dataList = dataList;
 	}
 

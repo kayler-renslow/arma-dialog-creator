@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ICanvasView;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
@@ -52,7 +52,7 @@ public class ArmaDialogCreator extends Application {
 		p.show();
 	}
 
-	public static ICanvasView getCanvasView() {
+	public static CanvasView getCanvasView() {
 		return mainWindow.getCanvasView();
 	}
 
@@ -83,7 +83,7 @@ public class ArmaDialogCreator extends Application {
 			@Override
 			protected void onCloseRequest(WindowEvent event) {
 				boolean good = saveManager.forceSave();
-				new StagePopup<TextArea>(primaryStage, new TextArea(good ? "Your data was successfully saved regardless of the error." : "Your data couldn't be saved."), "Save notification") {
+				new StagePopup<TextArea>(primaryStage, new TextArea(good ? "Your entry was successfully saved regardless of the error." : "Your entry couldn't be saved."), "Save notification") {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {
 						primaryStage.close();

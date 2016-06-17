@@ -11,9 +11,6 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import static javafx.application.Application.STYLESHEET_CASPIAN;
-import static javafx.application.Application.STYLESHEET_MODENA;
-
 /**
  Created by Kayler on 05/11/2016.
  */
@@ -21,7 +18,7 @@ public class ADCWindow {
 	private final Stage primaryStage;
 	private final VBox rootElement = new VBox();
 	private Resolution resolution = new Resolution(ScreenDimension.D1600, UIScale.SMALL);
-	private final CanvasView canvasView = new CanvasView(resolution);
+	private final ADCCanvasView canvasView = new ADCCanvasView(resolution);
 	private final ADCMenuBar mainMenuBar = new ADCMenuBar();
 
 	public ADCWindow(Stage primaryStage) {
@@ -60,7 +57,7 @@ public class ADCWindow {
 		this.primaryStage.show();
 	}
 
-	public ICanvasView getCanvasView() {
+	public CanvasView getCanvasView() {
 		return canvasView;
 	}
 

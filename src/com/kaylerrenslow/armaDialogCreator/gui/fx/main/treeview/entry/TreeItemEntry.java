@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry;
 
 import org.jetbrains.annotations.NotNull;
 

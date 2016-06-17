@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.collections.ListChangeListener;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
@@ -14,10 +15,16 @@ import javafx.stage.WindowEvent;
  */
 public class PreviewPopupWindow extends StagePopup<VBox> {
 	private static final PreviewPopupWindow INSTANCE = new PreviewPopupWindow();
-
 	public static PreviewPopupWindow getInstance() {
 		return INSTANCE;
 	}
+
+	private final ListChangeListener<ArmaControl> displayChangeListener = new ListChangeListener<ArmaControl>() {
+		@Override
+		public void onChanged(Change<? extends ArmaControl> c) {
+			repaintCanvas();
+		}
+	};
 
 	private ArmaDisplay armaDisplay;
 	private UICanvasPreview previewCanvas = new UICanvasPreview(ScreenDimension.D1600.width, ScreenDimension.D1600.height);
@@ -39,6 +46,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		if (armaDisplay == null) {
 			throw new IllegalStateException("no display set");
 		}
+		armaDisplay.getControls().addListener(displayChangeListener);
 		previewCanvas.removeAllComponents();
 		for (ArmaControl control : armaDisplay.getBackgroundControls()) {
 			previewCanvas.addComponentNoPaint(control.getRenderer());
@@ -49,6 +57,11 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		for (ArmaControl control : armaDisplay.getObjects()) {
 			previewCanvas.addComponentNoPaint(control.getRenderer());
 		}
+		previewCanvas.paint();
+		super.show();
+	}
+
+	private void repaintCanvas(){
 		previewCanvas.paint();
 	}
 
