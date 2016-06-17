@@ -1,17 +1,15 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 06/07/2016.
  */
-public class FolderTreeItemEntry extends GroupedTreeItemEntry {
+public class FolderTreeItemEntry implements GroupedTreeItemEntry {
 
 	private final String folderText;
 
-	public FolderTreeItemEntry(@NotNull String folderText, @Nullable TreeItemEntry... items) {
-		super(items);
+	public FolderTreeItemEntry(@NotNull String folderText) {
 		this.folderText = folderText;
 	}
 

@@ -14,18 +14,14 @@ import java.util.List;
 public class ArmaDisplay {
 	protected int idd;
 	protected boolean movingEnable, enableSimulation;
-	private List<ArmaControl> controls, objects, backgroundControls;
-	private ObservableList<ArmaControl> controlsOl, objectsOl, backgroundControlsOl;
+	private List<ArmaControl> controls;
+	private ObservableList<ArmaControl> controlsOl;
 
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
 		controls = new ArrayList<>();
-		objects = new ArrayList<>();
-		backgroundControls = new ArrayList<>();
 
 		controlsOl = FXCollections.observableList(controls);
-		objectsOl = FXCollections.observableArrayList(objects);
-		backgroundControlsOl = FXCollections.observableArrayList(backgroundControls);
 	}
 
 	public int getIdd() {
@@ -59,14 +55,5 @@ public class ArmaDisplay {
 		return controlsOl;
 	}
 
-	/** Get all objects. */
-	public ObservableList<ArmaControl> getObjects() {
-		return objectsOl;
-	}
-
-	/** Get all controls that will always not have simulation/interaction (these are rendered before controls) */
-	public ObservableList<ArmaControl> getBackgroundControls() {
-		return backgroundControlsOl;
-	}
 
 }

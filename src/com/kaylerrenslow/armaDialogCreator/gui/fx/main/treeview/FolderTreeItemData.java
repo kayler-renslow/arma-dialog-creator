@@ -11,6 +11,6 @@ import org.jetbrains.annotations.NotNull;
  */
 class FolderTreeItemData extends TreeItemData<TreeItemEntry> {
 	FolderTreeItemData(@NotNull String folderName) {
-		super(folderName, CellType.FOLDER, new FolderTreeItemEntry(folderName, null), EditorComponentTreeView.createFolderIcon());
+		super(folderName, CellType.FOLDER, new FolderTreeItemEntry(folderName), EditorComponentTreeView.createFolderIcon());
 	}
 }

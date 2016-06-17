@@ -1,6 +1,7 @@
 ADDED:
-    none
+    preview window is fully working now (live updates for both adding, removing, and changing controls)
+    inserting components via tree view
 CHANGED:
-    removed Label class because I figured out why the label class wasn't showing in the import window
+    none
 FIXED:
     none

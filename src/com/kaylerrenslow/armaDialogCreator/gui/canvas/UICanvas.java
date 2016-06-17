@@ -102,6 +102,16 @@ public abstract class UICanvas extends AnchorPane {
 		return removed;
 	}
 
+	/**
+	 Removes the given component from the canvas render and user interaction without repainting canvas.
+
+	 @param component component to remove
+	 @return true if the component was removed, false if nothing was removed
+	 */
+	public boolean removeComponentNoPaint(@NotNull Component component) {
+		return this.components.remove(component);
+	}
+
 	/** Removes all components form the canvas */
 	public void removeAllComponents() {
 		this.components.clear();

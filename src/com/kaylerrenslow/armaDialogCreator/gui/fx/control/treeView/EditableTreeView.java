@@ -77,9 +77,9 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param toRemove item to remove
 	 */
 	protected void removeChild(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> toRemove) {
-		FoundChild found = new FoundChild() {
+		FoundChild<TreeItemData<E>> found = new FoundChild<TreeItemData<E>>() {
 			@Override
-			public <E> void found(TreeItem<TreeItemData<E>> found) {
+			public void found(TreeItem<TreeItemData<E>> found) {
 				found.getValue().delete();
 			}
 		};

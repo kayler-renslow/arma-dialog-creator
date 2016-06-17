@@ -15,6 +15,7 @@ import javafx.stage.WindowEvent;
  */
 public class PreviewPopupWindow extends StagePopup<VBox> {
 	private static final PreviewPopupWindow INSTANCE = new PreviewPopupWindow();
+
 	public static PreviewPopupWindow getInstance() {
 		return INSTANCE;
 	}
@@ -46,22 +47,26 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		if (armaDisplay == null) {
 			throw new IllegalStateException("no display set");
 		}
+		armaDisplay.getControls().addListener(new ListChangeListener<ArmaControl>() {
+			@Override
+			public void onChanged(Change<? extends ArmaControl> c) {//I'm to lazy to do this efficiently
+				previewCanvas.removeAllComponents();
+				for (ArmaControl control : armaDisplay.getControls()) {
+					previewCanvas.addComponentNoPaint(control.getRenderer());
+				}
+				previewCanvas.paint();
+			}
+		});
 		armaDisplay.getControls().addListener(displayChangeListener);
 		previewCanvas.removeAllComponents();
-		for (ArmaControl control : armaDisplay.getBackgroundControls()) {
-			previewCanvas.addComponentNoPaint(control.getRenderer());
-		}
 		for (ArmaControl control : armaDisplay.getControls()) {
-			previewCanvas.addComponentNoPaint(control.getRenderer());
-		}
-		for (ArmaControl control : armaDisplay.getObjects()) {
 			previewCanvas.addComponentNoPaint(control.getRenderer());
 		}
 		previewCanvas.paint();
 		super.show();
 	}
 
-	private void repaintCanvas(){
+	private void repaintCanvas() {
 		previewCanvas.paint();
 	}
 

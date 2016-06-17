@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import org.jetbrains.annotations.NotNull;
 
@@ -8,22 +7,17 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  Used to depict a control group in a TreeView
  Created on 06/07/2016. */
-public class ControlGroupTreeItemEntry extends GroupedTreeItemEntry {
+public class ControlGroupTreeItemEntry extends ControlTreeItemEntry implements GroupedTreeItemEntry {
 
 	private final ArmaControlGroup controlGroup;
 
 	public ControlGroupTreeItemEntry(@NotNull ArmaControlGroup group) {
-		super(toTreeItems(group));
+		super(group);
 		this.controlGroup = group;
 	}
 
-	private static TreeItemEntry[] toTreeItems(ArmaControlGroup group) {
-		TreeItemEntry[] treeItems = new TreeItemEntry[group.getControls().size()];
-		int i = 0;
-		for (ArmaControl control : group.getControls()) {
-			treeItems[i++] = new ControlTreeItemEntry(control);
-		}
-		return treeItems;
+	public ArmaControlGroup getControlGroup() {
+		return controlGroup;
 	}
 
 	@Override

@@ -8,7 +8,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
-import com.kaylerrenslow.armaDialogCreator.io.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.image.Image;
@@ -18,6 +19,8 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  @author Kayler
@@ -41,7 +44,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	private void initializeUICanvasEditor(Resolution r) {
 		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
-		setToDisplay(ApplicationDataManager.applicationData.getEditingDisplay());
+
+		setToDisplay(ArmaDialogCreator.getApplicationData().getEditingDisplay());
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(Component component) {
@@ -51,13 +55,27 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void setToDisplay(@NotNull ArmaDisplay display) {
-		for (ArmaControl control : display.getBackgroundControls()) {
-			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
-		}
+		display.getControls().addListener(new ListChangeListener<ArmaControl>() {
+			@Override
+			public void onChanged(Change<? extends ArmaControl> c) {
+				while (c.next()) {
+					if (c.wasAdded()) {
+						List<? extends ArmaControl> added = c.getAddedSubList();
+						for (ArmaControl control : added) {
+							uiCanvasEditor.addComponentNoPaint(control.getRenderer());
+						}
+						uiCanvasEditor.paint();
+					} else if (c.wasRemoved()) {
+						List<? extends ArmaControl> removed = c.getRemoved();
+						for (ArmaControl control : removed) {
+							uiCanvasEditor.removeComponentNoPaint(control.getRenderer());
+						}
+						uiCanvasEditor.paint();
+					}
+				}
+			}
+		});
 		for (ArmaControl control : display.getControls()) {
-			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
-		}
-		for (ArmaControl control : display.getObjects()) {
 			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
 		}
 		uiCanvasEditor.paint();

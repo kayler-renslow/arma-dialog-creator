@@ -149,7 +149,7 @@ public class UICanvasEditor extends UICanvas {
 
 	@Override
 	public void addComponent(@NotNull Component component) {
-		super.addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
+		addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
 		paint();
 	}
 
@@ -164,7 +164,14 @@ public class UICanvasEditor extends UICanvas {
 	 @return true if the component was removed, false if nothing was removed
 	 */
 	public boolean removeComponent(@NotNull Component component) {
-		boolean removed = super.removeComponent(component);
+		boolean removed = removeComponentNoPaint(component);
+		paint();
+		return removed;
+	}
+
+	@Override
+	public boolean removeComponentNoPaint(@NotNull Component component) {
+		boolean removed = super.removeComponentNoPaint(component);
 		if (removed) {
 			this.selection.removeFromSelection(component);
 			if (component instanceof ArmaControlRenderer) {

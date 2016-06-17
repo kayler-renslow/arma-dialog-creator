@@ -24,7 +24,7 @@ public class ApplicationDataManager {
 	private Properties applicationProperties = new Properties();
 	private File appPropertiesFile = new File(makePathSafe(appdataFolder) + "/" + "config.properties");
 
-	public static final ApplicationData applicationData = new ApplicationData();
+	public final ApplicationData applicationData = new ApplicationData();
 
 	public enum ApplicationProperty {
 		/** Location path to folder where application save data should be stored. */
