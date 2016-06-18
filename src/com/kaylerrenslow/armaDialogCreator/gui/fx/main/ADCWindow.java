@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.UIScale;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -17,7 +17,7 @@ import javafx.stage.Stage;
 public class ADCWindow {
 	private final Stage primaryStage;
 	private final VBox rootElement = new VBox();
-	private Resolution resolution = new Resolution(ScreenDimension.D1600, UIScale.SMALL);
+	private ArmaResolution resolution = new ArmaResolution(ScreenDimension.D1600, ArmaUIScale.SMALL);
 	private final ADCCanvasView canvasView = new ADCCanvasView(resolution);
 	private final ADCMenuBar mainMenuBar = new ADCMenuBar();
 

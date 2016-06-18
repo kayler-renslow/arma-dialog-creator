@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,11 +14,11 @@ import java.util.List;
 public class ArmaControlGroup extends ArmaControl {
 	private List<ArmaControl> controls = new ArrayList<>();
 
-	public ArmaControlGroup(@NotNull String name, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		super(name, resolution, renderer, requiredSubClasses, optionalSubClasses);
 	}
 
-	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		super(name, idc, type, style, x, y, width, height, resolution, renderer, requiredSubClasses, optionalSubClasses);
 	}
 

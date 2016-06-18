@@ -3,8 +3,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
@@ -27,9 +27,9 @@ import org.jetbrains.annotations.Nullable;
 class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
-	private Resolution resolution;
+	private ArmaResolution resolution;
 
-	ADCCanvasView(Resolution resolution) {
+	ADCCanvasView(ArmaResolution resolution) {
 		this.resolution = resolution;
 		initializeUICanvasEditor(resolution);
 
@@ -40,13 +40,13 @@ class ADCCanvasView extends HBox implements CanvasView {
 		focusToCanvas(true);
 	}
 
-	private void initializeUICanvasEditor(Resolution r) {
+	private void initializeUICanvasEditor(ArmaResolution r) {
 		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
 
 		setToDisplay(ArmaDialogCreator.getApplicationData().getEditingDisplay());
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
-			public @NotNull ContextMenu initialize(Component component) {
+			public @NotNull ContextMenu initialize(CanvasComponent component) {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
@@ -108,7 +108,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	@Override
-	public Resolution getCurrentResolution() {
+	public ArmaResolution getCurrentResolution() {
 		return resolution;
 	}
 

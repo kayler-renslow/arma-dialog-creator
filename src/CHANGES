@@ -1,7 +1,7 @@
 ADDED:
-    none
+    attempts to add viewport snapping rather than just canvas size snapping
 CHANGED:
-    none
+    made the program more modular and dependent on interfaces rather than classes
 FIXED:
-    fixed order of render being wrong when controls are moved in treeview
+    none
 

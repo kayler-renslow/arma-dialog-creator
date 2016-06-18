@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui;
 import javafx.scene.paint.Color;
 
 /**
- * Created by Kayler on 05/11/2016.
+ Created by Kayler on 05/11/2016.
  */
 public class Border {
 	private int thickness;

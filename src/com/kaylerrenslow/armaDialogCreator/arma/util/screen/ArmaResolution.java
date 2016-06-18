@@ -1,10 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util.screen;
 
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
+
 /**
  @author Kayler
  Stores screen resolution information and methods for retrieving viewport width and height as well as the viewport x and y positions
  Created on 05/18/2016. */
-public class Resolution {
+public class ArmaResolution implements Resolution{
 	private int screenWidth, screenHeight;
 	private UIScale uiScale;
 
@@ -18,7 +21,7 @@ public class Resolution {
 	 @param screenDimension screen width and height (<b>must be 16:9 ratio</b>)
 	 @param scale ui scale constant
 	 */
-	public Resolution(ScreenDimension screenDimension, UIScale scale) {
+	public ArmaResolution(ScreenDimension screenDimension, ArmaUIScale scale) {
 		this.screenWidth = screenDimension.width;
 		this.screenHeight = screenDimension.height;
 		this.uiScale = scale;
@@ -26,16 +29,19 @@ public class Resolution {
 	}
 
 	/** Get the screen width */
+	@Override
 	public int getScreenWidth() {
 		return screenWidth;
 	}
 
 	/** Get the screen height */
+	@Override
 	public int getScreenHeight() {
 		return screenHeight;
 	}
 
 	/** Get the ui scale constant (based upon Arma 3 values) */
+	@Override
 	public UIScale getUIScale() {
 		return uiScale;
 	}
@@ -53,10 +59,11 @@ public class Resolution {
 		recalc();
 	}
 
+	@Override
 	public void setTo(Resolution r) {
-		this.screenWidth = r.screenWidth;
-		this.screenHeight = r.screenHeight;
-		this.uiScale = r.uiScale;
+		this.screenWidth = r.getScreenWidth();
+		this.screenHeight = r.getScreenHeight();
+		this.uiScale = r.getUIScale();
 		recalc();
 	}
 
@@ -137,7 +144,7 @@ public class Resolution {
 	 <br> For more information on the command, go to https://community.bistudio.com/wiki/getResolution
 	 */
 	public String toArmaFormattedString() {
-		return String.format("[%d,%d,%d,%d,%f,%f]", getScreenWidth(), getScreenHeight(), getViewportWidth(), getViewportHeight(), (getScreenWidth() * 1.0 / getScreenHeight()), uiScale.value);
+		return String.format("[%d,%d,%d,%d,%f,%f]", getScreenWidth(), getScreenHeight(), getViewportWidth(), getViewportHeight(), (getScreenWidth() * 1.0 / getScreenHeight()), uiScale.getValue());
 	}
 
 	/** Recalculate and set the cached values */
@@ -170,11 +177,11 @@ public class Resolution {
 	}
 
 	private int calcViewportWidth() {
-		return (int) (screenWidth * 3 / 4 * uiScale.value);
+		return (int) (screenWidth * 3 / 4 * uiScale.getValue());
 	}
 
 	private int calcViewportHeight() {
-		return (int) (screenHeight * uiScale.value);
+		return (int) (screenHeight * uiScale.getValue());
 	}
 
 	private double calcSafeZoneX() {

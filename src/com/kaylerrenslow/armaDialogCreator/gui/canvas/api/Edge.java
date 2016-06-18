@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui;
+package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 /**
  Created by Kayler on 05/14/2016.

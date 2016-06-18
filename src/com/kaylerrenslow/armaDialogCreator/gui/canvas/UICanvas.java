@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas;
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.PaintedRegion;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import javafx.event.EventHandler;
@@ -41,7 +41,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected Color backgroundColor = CanvasViewColors.EDITOR_BG;
 
 	/** All components added */
-	protected ArrayList<Component> components = new ArrayList<>();
+	protected ArrayList<CanvasComponent> components = new ArrayList<>();
 
 	/** Mouse button that is currently down */
 	protected final Point lastMousePosition = new Point(-1, -1);//last x and y positions of the mouse relative to the canvas
@@ -80,12 +80,12 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	/** Adds component without repainting the canvas */
-	public void addComponentNoPaint(@NotNull Component component) {
+	public void addComponentNoPaint(@NotNull CanvasComponent component) {
 		this.components.add(component);
 	}
 
 	/** Adds a component to the canvas and repaints the canvas */
-	public void addComponent(@NotNull Component component) {
+	public void addComponent(@NotNull CanvasComponent component) {
 		this.components.add(component);
 		paint();
 	}
@@ -96,7 +96,7 @@ public abstract class UICanvas extends AnchorPane {
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
 	 */
-	public boolean removeComponent(@NotNull Component component) {
+	public boolean removeComponent(@NotNull CanvasComponent component) {
 		boolean removed = this.components.remove(component);
 		paint();
 		return removed;
@@ -108,7 +108,7 @@ public abstract class UICanvas extends AnchorPane {
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
 	 */
-	public boolean removeComponentNoPaint(@NotNull Component component) {
+	public boolean removeComponentNoPaint(@NotNull CanvasComponent component) {
 		return this.components.remove(component);
 	}
 
@@ -128,8 +128,8 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	protected void paintComponents() {
-		this.components.sort(PaintedRegion.RENDER_PRIORITY_COMPARATOR);
-		for (Component component : components) {
+		this.components.sort(TextCanvasComponent.RENDER_PRIORITY_COMPARATOR);
+		for (CanvasComponent component : components) {
 			if (component.isGhost()) {
 				continue;
 			}
@@ -147,7 +147,7 @@ public abstract class UICanvas extends AnchorPane {
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
-	protected void paintComponent(Component component) {
+	protected void paintComponent(CanvasComponent component) {
 		gc.save();
 		if (!component.isGhost()) {
 			component.paint(gc);

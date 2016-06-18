@@ -2,11 +2,13 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Edge;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Edge;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
@@ -49,18 +51,21 @@ public class UICanvasEditor extends UICanvas {
 	private MouseButton mouseButtonDown = MouseButton.NONE;
 	private long lastMousePressTime;
 
-	private int dxAmount, dyAmount = 0; //amount of change that has happened since last snap
+	/** amount of change that has happened since last snap */
+	private int dxAmount, dyAmount = 0;
+	/** If true, snapping is calculated via the viewport width and height. If not, it's calculated by the canvas width and height */
+	private boolean snapRelativeToViewport = true;
 
 	private KeyMap keyMap = new KeyMap();
 
 	/** Component that is ready to be scaled, null if none is ready to be scaled */
-	private Component scaleComponent;
+	private CanvasComponent scaleComponent;
 	/** Edge that the scaling will be conducted, or Edge.NONE is no scaling is being done */
 	private Edge scaleEdge = Edge.NONE;
 	/** Component that the mouse is over, or null if not over any component */
-	private Component mouseOverComponent;
+	private CanvasComponent mouseOverComponent;
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
-	private Component contextMenuComponent;
+	private CanvasComponent contextMenuComponent;
 
 	private SnapConfiguration calc;
 
@@ -75,7 +80,7 @@ public class UICanvasEditor extends UICanvas {
 	/** If true, scaling and translating components will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
 	private boolean safeMovement = false;
 
-	private final Resolution resolution;
+	private final ArmaResolution resolution;
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
 
 	private boolean waitingForZXRelease = false;
@@ -89,7 +94,7 @@ public class UICanvasEditor extends UICanvas {
 	};
 
 
-	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator) {
+	public UICanvasEditor(ArmaResolution resolution, SnapConfiguration calculator) {
 		super(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.resolution = resolution;
 
@@ -125,7 +130,7 @@ public class UICanvasEditor extends UICanvas {
 		} else {
 			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
 				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
-					for (Component component : selection.getSelected()) {
+					for (CanvasComponent component : selection.getSelected()) {
 						component.setEnabled(false);
 					}
 					selection.clearSelected();
@@ -138,7 +143,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	@Override
-	public void addComponentNoPaint(@NotNull Component component) {
+	public void addComponentNoPaint(@NotNull CanvasComponent component) {
 		super.addComponentNoPaint(component);
 		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
@@ -147,7 +152,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	@Override
-	public void addComponent(@NotNull Component component) {
+	public void addComponent(@NotNull CanvasComponent component) {
 		addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
 		paint();
 	}
@@ -158,14 +163,14 @@ public class UICanvasEditor extends UICanvas {
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
 	 */
-	public boolean removeComponent(@NotNull Component component) {
+	public boolean removeComponent(@NotNull CanvasComponent component) {
 		boolean removed = removeComponentNoPaint(component);
 		paint();
 		return removed;
 	}
 
 	@Override
-	public boolean removeComponentNoPaint(@NotNull Component component) {
+	public boolean removeComponentNoPaint(@NotNull CanvasComponent component) {
 		boolean removed = super.removeComponentNoPaint(component);
 		if (removed) {
 			this.selection.removeFromSelection(component);
@@ -213,7 +218,7 @@ public class UICanvasEditor extends UICanvas {
 	/**
 	 Updates the resolution of this canvas.
 	 */
-	public void updateResolution(Resolution r) {
+	public void updateResolution(ArmaResolution r) {
 		this.resolution.setTo(r);
 		absRegionComponent.updateToNewResolution(r);
 		paint();
@@ -241,7 +246,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintComponents();
 		gc.save();
-		for (Component component : selection.getSelected()) {
+		for (CanvasComponent component : selection.getSelected()) {
 			gc.setStroke(component.getBackgroundColor());
 			component.drawRectangle(gc);
 		}
@@ -257,7 +262,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	@Override
-	protected void paintComponent(Component component) {
+	protected void paintComponent(CanvasComponent component) {
 		boolean selected = selection.isSelected(component);
 		if (selected) {
 			gc.save();
@@ -417,7 +422,7 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
-			Component component;
+			CanvasComponent component;
 			for (int i = selection.numSelected() - 1; i >= 0; i--) {
 				component = selection.getSelected().get(i);
 				if (component.containsPoint(mousex, mousey)) {
@@ -451,7 +456,7 @@ public class UICanvasEditor extends UICanvas {
 						return;
 					}
 					if (!keys.spaceDown()) { //if space is down, mouse over component should be selected
-						Component component;
+						CanvasComponent component;
 						for (int i = selection.numSelected() - 1; i >= 0; i--) {
 							component = selection.getSelected().get(i);
 							if (component.containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
@@ -512,9 +517,9 @@ public class UICanvasEditor extends UICanvas {
 		}
 		int dx1 = 0; //change in x that will be used for translation or scaling
 		int dy1 = 0; //change in y that will be used for translation or scaling
+		int ddx = dx < 0 ? -1 : 1; //change in direction for x
+		int ddy = dy < 0 ? -1 : 1; //change in direction for y
 		if (!keys.isAltDown()) {
-			int ddx = dx < 0 ? -1 : 1; //change in direction for x
-			int ddy = dy < 0 ? -1 : 1; //change in direction for y
 			int snapX = getSnapPixelsWidth(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
 			int snapY = getSnapPixelsHeight(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
 
@@ -540,12 +545,31 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 		//not scaling and simply translating (moving)
-		for (Component component : selection.getSelected()) {
+		ViewportComponent viewportComponent;
+		double px1, py1, px2, py2;
+		for (CanvasComponent component : selection.getSelected()) {
 			//only moveable components should be inside selection
-			if (!safeMovement) {
-				component.translate(dx1, dy1);
+			if (snapRelativeToViewport && component instanceof ViewportComponent) {
+				viewportComponent = ((ViewportComponent) component);
+				px1 = viewportComponent.getPercentX1() + calc.snapPercentageDecimal() * ddx;
+				py1 = viewportComponent.getPercentY1() + calc.snapPercentageDecimal() * ddy;
+				px2 = viewportComponent.getPercentX2() + calc.snapPercentageDecimal() * ddx;
+				py2 = viewportComponent.getPercentY2() + calc.snapPercentageDecimal() * ddy;
+				if (safeMovement) {
+					safeTranslate(component, viewportComponent.getScreenX(viewportComponent.getPercentX1() - px1), viewportComponent.getScreenY(viewportComponent.getPercentY1() - py1));
+				} else {
+					System.out.println("UICanvasEditor.mouseMoved px1 = " + px1);
+					viewportComponent.setPercentX1(px1);
+					viewportComponent.setPercentY1(py1);
+					viewportComponent.setPercentX2(px2);
+					viewportComponent.setPercentY2(py2);
+				}
 			} else {
-				safeTranslate(component, dx1, dy1);
+				if (!safeMovement) {
+					component.translate(dx1, dy1);
+				} else {
+					safeTranslate(component, dx1, dy1);
+				}
 			}
 		}
 	}
@@ -622,7 +646,7 @@ public class UICanvasEditor extends UICanvas {
 		updateContextMenu();
 		mouseOverComponent = null;
 		{
-			Component component;
+			CanvasComponent component;
 			for (int i = components.size() - 1; i >= 0; i--) {
 				component = components.get(i);
 				if (component.isEnabled()) {
@@ -651,7 +675,7 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			for (Component component : components) {
+			for (CanvasComponent component : components) {
 				if (component.isEnabled()) {
 					if (selection.contains(component)) {
 						selection.addToSelection(component);
@@ -679,7 +703,7 @@ public class UICanvasEditor extends UICanvas {
 	private void checkForScaling(int mousex, int mousey) {
 		Edge edge;
 		setReadyForScale(null, Edge.NONE);
-		Component component;
+		CanvasComponent component;
 		for (int i = selection.numSelected() - 1; i >= 0; i--) {
 			component = selection.getSelected().get(i);
 			if (!component.isEnabled()) {
@@ -695,19 +719,21 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 
-	private void setReadyForScale(@Nullable Component toScale, @NotNull Edge scaleEdge) {
+	private void setReadyForScale(@Nullable CanvasComponent toScale, @NotNull Edge scaleEdge) {
 		this.scaleComponent = toScale;
 		this.scaleEdge = scaleEdge;
 	}
 
 	private int getSnapPixelsWidth(double percentage) {
 		double p = percentage / 100.0;
-		return (int) (getCanvasWidth() * p);
+		int width = snapRelativeToViewport ? resolution.getViewportWidth() : getCanvasWidth();
+		return (int) (width * p);
 	}
 
 	private int getSnapPixelsHeight(double percentage) {
 		double p = percentage / 100.0;
-		return (int) (getCanvasHeight() * p);
+		int height = snapRelativeToViewport ? resolution.getViewportHeight() : getCanvasHeight();
+		return (int) (height * p);
 	}
 
 	/** Set the context menu that should be shown */
@@ -757,19 +783,19 @@ public class UICanvasEditor extends UICanvas {
 	 @author Kayler
 	 Created on 05/13/2016.
 	 */
-	private static class CanvasSelection extends Region implements Selection {
-		private ArrayList<Component> selected = new ArrayList<>();
+	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
+		private ArrayList<CanvasComponent> selected = new ArrayList<>();
 		private boolean isSelecting;
 
 		@Override
 		@NotNull
-		public ArrayList<Component> getSelected() {
+		public ArrayList<CanvasComponent> getSelected() {
 			return selected;
 		}
 
 		@Nullable
 		@Override
-		public Component getFirst() {
+		public CanvasComponent getFirst() {
 			if (selected.size() == 0) {
 				return null;
 			}
@@ -777,7 +803,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		@Override
-		public void toggleFromSelection(Component component) {
+		public void toggleFromSelection(CanvasComponent component) {
 			if (isSelected(component)) {
 				selected.remove(component);
 			} else {
@@ -786,18 +812,18 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		@Override
-		public void addToSelection(Component component) {
+		public void addToSelection(CanvasComponent component) {
 			if (!isSelected(component)) {
 				this.selected.add(component);
 			}
 		}
 
 		@Override
-		public boolean isSelected(@Nullable Component component) {
+		public boolean isSelected(@Nullable CanvasComponent component) {
 			if (component == null) {
 				return false;
 			}
-			for (Component c : selected) {
+			for (CanvasComponent c : selected) {
 				if (c == component) {
 					return true;
 				}
@@ -806,7 +832,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		@Override
-		public boolean removeFromSelection(Component component) {
+		public boolean removeFromSelection(CanvasComponent component) {
 			return this.selected.remove(component);
 		}
 
@@ -828,7 +854,7 @@ public class UICanvasEditor extends UICanvas {
 			this.isSelecting = selecting;
 		}
 
-		void removeAllAndAdd(@NotNull Component toAdd) {
+		void removeAllAndAdd(@NotNull CanvasComponent toAdd) {
 			clearSelected();
 			this.selected.add(toAdd);
 		}
@@ -838,16 +864,13 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		void beginSelecting(int x, int y) {
-			this.x1 = x;
-			this.y1 = y;
-			this.x2 = x;
-			this.y2 = y;
+			setPosition(x, y, x, y);
 			this.isSelecting = true;
 		}
 
 		void selectTo(int x, int y) {
-			this.x2 = x;
-			this.y2 = y;
+			setX2(x);
+			setY2(y);
 		}
 	}
 

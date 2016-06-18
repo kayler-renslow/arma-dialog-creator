@@ -1,8 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  Base class for JavaFX canvas rendering of arma controls
  Created on 05/20/2016. */
-public class ArmaControlRenderer extends Component {
+public class ArmaControlRenderer extends TextCanvasComponent implements ViewportComponent {
 	protected ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
 
@@ -99,9 +100,89 @@ public class ArmaControlRenderer extends Component {
 		myControl.calcPositionFromRenderer();
 	}
 
+
+	public void setX1Silent(int x1) {
+		super.setX1(x1);
+	}
+
+
+	public void setY1Silent(int y1) {
+		super.setY1(y1);
+	}
+
+
+	public void setX2Silent(int x2) {
+		super.setX2(x2);
+	}
+
+
+	public void setY2Silent(int y2) {
+		super.setY2(y2);
+	}
+
 	@Override
 	public void setGhost(boolean ghost) {
 		super.setGhost(ghost);
 		myControl.getControlListener().updateValue(null);
+	}
+
+	@Override
+	public void setPercentX1(double percentX) {
+		myControl.defineX(percentX);
+	}
+
+	@Override
+	public void setPercentY1(double percentY) {
+		myControl.defineY(percentY);
+	}
+
+	@Override
+	public void setPercentX2(double percentX2) {
+		myControl.defineW(x2 - x1);
+	}
+
+	@Override
+	public void setPercentY2(double percentY2) {
+		myControl.defineH(y2 - y1);
+	}
+
+	@Override
+	public double getPercentX1() {
+		return myControl.x;
+	}
+
+	@Override
+	public double getPercentY1() {
+		return myControl.y;
+	}
+
+	@Override
+	public double getPercentX2() {
+		return myControl.x + myControl.width;
+	}
+
+	@Override
+	public double getPercentY2() {
+		return myControl.y + myControl.height;
+	}
+
+	@Override
+	public int getScreenX(double percentX) {
+		return myControl.getScreenX(percentX);
+	}
+
+	@Override
+	public int getScreenY(double percentY) {
+		return myControl.getScreenY(percentY);
+	}
+
+	@Override
+	public int getScreenWidth(double percentW) {
+		return myControl.getScreenWidth(percentW);
+	}
+
+	@Override
+	public int getScreenHeight(double percentH) {
+		return myControl.getScreenHeight(percentH);
 	}
 }

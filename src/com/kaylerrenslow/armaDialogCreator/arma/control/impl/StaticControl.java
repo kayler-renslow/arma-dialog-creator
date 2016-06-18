@@ -3,8 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,7 +14,7 @@ public class StaticControl extends ArmaControl {
 
 	private ControlProperty backgroundColorProperty, colorTextProperty, textProperty;
 
-	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution) {
+	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution) {
 		super(name, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class, null, null);
 		backgroundColorProperty = ControlPropertyLookup.COLOR_BACKGROUND.getColorProperty(new AColor(renderer.getBackgroundColor()));
 		colorTextProperty = ControlPropertyLookup.COLOR_TEXT.getColorProperty(new AColor(renderer.getTextColor()));

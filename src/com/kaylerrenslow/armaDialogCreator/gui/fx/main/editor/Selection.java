@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,24 +12,24 @@ import java.util.ArrayList;
 public interface Selection {
 
 	@NotNull
-	ArrayList<Component> getSelected();
+	ArrayList<CanvasComponent> getSelected();
 
 	/**
 	 Gets the first item in the selection
 	 */
 	@Nullable
-	Component getFirst();
+	CanvasComponent getFirst();
 
 	/**
 	 Adds or removes the given component from the selection. If the component is selected, it will no longer be selected. If it isn't selected, it will be selected
 	 */
-	void toggleFromSelection(Component component);
+	void toggleFromSelection(CanvasComponent component);
 
-	void addToSelection(Component component);
+	void addToSelection(CanvasComponent component);
 
-	boolean isSelected(@Nullable Component component);
+	boolean isSelected(@Nullable CanvasComponent component);
 
-	boolean removeFromSelection(Component component);
+	boolean removeFromSelection(CanvasComponent component);
 
 	void clearSelected();
 

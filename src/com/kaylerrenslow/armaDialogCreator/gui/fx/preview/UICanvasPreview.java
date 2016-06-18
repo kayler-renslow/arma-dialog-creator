@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.preview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Component;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.input.MouseButton;
@@ -25,7 +25,7 @@ public class UICanvasPreview extends UICanvas {
 	}
 
 	@Override
-	public void addComponentNoPaint(@NotNull Component component) {
+	public void addComponentNoPaint(@NotNull CanvasComponent component) {
 		super.addComponentNoPaint(component);
 		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
@@ -34,7 +34,7 @@ public class UICanvasPreview extends UICanvas {
 	}
 
 	@Override
-	public void addComponent(@NotNull Component component) {
+	public void addComponent(@NotNull CanvasComponent component) {
 		super.addComponent(component);
 		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;

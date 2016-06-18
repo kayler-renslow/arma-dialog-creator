@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.PositionCalculator;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  Created on 05/20/2016. */
 public class ArmaControl extends ArmaControlClass {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
-	protected final Resolution resolution;
+	protected final ArmaResolution resolution;
 	/** Type of the control */
 	protected ControlType type = ControlType.STATIC;
 	/** Style of the control TODO: allow multiple styles */
@@ -34,7 +34,7 @@ public class ArmaControl extends ArmaControlClass {
 	 @param requiredSubClasses required sub-classes of the control (like maybe Scrollbar class)
 	 @param optionalSubClasses optional sub-classes of the control
 	 */
-	public ArmaControl(@NotNull String name, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		super(name);
 		this.resolution = resolution;
 		try {
@@ -79,7 +79,7 @@ public class ArmaControl extends ArmaControlClass {
 	 @param requiredSubClasses required sub-classes of the control (maybe Scrollbar class)
 	 @param optionalSubClasses optional sub-classes of the control
 	 */
-	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull Resolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
+	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
 		this(name, resolution, renderer, requiredSubClasses, optionalSubClasses);
 		defineType(type);
 		defineIdc(idc);
@@ -90,62 +90,79 @@ public class ArmaControl extends ArmaControlClass {
 		defineH(height);
 	}
 
-	/** Set x and define the x control property */
+	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(double x) {
 		xProperty.setValue(x);
 		setX(x);
 	}
 
-	/** Just set x position without updating the property */
+	/** Just set x position without updating the property. This will also update the renderer's position. */
 	protected void setX(double x) {
 		this.x = x;
-		renderer.setX1(PositionCalculator.getScreenX(resolution, x));
+		renderer.setX1Silent(getScreenX(x));
 	}
 
-	/** Set y and define the y control property */
+	protected int getScreenX(double percentX) {
+		return PositionCalculator.getScreenX(resolution, percentX);
+	}
+
+	/** Set y and define the y control property. This will also update the renderer's position. */
 	public void defineY(double y) {
 		yProperty.setValue(y);
 		setY(y);
 	}
 
-	/** Just set the y position without updating the y property */
+	/** Just set the y position without updating the y property. This will also update the renderer's position. */
 	protected void setY(double y) {
 		this.y = y;
-		renderer.setY1(PositionCalculator.getScreenY(resolution, y));
+		renderer.setY1Silent(getScreenY(y));
 	}
 
-	/** Set w (width) and define the w control property */
+	protected int getScreenY(double percentY) {
+		return PositionCalculator.getScreenY(resolution, percentY);
+	}
+
+	/** Set w (width) and define the w control property. This will also update the renderer's position. */
 	public void defineW(double width) {
 		wProperty.setValue(width);
 		setW(width);
 	}
 
-	/** Set the width without updating it's control property */
+	/** Set the width without updating it's control property. This will also update the renderer's position. */
 	protected void setW(double width) {
 		this.width = width;
-		int w = PositionCalculator.getScreenWidth(resolution, width);
-		renderer.setX2(renderer.getX1() + w);
+		int w = getScreenWidth(width);
+		renderer.setX2Silent(renderer.getX1() + w);
 	}
 
-	/** Set h (height) and define the h control property */
+	protected int getScreenWidth(double percentWidth) {
+		return PositionCalculator.getScreenWidth(resolution, percentWidth);
+	}
+
+	/** Set h (height) and define the h control property. This will also update the renderer's position. */
 	public void defineH(double height) {
 		hProperty.setValue(height);
 		setH(height);
 	}
 
-	/** Just set height without setting control property */
+	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setH(double height) {
 		this.height = height;
-		int h = PositionCalculator.getScreenHeight(resolution, height);
-		renderer.setY2(renderer.getY1() + h);
+		int h = getScreenHeight(height);
+		renderer.setY2Silent(renderer.getY1() + h);
 	}
 
+	/**Set the x,y,w,h properties. This will also update the renderer's position.*/
 	protected void setPositionWH(double x, double y, double w, double h) {
 		this.x = x;
 		this.y = y;
 		this.width = w;
 		this.height = h;
-		renderer.setPositionWHSilent(PositionCalculator.getScreenX(resolution, x), PositionCalculator.getScreenY(resolution, y), PositionCalculator.getScreenWidth(resolution, w), PositionCalculator.getScreenHeight(resolution, h));
+		renderer.setPositionWHSilent(getScreenX(x), getScreenY(y), getScreenWidth(w), getScreenHeight(h));
+	}
+
+	protected int getScreenHeight(double percentHeight) {
+		return PositionCalculator.getScreenHeight(resolution, percentHeight);
 	}
 
 	/** Set idc and define the idc control property */
@@ -185,7 +202,7 @@ public class ArmaControl extends ArmaControlClass {
 	}
 
 	/** Update the resolution to a new resolution and then recalculate positions and size */
-	public void updateResolution(Resolution r) {
+	public void updateResolution(ArmaResolution r) {
 		this.resolution.setTo(r);
 		defineX(this.x);
 		defineY(this.y);
