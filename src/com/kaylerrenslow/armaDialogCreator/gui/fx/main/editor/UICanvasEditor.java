@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.Resolution;
@@ -151,10 +150,6 @@ public class UICanvasEditor extends UICanvas {
 	public void addComponent(@NotNull Component component) {
 		addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
 		paint();
-	}
-
-	public void addControl(@NotNull ArmaControl control) {
-		addComponent(control.getRenderer());
 	}
 
 	/**

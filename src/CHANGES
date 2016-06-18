@@ -3,4 +3,5 @@ ADDED:
 CHANGED:
     none
 FIXED:
-    none
+    fixed order of render being wrong when controls are moved in treeview
+

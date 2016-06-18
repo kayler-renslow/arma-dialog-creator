@@ -20,8 +20,6 @@ import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 /**
  @author Kayler
  Used to hold the canvas editor itself and canvas controls (tree view, step, etc). This class is also used to update the editor when need be.
@@ -58,21 +56,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 		display.getControls().addListener(new ListChangeListener<ArmaControl>() {
 			@Override
 			public void onChanged(Change<? extends ArmaControl> c) {
-				while (c.next()) {
-					if (c.wasAdded()) {
-						List<? extends ArmaControl> added = c.getAddedSubList();
-						for (ArmaControl control : added) {
-							uiCanvasEditor.addComponentNoPaint(control.getRenderer());
-						}
-						uiCanvasEditor.paint();
-					} else if (c.wasRemoved()) {
-						List<? extends ArmaControl> removed = c.getRemoved();
-						for (ArmaControl control : removed) {
-							uiCanvasEditor.removeComponentNoPaint(control.getRenderer());
-						}
-						uiCanvasEditor.paint();
-					}
+				uiCanvasEditor.removeAllComponents();
+				for (ArmaControl control : display.getControls()) {
+					uiCanvasEditor.addComponentNoPaint(control.getRenderer());
 				}
+				uiCanvasEditor.paint();
 			}
 		});
 		for (ArmaControl control : display.getControls()) {
