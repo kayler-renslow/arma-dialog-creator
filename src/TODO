@@ -21,3 +21,6 @@ ARMA 3 TOOLS LOCATION WILL NEVER SAVE AND LOAD CORRECTLY AFTER CLOSING THE APPLI
 fix string input field when inputting ""hello"", exiting, and re opening
 
 have check box for "is background control" in control properties popup
+
+
+FIX MOVING around controls in tree view and not having proper render order afterwards (make take 2 or 3 shuffles to see what I mean)

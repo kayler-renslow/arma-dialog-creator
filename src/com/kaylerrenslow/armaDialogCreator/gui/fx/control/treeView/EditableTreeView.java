@@ -18,7 +18,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	}
 
 	public void setCellSelectionUpdate(@Nullable ITreeCellSelectionUpdate selectionUpdate) {
-		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory(selectionUpdate)));
+		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
 
 
@@ -96,17 +96,28 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 
 
 	/**
-	 Adds a child to a designated parent.
+	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<TreeItemData<E>> parent, TreeItem<TreeItemData<E>> child, int index) with index set to parent.getChildren().size()
 
 	 @param parent parent node
 	 @param child node to be made the child of parent
 	 */
 	protected void addChildToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> child) {
+		addChildToParent(parent, child, parent.getChildren().size());
+	}
+
+	/**
+	 Adds a child to a designated parent.
+
+	 @param parent parent node
+	 @param child node to be made the child of parent
+	 @param index index for where child is to be inserted (use child count to add to end)
+	 */
+	protected void addChildToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> child, int index) {
 		// if the parent is a folder, remove the placeholder item in that folder if there is one
 		if (parent.getValue().canHaveChildren() && parent.getChildren().size() == 1 && parent.getChildren().get(0).getValue().isPlaceholder()) {
 			parent.getChildren().remove(0);
 		}
-		parent.getChildren().add(child);
+		parent.getChildren().add(index, child);
 	}
 
 	/**

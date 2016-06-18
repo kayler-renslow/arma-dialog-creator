@@ -231,7 +231,6 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			gc.save();
 			gc.setStroke(selectionColor);
-			gc.setLineWidth(2);
 			selection.drawRectangle(gc);
 			gc.restore();
 		}

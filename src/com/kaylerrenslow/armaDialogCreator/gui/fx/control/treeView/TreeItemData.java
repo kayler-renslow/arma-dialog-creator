@@ -64,8 +64,7 @@ public class TreeItemData<E> {
 		return graphic;
 	}
 
-	@Nullable
-	public E getData() {
+	public @Nullable E getData() {
 		return data;
 	}
 
