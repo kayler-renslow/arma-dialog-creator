@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
+import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,11 @@ import java.util.Arrays;
  */
 public class ControlProperty {
 	public static final ControlProperty[] EMPTY = new ControlProperty[0];
+
+	/** Truncates the double to remove insignificant decimal places */
+	public static double truncate(double x) {
+		return MathUtil.truncate(x, 8);
+	}
 
 	private final String name;
 	private final PropertyType type;
@@ -284,7 +290,7 @@ public class ControlProperty {
 
 	/** Set the first value to double (use this if type==FLOAT) */
 	public void setValue(double v) {
-		valuesObserver.getValue()[0] = v + "";
+		valuesObserver.getValue()[0] = truncate(v) + "";
 		valuesObserver.updateValue(valuesObserver.getValue());
 	}
 
@@ -334,13 +340,13 @@ public class ControlProperty {
 		valuesObserver.updateValueSilent(valuesObserver.getValue());
 	}
 
-	/** Set the first value to boolean (use this if type==BOOLEAN). The value is set without notifying listeners*/
+	/** Set the first value to boolean (use this if type==BOOLEAN). The value is set without notifying listeners */
 	public void setValueSilent(boolean v) {
 		valuesObserver.getValue()[0] = v + "";
 		valuesObserver.updateValueSilent(valuesObserver.getValue());
 	}
 
-	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR). The value is set without notifying listeners*/
+	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR). The value is set without notifying listeners */
 	public void setValueSilent(AColor color) {
 		valuesObserver.updateValueSilent(color.getAsStringArray());
 	}

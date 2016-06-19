@@ -99,10 +99,10 @@ public class ArmaControl extends ArmaControlClass {
 	/** Just set x position without updating the property. This will also update the renderer's position. */
 	protected void setX(double x) {
 		this.x = x;
-		renderer.setX1Silent(getScreenX(x));
+		renderer.setX1Silent(calcScreenX(x));
 	}
 
-	protected int getScreenX(double percentX) {
+	protected int calcScreenX(double percentX) {
 		return PositionCalculator.getScreenX(resolution, percentX);
 	}
 
@@ -115,10 +115,10 @@ public class ArmaControl extends ArmaControlClass {
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
 	protected void setY(double y) {
 		this.y = y;
-		renderer.setY1Silent(getScreenY(y));
+		renderer.setY1Silent(calcScreenY(y));
 	}
 
-	protected int getScreenY(double percentY) {
+	protected int calcScreenY(double percentY) {
 		return PositionCalculator.getScreenY(resolution, percentY);
 	}
 
@@ -131,11 +131,11 @@ public class ArmaControl extends ArmaControlClass {
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
 	protected void setW(double width) {
 		this.width = width;
-		int w = getScreenWidth(width);
+		int w = calcScreenWidth(width);
 		renderer.setX2Silent(renderer.getX1() + w);
 	}
 
-	protected int getScreenWidth(double percentWidth) {
+	protected int calcScreenWidth(double percentWidth) {
 		return PositionCalculator.getScreenWidth(resolution, percentWidth);
 	}
 
@@ -148,7 +148,7 @@ public class ArmaControl extends ArmaControlClass {
 	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setH(double height) {
 		this.height = height;
-		int h = getScreenHeight(height);
+		int h = calcScreenHeight(height);
 		renderer.setY2Silent(renderer.getY1() + h);
 	}
 
@@ -158,10 +158,10 @@ public class ArmaControl extends ArmaControlClass {
 		this.y = y;
 		this.width = w;
 		this.height = h;
-		renderer.setPositionWHSilent(getScreenX(x), getScreenY(y), getScreenWidth(w), getScreenHeight(h));
+		renderer.setPositionWHSilent(calcScreenX(x), calcScreenY(y), calcScreenWidth(w), calcScreenHeight(h));
 	}
 
-	protected int getScreenHeight(double percentHeight) {
+	protected int calcScreenHeight(double percentHeight) {
 		return PositionCalculator.getScreenHeight(resolution, percentHeight);
 	}
 

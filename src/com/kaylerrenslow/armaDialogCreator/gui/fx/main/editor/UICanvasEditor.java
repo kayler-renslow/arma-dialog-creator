@@ -231,6 +231,7 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			gc.save();
 			gc.setStroke(selectionColor);
+			gc.setLineWidth(2);
 			selection.drawRectangle(gc);
 			gc.restore();
 		}
@@ -312,6 +313,9 @@ public class UICanvasEditor extends UICanvas {
 		double ys, xs;
 		double antiAlias = 0.5;
 		gc.save();
+		if (snapRelativeToViewport) {
+			gc.translate(Math.floor(resolution.getViewportX() % spacingX) * 0.5, Math.floor(resolution.getViewportY() % spacingY) * 0.5);
+		}
 		gc.setStroke(gridColor);
 		for (int y = 0; y <= numY; y++) {
 			ys = y * spacingY;
@@ -326,20 +330,7 @@ public class UICanvasEditor extends UICanvas {
 
 
 	/**
-	 Translates the given region by dx and dy only if the given dx and dy won't put the region out of bounds with the canvas. If either put the region out of bounds, the translate won't occur
-
-	 @param r the region to translate
-	 @param dx change in x
-	 @param dy change in y
-	 */
-	private void safeTranslate(Region r, int dx, int dy) {
-		if (boundUpdateSafe(r, dx, dx, dy, dy)) {
-			r.translate(dx, dy);
-		}
-	}
-
-	/**
-	 Check if the bound updateToNewResolution will keep the boundaries inside the canvas
+	 Check if the bound update to the region will keep the boundaries inside the canvas
 
 	 @param r region to check bounds of
 	 @param dxLeft change in x on the left side
@@ -349,9 +340,23 @@ public class UICanvasEditor extends UICanvas {
 	 @return true if the bounds can be updated, false otherwise
 	 */
 	private boolean boundUpdateSafe(Region r, int dxLeft, int dxRight, int dyTop, int dyBottom) {
-		boolean outX = MathUtil.outOfBounds(r.getLeftX() + dxLeft, 0, getCanvasWidth() - r.getWidth()) || MathUtil.outOfBounds(r.getRightX() + dxRight, 0, getCanvasWidth());
+		return boundSetSafe(r, r.getLeftX() + dxLeft, r.getRightX() + dxRight, r.getTopY() + dyTop, r.getBottomY() + dyBottom);
+	}
+
+	/**
+	 Check if the bounds set to the region will keep the boundaries inside the canvas
+
+	 @param r region to check bounds of
+	 @param x1 new x1 position
+	 @param x2 new x2 position
+	 @param y1 new y1 position
+	 @param y2 new y2 position
+	 @return true if the bounds can be updated, false otherwise
+	 */
+	private boolean boundSetSafe(Region r, int x1, int x2, int y1, int y2) {
+		boolean outX = MathUtil.outOfBounds(x1, 0, getCanvasWidth() - r.getWidth()) || MathUtil.outOfBounds(x2, 0, getCanvasWidth());
 		if (!outX) {
-			boolean outY = MathUtil.outOfBounds(r.getTopY() + dyTop, 0, getCanvasHeight() - r.getHeight()) || MathUtil.outOfBounds(r.getBottomY() + dyBottom, 0, getCanvasHeight());
+			boolean outY = MathUtil.outOfBounds(y1, 0, getCanvasHeight() - r.getHeight()) || MathUtil.outOfBounds(y2, 0, getCanvasHeight());
 			if (!outY) {
 				return true;
 			}
@@ -503,8 +508,7 @@ public class UICanvasEditor extends UICanvas {
 	 @param mousey y position of mouse relative to canvas
 	 */
 	protected void mouseMoved(int mousex, int mousey) {
-		boolean continueIt = basicMouseMovement(mousex, mousey);
-		if (!continueIt) {
+		if (!basicMouseMovement(mousex, mousey)) {
 			return;
 		}
 		int dx = mousex - lastMousePosition.getX(); //change in x
@@ -517,8 +521,11 @@ public class UICanvasEditor extends UICanvas {
 		}
 		int dx1 = 0; //change in x that will be used for translation or scaling
 		int dy1 = 0; //change in y that will be used for translation or scaling
-		int ddx = dx < 0 ? -1 : 1; //change in direction for x
-		int ddy = dy < 0 ? -1 : 1; //change in direction for y
+		int dirx = dx < 0 ? -1 : 1; //change in direction for x
+		int diry = dy < 0 ? -1 : 1; //change in direction for y
+
+		int xSnapCount = 0; //how many snaps occurred for x
+		int ySnapCount = 0; //how many snaps occurred for y
 		if (!keys.isAltDown()) {
 			int snapX = getSnapPixelsWidth(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
 			int snapY = getSnapPixelsHeight(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
@@ -528,59 +535,71 @@ public class UICanvasEditor extends UICanvas {
 			int dxAmountAbs = Math.abs(dxAmount);
 			int dyAmountAbs = Math.abs(dyAmount);
 			if (dxAmountAbs >= snapX) {
-				dx1 = snapX * ddx * (dxAmountAbs / snapX);
-				dxAmount = (dxAmountAbs - Math.abs(dx1)) * ddx;
+				xSnapCount = (dxAmountAbs / snapX);
+				dx1 = snapX * dirx * xSnapCount;
+				dxAmount = (dxAmountAbs - Math.abs(dx1)) * dirx;
 			}
 			if (dyAmountAbs >= snapY) {
-				dy1 = snapY * ddy * (dyAmountAbs / snapY);
-				dyAmount = (dyAmountAbs - Math.abs(dy1)) * ddy;
+				ySnapCount = (dyAmountAbs / snapY);
+				dy1 = snapY * diry * ySnapCount;
+				dyAmount = (dyAmountAbs - Math.abs(dy1)) * diry;
 			}
 		} else {//translate or scale how much the mouse moved
 			dx1 = dx;
 			dy1 = dy;
 		}
 
+		boolean canSnapViewport = !keys.isAltDown() && snapRelativeToViewport;
+		double vdx = calc.snapPercentageDecimal() * xSnapCount * dirx;
+		double vdy = calc.snapPercentageDecimal() * ySnapCount * diry;
+
 		if (scaleComponent != null) { //scaling
-			doScaleOnComponent(dx1, dy1);
+			boolean squareScale = keys.keyIsDown(keyMap.SCALE_SQUARE);
+			boolean symmetricScale = keys.isCtrlDown() || squareScale;
+			if (canSnapViewport && scaleComponent instanceof ViewportComponent) {
+				doScaleOnViewportComponent(symmetricScale, squareScale, vdx, vdy);
+			} else {
+				doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
+			}
 			return;
 		}
 		//not scaling and simply translating (moving)
 		ViewportComponent viewportComponent;
-		double px1, py1, px2, py2;
+		double px, py, pw, ph;
+
 		for (CanvasComponent component : selection.getSelected()) {
-			//only moveable components should be inside selection
-			if (snapRelativeToViewport && component instanceof ViewportComponent) {
+			//only move-able components should be inside selection
+			if (canSnapViewport && component instanceof ViewportComponent) {
 				viewportComponent = ((ViewportComponent) component);
-				px1 = viewportComponent.getPercentX1() + calc.snapPercentageDecimal() * ddx;
-				py1 = viewportComponent.getPercentY1() + calc.snapPercentageDecimal() * ddy;
-				px2 = viewportComponent.getPercentX2() + calc.snapPercentageDecimal() * ddx;
-				py2 = viewportComponent.getPercentY2() + calc.snapPercentageDecimal() * ddy;
+				px = viewportComponent.getPercentX() + vdx;
+				py = viewportComponent.getPercentY() + vdy;
+				pw = viewportComponent.getPercentW();
+				ph = viewportComponent.getPercentH();
 				if (safeMovement) {
-					safeTranslate(component, viewportComponent.getScreenX(viewportComponent.getPercentX1() - px1), viewportComponent.getScreenY(viewportComponent.getPercentY1() - py1));
-				} else {
-					System.out.println("UICanvasEditor.mouseMoved px1 = " + px1);
-					viewportComponent.setPercentX1(px1);
-					viewportComponent.setPercentY1(py1);
-					viewportComponent.setPercentX2(px2);
-					viewportComponent.setPercentY2(py2);
+					int vx = viewportComponent.calcScreenX(px);
+					int vy = viewportComponent.calcScreenY(py);
+					if (!boundSetSafe(viewportComponent, vx, vx + viewportComponent.calcScreenWidth(pw), vy, vy + viewportComponent.calcScreenHeight(ph))) {
+						continue;
+					}
 				}
+				viewportComponent.setPercentX(px);
+				viewportComponent.setPercentY(py);
+				viewportComponent.setPercentW(pw);
+				viewportComponent.setPercentH(ph);
 			} else {
-				if (!safeMovement) {
+				if (!safeMovement || boundUpdateSafe(component, dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
 					component.translate(dx1, dy1);
-				} else {
-					safeTranslate(component, dx1, dy1);
 				}
 			}
 		}
 	}
 
-	private void doScaleOnComponent(int dx, int dy) {
+	private void doScaleOnComponent(boolean symmetricScale, boolean squareScale, int dx, int dy) {
 		int dxl = 0; //change in x left
 		int dxr = 0; //change in x right
 		int dyt = 0; //change in y top
 		int dyb = 0; //change in y bottom
-		boolean symmetricScale = keys.isCtrlDown() || keys.keyIsDown(keyMap.SCALE_SQUARE);
-		if (keys.keyIsDown(keyMap.SCALE_SQUARE)) {//scale only as a square (all changes are equal)
+		if (squareScale) {//scale only as a square (all changes are equal)
 			//set them equal to the biggest value
 			if (Math.abs(dx) > Math.abs(dy)) {
 				dy = dx;
@@ -639,6 +658,89 @@ public class UICanvasEditor extends UICanvas {
 		}
 		if (!safeMovement || boundUpdateSafe(scaleComponent, dxl, dxr, dyt, dyb)) {
 			scaleComponent.scale(dxl, dxr, dyt, dyb);
+		}
+	}
+
+	private void doScaleOnViewportComponent(boolean symmetricScale, boolean squareScale, double vdx, double vdy) {
+		ViewportComponent viewportComponent = (ViewportComponent) scaleComponent; //should check if scale component is viewport component prior to this method call
+
+		double dxl = 0; //change in x percent left
+		double dxr = 0; //change in x percent right
+		double dyt = 0; //change in y percent top
+		double dyb = 0; //change in y percent bottom
+
+		if (squareScale) {//scale only as a square (all changes are equal)
+			//set them equal to the biggest value
+			if (Math.abs(vdx) > Math.abs(vdy)) {
+				vdy = vdx;
+			} else {
+				vdx = vdy;
+			}
+		}
+		if (scaleEdge == Edge.TOP_LEFT) {
+			dyt = vdy;
+			dxl = vdx;
+			if (symmetricScale) {
+				dyb = -vdy;
+				dxr = -vdx;
+			}
+		} else if (scaleEdge == Edge.TOP_RIGHT) {
+			dyt = vdy;
+			dxr = vdx;
+			if (symmetricScale) {
+				dyb = -vdy;
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM_LEFT) {
+			dyb = vdy;
+			dxl = vdx;
+			if (symmetricScale) {
+				dyt = -vdy;
+				dxr = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM_RIGHT) {
+			dyb = vdy;
+			dxr = vdx;
+			if (symmetricScale) {
+				dyt = -vdy;
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.TOP) {
+			dyt = vdy;
+			if (symmetricScale) {
+				dyb = -vdy;
+			}
+		} else if (scaleEdge == Edge.RIGHT) {
+			dxr = vdx;
+			if (symmetricScale) {
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM) {
+			dyb = vdy;
+			if (symmetricScale) {
+				dyt = -vdy;
+			}
+		} else if (scaleEdge == Edge.LEFT) {
+			dxl = vdx;
+			if (symmetricScale) {
+				dxr = -vdx;
+			}
+		}
+		double px = viewportComponent.getPercentX() + dxl;
+		double pw = viewportComponent.getPercentW() + dxr;
+		double py = viewportComponent.getPercentY() + dyt;
+		double ph = viewportComponent.getPercentH() + dyb;
+
+		int screenX = viewportComponent.calcScreenX(px);
+		int screenY = viewportComponent.calcScreenY(py);
+		int screenW = viewportComponent.calcScreenWidth(pw);
+		int screenH = viewportComponent.calcScreenHeight(ph);
+
+		if (!safeMovement || boundSetSafe(scaleComponent, screenX, screenX + screenW, screenY, screenY + screenH)) {
+			viewportComponent.setPercentX(px);
+			viewportComponent.setPercentY(py);
+			viewportComponent.setPercentW(pw);
+			viewportComponent.setPercentH(ph);
 		}
 	}
 

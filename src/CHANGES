@@ -1,7 +1,8 @@
 ADDED:
-    attempts to add viewport snapping rather than just canvas size snapping
+    viewport snapping for scaling (sort of works)
 CHANGED:
-    made the program more modular and dependent on interfaces rather than classes
+    viewport snapping now works exactly the way it should
+    made grid centered to viewport when viewport snapping is enabled
 FIXED:
     none
 

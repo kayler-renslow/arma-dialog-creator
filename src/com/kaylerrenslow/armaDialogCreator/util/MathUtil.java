@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.util;
 
+import java.text.NumberFormat;
+
 /**
  Created by Kayler on 05/12/2016.
  */
@@ -20,5 +22,12 @@ public class MathUtil {
 
 	public static boolean outOfBounds(int v, int min, int max) {
 		return v < min || v > max;
+	}
+
+	public static double truncate(double d, int digits){
+		NumberFormat nf = NumberFormat.getInstance();
+		nf.setMaximumFractionDigits(digits);
+		nf.setGroupingUsed(false);
+		return Double.parseDouble(nf.format(d));
 	}
 }

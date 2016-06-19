@@ -127,62 +127,66 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 	}
 
 	@Override
-	public void setPercentX1(double percentX) {
+	public void setPercentX(double percentX) {
 		myControl.defineX(percentX);
+		myControl.getControlListener().updateValue(null);
 	}
 
 	@Override
-	public void setPercentY1(double percentY) {
+	public void setPercentY(double percentY) {
 		myControl.defineY(percentY);
+		myControl.getControlListener().updateValue(null);
 	}
 
 	@Override
-	public void setPercentX2(double percentX2) {
-		myControl.defineW(x2 - x1);
+	public void setPercentW(double percentW) {
+		myControl.defineW(percentW);
+		myControl.getControlListener().updateValue(null);
 	}
 
 	@Override
-	public void setPercentY2(double percentY2) {
-		myControl.defineH(y2 - y1);
+	public void setPercentH(double percentH) {
+		myControl.defineH(percentH);
+		myControl.getControlListener().updateValue(null);
 	}
 
 	@Override
-	public double getPercentX1() {
+	public double getPercentX() {
 		return myControl.x;
 	}
 
 	@Override
-	public double getPercentY1() {
+	public double getPercentY() {
 		return myControl.y;
 	}
 
 	@Override
-	public double getPercentX2() {
-		return myControl.x + myControl.width;
+	public double getPercentW() {
+		return myControl.width;
 	}
 
 	@Override
-	public double getPercentY2() {
-		return myControl.y + myControl.height;
+	public double getPercentH() {
+		return myControl.height;
 	}
 
 	@Override
-	public int getScreenX(double percentX) {
-		return myControl.getScreenX(percentX);
+	public int calcScreenX(double percentX) {
+		return myControl.calcScreenX(percentX);
 	}
 
 	@Override
-	public int getScreenY(double percentY) {
-		return myControl.getScreenY(percentY);
+	public int calcScreenY(double percentY) {
+		return myControl.calcScreenY(percentY);
 	}
 
 	@Override
-	public int getScreenWidth(double percentW) {
-		return myControl.getScreenWidth(percentW);
+	public int calcScreenWidth(double percentW) {
+		return myControl.calcScreenWidth(percentW);
 	}
 
 	@Override
-	public int getScreenHeight(double percentH) {
-		return myControl.getScreenHeight(percentH);
+	public int calcScreenHeight(double percentH) {
+		return myControl.calcScreenHeight(percentH);
 	}
 }
