@@ -578,7 +578,7 @@ public class UICanvasEditor extends UICanvas {
 				if (safeMovement) {
 					int vx = viewportComponent.calcScreenX(px);
 					int vy = viewportComponent.calcScreenY(py);
-					if (!boundSetSafe(viewportComponent, vx, vx + viewportComponent.calcScreenWidth(pw), vy, vy + viewportComponent.calcScreenHeight(ph))) {
+					if (!boundSetSafe(component, vx, vx + viewportComponent.calcScreenWidth(pw), vy, vy + viewportComponent.calcScreenHeight(ph))) {
 						continue;
 					}
 				}
@@ -672,9 +672,9 @@ public class UICanvasEditor extends UICanvas {
 		if (squareScale) {//scale only as a square (all changes are equal)
 			//set them equal to the biggest value
 			if (Math.abs(vdx) > Math.abs(vdy)) {
-				vdy = vdx;
+				vdy = -vdx;
 			} else {
-				vdx = vdy;
+				vdx = -vdy;
 			}
 		}
 		if (scaleEdge == Edge.TOP_LEFT) {
@@ -727,9 +727,9 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 		double px = viewportComponent.getPercentX() + dxl;
-		double pw = viewportComponent.getPercentW() + dxr;
+		double pw = viewportComponent.getPercentW() + dxr - dxl;
 		double py = viewportComponent.getPercentY() + dyt;
-		double ph = viewportComponent.getPercentH() + dyb;
+		double ph = viewportComponent.getPercentH() + dyb - dyt;
 
 		int screenX = viewportComponent.calcScreenX(px);
 		int screenY = viewportComponent.calcScreenY(py);

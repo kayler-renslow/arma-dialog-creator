@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 /**
  @author Kayler
- A component that has a position based upon a percentage of the viewport rather than a pixel value
+ A canvas component that has a position based upon a percentage of the viewport rather than a pixel value
  Created on 06/18/2016. */
 public interface ViewportComponent extends CanvasComponent {
 	/** Sets the percentage x value as well as the component's position based on this value */

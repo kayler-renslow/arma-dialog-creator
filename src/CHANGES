@@ -1,8 +1,7 @@
 ADDED:
-    viewport snapping for scaling (sort of works)
+    none
 CHANGED:
-    viewport snapping now works exactly the way it should
-    made grid centered to viewport when viewport snapping is enabled
+    viewport snapping for scaling works, except for square scaling
 FIXED:
     none
 
