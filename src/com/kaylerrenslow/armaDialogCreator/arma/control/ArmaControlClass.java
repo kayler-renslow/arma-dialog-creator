@@ -32,7 +32,7 @@ public class ArmaControlClass {
 		this.className = name;
 		myselfListener.addValueListener(new ValueListener<ArmaControlClass>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
+			public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
 				if (newValue != null) {
 					updateProperties();
 				}

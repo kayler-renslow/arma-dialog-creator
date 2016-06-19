@@ -53,8 +53,6 @@ public class UICanvasEditor extends UICanvas {
 
 	/** amount of change that has happened since last snap */
 	private int dxAmount, dyAmount = 0;
-	/** If true, snapping is calculated via the viewport width and height. If not, it's calculated by the canvas width and height */
-	private boolean snapRelativeToViewport = true;
 
 	private KeyMap keyMap = new KeyMap();
 
@@ -88,7 +86,7 @@ public class UICanvasEditor extends UICanvas {
 
 	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
+		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
 			paint();
 		}
 	};
@@ -113,7 +111,7 @@ public class UICanvasEditor extends UICanvas {
 
 		keys.getKeyStateObserver().addValueListener(new ValueListener<Boolean>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean newValue, Boolean oldValue) {
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				keyUpdate(newValue);
 			}
 		});
@@ -288,42 +286,73 @@ public class UICanvasEditor extends UICanvas {
 			Region.fillRectangle(gc, component.getLeftX() - offset, component.getTopY() - offset, component.getRightX() + offset, component.getBottomY() + offset);
 			gc.restore();
 		}
-		if (selection.isSelecting() && !component.isEnabled() && selection.getArea() > 10) {
+		if (isSelectingArea() && !component.isEnabled()) {
 			return;
 		}
 		super.paintComponent(component);
 	}
 
+	private boolean isSelectingArea() {
+		return selection.isSelecting() && selection.getArea() > 10;
+	}
+
 	protected void paintAbsRegionComponent() {
-		if (!absRegionComponent.isGhost()) {
+		if (!absRegionComponent.isGhost() && !isSelectingArea()) {
 			absRegionComponent.paint(gc);
 		}
 	}
 
 	private void drawGrid() {
-		int w = getCanvasWidth();
-		int h = getCanvasHeight();
-		int spacingX = getSnapPixelsWidth(calc.snapPercentage());
-		int spacingY = getSnapPixelsHeight(calc.snapPercentage());
+		if (keys.isShiftDown()) {
+			double snap = calc.snapPercentage();
+			double alt = calc.alternateSnapPercentage();
+			//render such that the alternate is always more dominant
+			if (snap > alt) {
+				drawGrid(alt, true);
+				drawGrid(snap, false);
+			} else if (alt > snap) {
+				drawGrid(alt, false);
+				drawGrid(snap, true);
+			} else {
+				drawGrid(snap, false);
+			}
+		} else {
+			drawGrid(calc.snapPercentage(), false);
+		}
+
+	}
+
+	private void drawGrid(double snap, boolean light) {
+		double spacingX = getSnapPixelsWidthF(snap);
+		double spacingY = getSnapPixelsHeightF(snap);
 		if (spacingX <= 0 || spacingY <= 0) {
 			return;
 		}
-		int numX = w / spacingX;
-		int numY = h / spacingY;
+		int w = getCanvasWidth();
+		int h = getCanvasHeight();
+		int offsetx = 0;
+		int offsety = 0;
+		int numX = (int) (w / spacingX);
+		int numY = (int) (h / spacingY);
 		double ys, xs;
 		double antiAlias = 0.5;
 		gc.save();
-		if (snapRelativeToViewport) {
-			gc.translate(Math.floor(resolution.getViewportX() % spacingX) * 0.5, Math.floor(resolution.getViewportY() % spacingY) * 0.5);
+		if (light) {
+			gc.setGlobalAlpha(0.2);
 		}
 		gc.setStroke(gridColor);
+		if (snapRelativeToViewport()) {
+			offsetx = (int) (resolution.getViewportX() % spacingX);
+			offsety = (int) (resolution.getViewportY() % spacingY);
+			gc.translate(offsetx, offsety);
+		}
 		for (int y = 0; y <= numY; y++) {
-			ys = y * spacingY;
-			gc.strokeLine(0 + antiAlias, ys + antiAlias, w - antiAlias, ys + antiAlias);
-			for (int x = 0; x <= numX; x++) {
-				xs = x * spacingX;
-				gc.strokeLine(xs + antiAlias, 0 + antiAlias, xs + antiAlias, h - antiAlias);
-			}
+			ys = Math.floor(y * spacingY);
+			gc.strokeLine(0 + antiAlias - offsetx, ys + antiAlias, w - antiAlias + offsetx, ys + antiAlias);
+		}
+		for (int x = 0; x <= numX; x++) {
+			xs = Math.floor(x * spacingX);
+			gc.strokeLine(xs + antiAlias, 0 + antiAlias - offsety, xs + antiAlias, h - antiAlias + offsety);
 		}
 		gc.restore();
 	}
@@ -526,9 +555,10 @@ public class UICanvasEditor extends UICanvas {
 
 		int xSnapCount = 0; //how many snaps occurred for x
 		int ySnapCount = 0; //how many snaps occurred for y
+		double snapPercentage = keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage();
 		if (!keys.isAltDown()) {
-			int snapX = getSnapPixelsWidth(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
-			int snapY = getSnapPixelsHeight(keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage());
+			int snapX = getSnapPixelsWidth(snapPercentage);
+			int snapY = getSnapPixelsHeight(snapPercentage);
 
 			dxAmount += dx;
 			dyAmount += dy;
@@ -549,9 +579,9 @@ public class UICanvasEditor extends UICanvas {
 			dy1 = dy;
 		}
 
-		boolean canSnapViewport = !keys.isAltDown() && snapRelativeToViewport;
-		double vdx = calc.snapPercentageDecimal() * xSnapCount * dirx;
-		double vdy = calc.snapPercentageDecimal() * ySnapCount * diry;
+		boolean canSnapViewport = !keys.isAltDown() && snapRelativeToViewport();
+		double vdx = snapPercentage * xSnapCount * dirx;
+		double vdy = snapPercentage * ySnapCount * diry;
 
 		if (scaleComponent != null) { //scaling
 			boolean squareScale = keys.keyIsDown(keyMap.SCALE_SQUARE);
@@ -832,16 +862,26 @@ public class UICanvasEditor extends UICanvas {
 		this.scaleEdge = scaleEdge;
 	}
 
-	private int getSnapPixelsWidth(double percentage) {
-		double p = percentage / 100.0;
-		int width = snapRelativeToViewport ? resolution.getViewportWidth() : getCanvasWidth();
-		return (int) (width * p);
+	private double getSnapPixelsWidthF(double percentageDecimal) {
+		int width = snapRelativeToViewport() ? resolution.getViewportWidth() : getCanvasWidth();
+		return (width * percentageDecimal);
 	}
 
-	private int getSnapPixelsHeight(double percentage) {
-		double p = percentage / 100.0;
-		int height = snapRelativeToViewport ? resolution.getViewportHeight() : getCanvasHeight();
-		return (int) (height * p);
+	private double getSnapPixelsHeightF(double percentageDecimal) {
+		int height = snapRelativeToViewport() ? resolution.getViewportHeight() : getCanvasHeight();
+		return (height * percentageDecimal);
+	}
+
+	private int getSnapPixelsWidth(double percentageDecimal) {
+		return (int) getSnapPixelsWidthF(percentageDecimal);
+	}
+
+	private int getSnapPixelsHeight(double percentageDecimal) {
+		return (int) getSnapPixelsHeightF(percentageDecimal);
+	}
+
+	private boolean snapRelativeToViewport() {
+		return calc.snapRelativeToViewport();
 	}
 
 	/** Set the context menu that should be shown */

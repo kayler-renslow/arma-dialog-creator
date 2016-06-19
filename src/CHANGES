@@ -1,7 +1,9 @@
 ADDED:
-    none
+    box in tree view to show color of background of control
+    option to toggle viewport snapping
+    more snapping sizes
 CHANGED:
-    viewport snap scaling for square scaling
+    snap calculator now returns percentage as decimal
 FIXED:
-    none
-
+    grid not centered when viewport snapping is enabled
+    graphic on tree view item not showing when created after an edit to a previous tree item

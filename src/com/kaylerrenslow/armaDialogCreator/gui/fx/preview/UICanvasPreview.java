@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class UICanvasPreview extends UICanvas {
 	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass newValue, ArmaControlClass oldValue) {
+		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
 			paint();
 		}
 	};

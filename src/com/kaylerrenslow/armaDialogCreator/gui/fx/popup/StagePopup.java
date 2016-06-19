@@ -53,6 +53,12 @@ public class StagePopup<E extends Parent> {
 				onCloseRequest(event);
 			}
 		});
+		myStage.setOnHiding(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				hiding();
+			}
+		});
 	}
 
 	/** Make the popup magically appear (not really magically) */
@@ -72,7 +78,12 @@ public class StagePopup<E extends Parent> {
 
 	/** Hides the popup */
 	public void hide() {
+		hiding();
 		myStage.hide();
+	}
+
+	/** Called when the popup is about to hide. Defualt implementation is nothing. */
+	protected void hiding() {
 	}
 
 	/** The window's X was clicked */
@@ -80,9 +91,8 @@ public class StagePopup<E extends Parent> {
 		closing();
 	}
 
-	/** Window is definitely closing now. Default implementation is empty. */
+	/** Window is definitely closing now. Default implementation is nothing. */
 	protected void closing() {
-
 	}
 
 	/** Make the popup request focus */

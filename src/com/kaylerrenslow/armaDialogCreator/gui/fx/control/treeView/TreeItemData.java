@@ -15,7 +15,7 @@ public class TreeItemData<E> {
 
 	private E data;
 	private final CellType cellType;
-	private final ITreeNodeUpdateListener updateListener;
+	private final TreeNodeUpdateListener updateListener;
 
 	private final boolean isPlaceholder;
 	private final Node graphic;
@@ -42,7 +42,7 @@ public class TreeItemData<E> {
 		this.graphic = lbl;
 	}
 
-	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic, @Nullable ITreeNodeUpdateListener updateListener) {
+	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic, @Nullable TreeNodeUpdateListener updateListener) {
 		this.isPlaceholder = false;
 		this.graphic = graphic;
 		this.text = text;
@@ -56,7 +56,7 @@ public class TreeItemData<E> {
 		this(text, cellType, data, graphic, null);
 	}
 
-	public ITreeNodeUpdateListener getUpdateListener() {
+	public TreeNodeUpdateListener getUpdateListener() {
 		return updateListener;
 	}
 
@@ -79,7 +79,6 @@ public class TreeItemData<E> {
 	public final boolean canHaveChildren() {
 		return cellType == CellType.FOLDER || cellType == CellType.COMPOSITE;
 	}
-
 
 	public final boolean isFolder() {
 		return cellType == CellType.FOLDER;

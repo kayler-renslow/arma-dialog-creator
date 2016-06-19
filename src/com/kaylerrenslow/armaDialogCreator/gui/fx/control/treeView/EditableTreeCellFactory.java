@@ -16,7 +16,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 	private static final long WAIT_DURATION_TREE_VIEW_FOLDER = 500;
 	private static final Color COLOR_TREE_VIEW_DRAG = Color.ORANGE;
 
-	private final ITreeCellSelectionUpdate treeCellSelectionUpdate;
+	private final TreeCellSelectionUpdate treeCellSelectionUpdate;
 	private final EditableTreeView<E> treeView;
 
 	private TextField textField;
@@ -25,7 +25,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
 
-	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable ITreeCellSelectionUpdate treeCellSelectionUpdate) {
+	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
 		this.treeCellSelectionUpdate = treeCellSelectionUpdate;
 		this.treeView = treeView;
 		this.setEditable(true);
@@ -124,9 +124,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 
 				// remove the dragging item's last position and add it to the new parent
 				treeView.removeChild(dragging.getParent(), dragging);
-				//				dragging.getParent().getChildren().remove(dragging);
 				int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
-				//				getTreeItem().getParent().getChildren().add(index, dragging);
 				treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
 				getTreeView().getSelectionModel().select(index + 1);
 
@@ -186,7 +184,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 	public void cancelEdit() {
 		super.cancelEdit();
 		setText(getTreeItem().getValue().getText());
-		setGraphic(getTreeItem().getGraphic());
+		setGraphic(getTreeItem().getValue().getGraphic());
 		textField = null;
 	}
 
@@ -212,7 +210,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 				} else {
 					setText(getItem().getText());
 				}
-				setGraphic(getTreeItem().getGraphic());
+				setGraphic(getTreeItem().getValue().getGraphic());
 			}
 		}
 		if (node != null) {

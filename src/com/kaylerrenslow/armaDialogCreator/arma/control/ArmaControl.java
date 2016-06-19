@@ -98,7 +98,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
 	protected void setX(double x) {
-		this.x = x;
+		this.x = ControlProperty.truncate(x);
 		renderer.setX1Silent(calcScreenX(x));
 	}
 
@@ -114,7 +114,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
 	protected void setY(double y) {
-		this.y = y;
+		this.y = ControlProperty.truncate(y);
 		renderer.setY1Silent(calcScreenY(y));
 	}
 
@@ -130,7 +130,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
 	protected void setW(double width) {
-		this.width = width;
+		this.width = ControlProperty.truncate(width);
 		int w = calcScreenWidth(width);
 		renderer.setX2Silent(renderer.getX1() + w);
 	}
@@ -147,7 +147,7 @@ public class ArmaControl extends ArmaControlClass {
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setH(double height) {
-		this.height = height;
+		this.height = ControlProperty.truncate(height);
 		int h = calcScreenHeight(height);
 		renderer.setY2Silent(renderer.getY1() + h);
 	}
@@ -273,4 +273,6 @@ public class ArmaControl extends ArmaControlClass {
 	public ControlProperty[] getEventProperties() {
 		return ControlProperty.EMPTY;
 	}
+
+
 }

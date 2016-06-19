@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 /** Creates a new EditableTreeView with a root node already in place. This class extends javafx.scene.control.TreeView of type TreeItemData */
 public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemData<E>> {
 
-	public EditableTreeView(@Nullable ITreeCellSelectionUpdate selectionUpdate) {
+	public EditableTreeView(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		super(new MoveableTreeItem());
 		this.showRootProperty().set(false);
 
@@ -17,7 +17,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 		setCellSelectionUpdate(selectionUpdate);
 	}
 
-	public void setCellSelectionUpdate(@Nullable ITreeCellSelectionUpdate selectionUpdate) {
+	public void setCellSelectionUpdate(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
 
@@ -117,7 +117,11 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 		if (parent.getValue().canHaveChildren() && parent.getChildren().size() == 1 && parent.getChildren().get(0).getValue().isPlaceholder()) {
 			parent.getChildren().remove(0);
 		}
-		parent.getChildren().add(index, child);
+		if (index >= parent.getChildren().size()) {
+			parent.getChildren().add(child);
+		} else {
+			parent.getChildren().add(index, child);
+		}
 	}
 
 	/**

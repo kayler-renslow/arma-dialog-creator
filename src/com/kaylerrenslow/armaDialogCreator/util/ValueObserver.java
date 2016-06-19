@@ -22,7 +22,7 @@ public class ValueObserver<V> {
 		V old = this.value;
 		this.value = newValue;
 		for (ValueListener listener : listeners) {
-			listener.valueUpdated(this, newValue, old);
+			listener.valueUpdated(this, old, newValue);
 		}
 	}
 

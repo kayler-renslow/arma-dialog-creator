@@ -22,4 +22,4 @@ fix string input field when inputting ""hello"", exiting, and re opening
 
 have check box for "is background control" in control properties popup
 
-fix viewport snapping when scaling
+fix: when renaming control class name, adding a new control via tree view results in an item without a graphic (radio button or canvas box)
