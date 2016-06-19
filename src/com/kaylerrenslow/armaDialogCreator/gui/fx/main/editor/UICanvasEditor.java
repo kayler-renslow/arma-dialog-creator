@@ -672,9 +672,15 @@ public class UICanvasEditor extends UICanvas {
 		if (squareScale) {//scale only as a square (all changes are equal)
 			//set them equal to the biggest value
 			if (Math.abs(vdx) > Math.abs(vdy)) {
-				vdy = -vdx;
+				vdy = vdx;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					vdy = -vdy;
+				}
 			} else {
-				vdx = -vdy;
+				vdx = vdy;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					vdx = -vdx;
+				}
 			}
 		}
 		if (scaleEdge == Edge.TOP_LEFT) {

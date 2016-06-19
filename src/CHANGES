@@ -1,7 +1,7 @@
 ADDED:
     none
 CHANGED:
-    viewport snapping for scaling works, except for square scaling
+    viewport snap scaling for square scaling
 FIXED:
     none
 
