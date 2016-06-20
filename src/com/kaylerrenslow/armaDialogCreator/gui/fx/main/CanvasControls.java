@@ -34,7 +34,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	}
 
 	private void initializeUI() {
-		cbViewportSnap.setSelected(true);
+		cbViewportSnap.setSelected(false);
 		cbViewportSnap.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -81,6 +81,10 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	@Override
 	public boolean snapRelativeToViewport() {
 		return cbViewportSnap.isSelected();
+	}
+
+	public EditorComponentTreeView getEditorComponentTreeView() {
+		return editorComponentTreeView;
 	}
 
 	private static class Percentage {

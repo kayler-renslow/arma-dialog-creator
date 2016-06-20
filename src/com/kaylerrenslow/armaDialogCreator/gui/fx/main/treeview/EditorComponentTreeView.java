@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.*;
@@ -15,6 +16,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  @author Kayler
@@ -64,6 +68,31 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 				return new FolderTreeItemData(newFolder.getText());
 			}
 		}, newFolder);
+	}
+
+	/**
+	 Sets the selection such that only the given controls are selected
+
+	 @param controlList list of controls to select
+	 */
+	public void setSelectedControls(List<ArmaControl> controlList) {
+		getSelectionModel().clearSelection();
+		TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<TreeItemData<TreeItemEntry>>() {
+			@Override
+			public void found(TreeItem<TreeItemData<TreeItemEntry>> found) {
+				if (found.getValue().getData() instanceof ControlTreeItemEntry) {
+					ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue().getData();
+					Iterator<ArmaControl> controlIterator = controlList.iterator();
+					ArmaControl iterNext;
+					while (controlIterator.hasNext()) {
+						iterNext = controlIterator.next();
+						if (iterNext == treeItemEntry.getMyArmaControl()) {
+							getSelectionModel().select(found);
+						}
+					}
+				}
+			}
+		});
 	}
 
 	@Override

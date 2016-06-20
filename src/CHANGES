@@ -1,8 +1,6 @@
 ADDED:
-    basis for inserting new controls via context menu on component tree view
-    double clicking the components in the editor will now open the control properties popup
+    selection syncing from treeView to editor and vice versa
 CHANGED:
     none
 FIXED:
-    negative scaling was allowed
-    mouse cursor was switching rapidly for no reason when moving over components
+    none

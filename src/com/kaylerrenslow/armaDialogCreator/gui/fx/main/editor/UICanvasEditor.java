@@ -14,6 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -98,7 +100,7 @@ public class UICanvasEditor extends UICanvas {
 		super(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.resolution = resolution;
 
-		setPositionCalculator(calculator);
+		setSnapConfig(calculator);
 
 		gc.setTextBaseline(VPos.CENTER);
 		this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
@@ -187,8 +189,8 @@ public class UICanvasEditor extends UICanvas {
 		return removed;
 	}
 
-	public void setPositionCalculator(@NotNull SnapConfiguration positionCalculator) {
-		this.calc = positionCalculator;
+	public void setSnapConfig(@NotNull SnapConfiguration snapConfig) {
+		this.calc = snapConfig;
 	}
 
 	public @NotNull SnapConfiguration getSnapConfig() {
@@ -967,12 +969,11 @@ public class UICanvasEditor extends UICanvas {
 	 Created on 05/13/2016.
 	 */
 	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
-		private ArrayList<CanvasComponent> selected = new ArrayList<>();
+		private ObservableList<CanvasComponent> selected = FXCollections.observableArrayList(new ArrayList<>());
 		private boolean isSelecting;
 
 		@Override
-		@NotNull
-		public ArrayList<CanvasComponent> getSelected() {
+		public @NotNull ObservableList<CanvasComponent> getSelected() {
 			return selected;
 		}
 

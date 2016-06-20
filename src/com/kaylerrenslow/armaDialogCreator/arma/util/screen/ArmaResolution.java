@@ -7,7 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
  @author Kayler
  Stores screen resolution information and methods for retrieving viewport width and height as well as the viewport x and y positions
  Created on 05/18/2016. */
-public class ArmaResolution implements Resolution{
+public class ArmaResolution implements Resolution {
 	private int screenWidth, screenHeight;
 	private UIScale uiScale;
 
@@ -145,6 +145,11 @@ public class ArmaResolution implements Resolution{
 	 */
 	public String toArmaFormattedString() {
 		return String.format("[%d,%d,%d,%d,%f,%f]", getScreenWidth(), getScreenHeight(), getViewportWidth(), getViewportHeight(), (getScreenWidth() * 1.0 / getScreenHeight()), uiScale.getValue());
+	}
+
+	@Override
+	public String toString() {
+		return toArmaFormattedString() + " safeZoneX=" + safeZoneX + " safeZoneW=" + safeZoneW + " safeZoneY=" + safeZoneY + " safeZoneH=" + safeZoneH;
 	}
 
 	/** Recalculate and set the cached values */

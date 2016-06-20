@@ -5,15 +5,20 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemData;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.Selection;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -21,6 +26,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
@@ -30,6 +38,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
 	private ArmaResolution resolution;
+
+	/** True when the treeView selection is being updated from the canvas, false when it isn't */
+	private boolean selectFromCanvas = false;
+	/** True when the editor's selection is being updated from the treeView, false when it isn't */
+	private boolean selectFromTreeview = false;
 
 	ADCCanvasView(ArmaResolution resolution) {
 		this.resolution = resolution;
@@ -58,6 +71,44 @@ class ADCCanvasView extends HBox implements CanvasView {
 				if (newValue != null) {
 					DefaultComponentContextMenu.showControlPropertiesPopup(((ArmaControlRenderer) newValue).getMyControl());
 				}
+			}
+		});
+
+		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasComponent>() {
+			@Override
+			public void onChanged(Change<? extends CanvasComponent> c) {
+				if (selectFromTreeview) {
+					return;
+				}
+				selectFromCanvas = true;
+				List<ArmaControl> controlList = new ArrayList<>();
+				for (CanvasComponent component : uiCanvasEditor.getSelection().getSelected()) {
+					if (component instanceof ArmaControlRenderer) {
+						controlList.add(((ArmaControlRenderer) component).getMyControl());
+					}
+				}
+				canvasControls.getEditorComponentTreeView().setSelectedControls(controlList);
+				selectFromCanvas = false;
+			}
+		});
+
+		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<TreeItemData<TreeItemEntry>>>() {
+			@Override
+			public void onChanged(Change<? extends TreeItem<TreeItemData<TreeItemEntry>>> c) {
+				if (selectFromCanvas) {
+					return;
+				}
+				selectFromTreeview = true;
+				Selection selection = uiCanvasEditor.getSelection();
+				selection.clearSelected();
+				for (TreeItem<TreeItemData<TreeItemEntry>> treeItem : c.getList()) {
+					if (treeItem.getValue().getData() instanceof ControlTreeItemEntry) {
+						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue().getData();
+						selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
+					}
+				}
+				repaintCanvas();
+				selectFromTreeview = false;
 			}
 		});
 	}

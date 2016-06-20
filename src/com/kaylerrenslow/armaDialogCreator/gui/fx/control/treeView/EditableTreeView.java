@@ -34,7 +34,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 		} else if (data.getCellType() == CellType.COMPOSITE) {
 			item = createComposite(data);
 		} else {
-			item = new MoveableTreeItem<E>(data);
+			item = new MoveableTreeItem<>(data);
 		}
 
 		addChildToRoot(item);
@@ -63,11 +63,6 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	/** Return the most recent selected index */
 	public int getSelectedIndex() {
 		return getSelectionModel().getSelectedIndex();
-	}
-
-	@Deprecated
-	public TreeItemData<E> getItem(int index) {//todo add new implementation that allows to fetch from different root
-		return getRoot().getChildren().get(index).getValue();
 	}
 
 	/**
@@ -181,14 +176,16 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 		return getSelectionModel().getSelectedItem();
 	}
 
+	@SuppressWarnings("unchecked")
 	private TreeItem<TreeItemData<E>> createFolder(@NotNull TreeItemData<E> data) {
-		MoveableTreeItem<E> folder = new MoveableTreeItem<E>(data);
+		MoveableTreeItem<E> folder = new MoveableTreeItem<>(data);
 		folder.getChildren().add(new MoveableTreeItem());
 		return folder;
 	}
 
+	@SuppressWarnings("unchecked")
 	private TreeItem<TreeItemData<E>> createComposite(@NotNull TreeItemData<E> data) {
-		MoveableTreeItem<E> comp = new MoveableTreeItem<E>(data);
+		MoveableTreeItem<E> comp = new MoveableTreeItem<>(data);
 		comp.getChildren().add(new MoveableTreeItem());
 		return comp;
 	}
