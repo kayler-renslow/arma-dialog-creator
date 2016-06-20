@@ -9,6 +9,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMe
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -48,6 +50,14 @@ class ADCCanvasView extends HBox implements CanvasView {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
+			}
+		});
+		uiCanvasEditor.getDoubleClickObserver().addValueListener(new ValueListener<CanvasComponent>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<CanvasComponent> observer, CanvasComponent oldValue, CanvasComponent newValue) {
+				if (newValue != null) {
+					DefaultComponentContextMenu.showControlPropertiesPopup(((ArmaControlRenderer) newValue).getMyControl());
+				}
 			}
 		});
 	}

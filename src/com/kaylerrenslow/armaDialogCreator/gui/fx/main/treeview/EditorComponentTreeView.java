@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlGroupTreeItemEntry;
@@ -9,7 +8,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlTre
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
@@ -22,16 +23,47 @@ import org.jetbrains.annotations.NotNull;
  Created on 06/08/2016. */
 public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 
-	private MenuItem newFolder = new MenuItem("New Folder", createFolderIcon());
-	private MenuItem newItem = new MenuItem("New Item");
-	private MenuItem newComp = new MenuItem("New Composite");
-	private ContextMenu contextMenu = new ContextMenu(newFolder, newItem, newComp);
-
-	private static int id = 0; //delete this later on as its for testing
+	private MenuItem newFolder = new MenuItem(Lang.CanvasControls.ComponentTreeView.ContextMenu.NEW_FOLDER, createFolderIcon());
+	private ContextMenu contextMenu = new ContextMenu(newFolder);
 
 	public EditorComponentTreeView() {
 		super(null);
 		setupTreeViewContextMenu();
+	}
+
+	private void setupTreeViewContextMenu() {
+		setContextMenu(contextMenu);
+
+		Menu groupMenu;
+		MenuItem menuItemType;
+		for (ControlType.TypeGroup group : ControlType.TypeGroup.values()) {
+			groupMenu = new Menu(group.displayName);
+			contextMenu.getItems().add(groupMenu);
+			for (ControlTreeItemDataCreatorLookup creator : ControlTreeItemDataCreatorLookup.values()) {
+				ControlType controlType = creator.controlType;
+				if (controlType.group != group) {
+					continue;
+				}
+				menuItemType = new MenuItem(controlType.displayName);
+				if (controlType.deprecated) {
+					menuItemType.getStyleClass().add("deprecated-menu-item");
+				}
+				if (creator.allowsSubControls) {
+					TreeViewMenuItemBuilder.setNewCompositeItemAction(this, creator.creator, menuItemType);
+				} else {
+					TreeViewMenuItemBuilder.setNewItemAction(this, creator.creator, menuItemType);
+				}
+
+				groupMenu.getItems().add(menuItemType);
+			}
+		}
+
+		TreeViewMenuItemBuilder.setNewFolderAction(this, new TreeItemDataCreator<TreeItemEntry>() {
+			@Override
+			public TreeItemData<TreeItemEntry> createNew(CellType cellType) {
+				return new FolderTreeItemData(newFolder.getText());
+			}
+		}, newFolder);
 	}
 
 	@Override
@@ -121,28 +153,6 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 			correctedIndex++;
 		}
 		return correctedIndex;
-	}
-
-	private void setupTreeViewContextMenu() {
-		setContextMenu(contextMenu);
-		TreeViewMenuItemBuilder.setNewFolderAction(this, new TreeItemDataCreator<TreeItemEntry>() {
-			@Override
-			public TreeItemData<TreeItemEntry> createNew(CellType cellType) {
-				return new FolderTreeItemData("New Folder");
-			}
-		}, newFolder);
-
-		TreeViewMenuItemBuilder.setNewItemAction(this, new TreeItemDataCreator<TreeItemEntry>() {
-
-			@Override
-			public TreeItemData<TreeItemEntry> createNew(CellType cellType) {
-				StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, 0, 0, 1, 1, ArmaDialogCreator.getCanvasView().getCurrentResolution());
-				id++;
-				ControlTreeItemEntry entry = new ControlTreeItemEntry(control);
-				return new ControlTreeItemData(entry);
-			}
-		}, newItem);
-		//		TreeViewMenuItemBuilder.setNewCompositeItemAction(this, newComp, "Composite Item", new Object(), null);
 	}
 
 	private static <T extends TreeItemEntry> T getAncestorOfEntryType(TreeItem<TreeItemData<TreeItemEntry>> start, Class<T> clazz) {

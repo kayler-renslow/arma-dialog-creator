@@ -202,6 +202,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 				}
 				setText(null);
 				setGraphic(textField);
+				textField.selectAll();
 			} else {
 				if (textField != null) {
 					setText(textField.getText());

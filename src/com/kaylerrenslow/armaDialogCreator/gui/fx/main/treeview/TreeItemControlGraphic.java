@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -19,12 +18,12 @@ import javafx.scene.text.FontPosture;
  Created on 06/08/2016. */
 class TreeItemControlGraphic extends HBox {
 	private static final Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontPosture.ITALIC, Font.getDefault().getSize());
+	private static final Insets margin = new Insets(0, 5, 0, 0);
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 
 	TreeItemControlGraphic() {
 		rbSelected.setSelected(true);
-		setAlignment(Pos.CENTER_LEFT);
 	}
 
 	void init(ControlTreeItemData treeItem) {
@@ -39,7 +38,7 @@ class TreeItemControlGraphic extends HBox {
 
 		fillBox(treeItem.getPrimaryColor());
 
-		HBox.setMargin(box, new Insets(0, 5, 0, 0));
+		HBox.setMargin(box, margin);
 
 		getChildren().addAll(box, rbSelected, lblType);
 	}

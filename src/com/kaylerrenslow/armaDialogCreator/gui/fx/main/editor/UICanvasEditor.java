@@ -50,6 +50,7 @@ public class UICanvasEditor extends UICanvas {
 	/** Mouse button that is currently down */
 	private MouseButton mouseButtonDown = MouseButton.NONE;
 	private long lastMousePressTime;
+	private boolean hasDoubleClicked;
 
 	/** amount of change that has happened since last snap */
 	private int dxAmount, dyAmount = 0;
@@ -84,6 +85,7 @@ public class UICanvasEditor extends UICanvas {
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
 
+	private ValueObserver<@Nullable CanvasComponent> doubleClickObserver = new ValueObserver<>(null);
 	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
@@ -138,6 +140,11 @@ public class UICanvasEditor extends UICanvas {
 				}
 			}
 		}
+	}
+
+	/** Get the observer that watches what components get doubled clicked on. If the passed value is null, nothing was double clicked */
+	public ValueObserver<@Nullable CanvasComponent> getDoubleClickObserver() {
+		return doubleClickObserver;
 	}
 
 	@Override
@@ -393,6 +400,24 @@ public class UICanvasEditor extends UICanvas {
 		return false;
 	}
 
+	/**
+	 Check if scaling the given region will give it negative area (right most side is behind left side)
+
+	 @param r region to check bounds of
+	 @param dxl change in x on the left side
+	 @param dxr change in x on the right side
+	 @param dyt change in y on the top side
+	 @param dyb change in y on the bottom side
+	 @return true if the scale results in a bad scale, false if scale is okay
+	 */
+	private boolean scaleIsNegative(Region r, int dxl, int dxr, int dyt, int dyb) {
+		int xl = r.getLeftX() + dxl;
+		int xr = r.getRightX() + dxr;
+		int yt = r.getTopY() + dyt;
+		int yb = r.getBottomY() + dyb;
+		return xr < xl || yt > yb;
+	}
+
 	private void changeCursorToMove() {
 		canvas.setCursor(Cursor.MOVE);
 	}
@@ -438,7 +463,7 @@ public class UICanvasEditor extends UICanvas {
 		if (getContextMenu() != null) {
 			getContextMenu().hide();
 		}
-		boolean doubleClick = System.currentTimeMillis() - lastMousePressTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
+		hasDoubleClicked = System.currentTimeMillis() - lastMousePressTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
 		lastMousePressTime = System.currentTimeMillis();
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
@@ -484,7 +509,7 @@ public class UICanvasEditor extends UICanvas {
 			} else {
 				if (selection.numSelected() > 0) {
 					if (selection.isSelected(mouseOverComponent)) {
-						if (doubleClick) {
+						if (hasDoubleClicked) {
 							selection.removeAllAndAdd(mouseOverComponent);
 						}
 						return;
@@ -528,7 +553,11 @@ public class UICanvasEditor extends UICanvas {
 				setContextMenu(canvasContextMenu, mousex, mousey);
 			}
 		}
+		if (hasDoubleClicked) {
+			doubleClickObserver.updateValue(selection.getFirst());
+		}
 	}
+
 
 	/**
 	 This is called when the mouse is moved and/or dragged inside the canvas
@@ -687,7 +716,9 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 		if (!safeMovement || boundUpdateSafe(scaleComponent, dxl, dxr, dyt, dyb)) {
-			scaleComponent.scale(dxl, dxr, dyt, dyb);
+			if (!scaleIsNegative(scaleComponent, dxl, dxr, dyt, dyb)) {
+				scaleComponent.scale(dxl, dxr, dyt, dyb);
+			}
 		}
 	}
 
@@ -773,6 +804,9 @@ public class UICanvasEditor extends UICanvas {
 		int screenH = viewportComponent.calcScreenHeight(ph);
 
 		if (!safeMovement || boundSetSafe(scaleComponent, screenX, screenX + screenW, screenY, screenY + screenH)) {
+			if (screenH < 0 || screenW < 0) { //negative scale
+				return;
+			}
 			viewportComponent.setPercentX(px);
 			viewportComponent.setPercentY(py);
 			viewportComponent.setPercentW(pw);
@@ -796,9 +830,10 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 		if (scaleComponent == null) {
-			changeCursorToDefault();
 			if (!selection.isSelecting() && mouseOverComponent != null) {
 				changeCursorToMove();
+			} else {
+				changeCursorToDefault();
 			}
 		}
 		if (mouseButtonDown == MouseButton.NONE) {

@@ -14,23 +14,23 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 06/08/2016.
  */
-class ControlTreeItemData extends TreeItemData<TreeItemEntry> {
+public class ControlTreeItemData extends TreeItemData<TreeItemEntry> {
 	private TreeItemControlGraphic graphic = (TreeItemControlGraphic) getGraphic();
 	private ControlTreeItemEntry controlTreeItemEntry;
-	private TreeNodeUpdateListener myListen = new TreeNodeUpdateListener() {
-		@Override
-		public void delete() {
 
-		}
-
-		@Override
-		public void renamed(String newName) {
-			controlTreeItemEntry.getMyArmaControl().setClassName(newName);
-		}
-	};
-
-	ControlTreeItemData(ControlTreeItemEntry controlTreeItemEntry) {
+	public ControlTreeItemData(ControlTreeItemEntry controlTreeItemEntry) {
 		super(controlTreeItemEntry.getTreeItemText(), CellType.LEAF, controlTreeItemEntry, new TreeItemControlGraphic());
+		setUpdateListener(new TreeNodeUpdateListener() {
+			@Override
+			public void delete() {
+
+			}
+
+			@Override
+			public void renamed(String newName) {
+				controlTreeItemEntry.getMyArmaControl().setClassName(newName);
+			}
+		});
 		this.controlTreeItemEntry = controlTreeItemEntry;
 		graphic.init(this);
 		controlTreeItemEntry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {

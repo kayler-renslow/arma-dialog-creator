@@ -1,9 +1,8 @@
 ADDED:
-    box in tree view to show color of background of control
-    option to toggle viewport snapping
-    more snapping sizes
+    basis for inserting new controls via context menu on component tree view
+    double clicking the components in the editor will now open the control properties popup
 CHANGED:
-    snap calculator now returns percentage as decimal
+    none
 FIXED:
-    grid not centered when viewport snapping is enabled
-    graphic on tree view item not showing when created after an edit to a previous tree item
+    negative scaling was allowed
+    mouse cursor was switching rapidly for no reason when moving over components

@@ -15,7 +15,7 @@ public class TreeItemData<E> {
 
 	private E data;
 	private final CellType cellType;
-	private final TreeNodeUpdateListener updateListener;
+	private TreeNodeUpdateListener updateListener;
 
 	private final boolean isPlaceholder;
 	private final Node graphic;
@@ -42,18 +42,16 @@ public class TreeItemData<E> {
 		this.graphic = lbl;
 	}
 
-	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic, @Nullable TreeNodeUpdateListener updateListener) {
+	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic) {
 		this.isPlaceholder = false;
 		this.graphic = graphic;
 		this.text = text;
 		this.cellType = cellType;
 		this.data = data;
-		this.updateListener = updateListener;
 	}
 
-
-	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable E data, @Nullable Node graphic) {
-		this(text, cellType, data, graphic, null);
+	public void setUpdateListener(TreeNodeUpdateListener updateListener) {
+		this.updateListener = updateListener;
 	}
 
 	public TreeNodeUpdateListener getUpdateListener() {

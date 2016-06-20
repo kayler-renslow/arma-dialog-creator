@@ -18,3 +18,7 @@
 .hyper-link-fixed-color{
     -fx-text-fill:-fx-text-background-color;
 }
+
+.deprecated-menu-item .label .text {
+    -fx-strikethrough: true;
+}

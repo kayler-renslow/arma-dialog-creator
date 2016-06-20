@@ -9,6 +9,12 @@ public interface Lang {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
 		String VIEWPORT_SNAP = "Snap Relative to Viewport";
+
+		interface ComponentTreeView {
+			interface ContextMenu {
+				String NEW_FOLDER = "New Folder";
+			}
+		}
 	}
 
 	interface MainMenuBar {

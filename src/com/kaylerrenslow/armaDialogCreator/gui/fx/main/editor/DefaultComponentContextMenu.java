@@ -34,18 +34,22 @@ public class DefaultComponentContextMenu extends ContextMenu {
 		configure.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				for (ControlPropertiesConfigPopup popup : createdPopups) {
-					if (popup.getControl() == c && popup.isShowing()) {
-						popup.beepFocus();
-						return;
-					} else if (!popup.isShowing() && popup.getControl() == c) {
-						popup.initializeToControl(c);
-					}
-				}
-				ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);
-				createdPopups.add(popup);
-				popup.show();
+				showControlPropertiesPopup(c);
 			}
 		});
+	}
+
+	public static void showControlPropertiesPopup(ArmaControl c) {
+		for (ControlPropertiesConfigPopup popup : createdPopups) {
+			if (popup.getControl() == c && popup.isShowing()) {
+				popup.beepFocus();
+				return;
+			} else if (!popup.isShowing() && popup.getControl() == c) {
+				popup.initializeToControl(c);
+			}
+		}
+		ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);
+		createdPopups.add(popup);
+		popup.show();
 	}
 }

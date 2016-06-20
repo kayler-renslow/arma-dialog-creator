@@ -55,10 +55,10 @@ public enum ControlType {
 	public enum TypeGroup {
 		TEXT("Text"), BUTTON("Button"), COMBO("Combo Box"), SLIDER("Slider"), LIST_BOX("List Box"), CHECK_BOX("Check Box"), MENU("Menu"), OBJECT("Object"), MAP("Map"), MISC("Misc");
 
-		public final String name;
+		public final String displayName;
 
-		TypeGroup(String name) {
-			this.name = name;
+		TypeGroup(String displayName) {
+			this.displayName = displayName;
 		}
 	}
 
