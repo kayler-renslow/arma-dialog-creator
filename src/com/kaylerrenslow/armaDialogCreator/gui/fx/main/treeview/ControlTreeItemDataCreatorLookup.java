@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.StaticDataCreator;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
 
 /**
  Created by Kayler on 06/19/2016.

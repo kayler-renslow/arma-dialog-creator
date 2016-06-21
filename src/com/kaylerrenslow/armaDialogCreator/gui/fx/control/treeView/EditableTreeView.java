@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Creates a new EditableTreeView with a root node already in place. This class extends javafx.scene.control.TreeView of type TreeItemData */
-public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemData<E>> {
+public class EditableTreeView<E extends TreeItemData> extends javafx.scene.control.TreeView<E> {
 
 	public EditableTreeView(@Nullable TreeCellSelectionUpdate selectionUpdate) {
-		super(new MoveableTreeItem());
+		super(new TreeItem<>());
 		this.showRootProperty().set(false);
 
 		this.setEditable(true);
@@ -27,17 +27,8 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 
 	 @param data data inside tree node
 	 */
-	public void addChildDataToRoot(TreeItemData<E> data) {
-		TreeItem<TreeItemData<E>> item;
-		if (data.getCellType() == CellType.FOLDER) {
-			item = createFolder(data);
-		} else if (data.getCellType() == CellType.COMPOSITE) {
-			item = createComposite(data);
-		} else {
-			item = new MoveableTreeItem<>(data);
-		}
-
-		addChildToRoot(item);
+	public void addChildDataToRoot(E data) {
+		addChildToRoot(new TreeItem<>(data));
 	}
 
 	/**
@@ -46,17 +37,17 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param index where to add the child at
 	 @param data data inside node
 	 */
-	public void addChildDataToRoot(int index, TreeItemData<E> data) {
+	public void addChildDataToRoot(int index, E data) {
 		if (index < 0) {
 			addChildDataToRoot(data);
 			return;
 		}
 		if (data.getCellType() == CellType.FOLDER) {
-			addChildToRoot(index, createFolder(data));
+			addChildToRoot(index, new TreeItem<>(data));
 		} else if (data.getCellType() == CellType.COMPOSITE) {
-			addChildToRoot(index, createComposite(data));
+			addChildToRoot(index, new TreeItem<>(data));
 		} else {
-			addChildToRoot(index, new MoveableTreeItem<>(data));
+			addChildToRoot(index, new TreeItem<>(data));
 		}
 	}
 
@@ -71,14 +62,14 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param parent what TreeItem the item is a child of
 	 @param toRemove item to remove
 	 */
-	protected void removeChild(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> toRemove) {
-		FoundChild<TreeItemData<E>> found = new FoundChild<TreeItemData<E>>() {
+	protected void removeChild(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> toRemove) {
+		FoundChild<E> found = new FoundChild<E>() {
 			@Override
-			public void found(TreeItem<TreeItemData<E>> found) {
+			public void found(TreeItem<E> found) {
 				found.getValue().delete();
 			}
 		};
-		for (TreeItem<TreeItemData<E>> item : toRemove.getChildren()) {
+		for (TreeItem<E> item : toRemove.getChildren()) {
 			TreeUtil.stepThroughDescendants(item, found);
 		}
 		toRemove.getValue().delete();
@@ -91,12 +82,12 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 
 
 	/**
-	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<TreeItemData<E>> parent, TreeItem<TreeItemData<E>> child, int index) with index set to parent.getChildren().size()
+	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<E> parent, TreeItem<E> child, int index) with index set to parent.getChildren().size()
 
 	 @param parent parent node
 	 @param child node to be made the child of parent
 	 */
-	protected void addChildToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> child) {
+	protected void addChildToParent(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> child) {
 		addChildToParent(parent, child, parent.getChildren().size());
 	}
 
@@ -107,11 +98,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param child node to be made the child of parent
 	 @param index index for where child is to be inserted (use child count to add to end)
 	 */
-	protected void addChildToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItem<TreeItemData<E>> child, int index) {
-		// if the parent is a folder, remove the placeholder item in that folder if there is one
-		if (parent.getValue().canHaveChildren() && parent.getChildren().size() == 1 && parent.getChildren().get(0).getValue().isPlaceholder()) {
-			parent.getChildren().remove(0);
-		}
+	protected void addChildToParent(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> child, int index) {
 		if (index >= parent.getChildren().size()) {
 			parent.getChildren().add(child);
 		} else {
@@ -125,12 +112,12 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param parent parent node
 	 @param childData node to be made the child of parent
 	 */
-	protected void addChildDataToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItemData<E> childData) {
+	protected void addChildDataToParent(@NotNull TreeItem<E> parent, @NotNull E childData) {
 		// if the parent is a folder, remove the placeholder item in that folder if there is one
 		if (childData.getCellType() == CellType.FOLDER) {
-			addChildToParent(parent, createFolder(childData));
+			addChildToParent(parent, new TreeItem<>(childData));
 		} else if (childData.getCellType() == CellType.COMPOSITE) {
-			addChildToParent(parent, createComposite(childData));
+			addChildToParent(parent, new TreeItem<>(childData));
 		} else {
 			addChildToParent(parent, new TreeItem<>(childData));
 		}
@@ -141,7 +128,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 
 	 @param item item to be added
 	 */
-	protected void addChildToRoot(@NotNull TreeItem<TreeItemData<E>> item) {
+	protected void addChildToRoot(@NotNull TreeItem<E> item) {
 		getRoot().getChildren().add(item);
 	}
 
@@ -151,7 +138,7 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param index where to add the child at
 	 @param item tree item to add
 	 */
-	protected void addChildToRoot(int index, @NotNull TreeItem<TreeItemData<E>> item) {
+	protected void addChildToRoot(int index, @NotNull TreeItem<E> item) {
 		if (index < 0) {
 			addChildToRoot(item);
 			return;
@@ -165,29 +152,15 @@ public class EditableTreeView<E> extends javafx.scene.control.TreeView<TreeItemD
 	 @param parent parent to add folder to
 	 @param data data of folder
 	 */
-	protected void addFolderDataToParent(@NotNull TreeItem<TreeItemData<E>> parent, @NotNull TreeItemData<E> data) {
-		TreeItem<TreeItemData<E>> folder = createFolder(data);
+	protected void addFolderDataToParent(@NotNull TreeItem<E> parent, @NotNull E data) {
+		TreeItem<E> folder = new TreeItem<>(data);
 		addChildToParent(parent, folder);
 	}
 
 
 	@Nullable
-	protected TreeItem<TreeItemData<E>> getSelectedItem() {
+	protected TreeItem<E> getSelectedItem() {
 		return getSelectionModel().getSelectedItem();
-	}
-
-	@SuppressWarnings("unchecked")
-	private TreeItem<TreeItemData<E>> createFolder(@NotNull TreeItemData<E> data) {
-		MoveableTreeItem<E> folder = new MoveableTreeItem<>(data);
-		folder.getChildren().add(new MoveableTreeItem());
-		return folder;
-	}
-
-	@SuppressWarnings("unchecked")
-	private TreeItem<TreeItemData<E>> createComposite(@NotNull TreeItemData<E> data) {
-		MoveableTreeItem<E> comp = new MoveableTreeItem<>(data);
-		comp.getChildren().add(new MoveableTreeItem());
-		return comp;
 	}
 
 

@@ -1,6 +1,7 @@
 ADDED:
-    selection syncing from treeView to editor and vice versa
+    control type id to menu item text in control creation menu
 CHANGED:
-    none
+    only double clicking editable tree items will start an edit
+    removed "placeholders" from editable tree view because it was just making things confusing
 FIXED:
     none

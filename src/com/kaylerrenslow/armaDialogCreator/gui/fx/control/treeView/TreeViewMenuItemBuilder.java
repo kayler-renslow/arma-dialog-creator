@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TreeViewMenuItemBuilder {
 
-	private static <E> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, CellType cellType) {
+	private static <E extends TreeItemData> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView<E> treeView, @NotNull TreeItemDataCreator<E> creator, CellType cellType) {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				TreeItemData<E> treeItemData = creator.createNew(cellType);
+				E treeItemData = creator.createNew(cellType);
 				if (treeItemData.getCellType() != cellType) {
 					throw new IllegalStateException("Cell type doesn't match. Current type:" + treeItemData.getCellType() + ". Requested type:" + cellType);
 				}
@@ -32,7 +32,7 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new folder action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <E> void setNewFolderAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+	public static <E extends TreeItemData> void setNewFolderAction(@NotNull EditableTreeView<E> treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.FOLDER));
 	}
 
@@ -44,7 +44,7 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new item action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <E> void setNewItemAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+	public static <E extends TreeItemData> void setNewItemAction(@NotNull EditableTreeView<E> treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.LEAF));
 	}
 
@@ -56,12 +56,12 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new folder action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <E> void setNewCompositeItemAction(@NotNull EditableTreeView treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
+	public static <E extends TreeItemData> void setNewCompositeItemAction(@NotNull EditableTreeView<E> treeView, @NotNull TreeItemDataCreator<E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.COMPOSITE));
 	}
 
-	private static void addChild(@NotNull EditableTreeView treeView, @NotNull TreeItemData<?> treeItemData) {
-		TreeItem<TreeItemData> selected = treeView.getSelectedItem();
+	private static<E extends TreeItemData> void addChild(@NotNull EditableTreeView<E> treeView, @NotNull E treeItemData) {
+		TreeItem<E> selected = treeView.getSelectedItem();
 		if (selected != null) {
 			if (selected.getValue().canHaveChildren()) {
 				treeView.addChildDataToParent(selected, treeItemData);

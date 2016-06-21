@@ -3,11 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemData;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemData;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 
 /**
@@ -19,10 +17,9 @@ public class StaticDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 	public static final StaticDataCreator INSTANCE = new StaticDataCreator();
 
 	@Override
-	public TreeItemData<TreeItemEntry> createNew(CellType cellType) {
+	public TreeItemEntry createNew(CellType cellType) {
 		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, 0, 0, 1, 1, ArmaDialogCreator.getCanvasView().getCurrentResolution());
 		id++;
-		ControlTreeItemEntry entry = new ControlTreeItemEntry(control);
-		return new ControlTreeItemData(entry);
+		return new ControlTreeItemEntry(control);
 	}
 }

@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView;
 import javafx.scene.control.TreeCell;
 import javafx.util.Callback;
 
-class TreeFactoryGen<E> implements Callback<javafx.scene.control.TreeView<TreeItemData<E>>, TreeCell<TreeItemData<E>>> {
+class TreeFactoryGen<E extends TreeItemData> implements Callback<javafx.scene.control.TreeView<E>, TreeCell<E>> {
 	private EditableTreeCellFactory factory;
 
 	TreeFactoryGen(EditableTreeCellFactory factory) {
@@ -11,7 +11,7 @@ class TreeFactoryGen<E> implements Callback<javafx.scene.control.TreeView<TreeIt
 	}
 
 	@Override
-	public TreeCell<TreeItemData<E>> call(javafx.scene.control.TreeView<TreeItemData<E>> view) {
+	public TreeCell<E> call(javafx.scene.control.TreeView<E> view) {
 		return this.factory.getNewInstance();
 	}
 }

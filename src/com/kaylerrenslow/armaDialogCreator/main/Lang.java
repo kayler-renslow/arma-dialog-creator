@@ -10,11 +10,6 @@ public interface Lang {
 		String STEP = "Step:";
 		String VIEWPORT_SNAP = "Snap Relative to Viewport";
 
-		interface ComponentTreeView {
-			interface ContextMenu {
-				String NEW_FOLDER = "New Folder";
-			}
-		}
 	}
 
 	interface MainMenuBar {
@@ -95,6 +90,11 @@ public interface Lang {
 		interface DefaultComponent {
 			String CONFIGURE = "Configure Properties";
 			String RENDER_QUEUE = "Render Queue";
+		}
+
+		interface ComponentTreeView {
+			String NEW_FOLDER = "New Folder";
+			String TITLE = "New Control";
 		}
 	}
 

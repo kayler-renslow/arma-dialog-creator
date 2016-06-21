@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView;
 
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TreeCell;
@@ -11,10 +13,12 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
+class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	/** How long it takes for the current hovered tree item that is expandable for it to expand and show its children. Value is in milliseconds. */
 	private static final long WAIT_DURATION_TREE_VIEW_FOLDER = 500;
 	private static final Color COLOR_TREE_VIEW_DRAG = Color.ORANGE;
+
+	private static final long DOUBLE_CLICK_WAIT_TIME_MILLIS = 250;
 
 	private final TreeCellSelectionUpdate treeCellSelectionUpdate;
 	private final EditableTreeView<E> treeView;
@@ -23,13 +27,29 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 
 	private long waitStartTime = 0;
 
+	/** Millisecond epoch when this cell was selected (used for double click detection) */
+	private long lastSelectedTime = -1;
+
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
+	private boolean hasDoubleClicked;
 
 	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
 		this.treeCellSelectionUpdate = treeCellSelectionUpdate;
 		this.treeView = treeView;
 		this.setEditable(true);
 		// first method called when the user clicks and drags a tree item
+		this.setOnMouseClicked(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent event) {
+				long now = System.currentTimeMillis();
+				hasDoubleClicked = now - lastSelectedTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
+				if(hasDoubleClicked){
+					startEdit();
+					hasDoubleClicked = false; //I don't know why this makes it work correctly
+				}
+				lastSelectedTime = now;
+			}
+		});
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -38,11 +58,6 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 					event.consume();
 					return;
 				}
-				if (getTreeItem().getValue().isPlaceholder()) {
-					event.consume();
-					return;
-				}
-
 				// disables right clicking to start drag and drop
 				if (event.isSecondaryButtonDown()) {
 					event.consume();
@@ -66,7 +81,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 		this.setOnDragOver(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(DragEvent event) {
-				TreeItem<TreeItemData<E>> dragging = getDragging();
+				TreeItem<E> dragging = getDragging();
 				// not dragging on the tree
 				if (getTreeItem() == null) {
 					event.consume();
@@ -114,24 +129,14 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 
 			@Override
 			public void handle(DragEvent event) {
-				TreeItem<TreeItemData<E>> dragging = getDragging();
+				TreeItem<E> dragging = getDragging();
 				event.acceptTransferModes(TransferMode.MOVE);
-
-				// add a placeholder treeitem to the dragging's parent if it is a folder that will be empty after the move
-				if (dragging.getParent().getValue().canHaveChildren() && dragging.getParent().getChildren().size() == 1) {
-					dragging.getParent().getChildren().add(new MoveableTreeItem());
-				}
 
 				// remove the dragging item's last position and add it to the new parent
 				treeView.removeChild(dragging.getParent(), dragging);
 				int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
 				treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
 				getTreeView().getSelectionModel().select(index + 1);
-
-				// if the location where dragging was dropped was into a folder, remove the placeholder item in that folder if there is one
-				if (getTreeItem().getParent().getValue().canHaveChildren() && getTreeItem().getParent().getChildren().size() == 2 && getTreeItem().getParent().getChildren().get(1).getValue().isPlaceholder()) {
-					getTreeItem().getParent().getChildren().remove(1);
-				}
 
 				EditableTreeCellFactory.dragging = null;
 				getTreeView().getSelectionModel().clearSelection();
@@ -163,13 +168,13 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private TreeItem<TreeItemData<E>> getDragging() {
-		return (TreeItem<TreeItemData<E>>) EditableTreeCellFactory.dragging;
+	private TreeItem<E> getDragging() {
+		return (TreeItem<E>) EditableTreeCellFactory.dragging;
 	}
 
 	@Override
 	public void startEdit() {
-		if (getTreeItem() == null || getTreeItem().getValue().isPlaceholder()) {
+		if(!hasDoubleClicked){
 			return;
 		}
 		super.startEdit();
@@ -189,7 +194,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 	}
 
 	@Override
-	protected void updateItem(TreeItemData<E> node, boolean empty) {
+	protected void updateItem(E node, boolean empty) {
 		super.updateItem(node, empty);
 		// this adds a textfield to the tree item to get a new name
 		if (empty) {
@@ -232,6 +237,14 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 				}
 			}
 		});
+		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
+				if(!focused){
+					cancelEdit();
+				}
+			}
+		});
 
 	}
 
@@ -246,7 +259,7 @@ class EditableTreeCellFactory<E> extends TreeCell<TreeItemData<E>> {
 		}
 		if (treeCellSelectionUpdate != null) {
 			CellType parentType = (getTreeItem().getParent() != null ? getTreeItem().getParent().getValue().getCellType() : null);
-			if (getTreeItem().isLeaf() && !getTreeItem().getValue().isPlaceholder()) {
+			if (getTreeItem().isLeaf()) {
 				treeCellSelectionUpdate.selectionUpdate(CellType.LEAF, parentType);
 			} else if (getTreeItem().getValue().isFolder()) {
 				treeCellSelectionUpdate.selectionUpdate(CellType.FOLDER, parentType);

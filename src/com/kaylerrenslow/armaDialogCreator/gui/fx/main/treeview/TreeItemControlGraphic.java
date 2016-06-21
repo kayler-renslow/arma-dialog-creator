@@ -16,27 +16,27 @@ import javafx.scene.text.FontPosture;
  @author Kayler
  Graphic for tree items that represent a control
  Created on 06/08/2016. */
-class TreeItemControlGraphic extends HBox {
+public class TreeItemControlGraphic extends HBox {
 	private static final Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontPosture.ITALIC, Font.getDefault().getSize());
 	private static final Insets margin = new Insets(0, 5, 0, 0);
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 
-	TreeItemControlGraphic() {
+	public TreeItemControlGraphic() {
 		rbSelected.setSelected(true);
 	}
 
-	void init(ControlTreeItemData treeItem) {
+	public void init(ControlTreeItemEntry entry) {
 		rbSelected.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				treeItem.updateVisibilityFromButton(newValue);
+				entry.updateVisibilityFromButton(newValue);
 			}
 		});
-		Label lblType = new Label("(" + treeItem.getControlTypeText() + ")");
+		Label lblType = new Label("(" + entry.getControlTypeText() + ")");
 		lblType.setFont(LABEL_FONT);
 
-		fillBox(treeItem.getPrimaryColor());
+		fillBox(entry.getPrimaryColor());
 
 		HBox.setMargin(box, margin);
 
@@ -51,7 +51,7 @@ class TreeItemControlGraphic extends HBox {
 		gc.restore();
 	}
 
-	void updateVisibilityRadioButton(boolean visible) {
+	public void updateVisibilityRadioButton(boolean visible) {
 		rbSelected.setSelected(visible);
 	}
 

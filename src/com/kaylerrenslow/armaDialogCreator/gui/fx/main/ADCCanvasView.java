@@ -5,13 +5,13 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemData;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.Selection;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.ControlTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.entry.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlCreationContextMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -59,6 +59,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
 
 		setToDisplay(ArmaDialogCreator.getApplicationData().getEditingDisplay());
+
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
@@ -73,7 +74,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 				}
 			}
 		});
+		uiCanvasEditor.setCanvasContextMenu(new ControlCreationContextMenu(canvasControls.getEditorComponentTreeView(), false));
+		setupEditorSelectionSync();
+	}
 
+	private void setupEditorSelectionSync() {
 		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasComponent>() {
 			@Override
 			public void onChanged(Change<? extends CanvasComponent> c) {
@@ -92,18 +97,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 			}
 		});
 
-		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<TreeItemData<TreeItemEntry>>>() {
+		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<TreeItemEntry>>() {
 			@Override
-			public void onChanged(Change<? extends TreeItem<TreeItemData<TreeItemEntry>>> c) {
+			public void onChanged(Change<? extends TreeItem<TreeItemEntry>> c) {
 				if (selectFromCanvas) {
 					return;
 				}
 				selectFromTreeview = true;
 				Selection selection = uiCanvasEditor.getSelection();
 				selection.clearSelected();
-				for (TreeItem<TreeItemData<TreeItemEntry>> treeItem : c.getList()) {
-					if (treeItem.getValue().getData() instanceof ControlTreeItemEntry) {
-						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue().getData();
+				for (TreeItem<TreeItemEntry> treeItem : c.getList()) {
+					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
+						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
 						selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
 					}
 				}
