@@ -145,10 +145,8 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 		int currentIndex = 0;
 
 		TreeItem<TreeItemEntry> cursor = parent;
-		System.out.println("EditorComponentTreeView.getCorrectedIndex parent = " + parent);
 		while (cursor != getRoot() && cursor.getValue().getCellType() == CellType.FOLDER) {
 			for (TreeItem<TreeItemEntry> cursorChild : cursor.getChildren()) {
-				System.out.println("EditorComponentTreeView.getCorrectedIndex cursorChild = " + cursorChild);
 				if (cursorChild.getValue().getCellType() != CellType.FOLDER) {
 					correctedIndex++;
 				}
@@ -162,7 +160,6 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 		while (!children.isEmpty()) {
 			child = children.removeFirst();
 			children.addAll(child.getChildren());
-			System.out.println("EditorComponentTreeView.getCorrectedIndex child = " + child);
 			if (child.getValue().getCellType() != CellType.FOLDER) {
 				correctedIndex++;
 			}
@@ -189,6 +186,10 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 
 	static ImageView createFolderIcon() {
 		return new ImageView(ImagePaths.ICON_FOLDER);
+	}
+
+	static ImageView createCompositeIcon(){
+		return new ImageView(ImagePaths.ICON_COMPOSITE);
 	}
 
 

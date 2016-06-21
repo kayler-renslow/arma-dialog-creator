@@ -1,7 +1,8 @@
 ADDED:
-    control type id to menu item text in control creation menu
+    composite icon to differentiate between regular tree items and composite ones
+    composite icon
+    control group testing data creator
 CHANGED:
-    only double clicking editable tree items will start an edit
-    removed "placeholders" from editable tree view because it was just making things confusing
-FIXED:
     none
+FIXED:
+    not being able to drag into empty folders

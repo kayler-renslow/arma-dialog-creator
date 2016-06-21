@@ -14,11 +14,4 @@ public abstract class TreeItemEntry extends TreeItemData{
 		super(text, cellType, graphic);
 	}
 
-	/** Get the text to display in the tree */
-	@NotNull
-	abstract String getTreeItemText();
-
-	/** Return true if the tree item is used only as a visual indicator and doesn't represent the end product. */
-	abstract boolean isPhantom();
-
 }

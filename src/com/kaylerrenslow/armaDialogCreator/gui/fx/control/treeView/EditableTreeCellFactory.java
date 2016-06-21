@@ -19,6 +19,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	private static final Color COLOR_TREE_VIEW_DRAG = Color.ORANGE;
 
 	private static final long DOUBLE_CLICK_WAIT_TIME_MILLIS = 250;
+	private static final String HOVER_TREE_CELL = "hover-tree-cell";
 
 	private final TreeCellSelectionUpdate treeCellSelectionUpdate;
 	private final EditableTreeView<E> treeView;
@@ -33,19 +34,22 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
 	private boolean hasDoubleClicked;
 
+	private static TreeCell<?> hoveredEmptyParent; //static for the same reasons as dragging
+
 	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
 		this.treeCellSelectionUpdate = treeCellSelectionUpdate;
 		this.treeView = treeView;
 		this.setEditable(true);
 		// first method called when the user clicks and drags a tree item
+		TreeCell<E> myTreeCell = this;
 		this.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
 				long now = System.currentTimeMillis();
 				hasDoubleClicked = now - lastSelectedTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
-				if(hasDoubleClicked){
+				if (hasDoubleClicked) {
 					startEdit();
-					hasDoubleClicked = false; //I don't know why this makes it work correctly
+					hasDoubleClicked = false; //I don't know why this statement makes it work correctly
 				}
 				lastSelectedTime = now;
 			}
@@ -77,27 +81,23 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 			}
 		});
-
 		this.setOnDragOver(new EventHandler<DragEvent>() {
 			@Override
 			public void handle(DragEvent event) {
 				TreeItem<E> dragging = getDragging();
 				// not dragging on the tree
 				if (getTreeItem() == null) {
-					event.consume();
 					return;
 				}
 
 				// trying to drag into itself
 				if (getTreeItem().getValue().equals(getTreeView().getSelectionModel().getSelectedItem().getValue())) {
-					event.consume();
 					return;
 				}
 
 				// if it's a folder, we need to make sure it doesn't drag itself into its children
 				if (dragging.getValue().canHaveChildren()) {
 					if (TreeUtil.hasDescendant(dragging, getTreeItem())) {
-						event.consume();
 						return;
 					}
 				}
@@ -105,23 +105,29 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 				// auto expands the hovered tree item if it has children after a period of time.
 				// timer is reset when the mouse moves away from the current hovered item
 				if (!getTreeItem().isLeaf() || getTreeItem().getValue().canHaveChildren()) {
-					if (!getTreeItem().isExpanded()) {
-						if (waitStartTime == 0) {
-							waitStartTime = System.currentTimeMillis();
-						} else {
-							long now = System.currentTimeMillis();
-							// wait a while before the tree item is expanded
-							if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
-								getTreeItem().setExpanded(true);
-								waitStartTime = 0;
+					if (getTreeItem().getChildren().size() == 0) {
+						hoveredEmptyParent = myTreeCell;
+						getStyleClass().add(HOVER_TREE_CELL);
+					} else {
+						if (!getTreeItem().isExpanded()) {
+							if (waitStartTime == 0) {
+								waitStartTime = System.currentTimeMillis();
+							} else {
+								long now = System.currentTimeMillis();
+								// wait a while before the tree item is expanded
+								if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
+									getTreeItem().setExpanded(true);
+									waitStartTime = 0;
+								}
 							}
 						}
 					}
+				} else {
+					setEffect(new InnerShadow(1.0, 0, 2.0, COLOR_TREE_VIEW_DRAG));
 				}
 
 				// when it reaches this point, the tree item is okay to move
 				event.acceptTransferModes(TransferMode.MOVE);
-				setEffect(new InnerShadow(1.0, 0, 2.0, COLOR_TREE_VIEW_DRAG));
 			}
 		});
 
@@ -132,15 +138,22 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 				TreeItem<E> dragging = getDragging();
 				event.acceptTransferModes(TransferMode.MOVE);
 
-				// remove the dragging item's last position and add it to the new parent
+				// remove the dragging item's last position
 				treeView.removeChild(dragging.getParent(), dragging);
-				int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
-				treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
-				getTreeView().getSelectionModel().select(index + 1);
+				if (getTreeItem().getValue().canHaveChildren() && getTreeItem().getChildren().size() == 0) { //no children
+					treeView.addChildToParent(getTreeItem(), dragging);
+				} else {
+					int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
+					treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
+					getTreeView().getSelectionModel().select(index + 1);
+				}
+
 
 				EditableTreeCellFactory.dragging = null;
 				getTreeView().getSelectionModel().clearSelection();
-				event.consume();
+				if (hoveredEmptyParent != null) {
+					hoveredEmptyParent.getStyleClass().clear(); //for some reason, removing by the class name doesn't work
+				}
 			}
 
 		});
@@ -149,15 +162,17 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 			@Override
 			public void handle(DragEvent event) {
+				if(hoveredEmptyParent != null){
+					hoveredEmptyParent.getStyleClass().clear();
+				}
 				if (getTreeItem() == null) {
 					// this happens when something is still being dragged but it isn't over the tree
-					event.consume();
 					return;
 				}
 
 				waitStartTime = 0;
 				setEffect(null);
-				event.consume();
+				setBorder(null);
 			}
 
 		});
@@ -174,7 +189,10 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 	@Override
 	public void startEdit() {
-		if(!hasDoubleClicked){
+		if (!hasDoubleClicked) {
+			return;
+		}
+		if (getTreeItem() == null) {
 			return;
 		}
 		super.startEdit();
@@ -240,7 +258,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
-				if(!focused){
+				if (!focused) {
 					cancelEdit();
 				}
 			}

@@ -11,5 +11,5 @@ public class ImagePaths {
 
 	public static final String ICON_FOLDER = prefix + "icons/folder.png";
 	public static final String ICON_APP = prefix + "icons/app.png";
-
+	public static final String ICON_COMPOSITE = prefix + "icons/composite.png";
 }

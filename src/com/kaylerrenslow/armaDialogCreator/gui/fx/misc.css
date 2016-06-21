@@ -22,3 +22,7 @@
 .deprecated-menu-item .label .text {
     -fx-strikethrough: true;
 }
+
+.hover-tree-cell{
+    -fx-border-color:red;
+}

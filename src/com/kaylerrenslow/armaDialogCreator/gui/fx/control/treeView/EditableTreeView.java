@@ -42,13 +42,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 			addChildDataToRoot(data);
 			return;
 		}
-		if (data.getCellType() == CellType.FOLDER) {
-			addChildToRoot(index, new TreeItem<>(data));
-		} else if (data.getCellType() == CellType.COMPOSITE) {
-			addChildToRoot(index, new TreeItem<>(data));
-		} else {
-			addChildToRoot(index, new TreeItem<>(data));
-		}
+		addChildToRoot(index, new TreeItem<>(data));
 	}
 
 	/** Return the most recent selected index */
@@ -69,15 +63,9 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 				found.getValue().delete();
 			}
 		};
-		for (TreeItem<E> item : toRemove.getChildren()) {
-			TreeUtil.stepThroughDescendants(item, found);
-		}
+		TreeUtil.stepThroughDescendants(toRemove, found);
 		toRemove.getValue().delete();
 		parent.getChildren().remove(toRemove);
-		// if the parent is a folder, add a placeholder item in it if the folder is not empty
-		if (parent.getValue().canHaveChildren() && parent.getChildren().size() == 0) {
-			parent.getChildren().add(new TreeItem<>());
-		}
 	}
 
 
@@ -113,14 +101,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param childData node to be made the child of parent
 	 */
 	protected void addChildDataToParent(@NotNull TreeItem<E> parent, @NotNull E childData) {
-		// if the parent is a folder, remove the placeholder item in that folder if there is one
-		if (childData.getCellType() == CellType.FOLDER) {
-			addChildToParent(parent, new TreeItem<>(childData));
-		} else if (childData.getCellType() == CellType.COMPOSITE) {
-			addChildToParent(parent, new TreeItem<>(childData));
-		} else {
-			addChildToParent(parent, new TreeItem<>(childData));
-		}
+		addChildToParent(parent, new TreeItem<>(childData));
 	}
 
 	/**
@@ -145,18 +126,6 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		}
 		getRoot().getChildren().add(index, item);
 	}
-
-	/**
-	 Creates a new folder tree item with the given data and invokes addChildToParent on that folder tree item
-
-	 @param parent parent to add folder to
-	 @param data data of folder
-	 */
-	protected void addFolderDataToParent(@NotNull TreeItem<E> parent, @NotNull E data) {
-		TreeItem<E> folder = new TreeItem<>(data);
-		addChildToParent(parent, folder);
-	}
-
 
 	@Nullable
 	protected TreeItem<E> getSelectedItem() {

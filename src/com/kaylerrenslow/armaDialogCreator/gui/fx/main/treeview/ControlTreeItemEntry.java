@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ControlTreeItemEntry extends TreeItemEntry {
 	private final ArmaControl myArmaControl;
-	private TreeItemControlGraphic graphic = (TreeItemControlGraphic) getGraphic();
 
 	public ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, ArmaControl control) {
 		super(control.getClassName(), cellType, graphic);
@@ -37,34 +36,25 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 			}
 		});
 
-		graphic.init(this);
-		control.getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-				graphic.setBoxColor(newValue.toJavaFXColor());
-			}
-		});
+		if (getGraphic() instanceof TreeItemControlGraphic) {
+			TreeItemControlGraphic graphic = (TreeItemControlGraphic) getGraphic();
+			graphic.init(this);
+			control.getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+					graphic.setBoxColor(newValue.toJavaFXColor());
+				}
+			});
+		}
 	}
 
-	@Override
-	@NotNull
-	public String getTreeItemText() {
-		return myArmaControl.getClassName();
-	}
-
-
-	/**Sets whether or not the user can interact with the control in the editor.*/
-	public void setEnabled(boolean enabled){
+	/** Sets whether or not the user can interact with the control in the editor. */
+	public void setEnabled(boolean enabled) {
 		myArmaControl.getRenderer().setEnabled(enabled);
 	}
 
 	public ArmaControl getMyArmaControl() {
 		return myArmaControl;
-	}
-
-	@Override
-	public boolean isPhantom() {
-		return false;
 	}
 
 	/** Set whether or not the control is visible or not (updates the radio button as well) */
@@ -77,7 +67,7 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		return myArmaControl.getType().displayName;
 	}
 
-	public Color getPrimaryColor(){
+	public Color getPrimaryColor() {
 		return myArmaControl.getRenderer().getBackgroundColor();
 	}
 }

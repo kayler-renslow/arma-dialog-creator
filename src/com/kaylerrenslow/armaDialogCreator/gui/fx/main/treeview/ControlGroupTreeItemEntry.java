@@ -13,21 +13,11 @@ public class ControlGroupTreeItemEntry extends ControlTreeItemEntry {
 	private final ArmaControlGroup controlGroup;
 
 	public ControlGroupTreeItemEntry(@NotNull ArmaControlGroup group) {
-		super(CellType.COMPOSITE, null, group);
+		super(CellType.COMPOSITE, EditorComponentTreeView.createCompositeIcon(), group);
 		this.controlGroup = group;
 	}
 
 	public ArmaControlGroup getControlGroup() {
 		return controlGroup;
-	}
-
-	@Override
-	public @NotNull String getTreeItemText() {
-		return controlGroup.getRenderText();
-	}
-
-	@Override
-	public boolean isPhantom() {
-		return false;
 	}
 }

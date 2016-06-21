@@ -14,4 +14,5 @@ BUGS:
 >select many things in tree view and drag into folder
 >have check box for "is background control" in control properties popup
 >ARMA 3 TOOLS LOCATION WILL NEVER SAVE AND LOAD CORRECTLY AFTER CLOSING THE APPLICATION.
->fix string input field when inputting ""hello"", exiting, and re openingpa
+>fix string input field when inputting ""hello"", exiting, and re opening
+>fix adding controls to tree view resulting in wrong render order or an exception
