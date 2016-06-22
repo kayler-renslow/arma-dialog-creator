@@ -13,7 +13,6 @@ import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -54,45 +53,16 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 	}
 
 	@Override
-	protected void addChildToParent(@NotNull TreeItem<TreeItemEntry> parent, @NotNull TreeItem<TreeItemEntry> child) {
-		addChildToParent(parent, child, parent.getChildren().size());
-	}
-
-	@Override
 	protected void addChildToParent(@NotNull TreeItem<TreeItemEntry> parent, @NotNull TreeItem<TreeItemEntry> child, int index) {
-		int correctedIndex = getCorrectedIndex(index, parent); //needs to come before invoking super method
 		super.addChildToParent(parent, child, index);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
+		int correctedIndex = getCorrectedIndex(getRow(child), parent);
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
-		if (parent == getRoot()) {
-			display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
-		} else {
-			ControlGroupTreeItemEntry groupAncestor = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
-			if (groupAncestor != null) {
-				groupAncestor.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
-			} else { //didn't go into a control group, so it is in a folder. Therefore, the correctedIndex is relative to the root
-				LinkedList<TreeItem<TreeItemEntry>> children = new LinkedList<>();
-				children.addAll(parent.getChildren());
-				correctedIndex = 0;
-				while (!children.isEmpty()) {
-					child = children.removeFirst();
-					children.addAll(child.getChildren());
-					if (child.getValue().getCellType() != CellType.FOLDER) {
-						correctedIndex++;
-					}
-				}
-				System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
-				//TODO fix corrected index as it is wrong when child goes into a folder of folder
-				if (display.getControls().size() == 0 && correctedIndex == 1) {
-					display.getControls().add(childControlEntry.getMyArmaControl());
-				} else {
-					display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl()); //was added in a folder
-				}
-			}
-		}
+		System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
+		display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl()); //was added in a folder
 	}
 
 	@Override
@@ -101,6 +71,7 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
+		System.out.println("EditorComponentTreeView.addChildToRoot getRow = " + getRow(child));
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
 		display.getControls().add(childControlEntry.getMyArmaControl());
@@ -108,11 +79,12 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 
 	@Override
 	protected void addChildToRoot(int index, @NotNull TreeItem<TreeItemEntry> child) {
-		int correctedIndex = getCorrectedIndex(index, getRoot());
 		super.addChildToRoot(index, child);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
+		System.out.println("EditorComponentTreeView.addChildToRoot2");
+		int correctedIndex = getCorrectedIndex(getRow(child), getRoot());
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
 		display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
@@ -140,32 +112,25 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 
 	}
 
-	private int getCorrectedIndex(int index, TreeItem<TreeItemEntry> parent) {
-		int correctedIndex = 0; //index such that the folders weren't used to calculate index
-		int currentIndex = 0;
+	private int getCorrectedIndex(int row, TreeItem<TreeItemEntry> start) {
+		//get row after insertion. traverse upwards and count how many folders there are and subtract that from row
+		System.out.println("EditorComponentTreeView.getCorrectedIndex row = " + row);
+		int correctedIndex = row; //index such that the folders weren't used to calculate index
 
-		TreeItem<TreeItemEntry> cursor = parent;
+		TreeItem<TreeItemEntry> cursor = start;
 		while (cursor != getRoot() && cursor.getValue().getCellType() == CellType.FOLDER) {
-			for (TreeItem<TreeItemEntry> cursorChild : cursor.getChildren()) {
-				if (cursorChild.getValue().getCellType() != CellType.FOLDER) {
-					correctedIndex++;
+			correctedIndex--;
+			for (TreeItem<TreeItemEntry> child : cursor.getChildren()) {
+				if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
+					System.out.println("EditorComponentTreeView.getCorrectedIndex child = " + child);
+					correctedIndex--;
 				}
 			}
 			cursor = cursor.getParent();
 		}
-
-		LinkedList<TreeItem<TreeItemEntry>> children = new LinkedList<>();
-		children.addAll(parent.getChildren());
-		TreeItem<TreeItemEntry> child;
-		while (!children.isEmpty()) {
-			child = children.removeFirst();
-			children.addAll(child.getChildren());
-			if (child.getValue().getCellType() != CellType.FOLDER) {
-				correctedIndex++;
-			}
-			currentIndex++;
-			if (currentIndex == index) {
-				break;
+		for (TreeItem<TreeItemEntry> child : cursor.getChildren()) {
+			if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
+				correctedIndex--;
 			}
 		}
 
@@ -188,9 +153,8 @@ public class EditorComponentTreeView extends EditableTreeView<TreeItemEntry> {
 		return new ImageView(ImagePaths.ICON_FOLDER);
 	}
 
-	static ImageView createCompositeIcon(){
+	static ImageView createCompositeIcon() {
 		return new ImageView(ImagePaths.ICON_COMPOSITE);
 	}
-
 
 }

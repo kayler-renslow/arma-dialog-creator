@@ -34,7 +34,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
 	private boolean hasDoubleClicked;
 
-	private static TreeCell<?> hoveredEmptyParent; //static for the same reasons as dragging
+	private static TreeCell<?> hoveredChildParent; //static for the same reasons as dragging
 
 	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
 		this.treeCellSelectionUpdate = treeCellSelectionUpdate;
@@ -104,23 +104,22 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 				// auto expands the hovered tree item if it has children after a period of time.
 				// timer is reset when the mouse moves away from the current hovered item
-				if (!getTreeItem().isLeaf() || getTreeItem().getValue().canHaveChildren()) {
-					if (getTreeItem().getChildren().size() == 0) {
-						hoveredEmptyParent = myTreeCell;
-						getStyleClass().add(HOVER_TREE_CELL);
-					} else {
-						if (!getTreeItem().isExpanded()) {
-							if (waitStartTime == 0) {
-								waitStartTime = System.currentTimeMillis();
-							} else {
-								long now = System.currentTimeMillis();
-								// wait a while before the tree item is expanded
-								if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
-									getTreeItem().setExpanded(true);
-									waitStartTime = 0;
-								}
+				if (getTreeItem().getValue().canHaveChildren()) {
+					if (!getTreeItem().isExpanded()) {
+						if (waitStartTime == 0) {
+							waitStartTime = System.currentTimeMillis();
+						} else {
+							long now = System.currentTimeMillis();
+							// wait a while before the tree item is expanded
+							if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
+								getTreeItem().setExpanded(true);
+								waitStartTime = 0;
 							}
 						}
+					}
+					hoveredChildParent = myTreeCell;
+					if(!hoveredChildParent.getStyleClass().contains(HOVER_TREE_CELL)){ //don't add multiple times
+						hoveredChildParent.getStyleClass().add(HOVER_TREE_CELL);
 					}
 				} else {
 					setEffect(new InnerShadow(1.0, 0, 2.0, COLOR_TREE_VIEW_DRAG));
@@ -140,9 +139,9 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 				// remove the dragging item's last position
 				treeView.removeChild(dragging.getParent(), dragging);
-				if (getTreeItem().getValue().canHaveChildren() && getTreeItem().getChildren().size() == 0) { //no children
+				if (getTreeItem().getValue().canHaveChildren()) {
 					treeView.addChildToParent(getTreeItem(), dragging);
-				} else {
+				}else {
 					int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
 					treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
 					getTreeView().getSelectionModel().select(index + 1);
@@ -151,9 +150,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 				EditableTreeCellFactory.dragging = null;
 				getTreeView().getSelectionModel().clearSelection();
-				if (hoveredEmptyParent != null) {
-					hoveredEmptyParent.getStyleClass().clear(); //for some reason, removing by the class name doesn't work
-				}
+				clearHoveredParentHoverStyle();
 			}
 
 		});
@@ -162,9 +159,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 			@Override
 			public void handle(DragEvent event) {
-				if(hoveredEmptyParent != null){
-					hoveredEmptyParent.getStyleClass().clear();
-				}
+				clearHoveredParentHoverStyle();
 				if (getTreeItem() == null) {
 					// this happens when something is still being dragged but it isn't over the tree
 					return;
@@ -176,6 +171,12 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 			}
 
 		});
+	}
+
+	private void clearHoveredParentHoverStyle() {
+		if (hoveredChildParent != null) {
+			hoveredChildParent.getStyleClass().remove(HOVER_TREE_CELL);
+		}
 	}
 
 	EditableTreeCellFactory<E> getNewInstance() {
@@ -201,6 +202,8 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 		}
 		setText(null);
 		setGraphic(textField);
+		textField.requestFocus();
+		textField.selectAll();
 	}
 
 	@Override
@@ -225,7 +228,6 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 				}
 				setText(null);
 				setGraphic(textField);
-				textField.selectAll();
 			} else {
 				if (textField != null) {
 					setText(textField.getText());

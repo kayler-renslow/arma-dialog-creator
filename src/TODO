@@ -8,6 +8,7 @@ FEATURES:
 >have a color theme maker so that you don't need to constantly have to set colors to a macro. Maybe even have a big default archive for all attributes? Maybe just place them inside the lookup thingy?
 >go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls
 >for preview, have a control state toggler. Also, for action on buttons, have popup window show with action text.
+>add check to see if safeZone should be applied to control(s). This is checked by seeing if x,y,w,h properties are < 0 or > 1
 
 BUGS:
 -----------------------------------

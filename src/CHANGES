@@ -1,8 +1,7 @@
 ADDED:
-    composite icon to differentiate between regular tree items and composite ones
-    composite icon
-    control group testing data creator
-CHANGED:
     none
+CHANGED:
+    editing class name of control in tree view will now automatically focus to text field and select all text
 FIXED:
-    not being able to drag into empty folders
+    issue that when the hover style (the one for adding into empty folders in editable tree view) was removed, the item couldn't be visibly selected again.
+        Turns out the style classes were cleared so I made sure to only remove the hover style instead of clearing the style classes.
