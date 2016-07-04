@@ -27,7 +27,6 @@ classExtend : Colon Identifier;
 classContent : LBrace fileEntries RBrace;
 
 
-Define :'#define';
 Eval : '__EVAL';
 Exec : '__EXEC';
 Class : 'class';

@@ -1,9 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
@@ -97,16 +99,16 @@ class ADCCanvasView extends HBox implements CanvasView {
 			}
 		});
 
-		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<TreeItemEntry>>() {
+		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<? extends TreeItemEntry>>() {
 			@Override
-			public void onChanged(Change<? extends TreeItem<TreeItemEntry>> c) {
+			public void onChanged(Change<? extends TreeItem<? extends TreeItemEntry>> c) {
 				if (selectFromCanvas) {
 					return;
 				}
 				selectFromTreeview = true;
 				Selection selection = uiCanvasEditor.getSelection();
 				selection.clearSelected();
-				for (TreeItem<TreeItemEntry> treeItem : c.getList()) {
+				for (TreeItem<? extends TreeItemEntry> treeItem : c.getList()) {
 					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
 						selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
@@ -123,16 +125,21 @@ class ADCCanvasView extends HBox implements CanvasView {
 			@Override
 			public void onChanged(Change<? extends ArmaControl> c) {
 				uiCanvasEditor.removeAllComponents();
-				for (ArmaControl control : display.getControls()) {
-					uiCanvasEditor.addComponentNoPaint(control.getRenderer());
-				}
+				addAllControls(display.getControls(), uiCanvasEditor);
 				uiCanvasEditor.paint();
 			}
 		});
-		for (ArmaControl control : display.getControls()) {
-			uiCanvasEditor.addComponentNoPaint(control.getRenderer());
-		}
+		addAllControls(display.getControls(), uiCanvasEditor);
 		uiCanvasEditor.paint();
+	}
+
+	private static void addAllControls(List<ArmaControl> controls, UICanvas canvas) {
+		for (ArmaControl control : controls) {
+			canvas.addComponentNoPaint(control.getRenderer());
+			if (control instanceof ArmaControlGroup) {
+				addAllControls(((ArmaControlGroup) control).getControls(), canvas);
+			}
+		}
 	}
 
 	private void focusToCanvas(boolean focusToCanvas) {

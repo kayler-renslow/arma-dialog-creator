@@ -1,14 +1,18 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.preview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.collections.ListChangeListener;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
+
+import java.util.List;
 
 /**
  Created by Kayler on 06/14/2016.
@@ -51,19 +55,24 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 			@Override
 			public void onChanged(Change<? extends ArmaControl> c) {//I'm to lazy to do this efficiently
 				previewCanvas.removeAllComponents();
-				for (ArmaControl control : armaDisplay.getControls()) {
-					previewCanvas.addComponentNoPaint(control.getRenderer());
-				}
+				addAllControls(armaDisplay.getControls(), previewCanvas);
 				previewCanvas.paint();
 			}
 		});
 		armaDisplay.getControls().addListener(displayChangeListener);
 		previewCanvas.removeAllComponents();
-		for (ArmaControl control : armaDisplay.getControls()) {
-			previewCanvas.addComponentNoPaint(control.getRenderer());
-		}
+		addAllControls(armaDisplay.getControls(), previewCanvas);
 		previewCanvas.paint();
 		super.show();
+	}
+
+	private static void addAllControls(List<ArmaControl> controls, UICanvas canvas) {
+		for (ArmaControl control : controls) {
+			canvas.addComponentNoPaint(control.getRenderer());
+			if (control instanceof ArmaControlGroup) {
+				addAllControls(((ArmaControlGroup) control).getControls(), canvas);
+			}
+		}
 	}
 
 	private void repaintCanvas() {

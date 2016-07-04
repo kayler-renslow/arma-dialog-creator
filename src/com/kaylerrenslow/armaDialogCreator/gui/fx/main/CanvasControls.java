@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.SnapConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +23,7 @@ import javafx.scene.layout.VBox;
 class CanvasControls extends VBox implements SnapConfiguration {
 
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView editorComponentTreeView = new EditorComponentTreeView();
+	private final EditorComponentTreeView<? extends TreeItemEntry> editorComponentTreeView = new EditorComponentTreeView<>();
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
 	private final CheckBox cbViewportSnap = new CheckBox(Lang.CanvasControls.VIEWPORT_SNAP);
@@ -83,7 +84,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		return cbViewportSnap.isSelected();
 	}
 
-	public EditorComponentTreeView getEditorComponentTreeView() {
+	public EditorComponentTreeView<? extends TreeItemEntry> getEditorComponentTreeView() {
 		return editorComponentTreeView;
 	}
 

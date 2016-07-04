@@ -1,7 +1,6 @@
 ADDED:
     none
 CHANGED:
-    editing class name of control in tree view will now automatically focus to text field and select all text
+    trying to get control groups to work correctly in canvas
 FIXED:
-    issue that when the hover style (the one for adding into empty folders in editable tree view) was removed, the item couldn't be visibly selected again.
-        Turns out the style classes were cleared so I made sure to only remove the hover style instead of clearing the style classes.
+    none

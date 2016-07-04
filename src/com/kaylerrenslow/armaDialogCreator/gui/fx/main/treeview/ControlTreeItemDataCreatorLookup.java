@@ -1,12 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticRenderer;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.ControlGroupDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.StaticDataCreator;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 
 /**
  Created by Kayler on 06/19/2016.
@@ -26,12 +23,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	STATIC_SKEW(ControlType.STATIC_SKEW, StaticDataCreator.INSTANCE),
 	LINEBREAK(ControlType.LINEBREAK, StaticDataCreator.INSTANCE),
 	TREE(ControlType.TREE, StaticDataCreator.INSTANCE),
-	CONTROLS_GROUP(ControlType.CONTROLS_GROUP,  new TreeItemDataCreator<TreeItemEntry>() {
-		@Override
-		public TreeItemEntry createNew(CellType cellType) {
-			return new ControlGroupTreeItemEntry(new ArmaControlGroup("d", ArmaDialogCreator.getCanvasView().getCurrentResolution(), StaticRenderer.class, null,null));
-		}
-	}, true),
+	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupDataCreator.INSTANCE, true),
 	XKEYDESC(ControlType.XKEYDESC, StaticDataCreator.INSTANCE),
 	ANIMATED_TEXTURE(ControlType.ANIMATED_TEXTURE, StaticDataCreator.INSTANCE),
 	ANIMATED_USER(ControlType.ANIMATED_USER, StaticDataCreator.INSTANCE),
