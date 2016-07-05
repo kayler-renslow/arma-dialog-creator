@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
@@ -10,10 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
-import com.kaylerrenslow.armaDialogCreator.util.Point;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -88,9 +84,9 @@ public class UICanvasEditor extends UICanvas {
 	private long zxPressStartTimeMillis;
 
 	private ValueObserver<@Nullable CanvasComponent> doubleClickObserver = new ValueObserver<>(null);
-	private final ValueListener<ArmaControlClass> CONTROL_LISTENER = new ValueListener<ArmaControlClass>() {
+	private final UpdateListener<Object> controlListener = new UpdateListener<Object>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+		public void update(Object data) {
 			paint();
 		}
 	};
@@ -154,7 +150,7 @@ public class UICanvasEditor extends UICanvas {
 		super.addComponentNoPaint(component);
 		if (component instanceof ArmaControlRenderer) {
 			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
-			renderer.getMyControl().getControlListener().addValueListener(CONTROL_LISTENER);
+			renderer.getMyControl().getUpdateGroup().addListener(controlListener);
 		}
 	}
 
@@ -183,7 +179,7 @@ public class UICanvasEditor extends UICanvas {
 			this.selection.removeFromSelection(component);
 			if (component instanceof ArmaControlRenderer) {
 				ArmaControlRenderer renderer = (ArmaControlRenderer) component;
-				renderer.getMyControl().getControlListener().removeListener(CONTROL_LISTENER);
+				renderer.getMyControl().getUpdateGroup().removeUpdateListener(controlListener);
 			}
 		}
 		return removed;
@@ -298,7 +294,11 @@ public class UICanvasEditor extends UICanvas {
 		if (isSelectingArea() && !component.isEnabled()) {
 			return;
 		}
-		super.paintComponent(component);
+		if (selected && component instanceof ArmaControlRenderer) {
+			((ArmaControlRenderer) component).forcePaint(gc);
+		} else {
+			super.paintComponent(component);
+		}
 	}
 
 	private boolean isSelectingArea() {

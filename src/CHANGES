@@ -1,6 +1,6 @@
 ADDED:
-    clipping for control groups
+    none
 CHANGED:
-    none
+    how control/display updates work (rather than listening to controls themselves, a generic update listener is notified)
 FIXED:
-    none
+    control group render issues in preview

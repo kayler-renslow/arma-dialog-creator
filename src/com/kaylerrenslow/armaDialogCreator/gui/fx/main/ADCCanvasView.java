@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlCreationC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
@@ -40,11 +41,20 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
 	private ArmaResolution resolution;
+	private ArmaDisplay display;
 
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
 	private boolean selectFromTreeview = false;
+	private final UpdateListener<ArmaDisplay.DisplayUpdate> displayListener = new UpdateListener<ArmaDisplay.DisplayUpdate>() {
+		@Override
+		public void update(ArmaDisplay.DisplayUpdate data) {
+			uiCanvasEditor.removeAllComponents();
+			addAllControls(display.getControls(), true, uiCanvasEditor);
+			uiCanvasEditor.paint();
+		}
+	};
 
 	ADCCanvasView(ArmaResolution resolution) {
 		this.resolution = resolution;
@@ -121,23 +131,21 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void setToDisplay(@NotNull ArmaDisplay display) {
-		display.getControls().addListener(new ListChangeListener<ArmaControl>() {
-			@Override
-			public void onChanged(Change<? extends ArmaControl> c) {
-				uiCanvasEditor.removeAllComponents();
-				addAllControls(display.getControls(), uiCanvasEditor);
-				uiCanvasEditor.paint();
-			}
-		});
-		addAllControls(display.getControls(), uiCanvasEditor);
+		if (this.display != null) {
+			this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
+		}
+		this.display = display;
+		display.getUpdateListenerGroup().addListener(displayListener);
+		addAllControls(display.getControls(), true, uiCanvasEditor);
 		uiCanvasEditor.paint();
 	}
 
-	private static void addAllControls(List<ArmaControl> controls, UICanvas canvas) {
+	private static void addAllControls(List<ArmaControl> controls, boolean setVisible, UICanvas canvas) {
 		for (ArmaControl control : controls) {
 			canvas.addComponentNoPaint(control.getRenderer());
+			control.getRenderer().disablePaintFromCanvas(!setVisible);
 			if (control instanceof ArmaControlGroup) {
-				addAllControls(((ArmaControlGroup) control).getControls(), canvas);
+				addAllControls(((ArmaControlGroup) control).getControls(), false, canvas);
 			}
 		}
 	}

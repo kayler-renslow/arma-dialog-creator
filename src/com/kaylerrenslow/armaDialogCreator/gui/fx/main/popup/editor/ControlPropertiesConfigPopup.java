@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlClass;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
@@ -13,6 +12,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -319,12 +319,12 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					} else {
 						controlProperty.getValuesObserver().updateValue(new String[]{newValue.getUserData().toString()});
 					}
-					control.getControlListener().updateValue(control);
+					control.getUpdateGroup().update(control);
 				}
 			});
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					if (!controlProperty.valuesAreSet()) {
 						return;
 					}
@@ -391,7 +391,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 							controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
 						}
 					}
-					control.getControlListener().updateValue(control);
+					control.getUpdateGroup().update(control);
 				}
 			});
 			placeTooltip(this, lookup);
@@ -399,9 +399,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				setPromptText(promptText);
 			}
 			InputField myself = this;
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					if (controlProperty.valuesAreSet()) {
 						myself.setText(controlProperty.getStringValue().replaceAll("\"", "\"\""));
 					}
@@ -469,13 +469,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					} else {
 						controlProperty.setValue(new AColor(newValue));
 					}
-					control.getControlListener().updateValue(control);
+					control.getUpdateGroup().update(control);
 				}
 			});
 			ColorPicker myself = this;
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					if (controlProperty.valuesAreSet()) { //maybe wasn't updated
 						myself.setValue(AColor.toJavaFXColor(controlProperty.getValues()));
 					}
@@ -537,13 +537,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					} else {
 						controlProperty.setValue(newValue);
 					}
-					control.getControlListener().updateValue(control);
+					control.getUpdateGroup().update(control);
 				}
 			});
 			ChoiceBox<Boolean> myself = this;
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					if (controlProperty.valuesAreSet()) {
 						myself.setValue(controlProperty.getBooleanValue());
 					}
@@ -608,7 +608,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 						controlProperty.setValue(newValue.toString(), index);
-						control.getControlListener().updateValue(control);
+						control.getUpdateGroup().update(control);
 					}
 				});
 				controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
@@ -624,9 +624,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				placeTooltip(inputField, lookup);
 				getChildren().add(inputField);
 			}
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					if (controlProperty.valuesAreSet()) {
 						for (int i = 0; i < fields.size(); i++) {
 							fields.get(i).setValueFromText(controlProperty.getValues()[i]);
@@ -699,13 +699,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
 					controlProperty.setValue(newValue.name());
-					control.getControlListener().updateValue(control);
+					control.getUpdateGroup().update(control);
 				}
 			});
 			ChoiceBox<AFont> myself = this;
-			control.getControlListener().addValueListener(new ValueListener<ArmaControlClass>() {
+			control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
+				public void update(Object data) {
 					myself.setValue(AFont.valueOf(controlProperty.getStringValue()));
 				}
 			});

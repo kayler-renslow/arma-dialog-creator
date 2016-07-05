@@ -14,6 +14,9 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 	@Override
 	public void paint(GraphicsContext gc) {
 		super.paint(gc);
+		if(getArea() < 2){
+			return;
+		}
 		gc.save();
 		gc.beginPath();
 		gc.moveTo(getX1(), getY1());
@@ -25,7 +28,7 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 		gc.clip();
 		ArmaControlGroup controlGroup = (ArmaControlGroup) getMyControl();
 		for (ArmaControl control : controlGroup.getControls()) {
-			control.getRenderer().paint(gc);
+			control.getRenderer().forcePaint(gc);
 		}
 		gc.restore();
 	}

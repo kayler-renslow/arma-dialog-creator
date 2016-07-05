@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ControlGroupControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
@@ -17,6 +18,6 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntr
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup" + (id++), ArmaDialogCreator.getCanvasView().getCurrentResolution()));
+		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup" + (id++), -1, ControlStyle.CENTER, 0, 0, 1, 1, ArmaDialogCreator.getCanvasView().getCurrentResolution()));
 	}
 }

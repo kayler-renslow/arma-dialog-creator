@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,15 +25,14 @@ public class ArmaControlClass {
 
 	protected String className;
 
-	private final ValueObserver<ArmaControlClass> myselfListener = new ValueObserver<>(this);
-
+	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
 
 	public ArmaControlClass(@NotNull String name) {
 		this.className = name;
-		myselfListener.addValueListener(new ValueListener<ArmaControlClass>() {
+		updateGroup.addListener(new UpdateListener<Object>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<ArmaControlClass> observer, ArmaControlClass oldValue, ArmaControlClass newValue) {
-				if (newValue != null) {
+			public void update(@Nullable Object data) {
+				if (data != null) {
 					updateProperties();
 				}
 			}
@@ -182,15 +181,16 @@ public class ArmaControlClass {
 	}
 
 	/**
-	 Get the listener that listens to this object. Instead of adding listeners to all properties, anytime a control property is changed inside this control this returned observer should be notified from where it was changed.<br>
+	 Gets the update listener group that listens to this object. Instead of adding listeners to all properties, anytime a control property is changed inside this control the listeners should be notified from where it was changed.<br>
 	 Also, since it will not automatically change, it will cut down on the number of renders performed by the editor's canvas<br>
-	 The value inside the listener <b>SHOULD NOT CHANGE</b> as that would be expensive to constantly recreate the control. It can be null, however, which means all listeners except this control class's inner listener will be notified
+	 The value inside the listener can be null, which means all listeners except this control class's inner listener will be notified
 	 */
-	public ValueObserver<ArmaControlClass> getControlListener() {
-		return myselfListener;
+	public UpdateListenerGroup<Object> getUpdateGroup() {
+		return updateGroup;
 	}
 
-	/** Called when myselfObserver has been notified of an update and the new value is not null. Default implementation is nothing */
+
+	/** Called when update listeners have been notified of an update and the new value is not null. Default implementation is nothing */
 	protected void updateProperties() {
 
 	}

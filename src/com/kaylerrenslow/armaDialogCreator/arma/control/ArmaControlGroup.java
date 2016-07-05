@@ -22,7 +22,7 @@ public class ArmaControlGroup extends ArmaControl {
 			@Override
 			public void onChanged(Change<? extends ArmaControl> c) {
 				c.next();
-				me.getControlListener().updateValue(me);
+				me.getUpdateGroup().update(me);
 			}
 		});
 	}

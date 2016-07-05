@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class ArmaControlRenderer extends TextCanvasComponent implements ViewportComponent {
 	protected ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
+	private boolean disablePaintFromCanvas;
 
 	public ArmaControlRenderer() {
 		super(0, 0, 0, 0);
@@ -123,31 +125,31 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 	@Override
 	public void setGhost(boolean ghost) {
 		super.setGhost(ghost);
-		myControl.getControlListener().updateValue(null);
+		myControl.getUpdateGroup().update(null);
 	}
 
 	@Override
 	public void setPercentX(double percentX) {
 		myControl.defineX(percentX);
-		myControl.getControlListener().updateValue(null);
+		myControl.getUpdateGroup().update(null);
 	}
 
 	@Override
 	public void setPercentY(double percentY) {
 		myControl.defineY(percentY);
-		myControl.getControlListener().updateValue(null);
+		myControl.getUpdateGroup().update(null);
 	}
 
 	@Override
 	public void setPercentW(double percentW) {
 		myControl.defineW(percentW);
-		myControl.getControlListener().updateValue(null);
+		myControl.getUpdateGroup().update(null);
 	}
 
 	@Override
 	public void setPercentH(double percentH) {
 		myControl.defineH(percentH);
-		myControl.getControlListener().updateValue(null);
+		myControl.getUpdateGroup().update(null);
 	}
 
 	@Override
@@ -188,5 +190,26 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 	@Override
 	public int calcScreenHeight(double percentH) {
 		return myControl.calcScreenHeight(percentH);
+	}
+
+	@Override
+	public void paint(GraphicsContext gc) {
+		if (disablePaintFromCanvas) {
+			return;
+		}
+		super.paint(gc);
+	}
+
+	/** Forces the paint on the given graphics context. @see ArmaControlRenderer#disablePaintFromCanvas(boolean) for more information as to why this method is needed. */
+	public void forcePaint(GraphicsContext gc) {
+		boolean old = disablePaintFromCanvas;
+		disablePaintFromCanvas = false;
+		paint(gc);
+		disablePaintFromCanvas = old;
+	}
+
+	/** Since the control group's individual components are added to the canvas, we can't allow the default implementation of paint do anything. This item should be painted when the group is painted */
+	public void disablePaintFromCanvas(boolean disable) {
+		this.disablePaintFromCanvas = disable;
 	}
 }

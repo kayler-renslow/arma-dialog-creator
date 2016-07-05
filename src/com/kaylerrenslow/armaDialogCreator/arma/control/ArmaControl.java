@@ -267,7 +267,7 @@ public class ArmaControl extends ArmaControlClass {
 		wProperty.setValueSilent(width);
 		hProperty.setValueSilent(height);
 
-		getControlListener().updateValue(null); //don't execute updateProperties
+		getUpdateGroup().update(null); //don't execute updateProperties
 	}
 
 	public ControlProperty[] getEventProperties() {
