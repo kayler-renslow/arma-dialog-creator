@@ -54,14 +54,10 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		armaDisplay.getControls().addListener(new ListChangeListener<ArmaControl>() {
 			@Override
 			public void onChanged(Change<? extends ArmaControl> c) {//I'm to lazy to do this efficiently
-				previewCanvas.removeAllComponents();
-				addAllControls(armaDisplay.getControls(), previewCanvas);
 				previewCanvas.paint();
 			}
 		});
-		armaDisplay.getControls().addListener(displayChangeListener);
-		previewCanvas.removeAllComponents();
-		addAllControls(armaDisplay.getControls(), previewCanvas);
+		previewCanvas.setDisplay(armaDisplay);
 		previewCanvas.paint();
 		super.show();
 	}

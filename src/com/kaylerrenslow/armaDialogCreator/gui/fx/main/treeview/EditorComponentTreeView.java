@@ -76,11 +76,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 
 		if (group != null) {
-			if (groupTreeItem.getChildren().size() == 1 && child.getParent() == groupTreeItem) {//item that was added is only child
-				correctedIndex = 0;
-			} else {
-				correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem), getRow(child), parent);
-			}
+			correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem) + 1, getRow(child), parent);
 			group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 		} else { //didn't go into a control group, so it is in a folder.
 			correctedIndex = getCorrectedIndex(0, getRow(child), parent);
