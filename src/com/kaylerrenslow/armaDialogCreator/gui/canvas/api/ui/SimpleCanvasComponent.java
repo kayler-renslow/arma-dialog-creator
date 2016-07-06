@@ -16,8 +16,8 @@ import java.util.Comparator;
  Created on 05/12/2016. */
 public class SimpleCanvasComponent implements CanvasComponent {
 
-	private static Color randomColor() {
-		int argb = (int) (System.currentTimeMillis() + System.nanoTime());
+	private static Color randomColor(Object o) {
+		int argb = o.hashCode();
 		int r = (argb) & 0xFF;
 		int g = (argb >> 8) & 0xFF;
 		int b = (argb >> 16) & 0xFF;
@@ -26,7 +26,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	}
 
 	protected int x1, y1, x2, y2;
-	protected Color backgroundColor = randomColor();
+	protected Color backgroundColor = randomColor(this);
 	protected Color textColor = backgroundColor.invert();
 
 	private Border border;

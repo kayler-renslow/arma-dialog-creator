@@ -2,13 +2,17 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.*;
+import java.io.IOException;
+import java.net.URL;
 
 /**
  @author Kayler
@@ -25,12 +29,13 @@ public class StagePopup<E extends Parent> {
 	 The stylesheets will also update whenever the primary stage's stylesheets get updated.
 
 	 @param primaryStage the primary stage of the JavaFX application (should be the one from the class that extends Application). Can also be null (won't inherit icons or stylesheets).
+	 @param popupStage the already created stage that will house the popup
 	 @param rootElement the root element of the scene
 	 @param title title of the popup window
 	 */
-	public StagePopup(@Nullable Stage primaryStage, E rootElement, String title) {
+	public StagePopup(@Nullable Stage primaryStage, @NotNull Stage popupStage, E rootElement, String title) {
 		myRootElement = rootElement;
-		myStage = new Stage();
+		myStage = popupStage;
 		myScene = new Scene(rootElement);
 		myStage.setScene(myScene);
 		myStage.setTitle(title);
@@ -59,6 +64,31 @@ public class StagePopup<E extends Parent> {
 				hiding();
 			}
 		});
+	}
+
+	/**
+	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
+	 The stylesheets will also update whenever the primary stage's stylesheets get updated.
+
+	 @param primaryStage the primary stage of the JavaFX application (should be the one from the class that extends Application). Can also be null (won't inherit icons or stylesheets).
+	 @param rootElement the root element of the scene
+	 @param title title of the popup window
+	 */
+	public StagePopup(@Nullable Stage primaryStage, E rootElement, String title) {
+		this(primaryStage, new Stage(), rootElement, title);
+	}
+
+	/**
+	 Creates a new JavaFX Stage based popup window from an .fxml file and returns it. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
+	 The stylesheets will also update whenever the primary stage's stylesheets get updated.
+
+	 @param primaryStage the primary stage of the JavaFX application (should be the one from the class that extends Application). Can also be null (won't inherit icons or stylesheets).
+	 @param fxmlLocation String location inside the buildpath that points to the .fxml file
+	 @param title title of the popup window
+	 */
+	public static<T extends Parent> StagePopup newFxmlInstance(@Nullable Stage primaryStage, @NotNull URL fxmlLocation, String title) throws IOException {
+		T root = FXMLLoader.load(fxmlLocation);
+		return new StagePopup<>(primaryStage, new Stage(), root, title);
 	}
 
 	/** Make the popup magically appear (not really magically) */
