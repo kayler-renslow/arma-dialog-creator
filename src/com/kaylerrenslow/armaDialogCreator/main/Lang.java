@@ -80,6 +80,14 @@ public interface Lang {
 		interface MissingControlPropertiesConfig {
 			String POPUP_TITLE = "Missing Control Properties";
 		}
+
+		interface NewControl {
+			String POPUP_TITLE = "Arma Dialog Creator - New Control";
+
+			interface AddPropertiesPopup {
+				String POPUP_TITLE = "Arma Dialog Creator - New Control - Add Properties";
+			}
+		}
 	}
 
 	interface Misc {

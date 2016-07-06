@@ -23,6 +23,7 @@ public class StagePopup<E extends Parent> {
 	protected final Scene myScene;
 	protected final Stage myStage;
 	protected final E myRootElement;
+	private FXMLLoader myLoader;
 
 	/**
 	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
@@ -33,7 +34,7 @@ public class StagePopup<E extends Parent> {
 	 @param rootElement the root element of the scene
 	 @param title title of the popup window
 	 */
-	public StagePopup(@Nullable Stage primaryStage, @NotNull Stage popupStage, E rootElement, String title) {
+	public StagePopup(@Nullable Stage primaryStage, @NotNull Stage popupStage, @NotNull E rootElement, @Nullable String title) {
 		myRootElement = rootElement;
 		myStage = popupStage;
 		myScene = new Scene(rootElement);
@@ -74,8 +75,21 @@ public class StagePopup<E extends Parent> {
 	 @param rootElement the root element of the scene
 	 @param title title of the popup window
 	 */
-	public StagePopup(@Nullable Stage primaryStage, E rootElement, String title) {
+	public StagePopup(@Nullable Stage primaryStage, @NotNull E rootElement, @Nullable String title) {
 		this(primaryStage, new Stage(), rootElement, title);
+	}
+
+	/**
+	 Creates a new JavaFX Stage based popup window from a .fxml file. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
+	 The stylesheets will also update whenever the primary stage's stylesheets get updated.
+
+	 @param primaryStage the primary stage of the JavaFX application (should be the one from the class that extends Application). Can also be null (won't inherit icons or stylesheets).
+	 @param loader the loader that is <b>already loaded</b> and contains the root element and the controller class
+	 @param title title of the popup window
+	 */
+	public StagePopup(@Nullable Stage primaryStage, @NotNull FXMLLoader loader, @Nullable String title) {
+		this(primaryStage, new Stage(), loader.getRoot(), title);
+		this.myLoader = loader;
 	}
 
 	/**
@@ -86,7 +100,7 @@ public class StagePopup<E extends Parent> {
 	 @param fxmlLocation String location inside the buildpath that points to the .fxml file
 	 @param title title of the popup window
 	 */
-	public static<T extends Parent> StagePopup newFxmlInstance(@Nullable Stage primaryStage, @NotNull URL fxmlLocation, String title) throws IOException {
+	public static <T extends Parent> StagePopup newFxmlInstance(@Nullable Stage primaryStage, @NotNull URL fxmlLocation, @Nullable String title) throws IOException {
 		T root = FXMLLoader.load(fxmlLocation);
 		return new StagePopup<>(primaryStage, new Stage(), root, title);
 	}
@@ -134,5 +148,24 @@ public class StagePopup<E extends Parent> {
 	public void beepFocus() {
 		requestFocus();
 		Toolkit.getDefaultToolkit().beep();
+	}
+
+	/** Gets the loader. This will be null if constructor {@link StagePopup#StagePopup(Stage, FXMLLoader, String)} isn't used */
+	@Nullable
+	protected final FXMLLoader getMyLoader() {
+		return myLoader;
+	}
+
+	public void setStageSize(double w, double h) {
+		myStage.setWidth(w);
+		myStage.setHeight(h);
+	}
+
+	public double getStageWidth(){
+		return myStage.getWidth();
+	}
+
+	public double getStageHeight(){
+		return myStage.getHeight();
 	}
 }

@@ -62,15 +62,15 @@ public class ADCWindow {
 	}
 
 	public void setToDarkTheme(boolean set) {
-		String DARK_THEME = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
+		final String darkTheme = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
 		if (set) {
 			CanvasViewColors.EDITOR_BG = CanvasViewColors.Default.DARK_THEME_EDITOR_BG;
 			CanvasViewColors.GRID = CanvasViewColors.Default.DARK_THEME_GRID;
-			primaryStage.getScene().getStylesheets().add(DARK_THEME);
+			primaryStage.getScene().getStylesheets().add(darkTheme);
 		} else {
 			CanvasViewColors.EDITOR_BG = CanvasViewColors.Default.EDITOR_BG;
 			CanvasViewColors.GRID = CanvasViewColors.Default.GRID;
-			primaryStage.getScene().getStylesheets().remove(DARK_THEME);
+			primaryStage.getScene().getStylesheets().remove(darkTheme);
 		}
 		canvasView.updateCanvas();
 	}

@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.io;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +69,7 @@ public class ApplicationDataManager {
 		try {
 			applicationProperties.load(new FileInputStream(appPropertiesFile));
 		} catch (IOException e) {
-			ArmaDialogCreator.fatal(e);
+			ExceptionHandler.fatal(e);
 		}
 		for (ApplicationProperty p : ApplicationProperty.values()) {
 			if (applicationProperties.contains(p.propertyKey)) {
@@ -83,7 +83,7 @@ public class ApplicationDataManager {
 		try {
 			appdataFolder.mkdir();
 		} catch (SecurityException e) {
-			ArmaDialogCreator.fatal(e);
+			ExceptionHandler.fatal(e);
 			return;
 		}
 		createApplicationPropertiesFile();
@@ -93,7 +93,7 @@ public class ApplicationDataManager {
 		try {
 			appPropertiesFile.createNewFile();
 		} catch (IOException e) {
-			ArmaDialogCreator.fatal(e);
+			ExceptionHandler.fatal(e);
 			return;
 		}
 		for (ApplicationProperty p : ApplicationProperty.values()) {

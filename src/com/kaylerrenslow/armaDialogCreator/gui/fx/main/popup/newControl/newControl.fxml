@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlPopupController">
+   <children>
+      <VBox prefHeight="582.0" prefWidth="866.0" VBox.vgrow="ALWAYS">
+         <children>
+            <HBox prefHeight="35.0" prefWidth="662.0" spacing="10.0">
+               <children>
+                  <Label opacity="0.84" text="Control Class Name:">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="tfClassName" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" promptText="class name">
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </TextField>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+            </HBox>
+            <Separator prefWidth="200.0">
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
+            </Separator>
+            <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="688.0" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="0.0" prefHeight="543.0" prefWidth="180.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Properties" />
+                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="200.0" prefHeight="418.0" prefWidth="216.0" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <content>
+                              <VBox fx:id="vbProperties" prefHeight="200.0" prefWidth="100.0" />
+                           </content>
+                        </ScrollPane>
+                        <SplitMenuButton fx:id="mbtnAddProperty" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Add Property" textAlignment="CENTER">
+                          <items>
+                            <MenuItem fx:id="miAddCustomProperty" mnemonicParsing="false" text="Add Custom Property" />
+                          </items>
+                        </SplitMenuButton>
+                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="201.0" spacing="10.0">
+                           <children>
+                              <Button fx:id="btnEditProperty" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Edit" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="btnRemoveProperty" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Remove" HBox.hgrow="ALWAYS" />
+                           </children>
+                        </HBox>
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="454.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Preview Sample (Read Only)" />
+                        <TextArea fx:id="taPreviewSample" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+      </VBox>
+      <Separator prefWidth="200.0">
+         <VBox.margin>
+            <Insets bottom="10.0" top="10.0" />
+         </VBox.margin>
+      </Separator>
+      <HBox alignment="CENTER_RIGHT" fillHeight="false" prefHeight="0.0" prefWidth="866.0" spacing="5.0" VBox.vgrow="NEVER">
+         <children>
+            <Button fx:id="btnCancel" mnemonicParsing="false" prefWidth="70.0" text="Cancel" />
+            <Button fx:id="btnOk" mnemonicParsing="false" prefWidth="120.0" text="OK" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</VBox>
