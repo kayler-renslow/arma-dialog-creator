@@ -50,7 +50,6 @@ public class AHexColor extends AColor {
 		int b = (color >> 16) & 0xFF;
 		int a = (color >> 24) & 0xFF;
 		double f = 255.0;
-		double[] arr = {r / f, g / f, b / f, a / f};
-		return arr;
+		return new double[]{r / f, g / f, b / f, a / f};
 	}
 }

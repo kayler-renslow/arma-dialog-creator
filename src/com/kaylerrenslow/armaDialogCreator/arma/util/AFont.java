@@ -17,4 +17,9 @@ public enum AFont {
 
 	/** Default Arma 3 font */
 	public static AFont DEFAULT = PuristaMedium;
+
+	@Override
+	public String toString() {
+		return name();
+	}
 }

@@ -161,7 +161,7 @@ public class AColor {
 	}
 
 	/** Serializes the color array into a String. Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}" */
-	public String toArrayString() {
+	public String toString() {
 		return "{" + format.format(color[0]) + "," + format.format(color[1]) + "," + format.format(color[2]) + "," + format.format(color[3]) + "}";
 	}
 
