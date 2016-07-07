@@ -52,7 +52,7 @@
                               <VBox fx:id="vbProperties" prefHeight="200.0" prefWidth="100.0" />
                            </content>
                         </ScrollPane>
-                        <SplitMenuButton fx:id="mbtnAddProperty" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Add Property" textAlignment="CENTER">
+                        <SplitMenuButton fx:id="mbtnConfigureProperties" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Configure Properties" textAlignment="CENTER">
                           <items>
                             <MenuItem fx:id="miAddCustomProperty" mnemonicParsing="false" text="Add Custom Property" />
                           </items>

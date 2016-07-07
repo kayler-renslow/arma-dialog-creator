@@ -286,6 +286,10 @@ public enum ControlPropertyLookup {
 		this(propertyId, propertyName, propertyType, about == null ? strArr("No documentation.") : strArr(about), options);
 	}
 
+	@Override
+	public String toString() {
+		return propertyName;
+	}
 
 	public ControlProperty getEventProperty(String defaultEventValue) {
 		return new ControlProperty(this, propertyName, propertyType, defaultEventValue);

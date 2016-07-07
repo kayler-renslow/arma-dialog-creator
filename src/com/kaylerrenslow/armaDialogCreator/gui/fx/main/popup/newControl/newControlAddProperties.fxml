@@ -4,30 +4,24 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="800.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="800.0" spacing="10.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlAddPropertiesPopupController">
    <children>
       <Label contentDisplay="RIGHT" text="Filter:">
          <graphic>
-            <TextField />
+            <TextField fx:id="tfFilter" promptText="property name" />
          </graphic>
       </Label>
       <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" VBox.vgrow="ALWAYS">
          <children>
-            <TableView tableMenuButtonVisible="true" HBox.hgrow="ALWAYS">
-              <columns>
-                <TableColumn prefWidth="100.0" text="Property Name" />
-                <TableColumn prefWidth="92.0" text="Property Type" />
-                  <TableColumn prefWidth="213.0" text="Description" />
-              </columns>
-            </TableView>
+            <TableView fx:id="tvAllProperties" tableMenuButtonVisible="true" HBox.hgrow="ALWAYS" />
             <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="20.0">
                <children>
-                  <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="&lt;">
+                  <Button fx:id="btnToTv" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="&lt;">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Button>
-                  <Button mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="&gt;">
+                  <Button fx:id="btnToLv" mnemonicParsing="false" prefHeight="50.0" prefWidth="50.0" text="&gt;">
                      <font>
                         <Font size="24.0" />
                      </font>
@@ -37,7 +31,11 @@
                   <Insets />
                </HBox.margin>
             </VBox>
-            <ListView prefHeight="437.0" prefWidth="158.0" HBox.hgrow="ALWAYS" />
+            <Label contentDisplay="BOTTOM" text="Selected Properties">
+               <graphic>
+                  <TableView fx:id="tvSelectedProperties" tableMenuButtonVisible="true" />
+               </graphic>
+            </Label>
          </children>
       </HBox>
       <Separator prefWidth="200.0">
@@ -47,8 +45,8 @@
       </Separator>
       <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="600.0" spacing="10.0">
          <children>
-            <Button mnemonicParsing="false" prefWidth="75.0" text="Cancel" />
-            <Button mnemonicParsing="false" prefWidth="120.0" text="OK" />
+            <Button fx:id="btnCancel" mnemonicParsing="false" prefWidth="75.0" text="Cancel" />
+            <Button fx:id="btnOk" mnemonicParsing="false" prefWidth="120.0" text="OK" />
          </children>
       </HBox>
    </children>

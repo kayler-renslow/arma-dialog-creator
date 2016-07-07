@@ -17,7 +17,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 	public NewControlPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.Popups.NewControl.POPUP_TITLE);
 		NewControlPopupController controller = getMyLoader().getController();
-		controller.mbtnAddProperty.setOnAction(new EventHandler<ActionEvent>() {
+		controller.mbtnConfigureProperties.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				addPropertiesPopup.show();

@@ -86,6 +86,9 @@ public interface Lang {
 
 			interface AddPropertiesPopup {
 				String POPUP_TITLE = "Arma Dialog Creator - New Control - Add Properties";
+				String COLUMN_PROPERTY_NAME = "Property Name";
+				String COLUMN_PROPERTY_TYPE = "Property Type";
+				String COLUMN_PROPERTY_DESCRIPTION = "Property Description";
 			}
 		}
 	}

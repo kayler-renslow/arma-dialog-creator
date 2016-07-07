@@ -105,7 +105,8 @@ public class StagePopup<E extends Parent> {
 		return new StagePopup<>(primaryStage, new Stage(), root, title);
 	}
 
-	/** Make the popup magically appear (not really magically) */
+	/** Make the popup appear
+	 @see Stage#show() */
 	public void show() {
 		myStage.show();
 	}
@@ -114,13 +115,15 @@ public class StagePopup<E extends Parent> {
 		return myStage.isShowing();
 	}
 
-	/** Force close the popup. This will also call the method closing() */
+	/** Force close the popup. This will also call the method closing()
+	 @see Stage#close()  */
 	public void close() {
 		closing();
 		myStage.close();
 	}
 
-	/** Hides the popup */
+	/** Hides the popup
+	 @see Stage#hide()  */
 	public void hide() {
 		hiding();
 		myStage.hide();
@@ -161,11 +164,16 @@ public class StagePopup<E extends Parent> {
 		myStage.setHeight(h);
 	}
 
-	public double getStageWidth(){
+	public double getStageWidth() {
 		return myStage.getWidth();
 	}
 
-	public double getStageHeight(){
+	public double getStageHeight() {
 		return myStage.getHeight();
+	}
+
+	/** Performs the operation description at {@link Stage#showAndWait()} */
+	public void showAndWait() {
+		myStage.showAndWait();
 	}
 }

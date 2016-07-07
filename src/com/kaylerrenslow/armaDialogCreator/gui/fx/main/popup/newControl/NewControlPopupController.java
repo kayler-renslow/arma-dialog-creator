@@ -19,7 +19,7 @@ public class NewControlPopupController {
 	@FXML
 	public VBox vbProperties;
 	@FXML
-	public SplitMenuButton mbtnAddProperty;
+	public SplitMenuButton mbtnConfigureProperties;
 	@FXML
 	public MenuItem miAddCustomProperty;
 
@@ -30,9 +30,4 @@ public class NewControlPopupController {
 	public Button btnCancel;
 	@FXML
 	public Button btnOk;
-//
-//	@Override
-//	public void initialize(URL location, ResourceBundle resources) {
-//
-//	}
 }
