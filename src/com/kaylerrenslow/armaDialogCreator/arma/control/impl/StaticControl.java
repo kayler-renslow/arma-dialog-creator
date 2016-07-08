@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,25 +15,50 @@ public class StaticControl extends ArmaControl {
 
 	private ControlProperty backgroundColorProperty, colorTextProperty, textProperty;
 
+	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
+
+		private final ControlPropertyLookup[] REQUIRED_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
+				ControlPropertyLookup.COLOR_BACKGROUND,
+				ControlPropertyLookup.COLOR_TEXT,
+				ControlPropertyLookup.TEXT,
+				ControlPropertyLookup.FONT,
+		});
+
+		private final ControlPropertyLookup[] OPTIONAL_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
+				ControlPropertyLookup.MOVING,
+				ControlPropertyLookup.SHADOW,
+				ControlPropertyLookup.TOOLTIP,
+				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+				ControlPropertyLookup.STATIC_FIXED_WIDTH,
+				ControlPropertyLookup.STATIC_LINE_SPACING,
+				ControlPropertyLookup.BLINKING_PERIOD
+		});
+
+		@NotNull
+		@Override
+		public ControlPropertyLookup[] getRequiredProperties() {
+			return REQUIRED_PROPERTIES;
+		}
+
+		@NotNull
+		@Override
+		public ControlPropertyLookup[] getOptionalProperties() {
+			return OPTIONAL_PROPERTIES;
+		}
+	};
+
 	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution) {
-		super(name, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class, null, null);
-		backgroundColorProperty = ControlPropertyLookup.COLOR_BACKGROUND.getColorProperty(new AColor(renderer.getBackgroundColor()));
-		colorTextProperty = ControlPropertyLookup.COLOR_TEXT.getColorProperty(new AColor(renderer.getTextColor()));
-		textProperty = ControlPropertyLookup.TEXT.getStringProperty("");
+		super(name, SPEC_PROVIDER, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class);
+		backgroundColorProperty = findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		backgroundColorProperty.setDefaultValue(true, new AColor(renderer.getBackgroundColor()));
+		colorTextProperty = findRequiredProperty(ControlPropertyLookup.COLOR_TEXT);
+		colorTextProperty.setDefaultValue(true, new AColor(renderer.getTextColor()));
+		textProperty = findRequiredProperty(ControlPropertyLookup.TEXT);
+		textProperty.setDefaultValues(true, "");
 
-		addRequiredProperties(backgroundColorProperty);
-		addRequiredProperties(colorTextProperty);
-		addRequiredProperties(ControlPropertyLookup.FONT.getFontProperty(AFont.PuristaMedium));
-		addRequiredProperties(textProperty);
+		findRequiredProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
 
-		addOptionalProperties(ControlPropertyLookup.MOVING.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.SHADOW.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.TOOLTIP.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.TOOLTIP_COLOR_SHADE.getPropertyWithNoData()); //todo set universal default values?
-		addOptionalProperties(ControlPropertyLookup.TOOLTIP_COLOR_BOX.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.STATIC_FIXED_WIDTH.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.STATIC_LINE_SPACING.getPropertyWithNoData());
-		addOptionalProperties(ControlPropertyLookup.BLINKING_PERIOD.getPropertyWithNoData());
 	}
 
 	@Override

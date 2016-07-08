@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
@@ -12,6 +13,9 @@ public class NewControlPopupController {
 
 	@FXML
 	public TextField tfClassName;
+	@FXML
+	public ComboBox<ControlType> cobBaseControl;
+
 	@FXML
 	public Button btnEditProperty;
 	@FXML
@@ -30,4 +34,5 @@ public class NewControlPopupController {
 	public Button btnCancel;
 	@FXML
 	public Button btnOk;
+
 }

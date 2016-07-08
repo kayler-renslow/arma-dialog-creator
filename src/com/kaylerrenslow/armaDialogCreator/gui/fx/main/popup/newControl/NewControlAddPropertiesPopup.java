@@ -47,6 +47,7 @@ public class NewControlAddPropertiesPopup extends StagePopup<VBox> {
 
 	private void initTableviewAllProperties(NewControlAddPropertiesPopupController controller) {
 		//todo remove tableview and just use vbox so that search filtering will work better and we can store the propertyLookup item
+		//todo shouldn't we just be setting values for the properties inherited from the control type?
 		initTableview(controller);
 		ObservableList<ObservableList> rows = FXCollections.observableArrayList();
 		ObservableList<String> rowColumns;

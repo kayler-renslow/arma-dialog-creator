@@ -61,7 +61,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 			}
 		};
-		sp.setStageSize(300,300);
+		sp.setStageSize(300, 300);
 		sp.show();
 	}
 
@@ -69,6 +69,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	private static TextArea getExceptionTextArea(Thread thread, Throwable t) {
 		String err = getExceptionString(t);
 		TextArea ta = new TextArea();
+		ta.setPrefSize(700, 700);
 		ta.setText("THREAD:" + thread.getName() + "\n" + err);
 		return ta;
 	}

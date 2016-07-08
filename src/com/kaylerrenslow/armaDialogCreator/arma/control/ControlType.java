@@ -79,4 +79,9 @@ public enum ControlType {
 		this.group = group;
 		this.deprecated = deprecated;
 	}
+
+	@Override
+	public String toString() {
+		return displayName;
+	}
 }

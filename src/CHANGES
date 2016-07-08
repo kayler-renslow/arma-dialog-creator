@@ -1,6 +1,6 @@
 ADDED:
-    none
+    ability to get required properties for an base control in NewControlPopup
 CHANGED:
-    none
+    how required properties are determined for controls (moved to an interface that returns the required/optional properties and sub classes)
 FIXED:
     none

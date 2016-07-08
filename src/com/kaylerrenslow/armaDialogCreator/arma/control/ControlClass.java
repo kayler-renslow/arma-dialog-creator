@@ -14,21 +14,25 @@ import java.util.List;
  This class is useful for creating base control classes and not having to type a bunch of redundant information.<br>
  Be sure to remember that classes inside Controls class of dialogs require types and things. These "macro" classes must stay out of the Controls class.
  Created on 05/23/2016. */
-public class ArmaControlClass {
-	private ArmaControlClass extend;
+public class ControlClass {
+	public static final ControlClass[] EMPTY = new ControlClass[0];
+
+	private final ControlClassSpecificationProvider specProvider;
+	private ControlClass extend;
 
 	private final ArrayList<ControlProperty> requiredProperties = new ArrayList<>();
 	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
 
-	private final ArrayList<ArmaControlClass> requiredSubClasses = new ArrayList<>();
-	private final ArrayList<ArmaControlClass> optionalSubClasses = new ArrayList<>();
+	private final ArrayList<ControlClass> requiredSubClasses = new ArrayList<>();
+	private final ArrayList<ControlClass> optionalSubClasses = new ArrayList<>();
 
 	protected String className;
 
 	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
 
-	public ArmaControlClass(@NotNull String name) {
+	public ControlClass(@NotNull String name, @NotNull ControlClassSpecificationProvider provider) {
 		this.className = name;
+		this.specProvider = provider;
 		updateGroup.addListener(new UpdateListener<Object>() {
 			@Override
 			public void update(@Nullable Object data) {
@@ -37,6 +41,10 @@ public class ArmaControlClass {
 				}
 			}
 		});
+		addRequiredProperties(specProvider.getRequiredProperties());
+		addOptionalProperties(specProvider.getOptionalProperties());
+		addRequiredSubClasses(specProvider.getRequiredSubClasses());
+		addOptionalSubClasses(specProvider.getOptionalSubClasses());
 	}
 
 	public void setClassName(String className) {
@@ -47,20 +55,24 @@ public class ArmaControlClass {
 		return className;
 	}
 
-	public final void extendControlClass(@Nullable ArmaControlClass armaControl) {
+	public final void extendControlClass(@Nullable ControlClass armaControl) {
 		if (armaControl == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
 		this.extend = armaControl;
 	}
 
-	@Nullable
-	public final ArmaControlClass getExtendControl() {
+	public final @Nullable ControlClass getExtendControl() {
 		return extend;
 	}
 
-	protected final void addRequiredSubClasses(@NotNull ArmaControlClass... subClasses) {
-		for (ArmaControlClass subClass : subClasses) {
+	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
+	public final ControlClassSpecificationProvider getSpecProvider(){
+		return specProvider;
+	}
+
+	private void addRequiredSubClasses(@NotNull ControlClass... subClasses) {
+		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
 				throw new IllegalArgumentException("Can't require a class as a subclass of itself");
 			}
@@ -68,8 +80,8 @@ public class ArmaControlClass {
 		}
 	}
 
-	protected final void addOptionalSubClasses(@NotNull ArmaControlClass... subClasses) {
-		for (ArmaControlClass subClass : subClasses) {
+	private void addOptionalSubClasses(@NotNull ControlClass... subClasses) {
+		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
 				throw new IllegalArgumentException("Can't make a class as a subclass of itself");
 			}
@@ -78,13 +90,13 @@ public class ArmaControlClass {
 	}
 
 	@NotNull
-	public ArmaControlClass[] getRequiredSubClasses() {
-		return requiredSubClasses.toArray(new ArmaControlClass[requiredSubClasses.size()]);
+	public ControlClass[] getRequiredSubClasses() {
+		return requiredSubClasses.toArray(new ControlClass[requiredSubClasses.size()]);
 	}
 
 	@NotNull
-	public ArmaControlClass[] getOptionalSubClasses() {
-		return optionalSubClasses.toArray(new ArmaControlClass[optionalSubClasses.size()]);
+	public ControlClass[] getOptionalSubClasses() {
+		return optionalSubClasses.toArray(new ControlClass[optionalSubClasses.size()]);
 	}
 
 	@NotNull
@@ -108,20 +120,59 @@ public class ArmaControlClass {
 	}
 
 
-	protected final void addRequiredProperties(ControlProperty... props) {
-		for (ControlProperty p : props) {
-			if (!requiredProperties.contains(p)) {
-				requiredProperties.add(p);
+	private void addRequiredProperties(ControlPropertyLookup... props) {
+		main:
+		for (ControlPropertyLookup lookup : props) {
+			for(ControlProperty req : requiredProperties){
+				if(req.getPropertyLookup() == lookup){
+					continue main;
+				}
 			}
+			requiredProperties.add(lookup.getPropertyWithNoData());
 		}
 	}
 
-	protected final void addOptionalProperties(ControlProperty... props) {
-		for (ControlProperty p : props) {
-			if (!optionalProperties.contains(p)) {
-				optionalProperties.add(p);
+	private void addOptionalProperties(ControlPropertyLookup... props) {
+		main:
+		for (ControlPropertyLookup lookup : props) {
+			for(ControlProperty req : optionalProperties){
+				if(req.getPropertyLookup() == lookup){
+					continue main;
+				}
+			}
+			optionalProperties.add(lookup.getPropertyWithNoData());
+		}
+	}
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
+
+	 @return the ControlProperty instance
+	 @throws IllegalArgumentException when the lookup wasn't in required properties
+	 */
+	@NotNull
+	public ControlProperty findRequiredProperty(ControlPropertyLookup lookup) {
+		for (ControlProperty controlProperty : getRequiredProperties()) {
+			if (controlProperty.getPropertyLookup() == lookup) {
+				return controlProperty;
 			}
 		}
+		throw new IllegalArgumentException("Lookup element '"+lookup.name()+"' wasn't in required properties.");
+	}
+
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
+
+	 @return the ControlProperty instance
+	 @throws IllegalArgumentException when the lookup wasn't in optional properties
+	 */
+	@NotNull
+	public ControlProperty findOptionalProperty(ControlPropertyLookup lookup) {
+		for (ControlProperty controlProperty : getOptionalProperties()) {
+			if (controlProperty.getPropertyLookup() == lookup) {
+				return controlProperty;
+			}
+		}
+		throw new IllegalArgumentException("Lookup element '"+lookup.name()+"' wasn't in optional properties.");
 	}
 
 	@NotNull
@@ -164,7 +215,7 @@ public class ArmaControlClass {
 		return list;
 	}
 
-	private void appendInheritedProperties(@NotNull ArmaControlClass extend, @NotNull ArrayList<ControlProperty> list) {
+	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
 		for (ControlProperty c : extend.getAllDefinedProperties()) {
 			if (!list.contains(c)) {
 				list.add(c);

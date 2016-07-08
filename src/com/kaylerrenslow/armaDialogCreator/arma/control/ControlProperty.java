@@ -215,10 +215,36 @@ public class ControlProperty {
 		return valuesObserver.getValue();
 	}
 
-	/** Get the values that were set when the control property was instantiated (could be array full of nulls) */
+	/** Get the default values for the property (can be array full of nulls) */
 	@NotNull
 	public String[] getDefaultValues() {
 		return defaultValues;
+	}
+
+	/** Set the default values for the property (can be array full of nulls). If setValue is true, the defaultValues given will also be placed in the control property value */
+	public void setDefaultValues(boolean setValue, String... defaultValues) {
+		this.defaultValues = defaultValues;
+		if (setValue) {
+			setValues(defaultValues);
+		}
+	}
+
+	/** Sets the default values to only one integer (same thing as calling setDefaultValues(integer+"")) */
+	public void setDefaultValue(boolean setValue, int defaultValue) {
+		setDefaultValues(setValue, defaultValue + "");
+	}
+
+	/** Sets the default values to only one double (same thing as calling setDefaultValues(doubleNum+"")) */
+	public void setDefaultValue(boolean setValue, double defaultValue) {
+		setDefaultValues(setValue, defaultValue + "");
+	}
+
+	public void setDefaultValue(boolean setValue, AColor defaultValue) {
+		setDefaultValues(setValue, defaultValue.getAsStringArray());
+	}
+
+	public void setDefaultValue(boolean setValue, AFont defaultValue) {
+		setDefaultValues(setValue, defaultValue.name());
 	}
 
 	/** Get the first value as a String. This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc) */

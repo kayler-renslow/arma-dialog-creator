@@ -245,6 +245,7 @@ public enum ControlPropertyLookup {
 	CLASS_SHORTCUT_POS__H(0, "h", PropertyType.FLOAT, null)*/;
 
 
+	public static final ControlPropertyLookup[] EMPTY = new ControlPropertyLookup[0];
 	/** All values that the property can be, or null if user defined. */
 	public final @Nullable Option[] options;
 	public final String propertyName;

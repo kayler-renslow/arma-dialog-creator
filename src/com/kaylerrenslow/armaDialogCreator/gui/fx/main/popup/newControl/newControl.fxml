@@ -21,14 +21,19 @@
                         <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="tfClassName" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" promptText="class name">
+                  <TextField fx:id="tfClassName" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="198.0" promptText="class name">
                      <opaqueInsets>
                         <Insets />
                      </opaqueInsets>
                      <HBox.margin>
-                        <Insets />
+                        <Insets right="10.0" />
                      </HBox.margin>
                   </TextField>
+                  <Label contentDisplay="RIGHT" text="Base Control:">
+                     <graphic>
+                        <ComboBox fx:id="cobBaseControl" prefWidth="150.0" />
+                     </graphic>
+                  </Label>
                </children>
                <VBox.margin>
                   <Insets />
@@ -41,7 +46,7 @@
             </Separator>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="688.0" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="0.0" prefHeight="543.0" prefWidth="180.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="0.0" prefHeight="543.0" prefWidth="377.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Properties" />
                         <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="200.0" prefHeight="418.0" prefWidth="216.0" VBox.vgrow="ALWAYS">
@@ -57,7 +62,7 @@
                             <MenuItem fx:id="miAddCustomProperty" mnemonicParsing="false" text="Add Custom Property" />
                           </items>
                         </SplitMenuButton>
-                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="201.0" spacing="10.0">
+                        <HBox alignment="CENTER" prefHeight="3.0" prefWidth="291.0" spacing="10.0">
                            <children>
                               <Button fx:id="btnEditProperty" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Edit" HBox.hgrow="ALWAYS" />
                               <Button fx:id="btnRemoveProperty" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Remove" HBox.hgrow="ALWAYS" />
@@ -73,8 +78,8 @@
                   </VBox>
                   <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="454.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label text="Preview Sample (Read Only)" />
-                        <TextArea fx:id="taPreviewSample" editable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                        <Label text="Preview Sample" />
+                        <TextArea fx:id="taPreviewSample" editable="false" prefHeight="521.0" prefWidth="488.0" VBox.vgrow="ALWAYS" />
                      </children>
                   </VBox>
                </children>

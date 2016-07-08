@@ -3,13 +3,12 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.PositionCalculator;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
  The base class for all controls
  Created on 05/20/2016. */
-public class ArmaControl extends ArmaControlClass {
+public class ArmaControl extends ControlClass {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
 	/** Type of the control */
@@ -31,11 +30,9 @@ public class ArmaControl extends ArmaControlClass {
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
 	 @param renderer renderer of the control
-	 @param requiredSubClasses required sub-classes of the control (like maybe Scrollbar class)
-	 @param optionalSubClasses optional sub-classes of the control
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
-		super(name);
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer) {
+		super(name, provider);
 		this.resolution = resolution;
 		try {
 			this.renderer = renderer.newInstance();
@@ -44,22 +41,15 @@ public class ArmaControl extends ArmaControlClass {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + renderer.getName() + " couldn't be instantiated.");
 		}
-		if (requiredSubClasses != null) {
-			addRequiredSubClasses(requiredSubClasses);
-		}
-		if (optionalSubClasses != null) {
-			addOptionalSubClasses(optionalSubClasses);
-		}
-		idcProperty = ControlPropertyLookup.IDC.getIntProperty(idc);
-		typeProperty = ControlPropertyLookup.TYPE.getIntProperty(idc);
-		styleProperty = ControlPropertyLookup.STYLE.getIntProperty(idc);
-		xProperty = ControlPropertyLookup.X.getFloatProperty(x);
-		yProperty = ControlPropertyLookup.Y.getFloatProperty(y);
-		wProperty = ControlPropertyLookup.W.getFloatProperty(width);
-		hProperty = ControlPropertyLookup.H.getFloatProperty(height);
-		accessProperty = ControlPropertyLookup.ACCESS.getPropertyWithNoData();
-		addRequiredProperties(idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty);
-		addOptionalProperties(accessProperty);
+
+		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
+		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
+		styleProperty = findRequiredProperty(ControlPropertyLookup.STYLE);
+		xProperty = findRequiredProperty(ControlPropertyLookup.X);
+		yProperty = findRequiredProperty(ControlPropertyLookup.Y);
+		wProperty = findRequiredProperty(ControlPropertyLookup.W);
+		hProperty = findRequiredProperty(ControlPropertyLookup.H);
+		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
 
@@ -76,11 +66,17 @@ public class ArmaControl extends ArmaControlClass {
 	 @param height height (abs region)
 	 @param resolution resolution to use
 	 @param renderer renderer for the control
-	 @param requiredSubClasses required sub-classes of the control (maybe Scrollbar class)
-	 @param optionalSubClasses optional sub-classes of the control
 	 */
-	public ArmaControl(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @Nullable ArmaControlClass[] requiredSubClasses, @Nullable ArmaControlClass[] optionalSubClasses) {
-		this(name, resolution, renderer, requiredSubClasses, optionalSubClasses);
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer) {
+		this(name, provider, resolution, renderer);
+		idcProperty.setDefaultValue(false, idc);
+		typeProperty.setDefaultValue(false, type.typeId);
+		styleProperty.setDefaultValue(false, style.styleId);
+		xProperty.setDefaultValue(false, x);
+		yProperty.setDefaultValue(false, y);
+		wProperty.setDefaultValue(false, width);
+		hProperty.setDefaultValue(false, height);
+
 		defineType(type);
 		defineIdc(idc);
 		defineStyle(style);
@@ -152,7 +148,7 @@ public class ArmaControl extends ArmaControlClass {
 		renderer.setY2Silent(renderer.getY1() + h);
 	}
 
-	/**Set the x,y,w,h properties. This will also update the renderer's position.*/
+	/** Set the x,y,w,h properties. This will also update the renderer's position. */
 	protected void setPositionWH(double x, double y, double w, double h) {
 		this.x = x;
 		this.y = y;
