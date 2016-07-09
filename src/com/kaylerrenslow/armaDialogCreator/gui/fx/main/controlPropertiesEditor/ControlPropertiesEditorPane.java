@@ -109,7 +109,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return propertyEditors;
 	}
 
-	/** Get all missing properties (control properties that are required by have no valid data entered).*/
+	/** Get all missing properties (control properties that are required by have no valid data entered). */
 	public List<ControlProperty> getMissingProperties() {
 		List<ControlProperty> properties = new ArrayList<>(propertyInputs.size());
 		for (ControlPropertyInput input : propertyInputs) {
@@ -378,11 +378,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (newValue == null) {
 						controlProperty.getValuesObserver().updateValue(new String[]{null});
 					} else {
-						if (checker instanceof StringFieldDataChecker) {
-							controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString().replaceAll("\"\"", "\"")});
-						} else {
-							controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
-						}
+						controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
 					}
 					if (control != null) {
 						control.getUpdateGroup().update(control);
@@ -396,7 +392,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					@Override
 					public void update(Object data) {
 						if (controlProperty.valuesAreSet()) {
-							myself.setText(controlProperty.getFirstValue().replaceAll("\"", "\"\""));
+							myself.setText(controlProperty.getFirstValue());
 						}
 					}
 				});
@@ -749,15 +745,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			getItems().addAll(AFont.values());
 			boolean validData = controlProperty.valuesAreSet();
-			AFont font = null;
-			if (validData) {
-				try {
-					font = AFont.valueOf(controlProperty.getFirstValue());
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace(System.out);
-				}
-			}
-			getSelectionModel().select(font);
 			getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
@@ -768,6 +755,17 @@ public class ControlPropertiesEditorPane extends StackPane {
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
+			AFont font = null;
+			if (validData) {
+				try {
+					font = AFont.valueOf(controlProperty.getFirstValue());
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace(System.out);
+				}
+				getSelectionModel().select(font);
+			} else {
+				getSelectionModel().select(AFont.DEFAULT);
+			}
 			if (control != null) {
 				ChoiceBox<AFont> myself = this;
 				control.getUpdateGroup().addListener(new UpdateListener<Object>() {

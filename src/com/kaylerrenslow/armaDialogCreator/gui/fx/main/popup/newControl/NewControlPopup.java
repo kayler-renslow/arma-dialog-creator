@@ -20,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -31,9 +32,6 @@ public class NewControlPopup extends StagePopup<VBox> {
 	private final InputField<IdentifierFieldDataChecker, String> inClassName = new InputField<>(new IdentifierFieldDataChecker());
 	private ControlPropertiesEditorPane editorPane;
 
-	private final String classFormatString = "class %s \n{\n%s};";
-	private final String itemFormatString = "\t%s = %s;\n";
-	private final String itemArrayFormatString = "\t%s[] = %s;\n";
 	private final UpdateListener<ControlProperty> controlPropertyObserverListener = new UpdateListener<ControlProperty>() {
 		@Override
 		public void update(ControlProperty data) {
@@ -43,6 +41,9 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 	public NewControlPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.Popups.NewControl.POPUP_TITLE);
+		if(getMyLoader() == null){
+			throw new IllegalStateException("getMyLoader() should not return null");
+		}
 		NewControlPopupController controller = getMyLoader().getController();
 
 		initClassNameInputField(controller);
@@ -68,7 +69,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 		inClassName.setValue("New_ADC_Control");
 		inClassName.getValueObserver().addValueListener(new ValueListener<String>() {
 			@Override
-			public void valueUpdated(ValueObserver<String> observer, String oldValue, String newValue) {
+			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 				updatePreview();
 			}
 		});
@@ -96,6 +97,9 @@ public class NewControlPopup extends StagePopup<VBox> {
 		String body = "";
 		ControlPropertyEditor[] editors = editorPane.getEditors();
 		ControlProperty property;
+		final String itemFormatString = "\t%s = %s;\n";
+		final String itemArrayFormatString = "\t%s[] = %s;\n";
+		final String classFormatString = "class %s \n{\n%s};";
 		for (ControlPropertyEditor editor : editors) {
 			property = editor.getControlProperty();
 			if (!property.valuesAreSet() && editor.isOptional()) {

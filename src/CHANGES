@@ -1,6 +1,7 @@
 ADDED:
-    preview works in NewControlPopup
+    none
 CHANGED:
     none
 FIXED:
-    none
+    input fields being wacky
+    string input field: when inputting ""hello"", exiting, and re opening, resulted in false text. Fixed by telling the renderer to replace "" with " and the value in control property is untouched

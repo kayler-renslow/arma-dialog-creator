@@ -50,11 +50,11 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
 				checkIfValid(getText());
-				if (!focused && textField.getText().length() == 0 && !valid) {
+				if (!focused && !valid) {
 					setToButton(true);
 				}
-				if(!focused){
-					setValueFromText(getText());
+				if(!focused && valid){
+					setValue(getValue(getText()));
 				}
 			}
 		});
@@ -86,10 +86,19 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	/** Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data). If no text was inputted, will return null. */
 	@Nullable
 	public V getValue() {
-		if (getText() == null || this.getText().length() == 0) {
+		if (getText() == null) {
 			return null;
 		}
 		return fieldData.parse(this.getText());
+	}
+
+	/** Convert text into type V */
+	@Nullable
+	private V getValue(String text) {
+		if (getText() == null) {
+			return null;
+		}
+		return fieldData.parse(text);
 	}
 
 	/** Return true if the data inside the text field is valid, false otherwise */

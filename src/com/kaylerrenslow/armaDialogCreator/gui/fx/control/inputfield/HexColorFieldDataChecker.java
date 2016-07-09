@@ -12,7 +12,7 @@ public class HexColorFieldDataChecker implements InputFieldDataChecker<AHexColor
 		try {
 			AHexColor.convertToColorArray(data);
 			return true;
-		} catch (NumberFormatException e) {
+		} catch (IllegalArgumentException e ) {
 			return false;
 		}
 	}

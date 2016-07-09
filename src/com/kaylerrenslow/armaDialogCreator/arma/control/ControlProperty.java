@@ -36,7 +36,7 @@ public class ControlProperty {
 		/** Is a boolean (0 for false, 1 for true) */
 		BOOLEAN,
 		/** Is a String */
-		STRING,
+		STRING(true),
 		/** Generic array property type */
 		ARRAY(2),
 		/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
@@ -44,29 +44,37 @@ public class ControlProperty {
 		/** Is an array that is formatted to fit a sound and its params */
 		SOUND(3),
 		/** Is font name */
-		FONT,
+		FONT(true),
 		/** Denotes a file name inside a String */
-		FILE_NAME,
+		FILE_NAME(true),
 		/** Denotes an image path inside a String */
-		IMAGE,
+		IMAGE(true),
 		/** Color is set to a hex string like #ffffff or #ffffffff */
-		HEX_COLOR_STRING,
+		HEX_COLOR_STRING(true),
 		/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-		TEXTURE,
+		TEXTURE(true),
 		/** Is an SQF code string, but this propertyType is an easy way to categorize all event handlers. */
-		EVENT,
+		EVENT(true),
 		/** SQF code String */
-		SQF;
+		SQF(true);
 
 		/** Number of values used to represent the data */
 		public final int propertyValuesSize;
+		/** If true, when this control property is exported, the value should have quotes around it */
+		public final boolean exportHasQuotes;
 
 		PropertyType() {
 			this(1);
 		}
 
+		PropertyType(boolean exportHasQuotes) {
+			this.propertyValuesSize = 1;
+			this.exportHasQuotes = exportHasQuotes;
+		}
+
 		PropertyType(int propertyValueSize) {
 			propertyValuesSize = propertyValueSize;
+			exportHasQuotes = false;
 		}
 	}
 
@@ -289,13 +297,16 @@ public class ControlProperty {
 	public String getValuesForExport() {
 		String[] arr = valuesObserver.getValue();
 		if (arr.length == 1) {
+			if (type.exportHasQuotes) {
+				return "\"" + arr[0] + "\"";
+			}
 			return arr[0];
 		}
 		String ret = "{";
 		String v;
 		for (int i = 0; i < arr.length; i++) {
 			v = arr[i];
-			if (type == PropertyType.STRING) {
+			if (type.exportHasQuotes) {
 				v = "\"" + v + "\"";
 			}
 			ret += v + (i != arr.length - 1 ? "," : "");

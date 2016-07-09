@@ -82,10 +82,10 @@ public enum ControlType {
 
 	@Override
 	public String toString() {
-		return displayName;
+		return fullDisplayText();
 	}
 
-	/**Return a string formatted as such: 'displayName (typeId)'*/
+	/**Return a string formatted as such: 'displayName (typeId)'. {@link #toString()} will return this value*/
 	public String fullDisplayText() {
 		return displayName + " (" + typeId + ")";
 	}

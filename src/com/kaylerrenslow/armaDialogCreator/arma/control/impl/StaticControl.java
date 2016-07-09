@@ -15,7 +15,7 @@ public class StaticControl extends ArmaControl {
 
 	private ControlProperty backgroundColorProperty, colorTextProperty, textProperty;
 
-	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
+	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
 
 		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.COLOR_BACKGROUND,
@@ -66,7 +66,7 @@ public class StaticControl extends ArmaControl {
 		super.updateProperties();
 		StaticRenderer renderer = (StaticRenderer) getRenderer();
 		renderer.getBackgroundColorObserver().updateValue(new AColor(backgroundColorProperty.getValues()));
-		renderer.setText(textProperty.getFirstValue());
+		renderer.setText(textProperty.getFirstValue().replaceAll("\"\"", "\""));
 		renderer.setTextColor(AColor.toJavaFXColor(colorTextProperty.getValues()));
 	}
 }
