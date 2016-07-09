@@ -37,7 +37,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
 		initializePopup();
-		editorPane = new ControlPropertiesEditorPane(control, true);
+		editorPane = new ControlPropertiesEditorPane(control);
 		initializeToControl(control);
 	}
 

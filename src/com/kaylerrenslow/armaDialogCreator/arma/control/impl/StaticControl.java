@@ -17,14 +17,14 @@ public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
 
-		private final ControlPropertyLookup[] REQUIRED_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
+		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.COLOR_BACKGROUND,
 				ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.TEXT,
 				ControlPropertyLookup.FONT,
 		});
 
-		private final ControlPropertyLookup[] OPTIONAL_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
+		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.MOVING,
 				ControlPropertyLookup.SHADOW,
 				ControlPropertyLookup.TOOLTIP,
@@ -38,13 +38,13 @@ public class StaticControl extends ArmaControl {
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getRequiredProperties() {
-			return REQUIRED_PROPERTIES;
+			return requiredProperties;
 		}
 
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getOptionalProperties() {
-			return OPTIONAL_PROPERTIES;
+			return optionalProperties;
 		}
 	};
 
@@ -66,7 +66,7 @@ public class StaticControl extends ArmaControl {
 		super.updateProperties();
 		StaticRenderer renderer = (StaticRenderer) getRenderer();
 		renderer.getBackgroundColorObserver().updateValue(new AColor(backgroundColorProperty.getValues()));
-		renderer.setText(textProperty.getStringValue());
+		renderer.setText(textProperty.getFirstValue());
 		renderer.setTextColor(AColor.toJavaFXColor(colorTextProperty.getValues()));
 	}
 }

@@ -5,7 +5,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  Checker for Integers
  Created on 05/31/2016.
  */
-public class IntegerFieldDataChecker implements IInputFieldDataChecker<Integer>{
+public class IntegerFieldDataChecker implements InputFieldDataChecker<Integer> {
 	@Override
 	public boolean validData(String data) {
 		try{

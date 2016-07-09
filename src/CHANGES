@@ -1,7 +1,6 @@
 ADDED:
-    none
+    preview works in NewControlPopup
 CHANGED:
-    moved the control properties editor accordion into its own class
-    how new control popup will be implemented
+    none
 FIXED:
     none

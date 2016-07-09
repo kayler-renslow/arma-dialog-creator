@@ -8,7 +8,7 @@
    <children>
       <VBox prefHeight="582.0" prefWidth="866.0" VBox.vgrow="ALWAYS">
          <children>
-            <HBox prefHeight="35.0" prefWidth="662.0" spacing="10.0">
+            <HBox fx:id="hbHeader" prefHeight="35.0" prefWidth="662.0" spacing="10.0">
                <children>
                   <Label opacity="0.84" text="Control Class Name:">
                      <opaqueInsets>
@@ -46,28 +46,10 @@
             </Separator>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="688.0" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="0.0" prefHeight="543.0" prefWidth="377.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="583.0" minWidth="0.0" prefHeight="543.0" prefWidth="583.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Properties" />
-                        <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="400.0" minWidth="200.0" prefHeight="418.0" prefWidth="216.0" VBox.vgrow="ALWAYS">
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                           <content>
-                              <VBox fx:id="vbProperties" prefHeight="200.0" prefWidth="100.0" />
-                           </content>
-                        </ScrollPane>
-                        <SplitMenuButton fx:id="mbtnConfigureProperties" alignment="CENTER" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Configure Properties" textAlignment="CENTER">
-                          <items>
-                            <MenuItem fx:id="miAddCustomProperty" mnemonicParsing="false" text="Add Custom Property" />
-                          </items>
-                        </SplitMenuButton>
-                        <HBox alignment="CENTER" prefHeight="3.0" prefWidth="291.0" spacing="10.0">
-                           <children>
-                              <Button fx:id="btnEditProperty" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Edit" HBox.hgrow="ALWAYS" />
-                              <Button fx:id="btnRemoveProperty" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" mnemonicParsing="false" prefHeight="25.0" text="Remove" HBox.hgrow="ALWAYS" />
-                           </children>
-                        </HBox>
+                        <StackPane fx:id="stackPaneProperties" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
                      </children>
                      <opaqueInsets>
                         <Insets />

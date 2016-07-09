@@ -2,8 +2,12 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 /**
  @author Kayler
@@ -12,20 +16,15 @@ import javafx.scene.layout.VBox;
 public class NewControlPopupController {
 
 	@FXML
+	public HBox hbHeader;
+
+	@FXML
 	public TextField tfClassName;
 	@FXML
 	public ComboBox<ControlType> cobBaseControl;
 
 	@FXML
-	public Button btnEditProperty;
-	@FXML
-	public Button btnRemoveProperty;
-	@FXML
-	public VBox vbProperties;
-	@FXML
-	public SplitMenuButton mbtnConfigureProperties;
-	@FXML
-	public MenuItem miAddCustomProperty;
+	public StackPane stackPaneProperties;
 
 	@FXML
 	public TextArea taPreviewSample;

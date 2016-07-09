@@ -1,51 +1,112 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 /**
- Created by Kayler on 07/06/2016.
- */
+ @author Kayler
+ Popup window that allows for creating a new control. It has a control properties editor on the left and a preview window on the right to preview the outputted .h file text
+ Created on 07/06/2016. */
 public class NewControlPopup extends StagePopup<VBox> {
-	private final VBox vbProperties;
+	private final StackPane stackPaneProperties;
+	private final TextArea taPreviewSample;
+	private final InputField<IdentifierFieldDataChecker, String> inClassName = new InputField<>(new IdentifierFieldDataChecker());
+	private ControlPropertiesEditorPane editorPane;
+
+	private final String classFormatString = "class %s \n{\n%s};";
+	private final String itemFormatString = "\t%s = %s;\n";
+	private final String itemArrayFormatString = "\t%s[] = %s;\n";
+	private final UpdateListener<ControlProperty> controlPropertyObserverListener = new UpdateListener<ControlProperty>() {
+		@Override
+		public void update(ControlProperty data) {
+			updatePreview();
+		}
+	};
 
 	public NewControlPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.Popups.NewControl.POPUP_TITLE);
 		NewControlPopupController controller = getMyLoader().getController();
-		vbProperties = controller.vbProperties;
-		controller.mbtnConfigureProperties.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
 
-			}
-		});
+		initClassNameInputField(controller);
+
+		taPreviewSample = controller.taPreviewSample;
+		stackPaneProperties = controller.stackPaneProperties;
 		controller.cobBaseControl.getItems().addAll(ControlType.values());
-		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
 		controller.cobBaseControl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlType>() {
 			@Override
 			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType selected) {
 				setToControlType(selected);
 			}
 		});
+		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
 	}
 
-	private void setToControlType(ControlType type){
-		vbProperties.getChildren().clear();
+	private void initClassNameInputField(NewControlPopupController controller) {
+		HBox hbHeader = controller.hbHeader;
+		int indexTf = hbHeader.getChildren().indexOf(controller.tfClassName);
+		hbHeader.getChildren().add(indexTf, inClassName);
+		hbHeader.getChildren().remove(controller.tfClassName);
+
+		inClassName.setValue("New_ADC_Control");
+		inClassName.getValueObserver().addValueListener(new ValueListener<String>() {
+			@Override
+			public void valueUpdated(ValueObserver<String> observer, String oldValue, String newValue) {
+				updatePreview();
+			}
+		});
+	}
+
+	private void setToControlType(ControlType type) {
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(type);
-		ControlPropertyLookup[] required = lookup.specProvider.getRequiredProperties();
-		for(ControlPropertyLookup req : required){
-			vbProperties.getChildren().add(new Label(req.propertyName));
+		editorPane = new ControlPropertiesEditorPane(lookup.specProvider, type);
+		stackPaneProperties.getChildren().clear();
+		stackPaneProperties.getChildren().add(editorPane);
+
+		ControlPropertyEditor[] editors = editorPane.getEditors();
+		for (ControlPropertyEditor editor : editors) {
+			editor.getControlPropertyUpdateGroup().addListener(controlPropertyObserverListener);
 		}
+
+		updatePreview();
+	}
+
+	private void updatePreview() {
+		taPreviewSample.setText(getPreviewText());
+	}
+
+	private String getPreviewText() {
+		String body = "";
+		ControlPropertyEditor[] editors = editorPane.getEditors();
+		ControlProperty property;
+		for (ControlPropertyEditor editor : editors) {
+			property = editor.getControlProperty();
+			if (!property.valuesAreSet() && editor.isOptional()) {
+				continue;
+			}
+			if (property.getValues().length == 1) {
+				body += String.format(itemFormatString, property.getName(), property.getValuesForExport());
+			} else {
+				body += String.format(itemArrayFormatString, property.getName(), property.getValuesForExport());
+			}
+		}
+		return String.format(classFormatString, inClassName.getValue(), body);
 	}
 }

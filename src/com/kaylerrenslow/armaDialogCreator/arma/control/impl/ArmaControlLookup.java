@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/07/2016.
@@ -61,12 +62,13 @@ public enum ArmaControlLookup {
 		this.specProvider = specProvider;
 	}
 
+	@NotNull
 	public static ArmaControlLookup findByControlType(ControlType toFind) {
 		for (ArmaControlLookup lookup : values()) {
 			if (lookup.controlType == toFind) {
 				return lookup;
 			}
 		}
-		return null;
+		throw new IllegalStateException("control type should have been matched");
 	}
 }

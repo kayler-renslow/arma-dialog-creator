@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
  @author Kayler
  Checker for hex strings (#fff for example)
  Created on 05/31/2016. */
-public class HexColorFieldDataChecker implements IInputFieldDataChecker<AHexColor> {
+public class HexColorFieldDataChecker implements InputFieldDataChecker<AHexColor> {
 	@Override
 	public boolean validData(String data) {
 		try {

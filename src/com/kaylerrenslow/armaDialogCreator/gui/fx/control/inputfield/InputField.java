@@ -13,8 +13,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,9 +21,9 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  Base class for a text field control that checks if the inputted data is correct and returns the data as an object with type V
  Created on 05/31/2016. */
-public class InputField<E extends IInputFieldDataChecker<V>, V> extends HBox {
+public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
-	private final E fieldData;
+	private final T fieldData;
 	private boolean valid = true;
 	private ValueObserver<V> observer = new ValueObserver<>(null);
 	private TextField textField = new TextField();
@@ -32,7 +31,7 @@ public class InputField<E extends IInputFieldDataChecker<V>, V> extends HBox {
 	private Button button = new Button();
 
 	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns */
-	public InputField(@NotNull E fieldDataChecker) {
+	public InputField(@NotNull T fieldDataChecker) {
 		this.fieldData = fieldDataChecker;
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
@@ -81,8 +80,6 @@ public class InputField<E extends IInputFieldDataChecker<V>, V> extends HBox {
 		button.setOnMouseEntered(mouseEvent);
 
 		button.setMaxWidth(Double.MAX_VALUE);
-		HBox.setHgrow(button, Priority.ALWAYS);
-		HBox.setHgrow(textField, Priority.ALWAYS);
 		getChildren().add(button);
 	}
 

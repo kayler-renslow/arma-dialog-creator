@@ -90,6 +90,11 @@ public enum ControlType {
 		return displayName + " (" + typeId + ")";
 	}
 
+	/**Return the class name for the root control type*/
+	public String getNameAsClassName(){
+		return "ADC_" + displayName.replaceAll("\\s", "_");
+	}
+
 	/** Get the control type by finding the matched between {@link #typeId} and the parameter typeId */
 	public static ControlType getById(int typeId) {
 		for (ControlType type : values()) {

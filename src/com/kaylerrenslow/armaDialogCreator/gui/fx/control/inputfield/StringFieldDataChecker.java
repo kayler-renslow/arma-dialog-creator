@@ -4,7 +4,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  @author Kayler
  Checker for Strings
  Created on 05/31/2016. */
-public class StringFieldDataChecker implements IInputFieldDataChecker<String> {
+public class StringFieldDataChecker implements InputFieldDataChecker<String> {
 	@Override
 	public boolean validData(String data) {
 		char[] s = data.toCharArray();

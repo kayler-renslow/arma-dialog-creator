@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 public class ArmaControlSpecProvider implements ControlClassSpecificationProvider {
 	/** Returns a new array of the properties that are required for all controls */
 	public final static ControlPropertyLookup[] DEFAULT_REQUIRED_PROPERTIES = {
-			ControlPropertyLookup.IDC,
 			ControlPropertyLookup.TYPE,
+			ControlPropertyLookup.IDC,
 			ControlPropertyLookup.STYLE,
 			ControlPropertyLookup.X,
 			ControlPropertyLookup.Y,

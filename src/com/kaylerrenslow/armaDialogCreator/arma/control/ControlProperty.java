@@ -248,8 +248,13 @@ public class ControlProperty {
 		setDefaultValues(setValue, defaultValue.name());
 	}
 
-	/** Get the first value as a String. This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc) */
-	public String getStringValue() {
+	//	/** Get the first value as a String. */
+	//	public String getStringValue() {
+	//		return valuesObserver.getValue()[0];
+	//	}
+
+	/** Get the first and only value and return it as a String (This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc)) */
+	public String getFirstValue() {
 		return valuesObserver.getValue()[0];
 	}
 
@@ -279,6 +284,25 @@ public class ControlProperty {
 			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
 		}
 	}
+
+	/** Return a String with all the value(s) formatted for header export. If there is more than 1 value in this control property, the curly braces ('{','}') will be prepended and appended before the values */
+	public String getValuesForExport() {
+		String[] arr = valuesObserver.getValue();
+		if (arr.length == 1) {
+			return arr[0];
+		}
+		String ret = "{";
+		String v;
+		for (int i = 0; i < arr.length; i++) {
+			v = arr[i];
+			if (type == PropertyType.STRING) {
+				v = "\"" + v + "\"";
+			}
+			ret += v + (i != arr.length - 1 ? "," : "");
+		}
+		return ret + "}";
+	}
+
 
 	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
 	@NotNull
