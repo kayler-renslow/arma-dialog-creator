@@ -18,29 +18,34 @@ import javafx.scene.layout.VBox;
  Created by Kayler on 07/06/2016.
  */
 public class NewControlPopup extends StagePopup<VBox> {
-	private final NewControlAddPropertiesPopup addPropertiesPopup = new NewControlAddPropertiesPopup(this);
+	private final VBox vbProperties;
 
 	public NewControlPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.Popups.NewControl.POPUP_TITLE);
 		NewControlPopupController controller = getMyLoader().getController();
+		vbProperties = controller.vbProperties;
 		controller.mbtnConfigureProperties.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				addPropertiesPopup.show();
+
 			}
 		});
 		controller.cobBaseControl.getItems().addAll(ControlType.values());
+		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
 		controller.cobBaseControl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlType>() {
 			@Override
-			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType newValue) {
-				VBox vbProperties = controller.vbProperties;
-				vbProperties.getChildren().clear();
-				ArmaControlLookup lookup = ArmaControlLookup.findByControlType(newValue);
-				ControlPropertyLookup[] required = lookup.specProvider.getRequiredProperties();
-				for(ControlPropertyLookup req : required){
-					vbProperties.getChildren().add(new Label(req.propertyName));
-				}
+			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType selected) {
+				setToControlType(selected);
 			}
 		});
+	}
+
+	private void setToControlType(ControlType type){
+		vbProperties.getChildren().clear();
+		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(type);
+		ControlPropertyLookup[] required = lookup.specProvider.getRequiredProperties();
+		for(ControlPropertyLookup req : required){
+			vbProperties.getChildren().add(new Label(req.propertyName));
+		}
 	}
 }

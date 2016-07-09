@@ -181,6 +181,7 @@ public class ControlProperty {
 		this(propertyLookup, name, PropertyType.FONT, new String[]{value.name()});
 	}
 
+	@NotNull
 	public ControlPropertyLookup getPropertyLookup() {
 		return propertyLookup;
 	}

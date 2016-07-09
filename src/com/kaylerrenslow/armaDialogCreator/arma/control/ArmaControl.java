@@ -44,6 +44,7 @@ public class ArmaControl extends ControlClass {
 
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
+		typeProperty.setDefaultValue(true, type.typeId);
 		styleProperty = findRequiredProperty(ControlPropertyLookup.STYLE);
 		xProperty = findRequiredProperty(ControlPropertyLookup.X);
 		yProperty = findRequiredProperty(ControlPropertyLookup.Y);
@@ -265,10 +266,5 @@ public class ArmaControl extends ControlClass {
 
 		getUpdateGroup().update(null); //don't execute updateProperties
 	}
-
-	public ControlProperty[] getEventProperties() {
-		return ControlProperty.EMPTY;
-	}
-
 
 }

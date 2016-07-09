@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  Created by Kayler on 05/22/2016.
@@ -343,6 +344,9 @@ public enum ControlPropertyLookup {
 	}
 
 	public ControlProperty getPropertyFromOption(int optionNum) {
+		if(options == null || optionNum < 0 || optionNum > options.length){
+			throw new IllegalStateException("options and optionNum are bad. options=" + (options != null ? Arrays.toString(options) : "null") + " optionNum=" + optionNum);
+		}
 		return new ControlProperty(this, propertyName, propertyType, options[optionNum].value);
 	}
 

@@ -84,4 +84,19 @@ public enum ControlType {
 	public String toString() {
 		return displayName;
 	}
+
+	/**Return a string formatted as such: 'displayName (typeId)'*/
+	public String fullDisplayText() {
+		return displayName + " (" + typeId + ")";
+	}
+
+	/** Get the control type by finding the matched between {@link #typeId} and the parameter typeId */
+	public static ControlType getById(int typeId) {
+		for (ControlType type : values()) {
+			if (type.typeId == typeId) {
+				return type;
+			}
+		}
+		return null;
+	}
 }

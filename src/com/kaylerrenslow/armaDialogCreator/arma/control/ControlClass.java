@@ -22,6 +22,7 @@ public class ControlClass {
 
 	private final ArrayList<ControlProperty> requiredProperties = new ArrayList<>();
 	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
+	private final ArrayList<ControlProperty> eventProperties = new ArrayList<>();
 
 	private final ArrayList<ControlClass> requiredSubClasses = new ArrayList<>();
 	private final ArrayList<ControlClass> optionalSubClasses = new ArrayList<>();
@@ -41,10 +42,12 @@ public class ControlClass {
 				}
 			}
 		});
-		addRequiredProperties(specProvider.getRequiredProperties());
-		addOptionalProperties(specProvider.getOptionalProperties());
+		addProperties(requiredProperties, specProvider.getRequiredProperties());
+		addProperties(optionalProperties, specProvider.getOptionalProperties());
+		addProperties(eventProperties, specProvider.getEventProperties());
 		addRequiredSubClasses(specProvider.getRequiredSubClasses());
 		addOptionalSubClasses(specProvider.getOptionalSubClasses());
+
 	}
 
 	public void setClassName(String className) {
@@ -119,28 +122,15 @@ public class ControlClass {
 		return defined;
 	}
 
-
-	private void addRequiredProperties(ControlPropertyLookup... props) {
+	private void addProperties(ArrayList<ControlProperty> propertiesList, ControlPropertyLookup... props) {
 		main:
 		for (ControlPropertyLookup lookup : props) {
-			for(ControlProperty req : requiredProperties){
+			for(ControlProperty req : propertiesList){
 				if(req.getPropertyLookup() == lookup){
 					continue main;
 				}
 			}
-			requiredProperties.add(lookup.getPropertyWithNoData());
-		}
-	}
-
-	private void addOptionalProperties(ControlPropertyLookup... props) {
-		main:
-		for (ControlPropertyLookup lookup : props) {
-			for(ControlProperty req : optionalProperties){
-				if(req.getPropertyLookup() == lookup){
-					continue main;
-				}
-			}
-			optionalProperties.add(lookup.getPropertyWithNoData());
+			propertiesList.add(lookup.getPropertyWithNoData());
 		}
 	}
 	/**
@@ -213,6 +203,10 @@ public class ControlClass {
 		ArrayList<ControlProperty> list = new ArrayList<>();
 		appendInheritedProperties(extend, list);
 		return list;
+	}
+
+	public final ControlProperty[] getEventProperties() {
+		return eventProperties.toArray(new ControlProperty[eventProperties.size()]);
 	}
 
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {

@@ -39,7 +39,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				if (controlType.group != group) {
 					continue;
 				}
-				menuItemType = new MenuItem(controlType.displayName + " (" + controlType.typeId + ")");
+				menuItemType = new MenuItem(controlType.fullDisplayText());
 				if (controlType.deprecated) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}
