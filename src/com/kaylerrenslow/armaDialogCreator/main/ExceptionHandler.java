@@ -20,12 +20,12 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	private ExceptionHandler() {
 	}
 
-	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use ArmaDialogCreator.fatal() */
+	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)}*/
 	public static void error(Throwable t) {
 		error(Thread.currentThread(), t);
 	}
 
-	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use ArmaDialogCreator.fatal() */
+	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)} */
 	public static void error(Thread threadWhereErrorOccurred, Throwable t) {
 		new StagePopup<>(ArmaDialogCreator.getPrimaryStage(), getExceptionTextArea(threadWhereErrorOccurred, t), "An internal error occurred.").show();
 	}

@@ -33,7 +33,7 @@ public class StringMacro extends Macro<String> {
 	}
 
 	public String getValueWithoutQuotes() {
-		return value;
+		return valueObserver.getValue();
 	}
 
 	@Override

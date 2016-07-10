@@ -1,9 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
@@ -12,12 +10,12 @@ import java.util.ArrayList;
 public class MacroRegistry {
 	static final MacroRegistry INSTANCE = new MacroRegistry();
 
-	private final ObservableList<Macro> macros = FXCollections.observableArrayList(new ArrayList<Macro>());
+	private final List<Macro> macros = new ArrayList<>();
 
 	private MacroRegistry() {
 	}
 
-	public ObservableList<Macro> getMacros() {
+	public List<Macro> getMacros() {
 		return macros;
 	}
 }

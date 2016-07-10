@@ -15,7 +15,7 @@ public interface ControlPropertyEditor {
 	boolean hasValidData();
 
 	/** Set the data to the default values */
-	void resetToDefault();
+	void resetToDefaultValue();
 
 	/** Set whether or not the property can be edited by the user. */
 	void disableEditing(boolean disable);

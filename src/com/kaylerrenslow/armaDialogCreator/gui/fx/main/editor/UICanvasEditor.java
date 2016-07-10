@@ -569,8 +569,9 @@ public class UICanvasEditor extends UICanvas {
 	 */
 	protected void mouseMoved(int mousex, int mousey) {
 		if (!basicMouseMovement(mousex, mousey)) {
-			return;
+			return;//not dragging mouse
 		}
+		hasDoubleClicked = false; //force no double click so that when dragging after a double click, nothing happens
 		int dx = mousex - lastMousePosition.getX(); //change in x
 		int dy = mousey - lastMousePosition.getY(); //change in y
 		if (keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {

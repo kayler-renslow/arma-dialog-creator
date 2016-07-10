@@ -1,10 +1,15 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
@@ -105,8 +110,11 @@ public class StagePopup<E extends Parent> {
 		return new StagePopup<>(primaryStage, new Stage(), root, title);
 	}
 
-	/** Make the popup appear
-	 @see Stage#show() */
+	/**
+	 Make the popup appear
+
+	 @see Stage#show()
+	 */
 	public void show() {
 		myStage.show();
 	}
@@ -115,18 +123,68 @@ public class StagePopup<E extends Parent> {
 		return myStage.isShowing();
 	}
 
-	/** Force close the popup. This will also call the method closing()
-	 @see Stage#close()  */
+	/**
+	 Force close the popup. This will also call the method closing()
+
+	 @see Stage#close()
+	 */
 	public void close() {
 		closing();
 		myStage.close();
 	}
 
-	/** Hides the popup
-	 @see Stage#hide()  */
+	/**
+	 Hides the popup
+
+	 @see Stage#hide()
+	 */
 	public void hide() {
 		hiding();
 		myStage.hide();
+	}
+
+	/** Called when the cancel button is pressed (Invoked from the cancel button action event created in {@link #getResponseFooter(boolean, boolean)}). Default implementation invokes {@link #close()} */
+	protected void cancel() {
+		close();
+	}
+
+	/** Called when the ok button is pressed (Invoked from the ok button action event created in {@link #getResponseFooter(boolean, boolean)}). Default implementation invokes {@link #close()} */
+	protected void ok() {
+		close();
+	}
+
+	/**
+	 Get an HBox that provides default functionality for a cancel button and ok button
+
+	 @param addCancel true to add cancel button
+	 @param addOk true to add ok button
+	 */
+	protected HBox getResponseFooter(boolean addCancel, boolean addOk) {
+		HBox h = new HBox(5);
+		if (addCancel) {
+			Button btnCancel = new Button(Lang.Popups.BTN_CANCEL);
+			btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					cancel();
+				}
+			});
+			btnCancel.setPrefWidth(75d);
+			h.getChildren().add(btnCancel);
+		}
+		if (addOk) {
+			Button btnOk = new Button(Lang.Popups.BTN_OK);
+			btnOk.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					ok();
+				}
+			});
+			btnOk.setPrefWidth(100d);
+			h.getChildren().add(btnOk);
+		}
+		h.setAlignment(Pos.BOTTOM_RIGHT);
+		return h;
 	}
 
 	/** Called when the popup is about to hide. Defualt implementation is nothing. */

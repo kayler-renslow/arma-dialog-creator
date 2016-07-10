@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
@@ -9,7 +11,8 @@ import org.jetbrains.annotations.NotNull;
 public class Macro<T> {
 
 	private final String key;
-	protected T value;
+	protected ValueObserver<T> valueObserver;
+	protected String comment;
 
 	/**
 	 A macro is referenced by a key and the result is text that is appended into the ending .h file.
@@ -19,7 +22,7 @@ public class Macro<T> {
 	 */
 	public Macro(@NotNull String key, @NotNull T value) {
 		this.key = key;
-		this.value = value;
+		this.valueObserver = new ValueObserver<T>(value);
 	}
 
 	/** Get the key */
@@ -31,11 +34,23 @@ public class Macro<T> {
 	/** Get the value */
 	@NotNull
 	public T getValue() {
-		return value;
+		return valueObserver.getValue();
 	}
 
 	/** Set the value */
 	public void setValue(@NotNull T value) {
-		this.value = value;
+		this.valueObserver.updateValue(value);
+	}
+
+	public ValueObserver<T> getValueObserver() {
+		return valueObserver;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(@Nullable String comment) {
+		this.comment = comment;
 	}
 }

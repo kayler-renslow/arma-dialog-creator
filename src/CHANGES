@@ -1,7 +1,7 @@
 ADDED:
-    bad implementation of override input for control properties
+    hopefully full support for macro insertion for control properties editing
+    popup to choose macro
 CHANGED:
-    made "missing properties" popup for control properties config look better
-    switched hyperlink in control properties config popup to a menu button, as it is more intuitive and more obvious that there is something configurable
+    none
 FIXED:
     none

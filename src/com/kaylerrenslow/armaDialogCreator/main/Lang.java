@@ -75,6 +75,8 @@ public interface Lang {
 			String STRING = "String";
 			String EXTEND_CLASS = "Extend Class";
 			String IS_BACKGROUND_CONTROL = "Background Control";
+			String INT = "Integer";
+			String FLOAT = "Floating Point Number";
 		}
 
 		interface MissingControlPropertiesConfig {
@@ -116,8 +118,28 @@ public interface Lang {
 
 	interface ControlPropertiesEditorPane {
 		String RESET_TO_DEFAULT = "Reset to Default";
+		String RESET_TO_DEFAULT_TOOLTIP = "Set the value to its default/original value.";
 		String SET_TO_MACRO = "Set to Macro";
+		String SET_TO_MACRO_TOOLTIP = "Set the value equal to a macro.";
 		String VALUE_OVERRIDE = "Value Override";
+		String VALUE_OVERRIDE_TOOLTIP = "Enter anything for a value.";
 		String USE_DEFAULT_EDITOR = "Use Default Editor";
+		String USE_DEFAULT_EDITOR_TOOLTIP = "Use the editor specialized towards editing this data.";
+	}
+
+	interface Macros {
+		String MACRO = "Macro";
+		String COMMENT = "Comment";
+		String VALUE = "Value";
+		String NEW_MACRO = "New Macro";
+		String CHOOSE_MACRO = "Choose Macro";
+
+		interface ChooseMacroPopup {
+			String POPUP_TITLE = "Choose a Macro";
+			String AVAILABLE_MACROS = "Available Macros:";
+			String MO_AVAILABLE_MACROS = "No macros are available.";
+			String NO_RECENT_MACROS = "No recently chosen macros.";
+		}
+
 	}
 }
