@@ -46,6 +46,7 @@ public class ArmaControl extends ControlClass {
 		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
 		typeProperty.setDefaultValue(true, type.typeId);
 		styleProperty = findRequiredProperty(ControlPropertyLookup.STYLE);
+		styleProperty.setDefaultValue(true, style.styleId);
 		xProperty = findRequiredProperty(ControlPropertyLookup.X);
 		yProperty = findRequiredProperty(ControlPropertyLookup.Y);
 		wProperty = findRequiredProperty(ControlPropertyLookup.W);

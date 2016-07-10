@@ -79,6 +79,7 @@ public interface Lang {
 
 		interface MissingControlPropertiesConfig {
 			String POPUP_TITLE = "Missing Control Properties";
+			String MISSING_PROPERTIES_MESSAGE = "The properties below require a value to be entered.";
 		}
 
 		interface NewControl {
@@ -111,5 +112,12 @@ public interface Lang {
 
 	interface PreviewWindow {
 		String POPUP_TITLE = "Arma Dialog Creator - Preview Window";
+	}
+
+	interface ControlPropertiesEditorPane {
+		String RESET_TO_DEFAULT = "Reset to Default";
+		String SET_TO_MACRO = "Set to Macro";
+		String VALUE_OVERRIDE = "Value Override";
+		String USE_DEFAULT_EDITOR = "Use Default Editor";
 	}
 }

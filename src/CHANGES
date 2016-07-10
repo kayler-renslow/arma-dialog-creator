@@ -1,7 +1,7 @@
 ADDED:
-    none
+    bad implementation of override input for control properties
 CHANGED:
-    none
+    made "missing properties" popup for control properties config look better
+    switched hyperlink in control properties config popup to a menu button, as it is more intuitive and more obvious that there is something configurable
 FIXED:
-    input fields being wacky
-    string input field: when inputting ""hello"", exiting, and re opening, resulted in false text. Fixed by telling the renderer to replace "" with " and the value in control property is untouched
+    none

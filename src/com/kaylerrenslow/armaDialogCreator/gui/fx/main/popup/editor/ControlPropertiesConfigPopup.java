@@ -96,7 +96,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				if (!goodValues) {
 					StagePopup popup = new MissingControlPropertiesConfigPopup(myStage, missing);
 					popup.show();
-					popup.beepFocus();
+					popup.requestFocus();
 				}
 			}
 		});

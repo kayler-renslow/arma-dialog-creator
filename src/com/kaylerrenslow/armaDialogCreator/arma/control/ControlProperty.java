@@ -27,6 +27,7 @@ public class ControlProperty {
 	private final ControlPropertyLookup propertyLookup;
 	private ValueObserver<String[]> valuesObserver;
 	private String[] defaultValues;
+	private boolean dataOverride = false;
 
 	public enum PropertyType {
 		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
@@ -194,6 +195,16 @@ public class ControlProperty {
 		return propertyLookup;
 	}
 
+	/** Return true if the data may not match the type of the control property. This is set by invoking {@link #setDataOverride(boolean)} */
+	public boolean isDataOverride() {
+		return dataOverride;
+	}
+
+	/** @see #isDataOverride() */
+	public void setDataOverride(boolean dataOverride) {
+		this.dataOverride = dataOverride;
+	}
+
 	/** Get whether or not all values are set inside the property. */
 	public boolean valuesAreSet() {
 		for (String s : valuesObserver.getValue()) {
@@ -328,7 +339,7 @@ public class ControlProperty {
 	}
 
 	/** Set all values (if a value is intended to be empty (need to be filled), use null) */
-	public void setValues(String[] values) {
+	public void setValues(String... values) {
 		valuesObserver.updateValue(values);
 	}
 
