@@ -58,6 +58,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 			}
 		});
 		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
+		myStage.sizeToScene();
 	}
 
 	private void initClassNameInputField(NewControlPopupController controller) {
@@ -102,7 +103,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 		final String classFormatString = "class %s \n{\n%s};";
 		for (ControlPropertyEditor editor : editors) {
 			property = editor.getControlProperty();
-			if (!property.valuesAreSet() && editor.isOptional()) {
+			if (!property.valuesAreSet()/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
 				continue;
 			}
 			if (property.getValues().length == 1) {

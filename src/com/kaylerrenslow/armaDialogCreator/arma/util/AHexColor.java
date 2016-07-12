@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import javafx.scene.paint.Color;
+
 /**
  @author Kayler
  Class used to depict a hex color string.
@@ -18,6 +20,52 @@ public class AHexColor extends AColor {
 		this.hex = hex;
 	}
 
+	/** @see AColor#AColor(Color) */
+	public AHexColor(Color value) {
+		super(value);
+		updateHex();
+	}
+
+	private void updateHex() {
+		final double f = 255.0;
+		int r = (int) (getRed() * f);
+		int g = (int) (getGreen() * f);
+		int b = (int) (getBlue() * f);
+		int a = (int) (getAlpha() * f);
+		int argb = (a << 24) | (r << 16) | (g << 8) | b;
+		this.hex = Integer.toHexString(argb);
+	}
+
+	@Override
+	public void setRed(double r) {
+		super.setRed(r);
+		updateHex();
+	}
+
+	@Override
+	public void setGreen(double g) {
+		super.setGreen(g);
+		updateHex();
+	}
+
+	@Override
+	public void setBlue(double b) {
+		super.setBlue(b);
+		updateHex();
+	}
+
+	@Override
+	public void setAlpha(double a) {
+		super.setAlpha(a);
+		updateHex();
+	}
+
+	@Override
+	public void setColor(double[] c) {
+		super.setColor(c);
+		updateHex();
+	}
+
 	/** Get the hex color String */
 	public String getHexColor() {
 		return this.hex;
@@ -29,7 +77,7 @@ public class AHexColor extends AColor {
 	 @throws IllegalArgumentException for when the hex color is formatted wrong
 	 */
 	public void setHexColor(String hex) {
-		setColor(convertToColorArray(hex));
+		setColor(convertToColorArray(this.color, hex));
 		this.hex = hex;
 	}
 
@@ -45,11 +93,48 @@ public class AHexColor extends AColor {
 		} catch (NumberFormatException e) {
 			throw new IllegalArgumentException("Hex string was formatted wrong.");
 		}
+		return getColorArray(color);
+	}
+
+	/**
+	 Returns a color array like: {r,g,b,a} where r,g,b,a are from 0.0 to 1.0 inclusively
+
+	 @param arr stores values in given array (array must be length 4)
+	 @throws IllegalArgumentException for when the hex color is formatted wrong
+	 */
+	public static double[] convertToColorArray(double[] arr, String hex) {
+		if (arr.length != 4) {
+			throw new IllegalArgumentException("arr.length != 4");
+		}
+		int color;
+		try {
+			color = Integer.decode(hex);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("Hex string was formatted wrong.");
+		}
+		return getColorArray(arr, color);
+	}
+
+	/** Gets color array
+	 @param arr stores values in given array (array must be length 4)
+	 */
+	public static double[] getColorArray(double[] arr, int color) {
+		if (arr.length != 4) {
+			throw new IllegalArgumentException("arr.length != 4");
+		}
 		int r = (color) & 0xFF;
 		int g = (color >> 8) & 0xFF;
 		int b = (color >> 16) & 0xFF;
 		int a = (color >> 24) & 0xFF;
-		double f = 255.0;
-		return new double[]{r / f, g / f, b / f, a / f};
+		final double f = 255.0;
+		arr[0] = r / f;
+		arr[1] = g / f;
+		arr[2] = b / f;
+		arr[3] = a / f;
+		return arr;
+	}
+
+	public static double[] getColorArray(int color) {
+		return getColorArray(new double[4], color);
 	}
 }

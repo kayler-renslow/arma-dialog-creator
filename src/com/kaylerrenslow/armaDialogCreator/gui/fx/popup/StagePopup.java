@@ -143,14 +143,18 @@ public class StagePopup<E extends Parent> {
 		myStage.hide();
 	}
 
-	/** Called when the cancel button is pressed (Invoked from the cancel button action event created in {@link #getResponseFooter(boolean, boolean)}). Default implementation invokes {@link #close()} */
+	/** Called when the cancel button is pressed (Invoked from the cancel button action event created in {@link #getResponseFooter(boolean, boolean, boolean)}). Default implementation invokes {@link #close()} */
 	protected void cancel() {
 		close();
 	}
 
-	/** Called when the ok button is pressed (Invoked from the ok button action event created in {@link #getResponseFooter(boolean, boolean)}). Default implementation invokes {@link #close()} */
+	/** Called when the ok button is pressed (Invoked from the ok button action event created in {@link #getResponseFooter(boolean, boolean, boolean)}). Default implementation invokes {@link #close()} */
 	protected void ok() {
 		close();
+	}
+
+	/** Called when the help button is pressed (Invoked from the help button action event created in {@link #getResponseFooter(boolean, boolean, boolean)}). Default implementation does nothing */
+	protected void help() {
 	}
 
 	/**
@@ -158,9 +162,21 @@ public class StagePopup<E extends Parent> {
 
 	 @param addCancel true to add cancel button
 	 @param addOk true to add ok button
+	 @param addHelpButton true to add help button
 	 */
-	protected HBox getResponseFooter(boolean addCancel, boolean addOk) {
+	protected HBox getResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
 		HBox h = new HBox(5);
+		if(addHelpButton){
+			Button btnCancel = new Button(Lang.Popups.BTN_HELP);
+			btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					help();
+				}
+			});
+			btnCancel.setPrefWidth(50d);
+			h.getChildren().add(btnCancel);
+		}
 		if (addCancel) {
 			Button btnCancel = new Button(Lang.Popups.BTN_CANCEL);
 			btnCancel.setOnAction(new EventHandler<ActionEvent>() {

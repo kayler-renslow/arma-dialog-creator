@@ -13,4 +13,7 @@ public interface InputFieldDataChecker<E> {
 
 	/** Returns a display name that describes the type of data that is allowed (e.g. integer or double) */
 	String getTypeName();
+
+	/**Return true if the input field can remain empty and be valid, false if it requires at least 1 character to be entered*/
+	boolean allowEmptyData();
 }

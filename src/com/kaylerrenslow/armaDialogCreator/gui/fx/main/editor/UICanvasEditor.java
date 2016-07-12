@@ -511,8 +511,9 @@ public class UICanvasEditor extends UICanvas {
 			} else {
 				if (selection.numSelected() > 0) {
 					if (selection.isSelected(mouseOverComponent)) {
-						if (hasDoubleClicked) {
+						if (hasDoubleClicked && selection.numSelected() > 1) {
 							selection.removeAllAndAdd(mouseOverComponent);
+							hasDoubleClicked = false;//don't open configure control properties
 						}
 						return;
 					}

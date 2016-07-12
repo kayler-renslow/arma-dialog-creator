@@ -46,7 +46,7 @@
             </Separator>
             <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="552.0" prefWidth="688.0" spacing="10.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox maxHeight="1.7976931348623157E308" maxWidth="583.0" minWidth="0.0" prefHeight="543.0" prefWidth="583.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="0.0" prefWidth="600.0" spacing="5.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label text="Properties" />
                         <StackPane fx:id="stackPaneProperties" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />

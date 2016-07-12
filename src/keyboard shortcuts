@@ -1,5 +1,6 @@
 clicking on components:
     double left click (when many are already selected): only select double clicked one
+    double left click (when only 1 is selected): configure control properties
     ctrl+click: toggle the component from the selection
     holding space: will select the highest component that is enabled (if space wasn't held and a selected component was beneath a non-selected component, clicking the non-selected component would not change the selection)
 

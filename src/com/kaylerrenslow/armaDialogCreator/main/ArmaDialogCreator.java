@@ -41,7 +41,7 @@ public class ArmaDialogCreator extends Application {
 	private void loadWindow() {
 		mainWindow = new ADCWindow(primaryStage);
 		if (!saveManager.appSaveDataDirectorySet()) {
-			new SelectSaveLocationPopup(INSTANCE.primaryStage, INSTANCE.saveManager.getAppSaveDataDirectory(), INSTANCE.saveManager.getArma3ToolsDirectory()).show();
+			new SelectSaveLocationPopup(INSTANCE.saveManager.getAppSaveDataDirectory(), INSTANCE.saveManager.getArma3ToolsDirectory()).show();
 		}
 	}
 

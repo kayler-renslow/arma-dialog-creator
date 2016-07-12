@@ -1,7 +1,8 @@
 ADDED:
-    hopefully full support for macro insertion for control properties editing
-    popup to choose macro
+    support for all popups to have help button
 CHANGED:
-    none
+    made default arma control renderer font size bigger
+    macro creator popup now has proper editors for each property type
+    moved some String display name constants from enums into Lang.java
 FIXED:
-    none
+    in new control popup, setting value to something, changing to macro editor, changing back to default editor, and resetting data to default doesn't update macro display value

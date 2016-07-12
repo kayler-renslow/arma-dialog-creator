@@ -26,4 +26,9 @@ public class HexColorFieldDataChecker implements InputFieldDataChecker<AHexColor
 	public String getTypeName() {
 		return "Hex Color String";
 	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return false;
+	}
 }

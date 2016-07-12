@@ -12,6 +12,6 @@ public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getPrimaryStage(), ArmaDialogCreator.getSaveDataManager().getAppSaveDataDirectory(), ArmaDialogCreator.getSaveDataManager().getArma3ToolsDirectory()).show();
+		new SelectSaveLocationPopup(ArmaDialogCreator.getSaveDataManager().getAppSaveDataDirectory(), ArmaDialogCreator.getSaveDataManager().getArma3ToolsDirectory()).show();
 	}
 }

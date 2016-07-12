@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -31,51 +32,59 @@ public class ControlProperty {
 
 	public enum PropertyType {
 		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
-		INT,
+		INT(Lang.PropertyType.INT),
 		/** Is a floating point value. The current implementation uses 32 bit floating point (java double) */
-		FLOAT,
+		FLOAT(Lang.PropertyType.FLOAT),
 		/** Is a boolean (0 for false, 1 for true) */
-		BOOLEAN,
+		BOOLEAN(Lang.PropertyType.BOOLEAN),
 		/** Is a String */
-		STRING(true),
+		STRING(Lang.PropertyType.STRING, true),
 		/** Generic array property type */
-		ARRAY(2),
+		ARRAY(Lang.PropertyType.ARRAY, 2),
 		/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
-		COLOR(4),
+		COLOR(Lang.PropertyType.COLOR, 4),
 		/** Is an array that is formatted to fit a sound and its params */
-		SOUND(3),
+		SOUND(Lang.PropertyType.SOUND, 3),
 		/** Is font name */
-		FONT(true),
+		FONT(Lang.PropertyType.FONT, true),
 		/** Denotes a file name inside a String */
-		FILE_NAME(true),
+		FILE_NAME(Lang.PropertyType.FILE_NAME, true),
 		/** Denotes an image path inside a String */
-		IMAGE(true),
+		IMAGE(Lang.PropertyType.IMAGE, true),
 		/** Color is set to a hex string like #ffffff or #ffffffff */
-		HEX_COLOR_STRING(true),
+		HEX_COLOR_STRING(Lang.PropertyType.HEX_COLOR_STRING, true),
 		/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-		TEXTURE(true),
+		TEXTURE(Lang.PropertyType.TEXTURE, true),
 		/** Is an SQF code string, but this propertyType is an easy way to categorize all event handlers. */
-		EVENT(true),
+		EVENT(Lang.PropertyType.EVENT, true),
 		/** SQF code String */
-		SQF(true);
+		SQF(Lang.PropertyType.SQF, true);
 
 		/** Number of values used to represent the data */
 		public final int propertyValuesSize;
 		/** If true, when this control property is exported, the value should have quotes around it */
 		public final boolean exportHasQuotes;
+		public final String displayName;
 
-		PropertyType() {
-			this(1);
+		PropertyType(String displayName) {
+			this(displayName, 1);
 		}
 
-		PropertyType(boolean exportHasQuotes) {
+		PropertyType(String displayName, boolean exportHasQuotes) {
 			this.propertyValuesSize = 1;
+			this.displayName = displayName;
 			this.exportHasQuotes = exportHasQuotes;
 		}
 
-		PropertyType(int propertyValueSize) {
+		PropertyType(String displayName, int propertyValueSize) {
+			this.displayName = displayName;
 			propertyValuesSize = propertyValueSize;
 			exportHasQuotes = false;
+		}
+
+		@Override
+		public String toString() {
+			return displayName;
 		}
 	}
 
@@ -235,10 +244,16 @@ public class ControlProperty {
 		return valuesObserver.getValue();
 	}
 
-	/** Get the default values for the property (can be array full of nulls) */
-	@NotNull
+	/** Get the default values for the property (can be array full of nulls but the array reference won't be null) */
+	@Nullable
 	public String[] getDefaultValues() {
 		return defaultValues;
+	}
+
+	/** Get the first default value for the property */
+	@Nullable
+	public String getFirstDefaultValue() {
+		return defaultValues[0];
 	}
 
 	/** Set the default values for the property (can be array full of nulls). If setValue is true, the defaultValues given will also be placed in the control property value */

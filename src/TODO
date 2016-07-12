@@ -9,6 +9,8 @@ FEATURES:
 >go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls
 >for preview, have a control state toggler. Also, for action on buttons, have popup window show with action text.
 >add check to see if safeZone should be applied to control(s). This is checked by seeing if x,y,w,h properties are < 0 or > 1
+>for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
+>have help button implementation for all popups
 
 BUGS:
 -----------------------------------
@@ -16,3 +18,4 @@ BUGS:
 >have check box for "is background control" in control properties popup
 >ARMA 3 TOOLS LOCATION WILL NEVER SAVE AND LOAD CORRECTLY AFTER CLOSING THE APPLICATION.
 >!!!!!!!!!!!!fix adding controls to tree view resulting in wrong render order or an exception
+>the default value for a Font macro is wrong in control properties editor (switching from default editor to macro editor)

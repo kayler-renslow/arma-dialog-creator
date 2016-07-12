@@ -50,11 +50,13 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
 				checkIfValid(getText());
-				if (!focused && !valid) {
+				if (!focused && !valid && (getText() != null && getText().length() == 0 && !fieldDataChecker.allowEmptyData())) {
 					setToButton(true);
 				}
-				if(!focused && valid){
+				if (!focused && valid) {
 					setValue(getValue(getText()));
+				} else if (!focused) {
+					error(true);
 				}
 			}
 		});
@@ -70,9 +72,9 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		EventHandler<MouseEvent> mouseEvent = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if(event.getEventType() == MouseEvent.MOUSE_ENTERED){
+				if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
 					button.setCursor(Cursor.TEXT);
-				}else if(event.getEventType() == MouseEvent.MOUSE_EXITED){
+				} else if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
 					button.setCursor(Cursor.DEFAULT);
 				}
 			}
@@ -109,12 +111,12 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 
 	/** Set the value from an object. The text in the control is set to whatever V.toString() (generic type V) returns. If value given is null, will set field to button state */
 	public void setValue(@Nullable V value) {
+		observer.updateValue(value);
 		if (value == null) {
 			clear();
 			return;
 		}
 		this.setText(value.toString());
-		observer.updateValue(value);
 		setToButton(false);
 		valid = true;
 		error(false);
@@ -122,10 +124,6 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 
 	/** Set the value from text. The value will only be set if the text is valid. If text is null, will set to button state */
 	public void setValueFromText(@Nullable String text) {
-		if (text == null) {
-			clear();
-			return;
-		}
 		int cursorPosition = textField.getCaretPosition();
 		IndexRange selection = textField.getSelection();
 		checkIfValid(text);
@@ -137,6 +135,31 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		error(!valid);
 		textField.positionCaret(cursorPosition);
 		textField.selectRange(selection.getStart(), selection.getEnd());
+	}
+
+	/** @see TextField#getCaretPosition() */
+	public int getCaretPosition() {
+		return textField.getCaretPosition();
+	}
+
+	/** @see TextField#getSelection() */
+	public IndexRange getSelection() {
+		return textField.getSelection();
+	}
+
+	/** @see TextField#positionCaret(int) */
+	public void positionCaret(int position) {
+		textField.positionCaret(position);
+	}
+
+	/** @see TextField#selectRange(int, int) */
+	public void selectRange(int start, int end) {
+		textField.selectRange(start, end);
+	}
+
+	/** @see TextField#selectAll() */
+	public void selectAll() {
+		textField.selectAll();
 	}
 
 	/** Get the value observer */
@@ -181,11 +204,7 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	}
 
 	private void checkIfValid(String text) {
-		if (text != null && fieldData.validData(text)) {
-			valid = true;
-			return;
-		}
-		valid = false;
+		valid = fieldData.validData(text);
 	}
 
 	private void setToButton(boolean toButton) {

@@ -2,6 +2,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateMacroAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateNewControlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
@@ -47,9 +49,9 @@ class ADCMenuBar extends MenuBar {
 	private final RadioMenuItem view_bg_img3 = (RadioMenuItem) addOnAction(new RadioMenuItem(MainMenuBar.VIEW_CHANGE_BACKGROUND_IMAGE3), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_3));
 	private final RadioMenuItem view_bg_custom = (RadioMenuItem) addOnAction(new RadioMenuItem(MainMenuBar.VIEW_CHANGE_BACKGROUND_IMAGE_CUSTOM), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_CUSTOM));
 	private final RadioMenuItem view_bg_noImage = (RadioMenuItem) addOnAction(new RadioMenuItem(MainMenuBar.VIEW_CHANGE_BACKGROUND_NONE), new ViewBackgroundAction(ViewBackgroundAction.NO_IMAGE));
-	private final ToggleGroup view_bg_toggleGroup = new ToggleGroup();
 
 	{
+		final ToggleGroup view_bg_toggleGroup = new ToggleGroup();
 		view_bg_img1.setToggleGroup(view_bg_toggleGroup);
 		view_bg_img2.setToggleGroup(view_bg_toggleGroup);
 		view_bg_img3.setToggleGroup(view_bg_toggleGroup);
@@ -61,15 +63,20 @@ class ADCMenuBar extends MenuBar {
 	private final Menu backgroundAll = new Menu(MainMenuBar.VIEW_BACKGROUND_IMAGE, null, view_bg_img1, view_bg_img2, view_bg_img3, view_bg_custom, view_bg_noImage);
 
 	/*settings*/
-	private final MenuItem setings_configureDirs = addOnAction(new MenuItem(MainMenuBar.SETTINGS_CONFIGURE_DIRS), new SettingsChangeSaveDirAction());
+	private final MenuItem settings_configureDirs = addOnAction(new MenuItem(MainMenuBar.SETTINGS_CONFIGURE_DIRS), new SettingsChangeSaveDirAction());
 
-	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
+	/*create*/
+	private final MenuItem create_macro = addOnAction(new MenuItem(MainMenuBar.CREATE_MACRO), new CreateMacroAction());
+	private final MenuItem create_control_class = addOnAction(new MenuItem(MainMenuBar.CREATE_CONTROL_CLASS), new CreateNewControlAction());
+
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_fullScreen);
-	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, setings_configureDirs);
+	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, settings_configureDirs);
+	private final Menu menuCreate = new Menu(MainMenuBar.CREATE, null, create_macro, create_control_class);
 
 	ADCMenuBar() {
-		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings);
+		Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
+		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate);
 	}
 
 }

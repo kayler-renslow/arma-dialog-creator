@@ -4,7 +4,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  @author Kayler
  Checker for Arma Strings
  Created on 05/31/2016. */
-public class StringFieldDataChecker implements InputFieldDataChecker<String> {
+public class ArmaStringFieldDataChecker implements InputFieldDataChecker<String> {
 	@Override
 	public boolean validData(String data) {
 		if (data == null) {
@@ -37,5 +37,10 @@ public class StringFieldDataChecker implements InputFieldDataChecker<String> {
 	@Override
 	public String getTypeName() {
 		return "String";
+	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return true;
 	}
 }

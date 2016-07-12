@@ -13,7 +13,8 @@ import java.text.DecimalFormat;
 public class AColor {
 	private static DecimalFormat format = new DecimalFormat("#.####");
 
-	private double[] color = new double[4];
+	/**Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a]*/
+	protected double[] color = new double[4];
 
 	/**
 	 Creates a color
@@ -198,5 +199,30 @@ public class AColor {
 	 */
 	public static Color toJavaFXColor(String[] newValue) throws NumberFormatException {
 		return Color.color(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
+	}
+
+
+	/** Gets color array (formatted: [r,g,b,a])
+	 @param arr stores values in given array (array must be length 4)
+	 */
+	public static double[] getColorArray(double[] arr, int color) {
+		if (arr.length != 4) {
+			throw new IllegalArgumentException("arr.length != 4");
+		}
+		int r = (color) & 0xFF;
+		int g = (color >> 8) & 0xFF;
+		int b = (color >> 16) & 0xFF;
+		int a = (color >> 24) & 0xFF;
+		final double f = 255.0;
+		arr[0] = r / f;
+		arr[1] = g / f;
+		arr[2] = b / f;
+		arr[3] = a / f;
+		return arr;
+	}
+
+	/**Returns what {@link #getColorArray(int)} would, with new array of length 4*/
+	public static double[] getColorArray(int color) {
+		return getColorArray(new double[4], color);
 	}
 }

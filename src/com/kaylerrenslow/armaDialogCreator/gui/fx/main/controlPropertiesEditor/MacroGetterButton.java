@@ -30,7 +30,7 @@ import java.util.List;
  @author Kayler
  A menu button that will make a popup to choose a macro. There is also a drop down menu of recently used macros of the same type to save time.
  Created on 07/09/2016. */
-public class MacroGetterButton<V> extends HBox {
+class MacroGetterButton<V> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
@@ -62,7 +62,7 @@ public class MacroGetterButton<V> extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				ChooseMacroPopup<V> popup = new ChooseMacroPopup<>(clazz);
-				popup.show();
+				popup.showAndWait();
 				Macro<V> chosenMacro = popup.getChosenMacro();
 				if (chosenMacro == null) {
 					return;
@@ -179,18 +179,13 @@ public class MacroGetterButton<V> extends HBox {
 //				setStageSize(myScene.getWidth(), myScene.getHeight());
 			}
 			myStage.sizeToScene();
-			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true));
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true ,false));
 		}
 
 		@Override
 		protected void cancel() {
 			listViewMacros.getSelectionModel().clearSelection();
 			close();
-		}
-
-		@Override
-		public void show() {
-			showAndWait();
 		}
 
 		@Nullable

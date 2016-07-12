@@ -25,4 +25,9 @@ public class IntegerFieldDataChecker implements InputFieldDataChecker<Integer> {
 	public String getTypeName() {
 		return "Integer";
 	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return false;
+	}
 }

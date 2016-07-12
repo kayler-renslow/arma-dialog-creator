@@ -8,7 +8,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 public class IdentifierFieldDataChecker implements InputFieldDataChecker<String> {
 	@Override
 	public boolean validData(String data) {
-		return data.length() > 0 && !Character.isDigit(data.charAt(0)) && !data.contains(" ");
+		return data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
 	}
 
 	@Override
@@ -19,5 +19,10 @@ public class IdentifierFieldDataChecker implements InputFieldDataChecker<String>
 	@Override
 	public String getTypeName() {
 		return "Identifier";
+	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return false;
 	}
 }

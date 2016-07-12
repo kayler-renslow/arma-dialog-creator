@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlPopup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -10,6 +9,6 @@ import javafx.event.EventHandler;
 public class FileNewAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		new NewControlPopup().show();
+
 	}
 }

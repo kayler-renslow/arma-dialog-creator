@@ -150,13 +150,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 		HBox pane = new HBox(5);
 		pane.setAlignment(Pos.TOP_LEFT);
 
-		CustomMenuItem miDefaultEditor = new CustomMenuItem(new Label(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR), true);
-		CustomMenuItem miResetToDefault = new CustomMenuItem(new Label(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT), true);
-		CustomMenuItem miMacro = new CustomMenuItem(new Label(Lang.ControlPropertiesEditorPane.SET_TO_MACRO), true);
-		CustomMenuItem miOverride = new CustomMenuItem(new Label(Lang.ControlPropertiesEditorPane.VALUE_OVERRIDE), true);//broken. Maybe fix it later. Don't delete this in case you change your mind
-		Tooltip.install(miDefaultEditor.getContent(), new Tooltip(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR_TOOLTIP));
-		Tooltip.install(miResetToDefault.getContent(), new Tooltip(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT_TOOLTIP));
-		Tooltip.install(miMacro.getContent(), new Tooltip(Lang.ControlPropertiesEditorPane.SET_TO_MACRO_TOOLTIP));
+		MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
+		MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
+		MenuItem miMacro = new MenuItem(Lang.ControlPropertiesEditorPane.SET_TO_MACRO);
+		MenuItem miOverride = new MenuItem(Lang.ControlPropertiesEditorPane.VALUE_OVERRIDE);//broken. Maybe fix it later. Don't delete this in case you change your mind
 		MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
 
 		ControlPropertyInput propertyInput = getPropertyInputNode(c);
@@ -180,7 +177,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		propertyInputs.add(propertyInput);
 		propertyInput.setIsOptional(optional);
-
 		pane.getChildren().addAll(menuButton, new Label("="), (Node) propertyInput);
 
 		miResetToDefault.setOnAction(new EventHandler<ActionEvent>() {
@@ -231,11 +227,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 			case STRING:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.STRING);
 			case ARRAY:
-				return new ControlPropertyArrayInput(control, controlProperty, new StringFieldDataChecker(), new StringFieldDataChecker());
+				return new ControlPropertyArrayInput(control, controlProperty, new ArmaStringFieldDataChecker(), new ArmaStringFieldDataChecker());
 			case COLOR:
 				return new ControlPropertyColorPicker(control, controlProperty);
 			case SOUND:
-				return new ControlPropertyArrayInput(control, controlProperty, new StringFieldDataChecker(), new IntegerFieldDataChecker(), new DoubleFieldDataChecker());
+				return new ControlPropertyArrayInput(control, controlProperty, new ArmaStringFieldDataChecker(), new DoubleFieldDataChecker(), new DoubleFieldDataChecker());
 			case FONT:
 				return new ControlPropertyFontChoiceBox(control, controlProperty);
 			case FILE_NAME:
@@ -298,8 +294,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 		void setToMode(EditMode mode);
 
 		/** DO NOT USE THIS FOR ARRAY INPUT */
-		static InputField<StringFieldDataChecker, String> createRawInput(ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
-			InputField<StringFieldDataChecker, String> rawInput = new InputField<>(new StringFieldDataChecker());
+		static InputField<ArmaStringFieldDataChecker, String> createRawInput(ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
+			InputField<ArmaStringFieldDataChecker, String> rawInput = new InputField<>(new ArmaStringFieldDataChecker());
 			rawInput.getValueObserver().addValueListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
@@ -324,7 +320,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		private MacroGetterButton<String> macro;
 		private EditMode mode = EditMode.DEFAULT;
 
@@ -463,7 +459,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private final InputField inputField;
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		protected MacroGetterButton<T> macro;
 		protected EditMode mode = EditMode.DEFAULT;
 
@@ -535,8 +531,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			if (getControlProperty().getDefaultValues()[0] == null) {
-				inputField.clear();
+			if (getControlProperty().getFirstDefaultValue() == null) {
+				inputField.setValue(null);
 			} else {
 				inputField.setText(getControlProperty().getFirstValue());
 			}
@@ -580,7 +576,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	private static class ControlPropertyInputFieldString extends ControlPropertyInputField<String> {
 		ControlPropertyInputFieldString(ControlClass control, ControlProperty controlProperty, String promptText) {
-			super(String.class, control, controlProperty, new StringFieldDataChecker(), promptText);
+			super(String.class, control, controlProperty, new ArmaStringFieldDataChecker(), promptText);
 		}
 	}
 
@@ -602,7 +598,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private final ColorPicker colorPicker = new ColorPicker();
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		private final MacroGetterButton<AColor> macro;
 		private EditMode mode = EditMode.DEFAULT;
 
@@ -724,7 +720,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private final ChoiceBox<Boolean> choiceBox = new ChoiceBox<>();
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		private final MacroGetterButton<Boolean> macro;
 		private EditMode mode = EditMode.DEFAULT;
 
@@ -846,7 +842,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final ControlProperty controlProperty;
 		private ArrayList<InputField> fields = new ArrayList<>();
 		private HBox hBox = new HBox(5);
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		private final MacroGetterButton<String[]> macro;
 		private EditMode mode = EditMode.DEFAULT;
 
@@ -987,12 +983,27 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private final ChoiceBox<AFont> choiceBox = new ChoiceBox<>();
-		private final InputField<StringFieldDataChecker, String> rawInput;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
 		private final MacroGetterButton<AFont> macro;
 		private EditMode mode = EditMode.DEFAULT;
 
+		private final Button btnChooseDefault = new Button(Lang.Misc.DEFAULT_FONT);
+
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			getChildren().add(choiceBox);
+			getChildren().add(new HBox(5, choiceBox, btnChooseDefault));
+
+			btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
+						@Override
+						public void handle(ActionEvent event) {
+							choiceBox.getSelectionModel().select(AFont.DEFAULT);
+						}
+					});
+				}
+			});
+
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);

@@ -44,6 +44,10 @@ public interface Lang {
 
 		String SETTINGS = "Settings";
 		String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
+
+		String CREATE = "Create";
+		String CREATE_MACRO = "New Macro";
+		String CREATE_CONTROL_CLASS = "New Control Class";
 	}
 
 	interface Popups {
@@ -85,19 +89,22 @@ public interface Lang {
 		}
 
 		interface NewControl {
-			String POPUP_TITLE = "Arma Dialog Creator - New Control";
+			String POPUP_TITLE = "Arma Dialog Creator - New Control Class";
+		}
 
-			interface AddPropertiesPopup {
-				String POPUP_TITLE = "Arma Dialog Creator - New Control - Add Properties";
-				String COLUMN_PROPERTY_NAME = "Property Name";
-				String COLUMN_PROPERTY_TYPE = "Property Type";
-				String COLUMN_PROPERTY_DESCRIPTION = "Property Description";
-			}
+		interface NewMacro {
+			String POPUP_TITLE = "Create New Macro";
+			String MACRO_KEY = "Key:";
+			String MACRO_TYPE = "Type:";
+			String MACRO_VALUE = "Value:";
+			String MACRO_COMMENT = "Comment (optional):";
+			String NO_TYPE_CHOSEN = "No type chosen.";
 		}
 	}
 
 	interface Misc {
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
+		String DEFAULT_FONT = "Default Font";
 	}
 
 	interface ContextMenu {
@@ -118,20 +125,15 @@ public interface Lang {
 
 	interface ControlPropertiesEditorPane {
 		String RESET_TO_DEFAULT = "Reset to Default";
-		String RESET_TO_DEFAULT_TOOLTIP = "Set the value to its default/original value.";
 		String SET_TO_MACRO = "Set to Macro";
-		String SET_TO_MACRO_TOOLTIP = "Set the value equal to a macro.";
 		String VALUE_OVERRIDE = "Value Override";
-		String VALUE_OVERRIDE_TOOLTIP = "Enter anything for a value.";
 		String USE_DEFAULT_EDITOR = "Use Default Editor";
-		String USE_DEFAULT_EDITOR_TOOLTIP = "Use the editor specialized towards editing this data.";
 	}
 
 	interface Macros {
 		String MACRO = "Macro";
 		String COMMENT = "Comment";
 		String VALUE = "Value";
-		String NEW_MACRO = "New Macro";
 		String CHOOSE_MACRO = "Choose Macro";
 
 		interface ChooseMacroPopup {
@@ -140,6 +142,74 @@ public interface Lang {
 			String MO_AVAILABLE_MACROS = "No macros are available.";
 			String NO_RECENT_MACROS = "No recently chosen macros.";
 		}
+	}
 
+	interface PropertyType {
+		String INT = "Integer";
+		String FLOAT = "Floating Point Number";
+		String BOOLEAN = "Boolean";
+		String STRING = "String";
+		String ARRAY = "Array";
+		String COLOR = "Color";
+		String SOUND = "Sound Array";
+		String FONT = "Font";
+		String FILE_NAME = "File Name";
+		String IMAGE = "Image";
+		String HEX_COLOR_STRING = "Hex Color String";
+		String TEXTURE = "Texture";
+		String EVENT = "Event SQF Code String";
+		String SQF = "SQF Code String";
+	}
+
+	interface ControlType{
+		interface TypeGroup{
+			String TEXT = "Text";
+			String BUTTON = "Button";
+			String COMBO = "Combo Box";
+			String SLIDER = "Slider";
+			String LIST_BOX = "List Box";
+			String CHECK_BOX = "Check Box";
+			String MENU = "Menu";
+			String OBJECT = "Object";
+			String MAP = "Map";
+			String MISC = "Misc";
+		}
+
+		String STATIC = "Static";
+		String HTML = "HTML";
+		String EDIT = "Edit";
+		String STRUCTURED_TEXT = "Structured Text";
+		String ACTIVETEXT = "Active Text";
+		String BUTTON = "Button";
+		String SHORTCUTBUTTON = "Shortcut Button";
+		String XBUTTON = "X Button";
+		String PROGRESS = "Progress Bar";
+		String STATIC_SKEW = "Static Skew";
+		String LINEBREAK = "Line Break";
+		String TREE = "Tree";
+		String CONTROLS_GROUP = "Controls Group";
+		String XKEYDESC = "XKEYDESC";
+		String ANIMATED_TEXTURE = "Animated Texture";
+		String ANIMATED_USER = "Animated User";
+		String ITEMSLOT = "Item Slot";
+		String SLIDER = "Slider";
+		String XSLIDER = "X Slider";
+		String COMBO = "Combo";
+		String XCOMBO = "X Combo";
+		String LISTBOX = "List Box";
+		String XLISTBOX = "X List Box";
+		String LISTNBOX = "List N Box";
+		String TOOLBOX = "Tool Box";
+		String CHECKBOXES = "Check Boxes";
+		String CHECKBOX = "Check Box";
+		String CONTEXT_MENU = "Context Menu";
+		String MENU = "Menu";
+		String MENU_STRIP = "Menu Strip";
+		String OBJECT = "Object";
+		String OBJECT_ZOOM = "Object Zoom";
+		String OBJECT_CONTAINER = "Object Container";
+		String OBJECT_CONT_ANIM = "Object Container Animation";
+		String MAP = "Map";
+		String MAP_MAIN = "Map Main";
 	}
 }

@@ -7,6 +7,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 public class DoubleFieldDataChecker implements InputFieldDataChecker<Double> {
 	@Override
 	public boolean validData(String data) {
+		if (data == null) {
+			return false;
+		}
 		try {
 			Double.parseDouble(data);
 			return true;
@@ -23,5 +26,10 @@ public class DoubleFieldDataChecker implements InputFieldDataChecker<Double> {
 	@Override
 	public String getTypeName() {
 		return "Floating Point Number";
+	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return false;
 	}
 }
