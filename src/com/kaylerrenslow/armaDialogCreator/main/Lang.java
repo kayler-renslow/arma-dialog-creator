@@ -1,15 +1,18 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
+
 public interface Lang {
 	interface Application {
-		String APPLICATION_TITLE = "Arma Dialog Creator - V1.0.0";
+		String APPLICATION_NAME = "Arma Dialog Creator";
+		String VERSION = "v1.0.0";
+		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 	}
 
 	interface CanvasControls {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
 		String VIEWPORT_SNAP = "Snap Relative to Viewport";
-
 	}
 
 	interface MainMenuBar {
@@ -52,6 +55,7 @@ public interface Lang {
 
 	interface Popups {
 		String BTN_HELP = "Help";
+		String BTN_HELP_TOOLTIP = "Get help with this dialog.";
 		String BTN_CANCEL = "Cancel";
 		String BTN_OK = "OK";
 
@@ -65,7 +69,7 @@ public interface Lang {
 
 		interface SelectSaveLocation {
 			String POPUP_TITLE = "Configure Directories";
-			String LBL_APP_DATA_SAVE_DIR = "Application entry save directory:";
+			String LBL_APP_DATA_SAVE_DIR = "Application entry save directory (required):";
 			String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
 			String BTN_CHANGE = "Change";
 		}
@@ -89,7 +93,7 @@ public interface Lang {
 		}
 
 		interface NewControl {
-			String POPUP_TITLE = "Arma Dialog Creator - New Control Class";
+			String POPUP_TITLE = getPopupWindowTitle("New Control Class");
 		}
 
 		interface NewMacro {
@@ -120,7 +124,7 @@ public interface Lang {
 	}
 
 	interface PreviewWindow {
-		String POPUP_TITLE = "Arma Dialog Creator - Preview Window";
+		String POPUP_TITLE = getPopupWindowTitle("Preview Window");
 	}
 
 	interface ControlPropertiesEditorPane {
@@ -161,8 +165,8 @@ public interface Lang {
 		String SQF = "SQF Code String";
 	}
 
-	interface ControlType{
-		interface TypeGroup{
+	interface ControlType {
+		interface TypeGroup {
 			String TEXT = "Text";
 			String BUTTON = "Button";
 			String COMBO = "Combo Box";
@@ -211,5 +215,9 @@ public interface Lang {
 		String OBJECT_CONT_ANIM = "Object Container Animation";
 		String MAP = "Map";
 		String MAP_MAIN = "Map Main";
+	}
+
+	static String getPopupWindowTitle(String popupName) {
+		return APPLICATION_NAME + " - " + popupName;
 	}
 }

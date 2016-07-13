@@ -8,6 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
@@ -19,6 +20,7 @@ import javafx.scene.text.FontPosture;
 public class TreeItemControlGraphic extends HBox {
 	private static final Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontPosture.ITALIC, Font.getDefault().getSize());
 	private static final Insets margin = new Insets(0, 5, 0, 0);
+	private static final String BORDER_STYLE = "-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:1px;";
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 
@@ -37,10 +39,10 @@ public class TreeItemControlGraphic extends HBox {
 		lblType.setFont(LABEL_FONT);
 
 		fillBox(entry.getPrimaryColor());
-
-		HBox.setMargin(box, margin);
-
-		getChildren().addAll(box, rbSelected, lblType);
+		StackPane boxBorder = new StackPane(box);
+		boxBorder.setStyle(BORDER_STYLE);
+		HBox.setMargin(boxBorder, margin);
+		getChildren().addAll(boxBorder, rbSelected, lblType);
 	}
 
 	private void fillBox(Color color) {

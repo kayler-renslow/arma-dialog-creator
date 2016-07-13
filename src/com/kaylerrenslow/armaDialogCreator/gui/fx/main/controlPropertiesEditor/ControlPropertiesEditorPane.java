@@ -1018,8 +1018,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					e.printStackTrace(System.out);
 				}
 				choiceBox.getSelectionModel().select(font);
-			} else {
-				choiceBox.getSelectionModel().select(AFont.DEFAULT);
 			}
 			macro = new MacroGetterButton<>(AFont.class, font);
 			macro.getValueObserver().addValueListener(new ValueListener<AFont>() {
@@ -1037,7 +1035,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 			choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
-					controlProperty.setValue(newValue.name());
+					if (newValue == null) {
+						controlProperty.setFirstValue(null);
+					} else {
+						controlProperty.setValue(newValue.name());
+					}
 					macro.getValueObserver().updateValue(newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
@@ -1068,7 +1070,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			choiceBox.getSelectionModel().select(AFont.DEFAULT);
+			if (controlProperty.getFirstDefaultValue() == null) {
+				choiceBox.getSelectionModel().clearSelection();
+			} else {
+				choiceBox.getSelectionModel().select(AFont.valueOf(controlProperty.getFirstDefaultValue()));
+			}
 		}
 
 		@Override

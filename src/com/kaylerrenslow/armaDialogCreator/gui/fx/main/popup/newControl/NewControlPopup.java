@@ -16,6 +16,8 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Orientation;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -58,6 +60,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 			}
 		});
 		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
 		myStage.sizeToScene();
 	}
 

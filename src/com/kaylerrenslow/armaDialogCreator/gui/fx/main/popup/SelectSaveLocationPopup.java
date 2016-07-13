@@ -18,10 +18,8 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.io.File;
 
 /**
@@ -34,17 +32,11 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 
 	private Button btnChangeAppData = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
 	private Button btnChangeA3Tools = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
-	
-	private boolean a3AppSaveDirGood = false;
-	private boolean a3ToolsDirGood = true;
-
-	/** True if the popup is closing and no action should be performed on exit, false otherwise. */
-	private boolean cancel = false;
 
 	/**
 	 Creates the "change directories" popup
 	 */
-	public SelectSaveLocationPopup(@NotNull File initialDirectoryAppDataSave, @Nullable File a3ToolsDir) {
+	public SelectSaveLocationPopup(@Nullable File initialDirectoryAppDataSave, @Nullable File a3ToolsDir) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.SelectSaveLocation.POPUP_TITLE);
 		initialize(initialDirectoryAppDataSave, a3ToolsDir);
 		myStage.setMinWidth(600d);
@@ -52,15 +44,16 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		myStage.initStyle(StageStyle.UTILITY);
 	}
 
-	private void initialize(@NotNull File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
+	private void initialize(@Nullable File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
 		tfA3ToolsDir.setEditable(false);
 		tfAppDataSaveDir.setEditable(false);
 
 		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
-		a3AppSaveDirGood = initialAppSaveDirectory.exists();
-		tfAppDataSaveDir.setText(initialAppSaveDirectory.getPath());
+		if (initialAppSaveDirectory != null) {
+			tfAppDataSaveDir.setText(initialAppSaveDirectory.getPath());
+		}
 
 		Label lblAppDataSaveDir = new Label(Lang.Popups.SelectSaveLocation.LBL_APP_DATA_SAVE_DIR);
 		Label lblA3ToolsDir = new Label(Lang.Popups.SelectSaveLocation.LBL_A3_TOOLS_DIR);
@@ -93,7 +86,7 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 				chooseA3ToolsSaveDir(f);
 			}
 		});
-		
+
 
 		HBox hbTop = new HBox(5);
 		hbTop.getChildren().addAll(tfAppDataSaveDir, btnChangeAppData);
@@ -114,50 +107,57 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 	}
 
 	private void chooseAppDataSaveDir(File f) {
-		a3AppSaveDirGood = true;
 		tfAppDataSaveDir.setText(f.getPath());
 	}
 
-	@NotNull
+	@Nullable
 	public String getApplicationDataSaveLocationPath() {
-		return tfAppDataSaveDir.getText().trim();
+		String s = tfAppDataSaveDir.getText();
+		if (s.length() == 0) {
+			return null;
+		}
+		return tfAppDataSaveDir.getText();
 	}
 
 	@Nullable
 	public String getArma3ToolsDirectoryPath() {
-		String s = tfA3ToolsDir.getText().trim();
-		if (s.length() == 0 || !a3ToolsDirGood) {
+		String s = tfA3ToolsDir.getText();
+		if (s.length() == 0) {
 			return null;
 		}
 		return s;
 	}
 
 	@Override
-	protected void cancel() {
-		cancel = true;
+	protected void ok() {
+		String appSaveDataLocation = appSaveDataLocation();
+		if (appSaveDataLocation == null) {
+			return;
+		}
+		String a3tools = getArma3ToolsDirectoryPath();
+		ArmaDialogCreator.getSaveDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
+		if (a3tools != null) {
+			ArmaDialogCreator.getSaveDataManager().setArma3ToolsLocation(new File(a3tools));
+		}
 		close();
 	}
 
+	@Nullable
+	private String appSaveDataLocation() {
+		String appSaveDataLocation = getApplicationDataSaveLocationPath();
+		if (appSaveDataLocation == null) {
+			beepFocus();
+			tfAppDataSaveDir.requestFocus();
+			return null;
+		}
+		return appSaveDataLocation;
+	}
+
+
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
-		if (a3AppSaveDirGood && a3ToolsDirGood) {
-			super.onCloseRequest(event);
-		} else {
+		if (appSaveDataLocation() == null) {
 			event.consume();
-			btnChangeAppData.requestFocus();
-			Toolkit.getDefaultToolkit().beep();
 		}
 	}
-
-	@Override
-	protected void closing() {
-		if (cancel) {
-			return;
-		}
-		ArmaDialogCreator.getSaveDataManager().setAppSaveDataLocation(new File(getApplicationDataSaveLocationPath()));
-		if (getArma3ToolsDirectoryPath() != null) {
-			ArmaDialogCreator.getSaveDataManager().setArma3ToolsLocation(new File(getArma3ToolsDirectoryPath()));
-		}
-	}
-
 }

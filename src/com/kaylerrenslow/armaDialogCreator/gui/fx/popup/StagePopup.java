@@ -9,6 +9,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Tooltip;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -47,15 +49,19 @@ public class StagePopup<E extends Parent> {
 		myStage.setTitle(title);
 		if (primaryStage != null) {
 			myStage.initOwner(primaryStage);
-			myStage.getIcons().add(primaryStage.getIcons().get(0));
-			myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-			primaryStage.getScene().getStylesheets().addListener(new ListChangeListener<String>() {
-				@Override
-				public void onChanged(Change<? extends String> c) {
-					myStage.getScene().getStylesheets().clear();
-					myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
-				}
-			});
+			if (primaryStage.getIcons().size() > 0) {
+				myStage.getIcons().add(primaryStage.getIcons().get(0));
+			}
+			if (primaryStage.getScene() != null) {
+				myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+				primaryStage.getScene().getStylesheets().addListener(new ListChangeListener<String>() {
+					@Override
+					public void onChanged(Change<? extends String> c) {
+						myStage.getScene().getStylesheets().clear();
+						myStage.getScene().getStylesheets().addAll(primaryStage.getScene().getStylesheets());
+					}
+				});
+			}
 		}
 
 		myStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
@@ -164,18 +170,20 @@ public class StagePopup<E extends Parent> {
 	 @param addOk true to add ok button
 	 @param addHelpButton true to add help button
 	 */
-	protected HBox getResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
-		HBox h = new HBox(5);
-		if(addHelpButton){
-			Button btnCancel = new Button(Lang.Popups.BTN_HELP);
-			btnCancel.setOnAction(new EventHandler<ActionEvent>() {
+	protected BorderPane getResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
+		BorderPane bp = new BorderPane();
+		HBox right = new HBox(5);
+		if (addHelpButton) {
+			Button btnHelp = new Button(Lang.Popups.BTN_HELP);
+			btnHelp.setTooltip(new Tooltip(Lang.Popups.BTN_HELP_TOOLTIP));
+			btnHelp.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
 					help();
 				}
 			});
-			btnCancel.setPrefWidth(50d);
-			h.getChildren().add(btnCancel);
+			btnHelp.setPrefWidth(50d);
+			bp.setLeft(btnHelp);
 		}
 		if (addCancel) {
 			Button btnCancel = new Button(Lang.Popups.BTN_CANCEL);
@@ -186,7 +194,7 @@ public class StagePopup<E extends Parent> {
 				}
 			});
 			btnCancel.setPrefWidth(75d);
-			h.getChildren().add(btnCancel);
+			right.getChildren().add(btnCancel);
 		}
 		if (addOk) {
 			Button btnOk = new Button(Lang.Popups.BTN_OK);
@@ -197,10 +205,11 @@ public class StagePopup<E extends Parent> {
 				}
 			});
 			btnOk.setPrefWidth(100d);
-			h.getChildren().add(btnOk);
+			right.getChildren().add(btnOk);
 		}
-		h.setAlignment(Pos.BOTTOM_RIGHT);
-		return h;
+		right.setAlignment(Pos.BOTTOM_RIGHT);
+		bp.setRight(right);
+		return bp;
 	}
 
 	/** Called when the popup is about to hide. Defualt implementation is nothing. */

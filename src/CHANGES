@@ -1,8 +1,7 @@
 ADDED:
-    support for all popups to have help button
+    none
 CHANGED:
-    made default arma control renderer font size bigger
-    macro creator popup now has proper editors for each property type
-    moved some String display name constants from enums into Lang.java
+    placed a border around color preview box in tree view for controls
 FIXED:
-    in new control popup, setting value to something, changing to macro editor, changing back to default editor, and resetting data to default doesn't update macro display value
+    resetting font to default value wouldn't actually do anything
+    arma 3 tools location and app data folder location wasn't saving and loading correctly
