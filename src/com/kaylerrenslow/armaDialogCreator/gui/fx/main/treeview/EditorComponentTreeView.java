@@ -9,6 +9,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +26,8 @@ import java.util.List;
  Created on 06/08/2016. */
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
 
+	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
+
 	public enum TreeUpdate {
 		ADD_FOLDER, REMOVE_FOLDER, ADD_ITEM, REMOVE_ITEM
 	}
@@ -31,7 +36,18 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 	public EditorComponentTreeView() {
 		super(null);
-		setContextMenu(new ControlCreationContextMenu(this, true));
+		setContextMenu(controlCreationContextMenu);
+		EditorComponentTreeView treeView = this;
+		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<T>>() {
+			@Override
+			public void changed(ObservableValue<? extends TreeItem<T>> observable, TreeItem<T> oldValue, TreeItem<T> selected) {
+				if (selected != null && selected.getValue() instanceof ControlTreeItemEntry) {
+					treeView.setContextMenu(new ControlEditContextMenu((ControlTreeItemEntry) selected.getValue()));
+				} else {
+					treeView.setContextMenu(controlCreationContextMenu);
+				}
+			}
+		});
 	}
 
 	public UpdateListenerGroup<TreeUpdate> getUpdateListenerGroup() {

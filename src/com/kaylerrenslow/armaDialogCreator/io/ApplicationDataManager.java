@@ -36,8 +36,6 @@ public class ApplicationDataManager {
 		return propertyManager.getArma3ToolsDirectory();
 	}
 
-
-
 	/** Gets the application property, or null if doesn't exist */
 	@NotNull
 	public String getApplicationProperty(@NotNull ApplicationProperty p) {

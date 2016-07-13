@@ -17,13 +17,19 @@ import org.jetbrains.annotations.Nullable;
 public class ControlTreeItemEntry extends TreeItemEntry {
 	private final ArmaControl myArmaControl;
 
-	public ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, ArmaControl control) {
+	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, ArmaControl control) {
 		super(control.getClassName(), cellType, graphic);
 		this.myArmaControl = control;
+		myArmaControl.getRenderer().getEnabledObserver().addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
+				setEnabledFromListener(newValue);
+			}
+		});
 	}
 
 	public ControlTreeItemEntry(ArmaControl control) {
-		this(CellType.LEAF, new TreeItemControlGraphic(), control);
+		this(CellType.LEAF, new DefaultControlTreeItemGraphic(), control);
 		setUpdateListener(new TreeNodeUpdateListener() {
 			@Override
 			public void delete() {
@@ -36,8 +42,8 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 			}
 		});
 
-		if (getGraphic() instanceof TreeItemControlGraphic) {
-			TreeItemControlGraphic graphic = (TreeItemControlGraphic) getGraphic();
+		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
+			DefaultControlTreeItemGraphic graphic = (DefaultControlTreeItemGraphic) getGraphic();
 			graphic.init(this);
 			control.getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
 				@Override
@@ -51,6 +57,13 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	/** Sets whether or not the user can interact with the control in the editor. */
 	public void setEnabled(boolean enabled) {
 		myArmaControl.getRenderer().setEnabled(enabled);
+	}
+
+	private void setEnabledFromListener(boolean enabled) {
+		if (myArmaControl.getRenderer().isGhost()) { //only adjusted the visibility, so don't disable the graphic
+			return;
+		}
+		getGraphic().setDisable(!enabled);
 	}
 
 	public ArmaControl getMyArmaControl() {
@@ -69,5 +82,10 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 
 	public Color getPrimaryColor() {
 		return myArmaControl.getRenderer().getBackgroundColor();
+	}
+
+	/** Return the control's enabled state that this tree item entry represents */
+	public boolean isEnabled() {
+		return myArmaControl.getRenderer().isEnabled();
 	}
 }

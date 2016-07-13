@@ -20,6 +20,8 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 	private ValueObserver<AColor> backgroundColorObserver;
 	private boolean disablePaintFromCanvas;
 
+	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
+
 	public ArmaControlRenderer() {
 		super(0, 0, 0, 0);
 		setFont(FONT);
@@ -36,6 +38,16 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 
 	final void setMyControl(ArmaControl myControl) {
 		this.myControl = myControl;
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		super.setEnabled(enabled);
+		enabledObserver.updateValue(enabled);
+	}
+
+	public ValueObserver<Boolean> getEnabledObserver() {
+		return enabledObserver;
 	}
 
 	public ArmaControl getMyControl() {

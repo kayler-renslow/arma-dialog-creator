@@ -17,14 +17,14 @@ import javafx.scene.text.FontPosture;
  @author Kayler
  Graphic for tree items that represent a control
  Created on 06/08/2016. */
-public class TreeItemControlGraphic extends HBox {
+public class DefaultControlTreeItemGraphic extends HBox{
 	private static final Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontPosture.ITALIC, Font.getDefault().getSize());
 	private static final Insets margin = new Insets(0, 5, 0, 0);
 	private static final String BORDER_STYLE = "-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:1px;";
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 
-	public TreeItemControlGraphic() {
+	public DefaultControlTreeItemGraphic() {
 		rbSelected.setSelected(true);
 	}
 

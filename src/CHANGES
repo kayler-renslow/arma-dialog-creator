@@ -1,7 +1,6 @@
 ADDED:
-    none
+    prototype code for enabling/disabling controls from the treeview
 CHANGED:
-    placed a border around color preview box in tree view for controls
+    none
 FIXED:
-    resetting font to default value wouldn't actually do anything
-    arma 3 tools location and app data folder location wasn't saving and loading correctly
+    none

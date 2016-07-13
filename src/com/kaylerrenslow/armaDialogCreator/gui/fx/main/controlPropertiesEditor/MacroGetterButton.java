@@ -74,9 +74,9 @@ class MacroGetterButton<V> extends HBox {
 					recentMacrosMap.put(clazz, recentMacros);
 				}
 				if (recentMacros.size() + 1 >= MAX_RECENT_MACROS) {
-					recentMacros.removeFirst();
+					recentMacros.removeLast();
 				}
-				recentMacros.add(chosenMacro);
+				recentMacros.addFirst(chosenMacro);
 				updateRecentMacrosList(menuButton, recentMacros);
 			}
 		});
@@ -161,7 +161,6 @@ class MacroGetterButton<V> extends HBox {
 				listViewMacros.setDisable(true);
 				Label lblMessage = new Label(Lang.Macros.ChooseMacroPopup.MO_AVAILABLE_MACROS);
 				myRootElement.getChildren().addAll(lblAvail, lblMessage);
-//				setStageSize(myScene.getWidth(), myScene.getHeight());
 			} else {
 				HBox hbSplit = new HBox(5);
 				TextArea taComment = new TextArea();
@@ -176,7 +175,6 @@ class MacroGetterButton<V> extends HBox {
 					}
 				});
 				myRootElement.getChildren().addAll(hbSplit);
-//				setStageSize(myScene.getWidth(), myScene.getHeight());
 			}
 			myStage.sizeToScene();
 			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true ,false));
@@ -188,8 +186,8 @@ class MacroGetterButton<V> extends HBox {
 			close();
 		}
 
-		@Nullable
 		/**Return the macro chosen. If null, no macro was chosen.*/
+		@Nullable
 		public Macro<V> getChosenMacro() {
 			return listViewMacros.getSelectionModel().getSelectedItem();
 		}

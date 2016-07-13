@@ -25,7 +25,8 @@ public interface CanvasComponent extends Region{
 	/** Return true if the component is enabled (user can click on it or move it with mouse), false otherwise. */
 	boolean isEnabled();
 
-	/** Set whether the component is enabled or not. */
+	/** Set whether the component is enabled or not.
+	 @see #setGhost(boolean) */
 	void setEnabled(boolean enabled);
 
 	/**

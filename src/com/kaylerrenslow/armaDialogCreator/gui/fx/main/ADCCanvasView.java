@@ -121,7 +121,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 				for (TreeItem<? extends TreeItemEntry> treeItem : c.getList()) {
 					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
-						selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
+						if(treeItemEntry.isEnabled()){
+							selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
+						}
 					}
 				}
 				repaintCanvas();
