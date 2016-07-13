@@ -142,7 +142,7 @@ public interface Lang {
 
 		interface ChooseMacroPopup {
 			String POPUP_TITLE = "Choose a Macro";
-			String AVAILABLE_MACROS = "Available Macros:";
+			String AVAILABLE_MACROS = "Available Macros";
 			String MO_AVAILABLE_MACROS = "No macros are available.";
 			String NO_RECENT_MACROS = "No recently chosen macros.";
 		}

@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
 import com.kaylerrenslow.armaDialogCreator.data.Macro;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -24,6 +25,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -38,7 +40,8 @@ public class NewMacroPopup extends StagePopup<VBox> {
 
 	private StackPane stackPaneEditor = new StackPane();
 
-	private TextField tfMacroDescription = new TextField();
+	private final TextField tfMacroDescription = new TextField();
+	private final InputField<IdentifierFieldDataChecker, String> inMacroKey = new InputField<>(new IdentifierFieldDataChecker());
 
 	public NewMacroPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Popups.NewMacro.POPUP_TITLE);
@@ -48,7 +51,6 @@ public class NewMacroPopup extends StagePopup<VBox> {
 
 		stackPaneEditor.getChildren().add(new Label(Lang.Popups.NewMacro.NO_TYPE_CHOSEN));
 
-		InputField<IdentifierFieldDataChecker, String> inMacroKey = new InputField<>(new IdentifierFieldDataChecker());
 		EventHandler<? super KeyEvent> oldEvent = inMacroKey.getOnKeyReleased();
 		inMacroKey.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
@@ -78,7 +80,7 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			public void changed(ObservableValue<? extends ControlProperty.PropertyType> observable, ControlProperty.PropertyType oldValue, ControlProperty.PropertyType selected) {
 				editor = getEditor(selected);
 				stackPaneEditor.getChildren().clear();
-				stackPaneEditor.getChildren().add(editor.getEditorNode());
+				stackPaneEditor.getChildren().add(editor.getNode());
 			}
 		});
 
@@ -90,13 +92,11 @@ public class NewMacroPopup extends StagePopup<VBox> {
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true ,false));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
 
-		myStage.setMinWidth(320d);
-		myStage.setWidth(480d);
-		myStage.setHeight(200);
-//		vbTop.prefWidth(720d);
-//		vbTop.prefHeight(480d);
+		myStage.setMinWidth(480d);
+		myStage.setWidth(500d);
+		myStage.setHeight(240);
 	}
 
 	private static HBox hbox(String text, Node graphic) {
@@ -105,10 +105,24 @@ public class NewMacroPopup extends StagePopup<VBox> {
 		return new HBox(5, lbl, graphic);
 	}
 
+	/**Return the macro that has been created. (should be invoked after the popup has closed)*/
 	@Nullable
-	public Macro getCreatedMacro() {
-		return null;
-		//		return editor != null ? editor.getValue() ? null;
+	private Macro getCreatedMacro() {
+		if (editor == null || editor.getValue() == null || inMacroKey.getValue() == null) {
+			return null;
+		}
+		Macro m = new Macro<>(inMacroKey.getValue(), editor.getValue());
+		m.setComment(tfMacroDescription.getText());
+		return m;
+	}
+
+	@Override
+	protected void ok() {
+		Macro macro = getCreatedMacro();
+		if (macro != null) {
+			ArmaDialogCreator.getApplicationData().getMacroRegistry().getMacros().add(macro);
+		}
+		close();
 	}
 
 	private ValueEditor getEditor(ControlProperty.PropertyType propertyType) {
@@ -122,11 +136,11 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			case STRING:
 				return new InputFieldValueEditor<>(new ArmaStringFieldDataChecker());
 			case ARRAY:
-				return new ArrayValueEditor(true, new ArmaStringFieldDataChecker(), new ArmaStringFieldDataChecker());
+				return new ArrayValueEditor(2);
 			case COLOR:
 				return new ColorValueEditor();
 			case SOUND:
-				return new ArrayValueEditor(false, new ArmaStringFieldDataChecker(), new DoubleFieldDataChecker(), new DoubleFieldDataChecker());
+				return new SoundValueEditor();
 			case FONT:
 				return new FontValueEditor();
 			case FILE_NAME:
@@ -146,11 +160,12 @@ public class NewMacroPopup extends StagePopup<VBox> {
 	}
 
 	private interface ValueEditor<V> {
-		V getValue();
 
-		void setValue(V val);
+		@Nullable V getValue();
 
-		Node getEditorNode();
+		void setValue(@Nullable V val);
+
+		@NotNull Node getNode();
 	}
 
 	private static class InputFieldValueEditor<V> implements ValueEditor<V> {
@@ -170,8 +185,9 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			editor.setValue(val);
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return editor;
 		}
 	}
@@ -189,62 +205,70 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			editor.setValue(val);
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return editor;
 		}
 	}
 
 	private static class ArrayValueEditor implements ValueEditor<String[]> {
 
-		private ArrayList<InputField> editors = new ArrayList<>();
+		private ArrayList<TextField> editors = new ArrayList<>();
 
 		private final Button btnDecreaseSize = new Button("-");
 		private final Button btnIncreaseSize = new Button("+");
-		private final FlowPane editorsPane = new FlowPane(5, 5);
+		private final double gap = 5;
+		private final FlowPane editorsPane = new FlowPane(gap, gap);
 		private final HBox masterPane;
 
-		public ArrayValueEditor(boolean canChangeSize, InputFieldDataChecker<?>... checkers) {
+		public ArrayValueEditor(int numInitialFields) {
 			masterPane = new HBox(5, editorsPane);
 			editorsPane.minWidth(0d);
 			editorsPane.prefWidth(0d);
+			editorsPane.setPrefWrapLength(300d + 5 * numInitialFields);
 			masterPane.minWidth(0d);
-			if (canChangeSize) {
-				masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
-				btnDecreaseSize.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						if (editors.size() > 1) {
-							InputField removed = editors.remove(editors.size() - 1);
-							editorsPane.getChildren().remove(removed);
-						}
+
+			masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
+			btnDecreaseSize.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					if (editors.size() > 1) {
+						TextField removed = editors.remove(editors.size() - 1);
+						editorsPane.getChildren().remove(removed);
 					}
-				});
-				btnIncreaseSize.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						InputField in = new InputField<>(new ArmaStringFieldDataChecker());
-						editors.add(in);
-						editorsPane.getChildren().add(in);
-						editorsPane.autosize();
-					}
-				});
-			}
-			InputField in;
-			for (InputFieldDataChecker<?> checker : checkers) {
-				in = new InputField<>(checker);
-				editors.add(in);
-				editorsPane.getChildren().add(in);
+				}
+			});
+			btnIncreaseSize.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					TextField tf = getTextField();
+					editors.add(tf);
+					editorsPane.getChildren().add(tf);
+					editorsPane.autosize();
+				}
+			});
+			TextField tf;
+			for (int i = 0; i < numInitialFields; i++) {
+				tf = getTextField();
+				editors.add(tf);
+				editorsPane.getChildren().add(tf);
 			}
 			editorsPane.autosize();
+		}
+
+		private TextField getTextField() {
+			TextField tf = new TextField();
+			tf.setPrefWidth(100d);
+			return tf;
 		}
 
 		@Override
 		public String[] getValue() {
 			String[] values = new String[editors.size()];
 			int i = 0;
-			for (InputField inputField : editors) {
-				values[i++] = inputField.getText();
+			for (TextField tf : editors) {
+				values[i++] = tf.getText();
 			}
 			return values;
 		}
@@ -253,12 +277,13 @@ public class NewMacroPopup extends StagePopup<VBox> {
 		public void setValue(String[] val) {
 			int i = 0;
 			for (String s : val) {
-				editors.get(i++).setValueFromText(s);
+				editors.get(i++).setText(s);
 			}
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return masterPane; //need to include decrease/increase buttons
 		}
 	}
@@ -276,8 +301,9 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			editor.setValue(val.toJavaFXColor());
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return editor;
 		}
 	}
@@ -306,8 +332,9 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			editor.setValue(val);
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return editorNode;
 		}
 	}
@@ -325,10 +352,50 @@ public class NewMacroPopup extends StagePopup<VBox> {
 			editor.setValue(val.toJavaFXColor());
 		}
 
+		@NotNull
 		@Override
-		public Node getEditorNode() {
+		public Node getNode() {
 			return editor;
 		}
 	}
 
+	private class SoundValueEditor implements ValueEditor<ASound> {
+
+		private InputField<ArmaStringFieldDataChecker, String> inSoundName = new InputField<>(new ArmaStringFieldDataChecker());
+		private InputField<DoubleFieldDataChecker, Double> inDb = new InputField<>(new DoubleFieldDataChecker());
+		private InputField<DoubleFieldDataChecker, Double> inPitch = new InputField<>(new DoubleFieldDataChecker());
+
+		private FlowPane flowPane = new FlowPane(5, 10, inSoundName, inDb, inPitch);
+
+		public SoundValueEditor() {
+			flowPane.setPrefWrapLength(300d);
+		}
+
+		@Override
+		public ASound getValue() {
+			if (inSoundName.getValue() == null) {
+				return null;
+			}
+			if (inDb.getValue() == null) {
+				return null;
+			}
+			if (inPitch.getValue() == null) {
+				return null;
+			}
+			return new ASound(inSoundName.getValue(), inDb.getValue(), inPitch.getValue());
+		}
+
+		@Override
+		public void setValue(ASound val) {
+			inSoundName.setValue(val.getSoundName());
+			inDb.setValue(val.getDb());
+			inPitch.setValue(val.getPitch());
+		}
+
+		@NotNull
+		@Override
+		public Node getNode() {
+			return flowPane;
+		}
+	}
 }

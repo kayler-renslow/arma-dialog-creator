@@ -12,6 +12,10 @@ FEATURES:
 >for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
 >have help button implementation for all popups
 
+GENERAL:
+-----------------------------------
+>create documentation for all classes and **well** document it
+
 BUGS:
 -----------------------------------
 >select many things in tree view and drag into folder

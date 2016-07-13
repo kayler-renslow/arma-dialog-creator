@@ -966,6 +966,10 @@ public class UICanvasEditor extends UICanvas {
 		paint();
 	}
 
+	public CanvasComponent getMouseOverComponent() {
+		return mouseOverComponent;
+	}
+
 	/**
 	 @author Kayler
 	 Created on 05/13/2016.

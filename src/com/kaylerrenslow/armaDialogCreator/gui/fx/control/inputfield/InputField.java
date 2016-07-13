@@ -85,6 +85,12 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		getChildren().add(button);
 	}
 
+	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns. Also, set the initial value equal to defaultValue */
+	public InputField(@NotNull T fieldDataChecker, @Nullable V defaultValue) {
+		this(fieldDataChecker);
+		setValue(defaultValue);
+	}
+
 	/** Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data). If no text was inputted, will return null. */
 	@Nullable
 	public V getValue() {

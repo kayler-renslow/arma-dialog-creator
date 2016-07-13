@@ -1,6 +1,6 @@
 ADDED:
-    prototype code for enabling/disabling controls from the treeview
+    none
 CHANGED:
-    none
+    creating a macro works now
 FIXED:
-    none
+    editor: double clicking and then immediately dragging mouse on to a component would open up control properties editor

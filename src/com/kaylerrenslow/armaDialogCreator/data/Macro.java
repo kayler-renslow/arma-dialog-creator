@@ -53,4 +53,9 @@ public class Macro<T> {
 	public void setComment(@Nullable String comment) {
 		this.comment = comment;
 	}
+
+	@Override
+	public String toString() {
+		return key;
+	}
 }

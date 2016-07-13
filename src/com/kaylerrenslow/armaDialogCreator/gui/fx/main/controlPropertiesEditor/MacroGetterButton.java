@@ -146,38 +146,55 @@ class MacroGetterButton<V> extends HBox {
 			myStage.initStyle(StageStyle.UTILITY);
 
 			initRootElement(macroClassType);
+			myStage.setResizable(false);
 		}
 
 		private void initRootElement(Class<V> macroClassType) {
 			myRootElement.setPadding(new Insets(10));
-			Label lblAvail = new Label(Lang.Macros.ChooseMacroPopup.AVAILABLE_MACROS);
 			List<Macro> macroList = ArmaDialogCreator.getApplicationData().getMacroRegistry().getMacros();
 			for (Macro macro : macroList) {
-				if (macroClassType.isInstance(macro)) {
+				if (macroClassType.isInstance(macro.getValue())) {
 					listViewMacros.getItems().add(macro);
 				}
 			}
 			if (listViewMacros.getItems().size() == 0) {
 				listViewMacros.setDisable(true);
 				Label lblMessage = new Label(Lang.Macros.ChooseMacroPopup.MO_AVAILABLE_MACROS);
-				myRootElement.getChildren().addAll(lblAvail, lblMessage);
+				myRootElement.getChildren().addAll(new Label(Lang.Macros.ChooseMacroPopup.AVAILABLE_MACROS), lblMessage);
 			} else {
 				HBox hbSplit = new HBox(5);
+				Label lblListViewMacros = new Label(Lang.Macros.ChooseMacroPopup.AVAILABLE_MACROS, listViewMacros);
+				lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
+
+				final double height = 100;
+				VBox vbRight = new VBox(10);
 				TextArea taComment = new TextArea();
+				taComment.setPrefHeight(height);
 				taComment.setEditable(false);
 				Label lblComment = new Label(Lang.Macros.COMMENT, taComment);
 				lblComment.setContentDisplay(ContentDisplay.BOTTOM);
-				hbSplit.getChildren().addAll(listViewMacros, lblComment);
+				TextArea taValue = new TextArea();
+				taValue.setEditable(false);
+				taValue.setPrefHeight(height);
+				Label lblValue = new Label(Lang.Macros.VALUE, taValue);
+				lblValue.setContentDisplay(ContentDisplay.BOTTOM);
+
+				vbRight.getChildren().addAll(lblValue, lblComment);
+
+				hbSplit.getChildren().addAll(lblListViewMacros, vbRight);
 				listViewMacros.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Macro>() {
 					@Override
 					public void changed(ObservableValue<? extends Macro> observable, Macro oldValue, Macro selected) {
-						taComment.setText(selected.getComment());
+						if (selected != null) {
+							taComment.setText(selected.getComment());
+							taValue.setText(selected.getValue().toString());
+						}
 					}
 				});
 				myRootElement.getChildren().addAll(hbSplit);
 			}
 			myStage.sizeToScene();
-			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true ,false));
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
 		}
 
 		@Override
@@ -186,7 +203,7 @@ class MacroGetterButton<V> extends HBox {
 			close();
 		}
 
-		/**Return the macro chosen. If null, no macro was chosen.*/
+		/** Return the macro chosen. If null, no macro was chosen. */
 		@Nullable
 		public Macro<V> getChosenMacro() {
 			return listViewMacros.getSelectionModel().getSelectedItem();

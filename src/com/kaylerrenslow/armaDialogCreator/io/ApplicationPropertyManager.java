@@ -155,6 +155,6 @@ class ApplicationPropertyManager {
 	 */
 	@NotNull
 	static String getPathSafe(@NotNull File saveLocation) {
-		return saveLocation.getPath().replaceAll("\\\\", "\\\\");
+		return saveLocation.getPath().replaceAll("\\\\", "\\\\\\\\"); //convert single backslash into double backslash
 	}
 }

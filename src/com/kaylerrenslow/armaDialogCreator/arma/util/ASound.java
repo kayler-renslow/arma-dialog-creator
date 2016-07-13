@@ -5,11 +5,8 @@ package com.kaylerrenslow.armaDialogCreator.arma.util;
  Specifies a sound
  Created on 05/22/2016. */
 public class ASound {
-	/** Number of values stored inside a sound array. This is blatantly obvious, but serves as clarity and mitigates hard-coding. */
-	public static final int ARRAY_SIZE = 3;
-
 	private String soundName;
-	private int db;
+	private double db;
 	private double pitch;
 
 	/**
@@ -20,7 +17,7 @@ public class ASound {
 	 @param pitch pitch (ranged 0.0 - 1.0)
 	 @throws IllegalArgumentException when pitch is less than 0 or greater than 1
 	 */
-	public ASound(String soundName, int db, double pitch) {
+	public ASound(String soundName, double db, double pitch) {
 		this.soundName = soundName;
 		this.db = db;
 		setPitch(pitch);
@@ -34,7 +31,7 @@ public class ASound {
 		this.soundName = soundName;
 	}
 
-	public int getDb() {
+	public double getDb() {
 		return db;
 	}
 
@@ -73,5 +70,10 @@ public class ASound {
 		s[1] = db + "";
 		s[2] = pitch + "";
 		return s;
+	}
+
+	@Override
+	public String toString() {
+		return toArrayString();
 	}
 }
