@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util.screen;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 
 /**

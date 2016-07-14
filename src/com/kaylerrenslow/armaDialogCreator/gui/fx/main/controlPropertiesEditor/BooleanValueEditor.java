@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.control.SVBoolean;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
@@ -11,18 +12,18 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class BooleanValueEditor implements ValueEditor<Boolean> {
-	protected final ChoiceBox<Boolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(true, false));
+public class BooleanValueEditor implements ValueEditor<SVBoolean> {
+	protected final ChoiceBox<SVBoolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(SVBoolean.TRUE, SVBoolean.FALSE));
 	private final StackPane masterPane = new StackPane(choiceBox);
-	private final InputField<ArmaStringFieldDataChecker, String> overrideField = new InputField<>(new ArmaStringFieldDataChecker());
+	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
 
 	@Override
-	public Boolean getValue() {
+	public SVBoolean getValue() {
 		return choiceBox.getValue();
 	}
 
 	@Override
-	public void setValue(Boolean val) {
+	public void setValue(SVBoolean val) {
 		choiceBox.setValue(val);
 	}
 
@@ -42,7 +43,7 @@ public class BooleanValueEditor implements ValueEditor<Boolean> {
 	}
 
 	@Override
-	public InputField<ArmaStringFieldDataChecker, String> getOverrideTextField() {
+	public InputField<ArmaStringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
 }

@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+
 import java.util.ArrayList;
 import java.util.List;
 

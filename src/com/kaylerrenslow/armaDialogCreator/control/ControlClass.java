@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.control;
+package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;

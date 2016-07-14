@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.control;
+package com.kaylerrenslow.armaDialogCreator.control;
 
 import org.jetbrains.annotations.NotNull;
 

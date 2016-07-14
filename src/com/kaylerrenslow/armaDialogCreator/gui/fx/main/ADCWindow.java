@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaUIScale;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;

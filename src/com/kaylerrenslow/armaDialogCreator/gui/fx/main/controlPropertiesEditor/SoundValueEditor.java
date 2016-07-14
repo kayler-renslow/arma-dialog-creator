@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringFieldDataChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
@@ -15,12 +15,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class SoundValueEditor implements ValueEditor<ASound> {
 
-	protected InputField<ArmaStringFieldDataChecker, String> inSoundName = new InputField<>(new ArmaStringFieldDataChecker());
-	protected InputField<DoubleFieldDataChecker, Double> inDb = new InputField<>(new DoubleFieldDataChecker());
-	protected InputField<DoubleFieldDataChecker, Double> inPitch = new InputField<>(new DoubleFieldDataChecker());
+	protected InputField<ArmaStringChecker, String> inSoundName = new InputField<>(new ArmaStringChecker());
+	protected InputField<DoubleChecker, Double> inDb = new InputField<>(new DoubleChecker());
+	protected InputField<DoubleChecker, Double> inPitch = new InputField<>(new DoubleChecker());
 	private FlowPane flowPane = new FlowPane(5, 10, inSoundName, inDb, inPitch);
 
-	private final InputField<ArmaStringFieldDataChecker, String> overrideField = new InputField<>(new ArmaStringFieldDataChecker());
+	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
 	private final StackPane masterPane = new StackPane(flowPane);
 
 	public SoundValueEditor() {
@@ -70,7 +70,7 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	}
 
 	@Override
-	public InputField<ArmaStringFieldDataChecker, String> getOverrideTextField() {
+	public InputField<ArmaStringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
 }

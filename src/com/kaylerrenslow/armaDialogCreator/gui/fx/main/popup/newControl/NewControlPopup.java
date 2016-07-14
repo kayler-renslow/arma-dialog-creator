@@ -1,10 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
@@ -31,7 +31,7 @@ import org.jetbrains.annotations.NotNull;
 public class NewControlPopup extends StagePopup<VBox> {
 	private final StackPane stackPaneProperties;
 	private final TextArea taPreviewSample;
-	private final InputField<IdentifierFieldDataChecker, String> inClassName = new InputField<>(new IdentifierFieldDataChecker());
+	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
 	private ControlPropertiesEditorPane editorPane;
 
 	private final UpdateListener<ControlProperty> controlPropertyObserverListener = new UpdateListener<ControlProperty>() {

@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlClassSpecificationProvider;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecificationProvider;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 
 /**

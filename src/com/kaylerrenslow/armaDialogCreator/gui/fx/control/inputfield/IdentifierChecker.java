@@ -5,7 +5,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  A data checker for Identifiers (regex: letter letterOrDigit*). The input also can not be empty
  Created on 07/08/2016.
  */
-public class IdentifierFieldDataChecker implements InputFieldDataChecker<String> {
+public class IdentifierChecker implements InputFieldDataChecker<String> {
 	@Override
 	public boolean validData(String data) {
 		return data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");

@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import org.jetbrains.annotations.NotNull;
 
 /**

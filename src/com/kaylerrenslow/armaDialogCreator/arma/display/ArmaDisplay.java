@@ -57,7 +57,6 @@ public class ArmaDisplay {
 		return updateGroup;
 	}
 
-
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
 	public ObservableList<ArmaControl> getControls() {
 		return controls;

@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.ControlGroupDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.StaticDataCreator;

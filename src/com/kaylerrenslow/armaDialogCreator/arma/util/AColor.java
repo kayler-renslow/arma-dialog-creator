@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,7 +11,7 @@ import java.text.DecimalFormat;
  @author Kayler
  Defines a color.
  Created on 05/22/2016. */
-public class AColor {
+public class AColor implements SerializableValue{
 	private static DecimalFormat format = new DecimalFormat("#.####");
 
 	/**Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a]*/

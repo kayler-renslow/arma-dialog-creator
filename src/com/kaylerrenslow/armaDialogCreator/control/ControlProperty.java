@@ -1,12 +1,12 @@
-package com.kaylerrenslow.armaDialogCreator.arma.control;
+package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
-import com.kaylerrenslow.armaDialogCreator.data.Macro;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -24,6 +24,16 @@ public class ControlProperty {
 		return MathUtil.truncate(x, 8);
 	}
 
+	private final ValueListener<?> macroListener = new ValueListener<Object>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+			if (myMacro == null) {
+				throw new IllegalStateException("myMacro shouldn't be null");
+			}
+			setValues(myMacro.getValue().getAsStringArray());
+		}
+	};
+
 	private final String name;
 	private final PropertyType type;
 	private final ControlPropertyLookup propertyLookup;
@@ -31,6 +41,7 @@ public class ControlProperty {
 	private String[] defaultValues;
 	private boolean dataOverride = false;
 	private String[] cacheValues;
+	private @Nullable Macro myMacro;
 
 	public enum PropertyType {
 		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
@@ -253,7 +264,7 @@ public class ControlProperty {
 		return defaultValues[0];
 	}
 
-	/** Set the default values for the property (can be array full of nulls). If setValue is true, the defaultValues given will also be placed in the control property value */
+	/** Set the default values for the property (can be array full of nulls). If setString is true, the defaultValues given will also be placed in the control property value */
 	public void setDefaultValues(boolean setValue, String... defaultValues) {
 		this.defaultValues = defaultValues;
 		if (setValue) {
@@ -287,14 +298,25 @@ public class ControlProperty {
 	 */
 	public void setValueToMacro(@Nullable Macro m) {
 		if (m == null) {
+			if (this.myMacro != null) {
+				myMacro.getValueObserver().removeListener(macroListener);
+			}
 			valuesObserver.updateValue(cacheValues);
 		} else {
 			cacheValues = new String[valuesObserver.getValue().length];
 			for (int i = 0; i < cacheValues.length; i++) {
 				cacheValues[i] = valuesObserver.getValue()[i];
 			}
-			throw new IllegalStateException("todo");//todo need to update the valuesObserver. However, how do we extract each index from the macro String array?
+			this.myMacro = m;
+			this.myMacro.getValueObserver().addValueListener(macroListener);
+			setValues(this.myMacro.getValue().getAsStringArray());
 		}
+	}
+
+	/** Get the macro that the control property is using, or null if not using a macro */
+	@Nullable
+	public Macro getMacro() {
+		return myMacro;
 	}
 
 	/** Get the first and only value and return it as a String (This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc)) */

@@ -1,7 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ScreenDimension;
-
 /**
  Created by Kayler on 06/18/2016.
  */

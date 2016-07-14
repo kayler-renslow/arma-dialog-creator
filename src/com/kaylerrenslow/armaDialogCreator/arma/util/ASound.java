@@ -1,10 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+
 /**
  @author Kayler
  Specifies a sound
  Created on 05/22/2016. */
-public class ASound {
+public class ASound implements SerializableValue {
 	private String soundName;
 	private double db;
 	private double pitch;

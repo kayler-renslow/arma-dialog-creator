@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  Holds a simple macro. The macro is referenced by a key and the result is text that is appended into the ending .h file.
  Created on 07/05/2016. */
-public class Macro<T> {
+public class Macro<T extends SerializableValue> {
 
 	private final String key;
 	protected ValueObserver<T> valueObserver;
@@ -42,10 +42,12 @@ public class Macro<T> {
 		this.valueObserver.updateValue(value);
 	}
 
+	@NotNull
 	public ValueObserver<T> getValueObserver() {
 		return valueObserver;
 	}
 
+	@Nullable
 	public String getComment() {
 		return comment;
 	}

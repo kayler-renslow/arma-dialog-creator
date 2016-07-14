@@ -1,8 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.data.Macro;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -37,7 +38,7 @@ public class NewMacroPopup extends StagePopup<VBox> {
 	private StackPane stackPaneEditor = new StackPane();
 
 	private final TextField tfMacroDescription = new TextField();
-	private final InputField<IdentifierFieldDataChecker, String> inMacroKey = new InputField<>(new IdentifierFieldDataChecker());
+	private final InputField<IdentifierChecker, String> inMacroKey = new InputField<>(new IdentifierChecker());
 
 	public NewMacroPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Popups.NewMacro.POPUP_TITLE);
@@ -103,7 +104,7 @@ public class NewMacroPopup extends StagePopup<VBox> {
 
 	/**Return the macro that has been created. (should be invoked after the popup has closed)*/
 	@Nullable
-	private Macro getCreatedMacro() {
+	private Macro<? extends SerializableValue> getCreatedMacro() {
 		if (editor == null || editor.getValue() == null || inMacroKey.getValue() == null) {
 			return null;
 		}

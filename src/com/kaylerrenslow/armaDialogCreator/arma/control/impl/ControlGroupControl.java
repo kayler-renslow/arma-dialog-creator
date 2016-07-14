@@ -1,9 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import org.jetbrains.annotations.NotNull;
 
 /**

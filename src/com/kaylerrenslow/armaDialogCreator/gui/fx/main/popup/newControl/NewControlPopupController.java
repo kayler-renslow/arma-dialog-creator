@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;

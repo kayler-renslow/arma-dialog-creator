@@ -1,12 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import javafx.scene.paint.Color;
 
 /**
  @author Kayler
  Class used to depict a hex color string.
  Created on 05/23/2016. */
-public class AHexColor extends AColor {
+public class AHexColor extends AColor implements SerializableValue {
 	private String hex;
 
 	/**

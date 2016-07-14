@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ColorValueEditor implements ValueEditor<AColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
-	private final InputField<ArmaStringFieldDataChecker, String> overrideField = new InputField<>(new ArmaStringFieldDataChecker());
+	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
 
 	@Override
@@ -42,7 +42,7 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	}
 
 	@Override
-	public InputField<ArmaStringFieldDataChecker, String> getOverrideTextField() {
+	public InputField<ArmaStringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
 }

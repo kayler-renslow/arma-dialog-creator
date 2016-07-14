@@ -1,6 +1,6 @@
 ADDED:
     none
 CHANGED:
-    redoing a bit of the control editing api to make it make more sense
+    did a massive refactor of control related classes
 FIXED:
-    none
+    selecting macros for controls now works

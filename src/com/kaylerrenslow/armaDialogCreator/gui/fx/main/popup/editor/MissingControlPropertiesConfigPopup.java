@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;

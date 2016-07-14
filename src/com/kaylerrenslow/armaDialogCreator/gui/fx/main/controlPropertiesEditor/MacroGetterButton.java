@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.data.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -28,7 +29,7 @@ import java.util.List;
  @author Kayler
  A menu button that will make a popup to choose a macro. There is also a drop down menu of recently used macros of the same type to save time.
  Created on 07/09/2016. */
-class MacroGetterButton<V> extends HBox {
+class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
@@ -39,10 +40,10 @@ class MacroGetterButton<V> extends HBox {
 
 	private ValueObserver<Macro<V>> macroValueObserver;
 
-	public MacroGetterButton(Class<V> clazz) {
+	public MacroGetterButton(@NotNull Class<V> clazz, @Nullable Macro<V> currentMacro) {
 		super(5);
 		macroValueObserver = new ValueObserver<>(null);
-		setToMacro(null);
+		setToMacro(currentMacro);
 		SplitMenuButton menuButton = new SplitMenuButton();
 		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
 		getChildren().addAll(menuButton, lblChosenMacro);
@@ -117,7 +118,7 @@ class MacroGetterButton<V> extends HBox {
 		return macroValueObserver;
 	}
 
-	private static class ChooseMacroPopup<V> extends StagePopup<VBox> {
+	private static class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VBox> {
 
 		private final ListView<Macro<V>> listViewMacros = new ListView<>();
 

@@ -4,7 +4,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  @author Kayler
  Checker for Doubles
  Created on 05/31/2016. */
-public class DoubleFieldDataChecker implements InputFieldDataChecker<Double> {
+public class DoubleChecker implements InputFieldDataChecker<Double> {
 	@Override
 	public boolean validData(String data) {
 		if (data == null) {

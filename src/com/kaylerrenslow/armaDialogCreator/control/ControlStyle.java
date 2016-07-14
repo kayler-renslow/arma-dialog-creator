@@ -1,12 +1,10 @@
-package com.kaylerrenslow.armaDialogCreator.arma.control;
+package com.kaylerrenslow.armaDialogCreator.control;
 
 /**
  Created by Kayler on 05/22/2016.
  */
 public enum ControlStyle {
-	//The standard font in Arma 3 is "PuristaMedium"
-
-	// Static styles\
+	// Static styles
 	POS(0x0F, ""),
 	HPOS(0x03, ""),
 	VPOS(0x0C, ""),
