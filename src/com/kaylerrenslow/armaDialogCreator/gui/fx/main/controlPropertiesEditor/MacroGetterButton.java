@@ -4,7 +4,6 @@ import com.kaylerrenslow.armaDialogCreator.data.Macro;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -12,7 +11,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -34,29 +32,20 @@ class MacroGetterButton<V> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
-	private Label lblDisplayValue = new Label("Value:?");
 	private Label lblChosenMacro = new Label("Macro:?");
 
 	private final MenuItem miChooseMacro = new MenuItem(Lang.Macros.CHOOSE_MACRO);
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
 
-	private ValueObserver<V> valueObserver;
+	private ValueObserver<Macro<V>> macroValueObserver;
 
-	public MacroGetterButton(Class<V> clazz, V defaultValue) {
+	public MacroGetterButton(Class<V> clazz) {
 		super(5);
-		valueObserver = new ValueObserver<>(defaultValue);
-		valueObserver.addValueListener(new ValueListener<V>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
-				setDisplayValue(newValue);
-			}
-		});
+		macroValueObserver = new ValueObserver<>(null);
 		setToMacro(null);
-		setDisplayValue(defaultValue);
 		SplitMenuButton menuButton = new SplitMenuButton();
 		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
-		lblDisplayValue.setAlignment(Pos.CENTER);
-		getChildren().addAll(menuButton, lblChosenMacro, lblDisplayValue);
+		getChildren().addAll(menuButton, lblChosenMacro);
 
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -108,6 +97,7 @@ class MacroGetterButton<V> extends HBox {
 						setToMacro(recent);
 					}
 				});
+				miRecentMacro.setMnemonicParsing(false); //allow the first underscore in macro key to be displayed. https://bugs.openjdk.java.net/browse/JDK-8095296
 				menuButton.getItems().add(miRecentMacro);
 			}
 		}
@@ -117,30 +107,21 @@ class MacroGetterButton<V> extends HBox {
 	private void setToMacro(@Nullable Macro<V> macro) {
 		if (macro == null) {
 			lblChosenMacro.setText(Lang.Macros.MACRO + "=?");
-			setDisplayValue(null);
 		} else {
 			lblChosenMacro.setText(Lang.Macros.MACRO + "=" + macro.getKey());
-			setDisplayValue(macro.getValue());
 		}
+		macroValueObserver.updateValue(macro);
 	}
 
-	public ValueObserver<V> getValueObserver() {
-		return valueObserver;
-	}
-
-	private void setDisplayValue(@Nullable V value) {
-		if (value == null) {
-			lblDisplayValue.setText("?");
-		} else {
-			lblDisplayValue.setText(Lang.Macros.VALUE + "=" + value.toString());
-		}
+	public ValueObserver<Macro<V>> getChosenMacroValueObserver() {
+		return macroValueObserver;
 	}
 
 	private static class ChooseMacroPopup<V> extends StagePopup<VBox> {
 
 		private final ListView<Macro<V>> listViewMacros = new ListView<>();
 
-		public ChooseMacroPopup(Class<V> macroClassType) {
+		public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
 			super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Macros.ChooseMacroPopup.POPUP_TITLE);
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myStage.initStyle(StageStyle.UTILITY);

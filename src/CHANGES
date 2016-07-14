@@ -1,6 +1,6 @@
 ADDED:
     none
 CHANGED:
-    creating a macro works now
+    redoing a bit of the control editing api to make it make more sense
 FIXED:
-    editor: double clicking and then immediately dragging mouse on to a component would open up control properties editor
+    none

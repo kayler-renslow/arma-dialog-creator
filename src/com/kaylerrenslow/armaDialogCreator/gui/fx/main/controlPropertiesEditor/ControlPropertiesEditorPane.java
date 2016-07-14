@@ -3,7 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
 import com.kaylerrenslow.armaDialogCreator.arma.util.Option;
+import com.kaylerrenslow.armaDialogCreator.data.Macro;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -149,6 +151,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private Node getControlPropertyEntry(ControlProperty c, boolean optional) {
 		HBox pane = new HBox(5);
 		pane.setAlignment(Pos.TOP_LEFT);
+		StackPane stackPanePropertyInput = new StackPane();
 
 		MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
 		MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
@@ -177,7 +180,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		propertyInputs.add(propertyInput);
 		propertyInput.setIsOptional(optional);
-		pane.getChildren().addAll(menuButton, new Label("="), (Node) propertyInput);
+		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
+		pane.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
 		miResetToDefault.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -188,26 +192,43 @@ public class ControlPropertiesEditorPane extends StackPane {
 		miDefaultEditor.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				propertyInput.setToMode(ControlPropertyInput.EditMode.DEFAULT);
-				c.setDataOverride(false);
+				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.DEFAULT);
 			}
 		});
 		miMacro.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				propertyInput.setToMode(ControlPropertyInput.EditMode.MACRO);
-				c.setDataOverride(false);
+				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
+
 			}
 		});
 		miOverride.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				propertyInput.setToMode(ControlPropertyInput.EditMode.OVVERIDE);
-				c.setDataOverride(true);
+				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.OVERRIDE);
 			}
 		});
 
 		return pane;
+	}
+
+	private void updatePropertyInputMode(StackPane stackPanePropertyInput, ControlPropertyInput propertyInput, ControlPropertyInput.EditMode mode) {
+		stackPanePropertyInput.getChildren().clear();
+		if (mode == ControlPropertyInput.EditMode.MACRO) {
+			MacroGetterButton macroGetterButton = new MacroGetterButton<>(propertyInput.getMacroClass());
+			stackPanePropertyInput.getChildren().add(macroGetterButton);
+			macroGetterButton.getChosenMacroValueObserver().addValueListener(new ValueListener() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+					Macro m = (Macro) newValue;
+					propertyInput.getControlProperty().setValueToMacro(m);
+				}
+			});
+		} else {
+			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
+			propertyInput.setToMode(mode);
+			propertyInput.getControlProperty().setDataOverride(mode == ControlPropertyInput.EditMode.OVERRIDE);
+		}
 	}
 
 	/** Get node that holds the controls to input data. */
@@ -227,11 +248,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 			case STRING:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.STRING);
 			case ARRAY:
-				return new ControlPropertyArrayInput(control, controlProperty, new ArmaStringFieldDataChecker(), new ArmaStringFieldDataChecker());
+				return new ControlPropertyArrayInput(control, controlProperty, 2);
 			case COLOR:
 				return new ControlPropertyColorPicker(control, controlProperty);
 			case SOUND:
-				return new ControlPropertyArrayInput(control, controlProperty, new ArmaStringFieldDataChecker(), new DoubleFieldDataChecker(), new DoubleFieldDataChecker());
+				return new ControlPropertySoundInput(control, controlProperty);
 			case FONT:
 				return new ControlPropertyFontChoiceBox(control, controlProperty);
 			case FILE_NAME:
@@ -239,7 +260,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			case IMAGE:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.IMAGE_PATH);
 			case HEX_COLOR_STRING:
-				return new ControlPropertyColorPicker(control, controlProperty);
+				return new ControlPropertyColorPicker(control, controlProperty); //todo have hex color editor
 			case TEXTURE:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.TEXTURE);
 			case EVENT:
@@ -283,9 +304,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		enum EditMode {
 			DEFAULT,
+			/** This is broken. Maybe fix it later. */
 			@Deprecated
-			/**This is broken. Maybe fix it later.*/
-					OVVERIDE,
+			OVERRIDE,
 			MACRO
 		}
 
@@ -293,9 +314,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		void setToMode(EditMode mode);
 
+		Node getRootNode();
+
+		Class<?> getMacroClass();
+
 		/** DO NOT USE THIS FOR ARRAY INPUT */
-		static InputField<ArmaStringFieldDataChecker, String> createRawInput(ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
-			InputField<ArmaStringFieldDataChecker, String> rawInput = new InputField<>(new ArmaStringFieldDataChecker());
+		static InputField<ArmaStringFieldDataChecker, String> modifyRawInput(InputField<ArmaStringFieldDataChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
 			rawInput.getValueObserver().addValueListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
@@ -320,15 +344,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		private MacroGetterButton<String> macro;
-		private EditMode mode = EditMode.DEFAULT;
+		private final InputField<ArmaStringFieldDataChecker, String> rawInput = new InputField<>(new ArmaStringFieldDataChecker());
+		private boolean isOptional;
 
 		ControlPropertyOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(rawInput, control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
@@ -351,19 +374,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					toSelect = radioButton;
 				}
 			}
-			macro = new MacroGetterButton<>(String.class, (toSelect != null ? toSelect.getUserData().toString() : null));
-			macro.getValueObserver().addValueListener(new ValueListener<String>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setFirstValue(newValue);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
+
 			if (toSelect != null) {
 				toggleGroup.selectToggle(toSelect);
 			}
@@ -372,10 +383,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 					if (newValue == null) {
 						controlProperty.setFirstValue(null);
-						macro.getValueObserver().updateValue(null);
 					} else {
 						controlProperty.getValuesObserver().updateValue(new String[]{newValue.getUserData().toString()});
-						macro.getValueObserver().updateValue(newValue.getUserData().toString());
 					}
 					if (control != null) {
 						control.getUpdateGroup().update(control);
@@ -426,8 +435,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return controlPropertyUpdateGroup;
 		}
 
-		private boolean isOptional;
-
 		@Override
 		public boolean isOptional() {
 			return isOptional;
@@ -440,53 +447,46 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
 			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
+			if (mode == EditMode.OVERRIDE) {
 				getChildren().add(rawInput);
 			} else if (mode == EditMode.DEFAULT) {
 				getChildren().addAll(radioButtons);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
 			}
+		}
+
+		@Override
+		public Node getRootNode() {
+			return this;
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return String.class;
 		}
 	}
 
+	/** Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified. */
 	@SuppressWarnings("unchecked")
-	/**Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified.*/
-	private static abstract class ControlPropertyInputField<T> extends StackPane implements ControlPropertyInput {
+	private static abstract class ControlPropertyInputField<T> extends InputFieldValueEditor<T> implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private final InputField inputField;
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		protected MacroGetterButton<T> macro;
-		protected EditMode mode = EditMode.DEFAULT;
 
-		ControlPropertyInputField(Class<T> clazz, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
-			inputField = new InputField(checker);
-			getChildren().add(inputField);
+		private boolean isOptional;
+		private Class<?> macroTypeClass;
+
+		ControlPropertyInputField(Class<T> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
+			super(checker);
+			this.macroTypeClass = macroTypeClass;
 
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			if (controlProperty.valuesAreSet()) {
 				inputField.setValueFromText(controlProperty.getFirstValue());
 			}
-			macro = new MacroGetterButton<>(clazz, (T) controlProperty.getFirstValue());
-			macro.getValueObserver().addValueListener(new ValueListener<T>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<T> observer, T oldValue, T newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setFirstValue(newValue);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
 			inputField.getValueObserver().addValueListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
@@ -495,7 +495,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					} else {
 						controlProperty.getValuesObserver().updateValue(new String[]{newValue.toString()});
 					}
-					macro.getValueObserver().updateValue((T) newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
@@ -516,7 +515,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			if (promptText != null) {
 				inputField.setPromptText(promptText);
 			}
-			HBox.setHgrow(this, Priority.ALWAYS);
+			HBox.setHgrow(getRootNode(), Priority.ALWAYS);
 		}
 
 		@Override
@@ -540,15 +539,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void disableEditing(boolean disable) {
-			setDisable(disable);
+			inputField.setDisable(disable);
 		}
 
 		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
 		}
-
-		private boolean isOptional;
 
 		@Override
 		public boolean isOptional() {
@@ -562,15 +559,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
-			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
-				getChildren().add(inputField);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
-			}
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return this.macroTypeClass;
 		}
 	}
 
@@ -593,52 +587,32 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	/** Used for when control property requires color input */
-	private static class ControlPropertyColorPicker extends StackPane implements ControlPropertyInput {
+	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private final ColorPicker colorPicker = new ColorPicker();
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		private final MacroGetterButton<AColor> macro;
-		private EditMode mode = EditMode.DEFAULT;
+		private boolean isOptional;
 
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			getChildren().add(colorPicker);
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			boolean validData = controlProperty.valuesAreSet();
 			if (validData) {
 				AColor value = new AColor(controlProperty.getValues());
 				colorPicker.setValue(value.toJavaFXColor());
-				macro = new MacroGetterButton<>(AColor.class, value);
 			} else {
 				colorPicker.setValue(null);
-				macro = new MacroGetterButton<>(AColor.class, null);
 			}
-			macro.getValueObserver().addValueListener(new ValueListener<AColor>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setValue(newValue);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
 			colorPicker.valueProperty().addListener(new ChangeListener<Color>() {
 				@Override
 				public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
 					if (newValue == null) {
 						controlProperty.setValues(null, null, null, null);
-						macro.getValueObserver().updateValue(null);
 					} else {
 						AColor newColor = new AColor(newValue);
 						controlProperty.setValue(newColor);
-						macro.getValueObserver().updateValue(newColor);
 					}
 					if (control != null) {
 						control.getUpdateGroup().update(control);
@@ -680,15 +654,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void disableEditing(boolean disable) {
-			setDisable(disable);
+			getRootNode().setDisable(disable);
 		}
 
 		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
 		}
-
-		private boolean isOptional;
 
 		@Override
 		public boolean isOptional() {
@@ -702,55 +674,31 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
-			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
-				getChildren().add(colorPicker);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
-			}
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return AColor.class;
 		}
 	}
 
 	/** Used for boolean control properties */
-	private static class ControlPropertyBooleanChoiceBox extends StackPane implements ControlPropertyInput {
+	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private final ChoiceBox<Boolean> choiceBox = new ChoiceBox<>();
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		private final MacroGetterButton<Boolean> macro;
-		private EditMode mode = EditMode.DEFAULT;
 
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			getChildren().add(choiceBox);
-
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			choiceBox.getItems().addAll(true, false);
 			boolean validData = controlProperty.valuesAreSet();
 			if (validData) {
 				choiceBox.getSelectionModel().select(controlProperty.getBooleanValue());
-				macro = new MacroGetterButton<>(Boolean.class, controlProperty.getBooleanValue());
-			} else {
-				macro = new MacroGetterButton<>(Boolean.class, null);
 			}
-			macro.getValueObserver().addValueListener(new ValueListener<Boolean>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setValue(newValue);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
 			choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -759,7 +707,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					} else {
 						controlProperty.setValue(newValue);
 					}
-					macro.getValueObserver().updateValue(newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
@@ -800,7 +747,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void disableEditing(boolean disable) {
-			setDisable(disable);
+			getRootNode().setDisable(disable);
 		}
 
 		@Override
@@ -822,43 +769,36 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
-			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
-				getChildren().add(choiceBox);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
-			}
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return Boolean.class;
 		}
 	}
 
+	/** Used for control properties that require more than one input */
 	@SuppressWarnings("unchecked")
-	/**Used for control properties that require more than one input*/
-	private static class ControlPropertyArrayInput extends StackPane implements ControlPropertyInput {
+	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private ArrayList<InputField> fields = new ArrayList<>();
-		private HBox hBox = new HBox(5);
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		private final MacroGetterButton<String[]> macro;
-		private EditMode mode = EditMode.DEFAULT;
+		private boolean isOptional;
 
-		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker... checkers) {
-			getChildren().add(hBox);
+		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
+			super(defaultNumFields);
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			InputField<? extends InputFieldDataChecker, String> inputField;
+			InputField<ArmaStringFieldDataChecker, String> inputField;
 			boolean isDefined = controlProperty.valuesAreSet(); //no need to reiterate
-			for (int i = 0; i < checkers.length; i++) {
-				inputField = new InputField<>(checkers[i]);
+			for (int i = 0; i < editors.size(); i++) {
+				inputField = editors.get(i);
 				final int index = i;
 				if (isDefined) {
-					inputField.setValue(controlProperty.getFirstValue());
+					editors.get(i).setText(controlProperty.getFirstValue());
 				}
 
 				inputField.getValueObserver().addValueListener(new ValueListener() {
@@ -876,37 +816,21 @@ public class ControlPropertiesEditorPane extends StackPane {
 						@Override
 						public void valueUpdated(@NotNull ValueObserver<String[]> observer, String[] oldValue, String[] newValue) {
 							int i = 0;
-							for (InputField field : fields) {
+							for (InputField field : editors) {
 								field.setText(newValue[i++]);
 							}
 						}
 					});
 				}
-				fields.add(inputField);
 				placeTooltip(inputField, lookup);
-				hBox.getChildren().add(inputField);
 			}
-			macro = new MacroGetterButton<>(String[].class, controlProperty.getValues());
-			macro.getValueObserver().addValueListener(new ValueListener<String[]>() {
-				@Override
-				public void valueUpdated(ValueObserver<String[]> observer, String[] oldValue, String[] newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setValues(newValue);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						macro.getValueObserver().updateValue(newValue);
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
 			if (control != null) {
 				control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 					@Override
 					public void update(Object data) {
 						if (controlProperty.valuesAreSet()) {
-							for (int i = 0; i < fields.size(); i++) {
-								fields.get(i).setValueFromText(controlProperty.getValues()[i]);
+							for (int i = 0; i < editors.size(); i++) {
+								editors.get(i).setValueFromText(controlProperty.getValues()[i]);
 							}
 						}
 					}
@@ -916,7 +840,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public boolean hasValidData() {
-			for (InputField inputField : fields) {
+			for (InputField inputField : editors) {
 				if (!inputField.hasValidData()) {
 					return false;
 				}
@@ -932,26 +856,24 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public void resetToDefaultValue() {
 			String[] defaultValues = getControlProperty().getDefaultValues();
-			for (int i = 0; i < fields.size(); i++) {
+			for (int i = 0; i < editors.size(); i++) {
 				if (defaultValues[i] == null) {
-					fields.get(i).clear();
+					editors.get(i).clear();
 				} else {
-					fields.get(i).setText(defaultValues[i]);
+					editors.get(i).setText(defaultValues[i]);
 				}
 			}
 		}
 
 		@Override
 		public void disableEditing(boolean disable) {
-			setDisable(disable);
+			getRootNode().setDisable(disable);
 		}
 
 		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
 		}
-
-		private boolean isOptional;
 
 		@Override
 		public boolean isOptional() {
@@ -965,50 +887,27 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
-			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
-				getChildren().add(hBox);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
-			}
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return String[].class;
 		}
 	}
 
 	/** Used for control property font picking */
-	private static class ControlPropertyFontChoiceBox extends StackPane implements ControlPropertyInput {
+	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private final ChoiceBox<AFont> choiceBox = new ChoiceBox<>();
-		private final InputField<ArmaStringFieldDataChecker, String> rawInput;
-		private final MacroGetterButton<AFont> macro;
-		private EditMode mode = EditMode.DEFAULT;
-
-		private final Button btnChooseDefault = new Button(Lang.Misc.DEFAULT_FONT);
+		private boolean isOptional;
 
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			getChildren().add(new HBox(5, choiceBox, btnChooseDefault));
-
-			btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
-						@Override
-						public void handle(ActionEvent event) {
-							choiceBox.getSelectionModel().select(AFont.DEFAULT);
-						}
-					});
-				}
-			});
-
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			rawInput = ControlPropertyInput.createRawInput(control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			choiceBox.getItems().addAll(AFont.values());
 			boolean validData = controlProperty.valuesAreSet();
 			AFont font = null;
 			if (validData) {
@@ -1017,22 +916,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace(System.out);
 				}
-				choiceBox.getSelectionModel().select(font);
+				comboBox.getSelectionModel().select(font);
 			}
-			macro = new MacroGetterButton<>(AFont.class, font);
-			macro.getValueObserver().addValueListener(new ValueListener<AFont>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<AFont> observer, AFont oldValue, AFont newValue) {
-					if (mode == EditMode.MACRO) {
-						controlProperty.setValue(newValue.name());
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						controlPropertyUpdateGroup.update(controlProperty);
-					}
-				}
-			});
-			choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
+			comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
 					if (newValue == null) {
@@ -1040,7 +926,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					} else {
 						controlProperty.setValue(newValue.name());
 					}
-					macro.getValueObserver().updateValue(newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
@@ -1051,16 +936,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 				control.getUpdateGroup().addListener(new UpdateListener<Object>() {
 					@Override
 					public void update(Object data) {
-						choiceBox.setValue(AFont.valueOf(controlProperty.getFirstValue()));
+						comboBox.setValue(AFont.valueOf(controlProperty.getFirstValue()));
 					}
 				});
 			}
-			placeTooltip(choiceBox, lookup);
+			placeTooltip(comboBox, lookup);
 		}
 
 		@Override
 		public boolean hasValidData() {
-			return !choiceBox.getSelectionModel().isEmpty();
+			return !comboBox.getSelectionModel().isEmpty();
 		}
 
 		@Override
@@ -1071,23 +956,21 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public void resetToDefaultValue() {
 			if (controlProperty.getFirstDefaultValue() == null) {
-				choiceBox.getSelectionModel().clearSelection();
+				comboBox.getSelectionModel().clearSelection();
 			} else {
-				choiceBox.getSelectionModel().select(AFont.valueOf(controlProperty.getFirstDefaultValue()));
+				comboBox.getSelectionModel().select(AFont.valueOf(controlProperty.getFirstDefaultValue()));
 			}
 		}
 
 		@Override
 		public void disableEditing(boolean disable) {
-			setDisable(disable);
+			getRootNode().setDisable(disable);
 		}
 
 		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
 		}
-
-		private boolean isOptional;
 
 		@Override
 		public boolean isOptional() {
@@ -1101,15 +984,125 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			this.mode = mode;
-			getChildren().clear();
-			if (mode == EditMode.OVVERIDE) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
-				getChildren().add(choiceBox);
-			} else if (mode == EditMode.MACRO) {
-				getChildren().add(macro);
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return AFont.class;
+		}
+	}
+
+	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyInput {
+		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
+		private final ControlProperty controlProperty;
+		private boolean isOptional;
+
+		private final int NAME = 0;
+		private final int DB = 1;
+		private final int PITCH = 2;
+
+		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			this.controlProperty = controlProperty;
+			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
+
+			boolean validData = controlProperty.valuesAreSet();
+			ASound sound = null;
+			if (validData) {
+				sound = new ASound(controlProperty.getValues());
 			}
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+
+			initInputField(inSoundName, NAME, sound != null ? sound.getSoundName() : null);
+			initInputField(inDb, DB, sound != null ? sound.getDb() + "" : null);
+			initInputField(inPitch, PITCH, sound != null ? sound.getPitch() + "" : null);
+
+			if (control != null) {
+				control.getUpdateGroup().addListener(new UpdateListener<Object>() {
+					@Override
+					public void update(Object data) {
+						//						comboBox.setValue(AFont.valueOf(controlProperty.getFirstValue())); TODO
+					}
+				});
+			}
+		}
+
+		private void initInputField(InputField inputField, int typeIndex, String defaultValue) {
+			inputField.setText(defaultValue);
+
+			inputField.getValueObserver().addValueListener(new ValueListener() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+					controlProperty.setValue(newValue != null ? newValue.toString() : null, typeIndex);
+					if (control != null) {
+						control.getUpdateGroup().update(control);
+					}
+					controlPropertyUpdateGroup.update(controlProperty);
+				}
+			});
+			if (control != null) {
+				controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+					@Override
+					public void valueUpdated(@NotNull ValueObserver<String[]> observer, String[] oldValue, String[] newValue) {
+						for (String s : newValue) {
+							if (s == null) {
+								setValue(null);
+								return;
+							}
+						}
+						setValue(new ASound(newValue));
+					}
+				});
+			}
+			placeTooltip(inputField, controlProperty.getPropertyLookup());
+		}
+
+		@Override
+		public ControlProperty getControlProperty() {
+			return controlProperty;
+		}
+
+		@Override
+		public boolean hasValidData() {
+			return getValue() != null;
+		}
+
+		@Override
+		public void resetToDefaultValue() {
+			if (controlProperty.getDefaultValues()[0] == null) {
+				setValue(null);
+			}
+			setValue(new ASound(controlProperty.getDefaultValues()));
+		}
+
+		@Override
+		public void disableEditing(boolean disable) {
+			getRootNode().setDisable(disable);
+		}
+
+		@Override
+		public boolean isOptional() {
+			return isOptional;
+		}
+
+		@Override
+		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
+			return controlPropertyUpdateGroup;
+		}
+
+		@Override
+		public void setIsOptional(boolean optional) {
+			this.isOptional = optional;
+		}
+
+		@Override
+		public void setToMode(EditMode mode) {
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+
+		@Override
+		public Class<?> getMacroClass() {
+			return ASound.class;
 		}
 	}
 }

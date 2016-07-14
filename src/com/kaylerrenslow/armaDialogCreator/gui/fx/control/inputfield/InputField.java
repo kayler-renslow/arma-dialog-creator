@@ -55,8 +55,6 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 				}
 				if (!focused && valid) {
 					setValue(getValue(getText()));
-				} else if (!focused) {
-					error(true);
 				}
 			}
 		});

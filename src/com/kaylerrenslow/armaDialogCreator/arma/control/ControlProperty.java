@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
 import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
+import com.kaylerrenslow.armaDialogCreator.data.Macro;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -29,6 +30,7 @@ public class ControlProperty {
 	private ValueObserver<String[]> valuesObserver;
 	private String[] defaultValues;
 	private boolean dataOverride = false;
+	private String[] cacheValues;
 
 	public enum PropertyType {
 		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
@@ -77,6 +79,9 @@ public class ControlProperty {
 		}
 
 		PropertyType(String displayName, int propertyValueSize) {
+			if (propertyValueSize <= 0) {
+				throw new IllegalArgumentException("Number of values must be >= 1");
+			}
 			this.displayName = displayName;
 			propertyValuesSize = propertyValueSize;
 			exportHasQuotes = false;
@@ -116,15 +121,7 @@ public class ControlProperty {
 	 @param type type of property
 	 */
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type) {
-		int numValues = type.propertyValuesSize;
-		if (numValues <= 0) {
-			throw new IllegalArgumentException("Number of values must be >= 1");
-		}
-		this.propertyLookup = propertyLookup;
-		this.name = name;
-		this.type = type;
-		valuesObserver = new ValueObserver<>(new String[numValues]);
-		defaultValues = new String[numValues];
+		this(propertyLookup, name, type, new String[type.propertyValuesSize]);
 	}
 
 	/**
@@ -282,10 +279,23 @@ public class ControlProperty {
 		setDefaultValues(setValue, defaultValue.name());
 	}
 
-	//	/** Get the first value as a String. */
-	//	public String getStringValue() {
-	//		return valuesObserver.getValue()[0];
-	//	}
+	/**
+	 Set the control property's values equal to a macro. The properties prior to being set to the macro will be preserved.
+	 If this method is invoked again with the macro=null, the preserved values will be inserted. In either scenario, the values observer will be notified of the change.
+
+	 @param m the macro to set to, or null if not to set to macro
+	 */
+	public void setValueToMacro(@Nullable Macro m) {
+		if (m == null) {
+			valuesObserver.updateValue(cacheValues);
+		} else {
+			cacheValues = new String[valuesObserver.getValue().length];
+			for (int i = 0; i < cacheValues.length; i++) {
+				cacheValues[i] = valuesObserver.getValue()[i];
+			}
+			throw new IllegalStateException("todo");//todo need to update the valuesObserver. However, how do we extract each index from the macro String array?
+		}
+	}
 
 	/** Get the first and only value and return it as a String (This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc)) */
 	public String getFirstValue() {

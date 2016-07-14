@@ -22,7 +22,7 @@ public class Macro<T> {
 	 */
 	public Macro(@NotNull String key, @NotNull T value) {
 		this.key = key;
-		this.valueObserver = new ValueObserver<T>(value);
+		this.valueObserver = new ValueObserver<>(value);
 	}
 
 	/** Get the key */

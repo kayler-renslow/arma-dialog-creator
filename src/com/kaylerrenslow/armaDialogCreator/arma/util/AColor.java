@@ -70,7 +70,7 @@ public class AColor {
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public AColor(String[] newValue) throws NumberFormatException {
+	public AColor(String[] newValue) throws NumberFormatException,IndexOutOfBoundsException {
 		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 

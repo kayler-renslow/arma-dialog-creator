@@ -10,6 +10,16 @@ public class ASound {
 	private double pitch;
 
 	/**
+	 Create a new sound from String array that is formatted like so: {name, db, pitch}. Name must be String, db must be a double, and pitch must be a double
+
+	 @throws NumberFormatException     when the string array is not formatted correctly
+	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 3)
+	 */
+	public ASound(String[] values) throws NumberFormatException, IndexOutOfBoundsException {
+		this(values[0], Double.valueOf(values[1]), Double.valueOf(values[2]));
+	}
+
+	/**
 	 Creates a sound
 
 	 @param soundName sound name
