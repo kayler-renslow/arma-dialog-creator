@@ -23,4 +23,9 @@ public class SVDouble implements SerializableValue {
 	public String[] getAsStringArray() {
 		return arr;
 	}
+
+	@Override
+	public String toString() {
+		return arr[0];
+	}
 }

@@ -45,7 +45,6 @@ class ApplicationPropertyManager {
 			}
 		}
 
-
 		//now verify that the loaded a3Tools directory and appdata save directory are actual files that exist and are directories
 		File f = new File(getApplicationProperty(ApplicationProperty.A3_TOOLS_DIR));
 		if (f.exists() && f.isDirectory()) {

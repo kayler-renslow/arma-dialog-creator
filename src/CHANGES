@@ -1,6 +1,6 @@
 ADDED:
     none
 CHANGED:
-    did a massive refactor of control related classes
+    did some optimizations to control property editing (instead of listening to control's update group, just listening to control property's value observer)
 FIXED:
-    selecting macros for controls now works
+    when macro is assigned to control property, the control isn't notified since nothing is listening to the control property

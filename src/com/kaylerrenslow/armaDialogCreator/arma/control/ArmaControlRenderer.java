@@ -26,11 +26,14 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 		super(0, 0, 0, 0);
 		setFont(FONT);
 		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
-		backgroundColorObserver.addValueListener(new ValueListener<AColor>(){
+		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-				System.out.println("ArmaControlRenderer.valueUpdated newValue.toString()=" + newValue.toString());
+				if(newValue != null){
+					setBackgroundColor(newValue.toJavaFXColor());
+				}
 			}
+
 		});
 	}
 

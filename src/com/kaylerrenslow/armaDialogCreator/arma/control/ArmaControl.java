@@ -248,12 +248,6 @@ public class ArmaControl extends ControlClass {
 		return renderer;
 	}
 
-	/** Get the text used for render. */
-	public String getRenderText() {
-		return renderer.getText();
-	}
-
-
 	/** Set the x and y values (and width and height) based upon the renderer's position */
 	protected void calcPositionFromRenderer() {
 		this.x = PositionCalculator.getPercentX(this.resolution, renderer.getX1());

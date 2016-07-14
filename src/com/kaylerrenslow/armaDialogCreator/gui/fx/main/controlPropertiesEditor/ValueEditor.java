@@ -3,9 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IntegerChecker;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,13 +26,13 @@ public interface ValueEditor<V extends SerializableValue> {
 	static ValueEditor getEditor(ControlProperty.PropertyType propertyType) {
 		switch (propertyType) {
 			case INT:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new IntegerChecker()));
+				return new InputFieldValueEditor<>(new SVIntegerChecker());
 			case FLOAT:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new DoubleChecker()));
+				return new InputFieldValueEditor<>(new SVDoubleChecker());
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 			case ARRAY:
 				return new ArrayValueEditor(2);
 			case COLOR:
@@ -44,17 +42,17 @@ public interface ValueEditor<V extends SerializableValue> {
 			case FONT:
 				return new FontValueEditor();
 			case FILE_NAME:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 			case IMAGE:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 			case HEX_COLOR_STRING:
 				return new HexColorValueEditor();
 			case TEXTURE:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 			case EVENT:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 			case SQF:
-				return new InputFieldValueEditor<>(new DataCheckerWrapper(new ArmaStringChecker()));
+				return new InputFieldValueEditor<>(new SVArmaStringChecker());
 		}
 		throw new IllegalStateException("Should have made a match");
 	}

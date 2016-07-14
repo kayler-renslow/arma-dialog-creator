@@ -63,7 +63,6 @@ public class StaticControl extends ArmaControl {
 		textProperty.setDefaultValues(true, "");
 
 		findRequiredProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
-
 	}
 
 	@Override

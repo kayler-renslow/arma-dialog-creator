@@ -11,10 +11,14 @@ import java.text.DecimalFormat;
  @author Kayler
  Defines a color.
  Created on 05/22/2016. */
-public class AColor implements SerializableValue{
+public class AColor implements SerializableValue {
 	private static DecimalFormat format = new DecimalFormat("#.####");
 
-	/**Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a]*/
+	/** cache the javaFX color */
+	private Color javafxColor;
+	private boolean updateJavafxColor = false;
+
+	/** Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
 	protected double[] color = new double[4];
 
 	/**
@@ -63,6 +67,8 @@ public class AColor implements SerializableValue{
 	/** Set the color from a JavaFX Color instance */
 	public AColor(Color newValue) {
 		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
+		this.javafxColor = newValue;
+		updateJavafxColor = false;
 	}
 
 	/**
@@ -71,7 +77,7 @@ public class AColor implements SerializableValue{
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public AColor(String[] newValue) throws NumberFormatException,IndexOutOfBoundsException {
+	public AColor(String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
 		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 
@@ -93,6 +99,7 @@ public class AColor implements SerializableValue{
 	public void setRed(double r) {
 		boundCheck(r);
 		color[0] = r;
+		updateJavafxColor = true;
 	}
 
 	public double getGreen() {
@@ -107,6 +114,7 @@ public class AColor implements SerializableValue{
 	public void setGreen(double g) {
 		boundCheck(g);
 		color[1] = g;
+		updateJavafxColor = g != color[1];
 	}
 
 	public double getBlue() {
@@ -120,6 +128,7 @@ public class AColor implements SerializableValue{
 	 */
 	public void setBlue(double b) {
 		boundCheck(b);
+		updateJavafxColor = b != color[2];
 		color[2] = b;
 	}
 
@@ -135,6 +144,7 @@ public class AColor implements SerializableValue{
 	public void setAlpha(double a) {
 		boundCheck(a);
 		color[3] = a;
+		updateJavafxColor = a != color[3];
 	}
 
 	public double[] getColors() {
@@ -189,7 +199,11 @@ public class AColor implements SerializableValue{
 
 	/** Convert this color into a JavaFX color */
 	public Color toJavaFXColor() {
-		return Color.color(getRed(), getGreen(), getBlue(), getAlpha());
+		if (updateJavafxColor || javafxColor == null) {
+			updateJavafxColor = false;
+			javafxColor = Color.color(getRed(), getGreen(), getBlue(), getAlpha());
+		}
+		return javafxColor;
 	}
 
 	/**
@@ -203,7 +217,9 @@ public class AColor implements SerializableValue{
 	}
 
 
-	/** Gets color array (formatted: [r,g,b,a])
+	/**
+	 Gets color array (formatted: [r,g,b,a])
+
 	 @param arr stores values in given array (array must be length 4)
 	 */
 	public static double[] getColorArray(double[] arr, int color) {
@@ -222,7 +238,7 @@ public class AColor implements SerializableValue{
 		return arr;
 	}
 
-	/**Returns what {@link #getColorArray(int)} would, with new array of length 4*/
+	/** Returns what {@link #getColorArray(int)} would, with new array of length 4 */
 	public static double[] getColorArray(int color) {
 		return getColorArray(new double[4], color);
 	}
