@@ -23,6 +23,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	protected final Button btnDecreaseSize = new Button("-");
 	protected final Button btnIncreaseSize = new Button("+");
 	private final double gap = 5;
+	private final double tfPrefWidth = 100d;
 	protected final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
 	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
@@ -31,7 +32,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		masterPane = new HBox(5, editorsPane);
 		editorsPane.minWidth(0d);
 		editorsPane.prefWidth(0d);
-		editorsPane.setPrefWrapLength(300d + 5 * numInitialFields);
+		editorsPane.setPrefWrapLength(tfPrefWidth * 3 + gap * numInitialFields); //have room for 3 text fields
 		masterPane.minWidth(0d);
 
 		masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
@@ -64,7 +65,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 
 	private InputField<ArmaStringChecker, String> getTextField() {
 		InputField<ArmaStringChecker, String> tf = new InputField<>(new ArmaStringChecker());
-		tf.setPrefWidth(100d);
+		tf.setPrefWidth(tfPrefWidth);
 		return tf;
 	}
 

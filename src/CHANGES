@@ -1,6 +1,7 @@
 ADDED:
-    none
+    basic expression grammar
+    beginning of expression evaluating
 CHANGED:
-    did some optimizations to control property editing (instead of listening to control's update group, just listening to control property's value observer)
+    none
 FIXED:
-    when macro is assigned to control property, the control isn't notified since nothing is listening to the control property
+    none
