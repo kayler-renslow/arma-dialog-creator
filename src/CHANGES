@@ -1,7 +1,6 @@
 ADDED:
-    basic expression grammar
-    beginning of expression evaluating
+    none
 CHANGED:
     none
 FIXED:
-    none
+    expression lexer was actually broken

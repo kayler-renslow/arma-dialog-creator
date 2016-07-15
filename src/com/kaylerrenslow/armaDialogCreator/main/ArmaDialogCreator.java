@@ -12,16 +12,25 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
  @author Kayler
  Created on 05/11/2016. */
-public class ArmaDialogCreator extends Application {
+public final class ArmaDialogCreator extends Application {
+	private ArmaDialogCreator() {
+	}
+
 	private static ArmaDialogCreator INSTANCE;
 
+	/**
+	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time.
+	 */
 	public static void main(String[] args) {
+		if (INSTANCE != null) {
+			getPrimaryStage().requestFocus();
+			return;
+		}
 		ArmaDialogCreator.launch(args);
 	}
 
@@ -47,9 +56,9 @@ public class ArmaDialogCreator extends Application {
 
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
-		Iterator<StagePopup> iter = showLater.iterator();
-		while (iter.hasNext()) {
-			iter.next().show();
+		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
+		for (StagePopup aShowLater : showLater) {
+			aShowLater.show();
 		}
 		showLater = null;
 	}

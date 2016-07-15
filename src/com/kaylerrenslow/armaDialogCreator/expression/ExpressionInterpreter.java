@@ -10,17 +10,19 @@ import org.jetbrains.annotations.NotNull;
 public class ExpressionInterpreter {
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
-	private ExpressionInterpreter(){}
+
+	private ExpressionInterpreter() {
+	}
 
 	public static ExpressionInterpreter getInstance() {
 		return INSTANCE;
 	}
 
-	public Value evaluate(String s){
+	public Value evaluate(String s, Env env) {
 		ExpressionLexer l = getLexer(s);
 		ExpressionParser p = getParser(new CommonTokenStream(l));
 		AST.Expr e = p.expression().ast;
-		return evaluator.evaluate(e);
+		return evaluator.evaluate(e, env);
 	}
 
 	private ExpressionParser getParser(CommonTokenStream stream) {

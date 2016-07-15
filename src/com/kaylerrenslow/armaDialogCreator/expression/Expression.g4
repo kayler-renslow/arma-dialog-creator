@@ -1,37 +1,28 @@
 grammar Expression;
 
-/*
-+-------------------------------------------------------------------------------------------------------------------+
-|                                                                                                                   |
-| When this grammar's parser is regenerated, the following code will need to be manually placed in the parser:      |
-| import static com.kaylerrenslow.armaDialogCreator.expression.AST.*;                                               |
-|                                                                                                                   |
-+-------------------------------------------------------------------------------------------------------------------+
-*/
-
-expression returns [Expr ast]:
-    la=expression Plus ra=expression {$ast = new AddExpr($la.ast, $ra.ast);}
-    | lm=expression Minus rm=expression {$ast = new SubExpr($lm.ast, $rm.ast);}
-    | ls=expression Star rs=expression {$ast = new MultExpr($ls.ast, $rs.ast);}
-    | lf=expression FSlash rf=expression {$ast = new DivExpr($lf.ast, $rf.ast);}
+expression returns [AST.Expr ast]:
+    la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
+    | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
+    | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}
+    | lf=expression FSlash rf=expression {$ast = new AST.DivExpr($lf.ast, $rf.ast);}
     | lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
     | ll=literal_expression {$ast = $ll.ast;}
     ;
 
-unary_expression returns [UnaryExpr ast]:
-    Plus ep=expression {$ast = new UnaryExpr(true, $ep.ast);}
-    Minus em=expression {$ast = new UnaryExpr(false, $em.ast);}
+unary_expression returns [AST.UnaryExpr ast]:
+    Plus ep=expression {$ast = new AST.UnaryExpr(true, $ep.ast);}
+    Minus em=expression {$ast = new AST.UnaryExpr(false, $em.ast);}
     ;
 
-paren_expression returns [ParenExpr ast]:
-    LParen e=expression RParen {$ast = new ParenExpr($e.ast);}
+paren_expression returns [AST.ParenExpr ast]:
+    LParen e=expression RParen {$ast = new AST.ParenExpr($e.ast);}
     ;
 
-literal_expression returns [LiteralExpr ast]:
-    id=Identifier {$ast = new IdentifierExpr($id.text);}
-    | i=int_value {$ast = new IntegerExpr($i.i);}
-    | f=float_value {$ast = new FloatExpr($f.d);}
+literal_expression returns [AST.LiteralExpr ast]:
+    id=Identifier {$ast = new AST.IdentifierExpr($id.text);}
+    | i=int_value {$ast = new AST.IntegerExpr($i.i);}
+    | f=float_value {$ast = new AST.FloatExpr($f.d);}
     ;
 
 int_value returns [Integer i]:
@@ -58,8 +49,8 @@ Digits : DIGIT+;
 DecSignificand : '.' Digits | Digits '.' DIGIT+;
 DecExponent : (DecSignificand | IntegerLiteral) [Ee] [+-]? DIGIT*;
 
-HexLiteral : '0' [xX] '0'* {HEX_DIGIT} {1,8};
-HexDigit   : [0-9a-fA-F];
+HexLiteral : '0' [xX] '0'* HexDigits ;
+HexDigits  : {getText().length() >= 1 && getText().length() <= 8}? [0-9a-fA-F]; //allow between 1 and 8 hex digits
 
 Letter :   [a-zA-Z$_]
     |   ~[\u0000-\u00FF\uD800-\uDBFF]
