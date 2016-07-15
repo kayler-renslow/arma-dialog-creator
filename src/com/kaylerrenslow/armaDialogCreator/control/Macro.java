@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public class Macro<T extends SerializableValue> {
 
 	private final String key;
-	private final ControlProperty.PropertyType propertyType;
+	private final PropertyType propertyType;
 	protected ValueObserver<T> valueObserver;
 	protected String comment;
 
@@ -21,7 +22,7 @@ public class Macro<T extends SerializableValue> {
 	 @param key the key (prefered to be all caps)
 	 @param value the value (Object.toString() will be used to get end result)
 	 */
-	public Macro(@NotNull String key, @NotNull T value, @NotNull ControlProperty.PropertyType propertyType) {
+	public Macro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
 		this.key = key;
 		this.valueObserver = new ValueObserver<>(value);
 		this.propertyType = propertyType;
@@ -63,7 +64,7 @@ public class Macro<T extends SerializableValue> {
 		return key;
 	}
 
-	public ControlProperty.PropertyType getPropertyType() {
+	public PropertyType getPropertyType() {
 		return propertyType;
 	}
 }

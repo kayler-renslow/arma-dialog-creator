@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;

@@ -1,6 +1,5 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -147,10 +146,6 @@ public class AColor implements SerializableValue {
 		updateJavafxColor = a != color[3];
 	}
 
-	public double[] getColors() {
-		return color;
-	}
-
 	/** Takes out the color values 1 by 1 and injects them into this instances' color array. */
 	public void setColor(double[] c) {
 		if (c.length != 4) {
@@ -172,14 +167,24 @@ public class AColor implements SerializableValue {
 		return str;
 	}
 
+	@Override
+	public SerializableValue deepCopy() {
+		double[] copy = new double[color.length];
+		System.arraycopy(color, 0, copy, 0, copy.length);
+		return new AColor(copy);
+	}
+
 	/** Serializes the color array into a String. Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}" */
 	public String toString() {
 		return "{" + format.format(color[0]) + "," + format.format(color[1]) + "," + format.format(color[2]) + "," + format.format(color[3]) + "}";
 	}
 
+	/**
+	 Takes a serialized color array String and converts it into a double array. Example (both curly braces and square brackets are allowed): "{0.0,0.1,0.2,0.3}"  becomes  0 red, 0.1 green, 0.2 blue, 0.3 alpha
+
+	 @return null when string is improperly formatted, otherwise will return a double array of dimension 4
+	 */
 	@Nullable
-	/** Takes a serialized color array String and converts it into a double array. Example (both curly braces and square brackets are allowed): "{0.0,0.1,0.2,0.3}"  becomes  0 red, 0.1 green, 0.2 blue, 0.3 alpha
-	 @returns null when string is improperly formatted, otherwise will return a double array of dimension 4*/
 	public double[] arrayFromText(@NotNull String colorAsArray) {
 		try {
 			String[] split = colorAsArray.replaceAll("\\[|\\]|\\{|\\}", "").split(",");
@@ -238,7 +243,7 @@ public class AColor implements SerializableValue {
 		return arr;
 	}
 
-	/** Returns what {@link #getColorArray(int)} would, with new array of length 4 */
+	/** Returns what {@link #getColorArray(double[], int)} would, with new array of length 4 */
 	public static double[] getColorArray(int color) {
 		return getColorArray(new double[4], color);
 	}

@@ -106,10 +106,10 @@ public class NewControlPopup extends StagePopup<VBox> {
 		final String classFormatString = "class %s \n{\n%s};";
 		for (ControlPropertyEditor editor : editors) {
 			property = editor.getControlProperty();
-			if (!property.valuesAreSet()/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
+			if (property.getValue() == null/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
 				continue;
 			}
-			if (property.getValues().length == 1) {
+			if (property.getValue().getAsStringArray().length == 1) {
 				body += String.format(itemFormatString, property.getName(), property.getValuesForExport());
 			} else {
 				body += String.format(itemArrayFormatString, property.getName(), property.getValuesForExport());

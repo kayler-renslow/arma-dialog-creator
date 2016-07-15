@@ -1,12 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Edge;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.*;
@@ -189,11 +188,13 @@ public class UICanvasEditor extends UICanvas {
 		this.calc = snapConfig;
 	}
 
-	public @NotNull SnapConfiguration getSnapConfig() {
+	@NotNull
+	public SnapConfiguration getSnapConfig() {
 		return this.calc;
 	}
 
-	public @NotNull Selection getSelection() {
+	@NotNull
+	public Selection getSelection() {
 		return selection;
 	}
 
@@ -350,11 +351,6 @@ public class UICanvasEditor extends UICanvas {
 			gc.setGlobalAlpha(0.2);
 		}
 		gc.setStroke(gridColor);
-		if (snapRelativeToViewport()) {
-			offsetx = (int) (resolution.getViewportX() % spacingX);
-			offsety = (int) (resolution.getViewportY() % spacingY);
-			gc.translate(offsetx, offsety);
-		}
 		for (int y = 0; y <= numY; y++) {
 			ys = Math.floor(y * spacingY);
 			gc.strokeLine(0 + antiAlias - offsetx, ys + antiAlias, w - antiAlias + offsetx, ys + antiAlias);
@@ -611,48 +607,18 @@ public class UICanvasEditor extends UICanvas {
 			dx1 = dx;
 			dy1 = dy;
 		}
-
-		boolean canSnapViewport = !keys.isAltDown() && snapRelativeToViewport();
-		double vdx = snapPercentage * xSnapCount * dirx;
-		double vdy = snapPercentage * ySnapCount * diry;
-
 		if (scaleComponent != null) { //scaling
 			boolean squareScale = keys.keyIsDown(keyMap.SCALE_SQUARE);
 			boolean symmetricScale = keys.isCtrlDown() || squareScale;
-			if (canSnapViewport && scaleComponent instanceof ViewportComponent) {
-				doScaleOnViewportComponent(symmetricScale, squareScale, vdx, vdy);
-			} else {
-				doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
-			}
+			doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
 			return;
 		}
 		//not scaling and simply translating (moving)
-		ViewportComponent viewportComponent;
-		double px, py, pw, ph;
 
 		for (CanvasComponent component : selection.getSelected()) {
 			//only move-able components should be inside selection
-			if (canSnapViewport && component instanceof ViewportComponent) {
-				viewportComponent = ((ViewportComponent) component);
-				px = viewportComponent.getPercentX() + vdx;
-				py = viewportComponent.getPercentY() + vdy;
-				pw = viewportComponent.getPercentW();
-				ph = viewportComponent.getPercentH();
-				if (safeMovement) {
-					int vx = viewportComponent.calcScreenX(px);
-					int vy = viewportComponent.calcScreenY(py);
-					if (!boundSetSafe(component, vx, vx + viewportComponent.calcScreenWidth(pw), vy, vy + viewportComponent.calcScreenHeight(ph))) {
-						continue;
-					}
-				}
-				viewportComponent.setPercentX(px);
-				viewportComponent.setPercentY(py);
-				viewportComponent.setPercentW(pw);
-				viewportComponent.setPercentH(ph);
-			} else {
-				if (!safeMovement || boundUpdateSafe(component, dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
-					component.translate(dx1, dy1);
-				}
+			if (!safeMovement || boundUpdateSafe(component, dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
+				component.translate(dx1, dy1);
 			}
 		}
 	}
@@ -726,97 +692,6 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 
-	private void doScaleOnViewportComponent(boolean symmetricScale, boolean squareScale, double vdx, double vdy) {
-		ViewportComponent viewportComponent = (ViewportComponent) scaleComponent; //should check if scale component is viewport component prior to this method call
-
-		double dxl = 0; //change in x percent left
-		double dxr = 0; //change in x percent right
-		double dyt = 0; //change in y percent top
-		double dyb = 0; //change in y percent bottom
-
-		if (squareScale) {//scale only as a square (all changes are equal)
-			//set them equal to the biggest value
-			if (Math.abs(vdx) > Math.abs(vdy)) {
-				vdy = vdx;
-				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
-					vdy = -vdy;
-				}
-			} else {
-				vdx = vdy;
-				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
-					vdx = -vdx;
-				}
-			}
-		}
-		if (scaleEdge == Edge.TOP_LEFT) {
-			dyt = vdy;
-			dxl = vdx;
-			if (symmetricScale) {
-				dyb = -vdy;
-				dxr = -vdx;
-			}
-		} else if (scaleEdge == Edge.TOP_RIGHT) {
-			dyt = vdy;
-			dxr = vdx;
-			if (symmetricScale) {
-				dyb = -vdy;
-				dxl = -vdx;
-			}
-		} else if (scaleEdge == Edge.BOTTOM_LEFT) {
-			dyb = vdy;
-			dxl = vdx;
-			if (symmetricScale) {
-				dyt = -vdy;
-				dxr = -vdx;
-			}
-		} else if (scaleEdge == Edge.BOTTOM_RIGHT) {
-			dyb = vdy;
-			dxr = vdx;
-			if (symmetricScale) {
-				dyt = -vdy;
-				dxl = -vdx;
-			}
-		} else if (scaleEdge == Edge.TOP) {
-			dyt = vdy;
-			if (symmetricScale) {
-				dyb = -vdy;
-			}
-		} else if (scaleEdge == Edge.RIGHT) {
-			dxr = vdx;
-			if (symmetricScale) {
-				dxl = -vdx;
-			}
-		} else if (scaleEdge == Edge.BOTTOM) {
-			dyb = vdy;
-			if (symmetricScale) {
-				dyt = -vdy;
-			}
-		} else if (scaleEdge == Edge.LEFT) {
-			dxl = vdx;
-			if (symmetricScale) {
-				dxr = -vdx;
-			}
-		}
-		double px = viewportComponent.getPercentX() + dxl;
-		double pw = viewportComponent.getPercentW() + dxr - dxl;
-		double py = viewportComponent.getPercentY() + dyt;
-		double ph = viewportComponent.getPercentH() + dyb - dyt;
-
-		int screenX = viewportComponent.calcScreenX(px);
-		int screenY = viewportComponent.calcScreenY(py);
-		int screenW = viewportComponent.calcScreenWidth(pw);
-		int screenH = viewportComponent.calcScreenHeight(ph);
-
-		if (!safeMovement || boundSetSafe(scaleComponent, screenX, screenX + screenW, screenY, screenY + screenH)) {
-			if (screenH < 0 || screenW < 0) { //negative scale
-				return;
-			}
-			viewportComponent.setPercentX(px);
-			viewportComponent.setPercentY(py);
-			viewportComponent.setPercentW(pw);
-			viewportComponent.setPercentH(ph);
-		}
-	}
 
 	private boolean basicMouseMovement(int mousex, int mousey) {
 		updateContextMenu();
@@ -902,12 +777,12 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	private double getSnapPixelsWidthF(double percentageDecimal) {
-		int width = snapRelativeToViewport() ? resolution.getViewportWidth() : getCanvasWidth();
+		int width = getCanvasWidth();
 		return (width * percentageDecimal);
 	}
 
 	private double getSnapPixelsHeightF(double percentageDecimal) {
-		int height = snapRelativeToViewport() ? resolution.getViewportHeight() : getCanvasHeight();
+		int height = getCanvasHeight();
 		return (height * percentageDecimal);
 	}
 
@@ -917,10 +792,6 @@ public class UICanvasEditor extends UICanvas {
 
 	private int getSnapPixelsHeight(double percentageDecimal) {
 		return (int) getSnapPixelsHeightF(percentageDecimal);
-	}
-
-	private boolean snapRelativeToViewport() {
-		return calc.snapRelativeToViewport();
 	}
 
 	/** Set the context menu that should be shown */

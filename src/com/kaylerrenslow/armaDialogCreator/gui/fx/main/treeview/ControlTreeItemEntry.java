@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeNodeUpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;

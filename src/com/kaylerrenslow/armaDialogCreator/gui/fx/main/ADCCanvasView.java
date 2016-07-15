@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;

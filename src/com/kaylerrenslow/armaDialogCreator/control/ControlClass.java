@@ -178,17 +178,17 @@ public class ControlClass {
 	public @NotNull List<ControlProperty> getAllDefinedProperties() {
 		List<ControlProperty> properties = new ArrayList<>();
 		for (ControlProperty property : getInheritedProperties()) {
-			if (property.valuesAreSet()) {
+			if (property.getValue() != null) {
 				properties.add(property);
 			}
 		}
 		for (ControlProperty property : getRequiredProperties()) {
-			if (property.valuesAreSet()) {
+			if (property.getValue() != null) {
 				properties.add(property);
 			}
 		}
 		for (ControlProperty property : getOptionalProperties()) {
-			if (property.valuesAreSet()) {
+			if (property.getValue() != null) {
 				properties.add(property);
 			}
 		}

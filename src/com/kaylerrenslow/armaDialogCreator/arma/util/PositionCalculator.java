@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util.screen;
+package com.kaylerrenslow.armaDialogCreator.arma.util;
 
 /**
  @author Kayler

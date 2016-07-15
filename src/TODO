@@ -19,6 +19,7 @@ GENERAL:
 >for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
 >reating macro string doesn't display on control
 
+
 BUGS:
 -----------------------------------
 >select many things in tree view and drag into folder

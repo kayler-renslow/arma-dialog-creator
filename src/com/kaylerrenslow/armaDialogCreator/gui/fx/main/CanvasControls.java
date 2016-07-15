@@ -6,10 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
@@ -26,7 +23,6 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	private final EditorComponentTreeView<? extends TreeItemEntry> editorComponentTreeView = new EditorComponentTreeView<>();
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
-	private final CheckBox cbViewportSnap = new CheckBox(Lang.CanvasControls.VIEWPORT_SNAP);
 
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
@@ -35,18 +31,11 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	}
 
 	private void initializeUI() {
-		cbViewportSnap.setSelected(false);
-		cbViewportSnap.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				canvasView.repaintCanvas();
-			}
-		});
 		initializeStepChoiceboxes();
 		HBox hboxStep = new HBox(5);
 		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
 
-		getChildren().addAll(hboxStep,cbViewportSnap, editorComponentTreeView);
+		getChildren().addAll(hboxStep, editorComponentTreeView);
 		this.setPadding(new Insets(5, 5, 0, 5));
 
 		VBox.setVgrow(editorComponentTreeView, Priority.ALWAYS);
@@ -79,10 +68,6 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		return cbStep.getSelectionModel().getSelectedItem().percentDecimal;
 	}
 
-	@Override
-	public boolean snapRelativeToViewport() {
-		return cbViewportSnap.isSelected();
-	}
 
 	public EditorComponentTreeView<? extends TreeItemEntry> getEditorComponentTreeView() {
 		return editorComponentTreeView;

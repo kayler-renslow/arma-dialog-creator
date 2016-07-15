@@ -1,10 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -30,98 +26,33 @@ public class ControlProperty {
 			if (myMacro == null) {
 				throw new IllegalStateException("myMacro shouldn't be null");
 			}
-			setValues(myMacro.getValue().getAsStringArray());
+			setValue(myMacro.getValue());
 		}
 	};
 
 	private final String name;
 	private final PropertyType type;
 	private final ControlPropertyLookup propertyLookup;
-	private ValueObserver<String[]> valuesObserver;
-	private String[] defaultValues;
+	private ValueObserver<SerializableValue> valueObserver;
+	private SerializableValue defaultValue;
 	private boolean dataOverride = false;
-	private String[] cacheValues;
+	private SerializableValue cachedValue;
 	private @Nullable Macro myMacro;
 
-	public enum PropertyType {
-		/** Is a integer value. Current implementation is a 32 bit integer (java int) */
-		INT(Lang.PropertyType.INT),
-		/** Is a floating point value. The current implementation uses 32 bit floating point (java double) */
-		FLOAT(Lang.PropertyType.FLOAT),
-		/** Is a boolean (0 for false, 1 for true) */
-		BOOLEAN(Lang.PropertyType.BOOLEAN),
-		/** Is a String */
-		STRING(Lang.PropertyType.STRING, true),
-		/** Generic array property type */
-		ARRAY(Lang.PropertyType.ARRAY, 2),
-		/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
-		COLOR(Lang.PropertyType.COLOR, 4),
-		/** Is an array that is formatted to fit a sound and its params */
-		SOUND(Lang.PropertyType.SOUND, 3),
-		/** Is font name */
-		FONT(Lang.PropertyType.FONT, true),
-		/** Denotes a file name inside a String */
-		FILE_NAME(Lang.PropertyType.FILE_NAME, true),
-		/** Denotes an image path inside a String */
-		IMAGE(Lang.PropertyType.IMAGE, true),
-		/** Color is set to a hex string like #ffffff or #ffffffff */
-		HEX_COLOR_STRING(Lang.PropertyType.HEX_COLOR_STRING, true),
-		/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-		TEXTURE(Lang.PropertyType.TEXTURE, true),
-		/** Is an SQF code string, but this propertyType is an easy way to categorize all event handlers. */
-		EVENT(Lang.PropertyType.EVENT, true),
-		/** SQF code String */
-		SQF(Lang.PropertyType.SQF, true);
-
-		/** Number of values used to represent the data */
-		public final int propertyValuesSize;
-		/** If true, when this control property is exported, the value should have quotes around it */
-		public final boolean exportHasQuotes;
-		public final String displayName;
-
-		PropertyType(String displayName) {
-			this(displayName, 1);
-		}
-
-		PropertyType(String displayName, boolean exportHasQuotes) {
-			this.propertyValuesSize = 1;
-			this.displayName = displayName;
-			this.exportHasQuotes = exportHasQuotes;
-		}
-
-		PropertyType(String displayName, int propertyValueSize) {
-			if (propertyValueSize <= 0) {
-				throw new IllegalArgumentException("Number of values must be >= 1");
-			}
-			this.displayName = displayName;
-			propertyValuesSize = propertyValueSize;
-			exportHasQuotes = false;
-		}
-
-		@Override
-		public String toString() {
-			return displayName;
-		}
-	}
-
 	/**
-	 A control property is something like "idc" or "colorBackground". The current implementation puts all values inside a String array so that array serialization isn't needed.<br>
-	 For types that aren't array, only 1 entry will be inside the array and that is the value.
+	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
 
 	 @param propertyLookup unique lookup for the property.
 	 @param name name of the property
 	 @param type type of the property (integer, float, array, String)
-	 @param values current values of the property. (if non-array, just create a String array of dimension 1 with value at index 0). If values are currently not set, use the constructor ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type, int numValues)
+	 @param value current value of the property
 	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type, @NotNull String[] values) {
+	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type, @Nullable SerializableValue value) {
 		this.propertyLookup = propertyLookup;
 		this.name = name;
 		this.type = type;
-		valuesObserver = new ValueObserver<>(values);
-		defaultValues = new String[values.length];
-		for (int i = 0; i < values.length; i++) {
-			defaultValues[i] = values[i];
-		}
+		valueObserver = new ValueObserver<>(value);
+		defaultValue = null;
 	}
 
 	/**
@@ -132,79 +63,40 @@ public class ControlProperty {
 	 @param type type of property
 	 */
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type) {
-		this(propertyLookup, name, type, new String[type.propertyValuesSize]);
+		this(propertyLookup, name, type, null);
 	}
 
-	/**
-	 Creates a control property of type Object (the value will be the .toString() value of the object)<br>
-	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
-	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type, @NotNull Object value) {
-		this(propertyLookup, name, type, new String[]{value.toString()});
-	}
 
 	/**
-	 Creates a control property of type String<br>
-	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
-	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull String value) {
-		this(propertyLookup, name, PropertyType.STRING, new String[]{value});
-	}
-
-	/**
-	 Creates a control property of type String<br>
-	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
-	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull AHexColor value) {
-		this(propertyLookup, name, PropertyType.STRING, new String[]{value.getHexColor()});
-	}
-
-	/**
-	 Creates a control property of type Int<br>
+	 Creates a control property of type {@link SVInteger}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
 	 */
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, int value) {
-		this(propertyLookup, name, PropertyType.INT, new String[]{value + ""});
+		this(propertyLookup, name, PropertyType.INT, new SVInteger(value));
 	}
 
 	/**
-	 Creates a control property of type Float<br>
+	 Creates a control property of type {@link SVDouble}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
 	 */
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, double value) {
-		this(propertyLookup, name, PropertyType.FLOAT, new String[]{value + ""});
+		this(propertyLookup, name, PropertyType.FLOAT, new SVDouble(value));
 	}
 
 	/**
-	 Creates a control property of type Boolean<br>
+	 Creates a control property of type {@link SVBoolean}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
 	 */
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, boolean value) {
-		this(propertyLookup, name, PropertyType.BOOLEAN, new String[]{value + ""});
+		this(propertyLookup, name, PropertyType.BOOLEAN, SVBoolean.get(value));
 	}
 
 	/**
-	 Creates a control property of type Color<br>
+	 Creates a control property of type {@link SVString}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
 	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, AColor value) {
-		this(propertyLookup, name, PropertyType.COLOR, value.getAsStringArray());
-	}
-
-	/**
-	 Creates a control property of type Sound<br>
-	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
-	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, ASound value) {
-		this(propertyLookup, name, PropertyType.SOUND, value.getAsStringArray());
-	}
-
-	/**
-	 Creates a control property of type Font<br>
-	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
-	 */
-	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, AFont value) {
-		this(propertyLookup, name, PropertyType.FONT, new String[]{value.name()});
+	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, String value) {
+		this(propertyLookup, name, PropertyType.BOOLEAN, new SVString(value));
 	}
 
 	@NotNull
@@ -222,72 +114,71 @@ public class ControlProperty {
 		this.dataOverride = dataOverride;
 	}
 
-	/** Get whether or not all values are set inside the property. */
-	public boolean valuesAreSet() {
-		for (String s : valuesObserver.getValue()) {
-			if (s == null) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@NotNull
 	public String getName() {
 		return name;
 	}
 
-	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getType() == PropertyType.something) */
+	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
 	public boolean isType(PropertyType type) {
 		return this.type == type;
 	}
 
 	@NotNull
-	public PropertyType getType() {
+	public PropertyType getPropertyType() {
 		return type;
 	}
 
-	@NotNull
-	public String[] getValues() {
-		return valuesObserver.getValue();
-	}
-
-	/** Get the default values for the property (can be array full of nulls but the array reference won't be null) */
 	@Nullable
-	public String[] getDefaultValues() {
-		return defaultValues;
+	public SerializableValue getValue() {
+		return valueObserver.getValue();
 	}
 
-	/** Get the first default value for the property */
+	/** Get the default value for the property */
 	@Nullable
-	public String getFirstDefaultValue() {
-		return defaultValues[0];
+	public SerializableValue getDefaultValue() {
+		return defaultValue;
 	}
 
-	/** Set the default values for the property (can be array full of nulls). If setString is true, the defaultValues given will also be placed in the control property value */
-	public void setDefaultValues(boolean setValue, String... defaultValues) {
-		this.defaultValues = defaultValues;
+
+	/**
+	 Set the default value.
+
+	 @param setValue if true, the ControlProperty value will also be set to the given defaultValue
+	 @param defaultValue new default value
+	 */
+	public void setDefaultValue(boolean setValue, SerializableValue defaultValue) {
+		this.defaultValue = defaultValue;
 		if (setValue) {
-			setValues(defaultValues);
+			setValue(defaultValue);
 		}
 	}
 
-	/** Sets the default values to only one integer (same thing as calling setDefaultValues(integer+"")) */
+	/**
+	 Sets the default value to an integer (uses {@link SVInteger}) (same thing as calling setDefaultValue(new SVInteger(defaultValue)))
+
+	 @see #setDefaultValue(boolean, SerializableValue)
+	 */
 	public void setDefaultValue(boolean setValue, int defaultValue) {
-		setDefaultValues(setValue, defaultValue + "");
+		setDefaultValue(setValue, new SVInteger(defaultValue));
 	}
 
-	/** Sets the default values to only one double (same thing as calling setDefaultValues(doubleNum+"")) */
+	/**
+	 Sets the default value to an integer (uses {@link SVDouble}) (same thing as calling setDefaultValue(new SVDouble(defaultValue)))
+
+	 @see #setDefaultValue(boolean, SerializableValue)
+	 */
 	public void setDefaultValue(boolean setValue, double defaultValue) {
-		setDefaultValues(setValue, defaultValue + "");
+		setDefaultValue(setValue, new SVDouble(defaultValue));
 	}
 
-	public void setDefaultValue(boolean setValue, AColor defaultValue) {
-		setDefaultValues(setValue, defaultValue.getAsStringArray());
-	}
+	/**
+	 Sets the default value to a String (uses {@link SVString}) (same thing as calling setDefaultValue(new SVString(defaultValue)))
 
-	public void setDefaultValue(boolean setValue, AFont defaultValue) {
-		setDefaultValues(setValue, defaultValue.name());
+	 @see #setDefaultValue(boolean, SerializableValue)
+	 */
+	public void setDefaultValue(boolean setValue, String defaultValue) {
+		setDefaultValue(setValue, new SVString(defaultValue));
 	}
 
 	/**
@@ -301,15 +192,12 @@ public class ControlProperty {
 			if (this.myMacro != null) {
 				myMacro.getValueObserver().removeListener(macroListener);
 			}
-			valuesObserver.updateValue(cacheValues);
+			valueObserver.updateValue(cachedValue);
 		} else {
-			cacheValues = new String[valuesObserver.getValue().length];
-			for (int i = 0; i < cacheValues.length; i++) {
-				cacheValues[i] = valuesObserver.getValue()[i];
-			}
+			cachedValue = valueObserver.getValue().deepCopy();
 			this.myMacro = m;
 			this.myMacro.getValueObserver().addValueListener(macroListener);
-			setValues(this.myMacro.getValue().getAsStringArray());
+			setValue(this.myMacro.getValue());
 		}
 	}
 
@@ -319,41 +207,45 @@ public class ControlProperty {
 		return myMacro;
 	}
 
-	/** Get the first and only value and return it as a String (This can be used for any type, however, it is recommend to not use it on types where there are more than one value (ARRAY, FONT, COLOR, etc)) */
-	public String getFirstValue() {
-		return valuesObserver.getValue()[0];
-	}
+	/**
+	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger}, this method will succeed.
 
-	/** Get the first and only int value if the property type is INT */
+	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger}
+	 */
 	public int getIntValue() {
-		try {
-			return Integer.valueOf(valuesObserver.getValue()[0]);
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		if (getValue() instanceof SVInteger) {
+			return ((SVInteger) getValue()).getInt();
 		}
+		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
 
-	/** Get the first and only float value if the property type is FLOAT */
+	/**
+	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble}, this method will succeed.
+
+	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble}
+	 */
 	public double getFloatValue() {
-		try {
-			return Double.valueOf(valuesObserver.getValue()[0]);
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		if (getValue() instanceof SVDouble) {
+			return ((SVDouble) getValue()).getDouble();
 		}
+		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
 
-	/** Get the first and only boolean value if the property type is BOOLEAN */
+	/**
+	 Get the ControlProperty's value as an boolean. If the value is of type {@link SVBoolean}, this method will succeed.
+
+	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVBoolean}
+	 */
 	public boolean getBooleanValue() {
-		try {
-			return Boolean.valueOf(valuesObserver.getValue()[0]);
-		} catch (NumberFormatException e) {
-			throw new IllegalStateException("Incompatible type fetching. My property type=" + type);
+		if (getValue() instanceof SVBoolean) {
+			return ((SVBoolean) getValue()).isTrue();
 		}
+		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
 
 	/** Return a String with all the value(s) formatted for header export. If there is more than 1 value in this control property, the curly braces ('{','}') will be prepended and appended before the values */
 	public String getValuesForExport() {
-		String[] arr = valuesObserver.getValue();
+		String[] arr = getValue().getAsStringArray();
 		if (arr.length == 1) {
 			if (type.exportHasQuotes) {
 				return "\"" + arr[0] + "\"";
@@ -375,100 +267,74 @@ public class ControlProperty {
 
 	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
 	@NotNull
-	public ValueObserver<String[]> getValuesObserver() {
-		return valuesObserver;
+	public ValueObserver<SerializableValue> getValueObserver() {
+		return valueObserver;
 	}
 
-	/** Sets the first value equal to object.toString() */
-	public void setFirstValue(@Nullable Object object) {
-		valuesObserver.getValue()[0] = object == null ? null : object.toString();
-		valuesObserver.updateValue(valuesObserver.getValue());
+	/** Set ControlProperty's value. */
+	public void setValue(@Nullable SerializableValue v) {
+		valueObserver.updateValue(v);
 	}
 
-	/** Set all values (if a value is intended to be empty (need to be filled), use null) */
-	public void setValues(String... values) {
-		valuesObserver.updateValue(values);
-	}
-
-	/** Update values but only set the value at index valueInd */
-	public void setValue(String v, int valueInd) {
-		valuesObserver.getValue()[valueInd] = v;
-		valuesObserver.updateValue(valuesObserver.getValue());
-	}
-
-	/** Set the first value to String (use this whenever the type has values length == 1 (e.g. STRING, INT, FONT but not ARRAY or SOUND)) */
-	public void setValue(String v) {
-		valuesObserver.getValue()[0] = v;
-		valuesObserver.updateValue(valuesObserver.getValue());
-	}
-
-	/** Set the first value to int (use this if type==INT) */
+	/** Set the first value to int. This will just wrap the int in {@link SVInteger} */
 	public void setValue(int v) {
-		valuesObserver.getValue()[0] = v + "";
-		valuesObserver.updateValue(valuesObserver.getValue());
+		valueObserver.updateValue(new SVInteger(v));
 	}
 
-	/** Set the first value to double (use this if type==FLOAT) */
+	/** Set the first value to int. This will just wrap the int in {@link SVDouble} */
 	public void setValue(double v) {
-		valuesObserver.getValue()[0] = truncate(v) + "";
-		valuesObserver.updateValue(valuesObserver.getValue());
+		valueObserver.updateValue(new SVDouble(v));
 	}
 
-	/** Set the first value to boolean (use this if type==BOOLEAN) */
+	/** Set the first value to int. This will just wrap the int in {@link SVBoolean} */
 	public void setValue(boolean v) {
-		valuesObserver.getValue()[0] = v + "";
-		valuesObserver.updateValue(valuesObserver.getValue());
+		valueObserver.updateValue(SVBoolean.get(v));
 	}
 
-	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR) */
-	public void setValue(AColor color) {
-		valuesObserver.updateValue(color.getAsStringArray());
+	/** Set the first value to String. This will just wrap the String in {@link SVString} */
+	public void setValue(String v) {
+		valueObserver.updateValue(new SVString(v));
 	}
 
-	/** Sets the first value equal to object.toString(). The value is set without notifying listeners */
-	public void setFirstValueSilent(@Nullable Object object) {
-		valuesObserver.getValue()[0] = object == null ? null : object.toString();
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
+	/** Set the value without the {@link ValueObserver} (returned from {@link #getValueObserver()}) notifying value listeners */
+	public void setValueSilent(SerializableValue v) {
+		valueObserver.updateValueSilent(v);
 	}
 
-	/** Set all values (if a value is intended to be empty (need to be filled), use null). The value is set without notifying listeners */
-	public void setValuesSilent(String[] values) {
-		valuesObserver.updateValueSilent(values);
-	}
+	/**
+	 Set the first value to int. This will just wrap the int in {@link SVInteger}
 
-	/** Update values but only set the value at index valueInd. The value is set without notifying listeners */
-	public void setValueSilent(String v, int valueInd) {
-		valuesObserver.getValue()[valueInd] = v;
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
-	}
-
-	/** Set the first value to String (use this whenever the type has values length == 1 (e.g. STRING, INT, FONT but not ARRAY or SOUND)). The value is set without notifying listeners */
-	public void setValueSilent(String v) {
-		valuesObserver.getValue()[0] = v;
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
-	}
-
-	/** Set the first value to int (use this if type==INT). The value is set without notifying listeners */
+	 @see #setValueSilent(SerializableValue)
+	 */
 	public void setValueSilent(int v) {
-		valuesObserver.getValue()[0] = v + "";
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
+		valueObserver.updateValueSilent(new SVInteger(v));
 	}
 
-	/** Set the first value to double (use this if type==FLOAT). The value is set without notifying listeners */
+	/**
+	 Set the first value to int. This will just wrap the int in {@link SVDouble}
+
+	 @see #setValueSilent(SerializableValue)
+	 */
 	public void setValueSilent(double v) {
-		valuesObserver.getValue()[0] = v + "";
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
+		valueObserver.updateValueSilent(new SVDouble(v));
 	}
 
-	/** Set the first value to boolean (use this if type==BOOLEAN). The value is set without notifying listeners */
+	/**
+	 Set the first value to int. This will just wrap the int in {@link SVBoolean}
+
+	 @see #setValueSilent(SerializableValue)
+	 */
 	public void setValueSilent(boolean v) {
-		valuesObserver.getValue()[0] = v + "";
-		valuesObserver.updateValueSilent(valuesObserver.getValue());
+		valueObserver.updateValueSilent(SVBoolean.get(v));
 	}
 
-	/** Set the first value to a color (use this if type==COLOR or HEX_COLOR). The value is set without notifying listeners */
-	public void setValueSilent(AColor color) {
-		valuesObserver.updateValueSilent(color.getAsStringArray());
+	/**
+	 Set the first value to String. This will just wrap the String in {@link SVString}
+
+	 @see #setValueSilent(SerializableValue)
+	 */
+	public void setValueSilent(String v) {
+		valueObserver.updateValueSilent(new SVString(v));
 	}
 
 	@Override
@@ -489,7 +355,7 @@ public class ControlProperty {
 				"name='" + name + '\'' +
 				", type=" + type +
 				", propertyLookup=" + propertyLookup +
-				", values=" + Arrays.toString(getValues()) +
+				", value=" + Arrays.toString(getValue().getAsStringArray()) +
 				'}';
 	}
 }

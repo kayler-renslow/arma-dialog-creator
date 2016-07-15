@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import org.jetbrains.annotations.Nullable;
 
 /**

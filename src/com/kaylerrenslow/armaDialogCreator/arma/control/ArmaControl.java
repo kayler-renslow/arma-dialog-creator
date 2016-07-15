@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.PositionCalculator;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -252,13 +252,13 @@ public class ArmaControl extends ControlClass {
 	protected void calcPositionFromRenderer() {
 		this.x = PositionCalculator.getPercentX(this.resolution, renderer.getX1());
 		this.y = PositionCalculator.getPercentY(this.resolution, renderer.getY1());
-		xProperty.setValueSilent(x);
-		yProperty.setValueSilent(y);
+		xProperty.setValue(x);
+		yProperty.setValue(y);
 
 		this.width = PositionCalculator.getPercentWidth(this.resolution, renderer.getWidth());
 		this.height = PositionCalculator.getPercentHeight(this.resolution, renderer.getHeight());
-		wProperty.setValueSilent(width);
-		hProperty.setValueSilent(height);
+		wProperty.setValue(width);
+		hProperty.setValue(height);
 
 		getUpdateGroup().update(null); //don't execute updateProperties
 	}

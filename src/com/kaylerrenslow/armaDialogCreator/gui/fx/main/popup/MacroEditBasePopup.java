@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
@@ -38,7 +38,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 
 	private final TextField tfMacroDescription = new TextField();
 	private final InputField<IdentifierChecker, String> inMacroKey = new InputField<>(new IdentifierChecker());
-	private final ChoiceBox<ControlProperty.PropertyType> cbMacroType = new ChoiceBox<>();
+	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
 
 	private final Label lblNoTypeChosen = new Label(Lang.Popups.MacroEdit.NO_TYPE_CHOSEN);
 
@@ -69,11 +69,11 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		});
 		inMacroKey.setOnKeyTyped(inMacroKey.getOnKeyReleased());
 
-		cbMacroType.getItems().addAll(ControlProperty.PropertyType.values());
+		cbMacroType.getItems().addAll(PropertyType.values());
 
-		cbMacroType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlProperty.PropertyType>() {
+		cbMacroType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<PropertyType>() {
 			@Override
-			public void changed(ObservableValue<? extends ControlProperty.PropertyType> observable, ControlProperty.PropertyType oldValue, ControlProperty.PropertyType selected) {
+			public void changed(ObservableValue<? extends PropertyType> observable, PropertyType oldValue, PropertyType selected) {
 				editor = ValueEditor.getEditor(selected);
 				stackPaneEditor.getChildren().clear();
 				stackPaneEditor.getChildren().add(editor.getRootNode());

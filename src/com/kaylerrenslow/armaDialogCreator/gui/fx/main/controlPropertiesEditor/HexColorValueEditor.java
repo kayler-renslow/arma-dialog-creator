@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.AHexColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.AHexColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import javafx.scene.Node;

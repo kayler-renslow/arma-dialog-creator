@@ -2,13 +2,13 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
-import com.kaylerrenslow.armaDialogCreator.arma.util.screen.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -60,7 +60,7 @@ public class StaticControl extends ArmaControl {
 		colorTextProperty = findRequiredProperty(ControlPropertyLookup.COLOR_TEXT);
 		colorTextProperty.setDefaultValue(true, new AColor(renderer.getTextColor()));
 		textProperty = findRequiredProperty(ControlPropertyLookup.TEXT);
-		textProperty.setDefaultValues(true, "");
+		textProperty.setDefaultValue(true, "");
 
 		findRequiredProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
 	}
@@ -69,9 +69,9 @@ public class StaticControl extends ArmaControl {
 	protected void updateProperties() {
 		super.updateProperties();
 		StaticRenderer renderer = getStaticRenderer();
-		renderer.getBackgroundColorObserver().updateValue(new AColor(backgroundColorProperty.getValues()));
-		renderer.setText(textProperty.getFirstValue().replaceAll("\"\"", "\""));
-		renderer.setTextColor(AColor.toJavaFXColor(colorTextProperty.getValues()));
+		renderer.getBackgroundColorObserver().updateValue((AColor) backgroundColorProperty.getValue());
+		renderer.setText(textProperty.getValue().toString().replaceAll("\"\"", "\""));
+		renderer.setTextColor(((AColor)colorTextProperty.getValue()).toJavaFXColor());
 	}
 
 	private StaticRenderer getStaticRenderer() {

@@ -12,7 +12,6 @@ public interface Lang {
 	interface CanvasControls {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
-		String VIEWPORT_SNAP = "Snap Relative to Viewport";
 	}
 
 	interface MainMenuBar {

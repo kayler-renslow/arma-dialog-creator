@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 /**
  Created by Kayler on 07/14/2016.
  */
-public interface AST {
+interface AST {
 	interface Visitor<T> {
 		T visit(AST.AddExpr expr, Env env);
 

@@ -1,7 +1,7 @@
-package com.kaylerrenslow.armaDialogCreator.control;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /** A generic wrapper implementation for a String. */
-public class SVString implements SerializableValue {
+public final class SVString implements SerializableValue {
 	private final String[] arr;
 
 	public SVString(String s) {
@@ -19,6 +19,11 @@ public class SVString implements SerializableValue {
 	@Override
 	public String[] getAsStringArray() {
 		return arr;
+	}
+
+	@Override
+	public SerializableValue deepCopy() {
+		return new SVString(arr[0]);
 	}
 
 	@Override

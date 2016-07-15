@@ -1,8 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  Base class for JavaFX canvas rendering of arma controls
  Created on 05/20/2016. */
-public class ArmaControlRenderer extends TextCanvasComponent implements ViewportComponent {
+public class ArmaControlRenderer extends TextCanvasComponent {
 	private static final Font FONT = Font.font(20d);
 	protected ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
@@ -142,70 +141,6 @@ public class ArmaControlRenderer extends TextCanvasComponent implements Viewport
 	public void setGhost(boolean ghost) {
 		super.setGhost(ghost);
 		myControl.getUpdateGroup().update(null);
-	}
-
-	@Override
-	public void setPercentX(double percentX) {
-		myControl.defineX(percentX);
-		myControl.getUpdateGroup().update(null);
-	}
-
-	@Override
-	public void setPercentY(double percentY) {
-		myControl.defineY(percentY);
-		myControl.getUpdateGroup().update(null);
-	}
-
-	@Override
-	public void setPercentW(double percentW) {
-		myControl.defineW(percentW);
-		myControl.getUpdateGroup().update(null);
-	}
-
-	@Override
-	public void setPercentH(double percentH) {
-		myControl.defineH(percentH);
-		myControl.getUpdateGroup().update(null);
-	}
-
-	@Override
-	public double getPercentX() {
-		return myControl.x;
-	}
-
-	@Override
-	public double getPercentY() {
-		return myControl.y;
-	}
-
-	@Override
-	public double getPercentW() {
-		return myControl.width;
-	}
-
-	@Override
-	public double getPercentH() {
-		return myControl.height;
-	}
-
-	@Override
-	public int calcScreenX(double percentX) {
-		return myControl.calcScreenX(percentX);
-	}
-
-	@Override
-	public int calcScreenY(double percentY) {
-		return myControl.calcScreenY(percentY);
-	}
-
-	@Override
-	public int calcScreenWidth(double percentW) {
-		return myControl.calcScreenWidth(percentW);
-	}
-
-	@Override
-	public int calcScreenHeight(double percentH) {
-		return myControl.calcScreenHeight(percentH);
 	}
 
 	@Override

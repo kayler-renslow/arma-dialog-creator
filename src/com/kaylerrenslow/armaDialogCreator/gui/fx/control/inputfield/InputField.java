@@ -23,9 +23,9 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  Base class for a text field control that checks if the inputted data is correct and returns the data as an object with type V
  Created on 05/31/2016. */
-public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane {
+public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
-	private final T dataChecker;
+	private final C dataChecker;
 	private final ValueObserver<V> observer = new ValueObserver<>(null);
 	private final TextField textField = new TextField();
 	private final Button button = new Button();
@@ -36,7 +36,7 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	private String errMsg;
 
 	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns */
-	public InputField(@NotNull T fieldDataChecker) {
+	public InputField(@NotNull C fieldDataChecker) {
 		this.dataChecker = fieldDataChecker;
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
@@ -55,7 +55,7 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
 				checkIfValid(getText());
-				if (!focused && !valid && (getText() != null && getText().length() == 0 && !fieldDataChecker.allowEmptyData())) {
+				if (!focused && !valid && (getText().length() == 0 && !fieldDataChecker.allowEmptyData())) {
 					setToButton(true);
 				}
 				if (!focused && valid) {
@@ -89,12 +89,15 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	}
 
 	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns. Also, set the initial value equal to defaultValue */
-	public InputField(@NotNull T fieldDataChecker, @Nullable V defaultValue) {
+	public InputField(@NotNull C fieldDataChecker, @Nullable V defaultValue) {
 		this(fieldDataChecker);
 		setValue(defaultValue);
 	}
 
-	/** Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data). If no text was inputted, will return null. */
+	/**
+	 Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data).
+	 If no text was inputted and the data checker doesn't allow empty data, will return null.
+	 */
 	@Nullable
 	public V getValue() {
 		if (!dataChecker.allowEmptyData() && getText().length() == 0) {
@@ -180,9 +183,9 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		setToButton(true);
 	}
 
-	/** Sets the text without updating the error state. If text is null, will be put into buttons state. */
+	/** Sets the text without updating the error state or value observer. If text is null and the {@link InputFieldDataChecker} instance doesn't allow empty data, will be put into buttons state. */
 	public void setText(@Nullable String text) {
-		if (text == null) {
+		if (text == null && !dataChecker.allowEmptyData()) {
 			clear();
 		} else {
 			textField.setText(text);
@@ -195,7 +198,10 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		if (buttonState) {
 			return "";
 		}
-		return textField.getText() == null ? "" : textField.getText();
+		if (textField.getText() == null) {
+			textField.setText("");
+		}
+		return textField.getText();
 	}
 
 	/** Set the prompt text of the text field and the text of the button */

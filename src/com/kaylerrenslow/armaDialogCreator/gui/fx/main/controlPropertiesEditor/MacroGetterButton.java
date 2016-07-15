@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;

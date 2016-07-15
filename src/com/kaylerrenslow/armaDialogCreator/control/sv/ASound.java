@@ -1,6 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util;
-
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /**
  @author Kayler
@@ -47,7 +45,7 @@ public class ASound implements SerializableValue {
 		return db;
 	}
 
-	public void setDb(int db) {
+	public void setDb(double db) {
 		this.db = db;
 	}
 
@@ -82,6 +80,12 @@ public class ASound implements SerializableValue {
 		s[1] = db + "";
 		s[2] = pitch + "";
 		return s;
+	}
+
+	@Override
+	public SerializableValue deepCopy() {
+		String nameCopy = soundName;
+		return new ASound(nameCopy, db, pitch);
 	}
 
 	@Override

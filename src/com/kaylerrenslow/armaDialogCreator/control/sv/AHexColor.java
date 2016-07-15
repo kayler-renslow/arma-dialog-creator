@@ -1,6 +1,5 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import javafx.scene.paint.Color;
 
 /**

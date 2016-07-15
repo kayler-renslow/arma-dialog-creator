@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util.screen;
+package com.kaylerrenslow.armaDialogCreator.arma.util;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 

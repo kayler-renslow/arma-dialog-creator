@@ -1,9 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.AColor;
-import com.kaylerrenslow.armaDialogCreator.arma.util.AFont;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ASound;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
@@ -37,7 +35,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
 	private @Nullable ControlClass control;
 
-	private ArrayList<ControlPropertyInput> propertyInputs = new ArrayList<>();
+	private ArrayList<ControlPropertyInputDescriptor> propertyDescriptors = new ArrayList<>();
 	private ControlPropertyEditor[] propertyEditors;
 
 	private ControlPropertiesEditorPane() {
@@ -45,6 +43,38 @@ public class ControlPropertiesEditorPane extends StackPane {
 		scrollPane.setFitToHeight(true);
 		scrollPane.setFitToWidth(true);
 		getChildren().add(scrollPane);
+	}
+
+	private static class ControlPropertyInputDescriptor {
+		private final ControlPropertyInput input;
+		private boolean optional;
+
+		public ControlPropertyInputDescriptor(ControlPropertyInput input) {
+			this.input = input;
+		}
+
+		public ControlPropertyInput getInput() {
+			return input;
+		}
+
+		public boolean isOptional() {
+			return optional;
+		}
+
+		/** Return true if the {@link ControlProperty} returned from {@link #getControlProperty()} is optional (not in required list returned from {@link ControlClassSpecificationProvider#getRequiredProperties()}) */
+		public void setIsOptional(boolean optional) {
+			this.optional = optional;
+		}
+
+		/** Does same thing as {@link #getInput()}.getControlProperty() */
+		public ControlProperty getControlProperty() {
+			return input.getControlProperty();
+		}
+
+		/** Does same thing as {@link #getInput()}.hasValidData() */
+		public boolean hasValidData() {
+			return input.hasValidData();
+		}
 	}
 
 
@@ -99,9 +129,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** Return all properties that are being edited */
 	public List<ControlProperty> getAllProperties() {
-		List<ControlProperty> properties = new ArrayList<>(propertyInputs.size());
-		for (ControlPropertyInput input : propertyInputs) {
-			properties.add(input.getControlProperty());
+		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			properties.add(descriptor.getControlProperty());
 		}
 		return properties;
 	}
@@ -112,11 +142,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** Get all missing properties (control properties that are required by have no valid data entered). */
 	public List<ControlProperty> getMissingProperties() {
-		List<ControlProperty> properties = new ArrayList<>(propertyInputs.size());
-		for (ControlPropertyInput input : propertyInputs) {
-			if (!input.hasValidData() && !input.isOptional()) {
-				System.out.printf("%-20s: validData:%b optional:%b valuesSet:%b\n", input.getControlProperty().getName(), input.hasValidData(), input.isOptional(), input.getControlProperty().valuesAreSet());
-				properties.add(input.getControlProperty());
+		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			if (!descriptor.getInput().hasValidData() && !descriptor.isOptional()) {
+				System.out.printf("%-20s: validData:%b optional:%b valuesSet:%b\n", descriptor.getControlProperty().getName(), descriptor.hasValidData(), descriptor.isOptional(), descriptor.getControlProperty() != null);
+				properties.add(descriptor.getControlProperty());
 			}
 		}
 		return properties;
@@ -128,7 +158,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 		accordion.getPanes().add(getTitledPane("Events", eventProperties, true));
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
-		propertyEditors = propertyInputs.toArray(new ControlPropertyEditor[propertyInputs.size()]);
+		propertyEditors = new ControlPropertyEditor[propertyDescriptors.size()];
+		for (int i = 0; i < propertyEditors.length; i++) {
+			propertyEditors[i] = propertyDescriptors.get(i).getInput();
+		}
 	}
 
 	/** Get a titled pane for the accordion that holds all control properties */
@@ -177,8 +210,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 				break;
 			}
 		}
-		propertyInputs.add(propertyInput);
-		propertyInput.setIsOptional(optional);
+		propertyDescriptors.add(new ControlPropertyInputDescriptor(propertyInput));
+		propertyDescriptors.get(propertyDescriptors.size() - 1).setIsOptional(optional);
 		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 		pane.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
@@ -243,7 +276,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		if (lookup.options != null && lookup.options.length > 0) {
 			return new ControlPropertyOption(control, controlProperty);
 		}
-		ControlProperty.PropertyType propertyType = lookup.propertyType;
+		PropertyType propertyType = lookup.propertyType;
 		switch (propertyType) {
 			case INT:
 				return new ControlPropertyInputFieldInteger(control, controlProperty, Lang.Popups.ControlPropertiesConfig.INT);
@@ -266,7 +299,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			case IMAGE:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.IMAGE_PATH);
 			case HEX_COLOR_STRING:
-				return new ControlPropertyColorPicker(control, controlProperty); //todo have hex color editor
+				return new ControlPropertyColorPicker(control, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
 			case TEXTURE:
 				return new ControlPropertyInputFieldString(control, controlProperty, Lang.Popups.ControlPropertiesConfig.TEXTURE);
 			case EVENT:
@@ -280,7 +313,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static Tooltip getTooltip(ControlPropertyLookup lookup) {
 		String tooltip = "";
 		for (int i = 0; i < lookup.about.length; i++) {
-			if (lookup.propertyType == ControlProperty.PropertyType.EVENT) {
+			if (lookup.propertyType == PropertyType.EVENT) {
 				if (i == 2) { //priority
 					tooltip += "Priority: " + lookup.about[i];
 				} else if (i == 3) { //scope
@@ -309,14 +342,19 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private interface ControlPropertyInput extends ControlPropertyEditor {
 
 		enum EditMode {
+			/** Using default editor */
 			DEFAULT,
-			/** This is broken. Maybe fix it later. */
+			/**
+			 Uses a raw input field in which the user can enter anything they want. When this scenario happens, must be careful with casting after this is turned off.
+			 It is recommended to just clear the user's entered data to prevent exceptions from occurring.
+
+			 @deprecated This is broken. Maybe fix it later.
+			 */
 			@Deprecated
 			OVERRIDE,
+			/** The control property's value is set to a macro */
 			MACRO
 		}
-
-		void setIsOptional(boolean optional);
 
 		void setToMode(EditMode mode);
 
@@ -326,13 +364,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		/** DO NOT USE THIS FOR ARRAY INPUT */
 		static InputField<ArmaStringChecker, String> modifyRawInput(InputField<ArmaStringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
-			if (controlProperty.getType() == ControlProperty.PropertyType.ARRAY) {
+			if (controlProperty.getPropertyType() == PropertyType.ARRAY) {
 				throw new IllegalArgumentException("don't use this method for ARRAY property type");
 			}
 			rawInput.getValueObserver().addValueListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					controlProperty.setFirstValue(newValue);
+					controlProperty.setValue(new SVString(newValue));
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
@@ -350,7 +388,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
 		private final InputField<ArmaStringChecker, String> rawInput = new InputField<>(new ArmaStringChecker());
-		private boolean isOptional;
 
 		ControlPropertyOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
@@ -360,7 +397,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
-			boolean validData = controlProperty.valuesAreSet();
+			boolean validData = controlProperty.getValue() != null;
 			if (lookup.options == null) {
 				throw new IllegalStateException("options shouldn't be null");
 			}
@@ -375,7 +412,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				radioButton.setToggleGroup(toggleGroup);
 				getChildren().add(radioButton);
 				radioButtons.add(radioButton);
-				if (validData && controlProperty.getFirstValue().equals(option.value)) {
+				if (validData && controlProperty.getValue().toString().equals(option.value)) {
 					toSelect = radioButton;
 				}
 			}
@@ -387,9 +424,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 					if (newValue == null) {
-						controlProperty.setFirstValue(null);
+						controlProperty.setValue((SerializableValue) null);
 					} else {
-						controlProperty.setFirstValue(newValue.getUserData().toString());
+						controlProperty.setValue(newValue.getUserData().toString());
 					}
 					if (control != null) {
 						control.getUpdateGroup().update(control);
@@ -397,14 +434,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					if (!controlProperty.valuesAreSet()) {
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					if (newValue == null) {
 						return;
 					}
 					for (Toggle toggle : toggleGroup.getToggles()) {
-						if (toggle.getUserData().equals(controlProperty.getFirstValue())) {
+						if (toggle.getUserData().equals(controlProperty.getValue())) {
 							toggleGroup.selectToggle(toggle);
 							return;
 						}
@@ -439,16 +476,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
-		}
-
-		@Override
 		public void setToMode(EditMode mode) {
 			getChildren().clear();
 			if (mode == EditMode.OVERRIDE) {
@@ -469,14 +496,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified. */
+	/**
+	 Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified.
+	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString},
+	 */
 	@SuppressWarnings("unchecked")
 	private static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private final Class<? extends SerializableValue> macroTypeClass;
-		private boolean isOptional;
+		private final Class<C> macroTypeClass;
 
 		ControlPropertyInputField(Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
@@ -486,24 +515,24 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			if (controlProperty.valuesAreSet()) {
-				inputField.setValueFromText(controlProperty.getFirstValue());
+			if (controlProperty.getValue() != null) {
+				inputField.setValue((C) controlProperty.getValue());
 			}
 			inputField.getValueObserver().addValueListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
-					controlProperty.setFirstValue(newValue);
+					controlProperty.setValue((C) newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					if (controlProperty.valuesAreSet()) {
-						inputField.setText(controlProperty.getFirstValue());
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					if (controlProperty.getValue() != null) {
+						inputField.setText(controlProperty.getValue().toString());
 					}
 				}
 			});
@@ -526,10 +555,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			if (getControlProperty().getFirstDefaultValue() == null) {
+			if (getControlProperty().getDefaultValue() == null) {
 				inputField.setValue(null);
 			} else {
-				inputField.setText(getControlProperty().getFirstValue());
+				inputField.setText(getControlProperty().getValue().toString());
 			}
 		}
 
@@ -541,16 +570,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
-		}
-
-		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
 		}
 
 		@Override
@@ -582,21 +601,23 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Used for when control property requires color input */
+	/**
+	 Used for when control property requires color input.
+	 Use this only when the ControlProperty's value is of type {@link AColor}
+	 */
 	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private boolean isOptional;
 
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			boolean validData = controlProperty.valuesAreSet();
+			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
-				AColor value = new AColor(controlProperty.getValues());
+				AColor value = (AColor) controlProperty.getValue();
 				colorPicker.setValue(value.toJavaFXColor());
 			} else {
 				colorPicker.setValue(null);
@@ -605,7 +626,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
 					if (newValue == null) {
-						controlProperty.setValues(null, null, null, null);
+						controlProperty.setValue((SerializableValue) null);
 					} else {
 						AColor newColor = new AColor(newValue);
 						controlProperty.setValue(newColor);
@@ -616,11 +637,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					if (controlProperty.valuesAreSet()) { //maybe wasn't updated
-						colorPicker.setValue(AColor.toJavaFXColor(controlProperty.getValues()));
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					if (controlProperty.getValue() != null) { //maybe wasn't updated
+						colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
+					} else {
+						colorPicker.setValue(null);
 					}
 				}
 			});
@@ -641,7 +664,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public void resetToDefaultValue() {
 			try {
-				colorPicker.setValue(AColor.toJavaFXColor(getControlProperty().getDefaultValues()));
+				colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
 			} catch (NullPointerException e) {
 				colorPicker.setValue(null);
 			}
@@ -658,16 +681,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
-		}
-
-		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
 		}
@@ -678,12 +691,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Used for boolean control properties */
+	/**
+	 Used for boolean control properties
+	 Use this editor for when the ControlProperty's value is of type {@link SVBoolean}
+	 */
 	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private boolean isOptional;
 
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
@@ -691,29 +706,25 @@ public class ControlPropertiesEditorPane extends StackPane {
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 
-			boolean validData = controlProperty.valuesAreSet();
+			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				choiceBox.getSelectionModel().select(controlProperty.getBooleanValue() ? SVBoolean.TRUE : SVBoolean.FALSE);
 			}
 			choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<SVBoolean>() {
 				@Override
 				public void changed(ObservableValue<? extends SVBoolean> observable, SVBoolean oldValue, SVBoolean newValue) {
-					if (newValue == null) {
-						controlProperty.setFirstValue(null);
-					} else {
-						controlProperty.setValue(newValue.isTrue());
-					}
+					controlProperty.setValue(newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					if (controlProperty.valuesAreSet()) {
-						choiceBox.setValue(controlProperty.getBooleanValue() ? SVBoolean.TRUE : SVBoolean.FALSE);
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					if (controlProperty.getValue() != null) {
+						choiceBox.setValue((SVBoolean) newValue);
 					}
 				}
 			});
@@ -733,7 +744,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			if (getControlProperty().getDefaultValues()[0] == null) { //no intellij this is not always false
+			if (getControlProperty().getDefaultValue() == null) { //no intellij this is not always false
 				choiceBox.getSelectionModel().clearSelection();
 				return;
 			}
@@ -750,17 +761,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return controlPropertyUpdateGroup;
 		}
 
-
-		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
-		}
-
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -772,13 +772,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Used for control properties that require more than one input */
+	/**
+	 Used for control properties that require more than one input
+	 This editor will use {@link SVStringArray} as the ControlProperty's value type
+	 */
 	@SuppressWarnings("unchecked")
 	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private boolean isOptional;
+		private SVStringArray svStringArray;
 
 		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
@@ -786,19 +789,22 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
+			svStringArray = (SVStringArray) controlProperty.getValue();
 			InputField<ArmaStringChecker, String> inputField;
-			boolean isDefined = controlProperty.valuesAreSet(); //no need to reiterate
+			boolean isDefined = controlProperty.getValue() != null; //no need to reiterate
+			String[] values = controlProperty.getValue().getAsStringArray();
 			for (int i = 0; i < editors.size(); i++) {
 				inputField = editors.get(i);
 				final int index = i;
 				if (isDefined) {
-					editors.get(i).setText(controlProperty.getFirstValue());
+					editors.get(i).setText(values[i]);
 				}
 
 				inputField.getValueObserver().addValueListener(new ValueListener() {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
-						controlProperty.setValue(newValue.toString(), index);
+						svStringArray.setString(newValue.toString(), index);
+						controlProperty.setValue(svStringArray);
 						if (control != null) {
 							control.getUpdateGroup().update(control);
 						}
@@ -806,24 +812,26 @@ public class ControlPropertiesEditorPane extends StackPane {
 					}
 				});
 				if (control != null) {
-					controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+					controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 						@Override
-						public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, String[] newValue) {
+						public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, SerializableValue newValue) {
+							String[] values = newValue.getAsStringArray();
 							int i = 0;
 							for (InputField field : editors) {
-								field.setText(newValue[i++]);
+								field.setText(values[i++]);
 							}
 						}
 					});
 				}
 				placeTooltip(inputField, lookup);
 			}
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					if (controlProperty.valuesAreSet()) {
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					if (controlProperty.getValue() != null) {
+						String[] values = newValue.getAsStringArray();
 						for (int i = 0; i < editors.size(); i++) {
-							editors.get(i).setValueFromText(controlProperty.getValues()[i]);
+							editors.get(i).setValueFromText(values[i]);
 						}
 					}
 				}
@@ -847,7 +855,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			String[] defaultValues = getControlProperty().getDefaultValues();
+			SerializableValue defaultValue = controlProperty.getDefaultValue();
+			String[] defaultValues;
+			if (defaultValue == null) {
+				defaultValues = new String[controlProperty.getPropertyType().propertyValuesSize];
+			} else {
+				defaultValues = defaultValue.getAsStringArray();
+			}
 			for (int i = 0; i < editors.size(); i++) {
 				if (defaultValues[i] == null) {
 					editors.get(i).clear();
@@ -868,16 +882,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
-		}
-
-		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
 		}
@@ -888,23 +892,25 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Used for control property font picking */
+	/**
+	 Used for control property font picking
+	 Used for ControlProperty instances where it's value is {@link AFont}
+	 */
 	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyInput {
 
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private boolean isOptional;
 
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			boolean validData = controlProperty.valuesAreSet();
+			boolean validData = controlProperty.getValue() != null;
 			AFont font = null;
 			if (validData) {
 				try {
-					font = AFont.valueOf(controlProperty.getFirstValue());
+					font = (AFont) controlProperty.getValue();
 				} catch (IllegalArgumentException e) {
 					e.printStackTrace(System.out);
 				}
@@ -913,21 +919,17 @@ public class ControlPropertiesEditorPane extends StackPane {
 			comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
-					if (newValue == null) {
-						controlProperty.setFirstValue(null);
-					} else {
-						controlProperty.setValue(newValue.name());
-					}
+					controlProperty.setValue(newValue);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
 					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					comboBox.setValue(AFont.valueOf(controlProperty.getFirstValue()));
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					comboBox.setValue((AFont) controlProperty.getValue());
 				}
 			});
 			placeTooltip(comboBox, lookup);
@@ -945,10 +947,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			if (controlProperty.getFirstDefaultValue() == null) {
+			if (controlProperty.getDefaultValue() == null) {
 				comboBox.getSelectionModel().clearSelection();
 			} else {
-				comboBox.getSelectionModel().select(AFont.valueOf(controlProperty.getFirstDefaultValue()));
+				comboBox.getSelectionModel().select((AFont) controlProperty.getDefaultValue());
 			}
 		}
 
@@ -963,16 +965,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
-		}
-
-		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
 		}
@@ -983,46 +975,97 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
+	/** Use this editor for {@link ASound} ControlProperty values */
 	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyInput {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
-		private boolean isOptional;
 
 		private final int NAME = 0;
 		private final int DB = 1;
 		private final int PITCH = 2;
 
+		private String name = "";
+		private Double db = 0.0;
+		private Double pitch = 0.0;
+
+		private ASound aSound;
+
 		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 
-			boolean validData = controlProperty.valuesAreSet();
-			ASound sound = null;
+			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
-				sound = new ASound(controlProperty.getValues());
+				aSound = (ASound) controlProperty.getValue();
 			}
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
 
-			initInputField(inSoundName, NAME, sound != null ? sound.getSoundName() : null);
-			initInputField(inDb, DB, sound != null ? sound.getDb() + "" : null);
-			initInputField(inPitch, PITCH, sound != null ? sound.getPitch() + "" : null);
+			initInputField(inSoundName, NAME, aSound != null ? aSound.getSoundName() : null);
+			initInputField(inDb, DB, aSound != null ? aSound.getDb() : null);
+			initInputField(inPitch, PITCH, aSound != null ? aSound.getPitch() : null);
 
-			controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, @Nullable String[] newValue) {
-					//						comboBox.setString(AFont.valueOf(controlProperty.getFirstValue())); TODO
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+					ASound sound = (ASound) newValue;
+					if (sound == null) {
+						inSoundName.clear();
+						inDb.clear();
+						inPitch.clear();
+					} else {
+						inSoundName.setText(sound.getSoundName());
+						inDb.setText(sound.getDb() + "");
+						inPitch.setText(sound.getPitch() + "");
+					}
 				}
 			});
 
 		}
 
-		private void initInputField(InputField inputField, int typeIndex, String defaultValue) {
-			inputField.setText(defaultValue);
+		private void initInputField(InputField inputField, int typeIndex, Object defaultValue) {
+			inputField.setText(defaultValue.toString());
+			switch (typeIndex) {
+				case NAME: {
+					name = defaultValue.toString();
+					break;
+				}
+				case DB: {
+					db = (Double) defaultValue;
+					break;
+				}
+				case PITCH: {
+					pitch = (Double) defaultValue;
+					break;
+				}
+			}
 
 			inputField.getValueObserver().addValueListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
-					controlProperty.setValue(newValue != null ? newValue.toString() : null, typeIndex);
+					switch (typeIndex) {
+						case NAME: {
+							name = newValue.toString();
+							break;
+						}
+						case DB: {
+							db = (Double) newValue;
+							break;
+						}
+						case PITCH: {
+							pitch = (Double) newValue;
+							break;
+						}
+					}
+					if (name != null && db != null && pitch != null) {
+						if (aSound == null) {
+							aSound = new ASound(name, db, pitch);
+						} else {
+							aSound.setSoundName(name);
+							aSound.setDb(db);
+							aSound.setPitch(pitch);
+						}
+					}
+					controlProperty.setValue(aSound);
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
@@ -1030,16 +1073,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			});
 			if (control != null) {
-				controlProperty.getValuesObserver().addValueListener(new ValueListener<String[]>() {
+				controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 					@Override
-					public void valueUpdated(@NotNull ValueObserver<String[]> observer, @Nullable String[] oldValue, String[] newValue) {
-						for (String s : newValue) {
-							if (s == null) {
-								setValue(null);
-								return;
-							}
-						}
-						setValue(new ASound(newValue));
+					public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, SerializableValue newValue) {
+						setValue((ASound) newValue);
 					}
 				});
 			}
@@ -1058,10 +1095,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void resetToDefaultValue() {
-			if (controlProperty.getDefaultValues()[0] == null) {
-				setValue(null);
-			}
-			setValue(new ASound(controlProperty.getDefaultValues()));
+			setValue((ASound) controlProperty.getDefaultValue());
 		}
 
 		@Override
@@ -1070,18 +1104,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean isOptional() {
-			return isOptional;
-		}
-
-		@Override
 		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
 			return controlPropertyUpdateGroup;
-		}
-
-		@Override
-		public void setIsOptional(boolean optional) {
-			this.isOptional = optional;
 		}
 
 		@Override

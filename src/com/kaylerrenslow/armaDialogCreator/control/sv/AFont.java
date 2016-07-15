@@ -1,6 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.arma.util;
-
-import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /**
  @author Kayler
@@ -27,9 +25,15 @@ public enum AFont implements SerializableValue {
 		return name();
 	}
 
-
 	@Override
 	public String[] getAsStringArray() {
 		return meAsArray;
 	}
+
+	@Override
+	public SerializableValue deepCopy() {
+		return this;
+	}
+
+
 }

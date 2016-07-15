@@ -1,7 +1,7 @@
-package com.kaylerrenslow.armaDialogCreator.control;
+package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /** A generic wrapper implementation for a double. */
-public class SVDouble implements SerializableValue {
+public final class SVDouble implements SerializableValue {
 	private final String[] arr;
 	private double d;
 
@@ -22,6 +22,11 @@ public class SVDouble implements SerializableValue {
 	@Override
 	public String[] getAsStringArray() {
 		return arr;
+	}
+
+	@Override
+	public SerializableValue deepCopy() {
+		return new SVDouble(d);
 	}
 
 	@Override

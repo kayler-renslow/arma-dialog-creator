@@ -10,6 +10,4 @@ public interface SnapConfiguration {
 	/** How much snap there is (as a percentage decimal.). Should be > 0 */
 	double snapPercentage();
 
-	/** If true, snapping percentage will be based upon viewport size rather than canvas size. If false, snapping percentage will be based on canvas size. This value also dictates how the grid is drawn. */
-	boolean snapRelativeToViewport();
 }
