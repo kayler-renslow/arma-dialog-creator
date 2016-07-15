@@ -12,7 +12,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	public Value evaluate(AST.Expr e, Env env) {
 		try {
 			return (Value) e.accept(this, env);
-		} catch (ClassCastException ex) {
+		} catch (Exception ex) {
 			return null;
 		}
 	}
@@ -51,7 +51,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		if (expr.isAdd()) {
 			return new Value.NumVal(+v.v());
 		}
-		return new Value.NumVal(+v.v());
+		return new Value.NumVal(-v.v());
 	}
 
 	@Override

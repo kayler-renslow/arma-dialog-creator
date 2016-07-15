@@ -1,6 +1,6 @@
 ADDED:
-    none
+    test cases for expression evaluator
 CHANGED:
     none
 FIXED:
-    expression lexer was actually broken
+    expression evaluator: order of operations was wrong

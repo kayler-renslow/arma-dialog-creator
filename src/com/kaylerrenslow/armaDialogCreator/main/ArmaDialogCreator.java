@@ -1,6 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
+import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -11,6 +14,7 @@ import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 
@@ -27,6 +31,15 @@ public final class ArmaDialogCreator extends Application {
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time.
 	 */
 	public static void main(String[] args) {
+		System.out.println(ExpressionInterpreter.getInstance().evaluate("3 * (3 * 1 + 1*3)", new Env() {
+			@Override
+			public @Nullable Value getValue(String identifier) {
+				return new Value.NumVal(54);
+			}
+		}));
+		if (true) {
+			return;
+		}
 		if (INSTANCE != null) {
 			getPrimaryStage().requestFocus();
 			return;

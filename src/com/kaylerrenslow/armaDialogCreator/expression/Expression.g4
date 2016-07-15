@@ -1,18 +1,20 @@
 grammar Expression;
 
 expression returns [AST.Expr ast]:
-    la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
-    | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
-    | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}
-    | lf=expression FSlash rf=expression {$ast = new AST.DivExpr($lf.ast, $rf.ast);}
-    | lu=unary_expression {$ast = $lu.ast;}
+    lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
+    | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}
+    | lf=expression FSlash rf=expression {$ast = new AST.DivExpr($lf.ast, $rf.ast);} //don't mess with order of arguments because of order of operations
+    | la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
+    | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
     | ll=literal_expression {$ast = $ll.ast;}
     ;
 
 unary_expression returns [AST.UnaryExpr ast]:
-    Plus ep=expression {$ast = new AST.UnaryExpr(true, $ep.ast);}
-    Minus em=expression {$ast = new AST.UnaryExpr(false, $em.ast);}
+    Plus ep=paren_expression {$ast = new AST.UnaryExpr(true, $ep.ast);}
+    | Plus ep1=literal_expression {$ast = new AST.UnaryExpr(true, $ep1.ast);}
+    | Minus em=paren_expression {$ast = new AST.UnaryExpr(false, $em.ast);}
+    | Minus em1=literal_expression {$ast = new AST.UnaryExpr(false, $em1.ast);}
     ;
 
 paren_expression returns [AST.ParenExpr ast]:
@@ -50,7 +52,7 @@ DecSignificand : '.' Digits | Digits '.' DIGIT+;
 DecExponent : (DecSignificand | IntegerLiteral) [Ee] [+-]? DIGIT*;
 
 HexLiteral : '0' [xX] '0'* HexDigits ;
-HexDigits  : {getText().length() >= 1 && getText().length() <= 8}? [0-9a-fA-F]; //allow between 1 and 8 hex digits
+HexDigits  : [0-9a-fA-F]+; //allow between 1 and 8 hex digits
 
 Letter :   [a-zA-Z$_]
     |   ~[\u0000-\u00FF\uD800-\uDBFF]
