@@ -1,5 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
+import com.kaylerrenslow.armaDialogCreator.control.SVDouble;
+import com.kaylerrenslow.armaDialogCreator.control.SVInteger;
+import com.kaylerrenslow.armaDialogCreator.control.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
@@ -11,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class InputFieldValueEditor<V extends SerializableValue> implements ValueEditor<V> {
+public abstract class InputFieldValueEditor<V extends SerializableValue> implements ValueEditor<V> {
 	protected final InputField<? extends InputFieldDataChecker, V> inputField;
 	private final StackPane masterPane;
 	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
@@ -49,5 +52,23 @@ public class InputFieldValueEditor<V extends SerializableValue> implements Value
 	@Override
 	public InputField<ArmaStringChecker, String> getOverrideTextField() {
 		return overrideField;
+	}
+
+	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{
+		public IntegerEditor() {
+			super(new SVIntegerChecker());
+		}
+	}
+
+	public static class DoubleEditor extends InputFieldValueEditor<SVDouble>{
+		public DoubleEditor() {
+			super(new SVDoubleChecker());
+		}
+	}
+
+	public static class ArmaStringEditor extends InputFieldValueEditor<SVString>{
+		public ArmaStringEditor() {
+			super(new SVArmaStringChecker());
+		}
 	}
 }

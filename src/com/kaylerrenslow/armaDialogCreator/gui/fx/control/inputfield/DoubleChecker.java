@@ -1,31 +1,31 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
+import com.kaylerrenslow.armaDialogCreator.main.FXControlLang;
+import org.jetbrains.annotations.NotNull;
+
 /**
  @author Kayler
  Checker for Doubles
  Created on 05/31/2016. */
 public class DoubleChecker implements InputFieldDataChecker<Double> {
 	@Override
-	public boolean validData(String data) {
-		if (data == null) {
-			return false;
-		}
+	public String validData(@NotNull String data) {
 		try {
 			Double.parseDouble(data);
-			return true;
+			return null;
 		} catch (NumberFormatException e) {
-			return false;
+			return FXControlLang.InputField.DataCheckers.Double.NOT_A_NUMBER;
 		}
 	}
 
 	@Override
-	public Double parse(String data) {
+	public Double parse(@NotNull String data) {
 		return Double.parseDouble(data);
 	}
 
 	@Override
 	public String getTypeName() {
-		return "Floating Point Number";
+		return FXControlLang.InputField.DataCheckers.Double.TYPE_NAME;
 	}
 
 	@Override

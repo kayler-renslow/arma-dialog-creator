@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IntegerChecker;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -13,13 +14,17 @@ public class SVIntegerChecker implements InputFieldDataChecker<SVInteger> {
 	private static final IntegerChecker checker = new IntegerChecker();
 
 	@Override
-	public boolean validData(String data) {
+	public String validData(@NotNull String data) {
 		return checker.validData(data);
 	}
 
 	@Override
-	public SVInteger parse(String data) {
-		return new SVInteger(checker.parse(data));
+	public SVInteger parse(@NotNull String data) {
+		Integer i = checker.parse(data);
+		if(i == null){
+			throw new IllegalStateException("returned value shouldn't be null");
+		}
+		return new SVInteger(i);
 	}
 
 	@Override

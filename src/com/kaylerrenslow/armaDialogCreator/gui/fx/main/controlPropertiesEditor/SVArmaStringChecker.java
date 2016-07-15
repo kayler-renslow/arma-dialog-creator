@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.SVString;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -13,12 +14,12 @@ public class SVArmaStringChecker implements InputFieldDataChecker<SVString> {
 	private static final ArmaStringChecker checker = new ArmaStringChecker();
 
 	@Override
-	public boolean validData(String data) {
+	public String validData(@NotNull String data) {
 		return checker.validData(data);
 	}
 
 	@Override
-	public SVString parse(String data) {
+	public SVString parse(@NotNull String data) {
 		return new SVString(data);
 	}
 

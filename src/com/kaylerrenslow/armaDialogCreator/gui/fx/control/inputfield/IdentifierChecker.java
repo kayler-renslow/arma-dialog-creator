@@ -1,5 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
+import com.kaylerrenslow.armaDialogCreator.main.FXControlLang;
+import org.jetbrains.annotations.NotNull;
+
 /**
  @author Kayler
  A data checker for Identifiers (regex: letter letterOrDigit*). The input also can not be empty
@@ -7,18 +10,22 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
  */
 public class IdentifierChecker implements InputFieldDataChecker<String> {
 	@Override
-	public boolean validData(String data) {
-		return data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
+	public String validData(@NotNull String data) {
+		boolean match = data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
+		if(match){
+			return null;
+		}
+		return FXControlLang.InputField.DataCheckers.Identifier.NOT_IDENTIFIER;
 	}
 
 	@Override
-	public String parse(String data) {
+	public String parse(@NotNull String data) {
 		return data;
 	}
 
 	@Override
 	public String getTypeName() {
-		return "Identifier";
+		return FXControlLang.InputField.DataCheckers.Identifier.TYPE_NAME;
 	}
 
 	@Override

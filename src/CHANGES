@@ -1,6 +1,6 @@
 ADDED:
-    test cases for expression evaluator
-CHANGED:
     none
+CHANGED:
+    for InputField: added popup to show why data is invalid
 FIXED:
-    expression evaluator: order of operations was wrong
+    none

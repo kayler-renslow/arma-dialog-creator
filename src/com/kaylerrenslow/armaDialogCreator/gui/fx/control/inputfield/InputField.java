@@ -5,15 +5,17 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
-import javafx.scene.control.Button;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.stage.Popup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,16 +25,19 @@ import org.jetbrains.annotations.Nullable;
  Created on 05/31/2016. */
 public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
-	private final T fieldData;
-	private boolean valid = true;
-	private ValueObserver<V> observer = new ValueObserver<>(null);
-	private TextField textField = new TextField();
+	private final T dataChecker;
+	private final ValueObserver<V> observer = new ValueObserver<>(null);
+	private final TextField textField = new TextField();
+	private final Button button = new Button();
+	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
+
+	private boolean valid = false;
 	private boolean buttonState = true;
-	private Button button = new Button();
+	private String errMsg;
 
 	/** Creates a new InputField (TextField with additional features). The prompt text will be set to whatever fieldDataChecker.getTypeName() returns */
 	public InputField(@NotNull T fieldDataChecker) {
-		this.fieldData = fieldDataChecker;
+		this.dataChecker = fieldDataChecker;
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
@@ -92,19 +97,16 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	/** Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from IInputFieldDataChecker.parse(String data). If no text was inputted, will return null. */
 	@Nullable
 	public V getValue() {
-		if (getText() == null) {
+		if (!dataChecker.allowEmptyData() && getText().length() == 0) {
 			return null;
 		}
-		return fieldData.parse(this.getText());
+		return dataChecker.parse(this.getText());
 	}
 
 	/** Convert text into type V */
 	@Nullable
 	private V getValue(String text) {
-		if (getText() == null) {
-			return null;
-		}
-		return fieldData.parse(text);
+		return dataChecker.parse(text);
 	}
 
 	/** Return true if the data inside the text field is valid, false otherwise */
@@ -115,12 +117,13 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 
 	/** Set the value from an object. The text in the control is set to whatever V.toString() (generic type V) returns. If value given is null, will set field to button state */
 	public void setValue(@Nullable V value) {
-		observer.updateValue(value);
-		if (value == null) {
+		String toString = value == null ? "" : value.toString();
+		if (!dataChecker.allowEmptyData() && toString.length() == 0) {
 			clear();
 			return;
 		}
-		this.setText(value.toString());
+		observer.updateValue(value);
+		this.setText(toString);
 		setToButton(false);
 		valid = true;
 		error(false);
@@ -186,13 +189,13 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 	}
 
-	@Nullable
-	/**Get the inputted text, or null if in button state*/
+	/** Get the inputted text, or null if in button state */
+	@NotNull
 	public String getText() {
 		if (buttonState) {
-			return null;
+			return "";
 		}
-		return textField.getText();
+		return textField.getText() == null ? "" : textField.getText();
 	}
 
 	/** Set the prompt text of the text field and the text of the button */
@@ -208,7 +211,8 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	}
 
 	private void checkIfValid(String text) {
-		valid = fieldData.validData(text);
+		errMsg = dataChecker.validData(text);
+		valid = errMsg == null;
 	}
 
 	private void setToButton(boolean toButton) {
@@ -229,9 +233,38 @@ public class InputField<T extends InputFieldDataChecker<V>, V> extends StackPane
 	private void error(boolean e) {
 		if (e) {
 			textField.getStyleClass().add(BAD_FIELD);
+			errorMsgPopup.setMsg(errMsg);
+			errorMsgPopup.showPopup();
 		} else {
 			textField.getStyleClass().removeAll(BAD_FIELD);
+			errorMsgPopup.hide();
 		}
+
 		this.applyCss();
+	}
+
+	private static class ErrorMsgPopup extends Popup {
+		private final InputField inputField;
+		private Label lblMsg = new Label();
+
+		public ErrorMsgPopup(InputField inputField) {
+			this.inputField = inputField;
+			StackPane stackPane = new StackPane(lblMsg);
+			stackPane.setPadding(new Insets(5));
+			stackPane.setAlignment(Pos.BOTTOM_CENTER);
+			stackPane.setStyle("-fx-background-color:red;");
+			lblMsg.setTextFill(Color.WHITE);
+
+			getContent().add(stackPane);
+		}
+
+		public void setMsg(@NotNull String msg) {
+			this.lblMsg.setText(msg);
+		}
+
+		public void showPopup() {
+			Point2D p = inputField.localToScreen(0, -inputField.getHeight());
+			show(inputField, p.getX(), p.getY());
+		}
 	}
 }

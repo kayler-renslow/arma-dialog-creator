@@ -96,8 +96,12 @@ public interface Lang {
 			String POPUP_TITLE = getPopupWindowTitle("New Control Class");
 		}
 
-		interface NewMacro {
+		interface MacroNew {
 			String POPUP_TITLE = "Create New Macro";
+		}
+
+		interface MacroEdit {
+			String POPUP_TITLE = "Edit a Macro";
 			String MACRO_KEY = "Key:";
 			String MACRO_TYPE = "Type:";
 			String MACRO_VALUE = "Value:";

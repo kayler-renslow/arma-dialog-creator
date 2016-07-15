@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class Macro<T extends SerializableValue> {
 
 	private final String key;
+	private final ControlProperty.PropertyType propertyType;
 	protected ValueObserver<T> valueObserver;
 	protected String comment;
 
@@ -20,9 +21,10 @@ public class Macro<T extends SerializableValue> {
 	 @param key the key (prefered to be all caps)
 	 @param value the value (Object.toString() will be used to get end result)
 	 */
-	public Macro(@NotNull String key, @NotNull T value) {
+	public Macro(@NotNull String key, @NotNull T value, @NotNull ControlProperty.PropertyType propertyType) {
 		this.key = key;
 		this.valueObserver = new ValueObserver<>(value);
+		this.propertyType = propertyType;
 	}
 
 	/** Get the key */
@@ -59,5 +61,9 @@ public class Macro<T extends SerializableValue> {
 	@Override
 	public String toString() {
 		return key;
+	}
+
+	public ControlProperty.PropertyType getPropertyType() {
+		return propertyType;
 	}
 }

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.SVDouble;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -12,13 +13,17 @@ public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
 	private static final DoubleChecker checker = new DoubleChecker();
 
 	@Override
-	public boolean validData(String data) {
+	public String validData(@NotNull String data) {
 		return checker.validData(data);
 	}
 
 	@Override
-	public SVDouble parse(String data) {
-		return new SVDouble(checker.parse(data));
+	public SVDouble parse(@NotNull String data) {
+		Double d = checker.parse(data);
+		if(d == null){
+			throw new IllegalStateException("returned value shouldn't be null");
+		}
+		return new SVDouble(d);
 	}
 
 	@Override

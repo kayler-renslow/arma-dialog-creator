@@ -12,6 +12,44 @@ public class ExpressionInterpreter {
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
 
+	private ExpressionInterpreter() {
+	}
+
+	public static ExpressionInterpreter getInstance() {
+		return INSTANCE;
+	}
+
+	public Value evaluate(String s, Env env) {
+		ExpressionLexer l = getLexer(s);
+		ExpressionParser p = getParser(new CommonTokenStream(l));
+
+		//prevent ANTLR printing to the console when the expression is invalid
+		l.getErrorListeners().clear();
+		p.getErrorListeners().clear();
+
+		p.addErrorListener(ErrorListener.INSTANCE);
+		p.setErrorHandler(ErrorStrategy.INSTANCE);
+		l.addErrorListener(ErrorListener.INSTANCE);
+
+		AST.Expr e;
+		try{
+			e = p.expression().ast;
+		}catch (Exception ex){
+			return null;
+		}
+		return evaluator.evaluate(e, env);
+	}
+
+	private ExpressionParser getParser(CommonTokenStream stream) {
+		return new ExpressionParser(stream);
+	}
+
+	@NotNull
+	private ExpressionLexer getLexer(String s) {
+		return new ExpressionLexer(new ANTLRInputStream(s));
+	}
+
+
 	private static class ErrorStrategy extends DefaultErrorStrategy {
 
 		public static final ANTLRErrorStrategy INSTANCE = new ErrorStrategy();
@@ -50,40 +88,4 @@ public class ExpressionInterpreter {
 
 	}
 
-	private ExpressionInterpreter() {
-	}
-
-	public static ExpressionInterpreter getInstance() {
-		return INSTANCE;
-	}
-
-	public Value evaluate(String s, Env env) {
-		ExpressionLexer l = getLexer(s);
-		ExpressionParser p = getParser(new CommonTokenStream(l));
-
-		//prevent ANTLR printing to the console when the expression is invalid
-		l.getErrorListeners().clear();
-		p.getErrorListeners().clear();
-
-		p.addErrorListener(ErrorListener.INSTANCE);
-		p.setErrorHandler(ErrorStrategy.INSTANCE);
-		l.addErrorListener(ErrorListener.INSTANCE);
-
-		AST.Expr e;
-		try{
-			e = p.expression().ast;
-		}catch (Exception ex){
-			return null;
-		}
-		return evaluator.evaluate(e, env);
-	}
-
-	private ExpressionParser getParser(CommonTokenStream stream) {
-		return new ExpressionParser(stream);
-	}
-
-	@NotNull
-	private ExpressionLexer getLexer(String s) {
-		return new ExpressionLexer(new ANTLRInputStream(s));
-	}
 }

@@ -26,13 +26,13 @@ public interface ValueEditor<V extends SerializableValue> {
 	static ValueEditor getEditor(ControlProperty.PropertyType propertyType) {
 		switch (propertyType) {
 			case INT:
-				return new InputFieldValueEditor<>(new SVIntegerChecker());
+				return new InputFieldValueEditor.IntegerEditor();
 			case FLOAT:
-				return new InputFieldValueEditor<>(new SVDoubleChecker());
+				return new InputFieldValueEditor.DoubleEditor();
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.DoubleEditor();
 			case ARRAY:
 				return new ArrayValueEditor(2);
 			case COLOR:
@@ -42,18 +42,19 @@ public interface ValueEditor<V extends SerializableValue> {
 			case FONT:
 				return new FontValueEditor();
 			case FILE_NAME:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.ArmaStringEditor();
 			case IMAGE:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.ArmaStringEditor();
 			case HEX_COLOR_STRING:
 				return new HexColorValueEditor();
 			case TEXTURE:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.ArmaStringEditor();
 			case EVENT:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.ArmaStringEditor();
 			case SQF:
-				return new InputFieldValueEditor<>(new SVArmaStringChecker());
+				return new InputFieldValueEditor.ArmaStringEditor();
 		}
 		throw new IllegalStateException("Should have made a match");
 	}
+
 }
