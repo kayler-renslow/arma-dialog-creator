@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
@@ -32,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
  Base class for a popup that manipulates/creates macro data. Extend this class to provide more functionality.
  Created on 07/15/2016. */
 public abstract class MacroEditBasePopup extends StagePopup<VBox> {
+	private final Env env;
 	private ValueEditor editor;
 
 	private StackPane stackPaneEditor = new StackPane();
@@ -42,8 +44,14 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 
 	private final Label lblNoTypeChosen = new Label(Lang.Popups.MacroEdit.NO_TYPE_CHOSEN);
 
-	public MacroEditBasePopup() {
+	/**
+	 Creates a Macro editor.
+
+	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
+	 */
+	public MacroEditBasePopup(Env env) {
 		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Popups.MacroEdit.POPUP_TITLE);
+		this.env = env;
 		myRootElement.setPadding(new Insets(10));
 		stackPaneEditor.minWidth(0d);
 		stackPaneEditor.setAlignment(Pos.CENTER_LEFT);
@@ -74,7 +82,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		cbMacroType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<PropertyType>() {
 			@Override
 			public void changed(ObservableValue<? extends PropertyType> observable, PropertyType oldValue, PropertyType selected) {
-				editor = ValueEditor.getEditor(selected);
+				editor = ValueEditor.getEditor(selected, env);
 				stackPaneEditor.getChildren().clear();
 				stackPaneEditor.getChildren().add(editor.getRootNode());
 			}
@@ -101,7 +109,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		return new HBox(5, lbl, graphic);
 	}
 
-	/**Set the editor to the given macro*/
+	/** Set the editor to the given macro */
 	protected void setToMacro(@Nullable Macro m) {
 		if (m == null) {
 			inMacroKey.clear();
@@ -112,11 +120,11 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 			return;
 		}
 		inMacroKey.setValue(m.getKey());
-		editor = ValueEditor.getEditor(m.getPropertyType());
+		editor = ValueEditor.getEditor(m.getPropertyType(), env);
 		cbMacroType.setValue(m.getPropertyType());
 	}
 
-	/** Return a new Macro instance with the current settings.*/
+	/** Return a new Macro instance with the current settings. */
 	@Nullable
 	protected Macro<? extends SerializableValue> getMacro() {
 		if (editor == null || editor.getValue() == null || inMacroKey.getValue() == null || cbMacroType.getValue() == null) {

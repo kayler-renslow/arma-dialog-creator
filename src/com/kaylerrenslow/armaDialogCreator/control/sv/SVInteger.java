@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /** A generic wrapper implementation for an int. */
-public final class SVInteger implements SerializableValue {
+public final class SVInteger implements SVNumber {
 	private final String[] arr;
 	private int i;
 
@@ -32,5 +32,10 @@ public final class SVInteger implements SerializableValue {
 	@Override
 	public String toString() {
 		return arr[0];
+	}
+
+	@Override
+	public double getNumber() {
+		return i;
 	}
 }

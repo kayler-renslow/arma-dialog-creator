@@ -13,5 +13,4 @@ public interface SerializableValue {
 
 	/** Return the instance as a deep copy */
 	SerializableValue deepCopy();
-
 }

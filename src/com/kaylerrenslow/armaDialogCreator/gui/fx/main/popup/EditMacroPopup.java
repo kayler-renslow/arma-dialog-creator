@@ -4,7 +4,6 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 
-
 /**
  @author Kayler
  Popup for editing an existing macro.
@@ -14,6 +13,7 @@ public class EditMacroPopup extends MacroEditBasePopup {
 	private final Macro editing;
 
 	public EditMacroPopup(@NotNull Macro toEdit) {
+		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 		this.editing = toEdit;
 		setToMacro(editing);
 	}

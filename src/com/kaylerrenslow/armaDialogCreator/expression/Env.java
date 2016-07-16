@@ -3,10 +3,11 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/14/2016.
- */
-public abstract class Env {
-	/** Returns the value for the given identifier. Can be null. */
+ @author Kayler
+ Environment for evaluating identifiers for {@link ExpressionInterpreter}
+ Created on 07/14/2016. */
+public interface Env {
+	/** Returns the value for the given identifier. If returns null, means identifier couldn't be resolved to a value. */
 	@Nullable
-	public abstract Value getValue(String identifier);
+	Value getValue(String identifier);
 }

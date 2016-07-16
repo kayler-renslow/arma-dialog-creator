@@ -12,6 +12,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 public class NewMacroPopup extends MacroEditBasePopup {
 
 	public NewMacroPopup() {
+		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 		myStage.setTitle(Lang.Popups.MacroNew.POPUP_TITLE);
 	}
 

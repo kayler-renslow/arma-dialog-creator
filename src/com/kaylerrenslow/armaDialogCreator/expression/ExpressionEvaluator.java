@@ -1,19 +1,24 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
-import org.jetbrains.annotations.Nullable;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/14/2016.
  */
 class ExpressionEvaluator implements AST.Visitor<Value> {
 
-	/** Returns the value for the given expression in the given environment. If the expression is invalid, will return null. */
-	@Nullable
-	public Value evaluate(AST.Expr e, Env env) {
+	/**
+	 Returns the value for the given expression in the given environment.
+
+	 @throws ExpressionEvaluationException If the expression is invalid
+	 */
+	@NotNull
+	public Value evaluate(AST.Expr e, Env env) throws ExpressionEvaluationException {
 		try {
 			return (Value) e.accept(this, env);
 		} catch (Exception ex) {
-			return null;
+			throw new ExpressionEvaluationException(ex.getMessage());
 		}
 	}
 
@@ -60,8 +65,12 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(AST.IdentifierExpr expr, Env env) {
-		return env.getValue(expr.getIdentifier());
+	public Value visit(AST.IdentifierExpr expr, Env env) throws ExpressionEvaluationException {
+		Value v = env.getValue(expr.getIdentifier());
+		if (v == null) {
+			throw new ExpressionEvaluationException(String.format(Lang.Expression.IDENTIFIER_NOT_SET_F, expr.getIdentifier()));
+		}
+		return v;
 	}
 
 	@Override

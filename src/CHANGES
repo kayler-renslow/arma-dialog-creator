@@ -1,8 +1,6 @@
 ADDED:
-    none
+    SafeZone position expressions for x,y,w,h in ArmaControl
 CHANGED:
-    removed ViewPortComponent class since everything will be a safeZone value anyways
-    removed viewport snapping for same reason above ^
-    instead of having ControlProperty value be a String[], just made it be a SerializableValue. This makes more sense honestly
+    none
 FIXED:
     none

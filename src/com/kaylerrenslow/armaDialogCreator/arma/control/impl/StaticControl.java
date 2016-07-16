@@ -9,6 +9,8 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,8 +55,8 @@ public class StaticControl extends ArmaControl {
 		}
 	};
 
-	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution) {
-		super(name, SPEC_PROVIDER, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class);
+	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
+		super(name, SPEC_PROVIDER, idc, ControlType.STATIC, style, x, y, width, height, resolution, StaticRenderer.class, env);
 		backgroundColorProperty = findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 		backgroundColorProperty.setDefaultValue(true, new AColor(renderer.getBackgroundColor()));
 		colorTextProperty = findRequiredProperty(ControlPropertyLookup.COLOR_TEXT);
@@ -71,7 +73,7 @@ public class StaticControl extends ArmaControl {
 		StaticRenderer renderer = getStaticRenderer();
 		renderer.getBackgroundColorObserver().updateValue((AColor) backgroundColorProperty.getValue());
 		renderer.setText(textProperty.getValue().toString().replaceAll("\"\"", "\""));
-		renderer.setTextColor(((AColor)colorTextProperty.getValue()).toJavaFXColor());
+		renderer.setTextColor(((AColor) colorTextProperty.getValue()).toJavaFXColor());
 	}
 
 	private StaticRenderer getStaticRenderer() {

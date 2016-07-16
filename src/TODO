@@ -18,10 +18,13 @@ GENERAL:
 >when choosing a macro in control property editor, there should be a way to take off the macro (use controlProperty.setToMacro(null))
 >for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
 >reating macro string doesn't display on control
+>instead of passing around resolution and Env everywhere, there should just be one class that has all that information
 
 
 BUGS:
 -----------------------------------
+>ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
+>InputField: when dragging window, the InputField's error popup window doesn't move
 >select many things in tree view and drag into folder
 >have check box for "is background control" in control properties popup
 >!!!!!!!!!!!!fix adding controls to tree view resulting in wrong render order or an exception

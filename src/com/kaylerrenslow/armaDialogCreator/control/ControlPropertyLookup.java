@@ -9,22 +9,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- Created by Kayler on 05/22/2016.
+ @author Kayler
+ A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
+ Created on 05/22/2016.
  */
 public enum ControlPropertyLookup {
 	IDC(0, "idc", PropertyType.INT, "Control id, or -1 if doesn't matter."),
-	X(1, "x", PropertyType.FLOAT, "X position."),
-	Y(2, "y", PropertyType.FLOAT, "Y position."),
-	W(3, "w", PropertyType.FLOAT, "Width of control."),
-	H(4, "h", PropertyType.FLOAT, "Height of control."),
+	X(1, "x", PropertyType.EXP, "X position."),
+	Y(2, "y", PropertyType.EXP, "Y position."),
+	W(3, "w", PropertyType.EXP, "Width of control."),
+	H(4, "h", PropertyType.EXP, "Height of control."),
 	TYPE(5, "type", PropertyType.INT, "Type of the control."),
 	STYLE(6, "style", PropertyType.INT, "Style of the control."),
 	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new ControlPropertyOption("Read and Write", "0", "Default case where properties can still be added or overridden."), new ControlPropertyOption("Read and Create", "1", "Only allows creating new properties."), new ControlPropertyOption("Read Only", "2", "Does not allow to do anything in deriving classes."), new ControlPropertyOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")),
 
 	/*Common*/
-	/** moving: boolean. Set whether control can be dragged */
 	MOVING(8, "moving", PropertyType.BOOLEAN, "Whether or not this control can be dragged."),
-	/** sizeEx: float. Set font size */
 	SIZE_EX(9, "sizeEx", PropertyType.FLOAT, "Font size of text."),
 	FONT(10, "font", PropertyType.FONT, "Font for text."),
 	COLOR_TEXT(11, "colorText", PropertyType.COLOR, "Color of text."),

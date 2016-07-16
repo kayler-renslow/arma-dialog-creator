@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import javafx.scene.Node;
@@ -23,12 +24,20 @@ public interface ValueEditor<V extends SerializableValue> {
 
 	InputField<ArmaStringChecker, String> getOverrideTextField();
 
-	static ValueEditor getEditor(PropertyType propertyType) {
+	/**
+	 Get a new ValueEditor instance associated with the given property type.
+
+	 @param propertyType type of property to get editor for
+	 @param env used only for {@link InputFieldValueEditor.ExpressionEditor}. If propertyType != {@link PropertyType#EXP}, this parameter is ignored.
+	 */
+	static ValueEditor getEditor(PropertyType propertyType, Env env) {
 		switch (propertyType) {
 			case INT:
 				return new InputFieldValueEditor.IntegerEditor();
 			case FLOAT:
 				return new InputFieldValueEditor.DoubleEditor();
+			case EXP:
+				return new InputFieldValueEditor.ExpressionEditor(env);
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:

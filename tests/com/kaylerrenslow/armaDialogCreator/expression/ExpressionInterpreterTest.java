@@ -13,7 +13,7 @@ public class ExpressionInterpreterTest {
 	/** use this variable for identifier/variable tests */
 	private static final int a = 51;
 
-	private static class MyEnv extends Env {
+	private static class MyEnv implements Env {
 
 		@Override
 		public @Nullable Value getValue(String identifier) {
@@ -212,22 +212,35 @@ public class ExpressionInterpreterTest {
 	@Test
 	public void evaluate_error() throws Exception {
 		String exp = "(";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", null, ret);
+		try {
+			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			assertEquals("Should have failed", false, true);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals("Succeed", true, true);
+		}
+
 	}
 
 	@Test
 	public void evaluate_error1() throws Exception {
 		String exp = "()";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", null, ret);
+		try {
+			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			assertEquals("Should have failed", false, true);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals("Succeed", true, true);
+		}
 	}
 
 	@Test
 	public void evaluate_error2() throws Exception {
 		String exp = "..1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", null, ret);
+		try {
+			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			assertEquals("Should have failed", false, true);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals("Succeed", true, true);
+		}
 	}
 
 

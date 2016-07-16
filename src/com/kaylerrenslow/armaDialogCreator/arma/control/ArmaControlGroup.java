@@ -4,6 +4,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -49,12 +51,12 @@ public class ArmaControlGroup extends ArmaControl {
 		});
 	}
 
-	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer) {
-		super(name, SPEC_PROVIDER, resolution, renderer);
+	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @NotNull Env env) {
+		super(name, SPEC_PROVIDER, resolution, renderer, env);
 	}
 
-	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, double x, double y, double width, double height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer) {
-		super(name, SPEC_PROVIDER, idc, type, style, x, y, width, height, resolution, renderer);
+	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @NotNull Env env) {
+		super(name, SPEC_PROVIDER, idc, type, style, x, y, width, height, resolution, renderer, env);
 	}
 
 	/** Get all controls inside the group */

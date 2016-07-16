@@ -6,8 +6,11 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 07/14/2016.
- */
+ @author Kayler
+ Evaluates simple mathematical expressions.
+ Order of operations is supported as well as identifier lookup.
+ <p>
+ Created on 07/14/2016. */
 public class ExpressionInterpreter {
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
@@ -15,12 +18,22 @@ public class ExpressionInterpreter {
 	private ExpressionInterpreter() {
 	}
 
+	/** Get the only instance of the interpreter */
 	public static ExpressionInterpreter getInstance() {
 		return INSTANCE;
 	}
 
-	public Value evaluate(String s, Env env) {
-		ExpressionLexer l = getLexer(s);
+	/**
+	 Evaluate the given expression String in the given environment.
+
+	 @param exp expression text to evaluate
+	 @param env environment that holds information on all identifiers
+	 @return resulted {@link Value} instance
+	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
+	 */
+	@NotNull
+	public Value evaluate(String exp, Env env) throws ExpressionEvaluationException {
+		ExpressionLexer l = getLexer(exp);
 		ExpressionParser p = getParser(new CommonTokenStream(l));
 
 		//prevent ANTLR printing to the console when the expression is invalid
@@ -32,14 +45,15 @@ public class ExpressionInterpreter {
 		l.addErrorListener(ErrorListener.INSTANCE);
 
 		AST.Expr e;
-		try{
+		try {
 			e = p.expression().ast;
-		}catch (Exception ex){
-			return null;
+		} catch (Exception ex) {
+			throw new ExpressionEvaluationException(ex.getMessage());
 		}
 		return evaluator.evaluate(e, env);
 	}
 
+	@NotNull
 	private ExpressionParser getParser(CommonTokenStream stream) {
 		return new ExpressionParser(stream);
 	}
@@ -62,7 +76,7 @@ public class ExpressionInterpreter {
 		@Override
 		public void reportInputMismatch(Parser recognizer, InputMismatchException e) throws RecognitionException {
 			String msg = "mismatched input " + getTokenErrorDisplay(e.getOffendingToken());
-			msg += " expecting one of "+e.getExpectedTokens().toString(recognizer.getTokenNames());
+			msg += " expecting one of " + e.getExpectedTokens().toString(recognizer.getTokenNames());
 			RecognitionException ex = new RecognitionException(msg, recognizer, recognizer.getInputStream(), recognizer.getContext());
 			ex.initCause(e);
 			throw ex;
@@ -73,7 +87,7 @@ public class ExpressionInterpreter {
 			beginErrorCondition(recognizer);
 			Token t = recognizer.getCurrentToken();
 			IntervalSet expecting = getExpectedTokens(recognizer);
-			String msg = "missing "+expecting.toString(recognizer.getTokenNames()) + " at " + getTokenErrorDisplay(t);
+			String msg = "missing " + expecting.toString(recognizer.getTokenNames()) + " at " + getTokenErrorDisplay(t);
 			throw new RecognitionException(msg, recognizer, recognizer.getInputStream(), recognizer.getContext());
 		}
 	}
@@ -81,6 +95,7 @@ public class ExpressionInterpreter {
 	private static class ErrorListener extends BaseErrorListener {
 
 		public static final ErrorListener INSTANCE = new ErrorListener();
+
 		@Override
 		public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) throws ParseCancellationException {
 			throw new ParseCancellationException("line " + line + ":" + charPositionInLine + " " + msg);

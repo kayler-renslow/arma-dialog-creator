@@ -9,6 +9,10 @@ public interface Lang {
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 	}
 
+	interface Expression{
+		String IDENTIFIER_NOT_SET_F = "Identifier '%s' has no value.";
+	}
+
 	interface CanvasControls {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
@@ -84,6 +88,7 @@ public interface Lang {
 			String IS_BACKGROUND_CONTROL = "Background Control";
 			String INT = "Integer";
 			String FLOAT = "Floating Point Number";
+			String EXP = "Expression.";
 		}
 
 		interface MissingControlPropertiesConfig {
@@ -154,6 +159,7 @@ public interface Lang {
 	interface PropertyType {
 		String INT = "Integer";
 		String FLOAT = "Floating Point Number";
+		String EXP = "Expression";
 		String BOOLEAN = "Boolean";
 		String STRING = "String";
 		String ARRAY = "Array";

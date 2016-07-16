@@ -38,6 +38,7 @@ public class ControlProperty {
 	private boolean dataOverride = false;
 	private SerializableValue cachedValue;
 	private @Nullable Macro myMacro;
+	private boolean allowExpressionEvaluating = false;
 
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
@@ -120,7 +121,7 @@ public class ControlProperty {
 	}
 
 	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
-	public boolean isType(PropertyType type) {
+	public boolean isPropertyType(PropertyType type) {
 		return this.type == type;
 	}
 
@@ -139,7 +140,6 @@ public class ControlProperty {
 	public SerializableValue getDefaultValue() {
 		return defaultValue;
 	}
-
 
 	/**
 	 Set the default value.
@@ -192,6 +192,9 @@ public class ControlProperty {
 			if (this.myMacro != null) {
 				myMacro.getValueObserver().removeListener(macroListener);
 			}
+			if (cachedValue == null) {
+				return;
+			}
 			valueObserver.updateValue(cachedValue);
 		} else {
 			cachedValue = valueObserver.getValue().deepCopy();
@@ -213,6 +216,9 @@ public class ControlProperty {
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger}
 	 */
 	public int getIntValue() {
+		if (getValue() == null) {
+			throw new NullPointerException("value is null");
+		}
 		if (getValue() instanceof SVInteger) {
 			return ((SVInteger) getValue()).getInt();
 		}
@@ -225,6 +231,9 @@ public class ControlProperty {
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble}
 	 */
 	public double getFloatValue() {
+		if (getValue() == null) {
+			throw new NullPointerException("value is null");
+		}
 		if (getValue() instanceof SVDouble) {
 			return ((SVDouble) getValue()).getDouble();
 		}
@@ -237,6 +246,9 @@ public class ControlProperty {
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVBoolean}
 	 */
 	public boolean getBooleanValue() {
+		if (getValue() == null) {
+			throw new NullPointerException("value is null");
+		}
 		if (getValue() instanceof SVBoolean) {
 			return ((SVBoolean) getValue()).isTrue();
 		}
@@ -245,6 +257,9 @@ public class ControlProperty {
 
 	/** Return a String with all the value(s) formatted for header export. If there is more than 1 value in this control property, the curly braces ('{','}') will be prepended and appended before the values */
 	public String getValuesForExport() {
+		if (getValue() == null) {
+			throw new NullPointerException("value is null");
+		}
 		String[] arr = getValue().getAsStringArray();
 		if (arr.length == 1) {
 			if (type.exportHasQuotes) {
@@ -296,47 +311,6 @@ public class ControlProperty {
 		valueObserver.updateValue(new SVString(v));
 	}
 
-	/** Set the value without the {@link ValueObserver} (returned from {@link #getValueObserver()}) notifying value listeners */
-	public void setValueSilent(SerializableValue v) {
-		valueObserver.updateValueSilent(v);
-	}
-
-	/**
-	 Set the first value to int. This will just wrap the int in {@link SVInteger}
-
-	 @see #setValueSilent(SerializableValue)
-	 */
-	public void setValueSilent(int v) {
-		valueObserver.updateValueSilent(new SVInteger(v));
-	}
-
-	/**
-	 Set the first value to int. This will just wrap the int in {@link SVDouble}
-
-	 @see #setValueSilent(SerializableValue)
-	 */
-	public void setValueSilent(double v) {
-		valueObserver.updateValueSilent(new SVDouble(v));
-	}
-
-	/**
-	 Set the first value to int. This will just wrap the int in {@link SVBoolean}
-
-	 @see #setValueSilent(SerializableValue)
-	 */
-	public void setValueSilent(boolean v) {
-		valueObserver.updateValueSilent(SVBoolean.get(v));
-	}
-
-	/**
-	 Set the first value to String. This will just wrap the String in {@link SVString}
-
-	 @see #setValueSilent(SerializableValue)
-	 */
-	public void setValueSilent(String v) {
-		valueObserver.updateValueSilent(new SVString(v));
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -355,7 +329,7 @@ public class ControlProperty {
 				"name='" + name + '\'' +
 				", type=" + type +
 				", propertyLookup=" + propertyLookup +
-				", value=" + Arrays.toString(getValue().getAsStringArray()) +
+				", value=" + (getValue() != null ? Arrays.toString(getValue().getAsStringArray()) : "null") +
 				'}';
 	}
 }

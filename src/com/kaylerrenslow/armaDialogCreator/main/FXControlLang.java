@@ -29,6 +29,10 @@ public interface FXControlLang {
 				String NOT_INTEGER = "Not an integer.";
 				String TYPE_NAME = "Integer";
 			}
+
+			interface Expression {
+				String TYPE_NAME = "Expression";
+			}
 		}
 	}
 }

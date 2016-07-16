@@ -1,10 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVDouble;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
 import javafx.scene.Node;
@@ -69,6 +68,12 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	public static class ArmaStringEditor extends InputFieldValueEditor<SVString>{
 		public ArmaStringEditor() {
 			super(new SVArmaStringChecker());
+		}
+	}
+
+	public static class ExpressionEditor extends InputFieldValueEditor<Expression> {
+		public ExpressionEditor(Env env) {
+			super(new ExpressionChecker(env));
 		}
 	}
 }

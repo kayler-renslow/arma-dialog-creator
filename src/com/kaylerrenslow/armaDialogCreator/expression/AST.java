@@ -5,23 +5,23 @@ package com.kaylerrenslow.armaDialogCreator.expression;
  */
 interface AST {
 	interface Visitor<T> {
-		T visit(AST.AddExpr expr, Env env);
+		T visit(AST.AddExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.SubExpr expr, Env env);
+		T visit(AST.SubExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.MultExpr expr, Env env);
+		T visit(AST.MultExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.DivExpr expr, Env env);
+		T visit(AST.DivExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(UnaryExpr expr, Env env);
+		T visit(UnaryExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(ParenExpr expr, Env env);
+		T visit(ParenExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(IdentifierExpr expr, Env env);
+		T visit(IdentifierExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(IntegerExpr expr, Env env);
+		T visit(IntegerExpr expr, Env env) throws ExpressionEvaluationException;
 
-		T visit(FloatExpr expr, Env env);
+		T visit(FloatExpr expr, Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {

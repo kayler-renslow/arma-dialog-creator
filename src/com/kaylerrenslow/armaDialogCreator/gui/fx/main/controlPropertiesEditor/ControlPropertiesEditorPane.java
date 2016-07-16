@@ -4,8 +4,10 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -282,6 +284,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 				return new ControlPropertyInputFieldInteger(control, controlProperty, Lang.Popups.ControlPropertiesConfig.INT);
 			case FLOAT:
 				return new ControlPropertyInputFieldDouble(control, controlProperty, Lang.Popups.ControlPropertiesConfig.FLOAT);
+			case EXP:
+				return new ControlPropertyExprInput(control, controlProperty, Lang.Popups.ControlPropertiesConfig.EXP);
 			case BOOLEAN:
 				return new ControlPropertyBooleanChoiceBox(control, controlProperty);
 			case STRING:
@@ -338,7 +342,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		inputField.setTooltip(getTooltip(lookup));
 	}
 
-
 	private interface ControlPropertyInput extends ControlPropertyEditor {
 
 		enum EditMode {
@@ -364,7 +367,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		/** DO NOT USE THIS FOR ARRAY INPUT */
 		static InputField<ArmaStringChecker, String> modifyRawInput(InputField<ArmaStringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
-			if (controlProperty.getPropertyType() == PropertyType.ARRAY) {
+			if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
 				throw new IllegalArgumentException("don't use this method for ARRAY property type");
 			}
 			rawInput.getValueObserver().addValueListener(new ValueListener<String>() {
@@ -498,7 +501,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/**
 	 Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified.
-	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString},
+	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link Expression}
 	 */
 	@SuppressWarnings("unchecked")
 	private static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyInput {
@@ -598,6 +601,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<SVInteger> {
 		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty, String promptText) {
 			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), promptText);
+		}
+	}
+
+	private class ControlPropertyExprInput extends ControlPropertyInputField<Expression>{
+		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty, String promptText) {
+			super(Expression.class, control, controlProperty, new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()), promptText);
 		}
 	}
 
@@ -803,6 +812,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 				inputField.getValueObserver().addValueListener(new ValueListener() {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+						if (svStringArray == null) {
+							//todo
+						}
 						svStringArray.setString(newValue.toString(), index);
 						controlProperty.setValue(svStringArray);
 						if (control != null) {

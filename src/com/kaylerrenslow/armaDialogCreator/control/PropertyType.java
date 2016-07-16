@@ -8,8 +8,10 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 public enum PropertyType {
 	/** Is a integer value. Current implementation is a 32 bit integer (java int) */
 	INT(Lang.PropertyType.INT),
-	/** Is a floating point value. The current implementation uses 32 bit floating point (java double) */
+	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
 	FLOAT(Lang.PropertyType.FLOAT),
+	/** Is an expression */
+	EXP(Lang.PropertyType.EXP),
 	/** Is a boolean (0 for false, 1 for true) */
 	BOOLEAN(Lang.PropertyType.BOOLEAN),
 	/** Is a String */
