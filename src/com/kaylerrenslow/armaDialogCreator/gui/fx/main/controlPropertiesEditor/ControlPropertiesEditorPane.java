@@ -155,9 +155,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	private void setupAccordion(ControlProperty[] requiredProperties, ControlProperty[] optionalProperties, ControlProperty[] eventProperties) {
-		accordion.getPanes().add(getTitledPane("Required", requiredProperties, false));
-		accordion.getPanes().add(getTitledPane("Optional", optionalProperties, true));
-		accordion.getPanes().add(getTitledPane("Events", eventProperties, true));
+		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.REQUIRED, requiredProperties, false));
+		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.OPTIONAL, optionalProperties, true));
+		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.EVENTS, eventProperties, true));
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
 		propertyEditors = new ControlPropertyEditor[propertyDescriptors.size()];
@@ -187,14 +187,19 @@ public class ControlPropertiesEditorPane extends StackPane {
 		pane.setAlignment(Pos.TOP_LEFT);
 		StackPane stackPanePropertyInput = new StackPane();
 
+		ControlPropertyInput propertyInput = getPropertyInputNode(c);
+		propertyInput.disableEditing(c.getPropertyLookup() == ControlPropertyLookup.TYPE);
+
+		if (propertyInput.displayFullWidth()) {
+			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
+		}
+
 		MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
 		MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
 		MenuItem miMacro = new MenuItem(Lang.ControlPropertiesEditorPane.SET_TO_MACRO);
 		MenuItem miOverride = new MenuItem(Lang.ControlPropertiesEditorPane.VALUE_OVERRIDE);//broken. Maybe fix it later. Don't delete this in case you change your mind
 		MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
 
-		ControlPropertyInput propertyInput = getPropertyInputNode(c);
-		propertyInput.disableEditing(c.getPropertyLookup() == ControlPropertyLookup.TYPE);
 		switch (c.getPropertyLookup()) {
 			case TYPE: {
 				for (MenuItem item : menuButton.getItems()) {
@@ -276,7 +281,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private ControlPropertyInput getPropertyInputNode(ControlProperty controlProperty) {
 		ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 		if (lookup.options != null && lookup.options.length > 0) {
-			return new ControlPropertyOption(control, controlProperty);
+			return new ControlPropertyInputOption(control, controlProperty);
 		}
 		PropertyType propertyType = lookup.propertyType;
 		switch (propertyType) {
@@ -359,11 +364,28 @@ public class ControlPropertiesEditorPane extends StackPane {
 			MACRO
 		}
 
+		/**
+		 Updating the edit mode. When this is invoked, the proper new editor should be used.
+		 <ul>
+		 <li>{@link EditMode#DEFAULT} = default editor</li>
+		 <li>{@link EditMode#OVERRIDE} = use an editor that allows for literally any input (use a {@link TextField} for input)</li>
+		 <li>{@link EditMode#MACRO} = setting the ControlProperty's value equal to a {@link Macro}</li>
+		 </ul>
+		 */
 		void setToMode(EditMode mode);
 
 		Node getRootNode();
 
+		/** Get the Class type that */
 		Class<? extends SerializableValue> getMacroClass();
+
+		/**
+		 Return true if the {@link #getRootNode()}'s width should fill the parent's width.
+		 False if the width should be whatever it is initially. By default, will return false.
+		 */
+		default boolean displayFullWidth() {
+			return false;
+		}
 
 		/** DO NOT USE THIS FOR ARRAY INPUT */
 		static InputField<ArmaStringChecker, String> modifyRawInput(InputField<ArmaStringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
@@ -385,14 +407,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	/** Used for when a set amount of options are available (uses radio button group for option selecting) */
-	private static class ControlPropertyOption extends FlowPane implements ControlPropertyInput {
+	private static class ControlPropertyInputOption extends FlowPane implements ControlPropertyInput {
 		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
 		private final InputField<ArmaStringChecker, String> rawInput = new InputField<>(new ArmaStringChecker());
 
-		ControlPropertyOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
 			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
@@ -405,7 +427,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				throw new IllegalStateException("options shouldn't be null");
 			}
 			radioButtons = new ArrayList<>(lookup.options.length);
-			for (com.kaylerrenslow.armaDialogCreator.control.ControlPropertyOption option : lookup.options) {
+			for (ControlPropertyOption option : lookup.options) {
 				if (option == null) {
 					throw new IllegalStateException("option shouldn't be null");
 				}
@@ -444,7 +466,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 						return;
 					}
 					for (Toggle toggle : toggleGroup.getToggles()) {
-						if (toggle.getUserData().equals(controlProperty.getValue())) {
+						if (toggle.getUserData().equals(controlProperty.getValue().toString())) {
 							toggleGroup.selectToggle(toggle);
 							return;
 						}
@@ -543,7 +565,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			if (promptText != null) {
 				inputField.setPromptText(promptText);
 			}
-			HBox.setHgrow(getRootNode(), Priority.ALWAYS);
 		}
 
 		@Override
@@ -584,6 +605,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public Class<? extends SerializableValue> getMacroClass() {
 			return this.macroTypeClass;
 		}
+
+		@Override
+		public boolean displayFullWidth() {
+			return true;
+		}
 	}
 
 	private static class ControlPropertyInputFieldString extends ControlPropertyInputField<SVString> {
@@ -604,7 +630,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	private class ControlPropertyExprInput extends ControlPropertyInputField<Expression>{
+	private class ControlPropertyExprInput extends ControlPropertyInputField<Expression> {
 		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty, String promptText) {
 			super(Expression.class, control, controlProperty, new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()), promptText);
 		}

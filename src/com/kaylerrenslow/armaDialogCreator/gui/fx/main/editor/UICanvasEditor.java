@@ -582,8 +582,8 @@ public class UICanvasEditor extends UICanvas {
 		int dirx = dx < 0 ? -1 : 1; //change in direction for x
 		int diry = dy < 0 ? -1 : 1; //change in direction for y
 
-		int xSnapCount = 0; //how many snaps occurred for x
-		int ySnapCount = 0; //how many snaps occurred for y
+		int xSnapCount; //how many snaps occurred for x
+		int ySnapCount; //how many snaps occurred for y
 		double snapPercentage = keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage();
 		if (!keys.isAltDown()) {
 			int snapX = getSnapPixelsWidth(snapPercentage);

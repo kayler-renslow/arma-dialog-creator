@@ -17,7 +17,7 @@ GENERAL:
 >create documentation for all classes and **well** document it
 >when choosing a macro in control property editor, there should be a way to take off the macro (use controlProperty.setToMacro(null))
 >for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
->reating macro string doesn't display on control
+>creating macro string doesn't display on control
 >instead of passing around resolution and Env everywhere, there should just be one class that has all that information
 
 

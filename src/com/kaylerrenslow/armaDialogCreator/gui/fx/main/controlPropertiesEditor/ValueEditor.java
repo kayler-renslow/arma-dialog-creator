@@ -41,7 +41,8 @@ public interface ValueEditor<V extends SerializableValue> {
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:
-				return new InputFieldValueEditor.DoubleEditor();
+				return new ImageValueEditor();
+				//return new InputFieldValueEditor.DoubleEditor();
 			case ARRAY:
 				return new ArrayValueEditor(2);
 			case COLOR:
@@ -53,7 +54,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case FILE_NAME:
 				return new InputFieldValueEditor.ArmaStringEditor();
 			case IMAGE:
-				return new InputFieldValueEditor.ArmaStringEditor();
+				return new InputFieldValueEditor.ArmaStringEditor(); //TODO ///////////////////////do this when get back from walk/////////////////////
 			case HEX_COLOR_STRING:
 				return new HexColorValueEditor();
 			case TEXTURE:

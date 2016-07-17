@@ -8,9 +8,45 @@ import java.text.DecimalFormat;
  Created on 05/18/2016. */
 public class PositionCalculator {
 
+	/**
+	 Identifier used for expression Strings returned from :
+	 <ul>
+	 <li>{@link #getSafeZoneExpressionX(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionY(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionW(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionH(ArmaResolution, double)}</li>
+	 </ul>
+	 */
 	public static final String SAFE_ZONE_X = "safeZoneX";
+	/**
+	 Identifier used for expression Strings returned from :
+	 <ul>
+	 <li>{@link #getSafeZoneExpressionX(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionY(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionW(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionH(ArmaResolution, double)}</li>
+	 </ul>
+	 */
 	public static final String SAFE_ZONE_Y = "safeZoneY";
+	/**
+	 Identifier used for expression Strings returned from :
+	 <ul>
+	 <li>{@link #getSafeZoneExpressionX(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionY(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionW(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionH(ArmaResolution, double)}</li>
+	 </ul>
+	 */
 	public static final String SAFE_ZONE_W = "safeZoneW";
+	/**
+	 Identifier used for expression Strings returned from :
+	 <ul>
+	 <li>{@link #getSafeZoneExpressionX(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionY(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionW(ArmaResolution, double)}</li>
+	 <li>{@link #getSafeZoneExpressionH(ArmaResolution, double)}</li>
+	 </ul>
+	 */
 	public static final String SAFE_ZONE_H = "safeZoneH";
 
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.########");
@@ -34,7 +70,7 @@ public class PositionCalculator {
 	 @return "Safe Zone" expression String
 	 */
 	public static String getSafeZoneExpressionX(ArmaResolution resolution, double screenX) {
-		double percentXCanvas = screenX / resolution.getScreenWidth();
+		final double percentXCanvas = screenX / resolution.getScreenWidth();
 		return SAFE_ZONE_X + " + " + SAFE_ZONE_W + " * " + format(percentXCanvas);
 	}
 
@@ -52,7 +88,7 @@ public class PositionCalculator {
 	 @return "Safe Zone" expression String
 	 */
 	public static String getSafeZoneExpressionY(ArmaResolution resolution, double screenY) {
-		double percentYCanvas = screenY / resolution.getScreenHeight();
+		final double percentYCanvas = screenY / resolution.getScreenHeight();
 		return SAFE_ZONE_Y + " + " + SAFE_ZONE_H + " * " + format(percentYCanvas);
 	}
 
@@ -70,7 +106,7 @@ public class PositionCalculator {
 	 @return "Safe Zone" expression String
 	 */
 	public static String getSafeZoneExpressionW(ArmaResolution resolution, double screenW) {
-		double percentWCanvas = screenW / resolution.getScreenWidth();
+		final double percentWCanvas = screenW / resolution.getScreenWidth();
 		return SAFE_ZONE_W + " * " + format(percentWCanvas);
 	}
 
@@ -88,7 +124,7 @@ public class PositionCalculator {
 	 @return "Safe Zone" expression String
 	 */
 	public static String getSafeZoneExpressionH(ArmaResolution resolution, double screenH) {
-		double percentHCanvas = screenH / resolution.getScreenHeight();
+		final double percentHCanvas = screenH / resolution.getScreenHeight();
 		return SAFE_ZONE_H + " * " + format(percentHCanvas);
 	}
 

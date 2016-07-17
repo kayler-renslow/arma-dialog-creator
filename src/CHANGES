@@ -1,6 +1,6 @@
 ADDED:
-    SafeZone position expressions for x,y,w,h in ArmaControl
+    converting .paa to another image format
 CHANGED:
-    none
+    cleaned up InputField and made the documentation better
 FIXED:
     none

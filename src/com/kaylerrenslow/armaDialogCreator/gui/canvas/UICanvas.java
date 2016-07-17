@@ -169,7 +169,6 @@ public abstract class UICanvas extends AnchorPane {
 
 	/**
 	 This is called when the mouse listener is invoked and a mouse press was the event.
-	 This method should be the only one dealing with adding and removing components from the selection, other than mouseMove which adds to the selection via the selection box
 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas

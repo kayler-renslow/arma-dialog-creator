@@ -1,8 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 /**
- Created by Kayler on 05/18/2016.
- */
+ @author Kayler
+ All 16:9 screen dimensions.
+ Created on 05/18/2016. */
 public class ScreenDimension {
 
 	public static final ScreenDimension D640 = new ScreenDimension(640, 360);
@@ -15,11 +16,18 @@ public class ScreenDimension {
 	public static final ScreenDimension D1600 = new ScreenDimension(1600, 900);
 	public static final ScreenDimension D1920 = new ScreenDimension(1920, 1080);
 
+	/** All screen dimensions */
+	private static ScreenDimension[] allValues = {D640, D720, D848, D960, D1024, D1280, D1366, D1600, D1920};
+
 	public final int width;
 	public final int height;
 
 	ScreenDimension(int width, int height) {
 		this.width = width;
 		this.height = height;
+	}
+
+	public static ScreenDimension[] values() {
+		return allValues;
 	}
 }

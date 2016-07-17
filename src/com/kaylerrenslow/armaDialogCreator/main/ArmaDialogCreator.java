@@ -16,15 +16,16 @@ import java.util.LinkedList;
 
 /**
  @author Kayler
+ Contains main method for running Arma Dialog Creator
  Created on 05/11/2016. */
 public final class ArmaDialogCreator extends Application {
-
+	
 	private static ArmaDialogCreator INSTANCE;
-
+	
 	public ArmaDialogCreator() {
 		INSTANCE = this;
 	}
-
+	
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
 	 */
@@ -35,13 +36,13 @@ public final class ArmaDialogCreator extends Application {
 		}
 		ArmaDialogCreator.launch(args);
 	}
-
+	
 	private Stage primaryStage;
 	private ADCWindow mainWindow;
 	private ApplicationDataManager saveManager;
-
+	
 	private LinkedList<StagePopup> showLater = new LinkedList<>();
-
+	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
@@ -51,10 +52,10 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-
+		
 		//now can load save manager
 		saveManager = new ApplicationDataManager();
-
+		
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
 		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
@@ -63,34 +64,34 @@ public final class ArmaDialogCreator extends Application {
 		}
 		showLater = null;
 	}
-
+	
 	public static CanvasView getCanvasView() {
 		return INSTANCE.mainWindow.getCanvasView();
 	}
-
+	
 	public static Stage getPrimaryStage() {
 		return INSTANCE.primaryStage;
 	}
-
+	
 	public static ADCWindow getWindow() {
 		return INSTANCE.mainWindow;
 	}
-
+	
 	public static ApplicationDataManager getSaveDataManager() {
 		return INSTANCE.saveManager;
 	}
-
+	
 	public static ApplicationData getApplicationData() {
 		return INSTANCE.saveManager.applicationData;
 	}
-
+	
 	/** Show the given popup after the application's main window has been initialized */
 	public static void showAfterMainWindowLoaded(StagePopup<?> selectSaveLocationPopup) {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
 	}
-
+	
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
-
+		
 		@Override
 		public void handle(WindowEvent event) {
 			ArmaDialogCreator.INSTANCE.saveManager.forceSave();
