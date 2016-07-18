@@ -21,7 +21,7 @@ public interface FXControlLang {
 			}
 
 			interface Identifier {
-				String NOT_IDENTIFIER = "Not an identifier. (Must start with letter or underscore. Afterwards, can have: _,number,$)";
+				String NOT_IDENTIFIER = "Not an identifier. (Start with: letter, _, $. Then can have: letter, _, $, number)";
 				String TYPE_NAME = "Identifier";
 			}
 
@@ -32,6 +32,7 @@ public interface FXControlLang {
 
 			interface Expression {
 				String TYPE_NAME = "Expression";
+				String UNKNOWN_ERROR = "Unknown Error";
 			}
 		}
 	}

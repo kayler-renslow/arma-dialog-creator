@@ -17,8 +17,11 @@ public class ValueObserver<V> {
 		this.value = value;
 	}
 
-	/** Update the value and notify the value listener. Doesn't have to be a new value. */
+	/** Update the value and notify the value listener. The listeners will only be notified if the value is not equal (via {@link #equals(Object)}).  */
 	public void updateValue(@Nullable V newValue) {
+		if((newValue == null && this.value == null) || (newValue != null && newValue.equals(this.value))){
+			return;
+		}
 		V oldValue = this.value;
 		this.value = newValue;
 		for (ValueListener<V> listener : listeners) {

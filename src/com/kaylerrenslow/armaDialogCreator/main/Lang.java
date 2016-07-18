@@ -11,6 +11,7 @@ public interface Lang {
 
 	interface Expression {
 		String IDENTIFIER_NOT_SET_F = "Identifier '%s' has no value.";
+		String ERROR_NO_INPUT = "No expression typed.";
 	}
 
 	interface CanvasControls {

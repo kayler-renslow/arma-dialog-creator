@@ -1,6 +1,7 @@
 ADDED:
-    converting .paa to another image format
-CHANGED:
-    cleaned up InputField and made the documentation better
-FIXED:
     none
+CHANGED:
+    made the error popup behave better for InputField (autohide and show whenever mouse enters text field)
+FIXED:
+    hopefully the last update to InputField. I'm getting tired of changing the implementation
+    bug where ExpressionInterpreter was returning Exceptions with no message

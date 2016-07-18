@@ -271,6 +271,7 @@ public class UICanvasEditor extends UICanvas {
 		boolean selected = selection.isSelected(component);
 		if (selected) {
 			gc.save();
+			Color selectionColor = component.getBackgroundColor().invert();
 			int centerx = component.getCenterX();
 			int centery = component.getCenterY();
 			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);

@@ -28,3 +28,4 @@ BUGS:
 >select many things in tree view and drag into folder
 >have check box for "is background control" in control properties popup
 >!!!!!!!!!!!!fix adding controls to tree view resulting in wrong render order or an exception
+>shouldn't allow x,y,w,h to ever have empty value

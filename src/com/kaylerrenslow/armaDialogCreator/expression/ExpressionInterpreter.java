@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
@@ -33,6 +34,9 @@ public class ExpressionInterpreter {
 	 */
 	@NotNull
 	public Value evaluate(String exp, Env env) throws ExpressionEvaluationException {
+		if(exp == null || exp.trim().length() == 0){
+			throw new ExpressionEvaluationException(Lang.Expression.ERROR_NO_INPUT);
+		}
 		ExpressionLexer l = getLexer(exp);
 		ExpressionParser p = getParser(new CommonTokenStream(l));
 

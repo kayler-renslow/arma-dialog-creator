@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionEvaluationException;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
 import com.kaylerrenslow.armaDialogCreator.main.FXControlLang;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,18 +20,18 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 	}
 
 	@Override
-	public String validData(String data) {
+	public String validData(@NotNull String data) {
 		try {
 			ExpressionInterpreter.getInstance().evaluate(data, env);
 			return null;
 		} catch (ExpressionEvaluationException ex) {
-			return ex.getMessage();
+			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? FXControlLang.InputField.DataCheckers.Expression.UNKNOWN_ERROR : ex.getMessage();
 		}
 	}
 
 	@Nullable
 	@Override
-	public Expression parse(String data) {
+	public Expression parse(@NotNull String data) {
 		return new Expression(data, env);
 	}
 
@@ -43,4 +44,5 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 	public boolean allowEmptyData() {
 		return false;
 	}
+	
 }
