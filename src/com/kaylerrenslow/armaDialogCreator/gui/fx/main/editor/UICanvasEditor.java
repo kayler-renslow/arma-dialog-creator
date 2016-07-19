@@ -271,24 +271,24 @@ public class UICanvasEditor extends UICanvas {
 		boolean selected = selection.isSelected(component);
 		if (selected) {
 			gc.save();
-			Color selectionColor = component.getBackgroundColor().invert();
+			Color selectedBorderColor = component.getBackgroundColor().invert();
 			int centerx = component.getCenterX();
 			int centery = component.getCenterY();
 			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
 			boolean noVert = keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT);
 			if (noHoriz) {
-				gc.setStroke(selectionColor);
+				gc.setStroke(selectedBorderColor);
 				gc.setLineWidth(4);
 				gc.strokeLine(centerx, 0, centerx, getCanvasHeight());
 			}
 			if (noVert) {
-				gc.setStroke(selectionColor);
+				gc.setStroke(selectedBorderColor);
 				gc.setLineWidth(4);
 				gc.strokeLine(0, centery, getCanvasWidth(), centery);
 			}
 			//draw selection 'shadow'
 			gc.setGlobalAlpha(0.6);
-			gc.setStroke(selectionColor);
+			gc.setStroke(selectedBorderColor);
 			int offset = 4 + (component.getBorder() != null ? component.getBorder().getThickness() : 0);
 			Region.fillRectangle(gc, component.getLeftX() - offset, component.getTopY() - offset, component.getRightX() + offset, component.getBottomY() + offset);
 			gc.restore();

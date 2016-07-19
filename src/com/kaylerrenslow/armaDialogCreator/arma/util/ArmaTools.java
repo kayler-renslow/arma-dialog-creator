@@ -16,6 +16,14 @@ public class ArmaTools {
 	
 	private static final String IMAGE_TO_PAA_EXE = "\\ImageToPAA\\ImageToPAA.exe";
 	
+	/** Test if the given File is a valid path to Arma 3 Tools. In order to be valid, the path must be something like 'STEAM_INSTALLATION_ROOT\steamapps\common\Arma 3 Tools\' */
+	public static boolean isValidA3ToolsDirectory(@NotNull File file) {
+		if (!file.exists()) {
+			return false;
+		}
+		return new File(file.getPath() + IMAGE_TO_PAA_EXE).exists();
+	}
+	
 	/**
 	 Runs text in the command line. This method will freeze the current Thread for up to timeout milliseconds.
 	 
@@ -31,7 +39,8 @@ public class ArmaTools {
 	
 	/**
 	 Converts a *.paa image file into a new image type (must be specified in pngSafeTo file name. e.g. "something.paa" -> ("something.paa.png" or "something.jpg")).
-	 This method can also convert a .jpg or .png into a .paa (just pass the .jpg as toConvert and make saveTo's path end with .paa).<br>
+	 This method can also convert a .jpg or .png into a .paa (just pass the .jpg as toConvert and make saveTo's path end with .paa).
+	 Besides .paa, this method can also convert .tga into another file format mentioned earlier.<br>
 	 This conversion is done by invoking Arma 3 Tools's ImageToPAA.exe<br>
 	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a {@link Task} if using with JavaFX.
 	 
@@ -46,8 +55,8 @@ public class ArmaTools {
 		if (!arma3ToolsDirectory.exists()) {
 			throw new FileNotFoundException("Arma 3 Tools Directory doesn't exist.");
 		}
-		if (!arma3ToolsDirectory.isDirectory()) {
-			throw new IOException("Path to Arma 3 Tools directory isn't a directory.");
+		if (!isValidA3ToolsDirectory(arma3ToolsDirectory)) {
+			throw new FileNotFoundException("Path to Arma 3 Tools directory is incorrect.");
 		}
 		if (!toConvert.exists()) {
 			throw new FileNotFoundException("The file to be converted doesn't exist.");

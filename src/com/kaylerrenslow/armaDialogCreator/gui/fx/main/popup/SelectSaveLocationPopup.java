@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -26,13 +27,15 @@ import java.io.File;
  Created by Kayler on 05/26/2016.
  */
 public class SelectSaveLocationPopup extends StagePopup<VBox> {
-
+	
 	private TextField tfAppDataSaveDir = new TextField();
 	private TextField tfA3ToolsDir = new TextField();
-
+	
 	private Button btnChangeAppData = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
 	private Button btnChangeA3Tools = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
-
+	
+	private BadArma3ToolsDirectoryPopup badArma3ToolsDirectoryPopup;
+	
 	/**
 	 Creates the "change directories" popup
 	 */
@@ -43,18 +46,18 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
 	}
-
+	
 	private void initialize(@Nullable File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
 		tfA3ToolsDir.setEditable(false);
 		tfAppDataSaveDir.setEditable(false);
-
+		
 		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
 		if (initialAppSaveDirectory != null) {
 			tfAppDataSaveDir.setText(initialAppSaveDirectory.getPath());
 		}
-
+		
 		Label lblAppDataSaveDir = new Label(Lang.Popups.SelectSaveLocation.LBL_APP_DATA_SAVE_DIR);
 		Label lblA3ToolsDir = new Label(Lang.Popups.SelectSaveLocation.LBL_A3_TOOLS_DIR);
 
@@ -83,33 +86,40 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 				if (f == null) {
 					return;
 				}
-				chooseA3ToolsSaveDir(f);
+				if (ArmaTools.isValidA3ToolsDirectory(f)) {
+					chooseA3ToolsSaveDir(f);
+				} else {
+					if (badArma3ToolsDirectoryPopup == null) {
+						badArma3ToolsDirectoryPopup = new BadArma3ToolsDirectoryPopup();
+					}
+					badArma3ToolsDirectoryPopup.show();
+				}
 			}
 		});
-
-
+		
+		
 		HBox hbTop = new HBox(5);
 		hbTop.getChildren().addAll(tfAppDataSaveDir, btnChangeAppData);
 		HBox.setHgrow(tfAppDataSaveDir, Priority.ALWAYS);
-
+		
 		HBox hbMid = new HBox(5);
 		hbMid.getChildren().addAll(tfA3ToolsDir, btnChangeA3Tools);
 		HBox.setHgrow(tfA3ToolsDir, Priority.ALWAYS);
-
-
+		
+		
 		myRootElement.getChildren().addAll(lblAppDataSaveDir, hbTop, lblA3ToolsDir, hbMid, new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, true));
-		myRootElement.setPadding(new Insets(5));
-		myRootElement.setMinHeight(165d);
+		myRootElement.setPadding(new Insets(10));
+		myStage.setResizable(false);
 	}
-
+	
 	private void chooseA3ToolsSaveDir(File f) {
 		tfA3ToolsDir.setText(f.getPath());
 	}
-
+	
 	private void chooseAppDataSaveDir(File f) {
 		tfAppDataSaveDir.setText(f.getPath());
 	}
-
+	
 	@Nullable
 	public String getApplicationDataSaveLocationPath() {
 		String s = tfAppDataSaveDir.getText();
@@ -118,7 +128,7 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		}
 		return tfAppDataSaveDir.getText();
 	}
-
+	
 	@Nullable
 	public String getArma3ToolsDirectoryPath() {
 		String s = tfA3ToolsDir.getText();
@@ -127,7 +137,7 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		}
 		return s;
 	}
-
+	
 	@Override
 	protected void ok() {
 		String appSaveDataLocation = appSaveDataLocation();
@@ -135,13 +145,13 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 			return;
 		}
 		String a3tools = getArma3ToolsDirectoryPath();
-		ArmaDialogCreator.getSaveDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
+		ArmaDialogCreator.getApplicationDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
 		if (a3tools != null) {
-			ArmaDialogCreator.getSaveDataManager().setArma3ToolsLocation(new File(a3tools));
+			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(new File(a3tools));
 		}
 		close();
 	}
-
+	
 	@Nullable
 	private String appSaveDataLocation() {
 		String appSaveDataLocation = getApplicationDataSaveLocationPath();
@@ -152,12 +162,23 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		}
 		return appSaveDataLocation;
 	}
-
-
+	
+	
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
 		if (appSaveDataLocation() == null) {
 			event.consume();
+		}
+	}
+	
+	private static class BadArma3ToolsDirectoryPopup extends StagePopup<VBox> {
+		
+		public BadArma3ToolsDirectoryPopup() {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new Label(Lang.Popups.SelectSaveLocation.BAD_A3_TOOLS_DIR)), Lang.Popups.GENERIC_POPUP_TITLE);
+			myStage.initModality(Modality.APPLICATION_MODAL);
+			myRootElement.setPadding(new Insets(10));
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+			myStage.setWidth(300d);
 		}
 	}
 }

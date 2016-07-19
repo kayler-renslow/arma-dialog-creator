@@ -37,14 +37,14 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	/** Makes an error window popup with the stack trace printed. This method should be used when a <b>non-recoverable</b> error occurred. After the error window is closed, the application will also close. */
 	public static void fatal(Thread threadWereErrorOccurred, Throwable t) {
-		if (ArmaDialogCreator.getSaveDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) { //can be null if this method is called when ApplicationDataManager had an error before constructor finished
+		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) { //can be null if this method is called when ApplicationDataManager had an error before constructor finished
 			JOptionPane.showMessageDialog(null, getExceptionString(t), "FATAL ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		StagePopup sp = new StagePopup<TextArea>(ArmaDialogCreator.getPrimaryStage(), getExceptionTextArea(threadWereErrorOccurred, t), "A FATAL error occurred.") {
 			@Override
 			protected void onCloseRequest(WindowEvent event) {
-				boolean good = ArmaDialogCreator.getSaveDataManager().forceSave();
+				boolean good = ArmaDialogCreator.getApplicationDataManager().forceSave();
 				new StagePopup<TextArea>(ArmaDialogCreator.getPrimaryStage(), new TextArea(good ? "Your entry was successfully saved regardless of the error." : "Your entry couldn't be saved."), "Save notification") {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {

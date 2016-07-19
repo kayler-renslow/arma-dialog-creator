@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import javafx.stage.FileChooser;
+
 import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
 
 public interface Lang {
@@ -8,32 +10,32 @@ public interface Lang {
 		String VERSION = "0.0.1b";
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 	}
-
+	
 	interface Expression {
 		String IDENTIFIER_NOT_SET_F = "Identifier '%s' has no value.";
 		String ERROR_NO_INPUT = "No expression typed.";
 	}
-
+	
 	interface CanvasControls {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
 	}
-
-	/**{@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar}*/
+	
+	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar} */
 	interface MainMenuBar {
 		String FILE = "File";
 		String FILE_NEW = "New";
 		String FILE_OPEN = "Open";
 		String FILE_SAVE = "Save";
 		String FILE_SAVE_AS = "Save As";
-
+		
 		String EDIT = "Edit";
 		String EDIT_CHANGES = "View Changes";
 		String EDIT_UNDO = "Undo";
 		String EDIT_REDO = "Redo";
 		String EDIT_UNDO_F = "Undo %s";
 		String EDIT_REDO_F = "Redo %s";
-
+		
 		String VIEW = "View";
 		String VIEW_PREVIEW = "Preview";
 		String VIEW_SHOW_GRID = "Show Grid";
@@ -49,21 +51,22 @@ public interface Lang {
 		String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
 		String VIEW_DARK_THEME = "Use Dark Theme";
 		String VIEW_FULL_SCREEN = "Full Screen";
-
+		
 		String SETTINGS = "Settings";
 		String SETTINGS_CONFIGURE_DIRS = "Configure Directories";
-
+		
 		String CREATE = "Create";
 		String CREATE_MACRO = "New Macro";
 		String CREATE_CONTROL_CLASS = "New Control Class";
 	}
-
+	
 	interface Popups {
 		String BTN_HELP = "Help";
 		String BTN_HELP_TOOLTIP = "Get help with this dialog.";
 		String BTN_CANCEL = "Cancel";
 		String BTN_OK = "OK";
-
+		String GENERIC_POPUP_TITLE = "Notification";
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.CanvasViewColorsPopup} */
 		interface Colors {
 			String POPUP_TITLE = "Change Canvas Colors";
@@ -72,15 +75,16 @@ public interface Lang {
 			String ABS_REGION = "Absolute Region";
 			String BACKGROUND = "Canvas Background Color";
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup} */
 		interface SelectSaveLocation {
 			String POPUP_TITLE = "Configure Directories";
 			String LBL_APP_DATA_SAVE_DIR = "Application entry save directory (required):";
 			String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
 			String BTN_CHANGE = "Change";
+			String BAD_A3_TOOLS_DIR = "Not a valid Arma 3 Tools directory.";
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.ControlPropertiesConfigPopup} */
 		interface ControlPropertiesConfig {
 			String NO_PROPERTIES_AVAILABLE = "No properties available.";
@@ -95,23 +99,23 @@ public interface Lang {
 			String FLOAT = "Floating Point Number";
 			String EXP = "Expression";
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.MissingControlPropertiesConfigPopup} */
 		interface MissingControlPropertiesConfig {
 			String POPUP_TITLE = "Missing Control Properties";
 			String MISSING_PROPERTIES_MESSAGE = "The properties below require a value to be entered.";
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlPopup} */
 		interface NewControl {
 			String POPUP_TITLE = getPopupWindowTitle("New Control Class");
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.NewMacroPopup} */
 		interface MacroNew {
 			String POPUP_TITLE = "Create New Macro";
 		}
-
+		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.EditMacroPopup} */
 		interface MacroEdit {
 			String POPUP_TITLE = "Edit a Macro";
@@ -122,26 +126,26 @@ public interface Lang {
 			String NO_TYPE_CHOSEN = "No type chosen.";
 		}
 	}
-
+	
 	interface Misc {
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 	}
-
+	
 	interface ContextMenu {
 		interface DefaultComponent {
 			String CONFIGURE = "Configure Properties";
 			String RENDER_QUEUE = "Render Queue";
 		}
-
+		
 		interface ComponentTreeView {
 			String NEW_FOLDER = "New Folder";
 		}
 	}
-
+	
 	interface PreviewWindow {
 		String POPUP_TITLE = getPopupWindowTitle("Preview Window");
 	}
-
+	
 	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane} */
 	interface ControlPropertiesEditorPane {
 		String RESET_TO_DEFAULT = "Reset to Default";
@@ -152,24 +156,32 @@ public interface Lang {
 		String OPTIONAL = "Optional";
 		String EVENTS = "Events";
 	}
-
-	interface ValueEditors{
-		interface FontValueEditor{
+	
+	interface ValueEditors {
+		interface FontValueEditor {
 			String DEFAULT_FONT = "Default Font";
 		}
-
-		interface ImageValueEditor{
+		
+		interface ImageValueEditor {
 			String LOCATE_IMAGE = "Locate Image";
+			String A3_TOOLS_DIR_NOT_SET = "Arma 3 Tools directory not set.";
+			String SET_A3_TOOLS_BTN = "Set Arma 3 Tools directory";
+			FileChooser.ExtensionFilter IMAGE_FILE_EXTENSIONS = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.tga", "*.paa");
+			
+			interface ConvertingPaaPopup {
+				String POPUP_TITLE = "Converting Image";
+				String MESSAGE_F = "Converting \"%s\" to a read-able format.";
+			}
 		}
 	}
-
+	
 	interface Macros {
 		String MACRO = "Macro";
 		String COMMENT = "Comment";
 		String VALUE = "Value";
 		String CHOOSE_MACRO = "Choose Macro";
-
-		/**{@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.MacroGetterButton.ChooseMacroPopup}*/
+		
+		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.MacroGetterButton.ChooseMacroPopup} */
 		interface ChooseMacroPopup {
 			String POPUP_TITLE = "Choose a Macro";
 			String AVAILABLE_MACROS = "Available Macros";
@@ -177,8 +189,8 @@ public interface Lang {
 			String NO_RECENT_MACROS = "No recently chosen macros.";
 		}
 	}
-
-	/**{@link com.kaylerrenslow.armaDialogCreator.control.PropertyType}*/
+	
+	/** {@link com.kaylerrenslow.armaDialogCreator.control.PropertyType} */
 	interface PropertyType {
 		String INT = "Integer";
 		String FLOAT = "Floating Point Number";
@@ -196,8 +208,8 @@ public interface Lang {
 		String EVENT = "Event SQF Code String";
 		String SQF = "SQF Code String";
 	}
-
-	/**{@link com.kaylerrenslow.armaDialogCreator.control.ControlType}*/
+	
+	/** {@link com.kaylerrenslow.armaDialogCreator.control.ControlType} */
 	interface ControlType {
 		interface TypeGroup {
 			String TEXT = "Text";
@@ -211,7 +223,7 @@ public interface Lang {
 			String MAP = "Map";
 			String MISC = "Misc";
 		}
-
+		
 		String STATIC = "Static";
 		String HTML = "HTML";
 		String EDIT = "Edit";
@@ -249,7 +261,7 @@ public interface Lang {
 		String MAP = "Map";
 		String MAP_MAIN = "Map Main";
 	}
-
+	
 	static String getPopupWindowTitle(String popupName) {
 		return APPLICATION_NAME + " - " + popupName;
 	}

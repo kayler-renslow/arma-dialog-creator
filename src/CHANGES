@@ -1,7 +1,7 @@
 ADDED:
-    none
+    check to see if Arma 3 Tools directory is valid when choosing it in the SelectSaveLocationPopup
+    implementation for converting a .paa image to a .png (only in ImageValueEditor)
 CHANGED:
-    made the error popup behave better for InputField (autohide and show whenever mouse enters text field)
+    none
 FIXED:
-    hopefully the last update to InputField. I'm getting tired of changing the implementation
-    bug where ExpressionInterpreter was returning Exceptions with no message
+    none

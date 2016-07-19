@@ -77,7 +77,7 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.mainWindow;
 	}
 	
-	public static ApplicationDataManager getSaveDataManager() {
+	public static ApplicationDataManager getApplicationDataManager() {
 		return INSTANCE.saveManager;
 	}
 	
