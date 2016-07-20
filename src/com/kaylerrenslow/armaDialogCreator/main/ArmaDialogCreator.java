@@ -2,6 +2,8 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCProjectInitWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -12,6 +14,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 
 /**
@@ -52,11 +55,33 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		
+				
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
 		
-		//load main window
+		ADCProjectInitWindow projectInitWindow = new ADCProjectInitWindow();
+		projectInitWindow.showAndWait();
+		
+		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
+		Project project = null;
+		if(init instanceof ADCProjectInitWindow.ProjectInit.NewProject){
+			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
+			String projectName = newProject.getProjectName();
+			if (projectName == null) {
+				int year = Calendar.getInstance().get(Calendar.YEAR);
+				int month = Calendar.getInstance().get(Calendar.MONTH);
+				int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+				int hour = Calendar.getInstance().get(Calendar.HOUR);
+				int minute = Calendar.getInstance().get(Calendar.MINUTE);
+				String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
+				projectName = "untitled " + date;
+			}
+			project = new Project(projectName, applicationDataManager.getAppSaveDataDirectory());
+		}
+		
+		applicationDataManager.applicationData.initApplicationData(project);
+
+//		//load main window
 		mainWindow = new ADCWindow(primaryStage);
 		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
 		for (StagePopup aShowLater : showLater) {

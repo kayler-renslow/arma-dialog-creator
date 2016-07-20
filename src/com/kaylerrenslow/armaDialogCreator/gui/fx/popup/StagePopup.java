@@ -31,6 +31,8 @@ public class StagePopup<E extends Parent> {
 	protected final Stage myStage;
 	protected final E myRootElement;
 	private FXMLLoader myLoader;
+	/** The buttons used when invoking {@link #getResponseFooter(boolean, boolean, boolean)}. These are no longer null after invoking the method. */
+	protected @Nullable Button btnOk, btnCancel, btnHelp;
 	
 	/**
 	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>
@@ -174,7 +176,7 @@ public class StagePopup<E extends Parent> {
 		BorderPane bp = new BorderPane();
 		HBox right = new HBox(5);
 		if (addHelpButton) {
-			Button btnHelp = new Button(Lang.Popups.BTN_HELP);
+			btnHelp = new Button(Lang.Popups.BTN_HELP);
 			btnHelp.setTooltip(new Tooltip(Lang.Popups.BTN_HELP_TOOLTIP));
 			btnHelp.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
@@ -186,7 +188,7 @@ public class StagePopup<E extends Parent> {
 			bp.setLeft(btnHelp);
 		}
 		if (addCancel) {
-			Button btnCancel = new Button(Lang.Popups.BTN_CANCEL);
+			btnCancel = new Button(Lang.Popups.BTN_CANCEL);
 			btnCancel.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -197,7 +199,7 @@ public class StagePopup<E extends Parent> {
 			right.getChildren().add(btnCancel);
 		}
 		if (addOk) {
-			Button btnOk = new Button(Lang.Popups.BTN_OK);
+			btnOk = new Button(Lang.Popups.BTN_OK);
 			btnOk.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {

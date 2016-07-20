@@ -6,13 +6,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 /**
  @author Kayler
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor} is editing,
- the {@link MacroRegistry} instance, as well as //todo finish this sentence
+ the {@link MacroRegistry} instance, as well as all ExternalResources.
  Created on 07/19/2016. */
 public class Project {
 	private String projectName;
@@ -31,18 +29,18 @@ public class Project {
 		this.projectSaveDirectory.mkdir();
 	}
 	
-	private File getProjectFile(String projectName, File appSaveDirectory){
+	private File getProjectFile(String projectName, File appSaveDirectory) {
 		return new File(appSaveDirectory.getPath() + "\\" + projectName);
 	}
-		
+	
 	@NotNull
 	public String getProjectName() {
 		return projectName;
 	}
 	
-	public void setProjectName(@NotNull String projectName) throws IOException{
+	public void setProjectName(@NotNull String projectName) throws IOException {
 		this.projectName = projectName;
-		Files.move(projectSaveDirectory.toPath(), getProjectFile(projectName, appSaveDirectory).toPath(), StandardCopyOption.ATOMIC_MOVE);
+		//		Files.move(projectSaveDirectory.toPath(), getProjectFile(projectName, appSaveDirectory).toPath(), StandardCopyOption.ATOMIC_MOVE);
 	}
 	
 	@NotNull

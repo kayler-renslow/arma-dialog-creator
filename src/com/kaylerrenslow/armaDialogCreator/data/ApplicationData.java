@@ -9,9 +9,6 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.util.Calendar;
-
 /**
  @author Kayler
  Holds data that aren't specific to the current Project, but rather the entire application itself
@@ -20,18 +17,8 @@ public class ApplicationData {
 	
 	private Project currentProject;
 	
-	public ApplicationData(@NotNull File appSaveDataDirectory) {
-		int year = Calendar.getInstance().get(Calendar.YEAR);
-		int month = Calendar.getInstance().get(Calendar.MONTH);
-		int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-		int hour = Calendar.getInstance().get(Calendar.HOUR);
-		int minute = Calendar.getInstance().get(Calendar.MINUTE);
-		String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
-		this.currentProject = new Project("untitled " + date, appSaveDataDirectory);
-	}
-	
-	public ApplicationData(@NotNull File appSaveDataDirectory, @NotNull String projectName) {
-		this.currentProject = new Project(projectName, appSaveDataDirectory);
+	public void initApplicationData(@NotNull Project project) {
+		this.currentProject = project;
 	}
 	
 	private final SimpleEnv globalEnv = new SimpleEnv() {

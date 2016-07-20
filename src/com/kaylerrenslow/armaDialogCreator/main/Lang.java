@@ -271,13 +271,16 @@ public interface Lang {
 		String TAB_NEW = "New";
 		String TAB_OPEN = "Open";
 		String TAB_IMPORT = "Import";
-		String CREATE_NEW_PROJECT = "Create a New Project";
+		String NEW_PROJECT_TITLE = "Create a New Project";
+		String NEW_PROJECT_OK = "Create New Project";
 		String PROJECT_NAME = "Project Name:";
-		String OPEN_EXISTING_PROJECT = "Open Existing Project";
+		String OPEN_PROJECT_TITLE = "Open Existing Project";
+		String OPEN_PROJECT_OK = "Load Project";
 		String DETECTED_PROJECTS = "Detected Projects";
 		String NO_DETECTED_PROJECTS= "No detected projects.";
 		String OPEN_FROM_FILE = "Open from file";
-		String IMPORT_ARMA_DIALOG = "Import an Arma 3 Dialog";
+		String IMPORT_PROJECT_TITLE = "Import an Arma 3 Dialog";
+		String IMPORT_PROJECT_OK = "Import Dialog";
 		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
 		String PROJECT_SETUP = "Project Setup";
 	}

@@ -10,14 +10,9 @@ import java.io.File;
  Manages save data
  Created on 05/26/2016. */
 public class ApplicationDataManager {
-	private final ApplicationPropertyManager propertyManager;
-	public final ApplicationData applicationData;
+	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
+	public ApplicationData applicationData = new ApplicationData();
 	
-	public ApplicationDataManager() {
-		propertyManager = new ApplicationPropertyManager();
-		applicationData = new ApplicationData(propertyManager.getAppSaveDataDirectory());
-		
-	}
 	
 	/** Set the application save data directory to a new one. Automatically updates application properties. */
 	public void setAppSaveDataLocation(@NotNull File file) {
