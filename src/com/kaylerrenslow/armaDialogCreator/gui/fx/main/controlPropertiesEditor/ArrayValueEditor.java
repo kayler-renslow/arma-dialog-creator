@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVStringArray;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -17,24 +18,24 @@ import java.util.ArrayList;
  Created by Kayler on 07/13/2016.
  */
 public class ArrayValueEditor implements ValueEditor<SVStringArray> {
-
+	
 	protected ArrayList<InputField<ArmaStringChecker, String>> editors = new ArrayList<>();
-
+	
 	protected final Button btnDecreaseSize = new Button("-");
 	protected final Button btnIncreaseSize = new Button("+");
 	private final double gap = 5;
 	private final double tfPrefWidth = 100d;
 	protected final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
-
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+	
 	public ArrayValueEditor(int numInitialFields) {
 		masterPane = new HBox(5, editorsPane);
 		editorsPane.minWidth(0d);
 		editorsPane.prefWidth(0d);
 		editorsPane.setPrefWrapLength(tfPrefWidth * 3 + gap * numInitialFields); //have room for 3 text fields
 		masterPane.minWidth(0d);
-
+		
 		masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
 		btnDecreaseSize.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -62,23 +63,37 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		}
 		editorsPane.autosize();
 	}
-
+	
+	@Override
+	public void focusToEditor() {
+		for (InputField tf : editors) {
+			if (tf.getValue() == null) {
+				tf.requestFocus();
+				return;
+			}
+		}
+		editors.get(0).requestFocus();
+	}
+	
 	private InputField<ArmaStringChecker, String> getTextField() {
 		InputField<ArmaStringChecker, String> tf = new InputField<>(new ArmaStringChecker());
 		tf.setPrefWidth(tfPrefWidth);
 		return tf;
 	}
-
+	
 	@Override
 	public SVStringArray getValue() {
 		String[] values = new String[editors.size()];
 		int i = 0;
 		for (InputField tf : editors) {
-			values[i++] = new String(tf.getText());
+			if (tf.getValue() == null) {
+				return null;
+			}
+			values[i++] = tf.getText();
 		}
 		return new SVStringArray(values);
 	}
-
+	
 	@Override
 	public void setValue(SVStringArray val) {
 		int i = 0;
@@ -86,12 +101,12 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 			editors.get(i++).setText(s);
 		}
 	}
-
+	
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
 	}
-
+	
 	@Override
 	public void setToOverride(boolean override) {
 		masterPane.getChildren().clear();
@@ -101,9 +116,9 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 			masterPane.getChildren().add(editorsPane);
 		}
 	}
-
+	
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
 }

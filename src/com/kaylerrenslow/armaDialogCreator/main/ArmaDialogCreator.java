@@ -1,11 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
-import com.kaylerrenslow.armaDialogCreator.io.ApplicationDataManager;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
@@ -39,7 +39,7 @@ public final class ArmaDialogCreator extends Application {
 	
 	private Stage primaryStage;
 	private ADCWindow mainWindow;
-	private ApplicationDataManager saveManager;
+	private ApplicationDataManager applicationDataManager;
 	
 	private LinkedList<StagePopup> showLater = new LinkedList<>();
 	
@@ -54,7 +54,7 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
 		
 		//now can load save manager
-		saveManager = new ApplicationDataManager();
+		applicationDataManager = new ApplicationDataManager();
 		
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
@@ -78,11 +78,11 @@ public final class ArmaDialogCreator extends Application {
 	}
 	
 	public static ApplicationDataManager getApplicationDataManager() {
-		return INSTANCE.saveManager;
+		return INSTANCE.applicationDataManager;
 	}
 	
 	public static ApplicationData getApplicationData() {
-		return INSTANCE.saveManager.applicationData;
+		return INSTANCE.applicationDataManager.applicationData;
 	}
 	
 	/** Show the given popup after the application's main window has been initialized */
@@ -94,7 +94,7 @@ public final class ArmaDialogCreator extends Application {
 		
 		@Override
 		public void handle(WindowEvent event) {
-			ArmaDialogCreator.INSTANCE.saveManager.forceSave();
+			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
 		}
 	}
 }

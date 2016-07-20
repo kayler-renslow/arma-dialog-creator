@@ -35,18 +35,18 @@ import org.jetbrains.annotations.Nullable;
 public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	private final Env env;
 	private ValueEditor editor;
-
+	
 	private StackPane stackPaneEditor = new StackPane();
-
+	
 	private final TextField tfMacroDescription = new TextField();
 	private final InputField<IdentifierChecker, String> inMacroKey = new InputField<>(new IdentifierChecker());
 	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
-
+	
 	private final Label lblNoTypeChosen = new Label(Lang.Popups.MacroEdit.NO_TYPE_CHOSEN);
-
+	
 	/**
 	 Creates a Macro editor.
-
+	 
 	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
 	public MacroEditBasePopup(Env env) {
@@ -55,30 +55,30 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		myRootElement.setPadding(new Insets(10));
 		stackPaneEditor.minWidth(0d);
 		stackPaneEditor.setAlignment(Pos.CENTER_LEFT);
-
+		
 		stackPaneEditor.getChildren().add(lblNoTypeChosen);
-
+		
 		EventHandler<? super KeyEvent> oldEvent = inMacroKey.getOnKeyReleased();
 		inMacroKey.setOnKeyReleased(new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
 				int cursorPosition = inMacroKey.getCaretPosition();
 				IndexRange selection = inMacroKey.getSelection();
-
+				
 				inMacroKey.setText(inMacroKey.getText().toUpperCase().replaceAll("\\s", "_"));
-
+				
 				inMacroKey.positionCaret(cursorPosition);
 				inMacroKey.selectRange(selection.getStart(), selection.getEnd());
-
+				
 				if (oldEvent != null) {
 					oldEvent.handle(event);
 				}
 			}
 		});
 		inMacroKey.setOnKeyTyped(inMacroKey.getOnKeyReleased());
-
+		
 		cbMacroType.getItems().addAll(PropertyType.values());
-
+		
 		cbMacroType.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<PropertyType>() {
 			@Override
 			public void changed(ObservableValue<? extends PropertyType> observable, PropertyType oldValue, PropertyType selected) {
@@ -87,28 +87,48 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 				stackPaneEditor.getChildren().add(editor.getRootNode());
 			}
 		});
-
+		
 		VBox vbTop = new VBox(5);
 		vbTop.setFillWidth(true);
 		vbTop.getChildren().addAll(hbox(Lang.Popups.MacroEdit.MACRO_KEY, inMacroKey), hbox(Lang.Popups.MacroEdit.MACRO_TYPE, cbMacroType), hbox(Lang.Popups.MacroEdit.MACRO_VALUE, stackPaneEditor), hbox(Lang.Popups.MacroEdit.MACRO_COMMENT, tfMacroDescription));
 		myRootElement.getChildren().add(vbTop);
 		VBox.setVgrow(vbTop, Priority.ALWAYS);
-
+		
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
-
+		
 		myStage.setMinWidth(480d);
 		myStage.setWidth(500d);
 		myStage.setHeight(240);
 	}
-
-	private static HBox hbox(String text, Node graphic) {
+	
+	private HBox hbox(String text, Node graphic) {
 		Label lbl = new Label(text);
 		HBox.setHgrow(graphic, Priority.ALWAYS);
 		return new HBox(5, lbl, graphic);
 	}
-
+	
+	/** Return true if all fields have their input set (macro key, editor has valid value, type is set). If at least one input isn't set, will return false and the input will request focus. */
+	protected boolean checkFields() {
+		if (inMacroKey.getValue() == null) {
+			inMacroKey.requestFocus();
+			beep();
+			return false;
+		}
+		if (editor == null) {
+			cbMacroType.requestFocus();
+			beep();
+			return false;
+		}
+		if (editor.getValue() == null) {
+			editor.focusToEditor();
+			beep();
+			return false;
+		}
+		return true;
+	}
+	
 	/** Set the editor to the given macro */
 	protected void setToMacro(@Nullable Macro m) {
 		if (m == null) {
@@ -123,16 +143,16 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		editor = ValueEditor.getEditor(m.getPropertyType(), env);
 		cbMacroType.setValue(m.getPropertyType());
 	}
-
+	
 	/** Return a new Macro instance with the current settings. */
 	@Nullable
 	protected Macro<? extends SerializableValue> getMacro() {
-		if (editor == null || editor.getValue() == null || inMacroKey.getValue() == null || cbMacroType.getValue() == null) {
+		if (!checkFields()) {
 			return null;
 		}
 		Macro<? extends SerializableValue> m = new Macro<>(inMacroKey.getValue(), editor.getValue(), cbMacroType.getValue());
 		m.setComment(tfMacroDescription.getText());
 		return m;
 	}
-
+	
 }

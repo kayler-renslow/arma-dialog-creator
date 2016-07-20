@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVBoolean;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import javafx.collections.FXCollections;
 import javafx.scene.Node;
 import javafx.scene.control.ChoiceBox;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	protected final ChoiceBox<SVBoolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(SVBoolean.TRUE, SVBoolean.FALSE));
 	private final StackPane masterPane = new StackPane(choiceBox);
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
 	@Override
 	public SVBoolean getValue() {
@@ -43,7 +43,12 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	}
 
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
+	}
+	
+	@Override
+	public void focusToEditor() {
+		choiceBox.requestFocus();
 	}
 }

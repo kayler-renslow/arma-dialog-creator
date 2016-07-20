@@ -10,16 +10,15 @@ import java.util.List;
 
 /**
  @author Kayler
- Holds all macros for the program.
+ Holds all macros for the project.
  Created on 07/05/2016. */
 public class MacroRegistry {
-	static final MacroRegistry INSTANCE = new MacroRegistry();
-
+	
 	private final List<Macro> macros = new ArrayList<>();
 
-	private MacroRegistry() {
+	MacroRegistry() {
 	}
-
+		
 	public List<Macro> getMacros() {
 		return macros;
 	}

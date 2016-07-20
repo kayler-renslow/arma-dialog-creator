@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.io;
+package com.kaylerrenslow.armaDialogCreator.data;
 
 import javax.swing.filechooser.FileSystemView;
 
@@ -11,7 +11,8 @@ public enum ApplicationProperty {
 	/** Location path to folder where application save data should be stored. */
 	APP_SAVE_DATA_DIR("app_save_data_dir", ApplicationPropertyManager.getPathSafe(FileSystemView.getFileSystemView().getDefaultDirectory()) + "/" + ApplicationPropertyManager.SAVE_LOCATION_FILE_NAME),
 	/** Directory for where Arma 3 tools is. Can be empty (not set) */
-	A3_TOOLS_DIR("a3_tools_dir", "null");
+	A3_TOOLS_DIR("a3_tools_dir", "null"),
+	DARK_THEME("dark_theme", "false");
 
 	/** Property key name */
 	final String propertyKey;

@@ -70,7 +70,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private void initializeUICanvasEditor(ArmaResolution r) {
 		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
 
-		setToDisplay(ArmaDialogCreator.getApplicationData().getEditingDisplay());
+		setToDisplay(ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
 
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override

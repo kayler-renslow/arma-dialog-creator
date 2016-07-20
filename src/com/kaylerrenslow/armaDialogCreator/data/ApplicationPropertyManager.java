@@ -1,4 +1,4 @@
-package com.kaylerrenslow.armaDialogCreator.io;
+package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -153,7 +153,7 @@ class ApplicationPropertyManager {
 	 Return path as a String that is safe to save in .properties file
 	 */
 	@NotNull
-	static String getPathSafe(@NotNull File saveLocation) {
+	public static String getPathSafe(@NotNull File saveLocation) {
 		return saveLocation.getPath().replaceAll("\\\\", "\\\\\\\\"); //convert single backslash into double backslash
 	}
 }

@@ -133,7 +133,7 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 
 		private void initRootElement(Class<V> macroClassType) {
 			myRootElement.setPadding(new Insets(10));
-			List<Macro> macroList = ArmaDialogCreator.getApplicationData().getMacroRegistry().getMacros();
+			List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
 			for (Macro macro : macroList) {
 				if (macroClassType.isInstance(macro.getValue())) {
 					listViewMacros.getItems().add(macro);

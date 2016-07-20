@@ -1,7 +1,7 @@
 ADDED:
-    check to see if Arma 3 Tools directory is valid when choosing it in the SelectSaveLocationPopup
-    implementation for converting a .paa image to a .png (only in ImageValueEditor)
+    requesting focus for ValueEditor's editor nodes
 CHANGED:
-    none
+    the override InputField for ValueEditor's to a normal StringChecker since it will be impossible to tell if a quote needs to be cancelled or not
+    when Macro key, value, or type isn't set, won't close popup and will make a beep while requestingFocus to the editor missing a value
 FIXED:
     none

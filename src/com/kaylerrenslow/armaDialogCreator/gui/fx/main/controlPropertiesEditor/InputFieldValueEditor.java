@@ -2,10 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class InputFieldValueEditor<V extends SerializableValue> implements ValueEditor<V> {
 	protected final InputField<? extends InputFieldDataChecker, V> inputField;
 	private final StackPane masterPane;
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
 	public InputFieldValueEditor(@NotNull InputFieldDataChecker dataChecker) {
 		this.inputField = new InputField<>(dataChecker);
@@ -49,10 +49,15 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	}
 
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
-
+	
+	@Override
+	public void focusToEditor() {
+		inputField.requestFocus();
+	}
+	
 	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{
 		public IntegerEditor() {
 			super(new SVIntegerChecker());

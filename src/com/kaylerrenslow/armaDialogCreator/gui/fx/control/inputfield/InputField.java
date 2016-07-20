@@ -300,6 +300,15 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 	}
 	
+	@Override
+	public void requestFocus() {
+		if (buttonState) {
+			button.requestFocus();
+		} else {
+			textField.requestFocus();
+		}
+	}
+	
 	/**
 	 If e==true:
 	 <ul>

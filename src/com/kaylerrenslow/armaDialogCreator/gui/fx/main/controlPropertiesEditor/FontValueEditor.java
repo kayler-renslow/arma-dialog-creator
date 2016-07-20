@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -21,7 +21,7 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	private final Button btnChooseDefault = new Button(Lang.ValueEditors.FontValueEditor.DEFAULT_FONT);
 	protected final ComboBox<AFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(AFont.values()));
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(editorHbox);
 
 	public FontValueEditor() {
@@ -59,7 +59,12 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	}
 
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
+	}
+	
+	@Override
+	public void focusToEditor() {
+		comboBox.requestFocus();
 	}
 }

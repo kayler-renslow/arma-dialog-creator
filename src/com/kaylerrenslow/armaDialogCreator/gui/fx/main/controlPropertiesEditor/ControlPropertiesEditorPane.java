@@ -3,10 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
@@ -388,7 +385,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		/** DO NOT USE THIS FOR ARRAY INPUT */
-		static InputField<ArmaStringChecker, String> modifyRawInput(InputField<ArmaStringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
+		static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
 			if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
 				throw new IllegalArgumentException("don't use this method for ARRAY property type");
 			}
@@ -412,7 +409,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
-		private final InputField<ArmaStringChecker, String> rawInput = new InputField<>(new ArmaStringChecker());
+		private final InputField<StringChecker, String> rawInput = new InputField<>(new StringChecker());
 		
 		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);

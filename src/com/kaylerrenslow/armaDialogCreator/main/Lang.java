@@ -166,7 +166,7 @@ public interface Lang {
 			String LOCATE_IMAGE = "Locate Image";
 			String A3_TOOLS_DIR_NOT_SET = "Arma 3 Tools directory not set.";
 			String SET_A3_TOOLS_BTN = "Set Arma 3 Tools directory";
-			FileChooser.ExtensionFilter IMAGE_FILE_EXTENSIONS = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.tga", "*.paa");
+			FileChooser.ExtensionFilter IMAGE_FILE_EXTENSIONS = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.paa");
 			
 			interface ConvertingPaaPopup {
 				String POPUP_TITLE = "Converting Image";
@@ -264,5 +264,21 @@ public interface Lang {
 	
 	static String getPopupWindowTitle(String popupName) {
 		return APPLICATION_NAME + " - " + popupName;
+	}
+	
+	interface ProjectInitWindow {
+		String WINDOW_TITLE = getPopupWindowTitle("Set the Project");
+		String TAB_NEW = "New";
+		String TAB_OPEN = "Open";
+		String TAB_IMPORT = "Import";
+		String CREATE_NEW_PROJECT = "Create a New Project";
+		String PROJECT_NAME = "Project Name:";
+		String OPEN_EXISTING_PROJECT = "Open Existing Project";
+		String DETECTED_PROJECTS = "Detected Projects";
+		String NO_DETECTED_PROJECTS= "No detected projects.";
+		String OPEN_FROM_FILE = "Open from file";
+		String IMPORT_ARMA_DIALOG = "Import an Arma 3 Dialog";
+		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
+		String PROJECT_SETUP = "Project Setup";
 	}
 }

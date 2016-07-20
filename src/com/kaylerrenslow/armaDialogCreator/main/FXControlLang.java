@@ -34,6 +34,10 @@ public interface FXControlLang {
 				String TYPE_NAME = "Expression";
 				String UNKNOWN_ERROR = "Unknown Error";
 			}
+			
+			interface StringChecker {
+				String TYPE_NAME = "String";
+			}
 		}
 	}
 }

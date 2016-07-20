@@ -19,6 +19,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -30,19 +31,24 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 /**
- Created by Kayler on 07/16/2016.
- */
+ @author Kayler
+ A ValueEditor implementation for selecting image files. This editor also has an implementation for discovering if the image file is a .paa or .tga file and will automatically
+ convert it to a read-able format and store it.
+ Created on 07/16/2016. */
 public class ImageValueEditor implements ValueEditor {
 	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
 	
 	private final Button btnChooseImage = new Button(Lang.ValueEditors.ImageValueEditor.LOCATE_IMAGE);
-	private final TextField tfFilePath = new TextField("");
+	protected final TextField tfFilePath = new TextField("");
 	
 	private final HBox hBox = new HBox(5, btnChooseImage, tfFilePath);
 	
 	private final StackPane masterPane = new StackPane(hBox);
 	
+	protected @Nullable SVImage imageValue = null;
+	
 	public ImageValueEditor() {
+		HBox.setHgrow(tfFilePath, Priority.ALWAYS);
 		tfFilePath.setEditable(false);
 		btnChooseImage.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -61,10 +67,10 @@ public class ImageValueEditor implements ValueEditor {
 	}
 	
 	private void chooseImage(File chosenFile) {
-		if (chosenFile.getName().endsWith(".tga") || chosenFile.getName().endsWith(".paa")) {
+		if (chosenFile.getName().endsWith(".paa")) {
 			convertImage(chosenFile);
-		}else{
-			System.out.println("ImageValueEditor.chooseImage IMAGE SET");
+		} else {
+			setValue(new SVImage(chosenFile));
 		}
 	}
 	
@@ -74,7 +80,7 @@ public class ImageValueEditor implements ValueEditor {
 			Arma3ToolsDirNotSetPopup setPopup = new Arma3ToolsDirNotSetPopup();
 			setPopup.showAndWait();
 			a3Tools = setPopup.getA3ToolsDir();
-			if(a3Tools == null){
+			if (a3Tools == null) {
 				return;
 			}
 		}
@@ -90,7 +96,7 @@ public class ImageValueEditor implements ValueEditor {
 		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent event) {
-				System.out.println("IMAGE SUCCESS " + getValue());
+				setValue(task.getValue());
 				convertingPaaPopup.close();
 			}
 		});
@@ -104,12 +110,17 @@ public class ImageValueEditor implements ValueEditor {
 	
 	@Override
 	public @Nullable SerializableValue getValue() {
-		return null;
+		return imageValue;
 	}
 	
 	@Override
 	public void setValue(SerializableValue val) {
-		
+		imageValue = (SVImage) val;
+		if (val == null) {
+			tfFilePath.setText("");
+		} else {
+			tfFilePath.setText(val.toString());
+		}
 	}
 	
 	@Override
@@ -132,7 +143,12 @@ public class ImageValueEditor implements ValueEditor {
 		return overrideField;
 	}
 	
-	private static class ConvertingPaaPopup extends StagePopup<VBox>{
+	@Override
+	public void focusToEditor() {
+		btnChooseImage.requestFocus();
+	}
+	
+	private static class ConvertingPaaPopup extends StagePopup<VBox> {
 		
 		private final ProgressBar progressBar = new ProgressBar(0);
 		
@@ -140,6 +156,7 @@ public class ImageValueEditor implements ValueEditor {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.POPUP_TITLE);
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myRootElement.setPadding(new Insets(10));
+			myStage.setResizable(false);
 			
 			myRootElement.getChildren().add(new Label(String.format(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.MESSAGE_F, convertingFile.getName())));
 			myRootElement.getChildren().add(progressBar);
@@ -155,7 +172,7 @@ public class ImageValueEditor implements ValueEditor {
 		}
 		
 	}
-			
+	
 	private static class ConvertPaaTask extends Task<SVImage> {
 		
 		private final File toConvert;
@@ -170,10 +187,10 @@ public class ImageValueEditor implements ValueEditor {
 		protected SVImage call() throws Exception {
 			updateProgress(-1, 1);
 			Thread.sleep(5000);
-//			ArmaTools.imageToPAA(a3Tools, toConvert, ) //todo
-			
+			//			ArmaTools.imageToPAA(a3Tools, toConvert, ) //todo
 			updateProgress(1, 1);
-			return new SVImage(new File("test"));
+			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
+			return new SVImage(new File("D:\\DATA\\Steam\\steamapps\\common\\Arma 3 Tools"));
 		}
 	}
 	
@@ -189,7 +206,6 @@ public class ImageValueEditor implements ValueEditor {
 				@Override
 				public void handle(ActionEvent event) {
 					new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory(), ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
-					
 					close();
 				}
 			});

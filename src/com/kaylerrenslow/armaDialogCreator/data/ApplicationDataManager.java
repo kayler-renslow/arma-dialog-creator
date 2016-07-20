@@ -1,6 +1,5 @@
-package com.kaylerrenslow.armaDialogCreator.io;
+package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,9 +10,15 @@ import java.io.File;
  Manages save data
  Created on 05/26/2016. */
 public class ApplicationDataManager {
-	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
-	public final ApplicationData applicationData = new ApplicationData();
-
+	private final ApplicationPropertyManager propertyManager;
+	public final ApplicationData applicationData;
+	
+	public ApplicationDataManager() {
+		propertyManager = new ApplicationPropertyManager();
+		applicationData = new ApplicationData(propertyManager.getAppSaveDataDirectory());
+		
+	}
+	
 	/** Set the application save data directory to a new one. Automatically updates application properties. */
 	public void setAppSaveDataLocation(@NotNull File file) {
 		propertyManager.setAppSaveDataLocation(file);

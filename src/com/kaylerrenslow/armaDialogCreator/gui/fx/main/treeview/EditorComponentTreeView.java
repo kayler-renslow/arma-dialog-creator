@@ -90,7 +90,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		updateGroup.update(TreeUpdate.ADD_ITEM);
 		int correctedIndex;
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
+		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 
 		ControlGroupTreeItemEntry group = null;
 		TreeItem<? extends TreeItemEntry> groupTreeItem;
@@ -125,7 +125,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		updateGroup.update(TreeUpdate.ADD_ITEM);
 		System.out.println("EditorComponentTreeView.addChildToRoot getRow = " + getRow(child));
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
+		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		display.getControls().add(childControlEntry.getMyArmaControl());
 		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
 	}
@@ -141,7 +141,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		System.out.println("EditorComponentTreeView.addChildToRoot2");
 		int correctedIndex = getCorrectedIndex(0, getRow(child), getRoot());
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
+		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
 	}
@@ -156,7 +156,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		updateGroup.update(TreeUpdate.REMOVE_ITEM);
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getEditingDisplay();
+		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		if (parent == getRoot()) {
 			display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
 			return;

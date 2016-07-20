@@ -11,6 +11,6 @@ import javafx.event.EventHandler;
 public class ViewPreviewAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		PreviewPopupWindow.getInstance().showDisplay(ArmaDialogCreator.getApplicationData().getEditingDisplay());
+		PreviewPopupWindow.getInstance().showDisplay(ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
 	}
 }

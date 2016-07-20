@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.AHexColor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.StackPane;
@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
-
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
+	
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(colorPicker);
 
 	@Override
@@ -43,7 +43,12 @@ public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	}
 
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
+	}
+	
+	@Override
+	public void focusToEditor() {
+		colorPicker.requestFocus();
 	}
 }
