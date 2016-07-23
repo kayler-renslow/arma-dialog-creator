@@ -6,6 +6,8 @@ package com.kaylerrenslow.armaDialogCreator.main;
  Created on 07/15/2016. */
 public interface FXControlLang {
 	interface InputField {
+		String SUBMIT_BTN_TOOLTIP = "Submit";
+		
 		/** Lang strings for InputFieldDataChecker instances */
 		interface DataCheckers {
 			String NO_VALUE = "No value entered.";

@@ -26,11 +26,29 @@ public class Project {
 		this.appSaveDirectory = appSaveDirectory;
 		
 		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
-		this.projectSaveDirectory.mkdir();
+		//this.projectSaveDirectory.mkdir(); //todo uncomment this line
+	}
+	
+	public Project(@NotNull File projectFile, @NotNull File appSaveDirectory) {
+		this.projectName = projectName;
+		this.appSaveDirectory = appSaveDirectory;
+		
+		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
+		//this.projectSaveDirectory.mkdir(); //todo uncomment this line
 	}
 	
 	private File getProjectFile(String projectName, File appSaveDirectory) {
 		return new File(appSaveDirectory.getPath() + "\\" + projectName);
+	}
+	
+	/**
+	 Get the path for the fileName that is based inside the Project path
+	 
+	 @param fileName name of the file
+	 @return File instance that is project_path\fileName
+	 */
+	public File getFileForName(@NotNull String fileName) {
+		return new File(projectSaveDirectory.getPath() + "\\" + fileName);
 	}
 	
 	@NotNull

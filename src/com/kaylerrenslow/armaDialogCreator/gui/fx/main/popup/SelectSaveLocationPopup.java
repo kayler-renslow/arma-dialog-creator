@@ -19,6 +19,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
@@ -28,11 +29,8 @@ import java.io.File;
  */
 public class SelectSaveLocationPopup extends StagePopup<VBox> {
 	
-	private TextField tfAppDataSaveDir = new TextField();
-	private TextField tfA3ToolsDir = new TextField();
-	
-	private Button btnChangeAppData = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
-	private Button btnChangeA3Tools = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
+	private final TextField tfAppDataSaveDir = new TextField();
+	private final TextField tfA3ToolsDir = new TextField();
 	
 	private BadArma3ToolsDirectoryPopup badArma3ToolsDirectoryPopup;
 	
@@ -60,7 +58,11 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		
 		Label lblAppDataSaveDir = new Label(Lang.Popups.SelectSaveLocation.LBL_APP_DATA_SAVE_DIR);
 		Label lblA3ToolsDir = new Label(Lang.Popups.SelectSaveLocation.LBL_A3_TOOLS_DIR);
-
+		
+		
+		final Button btnChangeAppData = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
+		final Button btnChangeA3Tools = new Button(Lang.Popups.SelectSaveLocation.BTN_CHANGE);
+		final Button btnClearA3ToolsDir = new Button(Lang.Popups.SelectSaveLocation.BTN_CLEAR);
 		
 		/*set events*/
 		btnChangeAppData.setOnAction(new EventHandler<ActionEvent>() {
@@ -96,6 +98,12 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 				}
 			}
 		});
+		btnClearA3ToolsDir.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				chooseA3ToolsSaveDir(null);
+			}
+		});
 		
 		
 		HBox hbTop = new HBox(5);
@@ -103,7 +111,7 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		HBox.setHgrow(tfAppDataSaveDir, Priority.ALWAYS);
 		
 		HBox hbMid = new HBox(5);
-		hbMid.getChildren().addAll(tfA3ToolsDir, btnChangeA3Tools);
+		hbMid.getChildren().addAll(tfA3ToolsDir, btnChangeA3Tools, btnClearA3ToolsDir);
 		HBox.setHgrow(tfA3ToolsDir, Priority.ALWAYS);
 		
 		
@@ -112,11 +120,11 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		myStage.setResizable(false);
 	}
 	
-	private void chooseA3ToolsSaveDir(File f) {
-		tfA3ToolsDir.setText(f.getPath());
+	private void chooseA3ToolsSaveDir(@Nullable File f) {
+		tfA3ToolsDir.setText(f != null ? f.getPath() : "");
 	}
 	
-	private void chooseAppDataSaveDir(File f) {
+	private void chooseAppDataSaveDir(@NotNull File f) {
 		tfAppDataSaveDir.setText(f.getPath());
 	}
 	
@@ -148,6 +156,8 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		ArmaDialogCreator.getApplicationDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
 		if (a3tools != null) {
 			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(new File(a3tools));
+		}else{
+			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(null);
 		}
 		close();
 	}

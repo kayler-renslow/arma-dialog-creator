@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
+import com.kaylerrenslow.armaDialogCreator.main.FXControlLang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -13,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Popup;
@@ -28,6 +31,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private final C dataChecker;
 	private final ValueObserver<V> observer = new ValueObserver<>(null);
 	private final TextField textField = new TextField();
+	private final HBox hboxTextField = new HBox(2, textField);
 	private final Button button = new Button();
 	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
 	
@@ -57,7 +61,18 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 */
 	public InputField(@NotNull C fieldDataChecker) {
 		this.dataChecker = fieldDataChecker;
-		
+		HBox.setHgrow(textField, Priority.ALWAYS);
+		final Button btnSubmit = new Button("");
+		btnSubmit.setPrefWidth(10d);
+		btnSubmit.setDefaultButton(true);
+		btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				setValueFromText(getText(), true, false);
+			}
+		});
+		btnSubmit.setTooltip(new Tooltip(FXControlLang.InputField.SUBMIT_BTN_TOOLTIP));
+		this.hboxTextField.getChildren().add(btnSubmit);
 		textField.setStyle("-fx-background-radius:0px");
 		
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
@@ -291,11 +306,11 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 		buttonState = toButton;
 		if (toButton) {
-			getChildren().remove(textField);
+			getChildren().remove(hboxTextField);
 			getChildren().add(button);
 		} else {
 			getChildren().remove(button);
-			getChildren().add(textField);
+			getChildren().add(hboxTextField);
 			textField.requestFocus();
 		}
 	}

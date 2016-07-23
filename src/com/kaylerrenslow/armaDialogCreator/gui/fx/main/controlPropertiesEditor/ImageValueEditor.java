@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
@@ -91,6 +92,8 @@ public class ImageValueEditor implements ValueEditor {
 			@Override
 			public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
 				newValue.printStackTrace(System.out);
+				convertingPaaPopup.getProgressBar().setProgress(1);
+				convertingPaaPopup.getProgressBar().setStyle("-fx-accent:red");
 			}
 		});
 		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
@@ -178,6 +181,8 @@ public class ImageValueEditor implements ValueEditor {
 		private final File toConvert;
 		private final File a3Tools;
 		
+		private static final long TIMEOUT = 1000 * 10; //ten seconds
+		
 		public ConvertPaaTask(@NotNull File toConvert, @NotNull File a3Tools) {
 			this.toConvert = toConvert;
 			this.a3Tools = a3Tools;
@@ -186,11 +191,12 @@ public class ImageValueEditor implements ValueEditor {
 		@Override
 		protected SVImage call() throws Exception {
 			updateProgress(-1, 1);
-			Thread.sleep(5000);
-			//			ArmaTools.imageToPAA(a3Tools, toConvert, ) //todo
+			File f = ArmaDialogCreator.getApplicationData().getCurrentProject().getFileForName(toConvert.getName() + ".png");
+			System.out.println(f);
+			ArmaTools.imageToPAA(a3Tools, toConvert, f, TIMEOUT);
 			updateProgress(1, 1);
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
-			return new SVImage(new File("D:\\DATA\\Steam\\steamapps\\common\\Arma 3 Tools"));
+			return new SVImage(f);
 		}
 	}
 	

@@ -20,7 +20,7 @@ public class ApplicationDataManager {
 	}
 
 	/** Set the arma 3 tools directory to a new one (can be null). Automatically updates application properties. */
-	public void setArma3ToolsLocation(@NotNull File file) {
+	public void setArma3ToolsLocation(@Nullable File file) {
 		propertyManager.setArma3ToolsLocation(file);
 	}
 

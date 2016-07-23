@@ -3,12 +3,22 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 /**
@@ -33,7 +43,27 @@ public class ADCWindow {
 		this.primaryStage.setScene(scene);
 		initialize(scene);
 		show();
-
+		
+		new StagePopup<VBox>(primaryStage, new VBox(5), Lang.Popups.Beta.POPUP_TITLE){
+			@Override
+			public void show() {
+				myStage.initModality(Modality.APPLICATION_MODAL);
+				
+				myRootElement.setPadding(new Insets(10));
+				myStage.setResizable(false);
+				final Label lblBody = new Label(Lang.Popups.Beta.BODY);
+				final Hyperlink hyperlink = new Hyperlink(Lang.Popups.Beta.REPORT_TO_LINK);
+				hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+					@Override
+					public void handle(ActionEvent event) {
+						BrowserUtil.browse(Lang.Popups.Beta.REPORT_TO_LINK);
+					}
+				});
+				myRootElement.getChildren().addAll(lblBody, hyperlink, new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+				myStage.sizeToScene();
+				super.show();
+			}
+		}.show();
 	}
 
 	private void initialize(Scene scene) {

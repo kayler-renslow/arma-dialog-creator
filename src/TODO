@@ -23,6 +23,7 @@ GENERAL:
     it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
 >don't create a new project folder upon every application launch
+>for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 
 
 BUGS:

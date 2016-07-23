@@ -83,6 +83,7 @@ public interface Lang {
 			String LBL_A3_TOOLS_DIR = "Arma 3 Tools directory (optional):";
 			String BTN_CHANGE = "Change";
 			String BAD_A3_TOOLS_DIR = "Not a valid Arma 3 Tools directory.";
+			String BTN_CLEAR = "Clear";
 		}
 		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.ControlPropertiesConfigPopup} */
@@ -124,6 +125,12 @@ public interface Lang {
 			String MACRO_VALUE = "Value:";
 			String MACRO_COMMENT = "Comment (optional):";
 			String NO_TYPE_CHOSEN = "No type chosen.";
+		}
+		
+		interface Beta {
+			String POPUP_TITLE = getPopupWindowTitle("Notification");
+			String BODY = "This is a beta. Things may be broken or lack features. Please report any issues on the issues page.";
+			String REPORT_TO_LINK = "https://github.com/kayler-renslow/arma-dialog-creator/issues";
 		}
 	}
 	

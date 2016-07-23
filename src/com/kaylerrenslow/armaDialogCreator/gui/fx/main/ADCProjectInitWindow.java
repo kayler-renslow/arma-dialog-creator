@@ -137,7 +137,6 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 	public interface ProjectInit {
 		
-		
 		class NewProject implements ProjectInit {
 			private final String projectName;
 			

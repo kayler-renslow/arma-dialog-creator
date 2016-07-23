@@ -55,7 +55,7 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-				
+		
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
 		
@@ -64,10 +64,10 @@ public final class ArmaDialogCreator extends Application {
 		
 		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
 		Project project = null;
-		if(init instanceof ADCProjectInitWindow.ProjectInit.NewProject){
+		if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
 			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
 			String projectName = newProject.getProjectName();
-			if (projectName == null) {
+			if (projectName == null || projectName.trim().length() == 0) {
 				int year = Calendar.getInstance().get(Calendar.YEAR);
 				int month = Calendar.getInstance().get(Calendar.MONTH);
 				int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
@@ -76,12 +76,15 @@ public final class ArmaDialogCreator extends Application {
 				String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
 				projectName = "untitled " + date;
 			}
-			project = new Project(projectName, applicationDataManager.getAppSaveDataDirectory());
+			project = new Project(projectName.trim(), applicationDataManager.getAppSaveDataDirectory());
+		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
+			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
+			
 		}
 		
 		applicationDataManager.applicationData.initApplicationData(project);
-
-//		//load main window
+		
+		//		//load main window
 		mainWindow = new ADCWindow(primaryStage);
 		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
 		for (StagePopup aShowLater : showLater) {
