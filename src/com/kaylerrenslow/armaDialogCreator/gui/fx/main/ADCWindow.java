@@ -61,6 +61,7 @@ public class ADCWindow {
 				});
 				myRootElement.getChildren().addAll(lblBody, hyperlink, new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
 				myStage.sizeToScene();
+				
 				super.show();
 			}
 		}.show();

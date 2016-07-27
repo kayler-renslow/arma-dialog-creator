@@ -19,6 +19,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -85,29 +86,8 @@ public class ImageValueEditor implements ValueEditor {
 				return;
 			}
 		}
-		ConvertingPaaPopup convertingPaaPopup = new ConvertingPaaPopup(chosenFile);
-		ConvertPaaTask task = new ConvertPaaTask(chosenFile, a3Tools);
-		convertingPaaPopup.getProgressBar().progressProperty().bind(task.progressProperty());
-		task.exceptionProperty().addListener(new ChangeListener<Throwable>() {
-			@Override
-			public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
-				newValue.printStackTrace(System.out);
-				convertingPaaPopup.getProgressBar().setProgress(1);
-				convertingPaaPopup.getProgressBar().setStyle("-fx-accent:red");
-			}
-		});
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				setValue(task.getValue());
-				convertingPaaPopup.close();
-			}
-		});
-		
+		ConvertingPaaPopup convertingPaaPopup = new ConvertingPaaPopup(this, chosenFile, a3Tools);
 		convertingPaaPopup.show();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		thread.start();
 		
 	}
 	
@@ -154,8 +134,10 @@ public class ImageValueEditor implements ValueEditor {
 	private static class ConvertingPaaPopup extends StagePopup<VBox> {
 		
 		private final ProgressBar progressBar = new ProgressBar(0);
+		private ConvertPaaTask convertPaaTask;
+		private boolean errorShown = false;
 		
-		public ConvertingPaaPopup(File convertingFile) {
+		public ConvertingPaaPopup(ImageValueEditor imageValueEditor, File convertingFile, File a3tools) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.POPUP_TITLE);
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myRootElement.setPadding(new Insets(10));
@@ -163,17 +145,57 @@ public class ImageValueEditor implements ValueEditor {
 			
 			myRootElement.getChildren().add(new Label(String.format(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.MESSAGE_F, convertingFile.getName())));
 			myRootElement.getChildren().add(progressBar);
+			
+			initTask(imageValueEditor, convertingFile, a3tools);
 		}
 		
-		public ProgressBar getProgressBar() {
-			return progressBar;
+		private void initTask(ImageValueEditor imageValueEditor, File chosenFile, File a3Tools) {
+			convertPaaTask = new ConvertPaaTask(chosenFile, a3Tools);
+			progressBar.progressProperty().bind(convertPaaTask.progressProperty());
+			convertPaaTask.exceptionProperty().addListener(new ChangeListener<Throwable>() {
+				@Override
+				public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
+					conversionError(newValue.getMessage() != null ? newValue.getMessage() : Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
+				}
+			});
+			convertPaaTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+				@Override
+				public void handle(WorkerStateEvent event) {
+					imageValueEditor.setValue(convertPaaTask.getValue());
+					close();
+				}
+			});
+			convertPaaTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
+				@Override
+				public void handle(WorkerStateEvent event) {
+					conversionError(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
+				}
+			});
+			
+			myStage.setOnShowing(new EventHandler<WindowEvent>() {//prevent the conversion thread being finished before the popup is shown. Can't update progress bar when it doesn't yet exist.
+				@Override
+				public void handle(WindowEvent event) {
+					Thread thread = new Thread(convertPaaTask);
+					thread.setDaemon(true);
+					thread.start();
+				}
+			});
 		}
+		
+		private void conversionError(String msg) {
+			if (errorShown) { //prevent the popup showing twice
+				return;
+			}
+			errorShown = true;
+			new ConversionFailPopup(msg).showAndWait();
+			close();
+		}
+		
 		
 		@Override
 		protected void onCloseRequest(WindowEvent event) {
 			event.consume();
 		}
-		
 	}
 	
 	private static class ConvertPaaTask extends Task<SVImage> {
@@ -190,9 +212,9 @@ public class ImageValueEditor implements ValueEditor {
 		
 		@Override
 		protected SVImage call() throws Exception {
+			cancel();
 			updateProgress(-1, 1);
 			File f = ArmaDialogCreator.getApplicationData().getCurrentProject().getFileForName(toConvert.getName() + ".png");
-			System.out.println(f);
 			ArmaTools.imageToPAA(a3Tools, toConvert, f, TIMEOUT);
 			updateProgress(1, 1);
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
@@ -226,6 +248,20 @@ public class ImageValueEditor implements ValueEditor {
 		@Nullable
 		public File getA3ToolsDir() {
 			return ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory();
+		}
+	}
+	
+	private static class ConversionFailPopup extends StagePopup<VBox> {
+		
+		public ConversionFailPopup(@NotNull String message) {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.CONVERT_ERROR_POPUP_TITLE);
+			
+			myStage.initModality(Modality.APPLICATION_MODAL);
+			myRootElement.setPadding(new Insets(10));
+			myRootElement.getChildren().addAll(new HBox(10, new ImageView("/com/kaylerrenslow/armaDialogCreator/gui/img/icons/error64.png"), new Label(message)));
+			myStage.setMinWidth(340d);
+			
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
 		}
 	}
 }

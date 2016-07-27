@@ -178,6 +178,8 @@ public interface Lang {
 			interface ConvertingPaaPopup {
 				String POPUP_TITLE = "Converting Image";
 				String MESSAGE_F = "Converting \"%s\" to a read-able format.";
+				String UNKNOWN_IMAGE_CONVERSION_ERROR = "An un-described error occurred during the conversion.";
+				String CONVERT_ERROR_POPUP_TITLE = "Conversion Failed";
 			}
 		}
 	}

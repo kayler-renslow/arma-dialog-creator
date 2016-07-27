@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -25,8 +26,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 /**
- Created by Kayler on 05/26/2016.
- */
+ @author Kayler
+ Used for setting application save directory {@link ApplicationDataManager#getAppSaveDataDirectory()} and Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}<br>
+ The application save directory is not allowed to be empty/not set, however, the Arma 3 Tools directory can be not set. All changes will be set inside the popup.
+ Created on 05/26/2016. */
 public class SelectSaveLocationPopup extends StagePopup<VBox> {
 	
 	private final TextField tfAppDataSaveDir = new TextField();
@@ -156,10 +159,18 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		ArmaDialogCreator.getApplicationDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
 		if (a3tools != null) {
 			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(new File(a3tools));
-		}else{
+		} else {
 			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(null);
 		}
 		close();
+	}
+	
+	@Override
+	protected void cancel() {
+		if (appSaveDataLocation() == null) {
+			return;
+		}
+		super.cancel();
 	}
 	
 	@Nullable
