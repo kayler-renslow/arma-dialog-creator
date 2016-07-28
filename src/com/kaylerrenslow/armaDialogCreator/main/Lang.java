@@ -51,6 +51,7 @@ public interface Lang {
 		String VIEW_ABS_REGION_ALWAYS_FRONT = "Always at Front";
 		String VIEW_DARK_THEME = "Use Dark Theme";
 		String VIEW_FULL_SCREEN = "Full Screen";
+		String VIEW_UI = "User Interface (UI)";
 		
 		String SETTINGS = "Settings";
 		String SETTINGS_CONFIGURE_DIRS = "Configure Directories";

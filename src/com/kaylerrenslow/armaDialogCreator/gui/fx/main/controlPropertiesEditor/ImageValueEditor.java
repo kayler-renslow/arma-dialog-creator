@@ -172,7 +172,7 @@ public class ImageValueEditor implements ValueEditor {
 				}
 			});
 			
-			myStage.setOnShowing(new EventHandler<WindowEvent>() {//prevent the conversion thread being finished before the popup is shown. Can't update progress bar when it doesn't yet exist.
+			myStage.setOnShowing(new EventHandler<WindowEvent>() {//prevent the conversion thread being finished before the popup is shown
 				@Override
 				public void handle(WindowEvent event) {
 					Thread thread = new Thread(convertPaaTask);

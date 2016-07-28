@@ -24,7 +24,7 @@ GENERAL:
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
 >don't create a new project folder upon every application launch
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
-
+>auto update position for controls when resolution ui scale is changed
 
 BUGS:
 -----------------------------------
