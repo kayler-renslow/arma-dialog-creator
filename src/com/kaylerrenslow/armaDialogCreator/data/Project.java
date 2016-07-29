@@ -3,9 +3,11 @@ package com.kaylerrenslow.armaDialogCreator.data;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 
 /**
  @author Kayler
@@ -21,7 +23,17 @@ public class Project {
 	private final MacroRegistry macroRegistry = new MacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
 	
-	public Project(@NotNull String projectName, @NotNull File appSaveDirectory) {
+	public Project(@Nullable String projectName, @NotNull File appSaveDirectory) {
+		if (projectName == null || projectName.trim().length() == 0) {
+			int year = Calendar.getInstance().get(Calendar.YEAR);
+			int month = Calendar.getInstance().get(Calendar.MONTH);
+			int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
+			int hour = Calendar.getInstance().get(Calendar.HOUR);
+			int minute = Calendar.getInstance().get(Calendar.MINUTE);
+			String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
+			projectName = "untitled " + date;
+		}
+		
 		this.projectName = projectName;
 		this.appSaveDirectory = appSaveDirectory;
 		

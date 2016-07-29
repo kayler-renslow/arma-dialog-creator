@@ -14,7 +14,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
-import java.util.Calendar;
 import java.util.LinkedList;
 
 /**
@@ -67,16 +66,7 @@ public final class ArmaDialogCreator extends Application {
 		if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
 			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
 			String projectName = newProject.getProjectName();
-			if (projectName == null || projectName.trim().length() == 0) {
-				int year = Calendar.getInstance().get(Calendar.YEAR);
-				int month = Calendar.getInstance().get(Calendar.MONTH);
-				int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-				int hour = Calendar.getInstance().get(Calendar.HOUR);
-				int minute = Calendar.getInstance().get(Calendar.MINUTE);
-				String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
-				projectName = "untitled " + date;
-			}
-			project = new Project(projectName.trim(), applicationDataManager.getAppSaveDataDirectory());
+			project = new Project(projectName, applicationDataManager.getAppSaveDataDirectory());
 		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
 			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
 			

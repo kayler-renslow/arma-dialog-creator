@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 07/15/2016.
@@ -36,23 +37,23 @@ public enum PropertyType {
 	EVENT(Lang.PropertyType.EVENT, true),
 	/** SQF code String */
 	SQF(Lang.PropertyType.SQF, true);
-
+	
 	/** Number of values used to represent the data */
 	public final int propertyValuesSize;
 	/** If true, when this control property is exported, the value should have quotes around it */
 	public final boolean exportHasQuotes;
 	public final String displayName;
-
+	
 	PropertyType(String displayName) {
 		this(displayName, 1);
 	}
-
+	
 	PropertyType(String displayName, boolean exportHasQuotes) {
 		this.propertyValuesSize = 1;
 		this.displayName = displayName;
 		this.exportHasQuotes = exportHasQuotes;
 	}
-
+	
 	PropertyType(String displayName, int propertyValueSize) {
 		if (propertyValueSize <= 0) {
 			throw new IllegalArgumentException("Number of values must be >= 1");
@@ -61,9 +62,20 @@ public enum PropertyType {
 		propertyValuesSize = propertyValueSize;
 		exportHasQuotes = false;
 	}
-
+	
 	@Override
 	public String toString() {
 		return displayName;
+	}
+	
+	/** An alternative to {@link #valueOf(String)} that doesn't throw exceptions */
+	@Nullable
+	public static PropertyType get(String propertyName) {
+		for (PropertyType propertyType : values()) {
+			if (propertyType.name().equals(propertyName)) {
+				return propertyType;
+			}
+		}
+		return null;
 	}
 }
