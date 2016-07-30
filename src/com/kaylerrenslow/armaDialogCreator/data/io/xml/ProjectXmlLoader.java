@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
@@ -14,14 +15,16 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
  Created by Kayler on 07/28/2016.
  */
 public class ProjectXmlLoader {
-	private ProjectXmlLoader() {
+	private final Document document;
+	
+	private ProjectXmlLoader(@NotNull Document document) {
+		this.document = document;
 	}
 	
 	@Nullable
@@ -30,20 +33,20 @@ public class ProjectXmlLoader {
 		DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
 		Document doc = documentBuilder.parse(projectSaveXml);
 		doc.getDocumentElement().normalize();
-		return parseDocument(doc);
+		ProjectXmlLoader loader = new ProjectXmlLoader(doc);
+		return loader.parseDocument();
 	}
 	
 	@Nullable
-	private static Project parseDocument(@NotNull Document document) {
+	private Project parseDocument() {
 		String projectName = document.getDocumentElement().getAttribute("name");
 		Project project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
-		
+		fetchMacros(project.getMacroRegistry().getMacros());
 		
 		return project;
 	}
 	
-	private static List<Macro> getMacros(Document document) {
-		List<Macro> macros = new ArrayList<>();
+	private List<Macro> fetchMacros(List<Macro> macros) {
 		NodeList macrosNodeList = document.getDocumentElement().getElementsByTagName("macros");
 		for (int i = 0; i < macrosNodeList.getLength(); i++) {
 			Node macrosNode = macrosNodeList.item(i);
@@ -72,15 +75,26 @@ public class ProjectXmlLoader {
 				if (propertyType.propertyValuesSize > macroValueNodeList.getLength()) { //missing entries
 					continue;
 				}
-
+				String[] values = new String[propertyType.propertyValuesSize];
 				for (int macroValueInd = 0; macroValueInd < macroList.getLength(); macroValueInd++) {
 					Node macroValueNode = macroValueNodeList.item(macroValueInd);
 					if (macroValueNode.getNodeType() != Node.ELEMENT_NODE) {
 						continue;
 					}
 					Element macroValueElement = (Element) macroValueNode;
-					
+					values[macroValueInd] = macroValueElement.getNodeValue();
 				}
+				
+				SerializableValue value;
+				try {
+					value = propertyType.valueClass.getConstructor(String[].class).newInstance(values);
+				} catch (Exception e) {
+					e.printStackTrace();
+					continue;
+				}
+				Macro<?> macro = new Macro<>(key, value, propertyType);
+				macros.add(macro);
+				macro.setComment(comment);
 			}
 		}
 		

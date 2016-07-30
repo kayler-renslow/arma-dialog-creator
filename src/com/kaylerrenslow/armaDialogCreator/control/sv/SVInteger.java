@@ -1,27 +1,21 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /** A generic wrapper implementation for an int. */
-public final class SVInteger implements SVNumber {
-	private final String[] arr;
+public final class SVInteger extends SVNumber {
 	private int i;
 
 	public SVInteger(int i) {
+		super(i);
 		this.i = i;
-		arr = new String[]{i + ""};
 	}
 
 	public void setInt(int i) {
 		this.i = i;
-		arr[0] = this.i + "";
+		valuesAsArray[0] = this.i + "";
 	}
 
 	public int getInt() {
 		return i;
-	}
-
-	@Override
-	public String[] getAsStringArray() {
-		return arr;
 	}
 
 	@Override
@@ -31,9 +25,14 @@ public final class SVInteger implements SVNumber {
 
 	@Override
 	public String toString() {
-		return arr[0];
+		return valuesAsArray[0];
 	}
-
+	
+	@Override
+	protected void setValue(String value) {
+		setInt(Integer.parseInt(value));
+	}
+	
 	@Override
 	public double getNumber() {
 		return i;

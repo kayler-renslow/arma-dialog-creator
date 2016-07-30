@@ -168,6 +168,7 @@ public class ImageValueEditor implements ValueEditor {
 			convertPaaTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
 				@Override
 				public void handle(WorkerStateEvent event) {
+					System.out.println("ConvertingPaaPopup.handle");
 					conversionError(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
 				}
 			});
@@ -215,7 +216,11 @@ public class ImageValueEditor implements ValueEditor {
 			cancel();
 			updateProgress(-1, 1);
 			File f = ArmaDialogCreator.getApplicationData().getCurrentProject().getFileForName(toConvert.getName() + ".png");
-			ArmaTools.imageToPAA(a3Tools, toConvert, f, TIMEOUT);
+			boolean good = ArmaTools.imageToPAA(a3Tools, toConvert, f, TIMEOUT);
+			if (!good) {
+				cancel();
+				return null;
+			}
 			updateProgress(1, 1);
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
 			return new SVImage(f);

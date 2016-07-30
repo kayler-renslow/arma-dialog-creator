@@ -1,16 +1,35 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  @author Kayler
- Interface that specifies that a value can be converted into a String[]. For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
+ Base class that specifies that a value can be converted into a String[]. For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
  Created on 07/13/2016. */
-public interface SerializableValue {
-
+public abstract class SerializableValue {
+	
+	protected final String[] valuesAsArray;
+	
 	/**
-	 Return the value as a String array
+	 Equivalent of doing:<code>new SerializableValue(new String[]{onlyValue})</code>
 	 */
-	String[] getAsStringArray();
-
+	public SerializableValue(@NotNull String onlyValue) {
+		this(new String[]{onlyValue});
+	}
+	
+	/**
+	 Construct the SerializableValue from the given String values. Each value corresponds to a value in {@link #getAsStringArray()}. <br>
+	 <b>This constructor must be explicitly redefined in each parent class. This constructor is used for creating new SerializableValue's via Java reflection</b>
+	 */
+	public SerializableValue(@NotNull String[] values) {
+		this.valuesAsArray = values;
+	}
+	
+	/** Return the value as a String array */
+	public String[] getAsStringArray() {
+		return valuesAsArray;
+	}
+	
 	/** Return the instance as a deep copy */
-	SerializableValue deepCopy();
+	public abstract SerializableValue deepCopy();
 }

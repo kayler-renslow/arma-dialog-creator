@@ -1,6 +1,6 @@
 ADDED:
-    early beginning of project loading
-CHANGED:
     none
+CHANGED:
+    SerializableValue classes are now associated with the PropertyType
 FIXED:
     none
