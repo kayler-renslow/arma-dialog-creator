@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,6 +15,13 @@ import java.text.DecimalFormat;
 public class AColor extends SerializableValue {
 	private static DecimalFormat format = new DecimalFormat("#.####");
 	private static final double f = 255.0;
+	
+	public static final ValueConverter<AColor> CONVERTER = new ValueConverter<AColor>() {
+		@Override
+		public AColor convert(@NotNull DataContext context, @NotNull String... values) {
+			return new AColor(values);
+		}
+	};
 	
 	/** cache the javaFX color */
 	private Color javafxColor;

@@ -287,11 +287,25 @@ public interface Lang {
 		String OPEN_PROJECT_TITLE = "Open Existing Project";
 		String OPEN_PROJECT_OK = "Load Project";
 		String DETECTED_PROJECTS = "Detected Projects";
-		String NO_DETECTED_PROJECTS= "No detected projects.";
+		String NO_DETECTED_PROJECTS = "No detected projects.";
 		String OPEN_FROM_FILE = "Open from file";
 		String IMPORT_PROJECT_TITLE = "Import an Arma 3 Dialog";
 		String IMPORT_PROJECT_OK = "Import Dialog";
 		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
 		String PROJECT_SETUP = "Project Setup";
+	}
+	
+	interface XmlParse {
+		String FAILED_TO_READ_XML = "Failed to read the XML.";
+		String BAD_LOOKUP_ID_F = "Bad lookup id: '%s'.";
+		String BAD_CONTROL_TYPE_F = "Bad control type: '%s'.";
+		String BAD_RENDERER_F = "Bad renderer: '%s'.";
+		String BAD_MACRO_VALUES_F = "Bad macro values: '%s'.";
+		String BAD_MACRO_KEY_OR_TYPE_F = "Bad macro key or type. key:'%s', type:'%s'";
+		String BAD_MACRO_PROPERTY_TYPE_F = "Bad macro property type: '%s'.";
+		String BAD_MACRO_VALUE_COUNT_F = "Not enough values for macro. Count:'%d'.";
+		String BAD_DISPLAY_IDD_F = "Bad display idd: '%s'.";
+		String BAD_CONTROL_IDC_F = "Bad control idc: '%s'.";
+		String BAD_LOOKUP_TYPE_F = "Bad lookup type: '%s'.";
 	}
 }

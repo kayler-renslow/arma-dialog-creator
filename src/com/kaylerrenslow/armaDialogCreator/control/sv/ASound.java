@@ -1,10 +1,21 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
+
 /**
  @author Kayler
  Specifies a sound
  Created on 05/22/2016. */
 public class ASound extends SerializableValue {
+	public static final ValueConverter<ASound> CONVERTER = new ValueConverter<ASound>() {
+		@Override
+		public ASound convert(@NotNull DataContext context, @NotNull String... values) {
+			return new ASound(values);
+		}
+	};
+	
 	private String soundName;
 	private double db;
 	private double pitch;

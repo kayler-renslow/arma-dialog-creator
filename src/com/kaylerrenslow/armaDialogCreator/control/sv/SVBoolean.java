@@ -1,9 +1,20 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
+
 /** A generic wrapper implementation for a boolean. */
 public final class SVBoolean extends SerializableValue {
 	private static final String S_TRUE = "true";
 	private static final String S_FALSE = "false";
+	
+	public static final ValueConverter<SVBoolean> CONVERTER = new ValueConverter<SVBoolean>() {
+		@Override
+		public SVBoolean convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+			return values[0].trim().equalsIgnoreCase(S_TRUE) ? TRUE : FALSE;
+		}
+	};
 	
 	private boolean b;
 	
@@ -14,7 +25,7 @@ public final class SVBoolean extends SerializableValue {
 		super(b + "");
 		this.b = b;
 	}
-		
+	
 	public boolean isTrue() {
 		return b;
 	}

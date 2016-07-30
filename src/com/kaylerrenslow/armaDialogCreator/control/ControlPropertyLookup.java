@@ -11,8 +11,7 @@ import java.util.Arrays;
 /**
  @author Kayler
  A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
- Created on 05/22/2016.
- */
+ Created on 05/22/2016. */
 public enum ControlPropertyLookup {
 	IDC(0, "idc", PropertyType.INT, "Control id, or -1 if doesn't matter."),
 	X(1, "x", PropertyType.EXP, "X position."),
@@ -22,7 +21,7 @@ public enum ControlPropertyLookup {
 	TYPE(5, "type", PropertyType.INT, "Type of the control."),
 	STYLE(6, "style", PropertyType.INT, "Style of the control."),
 	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new ControlPropertyOption("Read and Write", "0", "Default case where properties can still be added or overridden."), new ControlPropertyOption("Read and Create", "1", "Only allows creating new properties."), new ControlPropertyOption("Read Only", "2", "Does not allow to do anything in deriving classes."), new ControlPropertyOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")),
-
+	
 	/*Common*/
 	MOVING(8, "moving", PropertyType.BOOLEAN, "Whether or not this control can be dragged."),
 	SIZE_EX(9, "sizeEx", PropertyType.FLOAT, "Font size of text."),
@@ -44,17 +43,17 @@ public enum ControlPropertyLookup {
 	SOUND_ENTER(55, "soundEnter", PropertyType.SOUND, "Sound to play when mouse cursor is moved over the control."),
 	SOUND_ESCAPE(56, "soundEscape", PropertyType.SOUND, "Sound to play when the control was clicked via the mouse, and then released outside the control area."),
 	SOUND_PUSH(57, "soundPush", PropertyType.SOUND, "Sound to play when mouse is clicked on control."),
-
+	
 	/*Static*/
 	STATIC_AUTO_PLAY(24, "autoPlay", PropertyType.BOOLEAN, "Autoplay the video (video only)."),
 	STATIC_KEY(25, "key", PropertyType.STRING, "From the wiki:\"a possibly quite useless xbox value\"."),
 	STATIC_LOOPS(26, "loops", PropertyType.INT, "Number of times the video loops."),
 	STATIC_LINE_SPACING(27, "lineSpacing", PropertyType.FLOAT, "Line spacing of text and is required if style is MULTI (16)"),
 	STATIC_FIXED_WIDTH(28, "fixedWidth", PropertyType.BOOLEAN, null),
-
+	
 	/*Structured Text*/
 	STRUCT_TEXT_SIZE(29, "size", PropertyType.FLOAT, "Size of text. If 1, size will be value of parent class."),
-
+	
 	/*HTML*/
 	HTML_CYCLE_LINKS(30, "cyclelinks", PropertyType.BOOLEAN, null),
 	HTML_FILE_NAME(31, "filename", PropertyType.FILE_NAME, "HTML file to load into control at startup."),
@@ -67,7 +66,7 @@ public enum ControlPropertyLookup {
 	HTML_COLOR_PICTURE_SELECTED(38, "colorPictureSelected", PropertyType.COLOR, "Color of transparent part of image that is within an active link."),
 	HTML_PREV_PAGE(39, "prevPage", PropertyType.IMAGE, "File name of image which is used for left arrow."),
 	HTML_NEXT_PAGE(40, "nextPage", PropertyType.IMAGE, "File name of image which is used for right arrow."),
-
+	
 	/*Button*/
 	BTN_ACTION(41, "action", PropertyType.SQF, "Script command(s) to execute when button is pressed. Variable 'this' contains unit that pressed button."),
 	BTN_BORDER_SIZE(42, "borderSize", PropertyType.FLOAT, "If > 0 then a background (in the color defined in 'colorBorder') is drawn behind the button. It extends to the left by the distance defined here, its height is slightly less than that of the button, and it is vertically centered. The width extends to the right, to where the drop shadow starts. Stays static when button is pressed."),
@@ -96,7 +95,7 @@ public enum ControlPropertyLookup {
 	BTN_PERIOD(67, "period", PropertyType.FLOAT, null),
 	BTN_PERIOD_FOCUS(68, "periodFocus", PropertyType.FLOAT, null),
 	BTN_PERIOD_OVER(69, "periodOver", PropertyType.FLOAT, null),
-
+	
 	/*Active Text*/
 	AT_ACTION(70, "action", PropertyType.SQF, "Script command(s) to execute when text is clicked."),
 	AT_CAN_DRAG(71, "canDrag", PropertyType.BOOLEAN, null),
@@ -113,14 +112,14 @@ public enum ControlPropertyLookup {
 	AT_PICTURE(82, "picture", PropertyType.TEXTURE, null),
 	AT_SIDE_TOGGLE(83, "sideToggle", PropertyType.COLOR, null),
 	AT_TEXT_HEIGHT(84, "textHeight", PropertyType.FLOAT, null),
-
+	
 	/*Edit*/
 	EDIT_AUTO_COMPLETE(85, "autocomplete", PropertyType.STRING, "Auto-completion option.", new ControlPropertyOption("None", "", "No auto-completion."), new ControlPropertyOption("Script", "scripting", "Auto-completion set for scripting."), new ControlPropertyOption("General", "general", "Auto-completion on normal words.")),
 	EDIT_HTML_CONTROL(86, "htmlControl", PropertyType.BOOLEAN, "If used together with style=ST_MULTI, allows multi-line editable text fields."),
 	EDIT_LINE_SPACING(87, "lineSpacing", PropertyType.FLOAT, "Line spacing and this is required if style is MULTI (16)"),
 	EDIT_COLOR_SELECTION(88, "colorSelection", PropertyType.COLOR, null),
 	EDIT_SIZE(89, "size", PropertyType.FLOAT, "From the wiki: \"possibly a typo, perhaps irrelevant xbox property\"."),
-
+	
 	/*Sliders*/
 	SLIDE_ARROW_EMPTY(90, "arrowEmpty", PropertyType.TEXTURE, null),
 	SLIDE_ARROW_FULL(91, "arrowFull", PropertyType.TEXTURE, null),
@@ -129,7 +128,7 @@ public enum ControlPropertyLookup {
 	SLIDE_DISABLED(94, "colorDisabled", PropertyType.COLOR, null),
 	SLIDE_THUMB(95, "thumb", PropertyType.TEXTURE, null),
 	SLIDE_VSPACING(96, "vspacing", PropertyType.FLOAT, null),
-
+	
 	/*Combo*/
 	COMBO_ARROW_EMPTY(97, "arrowEmpty", PropertyType.TEXTURE, null),
 	COMBO_ARROW_FULL(98, "arrowFull", PropertyType.TEXTURE, null),
@@ -145,7 +144,7 @@ public enum ControlPropertyLookup {
 	COMBO_ROW_HEIGHT(108, "rowHeight", PropertyType.FLOAT, "Height of a single row in the elapsed box."),
 	COMBO_SOUND_SELECT(109, "soundSelect", PropertyType.SOUND, null),
 	COMBO_SOUND_COLLAPSE(110, "soundCollapse", PropertyType.SOUND, null),
-
+	
 	/*Listboxes*/
 	LB_ACTIVE(111, "active", PropertyType.BOOLEAN, null),
 	LB_AUTO_SCROLL(112, "autoScroll", PropertyType.INT, null),
@@ -177,7 +176,7 @@ public enum ControlPropertyLookup {
 	LB_MAX_HISTORY_DELAY(139, "maxHistoryDelay", PropertyType.FLOAT, null),
 	LB_ROW_HEIGHT(140, "rowHeight", PropertyType.FLOAT, "The height of a single row in the elapsed box."),
 	LB_ROWS(141, "rows", PropertyType.INT, null),
-
+	
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.EVENT, strArr("Display and all controls are created, but no action on any is taken.", "Returns the display.", priority(1), "Display")),
 	EVENT_ON_UNLOAD(1001, "onUnload", PropertyType.EVENT, strArr("Display is closed, but no controls are destroyed yet.", "Returns the display and exit code.", priority(1), "Display")),
@@ -241,8 +240,8 @@ public enum ControlPropertyLookup {
 	/*ShortcutPos class*/
 	/*CLASS_SHORTCUT_POS__W(0, "w", PropertyType.FLOAT, null),
 	CLASS_SHORTCUT_POS__H(0, "h", PropertyType.FLOAT, null)*/;
-
-
+	
+	
 	public static final ControlPropertyLookup[] EMPTY = new ControlPropertyLookup[0];
 	/** All values that the property can be, or null if user defined. */
 	public final @Nullable ControlPropertyOption[] options;
@@ -254,7 +253,7 @@ public enum ControlPropertyLookup {
 	 <br>When the loopup item is written, the propertyId must <b>NEVER</b> change.
 	 */
 	public final int propertyId;
-
+	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable ControlPropertyOption... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
 			int canUse;
@@ -276,47 +275,47 @@ public enum ControlPropertyLookup {
 		this.about = about;
 		this.options = options;
 	}
-
+	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about) {
 		this(propertyId, propertyName, propertyType, about, (ControlPropertyOption[]) null);
 	}
-
+	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable ControlPropertyOption... options) {
 		this(propertyId, propertyName, propertyType, about == null ? strArr("No documentation.") : strArr(about), options);
 	}
-
+	
 	@Override
 	public String toString() {
 		return propertyName;
 	}
-
+	
 	public ControlProperty getIntProperty(int defaultValue) {
 		return new ControlProperty(this, propertyName, defaultValue);
 	}
-
+	
 	public ControlProperty getFloatProperty(double defaultValue) {
 		return new ControlProperty(this, propertyName, defaultValue);
 	}
-
+	
 	public ControlProperty getBooleanProperty(boolean defaultValue) {
 		return new ControlProperty(this, propertyName, defaultValue);
 	}
-
+	
 	public ControlProperty getProperty(SerializableValue defaultValue) {
 		return new ControlProperty(this, propertyName, PropertyType.STRING, defaultValue);
 	}
-
+	
 	public ControlProperty getPropertyFromOption(int optionNum) {
-		if(options == null || optionNum < 0 || optionNum > options.length){
+		if (options == null || optionNum < 0 || optionNum > options.length) {
 			throw new IllegalStateException("options and optionNum are bad. options=" + (options != null ? Arrays.toString(options) : "null") + " optionNum=" + optionNum);
 		}
 		return new ControlProperty(this, propertyName, propertyType, new SVString(options[optionNum].value));
 	}
-
+	
 	public ControlProperty getPropertyWithNoData() {
 		return new ControlProperty(this, propertyName, propertyType);
 	}
-
+	
 	/** Get all lookup enums where their property type is equal to find */
 	public static ControlPropertyLookup[] getAllOfTypeControlProperties(PropertyType find) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
@@ -327,20 +326,29 @@ public enum ControlPropertyLookup {
 		}
 		return props.toArray(new ControlPropertyLookup[props.size()]);
 	}
-
+	
 	private static String[] strArr(String... vals) {
 		return vals;
 	}
-
+	
 	private static String priority(int i) {
 		if (i < 0) {
 			return "unknown";
 		}
 		return i + "";
 	}
-
+	
 	private static class PropertiesLookupDataVerifier {
 		static ArrayList<Integer> usedIds = new ArrayList<>();
 	}
-
+	
+	public static ControlPropertyLookup findById(int id) {
+		for (ControlPropertyLookup lookup : values()) {
+			if (lookup.propertyId == id) {
+				return lookup;
+			}
+		}
+		return null;
+	}
+	
 }

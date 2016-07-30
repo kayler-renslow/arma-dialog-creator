@@ -1,6 +1,6 @@
 ADDED:
     none
 CHANGED:
-    SerializableValue classes are now associated with the PropertyType
+    xml loading
 FIXED:
     none

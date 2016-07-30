@@ -1,8 +1,19 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
+
 /** A generic wrapper implementation for a String. */
 public final class SVString extends SerializableValue {
 
+	public static final ValueConverter<SVString> CONVERTER = new ValueConverter<SVString>() {
+		@Override
+		public SVString convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+			return new SVString(values[0]);
+		}
+	};
+	
 	public SVString(String s) {
 		super(s);
 	}

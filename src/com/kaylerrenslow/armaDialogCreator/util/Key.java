@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/19/2016.
+ @author Kayler
+ Used in conjunction with {@link DataContext}
+ Created on 07/19/2016.
  */
 public class Key<V> {
 	private final String name;
@@ -52,5 +54,13 @@ public class Key<V> {
 	@Override
 	public int hashCode() {
 		return name.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return "Key{" +
+				"name='" + name + '\'' +
+				", defaultValue=" + defaultValue +
+				'}';
 	}
 }

@@ -1,12 +1,23 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import javafx.scene.paint.Color;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
  Class used to depict a hex color string.
  Created on 05/23/2016. */
 public class AHexColor extends AColor {
+	
+	public static final ValueConverter<AHexColor> CONVERTER = new ValueConverter<AHexColor>() {
+		@Override
+		public AHexColor convert(@NotNull DataContext context, @NotNull String... values) {
+			return new AHexColor(values[0]);
+		}
+	};
+
 	private String hex;
 
 	/**
@@ -136,5 +147,10 @@ public class AHexColor extends AColor {
 
 	public static double[] getColorArray(int color) {
 		return getColorArray(new double[4], color);
+	}
+	
+	@Override
+	public String toString() {
+		return hex;
 	}
 }

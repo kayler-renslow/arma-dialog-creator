@@ -1,7 +1,19 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
+
 /** A generic wrapper implementation for an int. */
 public final class SVInteger extends SVNumber {
+	
+	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
+		@Override
+		public SVInteger convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+			return new SVInteger(Integer.parseInt(values[0]));
+		}
+	};
+	
 	private int i;
 
 	public SVInteger(int i) {

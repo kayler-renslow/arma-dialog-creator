@@ -17,10 +17,7 @@ public abstract class SerializableValue {
 		this(new String[]{onlyValue});
 	}
 	
-	/**
-	 Construct the SerializableValue from the given String values. Each value corresponds to a value in {@link #getAsStringArray()}. <br>
-	 <b>This constructor must be explicitly redefined in each parent class. This constructor is used for creating new SerializableValue's via Java reflection</b>
-	 */
+	/** Construct the SerializableValue from the given String values. Each value corresponds to a value in {@link #getAsStringArray()} */
 	public SerializableValue(@NotNull String[] values) {
 		this.valuesAsArray = values;
 	}
