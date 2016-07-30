@@ -12,7 +12,6 @@ Arma Dialog Creator is a tool for creating dialogs for Arma 3. The tool was desi
 * Preview of Controls that have a .paa image file (must have Arma 3 Tools installed).
 
 ### License
-Arma games are created by Bohemia Interactive. Arma Dialog Creator was created by Kayler Renslow. The plugin and it's creator aren't affiliated with Bohemia Interactive.
-This project is open source. Do what you want with the code. Sell it, modify it, claim you made it, or anything else - I don't care (I still reserve my rights to the source code). Just make sure you are respecting the rights of Bohemia Interactive.
+Arma games are created by and owned Bohemia Interactive. Arma Dialog Creator was created by Kayler Renslow. The plugin and it's creator aren't affiliated with Bohemia Interactive. This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). You don't need to contact me if you want to create derivatives or publish the project elsewhere.
 
 ### More info coming soon...
