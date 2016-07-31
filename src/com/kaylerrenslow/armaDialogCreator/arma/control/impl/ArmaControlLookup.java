@@ -71,4 +71,5 @@ public enum ArmaControlLookup {
 		}
 		throw new IllegalStateException("control type should have been matched");
 	}
+	
 }

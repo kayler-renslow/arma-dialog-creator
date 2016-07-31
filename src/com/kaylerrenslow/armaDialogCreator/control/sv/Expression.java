@@ -1,11 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionEvaluationException;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
-import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,19 +14,18 @@ import org.jetbrains.annotations.NotNull;
  Expression value that is used for {@link com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter} and is storable in {@link com.kaylerrenslow.armaDialogCreator.control.ControlProperty}
  Created on 07/15/2016. */
 public class Expression extends SerializableValue {
-	public static final Key<Env> KEY_ENV = new Key<>("expression.converter.env", null);
 	
 	/**
 	 {@link ValueConverter} instance for Expression values. The {@link DataContext} parameter in the {@link ValueConverter#convert(DataContext, String...)}
-	 method must contain a non-null entry with key {@link #KEY_ENV}, or {@link IllegalArgumentException} will be thrown from {@link ValueConverter#convert(DataContext, String...)}.
+	 method must contain a non-null entry with key {@link DataKeys#ENV}, or {@link IllegalArgumentException} will be thrown from {@link ValueConverter#convert(DataContext, String...)}.
 	 */
 	public static final ValueConverter<Expression> CONVERTER = new ValueConverter<Expression>() {
 		
 		@Override
 		public Expression convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
-			Env env = KEY_ENV.get(context);
+			Env env = DataKeys.ENV.get(context);
 			if (env == null) {
-				throw new IllegalArgumentException("context key is missing:" + KEY_ENV);
+				throw new IllegalArgumentException("context key is missing:" + DataKeys.ENV);
 			}
 			return new Expression(values[0], env);
 		}

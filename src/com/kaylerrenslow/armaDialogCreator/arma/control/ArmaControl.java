@@ -9,7 +9,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
- The base class for all controls
+ The base class for all controls.<br>
+ <b>NOTE: any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instanceof some extended class because when the project is loaded from .xml
+ via {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
+ <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
  Created on 05/20/2016. */
 public class ArmaControl extends ControlClass {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */

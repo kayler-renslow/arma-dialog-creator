@@ -1,14 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecificationProvider;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/07/2016.
  */
-public class SimpleArmaControlSpecProvider implements ControlClassSpecificationProvider {
+public class SimpleArmaControlSpecProvider extends ArmaControlSpecProvider {
 		
 	private ControlClass[] requiredSubClasses;
 	private ControlClass[] optionalSubClasses;
