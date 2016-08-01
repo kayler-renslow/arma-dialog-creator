@@ -268,10 +268,13 @@ public class UICanvasEditor extends UICanvas {
 
 	@Override
 	protected void paintComponent(CanvasComponent component) {
+		if (isSelectingArea() && !component.isEnabled()) {
+			return;
+		}
 		boolean selected = selection.isSelected(component);
 		if (selected) {
 			gc.save();
-			Color selectedBorderColor = component.getBackgroundColor().invert();
+			Color selectedBorderColor = selectionColor;
 			int centerx = component.getCenterX();
 			int centery = component.getCenterY();
 			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
@@ -287,14 +290,11 @@ public class UICanvasEditor extends UICanvas {
 				gc.strokeLine(0, centery, getCanvasWidth(), centery);
 			}
 			//draw selection 'shadow'
-			gc.setGlobalAlpha(0.6);
+			gc.setGlobalAlpha(0.3d);
 			gc.setStroke(selectedBorderColor);
 			int offset = 4 + (component.getBorder() != null ? component.getBorder().getThickness() : 0);
 			Region.fillRectangle(gc, component.getLeftX() - offset, component.getTopY() - offset, component.getRightX() + offset, component.getBottomY() + offset);
 			gc.restore();
-		}
-		if (isSelectingArea() && !component.isEnabled()) {
-			return;
 		}
 		if (selected && component instanceof ArmaControlRenderer) {
 			((ArmaControlRenderer) component).forcePaint(gc);

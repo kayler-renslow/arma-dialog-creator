@@ -297,18 +297,25 @@ public interface Lang {
 	
 	interface XmlParse {
 		String FAILED_TO_READ_XML = "Failed to read the XML.";
-		String BAD_MACRO_VALUES_F = "Bad macro values: '%s'.";
-		String BAD_MACRO_KEY_OR_TYPE_F = "Bad macro key or type. key:'%s', type:'%s'";
-		String BAD_MACRO_PROPERTY_TYPE_F = "Bad macro property type: '%s'.";
-		String BAD_VALUE_CREATION_COUNT_F = "Not enough values for %s. Count:'%d'.";
-		String BAD_DISPLAY_IDD_F = "Bad display idd: '%s'.";
-		String MISSING_CONTROL_NAME = "Missing control name for tag:'%s'.";
-		String BAD_LOOKUP_ID_F = "Bad lookup id: '%s' for control '%s'.";
-		String BAD_CONTROL_TYPE_F = "Bad control type: '%s' for control '%s'.";
-		String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
-		String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";
-		String MISSING_CONTROL_PROPERTY_F = "Missing control property: '%s' for control '%s'.";
-		
 		String GENERIC_RECOVER_MESSAGE_F = "Value '%s' is now the current value.";
+		
+		interface ProjectLoad {
+			String BAD_VALUES_F = "Bad values: '%s'.";
+			String BAD_MACRO_KEY_OR_TYPE_F = "Bad macro key or type. key:'%s', type:'%s'";
+			String BAD_MACRO_PROPERTY_TYPE_F = "Bad macro property type: '%s'.";
+			String BAD_VALUE_CREATION_COUNT_F = "Not enough values for %s. Count:'%d'.";
+			String BAD_DISPLAY_IDD_F = "Bad display idd: '%s'.";
+			String MISSING_CONTROL_NAME = "Missing control name for tag:'%s'.";
+			String BAD_LOOKUP_ID_F = "Bad lookup id: '%s' for control '%s'.";
+			String BAD_CONTROL_TYPE_F = "Bad control type: '%s' for control '%s'.";
+			String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
+			String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";
+			String MISSING_CONTROL_PROPERTY_F = "Missing control property: '%s' for control '%s'.";
+		
+		}
+		
+		interface ApplicationPropertyLoad{
+			String BAD_SAVED_VALUE_F= "Application property '%s' failed to load saved value. Using '%s' as new value.";
+		}
 	}
 }

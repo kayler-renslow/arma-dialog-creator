@@ -32,6 +32,19 @@ public class XmlUtil {
 		return new SimpleNodeList(nodes);
 	}
 	
+	/** Get the text content of the given node but not the node's descendant nodes' text concatenated with it. */
+	public static String getImmediateTextContent(Node node) {
+		NodeList list = node.getChildNodes();
+		StringBuilder textContent = new StringBuilder();
+		for (int i = 0; i < list.getLength(); ++i) {
+			Node child = list.item(i);
+			if (child.getNodeType() == Node.TEXT_NODE) {
+				textContent.append(child.getTextContent());
+			}
+		}
+		return textContent.toString();
+	}
+	
 	private static class SimpleNodeList implements NodeList {
 		
 		private final List<Node> nodes;

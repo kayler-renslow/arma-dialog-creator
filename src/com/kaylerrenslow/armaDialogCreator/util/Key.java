@@ -58,9 +58,6 @@ public class Key<V> {
 	
 	@Override
 	public String toString() {
-		return "Key{" +
-				"name='" + name + '\'' +
-				", defaultValue=" + defaultValue +
-				'}';
+		return name;
 	}
 }

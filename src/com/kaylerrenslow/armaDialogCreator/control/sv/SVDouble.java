@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public final class SVDouble extends SVNumber {
 	public static final ValueConverter<SVDouble> CONVERTER = new ValueConverter<SVDouble>() {
 		@Override
-		public SVDouble convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVDouble convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVDouble(Double.parseDouble(values[0]));
 		}
 	};

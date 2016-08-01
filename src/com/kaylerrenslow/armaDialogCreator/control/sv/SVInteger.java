@@ -9,7 +9,7 @@ public final class SVInteger extends SVNumber {
 	
 	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
 		@Override
-		public SVInteger convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVInteger convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVInteger(Integer.parseInt(values[0]));
 		}
 	};

@@ -9,7 +9,7 @@ public final class SVString extends SerializableValue {
 
 	public static final ValueConverter<SVString> CONVERTER = new ValueConverter<SVString>() {
 		@Override
-		public SVString convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVString convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVString(values[0]);
 		}
 	};

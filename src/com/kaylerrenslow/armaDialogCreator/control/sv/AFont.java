@@ -24,7 +24,7 @@ public class AFont extends SerializableValue {
 	
 	public static final ValueConverter<AFont> CONVERTER = new ValueConverter<AFont>() {
 		@Override
-		public AFont convert(@NotNull DataContext context, @NotNull String... values) {
+		public AFont convert(DataContext context, @NotNull String... values) {
 			return get(values[0]);
 		}
 	};

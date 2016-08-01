@@ -1,6 +1,7 @@
 ADDED:
     none
 CHANGED:
-    I think project loading is mostly finished now. untested
+    made selection border for canvas editor less opaque
+    how application properties are saved, loaded, and accessed (now using xml file format loaded into DataContext instead of Properties instance)
 FIXED:
-    none
+    off by a pixel for renderer (changed rounding method for PositionCalculator)

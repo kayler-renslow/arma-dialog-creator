@@ -14,7 +14,7 @@ public class SVImage extends SerializableValue {
 	
 	public static final ValueConverter<SVImage> CONVERTER = new ValueConverter<SVImage>() {
 		@Override
-		public SVImage convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVImage convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVImage(new File(values[0]));
 		}
 	};

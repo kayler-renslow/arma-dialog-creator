@@ -18,7 +18,7 @@ public class AColor extends SerializableValue {
 	
 	public static final ValueConverter<AColor> CONVERTER = new ValueConverter<AColor>() {
 		@Override
-		public AColor convert(@NotNull DataContext context, @NotNull String... values) {
+		public AColor convert(DataContext context, @NotNull String... values) {
 			return new AColor(values);
 		}
 	};

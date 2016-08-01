@@ -11,7 +11,7 @@ public final class SVStringArray extends SerializableValue {
 	
 	public static final ValueConverter<SVStringArray> CONVERTER = new ValueConverter<SVStringArray>() {
 		@Override
-		public SVStringArray convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVStringArray convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVStringArray(values);
 		}
 	};

@@ -22,7 +22,7 @@ public class Expression extends SerializableValue {
 	public static final ValueConverter<Expression> CONVERTER = new ValueConverter<Expression>() {
 		
 		@Override
-		public Expression convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public Expression convert(DataContext context, @NotNull String... values) throws Exception {
 			Env env = DataKeys.ENV.get(context);
 			if (env == null) {
 				throw new IllegalArgumentException("context key is missing:" + DataKeys.ENV);

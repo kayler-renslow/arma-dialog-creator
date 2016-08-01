@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class ASound extends SerializableValue {
 	public static final ValueConverter<ASound> CONVERTER = new ValueConverter<ASound>() {
 		@Override
-		public ASound convert(@NotNull DataContext context, @NotNull String... values) {
+		public ASound convert(DataContext context, @NotNull String... values) {
 			return new ASound(values);
 		}
 	};

@@ -23,76 +23,76 @@ import java.util.ArrayList;
  @author Kayler
  Created on 05/11/2016. */
 public abstract class UICanvas extends AnchorPane {
-
+	
 	/** javafx Canvas */
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
-
+	
 	/** Width of canvas */
 	private int canvasWidth,
 	/** Height of canvas */
 	canvasHeight;
-
+	
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
-
+	
 	/** Background color of the canvas */
 	protected Color backgroundColor = CanvasViewColors.EDITOR_BG;
-
+	
 	/** All components added */
 	protected ArrayList<CanvasComponent> components = new ArrayList<>();
-
+	
 	/** Mouse button that is currently down */
 	protected final Point lastMousePosition = new Point(-1, -1);//last x and y positions of the mouse relative to the canvas
-
+	
 	protected Keys keys = new Keys();
-
+	
 	public UICanvas(int width, int height) {
 		this.canvas = new Canvas(width, height);
 		this.canvasWidth = width;
 		this.canvasHeight = height;
 		this.gc = this.canvas.getGraphicsContext2D();
 		gc.setTextBaseline(VPos.CENTER);
-
+		
 		this.getChildren().add(this.canvas);
 		UICanvas.CanvasMouseEvent mouseEvent = new UICanvas.CanvasMouseEvent(this);
-
+		
 		this.setOnMousePressed(mouseEvent);
 		this.setOnMouseReleased(mouseEvent);
 		this.setOnMouseMoved(mouseEvent);
 		this.setOnMouseDragged(mouseEvent);
 	}
-
+	
 	public int getCanvasWidth() {
 		return this.canvasWidth;
 	}
-
+	
 	public int getCanvasHeight() {
 		return this.canvasHeight;
 	}
-
+	
 	public void setCanvasSize(int width, int height) {
 		this.canvasWidth = width;
 		this.canvasHeight = height;
 		this.canvas.setWidth(width);
 		this.canvas.setHeight(height);
 	}
-
+	
 	/** Adds component without repainting the canvas */
 	public void addComponentNoPaint(@NotNull CanvasComponent component) {
 		this.components.add(component);
 	}
-
+	
 	/** Adds a component to the canvas and repaints the canvas */
 	public void addComponent(@NotNull CanvasComponent component) {
 		this.components.add(component);
 		paint();
 	}
-
+	
 	/**
 	 Removes the given component from the canvas render and user interaction.
-
+	 
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
 	 */
@@ -101,24 +101,24 @@ public abstract class UICanvas extends AnchorPane {
 		paint();
 		return removed;
 	}
-
+	
 	/**
 	 Removes the given component from the canvas render and user interaction without repainting canvas.
-
+	 
 	 @param component component to remove
 	 @return true if the component was removed, false if nothing was removed
 	 */
 	public boolean removeComponentNoPaint(@NotNull CanvasComponent component) {
 		return this.components.remove(component);
 	}
-
+	
 	/** Removes all components form the canvas */
 	public void removeAllComponents() {
 		this.components.clear();
 		paint();
 	}
-
-
+	
+	
 	/** Paint the canvas */
 	public void paint() {
 		gc.save();
@@ -126,7 +126,8 @@ public abstract class UICanvas extends AnchorPane {
 		paintComponents();
 		gc.restore();
 	}
-
+	
+	/** Paints all components. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
 	protected void paintComponents() {
 		this.components.sort(TextCanvasComponent.RENDER_PRIORITY_COMPARATOR);
 		for (CanvasComponent component : components) {
@@ -136,7 +137,7 @@ public abstract class UICanvas extends AnchorPane {
 			paintComponent(component);
 		}
 	}
-
+	
 	protected void paintBackground() {
 		gc.setFill(backgroundColor);
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
@@ -146,7 +147,7 @@ public abstract class UICanvas extends AnchorPane {
 		gc.setFill(backgroundImage);
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
-
+	
 	protected void paintComponent(CanvasComponent component) {
 		gc.save();
 		if (!component.isGhost()) {
@@ -154,49 +155,49 @@ public abstract class UICanvas extends AnchorPane {
 		}
 		gc.restore();
 	}
-
+	
 	/** Sets canvas background image and automatically repaints */
 	public void setCanvasBackgroundImage(@Nullable ImagePattern background) {
 		this.backgroundImage = background;
 	}
-
+	
 	/** Sets canvas background color and repaints the canvas */
 	public void setCanvasBackgroundColor(@NotNull Color color) {
 		this.backgroundColor = color;
 		paint();
 	}
-
-
+	
+	
 	/**
 	 This is called when the mouse listener is invoked and a mouse press was the event.
-
+	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was pressed
 	 */
 	protected abstract void mousePressed(int mousex, int mousey, @NotNull MouseButton mb);
-
+	
 	/**
 	 This is called when the mouse listener is invoked and a mouse release was the event
-
+	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was released
 	 */
 	protected abstract void mouseReleased(int mousex, int mousey, @NotNull MouseButton mb);
-
+	
 	/**
 	 This is called when the mouse is moved and/or dragged inside the canvas
-
+	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 */
 	protected abstract void mouseMoved(int mousex, int mousey);
-
-
+	
+	
 	/**
 	 This should be called when any mouse event occurs (press, release, drag, move, etc)
-
+	 
 	 @param shiftDown true if the shift key is down, false otherwise
 	 @param ctrlDown true if the ctrl key is down, false otherwise
 	 @param altDown true if alt key is down, false otherwise
@@ -205,71 +206,71 @@ public abstract class UICanvas extends AnchorPane {
 		keys.update(key, keyIsDown, shiftDown, ctrlDown, altDown);
 		paint();
 	}
-
-
+	
+	
 	/** This is called after mouseMove is called. This will ensure that no matter how mouse move exits, the last mouse position will be updated */
 	private void setLastMousePosition(int mousex, int mousey) {
 		lastMousePosition.set(mousex, mousey);
 	}
-
-
+	
+	
 	@Override
 	protected double computeMinWidth(double height) {
 		return getCanvasWidth();
 	}
-
+	
 	@Override
 	protected double computeMinHeight(double width) {
 		return getCanvasHeight();
 	}
-
+	
 	@Override
 	protected double computePrefWidth(double height) {
 		return getCanvasWidth();
 	}
-
+	
 	@Override
 	protected double computePrefHeight(double width) {
 		return getCanvasHeight();
 	}
-
+	
 	@Override
 	protected double computeMaxWidth(double height) {
 		return super.computeMaxWidth(height);
 	}
-
+	
 	@Override
 	protected double computeMaxHeight(double width) {
 		return super.computeMaxHeight(width);
 	}
-
+	
 	public Canvas getCanvas() {
 		return canvas;
 	}
-
-
+	
+	
 	/**
 	 Created by Kayler on 05/13/2016.
 	 */
 	private static class CanvasMouseEvent implements EventHandler<MouseEvent> {
 		private final UICanvas canvas;
-
+		
 		CanvasMouseEvent(UICanvas canvas) {
 			this.canvas = canvas;
 		}
-
+		
 		@Override
 		public void handle(MouseEvent event) {
 			MouseButton btn = event.getButton();
 			if (!(event.getTarget() instanceof Canvas)) {
 				return;
 			}
-
+			
 			Canvas c = (Canvas) event.getTarget();
 			Point2D p = c.sceneToLocal(event.getSceneX(), event.getSceneY());
 			int mousex = (int) p.getX();
 			int mousey = (int) p.getY();
-
+			
 			if (event.getEventType() == MouseEvent.MOUSE_MOVED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
 				canvas.mouseMoved(mousex, mousey);
 				canvas.setLastMousePosition(mousex, mousey);
@@ -281,9 +282,9 @@ public abstract class UICanvas extends AnchorPane {
 				}
 			}
 			canvas.paint();
-
+			
 		}
-
+		
 	}
-
+	
 }

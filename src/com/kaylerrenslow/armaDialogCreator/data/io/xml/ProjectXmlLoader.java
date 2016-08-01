@@ -14,17 +14,15 @@ import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,86 +33,32 @@ import java.util.List;
  @author Kayler
  Loads a project from a .xml save file
  Created on 07/28/2016. */
-public class ProjectXmlLoader {
-	private final Document document;
-	private final DataContext dataContext;
-	private ArrayList<Error> errors = new ArrayList<>();
-	
-	private ProjectXmlLoader(@NotNull Document document, @NotNull DataContext context) {
-		this.document = document;
-		this.dataContext = context;
-	}
+public class ProjectXmlLoader extends XmlLoader{
 	
 	@Nullable
 	public static ProjectParseResult parse(@NotNull DataContext context, @NotNull File projectSaveXml) throws XmlParseException {
-		if (!context.keysSet(DataKeys.ENV, DataKeys.ARMA_RESOLUTION)) {
-			throw new IllegalArgumentException("dataKeys must contain keys:" + DataKeys.ARMA_RESOLUTION.getName() + ", " + DataKeys.ENV.getName());
-		}
-		
-		Document doc;
-		try {
-			DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
-			DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
-			doc = documentBuilder.parse(projectSaveXml);
-			doc.getDocumentElement().normalize();
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-			throw new XmlParseException(Lang.XmlParse.FAILED_TO_READ_XML);
-		}
-		ProjectXmlLoader loader = new ProjectXmlLoader(doc, context);
-		return new ProjectParseResult(loader.parseDocument(), loader.errors);
+		ProjectXmlLoader loader = new ProjectXmlLoader(projectSaveXml, context, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
+		return new ProjectParseResult(loader.parseDocument(), loader.getErrors());
 	}
 	
-	public static class ProjectParseResult {
-		private final Project project;
-		private final ArrayList<Error> errors;
+	public static class ProjectParseResult extends XmlLoader.ParseResult{
 		
-		public ProjectParseResult(Project project, ArrayList<Error> errors) {
+		private final Project project;
+		private ProjectParseResult(Project project, ArrayList<ParseError> errors) {
+			super(errors);
 			this.project = project;
-			this.errors = errors;
 		}
 		
 		public Project getProject() {
 			return project;
 		}
 		
-		public ArrayList<Error> getErrors() {
-			return errors;
-		}
 	}
 	
-	public static class Error {
-		private final String message;
-		private final String recoverMessage;
-		
-		/**
-		 @param message message to user
-		 @param recoverMessage recover message, or null if wasn't recovered
-		 */
-		Error(String message, @Nullable String recoverMessage) {
-			this.message = message;
-			this.recoverMessage = recoverMessage;
-		}
-		
-		Error(String message) {
-			this(message, null);
-		}
-		
-		@NotNull
-		public String getMessage() {
-			return message;
-		}
-		
-		/** Get the recover message (used for when the error was recovered. If not recoverable, this will return null). */
-		@Nullable
-		public String getRecoverMessage() {
-			return recoverMessage;
-		}
-		
-		static String genericRecover(String value) {
-			return String.format(Lang.XmlParse.GENERIC_RECOVER_MESSAGE_F, value);
-		}
+	private ProjectXmlLoader(@NotNull File projectSaveXml, @NotNull DataContext context, @NotNull Key<?>... requiredKeys) throws XmlParseException {
+		super(projectSaveXml, context, requiredKeys);
 	}
+	
 	
 	@Nullable
 	private Project parseDocument() throws XmlParseException {
@@ -128,7 +72,7 @@ public class ProjectXmlLoader {
 		return project;
 	}
 	
-	private List<Macro> fetchMacros(List<Macro> macros) throws XmlParseException {
+	private List<Macro> fetchMacros(List<Macro> macros) {
 		NodeList macrosNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macro");
 		for (int i = 0; i < macrosNodeList.getLength(); i++) {
 			Node macrosNode = macrosNodeList.item(i);
@@ -147,12 +91,12 @@ public class ProjectXmlLoader {
 				String type = macroElement.getAttribute("type");
 				String comment = macroElement.getAttribute("comment");
 				if (key.length() == 0 || type.length() == 0) {
-					errors.add(new Error(String.format(Lang.XmlParse.BAD_MACRO_KEY_OR_TYPE_F, key, type)));
+					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_KEY_OR_TYPE_F, key, type)));
 					continue;
 				}
 				PropertyType propertyType = PropertyType.get(type);
 				if (propertyType == null) {
-					errors.add(new Error(String.format(Lang.XmlParse.BAD_MACRO_PROPERTY_TYPE_F, type)));
+					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_PROPERTY_TYPE_F, type)));
 					continue;
 				}
 				SerializableValue value = getValue(propertyType, macroElement);
@@ -168,7 +112,7 @@ public class ProjectXmlLoader {
 		return macros;
 	}
 	
-	private ArmaDisplay fetchEditingDisplay() throws XmlParseException {
+	private ArmaDisplay fetchEditingDisplay() {
 		NodeList displayNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "display");
 		
 		Element displayElement = null;
@@ -186,7 +130,7 @@ public class ProjectXmlLoader {
 		try {
 			idd = Integer.parseInt(iddStr);
 		} catch (NumberFormatException ex) {
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_DISPLAY_IDD_F, iddStr), Error.genericRecover("-1")));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_IDD_F, iddStr), ParseError.genericRecover("-1")));
 			idd = -1;
 		}
 		
@@ -228,7 +172,7 @@ public class ProjectXmlLoader {
 	private ArmaControl getControl(Element controlElement, boolean isControlGroup) {
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
-			errors.add(new Error(String.format(Lang.XmlParse.MISSING_CONTROL_NAME, controlElement.getTextContent())));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_NAME, controlElement.getTextContent())));
 			return null;
 		}
 		int idc;
@@ -236,7 +180,7 @@ public class ProjectXmlLoader {
 		try {
 			idc = Integer.parseInt(idcStr);
 		} catch (NumberFormatException e) {
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_CONTROL_IDC_F, idcStr, controlClassName), Error.genericRecover("-1")));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_IDC_F, idcStr, controlClassName), ParseError.genericRecover("-1")));
 			idc = -1;
 		}
 		ControlType controlType;
@@ -245,11 +189,11 @@ public class ProjectXmlLoader {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.getById(controlTypeId);
 			if (controlType == null) {
-				errors.add(new Error(String.format(Lang.XmlParse.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
 				return null;
 			}
 		} catch (NumberFormatException e) {
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
 			return null;
 		}
 		
@@ -260,7 +204,7 @@ public class ProjectXmlLoader {
 		try {
 			rendererClass = (Class<? extends ArmaControlRenderer>) Class.forName(rendererStr);
 		} catch (ClassNotFoundException | ClassCastException e) {
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_RENDERER_F, rendererStr, controlClassName)));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_RENDERER_F, rendererStr, controlClassName)));
 			return null;
 		}
 		NodeList controlPropertiesNodeList = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
@@ -278,11 +222,11 @@ public class ProjectXmlLoader {
 				int id = Integer.parseInt(lookupIdStr);
 				lookup = ControlPropertyLookup.findById(id);
 				if (lookup == null) {
-					errors.add(new Error(String.format(Lang.XmlParse.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
+					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
 					return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 				}
 			} catch (NumberFormatException e) {
-				errors.add(new Error(String.format(Lang.XmlParse.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
 			SerializableValue value = getValue(lookup.propertyType, controlPropertyElement);
@@ -294,8 +238,6 @@ public class ProjectXmlLoader {
 		}
 		ArmaControlSpecProvider specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
-		containsAll = containsAll && containsAllProperties(controlClassName, specProvider.getOptionalProperties(), properties);
-		containsAll = containsAll && containsAllProperties(controlClassName, specProvider.getEventProperties(), properties);
 		if (!containsAll) {
 			return null;
 		}
@@ -326,11 +268,38 @@ public class ProjectXmlLoader {
 		if (x == null || y == null || w == null || h == null) {
 			throw new IllegalStateException("at least one position value (x,y,h,w) is undefined when it should be defined at this point.");
 		}
+		ArmaControl control;
 		if (isControlGroup) {
-			return new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
+			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
 		} else {
-			return new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
+			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
 		}
+		
+		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
+			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
+				if (saved.getKey() == lookup) {
+					control.findRequiredProperty(lookup).setValue(saved.getValue());
+				}
+			}
+		}
+		
+		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
+			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
+				if (saved.getKey() == lookup) {
+					control.findOptionalProperty(lookup).setValue(saved.getValue());
+				}
+			}
+		}
+		
+//		for (ControlPropertyLookup lookup : specProvider.getEventProperties()) {
+//			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
+//				if (saved.getKey() == lookup) {
+//					control.findEventProperty(lookup).setValue(saved.getValue());
+//				}
+//			}
+//		}
+		
+		return control;
 	}
 	
 	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<Pair<ControlPropertyLookup, SerializableValue>> master) {
@@ -343,7 +312,7 @@ public class ProjectXmlLoader {
 				}
 			}
 			if (!matched) {
-				errors.add(new Error(String.format(Lang.XmlParse.MISSING_CONTROL_PROPERTY_F, toMatchLookup.propertyName, controlClassName)));
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_PROPERTY_F, toMatchLookup.propertyName, controlClassName)));
 				return false;
 			}
 		}
@@ -367,7 +336,7 @@ public class ProjectXmlLoader {
 	private SerializableValue getValue(PropertyType propertyType, Element parentElement) {
 		NodeList valueNodeList = XmlUtil.getChildElementsWithTagName(parentElement, "value");
 		if (propertyType.propertyValuesSize > valueNodeList.getLength()) { //missing entries
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_VALUE_CREATION_COUNT_F, parentElement.getTagName(), valueNodeList.getLength())));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUE_CREATION_COUNT_F, parentElement.getTagName(), valueNodeList.getLength())));
 			return null;
 		}
 		String[] values = new String[propertyType.propertyValuesSize];
@@ -377,7 +346,7 @@ public class ProjectXmlLoader {
 				continue;
 			}
 			Element macroValueElement = (Element) macroValueNode;
-			values[valueInd] = macroValueElement.getNodeValue();
+			values[valueInd] = XmlUtil.getImmediateTextContent(macroValueElement);
 		}
 		
 		SerializableValue value;
@@ -385,7 +354,7 @@ public class ProjectXmlLoader {
 			value = propertyType.converter.convert(dataContext, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			errors.add(new Error(String.format(Lang.XmlParse.BAD_MACRO_VALUES_F, Arrays.toString(values))));
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUES_F, Arrays.toString(values))));
 			return null;
 		}
 		return value;

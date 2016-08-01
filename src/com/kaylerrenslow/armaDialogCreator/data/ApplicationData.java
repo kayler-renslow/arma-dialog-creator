@@ -47,6 +47,8 @@ public class ApplicationData {
 	 {@link PositionCalculator#SAFE_ZONE_Y},
 	 {@link PositionCalculator#SAFE_ZONE_W},
 	 {@link PositionCalculator#SAFE_ZONE_H},
+	 {@link PositionCalculator#SAFE_ZONE_X_ABS},
+	 {@link PositionCalculator#SAFE_ZONE_W_ABS},
 	 */
 	public Env getGlobalExpressionEnvironment() {
 		//update the environment
@@ -54,6 +56,9 @@ public class ApplicationData {
 		globalEnv.put(PositionCalculator.SAFE_ZONE_Y, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneY()));
 		globalEnv.put(PositionCalculator.SAFE_ZONE_W, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneW()));
 		globalEnv.put(PositionCalculator.SAFE_ZONE_H, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneH()));
+		
+		globalEnv.put(PositionCalculator.SAFE_ZONE_X_ABS, globalEnv.getValue(PositionCalculator.SAFE_ZONE_X));
+		globalEnv.put(PositionCalculator.SAFE_ZONE_W_ABS, globalEnv.getValue(PositionCalculator.SAFE_ZONE_W));
 		
 		return globalEnv;
 	}

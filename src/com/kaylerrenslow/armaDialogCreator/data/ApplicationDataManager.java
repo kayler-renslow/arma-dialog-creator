@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,17 +37,10 @@ public class ApplicationDataManager {
 		return propertyManager.getArma3ToolsDirectory();
 	}
 
-	/** Gets the application property, or null if doesn't exist */
-	@NotNull
-	public String getApplicationProperty(@NotNull ApplicationProperty p) {
-		return propertyManager.getApplicationProperty(p);
+	/** Get application properties*/
+	public @NotNull DataContext getApplicationProperties() {
+		return propertyManager.getApplicationProperties();
 	}
-
-	/**Sets the application property to a new value*/
-	public void setApplicationProperty(@NotNull ApplicationProperty p, @NotNull String value) {
-		propertyManager.setApplicationProperty(p, value);
-	}
-
 
 	/**
 	 This should be called when the application is exiting unexpectedly and the data should be saved.

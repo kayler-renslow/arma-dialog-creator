@@ -1,27 +1,34 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.data.io.BooleanConverter;
+import com.kaylerrenslow.armaDialogCreator.data.io.FileConverter;
+import com.kaylerrenslow.armaDialogCreator.util.Key;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+
 import javax.swing.filechooser.FileSystemView;
+import java.io.File;
 
 /**
  @author Kayler
- Keys for retrieving application properties from APPDATA/config.properties
- Created on 07/12/2016.
- */
-public enum ApplicationProperty {
+ Keys for retrieving application properties from APPDATA/config.xml
+ Created on 07/12/2016. */
+public class ApplicationProperty<T> extends Key<T> {
 	/** Location path to folder where application save data should be stored. */
-	APP_SAVE_DATA_DIR("app_save_data_dir", ApplicationPropertyManager.getPathSafe(FileSystemView.getFileSystemView().getDefaultDirectory()) + "/" + ApplicationPropertyManager.SAVE_LOCATION_FILE_NAME),
+	public static final ApplicationProperty<File> APP_SAVE_DATA_DIR = new ApplicationProperty<>("app_save_data_dir", new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/" + ApplicationPropertyManager.SAVE_LOCATION_FILE_NAME), FileConverter.INSTANCE);
 	/** Directory for where Arma 3 tools is. Can be empty (not set) */
-	A3_TOOLS_DIR("a3_tools_dir", "null"),
-	DARK_THEME("dark_theme", "false");
-
-	/** Property key name */
-	final String propertyKey;
-
-	/** Default value */
-	final String defaultValue;
-
-	ApplicationProperty(String propertyKey, String defaultValue) {
-		this.propertyKey = propertyKey;
-		this.defaultValue = defaultValue;
+	public static final ApplicationProperty<File> A3_TOOLS_DIR = new ApplicationProperty<>("a3_tools_dir", (File) null, FileConverter.INSTANCE);
+	public static final ApplicationProperty<Boolean> DARK_THEME = new ApplicationProperty<>("dark_theme", false, BooleanConverter.INSTANCE);
+	
+	private static final ApplicationProperty[] values = {APP_SAVE_DATA_DIR, A3_TOOLS_DIR, DARK_THEME};
+	
+	public final ValueConverter converter;
+	
+	private ApplicationProperty(String propertyKey, T defaultValue, ValueConverter converter) {
+		super(propertyKey, defaultValue);
+		this.converter = converter;
+	}
+	
+	public static ApplicationProperty[] values() {
+		return values;
 	}
 }

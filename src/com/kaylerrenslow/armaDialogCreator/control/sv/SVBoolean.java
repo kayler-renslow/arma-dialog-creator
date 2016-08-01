@@ -11,7 +11,7 @@ public final class SVBoolean extends SerializableValue {
 	
 	public static final ValueConverter<SVBoolean> CONVERTER = new ValueConverter<SVBoolean>() {
 		@Override
-		public SVBoolean convert(@NotNull DataContext context, @NotNull String... values) throws Exception {
+		public SVBoolean convert(DataContext context, @NotNull String... values) throws Exception {
 			return values[0].trim().equalsIgnoreCase(S_TRUE) ? TRUE : FALSE;
 		}
 	};

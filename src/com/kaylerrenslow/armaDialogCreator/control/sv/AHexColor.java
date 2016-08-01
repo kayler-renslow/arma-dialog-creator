@@ -13,7 +13,7 @@ public class AHexColor extends AColor {
 	
 	public static final ValueConverter<AHexColor> CONVERTER = new ValueConverter<AHexColor>() {
 		@Override
-		public AHexColor convert(@NotNull DataContext context, @NotNull String... values) {
+		public AHexColor convert(DataContext context, @NotNull String... values) {
 			return new AHexColor(values[0]);
 		}
 	};
