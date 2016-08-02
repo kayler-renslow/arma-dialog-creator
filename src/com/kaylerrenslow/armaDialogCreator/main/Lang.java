@@ -5,6 +5,7 @@ import javafx.stage.FileChooser;
 import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
 
 public interface Lang {
+	
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";
 		String VERSION = "0.0.1b";
@@ -311,11 +312,11 @@ public interface Lang {
 			String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
 			String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";
 			String MISSING_CONTROL_PROPERTY_F = "Missing control property: '%s' for control '%s'.";
-		
+			
 		}
 		
-		interface ApplicationPropertyLoad{
-			String BAD_SAVED_VALUE_F= "Application property '%s' failed to load saved value. Using '%s' as new value.";
+		interface ApplicationPropertyLoad {
+			String BAD_SAVED_VALUE_F = "Application property '%s' failed to load saved value. Using '%s' as new value.";
 		}
 	}
 }

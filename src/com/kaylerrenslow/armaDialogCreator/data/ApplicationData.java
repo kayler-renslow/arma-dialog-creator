@@ -24,6 +24,20 @@ public class ApplicationData {
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
 		public @Nullable Value getValue(String identifier) {
+			//update the environment
+			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X) || identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X_ABS)) {
+				return new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneX());
+			}
+			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_Y)) {
+				return new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneY());
+			}
+			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_W) || identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_W_ABS)) {
+				return new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneW());
+			}
+			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_H)) {
+				return new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneH());
+			}
+			
 			Value v = super.getValue(identifier);
 			if (v == null) {
 				v = getCurrentProject().getMacroRegistry().getMacroValue(identifier);
@@ -51,15 +65,6 @@ public class ApplicationData {
 	 {@link PositionCalculator#SAFE_ZONE_W_ABS},
 	 */
 	public Env getGlobalExpressionEnvironment() {
-		//update the environment
-		globalEnv.put(PositionCalculator.SAFE_ZONE_X, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneX()));
-		globalEnv.put(PositionCalculator.SAFE_ZONE_Y, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneY()));
-		globalEnv.put(PositionCalculator.SAFE_ZONE_W, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneW()));
-		globalEnv.put(PositionCalculator.SAFE_ZONE_H, new Value.NumVal(ArmaDialogCreator.getCanvasView().getCurrentResolution().getSafeZoneH()));
-		
-		globalEnv.put(PositionCalculator.SAFE_ZONE_X_ABS, globalEnv.getValue(PositionCalculator.SAFE_ZONE_X));
-		globalEnv.put(PositionCalculator.SAFE_ZONE_W_ABS, globalEnv.getValue(PositionCalculator.SAFE_ZONE_W));
-		
 		return globalEnv;
 	}
 }

@@ -50,7 +50,7 @@ public final class ArmaDialogCreator extends Application {
 		//load this stuff first
 		ExceptionHandler.init();
 		this.primaryStage = primaryStage;
-		Thread.currentThread().setName("Arma_Dialog_Creator.MainThread");
+		Thread.currentThread().setName("Arma Dialog Creator Main Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);

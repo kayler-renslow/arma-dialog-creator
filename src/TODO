@@ -25,6 +25,7 @@ GENERAL:
 >don't create a new project folder upon every application launch
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 >auto update position for controls when resolution ui scale is changed
+>don't save/create project folder until the project itself is saved
 
 BUGS:
 -----------------------------------
@@ -32,3 +33,4 @@ BUGS:
 >select many things in tree view and drag into folder
 >have check box for "is background control" in control properties popup
 >!!!!!!!!!!!!fix adding controls to tree view resulting in wrong render order or an exception
+>converting paa doesn't work

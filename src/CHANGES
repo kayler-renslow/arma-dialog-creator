@@ -1,7 +1,6 @@
 ADDED:
     none
 CHANGED:
-    made selection border for canvas editor less opaque
-    how application properties are saved, loaded, and accessed (now using xml file format loaded into DataContext instead of Properties instance)
+    allowed for safeZone values for position evaluating to be upper case or lower case
 FIXED:
-    off by a pixel for renderer (changed rounding method for PositionCalculator)
+    none
