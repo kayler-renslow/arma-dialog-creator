@@ -48,6 +48,8 @@ public class ApplicationDataManager {
 	 @return true if the data could be successfully saved, false if it couldn't
 	 */
 	public boolean forceSave() {
+		applicationData.getCurrentProject().save();
+		
 		try {
 			propertyManager.saveApplicationProperties();
 		} catch (Exception e) {

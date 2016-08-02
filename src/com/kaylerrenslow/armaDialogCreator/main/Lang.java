@@ -210,7 +210,7 @@ public interface Lang {
 		String STRING = "String";
 		String ARRAY = "Array";
 		String COLOR = "Color";
-		String SOUND = "Sound Array";
+		String SOUND = "Sound";
 		String FONT = "Font";
 		String FILE_NAME = "File Name";
 		String IMAGE = "Image";
@@ -317,6 +317,12 @@ public interface Lang {
 		
 		interface ApplicationPropertyLoad {
 			String BAD_SAVED_VALUE_F = "Application property '%s' failed to load saved value. Using '%s' as new value.";
+		}
+	}
+	
+	interface XmlWrite {
+		interface ProjectSave {
+			String CONTROL_PROPERTIES_MISSING_F = "Control '%s' is missing at least 1 required control property.";
 		}
 	}
 }

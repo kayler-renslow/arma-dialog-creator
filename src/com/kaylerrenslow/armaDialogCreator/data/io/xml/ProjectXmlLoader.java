@@ -31,9 +31,9 @@ import java.util.List;
 
 /**
  @author Kayler
- Loads a project from a .xml save file
+ Loads a project from a .xml save file (used with Project export save-version 1)
  Created on 07/28/2016. */
-public class ProjectXmlLoader extends XmlLoader{
+public class ProjectXmlLoader extends XmlLoader {
 	
 	@Nullable
 	public static ProjectParseResult parse(@NotNull DataContext context, @NotNull File projectSaveXml) throws XmlParseException {
@@ -41,9 +41,10 @@ public class ProjectXmlLoader extends XmlLoader{
 		return new ProjectParseResult(loader.parseDocument(), loader.getErrors());
 	}
 	
-	public static class ProjectParseResult extends XmlLoader.ParseResult{
+	public static class ProjectParseResult extends XmlLoader.ParseResult {
 		
 		private final Project project;
+		
 		private ProjectParseResult(Project project, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;
@@ -184,7 +185,7 @@ public class ProjectXmlLoader extends XmlLoader{
 			idc = -1;
 		}
 		ControlType controlType;
-		String controlTypeStr = controlElement.getAttribute("control-type");
+		String controlTypeStr = controlElement.getAttribute("control-type-id");
 		try {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.getById(controlTypeId);
@@ -291,13 +292,13 @@ public class ProjectXmlLoader extends XmlLoader{
 			}
 		}
 		
-//		for (ControlPropertyLookup lookup : specProvider.getEventProperties()) {
-//			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
-//				if (saved.getKey() == lookup) {
-//					control.findEventProperty(lookup).setValue(saved.getValue());
-//				}
-//			}
-//		}
+		//		for (ControlPropertyLookup lookup : specProvider.getEventProperties()) {
+		//			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
+		//				if (saved.getKey() == lookup) {
+		//					control.findEventProperty(lookup).setValue(saved.getValue());
+		//				}
+		//			}
+		//		}
 		
 		return control;
 	}
