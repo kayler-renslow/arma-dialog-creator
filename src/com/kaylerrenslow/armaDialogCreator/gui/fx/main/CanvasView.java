@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -30,7 +29,4 @@ public interface CanvasView {
 	 @param showing true the region is showing, false if not
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
-
-	/** Get the current resolution */
-	ArmaResolution getCurrentResolution();
 }

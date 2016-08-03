@@ -1,9 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
@@ -27,8 +26,7 @@ import javafx.stage.Stage;
 public class ADCWindow {
 	private final Stage primaryStage;
 	private final VBox rootElement = new VBox();
-	private ArmaResolution resolution = new ArmaResolution(ScreenDimension.D1600, ArmaUIScale.SMALL);
-	private final ADCCanvasView canvasView = new ADCCanvasView(resolution);
+	private final ADCCanvasView canvasView = new ADCCanvasView();
 	private final ADCMenuBar mainMenuBar = new ADCMenuBar();
 
 	public ADCWindow(Stage primaryStage) {
@@ -70,8 +68,8 @@ public class ADCWindow {
 	private void initialize(Scene scene) {
 		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/misc.css");
 		rootElement.getChildren().addAll(mainMenuBar, canvasView);
-		rootElement.minWidth(resolution.getScreenWidth() + 250.0);
-		rootElement.minHeight(resolution.getScreenHeight() + 50.0);
+		rootElement.minWidth(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).getScreenWidth() + 250.0);
+		rootElement.minHeight(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).getScreenHeight() + 50.0);
 		EventHandler<KeyEvent> keyEvent = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {

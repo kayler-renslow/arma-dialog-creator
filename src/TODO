@@ -25,7 +25,6 @@ GENERAL:
 >don't create a new project folder upon every application launch
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 >auto update position for controls when resolution ui scale is changed
->don't save/create project folder until the project itself is saved
 
 BUGS:
 -----------------------------------

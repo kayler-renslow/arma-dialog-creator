@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
@@ -40,7 +40,6 @@ import java.util.List;
 class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
-	private ArmaResolution resolution;
 	private ArmaDisplay display;
 
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
@@ -56,10 +55,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 	};
 
-	ADCCanvasView(ArmaResolution resolution) {
-		this.resolution = resolution;
-		initializeUICanvasEditor(resolution);
-
+	ADCCanvasView() {
+		initializeUICanvasEditor();
+		
 		this.getChildren().addAll(uiCanvasEditor, canvasControls);
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
 
@@ -67,8 +65,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 		focusToCanvas(true);
 	}
 
-	private void initializeUICanvasEditor(ArmaResolution r) {
-		this.uiCanvasEditor = new UICanvasEditor(r, canvasControls);
+	private void initializeUICanvasEditor() {
+		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls);
 
 		setToDisplay(ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
 
@@ -188,11 +186,6 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public void updateAbsRegion(int alwaysFront, int showing) {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
-	}
-
-	@Override
-	public ArmaResolution getCurrentResolution() {
-		return resolution;
 	}
 
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {

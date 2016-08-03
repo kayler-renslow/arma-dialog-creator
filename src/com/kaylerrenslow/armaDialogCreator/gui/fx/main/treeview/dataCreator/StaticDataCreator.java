@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
@@ -20,7 +21,7 @@ public class StaticDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), ArmaDialogCreator.getCanvasView().getCurrentResolution(), getEnv());
+		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv());
 		id++;
 		return new ControlTreeItemEntry(control);
 	}

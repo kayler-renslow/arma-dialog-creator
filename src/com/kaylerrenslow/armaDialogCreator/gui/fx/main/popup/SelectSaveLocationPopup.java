@@ -162,6 +162,8 @@ public class SelectSaveLocationPopup extends StagePopup<VBox> {
 		} else {
 			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(null);
 		}
+		ArmaDialogCreator.getApplicationDataManager().saveApplicationProperties();
+		
 		close();
 	}
 	

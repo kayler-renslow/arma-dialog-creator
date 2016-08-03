@@ -35,7 +35,15 @@ import java.util.List;
  Created on 07/28/2016. */
 public class ProjectXmlLoader extends XmlLoader {
 	
-	@Nullable
+	/**
+	 Parses the given file and returns the result with the Project instance.
+	 
+	 @param context must contain keys: {@link DataKeys#ARMA_RESOLUTION}, {@link DataKeys#ENV}
+	 @param projectSaveXml file that contains the project save xml
+	 @return result
+	 @throws XmlParseException when the file could not be properly parsed
+	 */
+	@NotNull
 	public static ProjectParseResult parse(@NotNull DataContext context, @NotNull File projectSaveXml) throws XmlParseException {
 		ProjectXmlLoader loader = new ProjectXmlLoader(projectSaveXml, context, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
 		return new ProjectParseResult(loader.parseDocument(), loader.getErrors());
@@ -60,7 +68,6 @@ public class ProjectXmlLoader extends XmlLoader {
 		super(projectSaveXml, context, requiredKeys);
 	}
 	
-	
 	@Nullable
 	private Project parseDocument() throws XmlParseException {
 		String projectName = document.getDocumentElement().getAttribute("name");
@@ -70,7 +77,19 @@ public class ProjectXmlLoader extends XmlLoader {
 		if (editingDisplay != null) {
 			project.setEditingDisplay(editingDisplay);
 		}
+		project.setProjectDescription(getProjectDescription());
 		return project;
+	}
+	
+	private String getProjectDescription() {
+		NodeList descriptionNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
+		for (int i = 0; i < descriptionNodeList.getLength(); i++) {
+			if (descriptionNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				Element descElement = (Element) descriptionNodeList.item(i);
+				return XmlUtil.getImmediateTextContent(descElement);
+			}
+		}
+		return null;
 	}
 	
 	private List<Macro> fetchMacros(List<Macro> macros) {

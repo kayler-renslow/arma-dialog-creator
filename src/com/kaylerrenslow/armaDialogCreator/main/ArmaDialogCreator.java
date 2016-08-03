@@ -72,7 +72,7 @@ public final class ArmaDialogCreator extends Application {
 			
 		}
 		
-		applicationDataManager.applicationData.initApplicationData(project);
+		applicationDataManager.applicationData.setCurrentProject(project);
 		
 		//		//load main window
 		mainWindow = new ADCWindow(primaryStage);
@@ -112,7 +112,7 @@ public final class ArmaDialogCreator extends Application {
 		
 		@Override
 		public void handle(WindowEvent event) {
-			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
+//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
 		}
 	}
 }

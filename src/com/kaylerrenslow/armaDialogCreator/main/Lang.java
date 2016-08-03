@@ -283,6 +283,7 @@ public interface Lang {
 		String TAB_OPEN = "Open";
 		String TAB_IMPORT = "Import";
 		String NEW_PROJECT_TITLE = "Create a New Project";
+		String NEW_PROJECT_DESCRIPTION = "Project Description (optional):";
 		String NEW_PROJECT_OK = "Create New Project";
 		String PROJECT_NAME = "Project Name:";
 		String OPEN_PROJECT_TITLE = "Open Existing Project";
