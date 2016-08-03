@@ -15,7 +15,10 @@ public class ScreenDimension {
 	public static final ScreenDimension D1366 = new ScreenDimension(1366, 768);
 	public static final ScreenDimension D1600 = new ScreenDimension(1600, 900);
 	public static final ScreenDimension D1920 = new ScreenDimension(1920, 1080);
-
+	
+	public static final ScreenDimension SMALLEST = D640;
+	public static final ScreenDimension LARGEST = D1920;
+	
 	/** All screen dimensions */
 	private static ScreenDimension[] allValues = {D640, D720, D848, D960, D1024, D1280, D1366, D1600, D1920};
 

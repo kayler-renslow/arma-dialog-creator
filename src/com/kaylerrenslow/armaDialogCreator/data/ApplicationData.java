@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 public class ApplicationData extends DataContext {
 	
 	ApplicationData() {
-		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D720, ArmaUIScale.DEFAULT));
+		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT));
 		put(DataKeys.ENV, globalEnv);
 	}
 	

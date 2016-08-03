@@ -161,6 +161,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public void setCanvasSize(int width, int height) {
 		this.uiCanvasEditor.setCanvasSize(width, height);
+		uiCanvasEditor.paint();
 	}
 
 	@Override

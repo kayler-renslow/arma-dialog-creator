@@ -10,6 +10,6 @@ import javafx.event.EventHandler;
 public class ViewFullScreenAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ArmaDialogCreator.getWindow().setToFullScreen(true);
+		ArmaDialogCreator.getMainWindow().setToFullScreen(true);
 	}
 }

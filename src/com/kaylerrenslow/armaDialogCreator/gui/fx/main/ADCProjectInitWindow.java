@@ -12,6 +12,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -46,7 +47,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
-		myStage.setHeight(360d);
+		myStage.setHeight(400d);
 		myStage.setResizable(false);
 		
 		this.btnOk.setPrefWidth(130d);
@@ -127,7 +128,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		/** TextField used for getting project name in new tab */
 		private final TextField tfProjectName;
-		private final TextArea taProjectDescription = new TextArea();
+		private final TextField tfProjectDescription = new TextField();
 		
 		public NewProjectTab() {
 			final VBox root = getTabVbox(10);
@@ -137,9 +138,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			tfProjectName.setPrefWidth(200d);
 			final Label lblProjectName = new Label(Lang.ProjectInitWindow.PROJECT_NAME, tfProjectName);
 			lblProjectName.setContentDisplay(ContentDisplay.RIGHT);
-			final Label lblProjectDescription = new Label(Lang.ProjectInitWindow.NEW_PROJECT_DESCRIPTION, taProjectDescription);
+			final Label lblProjectDescription = new Label(Lang.ProjectInitWindow.NEW_PROJECT_DESCRIPTION, tfProjectDescription);
 			lblProjectDescription.setContentDisplay(ContentDisplay.RIGHT);
-			taProjectDescription.setPrefRowCount(2);
+			tfProjectDescription.setPrefWidth(250d);
 			
 			root.getChildren().addAll(lblCreateNewProject, lblProjectName, lblProjectDescription);
 			
@@ -148,7 +149,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		@Override
 		public ProjectInit getResult() {
-			return new ProjectInit.NewProject(tfProjectName.getText(), taProjectDescription.getText());
+			return new ProjectInit.NewProject(tfProjectName.getText(), tfProjectDescription.getText());
 		}
 		
 		@Override
@@ -166,37 +167,41 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		private final Tab tabOpen = new Tab(Lang.ProjectInitWindow.TAB_OPEN);
 		private final ListView<Project> lvKnownProjects = new ListView<>();
+		private final TextArea taProjectDesc = new TextArea();
 		private Project selectedProject;
 		
 		public TabOpen() {
 			btnOkEnabledObserver.updateValue(false);
 			final VBox root = getTabVbox(10d);
 			tabOpen.setContent(root);
-			initKnownProjects();
 			final Label lblOpenProject = new Label(Lang.ProjectInitWindow.OPEN_PROJECT_TITLE);
 			VBox.setMargin(lblOpenProject, new Insets(0d, 0d, 10d, 0d));
 			
+			final Button btnLocateProject = new Button(Lang.ProjectInitWindow.OPEN_FROM_FILE);
 			
-			root.getChildren().addAll(lblOpenProject);
+			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ProjectInitWindow.OPEN_FROM_FILE_TITLE), btnLocateProject);
 			
+			taProjectDesc.setEditable(false);
 			lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Project>() {
 				@Override
 				public void changed(ObservableValue<? extends Project> observable, Project oldValue, Project selected) {
 					selectedProject = selected;
+					taProjectDesc.setText(selected.getProjectDescription() != null ? selected.getProjectDescription() : "");
 					btnOkEnabledObserver.updateValue(selected != null);
 				}
 			});
 		}
 		
-		private void initKnownProjects() {
+		private Node initKnownProjects() {
 			LinkedList<ProjectXmlLoader.ProjectParseResult> knownProjects = new LinkedList<>();
 			fetchProjects(knownProjects);
 			if (knownProjects.size() == 0) {
-				
+				return new Label(Lang.ProjectInitWindow.NO_DETECTED_PROJECTS);
 			} else {
 				for (ProjectXmlLoader.ProjectParseResult result : knownProjects) {
-					
+					lvKnownProjects.getItems().add(result.getProject());
 				}
+				return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
 			}
 		}
 		
@@ -208,7 +213,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 						File[] projectFiles = f.listFiles(new FilenameFilter() {
 							@Override
 							public boolean accept(File dir, String name) {
-								return dir.getName().equals("project.xml");
+								return name.equals("project.xml");
 							}
 						});
 						if (projectFiles == null) {
@@ -229,7 +234,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		@Override
 		public ProjectInit getResult() {
-			return null;
+			return new ProjectInit.OpenProject(selectedProject);
 		}
 		
 		@Override

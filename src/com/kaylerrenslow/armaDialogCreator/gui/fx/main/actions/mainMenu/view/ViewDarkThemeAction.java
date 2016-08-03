@@ -13,6 +13,6 @@ public class ViewDarkThemeAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 		checked = !checked;
-		ArmaDialogCreator.getWindow().setToDarkTheme(checked);
+		ArmaDialogCreator.setToDarkTheme(checked);
 	}
 }

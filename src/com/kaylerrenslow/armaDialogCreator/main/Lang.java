@@ -286,7 +286,7 @@ public interface Lang {
 		String NEW_PROJECT_DESCRIPTION = "Project Description (optional):";
 		String NEW_PROJECT_OK = "Create New Project";
 		String PROJECT_NAME = "Project Name:";
-		String OPEN_PROJECT_TITLE = "Open Existing Project";
+		String OPEN_PROJECT_TITLE = "Open an Existing Project";
 		String OPEN_PROJECT_OK = "Load Project";
 		String DETECTED_PROJECTS = "Detected Projects";
 		String NO_DETECTED_PROJECTS = "No detected projects.";
@@ -295,6 +295,8 @@ public interface Lang {
 		String IMPORT_PROJECT_OK = "Import Dialog";
 		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
 		String PROJECT_SETUP = "Project Setup";
+		String OPEN_FROM_FILE_TITLE = "Project not listed?";
+		String SELECTED_PROJECT_DESCRIPTION = "Project Description";
 	}
 	
 	interface XmlParse {

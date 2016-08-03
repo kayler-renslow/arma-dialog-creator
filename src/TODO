@@ -18,11 +18,9 @@ GENERAL:
 >when choosing a macro in control property editor, there should be a way to take off the macro (use controlProperty.setToMacro(null))
 >for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
 >creating macro string doesn't display on control
->instead of passing around resolution and Env everywhere, there should just be one class that has all that information
 >Arma 3 won't allow .png images. All images must be .paa, or .jpg. When we do an export, convert all .png to .paa
     it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
->don't create a new project folder upon every application launch
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 >auto update position for controls when resolution ui scale is changed
 

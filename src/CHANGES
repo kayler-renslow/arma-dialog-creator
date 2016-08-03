@@ -1,8 +1,6 @@
 ADDED:
-    trivial changelog implementation for future use
+    auto editor canvas resizing
 CHANGED:
-    some work on the project opening
-    instead of application properties being saved when application closes, it saves when the choose directories popup closes
-    doesn't save/create project folder until the project itself is saved
+    project opening appears to work now
 FIXED:
     none

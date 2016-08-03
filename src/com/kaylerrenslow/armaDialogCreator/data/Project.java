@@ -31,7 +31,8 @@ public class Project {
 			int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 			int hour = Calendar.getInstance().get(Calendar.HOUR);
 			int minute = Calendar.getInstance().get(Calendar.MINUTE);
-			String date = String.format("%d-%d-%d %d-%d", year, month, day, hour, minute);
+			int am_pm = Calendar.getInstance().get(Calendar.AM_PM);
+			String date = String.format("%d-%d-%d %d-%d%s", year, month, day, hour, minute, am_pm == Calendar.AM ? "am" : "pm");
 			projectName = "untitled " + date;
 		}
 		

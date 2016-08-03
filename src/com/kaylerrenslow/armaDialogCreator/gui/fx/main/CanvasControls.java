@@ -24,6 +24,8 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
 
+	public static final double PREFERRED_WIDTH = 250d;
+	
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;

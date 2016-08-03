@@ -2,10 +2,12 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCProjectInitWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import javafx.application.Application;
@@ -55,9 +57,27 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
 		
+		
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
 		
+		//load main window
+		mainWindow = new ADCWindow(primaryStage);
+		
+		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
+		
+		initProject();
+		
+		mainWindow.show();
+		
+		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
+		for (StagePopup aShowLater : showLater) {
+			aShowLater.show();
+		}
+		showLater = null;
+	}
+	
+	private void initProject() {
 		ADCProjectInitWindow projectInitWindow = new ADCProjectInitWindow();
 		projectInitWindow.showAndWait();
 		
@@ -69,18 +89,10 @@ public final class ArmaDialogCreator extends Application {
 			project = new Project(projectName, applicationDataManager.getAppSaveDataDirectory());
 		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
 			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
-			
+			project = openProject.getProject();
 		}
 		
 		applicationDataManager.applicationData.setCurrentProject(project);
-		
-		//		//load main window
-		mainWindow = new ADCWindow(primaryStage);
-		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
-		for (StagePopup aShowLater : showLater) {
-			aShowLater.show();
-		}
-		showLater = null;
 	}
 	
 	public static CanvasView getCanvasView() {
@@ -91,8 +103,24 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.primaryStage;
 	}
 	
-	public static ADCWindow getWindow() {
+	public static ADCWindow getMainWindow() {
 		return INSTANCE.mainWindow;
+	}
+	
+	public static void setToDarkTheme(boolean set) {
+		final String darkTheme = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
+		if (set) {
+			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
+			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;
+			INSTANCE.primaryStage.getScene().getStylesheets().add(darkTheme);
+		} else {
+			CanvasViewColors.EDITOR_BG = CanvasViewColors.DEFAULT_EDITOR_BG;
+			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
+			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
+		}
+		if(getCanvasView() != null){
+			getCanvasView().updateCanvas();
+		}
 	}
 	
 	public static ApplicationDataManager getApplicationDataManager() {
@@ -112,7 +140,7 @@ public final class ArmaDialogCreator extends Application {
 		
 		@Override
 		public void handle(WindowEvent event) {
-//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
+			//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
 		}
 	}
 }
