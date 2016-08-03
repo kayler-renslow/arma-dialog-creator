@@ -288,7 +288,7 @@ public interface Lang {
 		String PROJECT_NAME = "Project Name:";
 		String OPEN_PROJECT_TITLE = "Open an Existing Project";
 		String OPEN_PROJECT_OK = "Load Project";
-		String DETECTED_PROJECTS = "Detected Projects";
+		String DETECTED_PROJECTS = "Projects";
 		String NO_DETECTED_PROJECTS = "No detected projects.";
 		String OPEN_FROM_FILE = "Open from file";
 		String IMPORT_PROJECT_TITLE = "Import an Arma 3 Dialog";
@@ -297,6 +297,15 @@ public interface Lang {
 		String PROJECT_SETUP = "Project Setup";
 		String OPEN_FROM_FILE_TITLE = "Project not listed?";
 		String SELECTED_PROJECT_DESCRIPTION = "Project Description";
+		String NO_DESCRIPTION = "No description.";
+		
+		interface ProjectResultErrorPopup {
+			String POPUP_TITLE = "Project Parsed With Errors";
+			String ERROR_MESSAGE = "Error:";
+			String RECOVERED = "Recovered:";
+			String RECOVER_MESSAGE = "Recover Message:";
+			String ERRORS_TITLE = "Errors occurred while parsing.";
+		}
 	}
 	
 	interface XmlParse {
@@ -315,7 +324,6 @@ public interface Lang {
 			String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
 			String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";
 			String MISSING_CONTROL_PROPERTY_F = "Missing control property: '%s' for control '%s'.";
-			
 		}
 		
 		interface ApplicationPropertyLoad {

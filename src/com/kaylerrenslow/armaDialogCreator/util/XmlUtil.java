@@ -24,7 +24,8 @@ public class XmlUtil {
 			return element.getChildNodes();
 		}
 		ArrayList<Node> nodes = new ArrayList<>(element.getChildNodes().getLength());
-		for (Node node : nodes) {
+		for (int i = 0 ; i < element.getChildNodes().getLength(); i++) {
+			Node node = element.getChildNodes().item(i);
 			if (node.getNodeName().equals(tagName)) {
 				nodes.add(node);
 			}

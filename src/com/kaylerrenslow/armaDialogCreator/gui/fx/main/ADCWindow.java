@@ -29,6 +29,7 @@ public class ADCWindow {
 	private final VBox rootElement = new VBox();
 	private ADCCanvasView canvasView;
 	private ADCMenuBar mainMenuBar;
+	private boolean fullscreen = false;
 	
 	public ADCWindow(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -99,9 +100,9 @@ public class ADCWindow {
 	}
 	
 	private void autoResizeCanvasView() {
-		ScreenDimension closest = ScreenDimension.D640;
+		ScreenDimension closest = ScreenDimension.SMALLEST;
 		for (ScreenDimension dimension : ScreenDimension.values()) {
-			if (primaryStage.getWidth() - CanvasControls.PREFERRED_WIDTH > dimension.width) {
+			if (primaryStage.getWidth() - (fullscreen ? 0 : CanvasControls.PREFERRED_WIDTH) >= dimension.width) {
 				closest = dimension;
 			}
 		}
@@ -111,11 +112,13 @@ public class ADCWindow {
 	
 	public void setToFullScreen(boolean fullScreen) {
 		primaryStage.setFullScreen(fullScreen);
+		this.fullscreen = fullScreen;
 		if (fullScreen) {
 			rootElement.getChildren().remove(mainMenuBar);
 		} else {
 			rootElement.getChildren().add(0, mainMenuBar);
 		}
+		canvasView.hideCanvasControls(fullScreen);
 		autoResizeCanvasView();
 	}
 }

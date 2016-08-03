@@ -1,6 +1,6 @@
 ADDED:
-    auto editor canvas resizing
+    popup to show xml parse errors for project loading
 CHANGED:
-    project opening appears to work now
+    when going full screen, the canvas controls hide as well
 FIXED:
     none

@@ -41,7 +41,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
 	private ArmaDisplay display;
-
+	
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
@@ -54,22 +54,22 @@ class ADCCanvasView extends HBox implements CanvasView {
 			uiCanvasEditor.paint();
 		}
 	};
-
+	
 	ADCCanvasView() {
 		initializeUICanvasEditor();
 		
 		this.getChildren().addAll(uiCanvasEditor, canvasControls);
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
-
+		
 		setOnMouseMoved(new CanvasViewMouseEvent(this));
 		focusToCanvas(true);
 	}
-
+	
 	private void initializeUICanvasEditor() {
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls);
-
+		
 		setToDisplay(ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
-
+		
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
@@ -87,7 +87,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 		uiCanvasEditor.setCanvasContextMenu(new ControlCreationContextMenu(canvasControls.getEditorComponentTreeView(), false));
 		setupEditorSelectionSync();
 	}
-
+	
 	private void setupEditorSelectionSync() {
 		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasComponent>() {
 			@Override
@@ -106,7 +106,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 				selectFromCanvas = false;
 			}
 		});
-
+		
 		canvasControls.getEditorComponentTreeView().getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<? extends TreeItemEntry>>() {
 			@Override
 			public void onChanged(Change<? extends TreeItem<? extends TreeItemEntry>> c) {
@@ -119,7 +119,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 				for (TreeItem<? extends TreeItemEntry> treeItem : c.getList()) {
 					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
-						if(treeItemEntry.isEnabled()){
+						if (treeItemEntry.isEnabled()) {
 							selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
 						}
 					}
@@ -129,7 +129,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			}
 		});
 	}
-
+	
 	private void setToDisplay(@NotNull ArmaDisplay display) {
 		if (this.display != null) {
 			this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
@@ -139,7 +139,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 		addAllControls(display.getControls(), true, uiCanvasEditor);
 		uiCanvasEditor.paint();
 	}
-
+	
 	private static void addAllControls(List<ArmaControl> controls, boolean setVisible, UICanvas canvas) {
 		for (ArmaControl control : controls) {
 			canvas.addComponentNoPaint(control.getRenderer());
@@ -149,7 +149,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			}
 		}
 	}
-
+	
 	private void focusToCanvas(boolean focusToCanvas) {
 		canvasControls.setFocusTraversable(!focusToCanvas);
 		uiCanvasEditor.setFocusTraversable(focusToCanvas);
@@ -157,18 +157,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 			uiCanvasEditor.requestFocus();
 		}
 	}
-
+	
 	@Override
 	public void setCanvasSize(int width, int height) {
 		this.uiCanvasEditor.setCanvasSize(width, height);
 		uiCanvasEditor.paint();
 	}
-
+	
 	@Override
 	public void showGrid(boolean showGrid) {
 		uiCanvasEditor.showGrid(showGrid);
 	}
-
+	
 	@Override
 	public void setCanvasBackgroundToImage(@Nullable String imgPath) {
 		if (imgPath == null) {
@@ -177,35 +177,43 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 		uiCanvasEditor.setCanvasBackgroundImage(new ImagePattern(new Image(imgPath)));
 	}
-
-
+	
+	
 	@Override
 	public void updateCanvas() {
 		uiCanvasEditor.updateColors();
 	}
-
+	
 	@Override
 	public void updateAbsRegion(int alwaysFront, int showing) {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
 	}
-
+	
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {
 		uiCanvasEditor.keyEvent(text, keyDown, shiftDown, controlDown, altDown);
 	}
-
+	
 	void repaintCanvas() {
 		uiCanvasEditor.paint();
 	}
-
-
+	
+	void hideCanvasControls(boolean hide) {
+		getChildren().remove(canvasControls);
+		if (hide) {
+			return;
+		}
+		getChildren().add(canvasControls);
+	}
+	
+	
 	private static class CanvasViewMouseEvent implements EventHandler<MouseEvent> {
-
+		
 		private final ADCCanvasView canvasView;
-
+		
 		CanvasViewMouseEvent(ADCCanvasView canvasView) {
 			this.canvasView = canvasView;
 		}
-
+		
 		@Override
 		public void handle(MouseEvent event) {
 			canvasView.focusToCanvas(event.getTarget() == canvasView.uiCanvasEditor.getCanvas());

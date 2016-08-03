@@ -121,6 +121,8 @@ public final class ArmaDialogCreator extends Application {
 		if(getCanvasView() != null){
 			getCanvasView().updateCanvas();
 		}
+		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
+		getApplicationDataManager().saveApplicationProperties();
 	}
 	
 	public static ApplicationDataManager getApplicationDataManager() {

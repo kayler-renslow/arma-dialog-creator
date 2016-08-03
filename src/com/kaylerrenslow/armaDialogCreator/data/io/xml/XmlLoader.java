@@ -41,7 +41,7 @@ class XmlLoader {
 		this.dataContext = context;
 	}
 	
-	public static class ParseResult {
+	static class ParseResult {
 		private final ArrayList<ParseError> errors;
 		
 		protected ParseResult(ArrayList<ParseError> errors) {
@@ -51,39 +51,6 @@ class XmlLoader {
 		@NotNull
 		public ArrayList<ParseError> getErrors() {
 			return errors;
-		}
-	}
-	
-	public static class ParseError {
-		private final String message;
-		private final String recoverMessage;
-		
-		/**
-		 @param message message to user
-		 @param recoverMessage recover message, or null if wasn't recovered
-		 */
-		public ParseError(String message, @Nullable String recoverMessage) {
-			this.message = message;
-			this.recoverMessage = recoverMessage;
-		}
-		
-		public ParseError(String message) {
-			this(message, null);
-		}
-		
-		@NotNull
-		public String getMessage() {
-			return message;
-		}
-		
-		/** Get the recover message (used for when the error was recovered. If not recoverable, this will return null). */
-		@Nullable
-		public String getRecoverMessage() {
-			return recoverMessage;
-		}
-		
-		public static String genericRecover(String value) {
-			return String.format(Lang.XmlParse.GENERIC_RECOVER_MESSAGE_F, value);
 		}
 	}
 	

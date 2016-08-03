@@ -23,6 +23,7 @@ GENERAL:
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 >auto update position for controls when resolution ui scale is changed
+>for project saving, list the control property's macro and if it is using it
 
 BUGS:
 -----------------------------------

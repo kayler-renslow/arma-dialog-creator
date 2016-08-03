@@ -9,7 +9,11 @@ import javafx.event.EventHandler;
  */
 public class ViewDarkThemeAction implements EventHandler<ActionEvent> {
 	private boolean checked = false;
-
+	
+	public ViewDarkThemeAction(boolean checked) {
+		this.checked = checked;
+	}
+	
 	@Override
 	public void handle(ActionEvent event) {
 		checked = !checked;

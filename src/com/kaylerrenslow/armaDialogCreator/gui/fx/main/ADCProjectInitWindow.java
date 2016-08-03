@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.ParseError;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -86,6 +87,18 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 	}
 	
+	@Override
+	protected void ok() {
+		Tab selected = tabPane.getSelectionModel().getSelectedItem();
+		for (ProjectInitTab initTab : initTabs) {
+			if (initTab.getTab() == selected) {
+				initTab.prepareProject();
+				break;
+			}
+		}
+		super.ok();
+	}
+	
 	private Button getOkButton() {
 		return this.btnOk;
 	}
@@ -120,6 +133,8 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		abstract String getOkBtnLabel();
 		
 		abstract Tab getTab();
+		
+		void prepareProject(){}
 	}
 	
 	public class NewProjectTab extends ProjectInitTab {
@@ -167,7 +182,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		private final Tab tabOpen = new Tab(Lang.ProjectInitWindow.TAB_OPEN);
 		private final ListView<Project> lvKnownProjects = new ListView<>();
-		private final TextArea taProjectDesc = new TextArea();
+		private LinkedList<ProjectXmlLoader.ProjectParseResult> parsedKnownProjects = new LinkedList<>();
 		private Project selectedProject;
 		
 		public TabOpen() {
@@ -181,24 +196,21 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			
 			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ProjectInitWindow.OPEN_FROM_FILE_TITLE), btnLocateProject);
 			
-			taProjectDesc.setEditable(false);
 			lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Project>() {
 				@Override
 				public void changed(ObservableValue<? extends Project> observable, Project oldValue, Project selected) {
 					selectedProject = selected;
-					taProjectDesc.setText(selected.getProjectDescription() != null ? selected.getProjectDescription() : "");
 					btnOkEnabledObserver.updateValue(selected != null);
 				}
 			});
 		}
 		
 		private Node initKnownProjects() {
-			LinkedList<ProjectXmlLoader.ProjectParseResult> knownProjects = new LinkedList<>();
-			fetchProjects(knownProjects);
-			if (knownProjects.size() == 0) {
+			fetchProjects(parsedKnownProjects);
+			if (parsedKnownProjects.size() == 0) {
 				return new Label(Lang.ProjectInitWindow.NO_DETECTED_PROJECTS);
 			} else {
-				for (ProjectXmlLoader.ProjectParseResult result : knownProjects) {
+				for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
 					lvKnownProjects.getItems().add(result.getProject());
 				}
 				return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
@@ -233,6 +245,17 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 		
 		@Override
+		void prepareProject() {
+			for (ProjectXmlLoader.ProjectParseResult parseResult : parsedKnownProjects) {
+				if (parseResult.getProject() == selectedProject) {
+					if (parseResult.getErrors().size() > 0) {
+						new ProjectImproperResultPopup(parseResult).showAndWait();
+					}
+				}
+			}
+		}
+		
+		@Override
 		public ProjectInit getResult() {
 			return new ProjectInit.OpenProject(selectedProject);
 		}
@@ -245,6 +268,47 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		@Override
 		public Tab getTab() {
 			return tabOpen;
+		}
+		
+		private class ProjectImproperResultPopup extends StagePopup<ScrollPane> {
+			
+			public ProjectImproperResultPopup(ProjectXmlLoader.ProjectParseResult result) {
+				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ProjectInitWindow.ProjectResultErrorPopup.POPUP_TITLE);
+				myRootElement.setFitToWidth(true);
+				myRootElement.setFitToHeight(true);
+				VBox root = (VBox) myRootElement.getContent();
+				root.getChildren().add(new Label(Lang.ProjectInitWindow.ProjectResultErrorPopup.ERRORS_TITLE));
+				root.getChildren().add(new Separator(Orientation.HORIZONTAL));
+				for (ParseError error : result.getErrors()) {
+					VBox vbErrorMsg = new VBox(5);
+					vbErrorMsg.getChildren().addAll(
+							getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.ERROR_MESSAGE + " " + error.getMessage(), null),
+							getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVERED, getCheckbox("", error.recovered()))
+					);
+					if (error.recovered()) {
+						vbErrorMsg.getChildren().add(getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVER_MESSAGE + " " + error.getRecoverMessage(), null));
+					}
+					
+					root.getChildren().add(vbErrorMsg);
+				}
+				root.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+				
+				myRootElement.setPadding(new Insets(10d));
+				myStage.setWidth(340d);
+			}
+			
+			private Label getLabel(String text, Node graphic) {
+				Label label = new Label(text, graphic);
+				label.setContentDisplay(ContentDisplay.RIGHT);
+				return label;
+			}
+			
+			private CheckBox getCheckbox(String text, boolean checked) {
+				CheckBox checkBox = new CheckBox(text);
+				checkBox.setSelected(checked);
+				checkBox.setDisable(true);
+				return checkBox;
+			}
 		}
 		
 	}

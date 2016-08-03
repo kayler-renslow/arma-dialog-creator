@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
@@ -14,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.Fil
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAsAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang.MainMenuBar;
 import javafx.scene.control.*;
 
@@ -38,7 +40,10 @@ class ADCMenuBar extends MenuBar {
 	/*View*/
 	private final MenuItem view_preview = addOnAction(new MenuItem(MainMenuBar.VIEW_PREVIEW, null), new ViewPreviewAction());
 	private final PresetCheckMenuItem view_showGrid = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(MainMenuBar.VIEW_SHOW_GRID, true), new ViewShowGridAction());
-	private final MenuItem view_darkTheme = addOnAction(new CheckMenuItem(MainMenuBar.VIEW_DARK_THEME), new ViewDarkThemeAction());
+	private final CheckMenuItem view_darkTheme = (CheckMenuItem) addOnAction(new CheckMenuItem(MainMenuBar.VIEW_DARK_THEME), new ViewDarkThemeAction(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties())));
+	{
+		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
+	}
 	private final MenuItem view_colors = addOnAction(new MenuItem(MainMenuBar.VIEW_CHANGE_COLORS), new ViewColorsAction());
 	private final MenuItem view_fullScreen = addOnAction(new MenuItem(MainMenuBar.VIEW_FULL_SCREEN), new ViewFullScreenAction());
 	/*screen*/
