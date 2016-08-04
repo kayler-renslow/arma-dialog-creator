@@ -18,6 +18,5 @@ public class ViewScreenUIScaleChangeAction implements ChangeListener<UIScale> {
 			newValue = ArmaUIScale.DEFAULT;
 		}
 		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setUIScale(newValue);
-		ArmaDialogCreator.getCanvasView().updateCanvas();
 	}
 }

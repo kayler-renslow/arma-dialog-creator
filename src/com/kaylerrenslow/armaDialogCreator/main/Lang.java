@@ -296,8 +296,6 @@ public interface Lang {
 		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
 		String PROJECT_SETUP = "Project Setup";
 		String OPEN_FROM_FILE_TITLE = "Project not listed?";
-		String SELECTED_PROJECT_DESCRIPTION = "Project Description";
-		String NO_DESCRIPTION = "No description.";
 		
 		interface ProjectResultErrorPopup {
 			String POPUP_TITLE = "Project Parsed With Errors";

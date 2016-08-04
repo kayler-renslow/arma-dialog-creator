@@ -1,6 +1,6 @@
 ADDED:
-    popup to show xml parse errors for project loading
+    none
 CHANGED:
-    when going full screen, the canvas controls hide as well
+    auto update position for controls when resolution ui scale is changed
 FIXED:
     none

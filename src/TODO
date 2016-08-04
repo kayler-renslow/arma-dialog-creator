@@ -22,8 +22,8 @@ GENERAL:
     it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
->auto update position for controls when resolution ui scale is changed
 >for project saving, list the control property's macro and if it is using it
+>preview's resolution should be independent from the editor.
 
 BUGS:
 -----------------------------------

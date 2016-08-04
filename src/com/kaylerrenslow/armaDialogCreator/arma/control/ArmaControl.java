@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -43,6 +44,12 @@ public class ArmaControl extends ControlClass {
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @NotNull Env env) {
 		super(name, provider);
 		this.resolution = resolution;
+		resolution.getUpdateGroup().addListener(new UpdateListener<ArmaResolution>() {
+			@Override
+			public void update(ArmaResolution data) {
+				resolutionUpdated();
+			}
+		});
 		this.env = env;
 		try {
 			this.renderer = renderer.newInstance();
@@ -217,9 +224,7 @@ public class ArmaControl extends ControlClass {
 		this.accessProperty.setValue(access);
 	}
 	
-	/** Update the resolution to a new resolution and then recalculate positions and size */
-	public void updateResolution(ArmaResolution r) {
-		this.resolution.setTo(r);
+	private void resolutionUpdated() {
 		defineX(this.x);
 		defineY(this.y);
 		defineW(this.width);

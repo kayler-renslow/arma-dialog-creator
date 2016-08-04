@@ -42,12 +42,6 @@ public class Project {
 		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
 	}
 	
-	public Project(@NotNull File projectFile, @NotNull File appSaveDirectory) {
-		this.projectName = projectName;
-		this.appSaveDirectory = appSaveDirectory;
-		
-		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
-	}
 	
 	private File getProjectFile(String projectName, File appSaveDirectory) {
 		return new File(appSaveDirectory.getPath() + "\\" + projectName);

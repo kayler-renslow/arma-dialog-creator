@@ -27,6 +27,9 @@ public final class ArmaDialogCreator extends Application {
 	private static ArmaDialogCreator INSTANCE;
 	
 	public ArmaDialogCreator() {
+		if(INSTANCE != null){
+			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
+		}
 		INSTANCE = this;
 	}
 	
@@ -82,7 +85,7 @@ public final class ArmaDialogCreator extends Application {
 		projectInitWindow.showAndWait();
 		
 		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
-		Project project = null;
+		Project project;
 		if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
 			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
 			String projectName = newProject.getProjectName();
@@ -90,6 +93,9 @@ public final class ArmaDialogCreator extends Application {
 		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
 			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
 			project = openProject.getProject();
+		} else {
+			System.err.println("WARNING: project init type wasn't matched with any known types. Just creating new project from scratch.");
+			project = new Project(null, applicationDataManager.getAppSaveDataDirectory());
 		}
 		
 		applicationDataManager.applicationData.setCurrentProject(project);
@@ -118,7 +124,7 @@ public final class ArmaDialogCreator extends Application {
 			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
 			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
 		}
-		if(getCanvasView() != null){
+		if (getCanvasView() != null) {
 			getCanvasView().updateCanvas();
 		}
 		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
