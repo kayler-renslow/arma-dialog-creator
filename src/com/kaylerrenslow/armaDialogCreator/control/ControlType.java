@@ -113,7 +113,7 @@ public enum ControlType {
 		throw new IllegalArgumentException("typeId " + typeId + " couldn't be matched.");
 	}
 	
-	private static final ControlType[] supported = {STATIC};
+	private static final ControlType[] supported = {STATIC, CONTROLS_GROUP};
 	
 	/** Return true if ControlType's is supported in the beta */
 	public boolean betaSupported() {

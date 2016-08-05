@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
  via {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
  Created on 05/20/2016. */
-public class ArmaControl extends ControlClass {
+public class ArmaControl extends ControlClass implements Control {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
 	private final Env env;
@@ -279,5 +280,5 @@ public class ArmaControl extends ControlClass {
 		
 		getUpdateGroup().update(null); //don't execute updateProperties
 	}
-	
+
 }

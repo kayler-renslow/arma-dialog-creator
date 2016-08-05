@@ -1,9 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Edge;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
@@ -23,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
@@ -55,17 +56,17 @@ public class UICanvasEditor extends UICanvas {
 	private KeyMap keyMap = new KeyMap();
 	
 	/** Component that is ready to be scaled, null if none is ready to be scaled */
-	private CanvasComponent scaleComponent;
+	private Control scaleControl;
 	/** Edge that the scaling will be conducted, or Edge.NONE is no scaling is being done */
 	private Edge scaleEdge = Edge.NONE;
 	/** Component that the mouse is over, or null if not over any component */
-	private CanvasComponent mouseOverComponent;
+	private Control mouseOverControl;
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
-	private CanvasComponent contextMenuComponent;
+	private Control contextMenuControl;
 	
 	private SnapConfiguration calc;
 	
-	/** Class that generates context menus for the components */
+	/** Class that generates context menus for the controls */
 	private ComponentContextMenuCreator menuCreator;
 	/** Context menu to show when user right clicks and no component is selected */
 	private ContextMenu canvasContextMenu;
@@ -73,7 +74,7 @@ public class UICanvasEditor extends UICanvas {
 	private ContextMenu contextMenu;
 	private final Point contextMenuPosition = new Point(-1, -1);
 	
-	/** If true, scaling and translating components will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
+	/** If true, scaling and translating controls will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
 	private boolean safeMovement = false;
 	
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
@@ -81,17 +82,10 @@ public class UICanvasEditor extends UICanvas {
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
 	
-	private ValueObserver<@Nullable CanvasComponent> doubleClickObserver = new ValueObserver<>(null);
-	private final UpdateListener<Object> controlListener = new UpdateListener<Object>() {
-		@Override
-		public void update(Object data) {
-			paint();
-		}
-	};
+	private ValueObserver<Control> doubleClickObserver = new ValueObserver<>(null);
 	
-	
-	public UICanvasEditor(ArmaResolution resolution, SnapConfiguration calculator) {
-		super(resolution.getScreenWidth(), resolution.getScreenHeight());
+	public UICanvasEditor(ArmaResolution resolution, SnapConfiguration calculator, @NotNull Display display) {
+		super(resolution.getScreenWidth(), resolution.getScreenHeight(), display);
 		resolution.getUpdateGroup().addListener(new UpdateListener<ArmaResolution>() {
 			@Override
 			public void update(ArmaResolution data) {
@@ -131,11 +125,11 @@ public class UICanvasEditor extends UICanvas {
 		} else {
 			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
 				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
-					for (CanvasComponent component : selection.getSelected()) {
-						component.setEnabled(false);
+					for (Control control : selection.getSelected()) {
+						control.getRenderer().setEnabled(false);
 					}
 					selection.clearSelected();
-					mouseOverComponent = scaleComponent = null;
+					mouseOverControl = scaleControl = null;
 					changeCursorToDefault();
 					waitingForZXRelease = false;
 				}
@@ -143,49 +137,9 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 	
-	/** Get the observer that watches what components get doubled clicked on. If the passed value is null, nothing was double clicked */
-	public ValueObserver<@Nullable CanvasComponent> getDoubleClickObserver() {
+	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */
+	public ValueObserver<Control> getDoubleClickObserver() {
 		return doubleClickObserver;
-	}
-	
-	@Override
-	public void addComponentNoPaint(@NotNull CanvasComponent component) {
-		super.addComponentNoPaint(component);
-		if (component instanceof ArmaControlRenderer) {
-			ArmaControlRenderer renderer = (ArmaControlRenderer) component;
-			renderer.getMyControl().getUpdateGroup().addListener(controlListener);
-		}
-	}
-	
-	@Override
-	public void addComponent(@NotNull CanvasComponent component) {
-		addComponentNoPaint(component); //intentionally using addComponentNoPaint so that there is less duplicate code
-		paint();
-	}
-	
-	/**
-	 Removes the given component from the canvas render and user interaction. This also removes the component from the selection
-	 
-	 @param component component to remove
-	 @return true if the component was removed, false if nothing was removed
-	 */
-	public boolean removeComponent(@NotNull CanvasComponent component) {
-		boolean removed = removeComponentNoPaint(component);
-		paint();
-		return removed;
-	}
-	
-	@Override
-	public boolean removeComponentNoPaint(@NotNull CanvasComponent component) {
-		boolean removed = super.removeComponentNoPaint(component);
-		if (removed) {
-			this.selection.removeFromSelection(component);
-			if (component instanceof ArmaControlRenderer) {
-				ArmaControlRenderer renderer = (ArmaControlRenderer) component;
-				renderer.getMyControl().getUpdateGroup().removeUpdateListener(controlListener);
-			}
-		}
-		return removed;
 	}
 	
 	public void setSnapConfig(@NotNull SnapConfiguration snapConfig) {
@@ -203,7 +157,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 	
 	/**
-	 @param ccm the context menu creator that is used to give Components context menus
+	 @param ccm the context menu creator that is used to give controls context menus
 	 */
 	public void setComponentMenuCreator(@Nullable ComponentContextMenuCreator ccm) {
 		this.menuCreator = ccm;
@@ -218,11 +172,11 @@ public class UICanvasEditor extends UICanvas {
 		this.safeMovement = safe;
 	}
 	
-	/** If true, scaling and translating components will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
+	/** If true, scaling and translating controls will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
 	public boolean getSafeMovement() {
 		return this.safeMovement;
 	}
-		
+	
 	/** Paint the canvas */
 	public void paint() {
 		super.paint();
@@ -239,15 +193,15 @@ public class UICanvasEditor extends UICanvas {
 	}
 	
 	@Override
-	protected void paintComponents() {
+	protected void paintControls() {
 		if (!absRegionComponent.alwaysRenderAtFront()) {
 			paintAbsRegionComponent();
 		}
-		super.paintComponents();
+		super.paintControls();
 		gc.save();
-		for (CanvasComponent component : selection.getSelected()) {
-			gc.setStroke(component.getBackgroundColor());
-			component.drawRectangle(gc);
+		for (Control control : selection.getSelected()) {
+			gc.setStroke(control.getRenderer().getBackgroundColor());
+			control.getRenderer().drawRectangle(gc);
 		}
 		gc.restore();
 	}
@@ -261,16 +215,16 @@ public class UICanvasEditor extends UICanvas {
 	}
 	
 	@Override
-	protected void paintComponent(CanvasComponent component) {
-		if (isSelectingArea() && !component.isEnabled()) {
+	protected void paintControl(Control control) {
+		if (isSelectingArea() && !control.getRenderer().isEnabled()) {
 			return;
 		}
-		boolean selected = selection.isSelected(component);
+		boolean selected = selection.isSelected(control);
 		if (selected) {
 			gc.save();
 			Color selectedBorderColor = selectionColor;
-			int centerx = component.getCenterX();
-			int centery = component.getCenterY();
+			int centerx = control.getRenderer().getCenterX();
+			int centery = control.getRenderer().getCenterY();
 			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
 			boolean noVert = keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT);
 			if (noHoriz) {
@@ -286,15 +240,11 @@ public class UICanvasEditor extends UICanvas {
 			//draw selection 'shadow'
 			gc.setGlobalAlpha(0.3d);
 			gc.setStroke(selectedBorderColor);
-			int offset = 4 + (component.getBorder() != null ? component.getBorder().getThickness() : 0);
-			Region.fillRectangle(gc, component.getLeftX() - offset, component.getTopY() - offset, component.getRightX() + offset, component.getBottomY() + offset);
+			int offset = 4 + (control.getRenderer().getBorder() != null ? control.getRenderer().getBorder().getThickness() : 0);
+			Region.fillRectangle(gc, control.getRenderer().getLeftX() - offset, control.getRenderer().getTopY() - offset, control.getRenderer().getRightX() + offset, control.getRenderer().getBottomY() + offset);
 			gc.restore();
 		}
-		if (selected && component instanceof ArmaControlRenderer) {
-			((ArmaControlRenderer) component).forcePaint(gc);
-		} else {
-			super.paintComponent(component);
-		}
+		super.paintControl(control);
 	}
 	
 	private boolean isSelectingArea() {
@@ -445,7 +395,7 @@ public class UICanvasEditor extends UICanvas {
 	
 	/**
 	 This is called when the mouse listener is invoked and a mouse press was the event.
-	 This method should be the only one dealing with adding and removing components from the selection, other than mouseMove which adds to the selection via the selection box
+	 This method should be the only one dealing with adding and removing controls from the selection, other than mouseMove which adds to the selection via the selection box
 	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
@@ -461,64 +411,65 @@ public class UICanvasEditor extends UICanvas {
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
 		
-		if (scaleComponent != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
-			selection.removeAllAndAdd(scaleComponent);
+		if (scaleControl != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
+			selection.removeAllAndAdd(scaleControl);
 			return;
 		}
-		if (selection.numSelected() == 0 && mouseOverComponent != null) { //nothing is selected, however, mouse is over a component so we need to select that
-			selection.addToSelection(mouseOverComponent);
+		if (selection.numSelected() == 0 && mouseOverControl != null) { //nothing is selected, however, mouse is over a component so we need to select that
+			selection.addToSelection(mouseOverControl);
 			return;
 		}
-		if (selection.numSelected() == 0 && mouseOverComponent == null && mb == MouseButton.SECONDARY) { //nothing is selected and right clicking the canvas
+		if (selection.numSelected() == 0 && mouseOverControl == null && mb == MouseButton.SECONDARY) { //nothing is selected and right clicking the canvas
 			selection.clearSelected();
 			return;
 		}
+		List<? extends Control> controls = display.getControls();
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
-			CanvasComponent component;
+			Control control;
 			for (int i = selection.numSelected() - 1; i >= 0; i--) {
-				component = selection.getSelected().get(i);
-				if (component.containsPoint(mousex, mousey)) {
-					selection.removeAllAndAdd(component); //only 1 can be selected
+				control = selection.getSelected().get(i);
+				if (control.getRenderer().containsPoint(mousex, mousey)) {
+					selection.removeAllAndAdd(control); //only 1 can be selected
 					return;
 				}
 			}
-			for (int i = components.size() - 1; i >= 0; i--) {
-				component = components.get(i);
-				if (!component.isEnabled()) {
+			for (int i = controls.size() - 1; i >= 0; i--) {
+				control = controls.get(i);
+				if (!control.getRenderer().isEnabled()) {
 					continue;
 				}
-				if (component.containsPoint(mousex, mousey)) {
-					selection.removeAllAndAdd(component);
+				if (control.getRenderer().containsPoint(mousex, mousey)) {
+					selection.removeAllAndAdd(control);
 					return;
 				}
 			}
 			selection.clearSelected();
 			return;
 		}
-		if (mouseOverComponent != null) {
+		if (mouseOverControl != null) {
 			if (keys.isCtrlDown()) {
-				selection.toggleFromSelection(mouseOverComponent);
+				selection.toggleFromSelection(mouseOverControl);
 				return;
 			} else {
 				if (selection.numSelected() > 0) {
-					if (selection.isSelected(mouseOverComponent)) {
+					if (selection.isSelected(mouseOverControl)) {
 						if (hasDoubleClicked && selection.numSelected() > 1) {
-							selection.removeAllAndAdd(mouseOverComponent);
+							selection.removeAllAndAdd(mouseOverControl);
 							hasDoubleClicked = false;//don't open configure control properties
 						}
 						return;
 					}
 					if (!keys.spaceDown()) { //if space is down, mouse over component should be selected
-						CanvasComponent component;
+						Control control;
 						for (int i = selection.numSelected() - 1; i >= 0; i--) {
-							component = selection.getSelected().get(i);
-							if (component.containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
+							control = selection.getSelected().get(i);
+							if (control.getRenderer().containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
 								return;
 							}
 						}
 					}
 				}
-				selection.removeAllAndAdd(mouseOverComponent);
+				selection.removeAllAndAdd(mouseOverControl);
 				return;
 			}
 		}
@@ -538,11 +489,11 @@ public class UICanvasEditor extends UICanvas {
 		this.mouseButtonDown = MouseButton.NONE;
 		selection.setSelecting(false);
 		setContextMenu(null, mousex, mousey);
-		contextMenuComponent = null;
+		contextMenuControl = null;
 		if (mb == MouseButton.SECONDARY) {
 			if (menuCreator != null && selection.getFirst() != null) {
-				contextMenuComponent = selection.getFirst();
-				setContextMenu(menuCreator.initialize(contextMenuComponent), mousex, mousey);
+				contextMenuControl = selection.getFirst();
+				setContextMenu(menuCreator.initialize(contextMenuControl.getRenderer()), mousex, mousey);
 			} else if (canvasContextMenu != null) {
 				setContextMenu(canvasContextMenu, mousex, mousey);
 			}
@@ -603,7 +554,7 @@ public class UICanvasEditor extends UICanvas {
 			dx1 = dx;
 			dy1 = dy;
 		}
-		if (scaleComponent != null) { //scaling
+		if (scaleControl != null) { //scaling
 			boolean squareScale = keys.keyIsDown(keyMap.SCALE_SQUARE);
 			boolean symmetricScale = keys.isCtrlDown() || squareScale;
 			doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
@@ -611,10 +562,10 @@ public class UICanvasEditor extends UICanvas {
 		}
 		//not scaling and simply translating (moving)
 		
-		for (CanvasComponent component : selection.getSelected()) {
-			//only move-able components should be inside selection
-			if (!safeMovement || boundUpdateSafe(component, dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
-				component.translate(dx1, dy1);
+		for (Control control : selection.getSelected()) {
+			//only move-able controls should be inside selection
+			if (!safeMovement || boundUpdateSafe(control.getRenderer(), dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
+				control.getRenderer().translate(dx1, dy1);
 			}
 		}
 	}
@@ -681,31 +632,32 @@ public class UICanvasEditor extends UICanvas {
 				dxr = -dx;
 			}
 		}
-		if (!safeMovement || boundUpdateSafe(scaleComponent, dxl, dxr, dyt, dyb)) {
-			if (!scaleIsNegative(scaleComponent, dxl, dxr, dyt, dyb)) {
-				scaleComponent.scale(dxl, dxr, dyt, dyb);
+		if (!safeMovement || boundUpdateSafe(scaleControl.getRenderer(), dxl, dxr, dyt, dyb)) {
+			if (!scaleIsNegative(scaleControl.getRenderer(), dxl, dxr, dyt, dyb)) {
+				scaleControl.getRenderer().scale(dxl, dxr, dyt, dyb);
 			}
 		}
 	}
 	
 	
 	private boolean basicMouseMovement(int mousex, int mousey) {
+		List<? extends Control> controls = display.getControls();
 		updateContextMenu();
-		mouseOverComponent = null;
+		mouseOverControl = null;
 		{
-			CanvasComponent component;
-			for (int i = components.size() - 1; i >= 0; i--) {
-				component = components.get(i);
-				if (component.isEnabled()) {
-					if (component.containsPoint(mousex, mousey)) {
-						mouseOverComponent = component;
+			Control control;
+			for (int i = controls.size() - 1; i >= 0; i--) {
+				control = controls.get(i);
+				if (control.getRenderer().isEnabled()) {
+					if (control.getRenderer().containsPoint(mousex, mousey)) {
+						mouseOverControl = control;
 						break;
 					}
 				}
 			}
 		}
-		if (scaleComponent == null) {
-			if (!selection.isSelecting() && mouseOverComponent != null) {
+		if (scaleControl == null) {
+			if (!selection.isSelecting() && mouseOverControl != null) {
 				changeCursorToMove();
 			} else {
 				changeCursorToDefault();
@@ -723,10 +675,10 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			for (CanvasComponent component : components) {
-				if (component.isEnabled()) {
-					if (selection.contains(component)) {
-						selection.addToSelection(component);
+			for (Control control : controls) {
+				if (control.getRenderer().isEnabled()) {
+					if (selection.contains(control.getRenderer())) {
+						selection.addToSelection(control);
 					}
 				}
 			}
@@ -739,9 +691,9 @@ public class UICanvasEditor extends UICanvas {
 		ContextMenu cm = getContextMenu();
 		
 		if (cm != null && cm.isShowing()) {
-			if (mouseOverComponent != contextMenuComponent && cm != canvasContextMenu) {
+			if (mouseOverControl != contextMenuControl && cm != canvasContextMenu) {
 				cm.hide();
-			} else if (cm == canvasContextMenu && mouseOverComponent != null) {
+			} else if (cm == canvasContextMenu && mouseOverControl != null) {
 				cm.hide();
 			}
 		}
@@ -751,13 +703,13 @@ public class UICanvasEditor extends UICanvas {
 	private void checkForScaling(int mousex, int mousey) {
 		Edge edge;
 		setReadyForScale(null, Edge.NONE);
-		CanvasComponent component;
+		Control component;
 		for (int i = selection.numSelected() - 1; i >= 0; i--) {
 			component = selection.getSelected().get(i);
-			if (!component.isEnabled()) {
+			if (!component.getRenderer().isEnabled()) {
 				continue;
 			}
-			edge = component.getEdgeForPoint(mousex, mousey, COMPONENT_EDGE_LEEWAY);
+			edge = component.getRenderer().getEdgeForPoint(mousex, mousey, COMPONENT_EDGE_LEEWAY);
 			if (edge == Edge.NONE) {
 				continue;
 			}
@@ -767,8 +719,8 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 	
-	private void setReadyForScale(@Nullable CanvasComponent toScale, @NotNull Edge scaleEdge) {
-		this.scaleComponent = toScale;
+	private void setReadyForScale(@Nullable Control toScale, @NotNull Edge scaleEdge) {
+		this.scaleControl = toScale;
 		this.scaleEdge = scaleEdge;
 	}
 	
@@ -833,8 +785,8 @@ public class UICanvasEditor extends UICanvas {
 		paint();
 	}
 	
-	public CanvasComponent getMouseOverComponent() {
-		return mouseOverComponent;
+	public Control getMouseOverControl() {
+		return mouseOverControl;
 	}
 	
 	/**
@@ -842,17 +794,17 @@ public class UICanvasEditor extends UICanvas {
 	 Created on 05/13/2016.
 	 */
 	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
-		private ObservableList<CanvasComponent> selected = FXCollections.observableArrayList(new ArrayList<>());
+		private ObservableList<Control> selected = FXCollections.observableArrayList(new ArrayList<>());
 		private boolean isSelecting;
 		
 		@Override
-		public @NotNull ObservableList<CanvasComponent> getSelected() {
+		public @NotNull ObservableList<Control> getSelected() {
 			return selected;
 		}
 		
 		@Nullable
 		@Override
-		public CanvasComponent getFirst() {
+		public Control getFirst() {
 			if (selected.size() == 0) {
 				return null;
 			}
@@ -860,28 +812,28 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 		@Override
-		public void toggleFromSelection(CanvasComponent component) {
-			if (isSelected(component)) {
-				selected.remove(component);
+		public void toggleFromSelection(Control control) {
+			if (isSelected(control)) {
+				selected.remove(control);
 			} else {
-				this.selected.add(component);
+				this.selected.add(control);
 			}
 		}
 		
 		@Override
-		public void addToSelection(CanvasComponent component) {
-			if (!isSelected(component)) {
-				this.selected.add(component);
+		public void addToSelection(Control control) {
+			if (!isSelected(control)) {
+				this.selected.add(control);
 			}
 		}
 		
 		@Override
-		public boolean isSelected(@Nullable CanvasComponent component) {
-			if (component == null) {
+		public boolean isSelected(@Nullable Control control) {
+			if (control == null) {
 				return false;
 			}
-			for (CanvasComponent c : selected) {
-				if (c == component) {
+			for (Control c : selected) {
+				if (c == control) {
 					return true;
 				}
 			}
@@ -889,8 +841,8 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 		@Override
-		public boolean removeFromSelection(CanvasComponent component) {
-			return this.selected.remove(component);
+		public boolean removeFromSelection(Control control) {
+			return this.selected.remove(control);
 		}
 		
 		@Override
@@ -911,7 +863,7 @@ public class UICanvasEditor extends UICanvas {
 			this.isSelecting = selecting;
 		}
 		
-		void removeAllAndAdd(@NotNull CanvasComponent toAdd) {
+		void removeAllAndAdd(@NotNull Control toAdd) {
 			clearSelected();
 			this.selected.add(toAdd);
 		}

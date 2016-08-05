@@ -5,7 +5,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,7 +16,6 @@ public class ArmaControlRenderer extends TextCanvasComponent {
 	private static final Font FONT = Font.font(20d);
 	protected ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
-	private boolean disablePaintFromCanvas;
 	
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	
@@ -150,24 +148,4 @@ public class ArmaControlRenderer extends TextCanvasComponent {
 		myControl.getUpdateGroup().update(null);
 	}
 	
-	@Override
-	public void paint(GraphicsContext gc) {
-		if (disablePaintFromCanvas) {
-			return;
-		}
-		super.paint(gc);
-	}
-	
-	/** Forces the paint on the given graphics context. @see ArmaControlRenderer#disablePaintFromCanvas(boolean) for more information as to why this method is needed. */
-	public void forcePaint(GraphicsContext gc) {
-		boolean old = disablePaintFromCanvas;
-		disablePaintFromCanvas = false;
-		paint(gc);
-		disablePaintFromCanvas = old;
-	}
-	
-	/** Since the control group's individual components are added to the canvas, we can't allow the default implementation of paint do anything. This item should be painted when the group is painted */
-	public void disablePaintFromCanvas(boolean disable) {
-		this.disablePaintFromCanvas = disable;
-	}
 }

@@ -8,7 +8,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.FoundChild;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -28,12 +27,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
 
-	public enum TreeUpdate {
-		ADD_FOLDER, REMOVE_FOLDER, ADD_ITEM, REMOVE_ITEM
-	}
-
-	private UpdateListenerGroup<TreeUpdate> updateGroup = new UpdateListenerGroup<>();
-
 	public EditorComponentTreeView() {
 		super(null);
 		setContextMenu(controlCreationContextMenu);
@@ -48,10 +41,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				}
 			}
 		});
-	}
-
-	public UpdateListenerGroup<TreeUpdate> getUpdateListenerGroup() {
-		return updateGroup;
 	}
 
 	/**
@@ -84,10 +73,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	protected void addChildToParent(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
 		super.addChildToParent(parent, child, index);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
-			updateGroup.update(TreeUpdate.ADD_FOLDER);
 			return;
 		}
-		updateGroup.update(TreeUpdate.ADD_ITEM);
 		int correctedIndex;
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
@@ -119,10 +106,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	protected void addChildToRoot(@NotNull TreeItem<T> child) {
 		super.addChildToRoot(child);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
-			updateGroup.update(TreeUpdate.ADD_FOLDER);
 			return;
 		}
-		updateGroup.update(TreeUpdate.ADD_ITEM);
 		System.out.println("EditorComponentTreeView.addChildToRoot getRow = " + getRow(child));
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
@@ -134,10 +119,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	protected void addChildToRoot(int index, @NotNull TreeItem<T> child) {
 		super.addChildToRoot(index, child);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
-			updateGroup.update(TreeUpdate.ADD_FOLDER);
 			return;
 		}
-		updateGroup.update(TreeUpdate.ADD_ITEM);
 		System.out.println("EditorComponentTreeView.addChildToRoot2");
 		int correctedIndex = getCorrectedIndex(0, getRow(child), getRoot());
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
@@ -151,10 +134,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	protected void removeChild(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> toRemove) {
 		super.removeChild(parent, toRemove);
 		if (toRemove.getValue().getCellType() == CellType.FOLDER) {
-			updateGroup.update(TreeUpdate.REMOVE_FOLDER);
 			return;
 		}
-		updateGroup.update(TreeUpdate.REMOVE_ITEM);
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		if (parent == getRoot()) {

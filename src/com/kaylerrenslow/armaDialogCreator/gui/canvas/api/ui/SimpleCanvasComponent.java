@@ -8,8 +8,6 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-
 /**
  @author Kayler
  Default implementation of CanvasComponent
@@ -272,17 +270,4 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		}
 		return false;
 	}
-
-	public static final Comparator<Region> RENDER_PRIORITY_COMPARATOR = new Comparator<Region>() {
-		@Override
-		public int compare(Region o1, Region o2) {
-			if (o1.getRenderPriority() < o2.getRenderPriority()) {
-				return -1;
-			}
-			if (o1.getRenderPriority() > o2.getRenderPriority()) {
-				return 1;
-			}
-			return 0;
-		}
-	};
 }

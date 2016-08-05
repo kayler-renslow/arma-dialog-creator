@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -19,7 +20,7 @@ import java.util.ArrayList;
  @author Kayler
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
  Created on 06/08/2016. */
-public class ArmaControlGroup extends ArmaControl {
+public class ArmaControlGroup extends ArmaControl implements ControlGroup{
 	private ObservableList<ArmaControl> controls = FXCollections.observableArrayList(new ArrayList<ArmaControl>());
 	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
 

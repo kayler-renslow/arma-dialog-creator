@@ -1,30 +1,26 @@
 package com.kaylerrenslow.armaDialogCreator.arma.display;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
  Interface that specifies something that is displayable in preview and in Arma 3 (title, dialog, display)
  Created on 06/14/2016. */
-public class ArmaDisplay {
-
-	public enum DisplayUpdate {
-		ADD_CONTROL, REMOVE_CONTROL
-	}
+public class ArmaDisplay implements Display{
 
 	private int idd;
 	private boolean movingEnable, enableSimulation;
-	private ObservableList<ArmaControl> controls;
+	private List<ArmaControl> controls;
 	private UpdateListenerGroup<DisplayUpdate> updateGroup = new UpdateListenerGroup<>();
 
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
-		controls = FXCollections.observableList(new ArrayList<>());
+		controls = new ArrayList<>();
 	}
 
 	public int getIdd() {
@@ -52,13 +48,13 @@ public class ArmaDisplay {
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
 	}
-
+		
 	public UpdateListenerGroup<DisplayUpdate> getUpdateListenerGroup() {
 		return updateGroup;
 	}
 
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
-	public ObservableList<ArmaControl> getControls() {
+	public List<ArmaControl> getControls() {
 		return controls;
 	}
 

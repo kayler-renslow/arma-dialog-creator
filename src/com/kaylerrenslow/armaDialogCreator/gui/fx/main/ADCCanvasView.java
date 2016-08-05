@@ -1,12 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.Selection;
@@ -15,7 +13,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlCreationC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
@@ -40,20 +37,11 @@ import java.util.List;
 class ADCCanvasView extends HBox implements CanvasView {
 	private UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls = new CanvasControls(this);
-	private ArmaDisplay display;
 	
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
-	private boolean selectFromTreeview = false;
-	private final UpdateListener<ArmaDisplay.DisplayUpdate> displayListener = new UpdateListener<ArmaDisplay.DisplayUpdate>() {
-		@Override
-		public void update(ArmaDisplay.DisplayUpdate data) {
-			uiCanvasEditor.removeAllComponents();
-			addAllControls(display.getControls(), true, uiCanvasEditor);
-			uiCanvasEditor.paint();
-		}
-	};
+	private boolean selectFromTreeView = false;
 	
 	ADCCanvasView() {
 		initializeUICanvasEditor();
@@ -66,20 +54,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 	
 	private void initializeUICanvasEditor() {
-		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls);
-		
-		setToDisplay(ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
-		
+		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
+				
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
-		uiCanvasEditor.getDoubleClickObserver().addValueListener(new ValueListener<CanvasComponent>() {
+		uiCanvasEditor.getDoubleClickObserver().addValueListener(new ValueListener<Control>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<CanvasComponent> observer, CanvasComponent oldValue, CanvasComponent newValue) {
-				if (newValue != null && uiCanvasEditor.getMouseOverComponent() == uiCanvasEditor.getSelection().getFirst()) {
+			public void valueUpdated(@NotNull ValueObserver<Control> observer, Control oldValue, Control newValue) {
+				if (newValue != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
 					DefaultComponentContextMenu.showControlPropertiesPopup(((ArmaControlRenderer) newValue).getMyControl());
 				}
 			}
@@ -89,15 +75,15 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 	
 	private void setupEditorSelectionSync() {
-		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasComponent>() {
+		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<Control>() {
 			@Override
-			public void onChanged(Change<? extends CanvasComponent> c) {
-				if (selectFromTreeview) {
+			public void onChanged(Change<? extends Control> c) {
+				if (selectFromTreeView) {
 					return;
 				}
 				selectFromCanvas = true;
 				List<ArmaControl> controlList = new ArrayList<>();
-				for (CanvasComponent component : uiCanvasEditor.getSelection().getSelected()) {
+				for (Control component : uiCanvasEditor.getSelection().getSelected()) {
 					if (component instanceof ArmaControlRenderer) {
 						controlList.add(((ArmaControlRenderer) component).getMyControl());
 					}
@@ -113,43 +99,23 @@ class ADCCanvasView extends HBox implements CanvasView {
 				if (selectFromCanvas) {
 					return;
 				}
-				selectFromTreeview = true;
+				selectFromTreeView = true;
 				Selection selection = uiCanvasEditor.getSelection();
 				selection.clearSelected();
 				for (TreeItem<? extends TreeItemEntry> treeItem : c.getList()) {
 					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
 						if (treeItemEntry.isEnabled()) {
-							selection.addToSelection(treeItemEntry.getMyArmaControl().getRenderer());
+							selection.addToSelection(treeItemEntry.getMyArmaControl());
 						}
 					}
 				}
 				repaintCanvas();
-				selectFromTreeview = false;
+				selectFromTreeView = false;
 			}
 		});
 	}
-	
-	private void setToDisplay(@NotNull ArmaDisplay display) {
-		if (this.display != null) {
-			this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
-		}
-		this.display = display;
-		display.getUpdateListenerGroup().addListener(displayListener);
-		addAllControls(display.getControls(), true, uiCanvasEditor);
-		uiCanvasEditor.paint();
-	}
-	
-	private static void addAllControls(List<ArmaControl> controls, boolean setVisible, UICanvas canvas) {
-		for (ArmaControl control : controls) {
-			canvas.addComponentNoPaint(control.getRenderer());
-			control.getRenderer().disablePaintFromCanvas(!setVisible);
-			if (control instanceof ArmaControlGroup) {
-				addAllControls(((ArmaControlGroup) control).getControls(), false, canvas);
-			}
-		}
-	}
-	
+		
 	private void focusToCanvas(boolean focusToCanvas) {
 		canvasControls.setFocusTraversable(!focusToCanvas);
 		uiCanvasEditor.setFocusTraversable(focusToCanvas);

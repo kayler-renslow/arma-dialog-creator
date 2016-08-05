@@ -6,6 +6,8 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
+
 /**
  @author Kayler
  A component that is drawable and interactable in the UICanvas.
@@ -38,4 +40,17 @@ public interface CanvasComponent extends Region{
 	 Sets the visibility and enable values. A ghost is not visible and is not enabled.
 	 */
 	void setGhost(boolean ghost);
+	
+	Comparator<CanvasComponent> RENDER_PRIORITY_COMPARATOR = new Comparator<CanvasComponent>() {
+		@Override
+		public int compare(CanvasComponent o1, CanvasComponent o2) {
+			if (o1.getRenderPriority() < o2.getRenderPriority()) {
+				return -1;
+			}
+			if (o1.getRenderPriority() > o2.getRenderPriority()) {
+				return 1;
+			}
+			return 0;
+		}
+	};
 }

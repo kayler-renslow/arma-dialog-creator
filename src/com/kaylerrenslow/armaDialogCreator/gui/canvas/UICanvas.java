@@ -1,9 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -28,6 +30,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
+	protected @NotNull Display display;
 	
 	/** Width of canvas */
 	private int canvasWidth,
@@ -40,16 +43,24 @@ public abstract class UICanvas extends AnchorPane {
 	/** Background color of the canvas */
 	protected Color backgroundColor = CanvasViewColors.EDITOR_BG;
 	
-	/** All components added */
-	protected ArrayList<CanvasComponent> components = new ArrayList<>();
-	
 	/** Mouse button that is currently down */
 	protected final Point lastMousePosition = new Point(-1, -1);//last x and y positions of the mouse relative to the canvas
 	
 	protected Keys keys = new Keys();
 	
-	public UICanvas(int width, int height) {
+	/** All components added */
+	protected ArrayList<CanvasComponent> components = new ArrayList<>();
+	
+	private final UpdateListener<Display.DisplayUpdate> displayListener = new UpdateListener<Display.DisplayUpdate>() {
+		@Override
+		public void update(Display.DisplayUpdate data) {
+			paint();
+		}
+	};
+	
+	public UICanvas(int width, int height, @NotNull Display display) {
 		this.canvas = new Canvas(width, height);
+		this.display = display;
 		this.canvasWidth = width;
 		this.canvasHeight = height;
 		this.gc = this.canvas.getGraphicsContext2D();
@@ -72,16 +83,17 @@ public abstract class UICanvas extends AnchorPane {
 		return this.canvasHeight;
 	}
 	
+	public void setDisplay(@NotNull Display display) {
+		this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
+		this.display = display;
+		this.display.getUpdateListenerGroup().addListener(displayListener);
+	}
+	
 	public void setCanvasSize(int width, int height) {
 		this.canvasWidth = width;
 		this.canvasHeight = height;
 		this.canvas.setWidth(width);
 		this.canvas.setHeight(height);
-	}
-	
-	/** Adds component without repainting the canvas */
-	public void addComponentNoPaint(@NotNull CanvasComponent component) {
-		this.components.add(component);
 	}
 	
 	/** Adds a component to the canvas and repaints the canvas */
@@ -103,37 +115,33 @@ public abstract class UICanvas extends AnchorPane {
 	}
 	
 	/**
-	 Removes the given component from the canvas render and user interaction without repainting canvas.
-	 
-	 @param component component to remove
-	 @return true if the component was removed, false if nothing was removed
+	 Paint the canvas. Order of painting is:
+	 <ol>
+	 <li>background</li>
+	 <li>display/controls</li>
+	 <li>components inserted via {@link #addComponent(CanvasComponent)}</li>
+	 </ol>
 	 */
-	public boolean removeComponentNoPaint(@NotNull CanvasComponent component) {
-		return this.components.remove(component);
-	}
-	
-	/** Removes all components form the canvas */
-	public void removeAllComponents() {
-		this.components.clear();
-		paint();
-	}
-	
-	
-	/** Paint the canvas */
 	public void paint() {
 		gc.save();
 		paintBackground();
+		paintControls();
 		paintComponents();
 		gc.restore();
 	}
 	
+	/** Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
+	protected void paintControls() {
+		this.display.getControls().sort(Control.RENDER_PRIORITY_COMPARATOR);
+		for (Control control : display.getControls()) {
+			paintControl(control);
+		}
+	}
+	
 	/** Paints all components. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
 	protected void paintComponents() {
-		this.components.sort(TextCanvasComponent.RENDER_PRIORITY_COMPARATOR);
+		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
 		for (CanvasComponent component : components) {
-			if (component.isGhost()) {
-				continue;
-			}
 			paintComponent(component);
 		}
 	}
@@ -148,11 +156,18 @@ public abstract class UICanvas extends AnchorPane {
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 	
-	protected void paintComponent(CanvasComponent component) {
+	protected void paintControl(Control control){
 		gc.save();
-		if (!component.isGhost()) {
-			component.paint(gc);
+		paintComponent(control.getRenderer());
+		gc.restore();
+	}
+	
+	protected void paintComponent(CanvasComponent component) {
+		if (component.isGhost()) {
+			return;
 		}
+		gc.save();
+		component.paint(gc);
 		gc.restore();
 	}
 	
@@ -169,30 +184,33 @@ public abstract class UICanvas extends AnchorPane {
 	
 	
 	/**
-	 This is called when the mouse listener is invoked and a mouse press was the event.
+	 This is called when the mouse listener is invoked and a mouse press was the event. Default implementation does nothing.
 	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was pressed
 	 */
-	protected abstract void mousePressed(int mousex, int mousey, @NotNull MouseButton mb);
+	protected void mousePressed(int mousex, int mousey, @NotNull MouseButton mb) {
+	}
 	
 	/**
-	 This is called when the mouse listener is invoked and a mouse release was the event
+	 This is called when the mouse listener is invoked and a mouse release was the event. Default implementation does nothing.
 	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was released
 	 */
-	protected abstract void mouseReleased(int mousex, int mousey, @NotNull MouseButton mb);
+	protected void mouseReleased(int mousex, int mousey, @NotNull MouseButton mb) {
+	}
 	
 	/**
-	 This is called when the mouse is moved and/or dragged inside the canvas
+	 This is called when the mouse is moved and/or dragged inside the canvas. Default implementation does nothing.
 	 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 */
-	protected abstract void mouseMoved(int mousex, int mousey);
+	protected void mouseMoved(int mousex, int mousey) {
+	}
 	
 	
 	/**
@@ -247,7 +265,6 @@ public abstract class UICanvas extends AnchorPane {
 	public Canvas getCanvas() {
 		return canvas;
 	}
-	
 	
 	/**
 	 Created by Kayler on 05/13/2016.

@@ -28,7 +28,7 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 		gc.clip();
 		ArmaControlGroup controlGroup = (ArmaControlGroup) getMyControl();
 		for (ArmaControl control : controlGroup.getControls()) {
-			control.getRenderer().forcePaint(gc);
+			control.getRenderer().paint(gc);
 		}
 		gc.restore();
 	}
