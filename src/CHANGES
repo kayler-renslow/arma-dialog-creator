@@ -1,6 +1,8 @@
 ADDED:
-    none
+    undo, redo icons
+    Tanoa background image
+    new Altis background image
 CHANGED:
-    redid how the UICanvas renders and how the editor edits
+    none
 FIXED:
     none

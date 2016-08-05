@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+
 /**
  Created by Kayler on 06/18/2016.
  */
@@ -45,5 +47,6 @@ public interface Resolution {
 
 	/** Get the viewport screen height as a floating point number */
 	double getViewportHeightF();
-
+	
+	UpdateListenerGroup<Resolution> getUpdateGroup();
 }

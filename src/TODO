@@ -24,6 +24,7 @@ GENERAL:
 >for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted, error, etc)
 >for project saving, list the control property's macro and if it is using it
 >preview's resolution should be independent from the editor.
+>!!!!when saving/loading, make sure to include the folders
 
 BUGS:
 -----------------------------------

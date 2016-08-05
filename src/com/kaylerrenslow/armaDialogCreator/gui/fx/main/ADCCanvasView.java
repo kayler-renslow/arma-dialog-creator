@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
@@ -54,8 +55,10 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 	
 	private void initializeUICanvasEditor() {
-		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
-				
+		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
+		canvasControls.getEditorComponentTreeView().setToDisplay(display);
+		
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
@@ -83,9 +86,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 				}
 				selectFromCanvas = true;
 				List<ArmaControl> controlList = new ArrayList<>();
-				for (Control component : uiCanvasEditor.getSelection().getSelected()) {
-					if (component instanceof ArmaControlRenderer) {
-						controlList.add(((ArmaControlRenderer) component).getMyControl());
+				for (Control control : uiCanvasEditor.getSelection().getSelected()) {
+					if (control instanceof ArmaControl) {
+						controlList.add((ArmaControl) control);
 					}
 				}
 				canvasControls.getEditorComponentTreeView().setSelectedControls(controlList);

@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
@@ -24,9 +25,9 @@ import java.util.List;
  Anything that happens to the gui tree view will echo through the application data and vice versa through this class.
  Created on 06/08/2016. */
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
-
+	
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
-
+	
 	public EditorComponentTreeView() {
 		super(null);
 		setContextMenu(controlCreationContextMenu);
@@ -42,10 +43,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		});
 	}
-
+	
 	/**
 	 Sets the selection such that only the given controls are selected
-
+	 
 	 @param controlList list of controls to select
 	 */
 	public void setSelectedControls(List<ArmaControl> controlList) {
@@ -67,41 +68,67 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		});
 	}
-
-	@Override
+	
+	public void setToDisplay(ArmaDisplay display) {
+		getRoot().getChildren().clear();
+		addControls(getRoot(), null, display.getControls());
+	}
+	
+	private void addControls(TreeItem<T> parentTreeItem, ArmaControl parent, List<ArmaControl> controls) {
+		for (ArmaControl control : controls) {
+			if (control instanceof ArmaControlGroup) {
+				addControls(getTreeData(parent), control, ((ArmaControlGroup) control).getControls());
+			} else {
+				addChildToParent2(parentTreeItem, getTreeData(control), parentTreeItem.getChildren().size(), false);
+			}
+		}
+	}
+	
 	@SuppressWarnings("unchecked")
-	protected void addChildToParent(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
+	private TreeItem<T> getTreeData(ArmaControl control){
+		return new TreeItem<T>(control instanceof ArmaControlGroup ? (T) new ControlGroupTreeItemEntry((ArmaControlGroup) control) : (T) new ControlTreeItemEntry(control));
+	}
+	
+	private void addChildToParent2(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index, boolean addToDisplay) {
 		super.addChildToParent(parent, child, index);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		int correctedIndex;
-		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-
-		ControlGroupTreeItemEntry group = null;
-		TreeItem<? extends TreeItemEntry> groupTreeItem;
-		if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
-			groupTreeItem = parent;
-			group = (ControlGroupTreeItemEntry) parent.getValue();
-		} else {
-			groupTreeItem = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
-			if (groupTreeItem != null) {
-				group = (ControlGroupTreeItemEntry) groupTreeItem.getValue();
+		if (addToDisplay) {
+			int correctedIndex;
+			ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
+			ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+			
+			ControlGroupTreeItemEntry group = null;
+			TreeItem<? extends TreeItemEntry> groupTreeItem;
+			if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
+				groupTreeItem = parent;
+				group = (ControlGroupTreeItemEntry) parent.getValue();
+			} else {
+				groupTreeItem = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
+				if (groupTreeItem != null) {
+					group = (ControlGroupTreeItemEntry) groupTreeItem.getValue();
+				}
 			}
+			
+			if (group != null) {
+				correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem) + 1, getRow(child), parent);
+				group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
+			} else { //didn't go into a control group, so it is in a folder.
+				correctedIndex = getCorrectedIndex(0, getRow(child), parent);
+				display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl()); //was added in a folder
+			}
+			display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
+			System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
 		}
-
-		if (group != null) {
-			correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem) + 1, getRow(child), parent);
-			group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
-		} else { //didn't go into a control group, so it is in a folder.
-			correctedIndex = getCorrectedIndex(0, getRow(child), parent);
-			display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl()); //was added in a folder
-		}
-		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
-		System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
 	}
-
+	
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void addChildToParent(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
+		addChildToParent2(parent, child, index, true);
+	}
+	
 	@Override
 	protected void addChildToRoot(@NotNull TreeItem<T> child) {
 		super.addChildToRoot(child);
@@ -114,7 +141,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		display.getControls().add(childControlEntry.getMyArmaControl());
 		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
 	}
-
+	
 	@Override
 	protected void addChildToRoot(int index, @NotNull TreeItem<T> child) {
 		super.addChildToRoot(index, child);
@@ -128,7 +155,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
 	}
-
+	
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void removeChild(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> toRemove) {
@@ -142,7 +169,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
 			return;
 		}
-
+		
 		ControlGroupTreeItemEntry group = null;
 		if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
 			group = (ControlGroupTreeItemEntry) parent.getValue();
@@ -158,9 +185,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
 		}
 		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.REMOVE_CONTROL);
-
+		
 	}
-
+	
 	private int getCorrectedIndex(int rowOriginStart, int row, TreeItem<T> start) {
 		//get row after insertion. traverse upwards and count how many folders there are and subtract that from row
 		System.out.println("EditorComponentTreeView.getCorrectedIndex row = " + row);
@@ -180,10 +207,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				correctedIndex--;
 			}
 		}
-
+		
 		return correctedIndex;
 	}
-
+	
 	@SuppressWarnings("unchecked")
 	private static <T extends TreeItemEntry> TreeItem<T> getAncestorOfEntryType(TreeItem<? extends TreeItemEntry> start, Class<T> clazz) {
 		if (start.getParent() == null || start.getParent().getValue() == null) {
@@ -194,14 +221,14 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		return getAncestorOfEntryType(start.getParent(), clazz);
 	}
-
-
+	
+	
 	static ImageView createFolderIcon() {
 		return new ImageView(ImagePaths.ICON_FOLDER);
 	}
-
+	
 	static ImageView createCompositeIcon() {
 		return new ImageView(ImagePaths.ICON_COMPOSITE);
 	}
-
+	
 }

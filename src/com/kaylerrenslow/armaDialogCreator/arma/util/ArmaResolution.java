@@ -16,7 +16,7 @@ public class ArmaResolution implements Resolution {
 	private int vw, vh, vx, vy;
 	private double vwd, vhd, vxd, vyd;
 	private double safeZoneX, safeZoneY, safeZoneW, safeZoneH;
-	private final UpdateListenerGroup<ArmaResolution> updateGroup = new UpdateListenerGroup<>();
+	private final UpdateListenerGroup<Resolution> updateGroup = new UpdateListenerGroup<>();
 	
 	/**
 	 Construct a resolution width the given screen dimension and ui scale
@@ -179,7 +179,7 @@ public class ArmaResolution implements Resolution {
 	}
 	
 	/** Get the update group. This update group is notified of updates whenever the resolution changes viewport size, screen size, or safeZone positions */
-	public UpdateListenerGroup<ArmaResolution> getUpdateGroup() {
+	public UpdateListenerGroup<Resolution> getUpdateGroup() {
 		return updateGroup;
 	}
 	

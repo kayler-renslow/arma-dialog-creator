@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
 
@@ -47,9 +48,9 @@ public class ArmaControl extends ControlClass implements Control {
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
 		this.resolution = resolution;
-		resolution.getUpdateGroup().addListener(new UpdateListener<ArmaResolution>() {
+		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
 			@Override
-			public void update(ArmaResolution data) {
+			public void update(Resolution data) {
 				resolutionUpdated();
 			}
 		});

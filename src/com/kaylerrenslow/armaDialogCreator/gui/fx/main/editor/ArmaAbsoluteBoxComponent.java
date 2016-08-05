@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,10 +10,10 @@ import javafx.scene.canvas.GraphicsContext;
  Created by Kayler on 05/18/2016.
  */
 class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
-	private ArmaResolution resolution;
+	private Resolution resolution;
 	private boolean alwaysFront = true;
 	
-	ArmaAbsoluteBoxComponent(ArmaResolution r) {
+	ArmaAbsoluteBoxComponent(Resolution r) {
 		super(r.getViewportX(), r.getViewportY(), r.getViewportWidth(), r.getViewportHeight());
 		this.resolution = r;
 		super.setBackgroundColor(CanvasViewColors.ABS_REGION);
@@ -23,11 +23,7 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	public boolean isEnabled() {
 		return false;
 	}
-	
-	void updateToNewResolution(ArmaResolution newResolution) {
-		resolution.setTo(newResolution);
-	}
-	
+		
 	void setAlwaysRenderAtFront(boolean alwaysFront) {
 		this.alwaysFront = alwaysFront;
 	}

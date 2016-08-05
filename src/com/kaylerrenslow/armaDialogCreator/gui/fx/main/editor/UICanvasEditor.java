@@ -1,11 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Edge;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.*;
@@ -84,11 +80,11 @@ public class UICanvasEditor extends UICanvas {
 	
 	private ValueObserver<Control> doubleClickObserver = new ValueObserver<>(null);
 	
-	public UICanvasEditor(ArmaResolution resolution, SnapConfiguration calculator, @NotNull Display display) {
+	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display display) {
 		super(resolution.getScreenWidth(), resolution.getScreenHeight(), display);
-		resolution.getUpdateGroup().addListener(new UpdateListener<ArmaResolution>() {
+		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
 			@Override
-			public void update(ArmaResolution data) {
+			public void update(Resolution data) {
 				paint();
 			}
 		});

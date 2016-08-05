@@ -36,6 +36,7 @@ public interface Lang {
 		String EDIT_REDO = "Redo";
 		String EDIT_UNDO_F = "Undo %s";
 		String EDIT_REDO_F = "Redo %s";
+		String EDIT_MACROS = "Edit Macros";
 		
 		String VIEW = "View";
 		String VIEW_PREVIEW = "Preview";
@@ -44,7 +45,7 @@ public interface Lang {
 		String VIEW_BACKGROUND_IMAGE = "Background Image";
 		String VIEW_CHANGE_BACKGROUND_IMAGE1 = "VR";
 		String VIEW_CHANGE_BACKGROUND_IMAGE2 = "Altis";
-		String VIEW_CHANGE_BACKGROUND_IMAGE3 = "Altis Late";
+		String VIEW_CHANGE_BACKGROUND_IMAGE3 = "Tanoa";
 		String VIEW_CHANGE_BACKGROUND_IMAGE_CUSTOM = "Custom";
 		String VIEW_CHANGE_BACKGROUND_NONE = "None";
 		String VIEW_ABS_REGION = "Absolute Coordinate Region";

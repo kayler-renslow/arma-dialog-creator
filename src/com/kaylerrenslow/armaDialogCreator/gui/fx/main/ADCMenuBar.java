@@ -15,9 +15,11 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.Fil
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileOpenAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang.MainMenuBar;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.control.MenuUtil.addOnAction;
 
@@ -34,9 +36,10 @@ class ADCMenuBar extends MenuBar {
 	
 	
 	/*Edit*/
+	private final MenuItem edit_undo = addOnAction(new MenuItem(MainMenuBar.EDIT_UNDO, new ImageView(ImagePaths.ICON_UNDO)), new EditUndoAction());
+	private final MenuItem edit_redo = addOnAction(new MenuItem(MainMenuBar.EDIT_REDO, new ImageView(ImagePaths.ICON_REDO)), new EditRedoAction());
 	private final MenuItem edit_viewChanges = addOnAction(new MenuItem(MainMenuBar.EDIT_CHANGES), new EditViewChangesAction());
-	private final MenuItem edit_undo = addOnAction(new MenuItem(MainMenuBar.EDIT_UNDO), new EditUndoAction());
-	private final MenuItem edit_redo = addOnAction(new MenuItem(MainMenuBar.EDIT_REDO), new EditRedoAction());
+	private final MenuItem edit_macros = addOnAction(new MenuItem(MainMenuBar.EDIT_MACROS), new EditViewChangesAction());
 	
 	/*View*/
 	private final MenuItem view_preview = addOnAction(new MenuItem(MainMenuBar.VIEW_PREVIEW, null), new ViewPreviewAction());
@@ -90,7 +93,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem create_control_class = addOnAction(new MenuItem(MainMenuBar.CREATE_CONTROL_CLASS), new CreateNewControlAction());
 	
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject);
-	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
+	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, settings_configureDirs);
 	private final Menu menuCreate = new Menu(MainMenuBar.CREATE, null, create_macro, create_control_class);
