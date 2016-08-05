@@ -19,8 +19,8 @@
     -fx-text-fill:-fx-text-background-color;
 }
 
-/**Use this for disabled menu items to make the text darker and easier to read*/
-.darker-disabled-menu-item .label {
+/**For disabled menu items to make the text darker and easier to read*/
+.menu-item:disabled .label, .menu-item:disabled .label:disabled {
     -fx-opacity:1;
 }
 

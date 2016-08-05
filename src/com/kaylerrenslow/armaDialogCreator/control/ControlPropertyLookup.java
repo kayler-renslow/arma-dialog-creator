@@ -250,7 +250,7 @@ public enum ControlPropertyLookup {
 	public final String[] about;
 	/**
 	 A unique id for the lookup item to guarantee a match by despite order change or property name change, or some other change.
-	 <br>When the loopup item is written, the propertyId must <b>NEVER</b> change.
+	 <br>When the lookup item is written, the propertyId must <b>NEVER</b> change.
 	 */
 	public final int propertyId;
 	
@@ -338,17 +338,19 @@ public enum ControlPropertyLookup {
 		return i + "";
 	}
 	
-	private static class PropertiesLookupDataVerifier {
-		static ArrayList<Integer> usedIds = new ArrayList<>();
-	}
-	
+	/**@throws IllegalArgumentException when id couldn't be matched*/
+	@NotNull
 	public static ControlPropertyLookup findById(int id) {
 		for (ControlPropertyLookup lookup : values()) {
 			if (lookup.propertyId == id) {
 				return lookup;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("id " + id + " couldn't be matched");
+	}
+	
+	private static class PropertiesLookupDataVerifier {
+		static ArrayList<Integer> usedIds = new ArrayList<>();
 	}
 	
 }

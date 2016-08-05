@@ -226,7 +226,7 @@ public class ControlClass {
 	}
 
 	/**
-	 Gets the update listener group that listens to this object. Instead of adding listeners to all properties, anytime a control property is changed inside this control the listeners should be notified from where it was changed.<br>
+	 Gets the update listener group that listens to this object. Instead of adding listeners to all {@link ControlProperty}'s, anytime a control property is changed inside this control the listeners should be notified from where it was changed.<br>
 	 Also, since it will not automatically change, it will cut down on the number of renders performed by the editor's canvas<br>
 	 The value inside the listener can be null, which means all listeners except this control class's inner listener will be notified
 	 */
@@ -235,7 +235,8 @@ public class ControlClass {
 	}
 
 
-	/** Called when update listeners have been notified of an update and the new value is not null. Default implementation is nothing */
+	/** Called when update listeners have been notified of an update and the new value is not null. Default implementation is nothing.
+	 @see #getUpdateGroup() */
 	protected void updateProperties() {
 
 	}

@@ -41,6 +41,10 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		this.setPadding(new Insets(5, 5, 0, 5));
 
 		VBox.setVgrow(editorComponentTreeView, Priority.ALWAYS);
+		
+		//setup tree view to show all controls
+		
+		
 	}
 
 	private void initializeStepChoiceboxes() {

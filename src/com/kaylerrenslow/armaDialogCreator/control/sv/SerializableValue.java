@@ -2,6 +2,8 @@ package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  @author Kayler
  Base class that specifies that a value can be converted into a String[]. For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
@@ -25,6 +27,11 @@ public abstract class SerializableValue {
 	/** Return the value as a String array */
 	public String[] getAsStringArray() {
 		return valuesAsArray;
+	}
+	
+	/**Returns {@link Arrays#toString(Object[])} with {@link #getAsStringArray()} as the parameter*/
+	public String toStringDebug(){
+		return Arrays.toString(valuesAsArray);
 	}
 	
 	/** Return the instance as a deep copy */

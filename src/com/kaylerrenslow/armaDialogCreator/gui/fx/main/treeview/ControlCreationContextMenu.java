@@ -14,10 +14,9 @@ import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorCom
 /**
  @author Kayler
  ContextMenu for inserting a new control into the EditorComponentTreeView
- Created on 06/20/2016.
- */
+ Created on 06/20/2016. */
 public class ControlCreationContextMenu extends ContextMenu {
-
+	
 	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {
 		if (showNewFolderOption) {
 			MenuItem newFolder = new MenuItem(Lang.ContextMenu.ComponentTreeView.NEW_FOLDER, createFolderIcon());
@@ -39,6 +38,9 @@ public class ControlCreationContextMenu extends ContextMenu {
 				if (controlType.group != group) {
 					continue;
 				}
+				if (!controlType.betaSupported()) {
+					continue;
+				}
 				menuItemType = new MenuItem(controlType.fullDisplayText());
 				if (controlType.deprecated) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
@@ -48,8 +50,13 @@ public class ControlCreationContextMenu extends ContextMenu {
 				} else {
 					TreeViewMenuItemBuilder.setNewItemAction(treeView, creator.creator, menuItemType);
 				}
-
+				
 				groupMenu.getItems().add(menuItemType);
+			}
+			if(groupMenu.getItems().size() == 0){
+				MenuItem miNone = new MenuItem(Lang.Misc.NO_ITEMS_AVAILABLE);
+				miNone.setDisable(true);
+				groupMenu.getItems().add(miNone);
 			}
 		}
 	}

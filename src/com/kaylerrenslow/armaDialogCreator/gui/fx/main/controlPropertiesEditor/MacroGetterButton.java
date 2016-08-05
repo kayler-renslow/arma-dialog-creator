@@ -86,7 +86,6 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 		if (recentMacros.size() == 0) {
 			MenuItem miNoRecentMacros = new MenuItem(Lang.Macros.ChooseMacroPopup.NO_RECENT_MACROS);
 			miNoRecentMacros.setDisable(true);
-			miNoRecentMacros.getStyleClass().add("darker-disabled-menu-item");
 			menuButton.getItems().add(miNoRecentMacros);
 		} else {
 			MenuItem miRecentMacro;

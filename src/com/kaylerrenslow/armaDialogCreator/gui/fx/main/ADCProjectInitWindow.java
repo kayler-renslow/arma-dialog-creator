@@ -11,12 +11,15 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
+import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
@@ -92,7 +95,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		Tab selected = tabPane.getSelectionModel().getSelectedItem();
 		for (ProjectInitTab initTab : initTabs) {
 			if (initTab.getTab() == selected) {
-				initTab.prepareProject();
+				if (!initTab.prepareProject()) {
+					return;
+				}
 				break;
 			}
 		}
@@ -134,7 +139,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		abstract Tab getTab();
 		
-		void prepareProject(){}
+		boolean prepareProject() {
+			return true;
+		}
 	}
 	
 	public class NewProjectTab extends ProjectInitTab {
@@ -142,20 +149,21 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		private final Tab tabNew = new Tab(Lang.ProjectInitWindow.TAB_NEW);
 		
 		/** TextField used for getting project name in new tab */
-		private final TextField tfProjectName;
+		private final TextField tfProjectName = new TextField();
 		private final TextField tfProjectDescription = new TextField();
 		
 		public NewProjectTab() {
+			tfProjectName.setPrefWidth(200d);
+			tfProjectDescription.setPrefWidth(250d);
+			
 			final VBox root = getTabVbox(10);
+			
 			final Label lblCreateNewProject = new Label(Lang.ProjectInitWindow.NEW_PROJECT_TITLE);
 			VBox.setMargin(lblCreateNewProject, new Insets(0, 0, 10, 0));
-			tfProjectName = new TextField();
-			tfProjectName.setPrefWidth(200d);
 			final Label lblProjectName = new Label(Lang.ProjectInitWindow.PROJECT_NAME, tfProjectName);
 			lblProjectName.setContentDisplay(ContentDisplay.RIGHT);
 			final Label lblProjectDescription = new Label(Lang.ProjectInitWindow.NEW_PROJECT_DESCRIPTION, tfProjectDescription);
 			lblProjectDescription.setContentDisplay(ContentDisplay.RIGHT);
-			tfProjectDescription.setPrefWidth(250d);
 			
 			root.getChildren().addAll(lblCreateNewProject, lblProjectName, lblProjectDescription);
 			
@@ -193,6 +201,32 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			VBox.setMargin(lblOpenProject, new Insets(0d, 0d, 10d, 0d));
 			
 			final Button btnLocateProject = new Button(Lang.ProjectInitWindow.OPEN_FROM_FILE);
+			btnLocateProject.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					FileChooser fc = new FileChooser();
+					fc.setInitialDirectory(ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+					fc.setTitle(Lang.ProjectInitWindow.FC_LOCATE_PROJECT_TITLE);
+					fc.getExtensionFilters().add(Lang.ProjectInitWindow.FC_FILTER);
+					
+					File chosen = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
+					if (chosen == null) {
+						return;
+					}
+					ProjectXmlLoader.ProjectParseResult result;
+					try {
+						result = ProjectXmlLoader.parse(ArmaDialogCreator.getApplicationData(), chosen);
+					} catch (XmlParseException e) {
+						return;
+					}
+					if (!lvKnownProjects.getItems().contains(result.getProject())) {
+						parsedKnownProjects.add(result);
+						lvKnownProjects.getItems().add(result.getProject());
+					}
+					lvKnownProjects.getSelectionModel().select(result.getProject());
+					lvKnownProjects.requestFocus();
+				}
+			});
 			
 			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ProjectInitWindow.OPEN_FROM_FILE_TITLE), btnLocateProject);
 			
@@ -207,14 +241,10 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		private Node initKnownProjects() {
 			fetchProjects(parsedKnownProjects);
-			if (parsedKnownProjects.size() == 0) {
-				return new Label(Lang.ProjectInitWindow.NO_DETECTED_PROJECTS);
-			} else {
-				for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
-					lvKnownProjects.getItems().add(result.getProject());
-				}
-				return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
+			for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
+				lvKnownProjects.getItems().add(result.getProject());
 			}
+			return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
 		}
 		
 		private void fetchProjects(LinkedList<ProjectXmlLoader.ProjectParseResult> knownProjects) {
@@ -245,14 +275,20 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 		
 		@Override
-		void prepareProject() {
+		boolean prepareProject() {
 			for (ProjectXmlLoader.ProjectParseResult parseResult : parsedKnownProjects) {
 				if (parseResult.getProject() == selectedProject) {
 					if (parseResult.getErrors().size() > 0) {
 						new ProjectImproperResultPopup(parseResult).showAndWait();
+						for (ParseError error : parseResult.getErrors()) {
+							if (!error.recovered()) {
+								return false;
+							}
+						}
 					}
 				}
 			}
+			return true;
 		}
 		
 		@Override
@@ -283,7 +319,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					VBox vbErrorMsg = new VBox(5);
 					vbErrorMsg.getChildren().addAll(
 							getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.ERROR_MESSAGE + " " + error.getMessage(), null),
-							getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVERED, getCheckbox("", error.recovered()))
+							getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVERED, getLabel(error.recovered() ? Lang.ProjectInitWindow.ProjectResultErrorPopup.YES : Lang.ProjectInitWindow.ProjectResultErrorPopup.NO, null))
 					);
 					if (error.recovered()) {
 						vbErrorMsg.getChildren().add(getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVER_MESSAGE + " " + error.getRecoverMessage(), null));
@@ -303,12 +339,6 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				return label;
 			}
 			
-			private CheckBox getCheckbox(String text, boolean checked) {
-				CheckBox checkBox = new CheckBox(text);
-				checkBox.setSelected(checked);
-				checkBox.setDisable(true);
-				return checkBox;
-			}
 		}
 		
 	}

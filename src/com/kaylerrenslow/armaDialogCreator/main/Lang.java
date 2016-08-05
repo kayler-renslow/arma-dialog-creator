@@ -25,10 +25,10 @@ public interface Lang {
 	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar} */
 	interface MainMenuBar {
 		String FILE = "File";
-		String FILE_NEW = "New";
 		String FILE_OPEN = "Open";
+		String FILE_CLOSE_PROJECT = "Close Project";
 		String FILE_SAVE = "Save";
-		String FILE_SAVE_AS = "Save As";
+		String FILE_EXPORT = "Export";
 		
 		String EDIT = "Edit";
 		String EDIT_CHANGES = "View Changes";
@@ -138,6 +138,7 @@ public interface Lang {
 	
 	interface Misc {
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
+		String NO_ITEMS_AVAILABLE = "No items available.";
 	}
 	
 	interface ContextMenu {
@@ -289,18 +290,21 @@ public interface Lang {
 		String OPEN_PROJECT_TITLE = "Open an Existing Project";
 		String OPEN_PROJECT_OK = "Load Project";
 		String DETECTED_PROJECTS = "Projects";
-		String NO_DETECTED_PROJECTS = "No detected projects.";
-		String OPEN_FROM_FILE = "Open from file";
 		String IMPORT_PROJECT_TITLE = "Import an Arma 3 Dialog";
 		String IMPORT_PROJECT_OK = "Import Dialog";
 		String LOCATE_DESCRIPTION_EXT = "Locate description.ext";
 		String PROJECT_SETUP = "Project Setup";
 		String OPEN_FROM_FILE_TITLE = "Project not listed?";
+		String OPEN_FROM_FILE = "Open from file";
+		String FC_LOCATE_PROJECT_TITLE = "Locate a project.xml";
+		FileChooser.ExtensionFilter FC_FILTER = new FileChooser.ExtensionFilter("project.xml", "*.xml");
 		
 		interface ProjectResultErrorPopup {
 			String POPUP_TITLE = "Project Parsed With Errors";
 			String ERROR_MESSAGE = "Error:";
 			String RECOVERED = "Recovered:";
+			String YES = "Yes";
+			String NO = "No";
 			String RECOVER_MESSAGE = "Recover Message:";
 			String ERRORS_TITLE = "Errors occurred while parsing.";
 		}

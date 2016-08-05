@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -332,7 +331,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		Tooltip tp = new Tooltip(tooltip);
 		tp.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20));
-		FXUtil.hackTooltipStartTiming(tp, 0);
 		return tp;
 	}
 	

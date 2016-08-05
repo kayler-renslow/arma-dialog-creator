@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
@@ -19,6 +20,7 @@ public class ArmaControl extends ControlClass {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
 	private final Env env;
+	private final RendererLookup rendererLookup;
 	/** Type of the control */
 	protected ControlType type = ControlType.STATIC;
 	/** Style of the control TODO: allow multiple styles */
@@ -38,10 +40,10 @@ public class ArmaControl extends ControlClass {
 	 
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
-	 @param renderer renderer of the control
+	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull Class<? extends ArmaControlRenderer> renderer, @NotNull Env env) {
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
 		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateListener<ArmaResolution>() {
@@ -52,11 +54,13 @@ public class ArmaControl extends ControlClass {
 		});
 		this.env = env;
 		try {
-			this.renderer = renderer.newInstance();
+			this.renderer = rendererLookup.rendererClass.newInstance();
 			this.renderer.setMyControl(this);
+			this.renderer.init();
+			this.rendererLookup = rendererLookup;
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			throw new RuntimeException("Class " + renderer.getName() + " couldn't be instantiated.");
+			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
 		}
 		
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
@@ -85,13 +89,13 @@ public class ArmaControl extends ControlClass {
 	 @param width width (abs region)
 	 @param height height (abs region)
 	 @param resolution resolution to use
-	 @param renderer renderer for the control
+	 @param rendererLookup renderer for the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, int idc, @NotNull ControlType type, @NotNull ControlStyle style,
 					   @NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
-					   @NotNull Class<? extends ArmaControlRenderer> renderer, @NotNull Env env) {
-		this(name, provider, resolution, renderer, env);
+					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		this(name, provider, resolution, rendererLookup, env);
 		typeProperty.setDefaultValue(false, type.typeId);
 		styleProperty.setDefaultValue(false, style.styleId);
 		xProperty.setDefaultValue(false, x);
@@ -238,7 +242,10 @@ public class ArmaControl extends ControlClass {
 	
 	@Override
 	protected void updateProperties() {
-		setPositionWH((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
+		if (xProperty.getValue() != this.x || yProperty.getValue() != this.y || wProperty.getValue() != this.width || hProperty.getValue() != this.height) {
+			setPositionWH((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
+		}
+		renderer.updateProperties();
 		//		defineStyle(styleProperty.);
 	}
 	
@@ -250,9 +257,12 @@ public class ArmaControl extends ControlClass {
 		return style;
 	}
 	
-	
 	public ArmaControlRenderer getRenderer() {
 		return renderer;
+	}
+	
+	public RendererLookup getRendererLookup() {
+		return rendererLookup;
 	}
 	
 	/** Set the x and y values (and width and height) based upon the renderer's position */

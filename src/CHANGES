@@ -1,6 +1,7 @@
 ADDED:
     none
 CHANGED:
-    auto update position for controls when resolution ui scale is changed
+    tooltip for control property editor no longer immediately shows because it got annoying
+    control types that aren't supported in the beta are now removed from the creation menu
 FIXED:
-    none
+    loading from file now properly loads the controls and places them in the tree view

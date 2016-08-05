@@ -2,9 +2,9 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
@@ -167,7 +167,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		Element controlElement;
 		for (int tagInd = 0; tagInd < tagsNodeList.getLength(); tagInd++) {
 			tagNode = tagsNodeList.item(tagInd);
-			if (tagNode.getNodeType() != Node.ELEMENT_NODE || !tagNode.getNodeName().equals("control") || !tagNode.getNodeName().equals("control-group")) {
+			if (tagNode.getNodeType() != Node.ELEMENT_NODE || (!tagNode.getNodeName().equals("control") && !tagNode.getNodeName().equals("control-group"))) {
 				continue;
 			}
 			controlElement = (Element) tagNode;
@@ -208,22 +208,17 @@ public class ProjectXmlLoader extends XmlLoader {
 		try {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.getById(controlTypeId);
-			if (controlType == null) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
-				return null;
-			}
-		} catch (NumberFormatException e) {
+		} catch (IllegalArgumentException e) { //will catch number format exception as well
 			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
 			return null;
 		}
 		
-		
 		String extendClassName = controlElement.getAttribute("extend-class");
-		Class<? extends ArmaControlRenderer> rendererClass;
-		String rendererStr = controlElement.getAttribute("renderer");
+		RendererLookup rendererLookup;
+		String rendererStr = controlElement.getAttribute("renderer-id");
 		try {
-			rendererClass = (Class<? extends ArmaControlRenderer>) Class.forName(rendererStr);
-		} catch (ClassNotFoundException | ClassCastException e) {
+			rendererLookup = RendererLookup.getById(Integer.parseInt(rendererStr));
+		} catch (IllegalArgumentException e) {
 			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_RENDERER_F, rendererStr, controlClassName)));
 			return null;
 		}
@@ -241,11 +236,7 @@ public class ProjectXmlLoader extends XmlLoader {
 			try {
 				int id = Integer.parseInt(lookupIdStr);
 				lookup = ControlPropertyLookup.findById(id);
-				if (lookup == null) {
-					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
-					return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
-				}
-			} catch (NumberFormatException e) {
+			} catch (IllegalArgumentException e) {
 				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
@@ -253,9 +244,9 @@ public class ProjectXmlLoader extends XmlLoader {
 			if (value == null) {
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
-			
-			
+			properties.add(new Pair<>(lookup, value));
 		}
+		
 		ArmaControlSpecProvider specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
 		if (!containsAll) {
@@ -290,9 +281,9 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		ArmaControl control;
 		if (isControlGroup) {
-			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
+			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		} else {
-			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererClass, DataKeys.ENV.get(dataContext));
+			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		}
 		
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {

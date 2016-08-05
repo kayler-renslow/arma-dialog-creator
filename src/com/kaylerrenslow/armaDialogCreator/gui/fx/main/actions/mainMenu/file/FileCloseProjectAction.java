@@ -6,7 +6,7 @@ import javafx.event.EventHandler;
 /**
  Created by Kayler on 05/20/2016.
  */
-public class FileNewAction implements EventHandler<ActionEvent> {
+public class FileCloseProjectAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 

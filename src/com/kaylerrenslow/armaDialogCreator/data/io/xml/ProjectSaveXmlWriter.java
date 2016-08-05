@@ -68,10 +68,10 @@ public class ProjectSaveXmlWriter {
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
 		
-		fos.write(String.format("<%s idc='%d' renderer='%s' control-type-id='%d' class-name='%s' extend-class='%s'>",
+		fos.write(String.format("<%s idc='%d' renderer-id='%d' control-type-id='%d' class-name='%s' extend-class='%s'>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getIdc(),
-				control.getRenderer().getClass().getName(),
+				control.getRendererLookup().id,
 				control.getType().typeId,
 				control.getClassName(),
 				control.getExtendControl() != null ? control.getExtendControl().getClassName() : ""
@@ -96,7 +96,7 @@ public class ProjectSaveXmlWriter {
 			}
 		}
 		
-		fos.write((controlGroup ? controlGroupStr : controlStr).getBytes());
+		fos.write(("</"+(controlGroup ? controlGroupStr : controlStr)+">").getBytes());
 	}
 	
 	private void writeMacros(@NotNull FileOutputStream fos) throws IOException {

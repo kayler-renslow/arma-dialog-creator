@@ -10,10 +10,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.C
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileNewAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileCloseProjectAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileExportAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileOpenAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.FileSaveAsAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang.MainMenuBar;
@@ -27,10 +27,11 @@ import static com.kaylerrenslow.armaDialogCreator.gui.fx.control.MenuUtil.addOnA
 class ADCMenuBar extends MenuBar {
 	
 	/*File*/
-	private final MenuItem file_new = addOnAction(new MenuItem(MainMenuBar.FILE_NEW), new FileNewAction());
 	private final MenuItem file_open = addOnAction(new MenuItem(MainMenuBar.FILE_OPEN), new FileOpenAction());
 	private final MenuItem file_save = addOnAction(new MenuItem(MainMenuBar.FILE_SAVE), new FileSaveAction());
-	private final MenuItem file_saveAs = addOnAction(new MenuItem(MainMenuBar.FILE_SAVE_AS), new FileSaveAsAction());
+	private final MenuItem file_export = addOnAction(new MenuItem(MainMenuBar.FILE_EXPORT), new FileExportAction());
+	private final MenuItem file_closeProject = addOnAction(new MenuItem(MainMenuBar.FILE_CLOSE_PROJECT), new FileCloseProjectAction());
+	
 	
 	/*Edit*/
 	private final MenuItem edit_viewChanges = addOnAction(new MenuItem(MainMenuBar.EDIT_CHANGES), new EditViewChangesAction());
@@ -88,13 +89,13 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem create_macro = addOnAction(new MenuItem(MainMenuBar.CREATE_MACRO), new CreateMacroAction());
 	private final MenuItem create_control_class = addOnAction(new MenuItem(MainMenuBar.CREATE_CONTROL_CLASS), new CreateNewControlAction());
 	
+	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject);
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_viewChanges, edit_undo, edit_redo);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, settings_configureDirs);
 	private final Menu menuCreate = new Menu(MainMenuBar.CREATE, null, create_macro, create_control_class);
 	
 	ADCMenuBar() {
-		Menu menuFile = new Menu(MainMenuBar.FILE, null, file_new, file_open, file_save, file_saveAs);
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate);
 	}
 	
