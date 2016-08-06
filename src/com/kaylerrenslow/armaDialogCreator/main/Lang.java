@@ -92,16 +92,8 @@ public interface Lang {
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.ControlPropertiesConfigPopup} */
 		interface ControlPropertiesConfig {
 			String NO_PROPERTIES_AVAILABLE = "No properties available.";
-			String SQF_CODE = "SQF Code";
-			String TEXTURE = "Texture String";
-			String IMAGE_PATH = "Image Path String";
-			String FILE_NAME = "File Path String";
-			String STRING = "String";
 			String EXTEND_CLASS = "Extend Class";
 			String IS_BACKGROUND_CONTROL = "Background Control";
-			String INT = "Integer";
-			String FLOAT = "Floating Point Number";
-			String EXP = "Expression";
 		}
 		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.MissingControlPropertiesConfigPopup} */
@@ -186,6 +178,9 @@ public interface Lang {
 				String CONVERT_ERROR_POPUP_TITLE = "Conversion Failed";
 			}
 		}
+		interface ControlStyleGroupEditor{
+			String SELECT_STYLES = "Select Styles";
+		}
 	}
 	
 	interface Macros {
@@ -220,6 +215,7 @@ public interface Lang {
 		String TEXTURE = "Texture";
 		String EVENT = "Event SQF Code String";
 		String SQF = "SQF Code String";
+		String CONTROL_STYLE = "Control Style";
 	}
 	
 	/** {@link com.kaylerrenslow.armaDialogCreator.control.ControlType} */

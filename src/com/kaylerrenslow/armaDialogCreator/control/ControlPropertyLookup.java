@@ -19,7 +19,7 @@ public enum ControlPropertyLookup {
 	W(3, "w", PropertyType.EXP, "Width of control."),
 	H(4, "h", PropertyType.EXP, "Height of control."),
 	TYPE(5, "type", PropertyType.INT, "Type of the control."),
-	STYLE(6, "style", PropertyType.INT, "Style of the control."),
+	STYLE(6, "style", PropertyType.CONTROL_STYLE, "Style of the control."),
 	ACCESS(7, "access", PropertyType.INT, "Read and write setting.", new ControlPropertyOption("Read and Write", "0", "Default case where properties can still be added or overridden."), new ControlPropertyOption("Read and Create", "1", "Only allows creating new properties."), new ControlPropertyOption("Read Only", "2", "Does not allow to do anything in deriving classes."), new ControlPropertyOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")),
 	
 	/*Common*/

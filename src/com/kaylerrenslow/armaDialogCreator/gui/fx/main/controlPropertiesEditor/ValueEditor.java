@@ -44,6 +44,8 @@ public interface ValueEditor<V extends SerializableValue> {
 				return new InputFieldValueEditor.IntegerEditor();
 			case FLOAT:
 				return new InputFieldValueEditor.DoubleEditor();
+			case CONTROL_STYLE:
+				return new ControlStyleValueEditor();
 			case EXP:
 				return new InputFieldValueEditor.ExpressionEditor(env);
 			case BOOLEAN:

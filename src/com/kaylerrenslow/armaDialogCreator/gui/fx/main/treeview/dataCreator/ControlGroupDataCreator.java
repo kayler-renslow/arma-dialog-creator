@@ -21,7 +21,7 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntr
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup" + (id++), -1, ControlStyle.CENTER, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()),
+		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup" + (id++), -1, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()),
 				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
 	}
 

@@ -287,9 +287,9 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		ArmaControl control;
 		if (isControlGroup) {
-			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER.styleGroup, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		} else {
-			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER.styleGroup, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		}
 		
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {

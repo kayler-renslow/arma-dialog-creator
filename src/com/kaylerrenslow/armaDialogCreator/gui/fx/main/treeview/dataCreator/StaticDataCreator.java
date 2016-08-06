@@ -21,7 +21,7 @@ public class StaticDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv());
+		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv());
 		id++;
 		return new ControlTreeItemEntry(control);
 	}

@@ -1,7 +1,6 @@
 ADDED:
-    none
+    control style value editor
 CHANGED:
-    for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted)
-    input field will now no longer submit data after focus lost unless there is no text entered and field doesn't allow empty data
+    Arma control renderers are no longer text components
 FIXED:
-    changing ui scale manipulates safeZone controls when it shouldn't
+    none

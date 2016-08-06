@@ -4,10 +4,10 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
@@ -52,7 +52,7 @@ public class StaticControl extends ArmaControl {
 		}
 	};
 	
-	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyle style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
+	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyleGroup style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, idc, ControlType.STATIC, style, x, y, width, height, resolution, RendererLookup.STATIC, env);
 		findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(renderer.getBackgroundColor()));
 		findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(renderer.getTextColor()));

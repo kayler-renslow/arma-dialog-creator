@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
@@ -25,7 +26,7 @@ public class ArmaControl extends ControlClass implements Control {
 	/** Type of the control */
 	protected ControlType type = ControlType.STATIC;
 	/** Style of the control TODO: allow multiple styles */
-	protected ControlStyle style = ControlStyle.CENTER;
+	protected ControlStyleGroup style = new ControlStyleGroup(new ControlStyle[]{ControlStyle.CENTER});
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
 	
@@ -63,7 +64,7 @@ public class ArmaControl extends ControlClass implements Control {
 		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
 		typeProperty.setDefaultValue(true, type.typeId);
 		styleProperty = findRequiredProperty(ControlPropertyLookup.STYLE);
-		styleProperty.setDefaultValue(true, style.styleId);
+		styleProperty.setDefaultValue(true, style);
 		xProperty = findRequiredProperty(ControlPropertyLookup.X);
 		yProperty = findRequiredProperty(ControlPropertyLookup.Y);
 		wProperty = findRequiredProperty(ControlPropertyLookup.W);
@@ -87,12 +88,12 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer for the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, int idc, @NotNull ControlType type, @NotNull ControlStyle style,
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, int idc, @NotNull ControlType type, @NotNull ControlStyleGroup style,
 					   @NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
 					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
 		typeProperty.setDefaultValue(false, type.typeId);
-		styleProperty.setDefaultValue(false, style.styleId);
+		styleProperty.setDefaultValue(false, style);
 		xProperty.setDefaultValue(false, x);
 		yProperty.setDefaultValue(false, y);
 		wProperty.setDefaultValue(false, width);
@@ -241,12 +242,12 @@ public class ArmaControl extends ControlClass implements Control {
 	}
 	
 	/** Set and define the style control property */
-	protected void defineStyle(ControlStyle style) {
+	protected void defineStyle(ControlStyleGroup style) {
 		setStyle(style);
 	}
 	
 	/** Just set the style */
-	protected void setStyle(ControlStyle style) {
+	protected void setStyle(ControlStyleGroup style) {
 		this.style = style;
 	}
 	
@@ -264,7 +265,7 @@ public class ArmaControl extends ControlClass implements Control {
 		return type;
 	}
 	
-	public ControlStyle getStyle() {
+	public ControlStyleGroup getStyle() {
 		return style;
 	}
 	
@@ -276,4 +277,7 @@ public class ArmaControl extends ControlClass implements Control {
 		return rendererLookup;
 	}
 	
+	public ControlStyle[] getAllowedStyles() {
+		return ControlStyle.values();
+	}
 }

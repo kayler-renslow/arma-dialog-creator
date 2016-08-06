@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
@@ -10,6 +11,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -184,6 +186,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		StackPane stackPanePropertyInput = new StackPane();
 		
 		ControlPropertyInput propertyInput = getPropertyInputNode(c);
+		
 		propertyInput.disableEditing(c.getPropertyLookup() == ControlPropertyLookup.TYPE);
 		
 		if (propertyInput.displayFullWidth()) {
@@ -287,6 +290,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 				return new ControlPropertyInputFieldDouble(control, controlProperty);
 			case EXP:
 				return new ControlPropertyExprInput(control, controlProperty);
+			case CONTROL_STYLE:
+				return new ControlStylePropertyInput(control, controlProperty);
 			case BOOLEAN:
 				return new ControlPropertyBooleanChoiceBox(control, controlProperty);
 			case STRING:
@@ -516,6 +521,107 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 	
+	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyInput {
+		
+		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
+		private final ControlProperty controlProperty;
+		private boolean updateFromProperty = false;
+		private boolean updateFromSelection = false;
+		
+		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			if (control != null && control instanceof ArmaControl) {
+				menuButton.getItems().clear();
+				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
+			}
+			this.controlProperty = controlProperty;
+			ControlStyleGroup group = (ControlStyleGroup) controlProperty.getValue();
+			if (group != null) {
+				menuButton.setSelected(group.getValues());
+			}
+			menuButton.getSelectedItems().addListener(new ListChangeListener<ControlStyle>() {
+				@Override
+				public void onChanged(Change<? extends ControlStyle> c) {
+					if (updateFromProperty) { //prevent stack overflow
+						return;
+					}
+					updateFromSelection = true;
+					controlProperty.setValue(getValue());
+					if (control != null) {
+						control.getUpdateGroup().update(control);
+					}
+					controlPropertyUpdateGroup.update(controlProperty);
+					updateFromSelection = false;
+				}
+			});
+			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+					if (updateFromSelection) {
+						return;
+					}
+					updateFromProperty = true; //prevent stack overflow
+					if (newValue == null) {
+						menuButton.clearSelection();
+					} else {
+						setValue((ControlStyleGroup) newValue);
+					}
+					updateFromProperty = false; //prevent stack overflow
+				}
+			});
+		}
+		
+		@Override
+		public ControlProperty getControlProperty() {
+			return controlProperty;
+		}
+		
+		@Override
+		public boolean hasValidData() {
+			return menuButton.getSelectedItems().size() > 0;
+		}
+		
+		@Override
+		public void resetToDefaultValue() {
+			if (controlProperty.getDefaultValue() == null) {
+				menuButton.clearSelection();
+			} else {
+				ControlStyleGroup group = (ControlStyleGroup) controlProperty.getDefaultValue();
+				menuButton.setSelected(group.getValues());
+			}
+		}
+		
+		@Override
+		public void disableEditing(boolean disable) {
+			setDisable(disable);
+		}
+		
+		@Override
+		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
+			return controlPropertyUpdateGroup;
+		}
+		
+		@Override
+		public void setToMode(EditMode mode) {
+			setToOverride(mode == EditMode.OVERRIDE);
+		}
+		
+		@NotNull
+		@Override
+		public Node getRootNode() {
+			return this;
+		}
+		
+		@Override
+		public Class<? extends SerializableValue> getMacroClass() {
+			return ControlStyleGroup.class;
+		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return true;
+		}
+	}
+	
 	/**
 	 Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified.
 	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link Expression}
@@ -610,19 +716,19 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	private static class ControlPropertyInputFieldString extends ControlPropertyInputField<SVString> {
 		ControlPropertyInputFieldString(ControlClass control, ControlProperty controlProperty) {
-			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.Popups.ControlPropertiesConfig.STRING);
+			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.PropertyType.STRING);
 		}
 	}
 	
 	private static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<SVDouble> {
 		ControlPropertyInputFieldDouble(ControlClass control, ControlProperty controlProperty) {
-			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.Popups.ControlPropertiesConfig.FLOAT);
+			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.PropertyType.FLOAT);
 		}
 	}
 	
 	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<SVInteger> {
 		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
-			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.Popups.ControlPropertiesConfig.INT);
+			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.PropertyType.INT);
 		}
 	}
 	
@@ -630,7 +736,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()),
-					Lang.Popups.ControlPropertiesConfig.EXP);
+					Lang.PropertyType.EXP);
 		}
 	}
 	

@@ -13,6 +13,8 @@ public enum PropertyType {
 	INT(SVInteger.CONVERTER, Lang.PropertyType.INT),
 	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
 	FLOAT(SVDouble.CONVERTER, Lang.PropertyType.FLOAT),
+	/** Unique property type to {@link ControlPropertyLookup#STYLE} */
+	CONTROL_STYLE(ControlStyleGroup.CONVERTER, Lang.PropertyType.CONTROL_STYLE),
 	/** Is an expression */
 	EXP(Expression.CONVERTER, Lang.PropertyType.EXP),
 	/** Is a boolean (0 for false, 1 for true) */

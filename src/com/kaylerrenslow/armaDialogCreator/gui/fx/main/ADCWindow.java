@@ -90,6 +90,9 @@ public class ADCWindow {
 				myRootElement.getChildren().addAll(lblBody, hyperlink, new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
 				myStage.sizeToScene();
 				
+				btnOk.requestFocus();
+				btnOk.setDefaultButton(true);
+				
 				super.show();
 			}
 		}.show();

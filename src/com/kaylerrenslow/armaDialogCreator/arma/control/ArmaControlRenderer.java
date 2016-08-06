@@ -2,18 +2,16 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.TextCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
  Base class for JavaFX canvas rendering of arma controls
  Created on 05/20/2016. */
-public class ArmaControlRenderer extends TextCanvasComponent {
-	private static final Font FONT = Font.font(20d);
+public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
 	
@@ -21,7 +19,6 @@ public class ArmaControlRenderer extends TextCanvasComponent {
 	
 	public ArmaControlRenderer() {
 		super(0, 0, 0, 0);
-		setFont(FONT);
 		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
 		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
