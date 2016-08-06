@@ -7,21 +7,23 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
  Created on 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup{
-	private ObservableList<ArmaControl> controls = FXCollections.observableArrayList(new ArrayList<ArmaControl>());
+	private final List<ArmaControl> controls = new ArrayList<>();
+	private final ReadOnlyList<ArmaControl> controlReadOnlyList = new ReadOnlyList<>(controls);
+	
 	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
 
 		private final ControlPropertyLookup[] REQUIRED_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
@@ -42,16 +44,7 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup{
 			return OPTIONAL_PROPERTIES;
 		}
 	};
-	{
-		ArmaControlGroup me = this;
-		controls.addListener(new ListChangeListener<ArmaControl>() {
-			@Override
-			public void onChanged(Change<? extends ArmaControl> c) {
-				c.next();
-				me.getUpdateGroup().update(me);
-			}
-		});
-	}
+	
 
 	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, resolution, renderer, env);
@@ -60,10 +53,36 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup{
 	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, @NotNull ControlStyle style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, idc, type, style, x, y, width, height, resolution, renderer, env);
 	}
-
-	/** Get all controls inside the group */
-	@NotNull
-	public ObservableList<ArmaControl> getControls() {
-		return controls;
+	
+	
+	@Override
+	public ReadOnlyList<ArmaControl> getControls() {
+		return controlReadOnlyList;
+	}
+	
+	@Override
+	public void addControl(Control control) {
+		if(!(control instanceof ArmaControl)){
+			throw new IllegalArgumentException("control does not extend ArmaControl");
+		}
+		controls.add((ArmaControl) control);
+	}
+	
+	@Override
+	public void addControl(int index, Control toAdd) {
+		if(!(toAdd instanceof ArmaControl)){
+			throw new IllegalArgumentException("toAdd does not extend ArmaControl");
+		}
+		controls.add(index, (ArmaControl) toAdd);
+	}
+	
+	@Override
+	public int indexOf(Control control) {
+		return controls.indexOf(control);
+	}
+	
+	@Override
+	public boolean removeControl(Control control) {
+		return controls.remove(control);
 	}
 }

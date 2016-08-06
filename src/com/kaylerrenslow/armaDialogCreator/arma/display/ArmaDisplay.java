@@ -1,7 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.arma.display;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 
 import java.util.ArrayList;
@@ -15,12 +19,19 @@ public class ArmaDisplay implements Display{
 
 	private int idd;
 	private boolean movingEnable, enableSimulation;
-	private List<ArmaControl> controls;
-	private UpdateListenerGroup<DisplayUpdate> updateGroup = new UpdateListenerGroup<>();
-
+	private final List<ArmaControl> controls = new ArrayList<>();
+	private final ReadOnlyList<ArmaControl> controlReadOnlyList = new ReadOnlyList<>(controls);
+	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
+	private final UpdateListener<Object> controlListener = new UpdateListener<Object>(){
+		@Override
+		public void update(Object data) {
+			updateGroup.update(data);
+		}
+	};
+	
+	
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
-		controls = new ArrayList<>();
 	}
 
 	public int getIdd() {
@@ -49,14 +60,61 @@ public class ArmaDisplay implements Display{
 		this.enableSimulation = enableSimulation;
 	}
 		
-	public UpdateListenerGroup<DisplayUpdate> getUpdateListenerGroup() {
+	public UpdateListenerGroup<Object> getUpdateListenerGroup() {
 		return updateGroup;
 	}
-
-	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
-	public List<ArmaControl> getControls() {
-		return controls;
+	
+	@Override
+	public void resolutionUpdate(Resolution newResolution) {
+		for(ArmaControl control : controls){
+			control.resolutionUpdate(newResolution);
+		}
 	}
-
-
+	
+	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
+	public ReadOnlyList<ArmaControl> getControls() {
+		return controlReadOnlyList;
+	}
+	
+	@Override
+	public void addControl(Control control) {
+		if(!(control instanceof ArmaControl)){
+			throw new IllegalArgumentException("control does not extend ArmaControl");
+		}
+		ArmaControl armaControl = (ArmaControl) control;
+		controls.add(armaControl);
+		controls.sort(Control.RENDER_PRIORITY_COMPARATOR);
+		armaControl.getUpdateGroup().addListener(controlListener);
+	}
+	
+	@Override
+	public void addControl(int index, Control toAdd) {
+		if(!(toAdd instanceof ArmaControl)){
+			throw new IllegalArgumentException("toAdd does not extend ArmaControl");
+		}
+		ArmaControl armaControl = (ArmaControl) toAdd;
+		controls.add(index, armaControl);
+		armaControl.getUpdateGroup().addListener(controlListener);
+	}
+	
+	@Override
+	public int indexOf(Control control) {
+		return controls.indexOf(control);
+	}
+	
+	@Override
+	public boolean removeControl(Control control) {
+		if(!(control instanceof ArmaControl)){
+			throw new IllegalArgumentException("control does not extend ArmaControl");
+		}
+		if (controls.remove(control)) {
+			ArmaControl armaControl = (ArmaControl) control;
+			armaControl.getUpdateGroup().removeUpdateListener(controlListener);
+			controls.sort(Control.RENDER_PRIORITY_COMPARATOR);
+			return true;
+		}
+		return false;
+	}
+	
+	
 }

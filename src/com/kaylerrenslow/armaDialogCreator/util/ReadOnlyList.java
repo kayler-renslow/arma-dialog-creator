@@ -7,7 +7,7 @@ import java.util.List;
  @author Kayler
  Creates a wrapper around a list such that it is read only
  Created on 06/07/2016. */
-public class ReadOnlyList<E> {
+public class ReadOnlyList<E> implements Iterable<E>{
 	private final List<E> dataList;
 
 	public ReadOnlyList(List<E> dataList) {
@@ -33,5 +33,5 @@ public class ReadOnlyList<E> {
 	public Iterator<E> iterator(){
 		return dataList.iterator();
 	}
-
+	
 }

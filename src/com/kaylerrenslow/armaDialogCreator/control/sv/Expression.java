@@ -32,7 +32,6 @@ public class Expression extends SerializableValue {
 	};
 	
 	private final Env env;
-	private Value value;
 	
 	public Expression(String exp, Env env) throws ExpressionEvaluationException {
 		super(exp);
@@ -41,7 +40,6 @@ public class Expression extends SerializableValue {
 	}
 	
 	public void setExpression(String exp) throws ExpressionEvaluationException {
-		this.value = ExpressionInterpreter.getInstance().evaluate(exp, env);
 		valuesAsArray[0] = exp;
 	}
 	
@@ -50,16 +48,17 @@ public class Expression extends SerializableValue {
 	}
 	
 	public Value getValue() {
-		return value;
+		return ExpressionInterpreter.getInstance().evaluate(valuesAsArray[0], env);
 	}
 	
 	public Env getEnv() {
 		return env;
 	}
 	
-	/** Returns {@link #getValue()} and casts it to {@link Value.NumVal} */
-	public Value.NumVal getNumVal() {
-		return (Value.NumVal) value;
+	/** Returns {@link #getValue()} and casts it to {@link Value.NumVal} and returns {@link Value.NumVal#v()}*/
+	public double getNumVal() {
+		Value.NumVal value = (Value.NumVal) getValue();
+		return value.v();
 	}
 	
 	@Override

@@ -8,7 +8,6 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -48,18 +47,12 @@ public class ArmaControl extends ControlClass implements Control {
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
 		this.resolution = resolution;
-		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
-			@Override
-			public void update(Resolution data) {
-				resolutionUpdated();
-			}
-		});
 		this.env = env;
 		try {
 			this.renderer = rendererLookup.rendererClass.newInstance();
 			this.renderer.setMyControl(this);
-			this.renderer.init();
 			this.rendererLookup = rendererLookup;
+			this.renderer.init();
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
@@ -120,30 +113,10 @@ public class ArmaControl extends ControlClass implements Control {
 		setX(x);
 	}
 	
-	/** Just set x position without updating the property. This will also update the renderer's position. */
-	protected void setX(Expression x) {
-		this.x = x;
-		renderer.setX1Silent(calcScreenX(x.getNumVal().v()));
-	}
-	
-	protected int calcScreenX(double percentX) {
-		return PositionCalculator.getScreenX(resolution, percentX);
-	}
-	
 	/** Set y and define the y control property. This will also update the renderer's position. */
 	public void defineY(Expression y) {
 		yProperty.setValue(y);
 		setY(y);
-	}
-	
-	/** Just set the y position without updating the y property. This will also update the renderer's position. */
-	protected void setY(Expression y) {
-		this.y = y;
-		renderer.setY1Silent(calcScreenY(y.getNumVal().v()));
-	}
-	
-	protected int calcScreenY(double percentY) {
-		return PositionCalculator.getScreenY(resolution, percentY);
 	}
 	
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
@@ -152,28 +125,52 @@ public class ArmaControl extends ControlClass implements Control {
 		setW(width);
 	}
 	
-	/** Set the width without updating it's control property. This will also update the renderer's position. */
-	protected void setW(Expression width) {
-		this.width = width;
-		int w = calcScreenWidth(width.getNumVal().v());
-		renderer.setX2Silent(renderer.getX1() + w);
-	}
-	
-	protected int calcScreenWidth(double percentWidth) {
-		return PositionCalculator.getScreenWidth(resolution, percentWidth);
-	}
-	
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
 	public void defineH(Expression height) {
 		hProperty.setValue(height);
 		setH(height);
 	}
 	
+	/** Just set x position without updating the property. This will also update the renderer's position. */
+	protected void setX(Expression x) {
+		this.x = x;
+		renderer.setX1Silent(calcScreenX(this.resolution, x.getNumVal()));
+	}
+	
+	/** Just set the y position without updating the y property. This will also update the renderer's position. */
+	protected void setY(Expression y) {
+		this.y = y;
+		renderer.setY1Silent(calcScreenY(this.resolution, y.getNumVal()));
+	}
+	
+	/** Set the width without updating it's control property. This will also update the renderer's position. */
+	protected void setW(Expression width) {
+		this.width = width;
+		int w = calcScreenWidth(this.resolution, width.getNumVal());
+		renderer.setX2Silent(renderer.getX1() + w);
+	}
+	
 	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setH(Expression height) {
 		this.height = height;
-		int h = calcScreenHeight(height.getNumVal().v());
+		int h = calcScreenHeight(this.resolution, height.getNumVal());
 		renderer.setY2Silent(renderer.getY1() + h);
+	}
+	
+	protected int calcScreenX(ArmaResolution resolution, double percentX) {
+		return PositionCalculator.getScreenX(resolution, percentX);
+	}
+	
+	protected int calcScreenY(ArmaResolution resolution, double percentY) {
+		return PositionCalculator.getScreenY(resolution, percentY);
+	}
+	
+	protected int calcScreenWidth(ArmaResolution resolution, double percentWidth) {
+		return PositionCalculator.getScreenWidth(resolution, percentWidth);
+	}
+	
+	protected int calcScreenHeight(ArmaResolution resolution, double percentHeight) {
+		return PositionCalculator.getScreenHeight(resolution, percentHeight);
 	}
 	
 	/** Set the x,y,w,h properties. This will also update the renderer's position. If x, y, w, or h are null, this method will do nothing. */
@@ -187,11 +184,39 @@ public class ArmaControl extends ControlClass implements Control {
 		this.y = y;
 		this.width = w;
 		this.height = h;
-		renderer.setPositionWHSilent(calcScreenX(x.getNumVal().v()), calcScreenY(y.getNumVal().v()), calcScreenWidth(w.getNumVal().v()), calcScreenHeight(h.getNumVal().v()));
+		renderer.setPositionWHSilent(calcScreenX(this.resolution, x.getNumVal()), calcScreenY(this.resolution, y.getNumVal()), calcScreenWidth(this.resolution, w.getNumVal()), calcScreenHeight(this.resolution, h.getNumVal()));
 	}
 	
-	protected int calcScreenHeight(double percentHeight) {
-		return PositionCalculator.getScreenHeight(resolution, percentHeight);
+	/** Set the x and y values (and width and height) based upon the renderer's position */
+	protected void calcPositionFromRenderer() {
+		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(this.resolution, renderer.getX1()), env);
+		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(this.resolution, renderer.getY1()), env);
+		xProperty.setValue(x);
+		yProperty.setValue(y);
+		
+		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(this.resolution, renderer.getWidth()), env);
+		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(this.resolution, renderer.getHeight()), env);
+		wProperty.setValue(width);
+		hProperty.setValue(height);
+		
+		getUpdateGroup().update(null); //don't execute updateProperties
+	}
+	
+	@Override
+	public void resolutionUpdate(Resolution newResolution) {
+		setX(this.x);
+		setY(this.y);
+		setW(this.width);
+		setH(this.height);
+	}
+	
+	@Override
+	protected void updateProperties() {
+		if (xProperty.getValue() != this.x || yProperty.getValue() != this.y || wProperty.getValue() != this.width || hProperty.getValue() != this.height) {
+			setPositionWH((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
+		}
+		renderer.updateProperties();
+		//		defineStyle(styleProperty.);
 	}
 	
 	/** Set idc and define the idc control property */
@@ -230,25 +255,9 @@ public class ArmaControl extends ControlClass implements Control {
 		this.accessProperty.setValue(access);
 	}
 	
-	private void resolutionUpdated() {
-		defineX(this.x);
-		defineY(this.y);
-		defineW(this.width);
-		defineH(this.height);
-	}
-	
 	/** Get idc (control id for arma) */
 	public int getIdc() {
 		return idc;
-	}
-	
-	@Override
-	protected void updateProperties() {
-		if (xProperty.getValue() != this.x || yProperty.getValue() != this.y || wProperty.getValue() != this.width || hProperty.getValue() != this.height) {
-			setPositionWH((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
-		}
-		renderer.updateProperties();
-		//		defineStyle(styleProperty.);
 	}
 	
 	public ControlType getType() {
@@ -267,19 +276,4 @@ public class ArmaControl extends ControlClass implements Control {
 		return rendererLookup;
 	}
 	
-	/** Set the x and y values (and width and height) based upon the renderer's position */
-	protected void calcPositionFromRenderer() {
-		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(this.resolution, renderer.getX1()), env);
-		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(this.resolution, renderer.getY1()), env);
-		xProperty.setValue(x);
-		yProperty.setValue(y);
-		
-		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(this.resolution, renderer.getWidth()), env);
-		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(this.resolution, renderer.getHeight()), env);
-		wProperty.setValue(width);
-		hProperty.setValue(height);
-		
-		getUpdateGroup().update(null); //don't execute updateProperties
-	}
-
 }

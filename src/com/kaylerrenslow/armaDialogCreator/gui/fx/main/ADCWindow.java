@@ -107,7 +107,6 @@ public class ADCWindow {
 			}
 		}
 		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setScreenDimension(closest);
-		canvasView.setCanvasSize(closest.width, closest.height);
 	}
 	
 	public void setToFullScreen(boolean fullScreen) {

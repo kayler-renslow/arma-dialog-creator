@@ -1,8 +1,7 @@
 ADDED:
-    undo, redo icons
-    Tanoa background image
-    new Altis background image
+    none
 CHANGED:
-    none
+    for submit button for input fields, toggle color of button to show different states (data is submitted, not submitted)
+    input field will now no longer submit data after focus lost unless there is no text entered and field doesn't allow empty data
 FIXED:
-    none
+    changing ui scale manipulates safeZone controls when it shouldn't

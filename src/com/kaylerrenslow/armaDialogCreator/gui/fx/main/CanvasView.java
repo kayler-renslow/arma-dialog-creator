@@ -6,8 +6,6 @@ import org.jetbrains.annotations.Nullable;
  Created by Kayler on 05/20/2016.
  */
 public interface CanvasView {
-	/** Set the new dimensions of the canvas */
-	void setCanvasSize(int width, int height);
 
 	/** Set whether or not the grid is showing */
 	void showGrid(boolean showGrid);

@@ -28,12 +28,17 @@ import org.jetbrains.annotations.Nullable;
  Created on 05/31/2016. */
 public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
+	private static final String DATA_NEEDS_SUBMITION = "-fx-background-color:green";
+	private static final String DATA_BAD = "-fx-background-color:red";
+	private static final String DATA_SUBMITTED = "";
+	
 	private final C dataChecker;
 	private final ValueObserver<V> observer = new ValueObserver<>(null);
 	private final TextField textField = new TextField();
 	private final HBox hboxTextField = new HBox(2, textField);
 	private final Button button = new Button();
 	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
+	private final Button btnSubmit = new Button("");
 	
 	private boolean valid = false;
 	private boolean buttonState = true;
@@ -56,15 +61,18 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 <li>The InputField will become a {@link Button} and {@link InputFieldDataChecker#getTypeName()} will be the text inside the button. The user's mouse will become {@link Cursor#TEXT} when hovered over the button.
 	 When the button is pressed, the InputField will enter Input State</li>
 	 </ul>
+	 The InputField will update it's value when:<br>
+	 <ul>
+	 <li>When submit button is pressed</li>
+	 <li>Pressing the 'enter' key</li>
+	 </ul>
 	 
 	 @param fieldDataChecker the {@link InputFieldDataChecker} instance to use
 	 */
 	public InputField(@NotNull C fieldDataChecker) {
 		this.dataChecker = fieldDataChecker;
 		HBox.setHgrow(textField, Priority.ALWAYS);
-		final Button btnSubmit = new Button("");
 		btnSubmit.setPrefWidth(10d);
-		btnSubmit.setDefaultButton(true);
 		btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -80,6 +88,8 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			public void handle(javafx.scene.input.KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
 					setValueFromText(getText(), true, false);
+				} else {
+					btnSubmit.setStyle(DATA_NEEDS_SUBMITION);
 				}
 			}
 		};
@@ -99,9 +109,6 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
-				if (!focused) {
-					setValueFromText(getText(), false, false);
-				}
 				if (!focused && (getText().length() == 0 && !dataChecker.allowEmptyData())) {
 					if (dataChecker.getDefaultValue() != null) {
 						getValueObserver().updateValue(dataChecker.getDefaultValue());
@@ -183,6 +190,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			valid = false;
 			return;
 		}
+		btnSubmit.setStyle(DATA_SUBMITTED);
 		this.setText(value.toString());
 		setToButton(false);
 		valid = true;

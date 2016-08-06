@@ -155,7 +155,10 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		
 		ArmaDisplay display = new ArmaDisplay(idd);
-		display.getControls().addAll(getControls(displayElement));
+		List<ArmaControl> controls = getControls(displayElement);
+		for(ArmaControl control : controls){
+			display.addControl(control);
+		}
 		
 		return display;
 	}
@@ -178,7 +181,10 @@ public class ProjectXmlLoader extends XmlLoader {
 					return controls;
 				}
 				ArmaControlGroup group = (ArmaControlGroup) control;
-				group.getControls().addAll(getControls(controlElement));
+				List<ArmaControl> controlsToAdd =getControls(controlElement);
+				for(ArmaControl add : controlsToAdd){
+					group.addControl(add);
+				}
 				
 			} else {
 				control = getControl(controlElement, false);

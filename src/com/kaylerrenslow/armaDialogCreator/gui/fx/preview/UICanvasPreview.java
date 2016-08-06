@@ -1,7 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.preview;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UICanvasPreview extends UICanvas {
 	
-	public UICanvasPreview(int width, int height) {
-		super(width, height, ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay());
+	public UICanvasPreview(Resolution resolution, Display display) {
+		super(resolution, display);
 	}
 	
 	@Override

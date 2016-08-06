@@ -8,6 +8,8 @@ import java.util.Comparator;
 public interface Control {
 	CanvasComponent getRenderer();
 	
+	void resolutionUpdate(Resolution newResolution);
+	
 	Comparator<Control> RENDER_PRIORITY_COMPARATOR = new Comparator<Control>() {
 		@Override
 		public int compare(Control o1, Control o2) {

@@ -126,13 +126,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			uiCanvasEditor.requestFocus();
 		}
 	}
-	
-	@Override
-	public void setCanvasSize(int width, int height) {
-		this.uiCanvasEditor.setCanvasSize(width, height);
-		uiCanvasEditor.paint();
-	}
-	
+		
 	@Override
 	public void showGrid(boolean showGrid) {
 		uiCanvasEditor.showGrid(showGrid);

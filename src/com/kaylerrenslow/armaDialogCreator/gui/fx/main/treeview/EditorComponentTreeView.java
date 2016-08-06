@@ -74,7 +74,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		addControls(getRoot(), null, display.getControls());
 	}
 	
-	private void addControls(TreeItem<T> parentTreeItem, ArmaControl parent, List<ArmaControl> controls) {
+	private void addControls(TreeItem<T> parentTreeItem, ArmaControl parent, Iterable<ArmaControl> controls) {
 		for (ArmaControl control : controls) {
 			if (control instanceof ArmaControlGroup) {
 				addControls(getTreeData(parent), control, ((ArmaControlGroup) control).getControls());
@@ -113,12 +113,12 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			
 			if (group != null) {
 				correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem) + 1, getRow(child), parent);
-				group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
+				group.getControlGroup().addControl(correctedIndex, childControlEntry.getMyArmaControl());
 			} else { //didn't go into a control group, so it is in a folder.
 				correctedIndex = getCorrectedIndex(0, getRow(child), parent);
-				display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl()); //was added in a folder
+				display.addControl(childControlEntry.getMyArmaControl()); //was added in a folder
 			}
-			display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
+			display.getUpdateListenerGroup().update(null);
 			System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
 		}
 	}
@@ -138,8 +138,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		System.out.println("EditorComponentTreeView.addChildToRoot getRow = " + getRow(child));
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-		display.getControls().add(childControlEntry.getMyArmaControl());
-		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
+		display.addControl(childControlEntry.getMyArmaControl());
+		display.getUpdateListenerGroup().update(null);
 	}
 	
 	@Override
@@ -152,8 +152,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		int correctedIndex = getCorrectedIndex(0, getRow(child), getRoot());
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-		display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
-		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.ADD_CONTROL);
+		display.addControl(childControlEntry.getMyArmaControl());
+		display.getUpdateListenerGroup().update(null);
 	}
 	
 	@Override
@@ -166,7 +166,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
 		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		if (parent == getRoot()) {
-			display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
+			display.removeControl(toRemoveControlEntry.getMyArmaControl());
 			return;
 		}
 		
@@ -180,11 +180,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 		if (group != null) {
-			group.getControlGroup().getControls().remove(toRemoveControlEntry.getMyArmaControl());
+			group.getControlGroup().removeControl(toRemoveControlEntry.getMyArmaControl());
 		} else {
-			display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
+			display.removeControl(toRemoveControlEntry.getMyArmaControl());
 		}
-		display.getUpdateListenerGroup().update(ArmaDisplay.DisplayUpdate.REMOVE_CONTROL);
+		display.getUpdateListenerGroup().update(null);
 		
 	}
 	

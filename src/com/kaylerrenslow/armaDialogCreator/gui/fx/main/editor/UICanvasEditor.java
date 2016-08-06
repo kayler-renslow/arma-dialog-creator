@@ -19,7 +19,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  @author Kayler
@@ -81,13 +80,7 @@ public class UICanvasEditor extends UICanvas {
 	private ValueObserver<Control> doubleClickObserver = new ValueObserver<>(null);
 	
 	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display display) {
-		super(resolution.getScreenWidth(), resolution.getScreenHeight(), display);
-		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
-			@Override
-			public void update(Resolution data) {
-				paint();
-			}
-		});
+		super(resolution, display);
 		
 		setSnapConfig(calculator);
 		
@@ -110,27 +103,6 @@ public class UICanvasEditor extends UICanvas {
 		});
 		
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
-	}
-	
-	private void keyUpdate(boolean keyIsDown) {
-		if (keyIsDown) {
-			if (keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
-				zxPressStartTimeMillis = System.currentTimeMillis();
-				waitingForZXRelease = true;
-			}
-		} else {
-			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
-				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
-					for (Control control : selection.getSelected()) {
-						control.getRenderer().setEnabled(false);
-					}
-					selection.clearSelected();
-					mouseOverControl = scaleControl = null;
-					changeCursorToDefault();
-					waitingForZXRelease = false;
-				}
-			}
-		}
 	}
 	
 	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */
@@ -171,6 +143,42 @@ public class UICanvasEditor extends UICanvas {
 	/** If true, scaling and translating controls will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
 	public boolean getSafeMovement() {
 		return this.safeMovement;
+	}
+	
+	public Control getMouseOverControl() {
+		return mouseOverControl;
+	}
+	
+	/**
+	 Sets whether or not the grid should be shown. When this method is invoked, the canvas is repainted.
+	 */
+	public void showGrid(boolean showGrid) {
+		this.showGrid = showGrid;
+		paint();
+	}
+	
+	/** Updates the UI colors like selection color, grid color, and bg color */
+	public void updateColors() {
+		this.gridColor = CanvasViewColors.GRID;
+		this.selectionColor = CanvasViewColors.SELECTION;
+		this.absRegionComponent.setBackgroundColor(CanvasViewColors.ABS_REGION);
+		this.setCanvasBackgroundColor(CanvasViewColors.EDITOR_BG);
+	}
+	
+	/**
+	 Update the Absolute region box. For each parameter: -1 to leave unchanged, 0 for false, 1 for true
+	 
+	 @param alwaysFront true if the region should always be rendered last, false if it should be rendered first
+	 @param showing true the region is showing, false if not
+	 */
+	public void updateAbsRegion(int alwaysFront, int showing) {
+		if (alwaysFront != -1) {
+			absRegionComponent.setAlwaysRenderAtFront(alwaysFront == 1);
+		}
+		if (showing != -1) {
+			absRegionComponent.setGhost(!(showing == 1));
+		}
+		paint();
 	}
 	
 	/** Paint the canvas */
@@ -272,7 +280,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 	}
-	
+		
 	private void drawGrid(double snap, boolean light) {
 		double spacingX = getSnapPixelsWidthF(snap);
 		double spacingY = getSnapPixelsHeightF(snap);
@@ -301,92 +309,6 @@ public class UICanvasEditor extends UICanvas {
 			gc.strokeLine(xs + antiAlias, 0 + antiAlias - offsety, xs + antiAlias, h - antiAlias + offsety);
 		}
 		gc.restore();
-	}
-	
-	
-	/**
-	 Check if the bound update to the region will keep the boundaries inside the canvas
-	 
-	 @param r region to check bounds of
-	 @param dxLeft change in x on the left side
-	 @param dxRight change in x on the right side
-	 @param dyTop change in y on the top side
-	 @param dyBottom change in y on the bottom side
-	 @return true if the bounds can be updated, false otherwise
-	 */
-	private boolean boundUpdateSafe(Region r, int dxLeft, int dxRight, int dyTop, int dyBottom) {
-		return boundSetSafe(r, r.getLeftX() + dxLeft, r.getRightX() + dxRight, r.getTopY() + dyTop, r.getBottomY() + dyBottom);
-	}
-	
-	/**
-	 Check if the bounds set to the region will keep the boundaries inside the canvas
-	 
-	 @param r region to check bounds of
-	 @param x1 new x1 position
-	 @param x2 new x2 position
-	 @param y1 new y1 position
-	 @param y2 new y2 position
-	 @return true if the bounds can be updated, false otherwise
-	 */
-	private boolean boundSetSafe(Region r, int x1, int x2, int y1, int y2) {
-		boolean outX = MathUtil.outOfBounds(x1, 0, getCanvasWidth() - r.getWidth()) || MathUtil.outOfBounds(x2, 0, getCanvasWidth());
-		if (!outX) {
-			boolean outY = MathUtil.outOfBounds(y1, 0, getCanvasHeight() - r.getHeight()) || MathUtil.outOfBounds(y2, 0, getCanvasHeight());
-			if (!outY) {
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
-	 Check if scaling the given region will give it negative area (right most side is behind left side)
-	 
-	 @param r region to check bounds of
-	 @param dxl change in x on the left side
-	 @param dxr change in x on the right side
-	 @param dyt change in y on the top side
-	 @param dyb change in y on the bottom side
-	 @return true if the scale results in a bad scale, false if scale is okay
-	 */
-	private boolean scaleIsNegative(Region r, int dxl, int dxr, int dyt, int dyb) {
-		int xl = r.getLeftX() + dxl;
-		int xr = r.getRightX() + dxr;
-		int yt = r.getTopY() + dyt;
-		int yb = r.getBottomY() + dyb;
-		return xr < xl || yt > yb;
-	}
-	
-	private void changeCursorToMove() {
-		canvas.setCursor(Cursor.MOVE);
-	}
-	
-	private void changeCursorToDefault() {
-		canvas.setCursor(Cursor.DEFAULT);
-	}
-	
-	private void changeCursorToScale(Edge edge) {
-		if (edge == Edge.NONE) {
-			changeCursorToDefault();
-			return;
-		}
-		if (edge == Edge.TOP_LEFT || edge == Edge.BOTTOM_RIGHT) {
-			canvas.setCursor(Cursor.NW_RESIZE);
-			return;
-		}
-		if (edge == Edge.TOP_RIGHT || edge == Edge.BOTTOM_LEFT) {
-			canvas.setCursor(Cursor.NE_RESIZE);
-			return;
-		}
-		if (edge == Edge.TOP || edge == Edge.BOTTOM) {
-			canvas.setCursor(Cursor.N_RESIZE);
-			return;
-		}
-		if (edge == Edge.LEFT || edge == Edge.RIGHT) {
-			canvas.setCursor(Cursor.W_RESIZE);
-			return;
-		}
-		throw new IllegalStateException("couldn't find correct cursor for edge:" + edge.name());
 	}
 	
 	/**
@@ -419,7 +341,7 @@ public class UICanvasEditor extends UICanvas {
 			selection.clearSelected();
 			return;
 		}
-		List<? extends Control> controls = display.getControls();
+		ReadOnlyList<? extends Control> controls = display.getControls();
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
 			Control control;
 			for (int i = selection.numSelected() - 1; i >= 0; i--) {
@@ -474,6 +396,7 @@ public class UICanvasEditor extends UICanvas {
 		selection.beginSelecting(mousex, mousey);
 	}
 	
+	
 	/**
 	 This is called when the mouse listener is invoked and a mouse release was the event
 	 
@@ -499,7 +422,6 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-	
 	
 	/**
 	 This is called when the mouse is moved and/or dragged inside the canvas
@@ -565,7 +487,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-	
+		
 	private void doScaleOnComponent(boolean symmetricScale, boolean squareScale, int dx, int dy) {
 		int dxl = 0; //change in x left
 		int dxr = 0; //change in x right
@@ -635,9 +557,8 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 	
-	
 	private boolean basicMouseMovement(int mousex, int mousey) {
-		List<? extends Control> controls = display.getControls();
+		ReadOnlyList<? extends Control> controls = display.getControls();
 		updateContextMenu();
 		mouseOverControl = null;
 		{
@@ -749,40 +670,112 @@ public class UICanvasEditor extends UICanvas {
 		return contextMenu;
 	}
 	
-	/**
-	 Sets whether or not the grid should be shown. When this method is invoked, the canvas is repainted.
-	 */
-	public void showGrid(boolean showGrid) {
-		this.showGrid = showGrid;
-		paint();
-	}
-	
-	/** Updates the UI colors like selection color, grid color, and bg color */
-	public void updateColors() {
-		this.gridColor = CanvasViewColors.GRID;
-		this.selectionColor = CanvasViewColors.SELECTION;
-		this.absRegionComponent.setBackgroundColor(CanvasViewColors.ABS_REGION);
-		this.setCanvasBackgroundColor(CanvasViewColors.EDITOR_BG);
-	}
 	
 	/**
-	 Update the Absolute region box. For each parameter: -1 to leave unchanged, 0 for false, 1 for true
+	 Check if the bound update to the region will keep the boundaries inside the canvas
 	 
-	 @param alwaysFront true if the region should always be rendered last, false if it should be rendered first
-	 @param showing true the region is showing, false if not
+	 @param r region to check bounds of
+	 @param dxLeft change in x on the left side
+	 @param dxRight change in x on the right side
+	 @param dyTop change in y on the top side
+	 @param dyBottom change in y on the bottom side
+	 @return true if the bounds can be updated, false otherwise
 	 */
-	public void updateAbsRegion(int alwaysFront, int showing) {
-		if (alwaysFront != -1) {
-			absRegionComponent.setAlwaysRenderAtFront(alwaysFront == 1);
-		}
-		if (showing != -1) {
-			absRegionComponent.setGhost(!(showing == 1));
-		}
-		paint();
+	private boolean boundUpdateSafe(Region r, int dxLeft, int dxRight, int dyTop, int dyBottom) {
+		return boundSetSafe(r, r.getLeftX() + dxLeft, r.getRightX() + dxRight, r.getTopY() + dyTop, r.getBottomY() + dyBottom);
 	}
 	
-	public Control getMouseOverControl() {
-		return mouseOverControl;
+	/**
+	 Check if the bounds set to the region will keep the boundaries inside the canvas
+	 
+	 @param r region to check bounds of
+	 @param x1 new x1 position
+	 @param x2 new x2 position
+	 @param y1 new y1 position
+	 @param y2 new y2 position
+	 @return true if the bounds can be updated, false otherwise
+	 */
+	private boolean boundSetSafe(Region r, int x1, int x2, int y1, int y2) {
+		boolean outX = MathUtil.outOfBounds(x1, 0, getCanvasWidth() - r.getWidth()) || MathUtil.outOfBounds(x2, 0, getCanvasWidth());
+		if (!outX) {
+			boolean outY = MathUtil.outOfBounds(y1, 0, getCanvasHeight() - r.getHeight()) || MathUtil.outOfBounds(y2, 0, getCanvasHeight());
+			if (!outY) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 Check if scaling the given region will give it negative area (right most side is behind left side)
+	 
+	 @param r region to check bounds of
+	 @param dxl change in x on the left side
+	 @param dxr change in x on the right side
+	 @param dyt change in y on the top side
+	 @param dyb change in y on the bottom side
+	 @return true if the scale results in a bad scale, false if scale is okay
+	 */
+	private boolean scaleIsNegative(Region r, int dxl, int dxr, int dyt, int dyb) {
+		int xl = r.getLeftX() + dxl;
+		int xr = r.getRightX() + dxr;
+		int yt = r.getTopY() + dyt;
+		int yb = r.getBottomY() + dyb;
+		return xr < xl || yt > yb;
+	}
+	
+	private void changeCursorToMove() {
+		canvas.setCursor(Cursor.MOVE);
+	}
+	
+	private void changeCursorToDefault() {
+		canvas.setCursor(Cursor.DEFAULT);
+	}
+	
+	private void changeCursorToScale(Edge edge) {
+		if (edge == Edge.NONE) {
+			changeCursorToDefault();
+			return;
+		}
+		if (edge == Edge.TOP_LEFT || edge == Edge.BOTTOM_RIGHT) {
+			canvas.setCursor(Cursor.NW_RESIZE);
+			return;
+		}
+		if (edge == Edge.TOP_RIGHT || edge == Edge.BOTTOM_LEFT) {
+			canvas.setCursor(Cursor.NE_RESIZE);
+			return;
+		}
+		if (edge == Edge.TOP || edge == Edge.BOTTOM) {
+			canvas.setCursor(Cursor.N_RESIZE);
+			return;
+		}
+		if (edge == Edge.LEFT || edge == Edge.RIGHT) {
+			canvas.setCursor(Cursor.W_RESIZE);
+			return;
+		}
+		throw new IllegalStateException("couldn't find correct cursor for edge:" + edge.name());
+	}
+	
+	
+	private void keyUpdate(boolean keyIsDown) {
+		if (keyIsDown) {
+			if (keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+				zxPressStartTimeMillis = System.currentTimeMillis();
+				waitingForZXRelease = true;
+			}
+		} else {
+			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
+					for (Control control : selection.getSelected()) {
+						control.getRenderer().setEnabled(false);
+					}
+					selection.clearSelected();
+					mouseOverControl = scaleControl = null;
+					changeCursorToDefault();
+					waitingForZXRelease = false;
+				}
+			}
+		}
 	}
 	
 	/**

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
@@ -31,12 +32,7 @@ public abstract class UICanvas extends AnchorPane {
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
 	protected @NotNull Display display;
-	
-	/** Width of canvas */
-	private int canvasWidth,
-	/** Height of canvas */
-	canvasHeight;
-	
+		
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
 	
@@ -51,18 +47,31 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected ArrayList<CanvasComponent> components = new ArrayList<>();
 	
-	private final UpdateListener<Display.DisplayUpdate> displayListener = new UpdateListener<Display.DisplayUpdate>() {
+	private final UpdateListener<Object> displayListener = new UpdateListener<Object>() {
 		@Override
-		public void update(Display.DisplayUpdate data) {
+		public void update(Object data) {
 			paint();
 		}
 	};
 	
-	public UICanvas(int width, int height, @NotNull Display display) {
-		this.canvas = new Canvas(width, height);
+	public UICanvas(@NotNull Resolution resolution, @NotNull Display display) {
+		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
+			@Override
+			public void update(Resolution newResolution) {
+				if(getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()){
+					canvas.setWidth(newResolution.getScreenWidth());
+					canvas.setHeight(newResolution.getScreenHeight());
+				}
+				display.resolutionUpdate(newResolution);
+				paint();
+			}
+		});
+		
+		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
+		
 		this.display = display;
-		this.canvasWidth = width;
-		this.canvasHeight = height;
+		this.display.getUpdateListenerGroup().addListener(displayListener);
+		
 		this.gc = this.canvas.getGraphicsContext2D();
 		gc.setTextBaseline(VPos.CENTER);
 		
@@ -76,11 +85,11 @@ public abstract class UICanvas extends AnchorPane {
 	}
 	
 	public int getCanvasWidth() {
-		return this.canvasWidth;
+		return (int) canvas.getWidth();
 	}
 	
 	public int getCanvasHeight() {
-		return this.canvasHeight;
+		return (int) this.canvas.getHeight();
 	}
 	
 	public void setDisplay(@NotNull Display display) {
@@ -88,14 +97,7 @@ public abstract class UICanvas extends AnchorPane {
 		this.display = display;
 		this.display.getUpdateListenerGroup().addListener(displayListener);
 	}
-	
-	public void setCanvasSize(int width, int height) {
-		this.canvasWidth = width;
-		this.canvasHeight = height;
-		this.canvas.setWidth(width);
-		this.canvas.setHeight(height);
-	}
-	
+		
 	/** Adds a component to the canvas and repaints the canvas */
 	public void addComponent(@NotNull CanvasComponent component) {
 		this.components.add(component);
@@ -132,7 +134,6 @@ public abstract class UICanvas extends AnchorPane {
 	
 	/** Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
 	protected void paintControls() {
-		this.display.getControls().sort(Control.RENDER_PRIORITY_COMPARATOR);
 		for (Control control : display.getControls()) {
 			paintControl(control);
 		}
