@@ -59,7 +59,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	@Nullable
 	@Override
 	public ControlStyleGroup getValue() {
-		return new ControlStyleGroup(menuButton.getItems().toArray(new ControlStyle[menuButton.getItems().size()]));
+		return menuButton.getSelectedItems().size() == 0 ? null : new ControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
 	}
 	
 	@Override

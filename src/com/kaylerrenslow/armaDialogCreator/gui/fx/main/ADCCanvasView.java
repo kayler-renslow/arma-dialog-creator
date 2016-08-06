@@ -79,7 +79,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Control> observer, Control oldValue, Control newValue) {
 				if (newValue != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
-					DefaultComponentContextMenu.showControlPropertiesPopup(((ArmaControlRenderer) newValue).getMyControl());
+					DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) newValue);
 				}
 			}
 		});

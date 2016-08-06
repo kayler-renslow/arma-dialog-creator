@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 
 /**
  Created by Kayler on 07/08/2016.
@@ -29,6 +28,4 @@ public interface ControlPropertyEditor {
 	/** Set whether or not the property can be edited by the user. */
 	void disableEditing(boolean disable);
 
-	/** Return the update groud for the control property. Any time the controlProperty is updated, this listener group will be notified */
-	UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup();
 }

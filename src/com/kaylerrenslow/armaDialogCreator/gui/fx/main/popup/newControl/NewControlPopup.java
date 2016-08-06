@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
@@ -21,7 +22,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.C
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -44,9 +44,9 @@ public class NewControlPopup extends StagePopup<VBox> {
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
 	private ControlPropertiesEditorPane editorPane;
 
-	private final UpdateListener<ControlProperty> controlPropertyObserverListener = new UpdateListener<ControlProperty>() {
+	private final ValueListener<SerializableValue> controlPropertyObserverListener = new ValueListener<SerializableValue>() {
 		@Override
-		public void update(ControlProperty data) {
+		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 			updatePreview();
 		}
 	};
@@ -97,7 +97,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 		ControlPropertyEditor[] editors = editorPane.getEditors();
 		for (ControlPropertyEditor editor : editors) {
-			editor.getControlPropertyUpdateGroup().addListener(controlPropertyObserverListener);
+			editor.getControlProperty().getValueObserver().addValueListener(controlPropertyObserverListener);
 		}
 
 		updatePreview();

@@ -31,7 +31,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -413,7 +412,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		/** DO NOT USE THIS FOR ARRAY INPUT */
-		static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlClass control, UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup, ControlProperty controlProperty) {
+		static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlClass control, ControlProperty controlProperty) {
 			if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
 				throw new IllegalArgumentException("don't use this method for ARRAY property type");
 			}
@@ -424,7 +423,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
 				}
 			});
 			return rawInput;
@@ -433,7 +431,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	/** Used for when a set amount of options are available (uses radio button group for option selecting) */
 	private static class ControlPropertyInputOption extends FlowPane implements ControlPropertyInput {
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
@@ -442,8 +439,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(rawInput, control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(rawInput, control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
@@ -481,7 +477,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -521,11 +517,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
-		
-		@Override
 		public void setToMode(EditMode mode) {
 			getChildren().clear();
 			if (mode == EditMode.OVERRIDE) {
@@ -548,7 +539,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyInput {
 		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 		private final ControlProperty controlProperty;
 		private boolean updateFromProperty = false;
 		private boolean updateFromSelection = false;
@@ -576,7 +566,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
 					updateFromSelection = false;
 				}
 			});
@@ -623,11 +612,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
-		
-		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
 		}
@@ -656,7 +640,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 	@SuppressWarnings("unchecked")
 	private static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyInput {
 		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		private final Class<C> macroTypeClass;
 		
@@ -665,8 +648,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.macroTypeClass = macroTypeClass;
 			
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			if (controlProperty.getValue() != null) {
 				inputField.setValue((C) controlProperty.getValue());
@@ -678,7 +660,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -720,10 +702,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			inputField.setDisable(disable);
 		}
 		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
 		
 		@Override
 		public void setToMode(EditMode mode) {
@@ -773,13 +751,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyInput {
 		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -800,7 +776,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -841,10 +817,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			getRootNode().setDisable(disable);
 		}
 		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
 		
 		@Override
 		public void setToMode(EditMode mode) {
@@ -863,13 +835,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyInput {
 		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
 		private final ControlProperty controlProperty;
 		
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			
 			boolean validData = controlProperty.getValue() != null;
@@ -883,7 +853,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -921,12 +891,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
-		
+				
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -944,16 +909,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	@SuppressWarnings("unchecked")
 	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
-		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
+				
 		private final ControlProperty controlProperty;
 		private SVStringArray svStringArray;
 		
 		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			svStringArray = (SVStringArray) controlProperty.getValue();
 			InputField<ArmaStringChecker, String> inputField;
@@ -977,7 +940,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 						if (control != null) {
 							control.getUpdateGroup().update(control);
 						}
-						controlPropertyUpdateGroup.update(controlProperty);
+						
 					}
 				});
 				if (control != null) {
@@ -1044,12 +1007,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
-		
+				
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -1067,13 +1025,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyInput {
 		
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
+		
 		private final ControlProperty controlProperty;
 		
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
 			boolean validData = controlProperty.getValue() != null;
 			AFont font = null;
@@ -1092,7 +1049,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -1128,10 +1085,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			getRootNode().setDisable(disable);
 		}
 		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
 		
 		@Override
 		public void setToMode(EditMode mode) {
@@ -1146,7 +1099,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	/** Use this editor for {@link ASound} ControlProperty values */
 	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyInput {
-		private final UpdateListenerGroup<ControlProperty> controlPropertyUpdateGroup;
+		
 		private final ControlProperty controlProperty;
 		
 		private final int NAME = 0;
@@ -1161,13 +1114,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 		
 		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			this.controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 			
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				aSound = (ASound) controlProperty.getValue();
 			}
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlPropertyUpdateGroup, controlProperty);
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			
 			initInputField(inSoundName, NAME, aSound != null ? aSound.getSoundName() : null);
 			initInputField(inDb, DB, aSound != null ? aSound.getDb() : null);
@@ -1238,7 +1190,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (control != null) {
 						control.getUpdateGroup().update(control);
 					}
-					controlPropertyUpdateGroup.update(controlProperty);
+					
 				}
 			});
 			if (control != null) {
@@ -1271,12 +1223,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-		
-		@Override
-		public UpdateListenerGroup<ControlProperty> getControlPropertyUpdateGroup() {
-			return controlPropertyUpdateGroup;
-		}
-		
+				
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);

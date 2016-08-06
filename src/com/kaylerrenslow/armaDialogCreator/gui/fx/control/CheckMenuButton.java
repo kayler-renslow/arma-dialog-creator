@@ -66,9 +66,9 @@ public class CheckMenuButton<E> extends StackPane {
 						while (i < items.size()) {
 							if (items.get(i).getUserData() == item) {
 								items.remove(i);
-							} else {
-								i++;
+								break;
 							}
+							i++;
 						}
 					}
 				}
@@ -88,13 +88,13 @@ public class CheckMenuButton<E> extends StackPane {
 		for (MenuItem menuItem : menuButton.getItems()) {
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
+			checkBox.setSelected(false);
 			for (E item : items) {
 				if (customMenuItem.getUserData() == item) {
 					checkBox.setSelected(true);
 					continue menuItems;
 				}
 			}
-			checkBox.setSelected(false);
 		}
 	}
 	

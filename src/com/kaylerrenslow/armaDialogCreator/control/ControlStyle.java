@@ -94,7 +94,7 @@ public enum ControlStyle {
 	
 	@Override
 	public String toString() {
-		return displayName;
+		return displayName + " (" + styleId + ")";
 	}
 }
 
