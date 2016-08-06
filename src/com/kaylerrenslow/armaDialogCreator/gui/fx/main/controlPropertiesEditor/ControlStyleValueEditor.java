@@ -1,3 +1,13 @@
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+ */
+
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
@@ -5,7 +15,8 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CheckMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -18,7 +29,7 @@ import java.util.List;
 
 /**
  @author Kayler
- A value editor for {@link com.kaylerrenslow.armaDialogCreator.main.Lang.PropertyType#CONTROL_STYLE}. By default, all {@link ControlStyle}'s are added in the MenuButton.
+ A value editor for {@link LookupLang.PropertyType#CONTROL_STYLE}. By default, all {@link ControlStyle}'s are added in the MenuButton.
  Created on 08/05/2016. */
 public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
 	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ValueEditors.ControlStyleGroupEditor.SELECT_STYLES, null);

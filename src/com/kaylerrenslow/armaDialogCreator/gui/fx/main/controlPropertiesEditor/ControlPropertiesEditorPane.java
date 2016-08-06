@@ -1,3 +1,27 @@
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+ */
+
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction,
+ * including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to
+ * do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and
+ * noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out
+ * of or in connection with the software or the use or other dealings in the software.
+ */
+
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
@@ -5,7 +29,8 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -536,7 +561,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlProperty = controlProperty;
 			ControlStyleGroup group = (ControlStyleGroup) controlProperty.getValue();
 			if (group != null) {
+				updateFromSelection = true;
 				menuButton.setSelected(group.getValues());
+				updateFromSelection = false;
 			}
 			menuButton.getSelectedItems().addListener(new ListChangeListener<ControlStyle>() {
 				@Override
@@ -716,19 +743,19 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	private static class ControlPropertyInputFieldString extends ControlPropertyInputField<SVString> {
 		ControlPropertyInputFieldString(ControlClass control, ControlProperty controlProperty) {
-			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.PropertyType.STRING);
+			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), LookupLang.PropertyType.STRING);
 		}
 	}
 	
 	private static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<SVDouble> {
 		ControlPropertyInputFieldDouble(ControlClass control, ControlProperty controlProperty) {
-			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.PropertyType.FLOAT);
+			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), LookupLang.PropertyType.FLOAT);
 		}
 	}
 	
 	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<SVInteger> {
 		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
-			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.PropertyType.INT);
+			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), LookupLang.PropertyType.INT);
 		}
 	}
 	
@@ -736,7 +763,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()),
-					Lang.PropertyType.EXP);
+					LookupLang.PropertyType.EXP);
 		}
 	}
 	

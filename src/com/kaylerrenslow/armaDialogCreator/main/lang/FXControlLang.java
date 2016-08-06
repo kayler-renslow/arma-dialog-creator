@@ -8,38 +8,49 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
-
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
-import org.jetbrains.annotations.NotNull;
+package com.kaylerrenslow.armaDialogCreator.main.lang;
 
 /**
  @author Kayler
- Checker for Integers
- Created on 05/31/2016. */
-public class IntegerChecker implements InputFieldDataChecker<Integer> {
-	@Override
-	public String validData(@NotNull String data) {
-		try {
-			Integer.parseInt(data);
-			return null;
-		} catch (NumberFormatException e) {
-			return FXControlLang.InputField.DataCheckers.Integer.NOT_INTEGER;
+ Lang class for any custom FX controls
+ Created on 07/15/2016. */
+public interface FXControlLang {
+	interface InputField {
+		String SUBMIT_BTN_TOOLTIP = "Submit";
+		
+		/** Lang strings for InputFieldDataChecker instances */
+		interface DataCheckers {
+			String NO_VALUE = "No value entered.";
+
+			interface ArmaString {
+				String TYPE_NAME = "String";
+				String MISSING_QUOTE = "Missing quote.";
+			}
+
+			interface Double {
+				String NOT_A_NUMBER = "Not a number.";
+				String TYPE_NAME = "Floating Point Number";
+			}
+
+			interface Identifier {
+				String NOT_IDENTIFIER = "Not an identifier. (Start with: letter, _, $. Then can have: letter, _, $, number)";
+				String TYPE_NAME = "Identifier";
+			}
+
+			interface Integer {
+				String NOT_INTEGER = "Not an integer.";
+				String TYPE_NAME = "Integer";
+			}
+
+			interface Expression {
+				String TYPE_NAME = "Expression";
+				String UNKNOWN_ERROR = "Unknown Error";
+			}
+			
+			interface StringChecker {
+				String TYPE_NAME = "String";
+			}
 		}
 	}
-
-	@Override
-	public Integer parse(@NotNull String data) {
-		return Integer.parseInt(data);
-	}
-
-	@Override
-	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.Integer.TYPE_NAME;
-	}
-
-	@Override
-	public boolean allowEmptyData() {
-		return false;
-	}
 }
+

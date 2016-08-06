@@ -1,8 +1,18 @@
-package com.kaylerrenslow.armaDialogCreator.main;
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+ */
+
+package com.kaylerrenslow.armaDialogCreator.main.lang;
 
 import javafx.stage.FileChooser;
 
-import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
+import static com.kaylerrenslow.armaDialogCreator.main.lang.Lang.Application.APPLICATION_NAME;
 
 public interface Lang {
 	
@@ -196,79 +206,6 @@ public interface Lang {
 			String MO_AVAILABLE_MACROS = "No macros are available.";
 			String NO_RECENT_MACROS = "No recently chosen macros.";
 		}
-	}
-	
-	/** {@link com.kaylerrenslow.armaDialogCreator.control.PropertyType} */
-	interface PropertyType {
-		String INT = "Integer";
-		String FLOAT = "Floating Point Number";
-		String EXP = "Expression";
-		String BOOLEAN = "Boolean";
-		String STRING = "String";
-		String ARRAY = "Array";
-		String COLOR = "Color";
-		String SOUND = "Sound";
-		String FONT = "Font";
-		String FILE_NAME = "File Name";
-		String IMAGE = "Image";
-		String HEX_COLOR_STRING = "Hex Color String";
-		String TEXTURE = "Texture";
-		String EVENT = "Event SQF Code String";
-		String SQF = "SQF Code String";
-		String CONTROL_STYLE = "Control Style";
-	}
-	
-	/** {@link com.kaylerrenslow.armaDialogCreator.control.ControlType} */
-	interface ControlType {
-		interface TypeGroup {
-			String TEXT = "Text";
-			String BUTTON = "Button";
-			String COMBO = "Combo Box";
-			String SLIDER = "Slider";
-			String LIST_BOX = "List Box";
-			String CHECK_BOX = "Check Box";
-			String MENU = "Menu";
-			String OBJECT = "Object";
-			String MAP = "Map";
-			String MISC = "Misc";
-		}
-		
-		String STATIC = "Static";
-		String HTML = "HTML";
-		String EDIT = "Edit";
-		String STRUCTURED_TEXT = "Structured Text";
-		String ACTIVETEXT = "Active Text";
-		String BUTTON = "Button";
-		String SHORTCUTBUTTON = "Shortcut Button";
-		String XBUTTON = "X Button";
-		String PROGRESS = "Progress Bar";
-		String STATIC_SKEW = "Static Skew";
-		String LINEBREAK = "Line Break";
-		String TREE = "Tree";
-		String CONTROLS_GROUP = "Controls Group";
-		String XKEYDESC = "XKEYDESC";
-		String ANIMATED_TEXTURE = "Animated Texture";
-		String ANIMATED_USER = "Animated User";
-		String ITEMSLOT = "Item Slot";
-		String SLIDER = "Slider";
-		String XSLIDER = "X Slider";
-		String COMBO = "Combo";
-		String XCOMBO = "X Combo";
-		String LISTBOX = "List Box";
-		String XLISTBOX = "X List Box";
-		String LISTNBOX = "List N Box";
-		String TOOLBOX = "Tool Box";
-		String CHECKBOXES = "Check Boxes";
-		String CHECKBOX = "Check Box";
-		String CONTEXT_MENU = "Context Menu";
-		String MENU = "Menu";
-		String MENU_STRIP = "Menu Strip";
-		String OBJECT = "Object";
-		String OBJECT_ZOOM = "Object Zoom";
-		String OBJECT_CONTAINER = "Object Container";
-		String OBJECT_CONT_ANIM = "Object Container Animation";
-		String MAP = "Map";
-		String MAP_MAIN = "Map Main";
 	}
 	
 	static String getPopupWindowTitle(String popupName) {
