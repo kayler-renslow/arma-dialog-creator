@@ -17,8 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -28,12 +30,13 @@ import javafx.scene.layout.VBox;
  Holds the step configuration contorls and the tree view for editor components.
  Created on 05/15/2016. */
 class CanvasControls extends VBox implements SnapConfiguration {
-
+	
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView<? extends TreeItemEntry> editorComponentTreeView = new EditorComponentTreeView<>();
+	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain = new EditorComponentTreeView<>(false);
+	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg = new EditorComponentTreeView<>(true);
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
-
+	
 	public static final double PREFERRED_WIDTH = 250d;
 	
 	CanvasControls(ADCCanvasView canvasView) {
@@ -41,22 +44,23 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		this.canvasView = canvasView;
 		initializeUI();
 	}
-
+	
 	private void initializeUI() {
 		initializeStepChoiceboxes();
 		HBox hboxStep = new HBox(5);
 		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
-
-		getChildren().addAll(hboxStep, editorComponentTreeView);
+		
+		final VBox vbBgControls = new VBox(5, new Label(" "+Lang.CanvasControls.BACKGROUND_CONTROLS), treeViewBg); //placing space before label to give fake padding
+		VBox.setVgrow(treeViewBg, Priority.ALWAYS);
+		final SplitPane splitPane = new SplitPane(treeViewMain, vbBgControls);
+		splitPane.setOrientation(Orientation.VERTICAL);
+		getChildren().addAll(hboxStep, splitPane);
+		VBox.setVgrow(splitPane, Priority.ALWAYS);
+		splitPane.setPrefHeight(getHeight());
+		
 		this.setPadding(new Insets(5, 5, 0, 5));
-
-		VBox.setVgrow(editorComponentTreeView, Priority.ALWAYS);
-		
-		//setup tree view to show all controls
-		
-		
 	}
-
+	
 	private void initializeStepChoiceboxes() {
 		cbStep.getItems().addAll(new Percentage(1), new Percentage(2.50), new Percentage(5), new Percentage(10));
 		cbAltStep.getItems().addAll(new Percentage(0.5));
@@ -72,36 +76,41 @@ class CanvasControls extends VBox implements SnapConfiguration {
 			}
 		});
 	}
-
-
+	
+	
 	@Override
 	public double alternateSnapPercentage() {
 		return cbAltStep.getSelectionModel().getSelectedItem().percentDecimal;
 	}
-
+	
 	@Override
 	public double snapPercentage() {
 		return cbStep.getSelectionModel().getSelectedItem().percentDecimal;
 	}
-
-
-	public EditorComponentTreeView<? extends TreeItemEntry> getEditorComponentTreeView() {
-		return editorComponentTreeView;
+	
+	/** Get the tree view used for storing controls that is meant for non-background controls */
+	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewMain() {
+		return treeViewMain;
 	}
-
+	
+	/** Get the tree view used for storing controls that is meant <b>for</b> background controls */
+	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewBackground() {
+		return treeViewBg;
+	}
+	
 	private static class Percentage {
 		private final double percentDecimal;
 		private final String str;
-
+		
 		Percentage(double value) {
 			this.percentDecimal = value / 100.0;
 			this.str = value + "%";
 		}
-
+		
 		@Override
 		public String toString() {
 			return str;
 		}
 	}
-
+	
 }

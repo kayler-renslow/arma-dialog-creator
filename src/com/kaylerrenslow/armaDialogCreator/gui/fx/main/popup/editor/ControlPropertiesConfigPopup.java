@@ -25,7 +25,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
@@ -85,8 +84,6 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.getChildren().clear();
 		addCloseButton();
 		myRootElement.getChildren().add(editorPane);
-		CheckBox cbIsBackgroundControl = new CheckBox(Lang.Popups.ControlPropertiesConfig.IS_BACKGROUND_CONTROL);
-		myRootElement.getChildren().add(cbIsBackgroundControl);
 		return true;
 	}
 

@@ -19,7 +19,9 @@ import org.jetbrains.annotations.NotNull;
 public interface Region {
 
 	int getRenderPriority();
-
+	
+	void setRenderPriority(int priority);
+		
 	int getLeftX();
 
 	int getRightX();

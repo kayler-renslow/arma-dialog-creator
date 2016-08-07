@@ -30,6 +30,7 @@ public interface Lang {
 	interface CanvasControls {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
+		String BACKGROUND_CONTROLS = "Background Controls";
 	}
 	
 	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar} */

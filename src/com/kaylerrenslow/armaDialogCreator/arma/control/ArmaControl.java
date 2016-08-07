@@ -35,16 +35,17 @@ public class ArmaControl extends ControlClass implements Control {
 	private final RendererLookup rendererLookup;
 	private final ControlStyle[] allowedStyles;
 	/** Type of the control */
-	protected ControlType type = ControlType.STATIC;
+	private ControlType type = ControlType.STATIC;
 	/** Style of the control TODO: allow multiple styles */
-	protected ControlStyleGroup style = new ControlStyleGroup(new ControlStyle[]{ControlStyle.CENTER});
+	private ControlStyleGroup style = new ControlStyleGroup(new ControlStyle[]{ControlStyle.CENTER});
 	/** Renderer of the control for the canvas */
-	protected ArmaControlRenderer renderer;
+	protected final ArmaControlRenderer renderer;
 	
-	protected Expression x, y, width, height;
+	private Expression x, y, width, height;
+	
 	
 	/** Control id (-1 if doesn't matter) */
-	protected int idc = -1;
+	private int idc = -1;
 	
 	private final ControlProperty idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty, accessProperty;
 	
@@ -61,10 +62,8 @@ public class ArmaControl extends ControlClass implements Control {
 		this.resolution = resolution;
 		this.env = env;
 		try {
-			this.renderer = rendererLookup.rendererClass.newInstance();
-			this.renderer.setMyControl(this);
 			this.rendererLookup = rendererLookup;
-			this.renderer.init();
+			this.renderer = rendererLookup.rendererClass.getConstructor(ArmaControl.class).newInstance(this);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
@@ -187,7 +186,7 @@ public class ArmaControl extends ControlClass implements Control {
 	}
 	
 	/** Set the x,y,w,h properties. This will also update the renderer's position. If x, y, w, or h are null, this method will do nothing. This will not update the value observers.*/
-	protected void setPositionWHSilent(Expression x, Expression y, Expression w, Expression h) {
+	protected final void setPositionWHSilent(Expression x, Expression y, Expression w, Expression h) {
 		//do not use @NotNull annotations for parameters because this method is called from updateProperties. updateProperties is only invoked when a ControlProperty is edited.
 		//when a ControlProperty is edited, required (like x,y,w,h), and has no input, the user should not be allowed to exit editing until valid input is entered
 		if (x == null || y == null || w == null || h == null) {
@@ -201,7 +200,7 @@ public class ArmaControl extends ControlClass implements Control {
 	}
 	
 	/** Set the x and y values (and width and height) based upon the renderer's position */
-	protected void calcPositionFromRenderer() {
+	protected final void calcPositionFromRenderer() {
 		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(this.resolution, renderer.getX1()), env);
 		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(this.resolution, renderer.getY1()), env);
 		xProperty.setValue(x);
@@ -267,7 +266,7 @@ public class ArmaControl extends ControlClass implements Control {
 	public final void defineAccess(int access) {
 		this.accessProperty.setValue(access);
 	}
-	
+		
 	/** Get idc (control id for arma) */
 	public final int getIdc() {
 		return idc;

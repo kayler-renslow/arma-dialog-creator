@@ -22,13 +22,15 @@ import org.jetbrains.annotations.NotNull;
  Base class for JavaFX canvas rendering of arma controls
  Created on 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent {
-	protected ArmaControl myControl;
+	protected final ArmaControl myControl;
 	private ValueObserver<AColor> backgroundColorObserver;
 	
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
+	private boolean backgroundControl;
 	
-	public ArmaControlRenderer() {
+	public ArmaControlRenderer(ArmaControl control) {
 		super(0, 0, 0, 0);
+		this.myControl = control;
 		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
 		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
@@ -38,14 +40,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				}
 			}
 		});
-	}
-	
-	final void setMyControl(ArmaControl myControl) {
-		this.myControl = myControl;
-	}
-	
-	/** Invoked when the renderer is fully setup by the ArmaControl attached to the renderer. Default implementation does nothing. */
-	protected void init() {
 	}
 	
 	/** Invoked when {@link ArmaControl#updateProperties()} is invoked */
@@ -129,21 +123,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		myControl.calcPositionFromRenderer();
 	}
 	
-	
 	public void setX1Silent(int x1) {
 		super.setX1(x1);
 	}
-	
 	
 	public void setY1Silent(int y1) {
 		super.setY1(y1);
 	}
 	
-	
 	public void setX2Silent(int x2) {
 		super.setX2(x2);
 	}
-	
 	
 	public void setY2Silent(int y2) {
 		super.setY2(y2);

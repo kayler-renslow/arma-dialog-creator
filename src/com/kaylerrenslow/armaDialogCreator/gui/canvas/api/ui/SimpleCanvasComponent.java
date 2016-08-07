@@ -41,6 +41,8 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	private boolean isEnabled = true;
 	private boolean isVisible = true;
 
+	private int renderPriority = 0;
+	
 	public SimpleCanvasComponent(int x, int y, int width, int height) {
 		this.x1 = x;
 		this.y1 = y;
@@ -115,9 +117,15 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	@Override
 	public int getRenderPriority() {
-		return 0;
+		return renderPriority;
 	}
-
+	
+	@Override
+	public void setRenderPriority(int priority) {
+		this.renderPriority = priority;
+	}
+	
+	
 	@Override
 	public int getLeftX() {
 		return Math.min(x1, x2);

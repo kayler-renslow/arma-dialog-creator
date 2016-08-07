@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
@@ -33,8 +34,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 	
 	private Text textObj = new Text();
 	
-	@Override
-	protected void init() {
+	public StaticRenderer(ArmaControl control) {
+		super(control);
+		init();
+	}
+	
+	private void init() {
 		textObj.setFont(DEFAULT_FX_FONT);
 		
 		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -83,14 +88,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 		gc.fillText(getText(), getTextX(), getTextY());
 	}
 	
-	public Font getFont() {
+	private Font getFont() {
 		return textObj.getFont();
 	}
-	
-	public void setFont(@NotNull Font font) {
-		this.textObj.setFont(font);
-	}
-	
+		
 	public void setText(String text) {
 		this.textObj.setText(text);
 	}

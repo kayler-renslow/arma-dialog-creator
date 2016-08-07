@@ -44,4 +44,8 @@ public class ReadOnlyList<E> implements Iterable<E>{
 		return dataList.iterator();
 	}
 	
+	@Override
+	public String toString() {
+		return dataList.toString();
+	}
 }

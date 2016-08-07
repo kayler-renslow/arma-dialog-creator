@@ -20,7 +20,11 @@ import javafx.scene.canvas.GraphicsContext;
  Renderer for a ControlGroup control. Use for controls whose classes that extends ArmaControlGroup
  Created on 07/04/2016. */
 public class ControlGroupRenderer extends ArmaControlRenderer {
-
+	
+	public ControlGroupRenderer(ArmaControl control) {
+		super(control);
+	}
+	
 	@Override
 	public void paint(GraphicsContext gc) {
 		super.paint(gc);

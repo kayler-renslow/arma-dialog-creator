@@ -144,6 +144,9 @@ public abstract class UICanvas extends AnchorPane {
 	
 	/** Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
 	protected void paintControls() {
+		for(Control control : display.getBackgroundControls()){
+			paintControl(control);
+		}
 		for (Control control : display.getControls()) {
 			paintControl(control);
 		}

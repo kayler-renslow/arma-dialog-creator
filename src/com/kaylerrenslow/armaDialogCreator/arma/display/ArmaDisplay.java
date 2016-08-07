@@ -31,6 +31,10 @@ public class ArmaDisplay implements Display{
 	private boolean movingEnable, enableSimulation;
 	private final List<ArmaControl> controls = new ArrayList<>();
 	private final ReadOnlyList<ArmaControl> controlReadOnlyList = new ReadOnlyList<>(controls);
+	private final List<ArmaControl> bgControls = new ArrayList<>();
+	private final ReadOnlyList<ArmaControl> bgControlReadOnlyList = new ReadOnlyList<>(bgControls);
+		
+	
 	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
 	private final UpdateListener<Object> controlListener = new UpdateListener<Object>(){
 		@Override
@@ -75,7 +79,46 @@ public class ArmaDisplay implements Display{
 	}
 	
 	@Override
+	public ReadOnlyList<ArmaControl> getBackgroundControls() {
+		return bgControlReadOnlyList;
+	}
+	
+	@Override
+	public void addBackgroundControl(Control control) {
+		testInstance(control);
+		bgControls.add((ArmaControl) control);
+	}
+	
+	@Override
+	public void addBackgroundControl(int index, Control toAdd) {
+		testInstance(toAdd);
+		ArmaControl armaControl = (ArmaControl) toAdd;
+		bgControls.add(index, armaControl);
+		armaControl.getUpdateGroup().addListener(controlListener);
+	}
+	
+	@Override
+	public int indexOfBackgroundControl(Control control) {
+		testInstance(control);
+		return bgControls.indexOf(control);
+	}
+	
+	@Override
+	public boolean removeBackgroundControl(Control control) {
+		testInstance(control);
+		ArmaControl armaControl = (ArmaControl) control;
+		if (bgControls.remove(armaControl)) {
+			armaControl.getUpdateGroup().removeUpdateListener(controlListener);
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
 	public void resolutionUpdate(Resolution newResolution) {
+		for(ArmaControl control : bgControls){
+			control.resolutionUpdate(newResolution);
+		}
 		for(ArmaControl control : controls){
 			control.resolutionUpdate(newResolution);
 		}
@@ -88,20 +131,15 @@ public class ArmaDisplay implements Display{
 	
 	@Override
 	public void addControl(Control control) {
-		if(!(control instanceof ArmaControl)){
-			throw new IllegalArgumentException("control does not extend ArmaControl");
-		}
+		testInstance(control);
 		ArmaControl armaControl = (ArmaControl) control;
 		controls.add(armaControl);
-		controls.sort(Control.RENDER_PRIORITY_COMPARATOR);
 		armaControl.getUpdateGroup().addListener(controlListener);
 	}
 	
 	@Override
 	public void addControl(int index, Control toAdd) {
-		if(!(toAdd instanceof ArmaControl)){
-			throw new IllegalArgumentException("toAdd does not extend ArmaControl");
-		}
+		testInstance(toAdd);
 		ArmaControl armaControl = (ArmaControl) toAdd;
 		controls.add(index, armaControl);
 		armaControl.getUpdateGroup().addListener(controlListener);
@@ -109,21 +147,25 @@ public class ArmaDisplay implements Display{
 	
 	@Override
 	public int indexOf(Control control) {
+		testInstance(control);
 		return controls.indexOf(control);
 	}
 	
 	@Override
 	public boolean removeControl(Control control) {
-		if(!(control instanceof ArmaControl)){
-			throw new IllegalArgumentException("control does not extend ArmaControl");
-		}
-		if (controls.remove(control)) {
-			ArmaControl armaControl = (ArmaControl) control;
+		testInstance(control);
+		ArmaControl armaControl = (ArmaControl) control;
+		if (controls.remove(armaControl)) {
 			armaControl.getUpdateGroup().removeUpdateListener(controlListener);
-			controls.sort(Control.RENDER_PRIORITY_COMPARATOR);
 			return true;
 		}
 		return false;
+	}
+	
+	private void testInstance(Control control) {
+		if(!(control instanceof ArmaControl)){
+			throw new IllegalArgumentException("control does not extend ArmaControl");
+		}
 	}
 	
 	

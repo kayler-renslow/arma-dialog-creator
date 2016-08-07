@@ -1,7 +1,6 @@
 ADDED:
-    control style documentation
+    background control support
 CHANGED:
-    when typing in input field or the text is set, button will now turn green. however, if the text is manipulated back to the value it's set to, the button will not be green anymore
-    instead of setting input field text upon control property value update in the control property editor, the value is set since the value observer checks to see if the values are different to prevent stack overflow
+    none
 FIXED:
     none

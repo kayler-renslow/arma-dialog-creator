@@ -14,7 +14,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
+import com.kaylerrenslow.armaDialogCreator.util.Point;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -29,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  @author Kayler
@@ -290,7 +294,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 	}
-		
+	
 	private void drawGrid(double snap, boolean light) {
 		double spacingX = getSnapPixelsWidthF(snap);
 		double spacingY = getSnapPixelsHeightF(snap);
@@ -351,7 +355,6 @@ public class UICanvasEditor extends UICanvas {
 			selection.clearSelected();
 			return;
 		}
-		ReadOnlyList<? extends Control> controls = display.getControls();
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
 			Control control;
 			for (int i = selection.numSelected() - 1; i >= 0; i--) {
@@ -361,8 +364,9 @@ public class UICanvasEditor extends UICanvas {
 					return;
 				}
 			}
-			for (int i = controls.size() - 1; i >= 0; i--) {
-				control = controls.get(i);
+			Iterator<? extends Control> controlIterator = display.iteratorForAllControls(true);
+			while (controlIterator.hasNext()) {
+				control = controlIterator.next();
 				if (!control.getRenderer().isEnabled()) {
 					continue;
 				}
@@ -497,7 +501,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-		
+	
 	private void doScaleOnComponent(boolean symmetricScale, boolean squareScale, int dx, int dy) {
 		int dxl = 0; //change in x left
 		int dxr = 0; //change in x right
@@ -568,21 +572,22 @@ public class UICanvasEditor extends UICanvas {
 	}
 	
 	private boolean basicMouseMovement(int mousex, int mousey) {
-		ReadOnlyList<? extends Control> controls = display.getControls();
+		
 		updateContextMenu();
 		mouseOverControl = null;
-		{
-			Control control;
-			for (int i = controls.size() - 1; i >= 0; i--) {
-				control = controls.get(i);
-				if (control.getRenderer().isEnabled()) {
-					if (control.getRenderer().containsPoint(mousex, mousey)) {
-						mouseOverControl = control;
-						break;
-					}
+		
+		Control control;
+		Iterator<? extends Control> iteratorControl = display.iteratorForAllControls(true);
+		while (iteratorControl.hasNext()) {
+			control = iteratorControl.next();
+			if (control.getRenderer().isEnabled()) {
+				if (control.getRenderer().containsPoint(mousex, mousey)) {
+					mouseOverControl = control;
+					break;
 				}
 			}
 		}
+		
 		if (scaleControl == null) {
 			if (!selection.isSelecting() && mouseOverControl != null) {
 				changeCursorToMove();
@@ -602,7 +607,9 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			for (Control control : controls) {
+			iteratorControl = display.iteratorForAllControls(false);
+			while (iteratorControl.hasNext()) {
+				control = iteratorControl.next();
 				if (control.getRenderer().isEnabled()) {
 					if (selection.contains(control.getRenderer())) {
 						selection.addToSelection(control);
@@ -787,6 +794,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
+	
 	
 	/**
 	 @author Kayler
