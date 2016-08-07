@@ -15,6 +15,8 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  Created by Kayler on 08/05/2016.
  */
@@ -70,10 +72,21 @@ public class ControlStyleGroup extends SerializableValue {
 		}
 		return s;
 	}
-	
-	
+		
 	@Override
 	public String toString() {
 		return toString(values);
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof ControlStyleGroup){
+			ControlStyleGroup other = (ControlStyleGroup) o;
+			return Arrays.equals(this.values, other.values);
+		}
+		return false;
 	}
 }

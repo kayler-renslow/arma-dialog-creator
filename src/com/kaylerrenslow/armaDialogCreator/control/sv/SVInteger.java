@@ -59,4 +59,17 @@ public final class SVInteger extends SVNumber {
 	public double getNumber() {
 		return i;
 	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof SVInteger){
+			SVInteger other = (SVInteger) o;
+			return this.i == other.i;
+		}
+		return false;
+	}
 }

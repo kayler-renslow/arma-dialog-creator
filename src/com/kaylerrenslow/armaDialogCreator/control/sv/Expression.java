@@ -80,4 +80,17 @@ public class Expression extends SerializableValue {
 	public String toString() {
 		return valuesAsArray[0];
 	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof Expression){
+			Expression other = (Expression) o;
+			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
+		}
+		return false;
+	}
 }

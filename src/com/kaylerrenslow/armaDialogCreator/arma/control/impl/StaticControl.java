@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
@@ -59,6 +60,30 @@ public class StaticControl extends ArmaControl {
 		@Override
 		public ControlPropertyLookup[] getOptionalProperties() {
 			return optionalProperties;
+		}
+				
+		private final ControlStyle[] allowedStyles = {
+				ControlStyle.LEFT,
+				ControlStyle.RIGHT,
+				ControlStyle.CENTER,
+				ControlStyle.MULTI,
+				ControlStyle.TITLE_BAR,
+				ControlStyle.PICTURE,
+				ControlStyle.FRAME,
+				ControlStyle.BACKGROUND,
+				ControlStyle.GROUP_BOX,
+				ControlStyle.GROUP_BOX2,
+				ControlStyle.HUD_BACKGROUND,
+				ControlStyle.WITH_RECT,
+				ControlStyle.LINE,
+				ControlStyle.SHADOW,
+				ControlStyle.NO_RECT,
+				ControlStyle.KEEP_ASPECT_RATIO
+		};
+		
+		@Override
+		public ControlStyle[] getAllowedStyles() {
+			return allowedStyles;
 		}
 	};
 	

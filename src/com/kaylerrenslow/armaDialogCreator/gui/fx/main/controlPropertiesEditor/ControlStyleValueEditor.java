@@ -41,12 +41,15 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		getChildren().add(menuButton);
 		getChildren().add(textField);
 		menuButton.getItems().addAll(ControlStyle.values());
+		for (ControlStyle style : menuButton.getItems()) {
+			menuButton.bindTooltip(style, style.documentation);
+		}
 		menuButton.getSelectedItems().addListener(new ListChangeListener<ControlStyle>() {
 			@Override
 			public void onChanged(Change<? extends ControlStyle> c) {
 				String s = "";
 				List<ControlStyle> selected = menuButton.getSelectedItems();
-				for(int i = 0; i < selected.size(); i++){
+				for (int i = 0; i < selected.size(); i++) {
 					s += selected.get(i).styleId + (i != selected.size() - 1 ? ControlStyleGroup.DEFAULT_DELIMITER : "");
 				}
 				textField.setText(s);

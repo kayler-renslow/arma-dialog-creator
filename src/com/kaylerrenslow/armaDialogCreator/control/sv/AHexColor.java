@@ -163,4 +163,17 @@ public class AHexColor extends AColor {
 	public String toString() {
 		return hex;
 	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof AHexColor){
+			AHexColor other = (AHexColor) o;
+			return this.hex.equals(other.hex);
+		}
+		return false;
+	}
 }

@@ -54,4 +54,16 @@ public class SVImage extends SerializableValue {
 	public SerializableValue deepCopy() {
 		return new SVImage(imageRelativePath);
 	}
+		
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof SVImage){
+			SVImage other = (SVImage) o;
+			return this.imageRelativePath.equals(other.imageRelativePath);
+		}
+		return false;
+	}
 }

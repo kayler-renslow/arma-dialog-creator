@@ -16,11 +16,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Node;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.CustomMenuItem;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,12 +31,20 @@ import java.util.List;
  Created by Kayler on 08/05/2016.
  */
 public class CheckMenuButton<E> extends StackPane {
+	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private final MenuButton menuButton;
 	private final ObservableList<E> selected = FXCollections.observableArrayList();
 	private final ObservableList<E> selectedReadOnly = FXCollections.unmodifiableObservableList(selected);
 	
 	private final ObservableList<E> items;
 	
+	/**
+	 Creates a {@link MenuButton} that allows for selecting many items.
+	 
+	 @param title text to display on the button
+	 @param graphic graphic to put on the button
+	 @param initialItems items to initially add
+	 */
 	public CheckMenuButton(String title, Node graphic, E... initialItems) {
 		this.items = FXCollections.observableArrayList(new ArrayList<>(initialItems.length));
 		items.addListener(new ListChangeListener<E>() {
@@ -79,10 +88,30 @@ public class CheckMenuButton<E> extends StackPane {
 		Collections.addAll(this.items, initialItems);
 	}
 	
+	/** Bind a tooltip to one of the items, If the tooltip is null, will remove the tooltip. */
+	public void bindTooltip(@NotNull E itemToBindTo, @Nullable String tooltip) {
+		for (MenuItem menuItem : menuButton.getItems()) {
+			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
+			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
+			if (customMenuItem.getUserData() == itemToBindTo) {
+				if (tooltip == null) {
+					checkBox.setTooltip(null);
+				} else {
+					Tooltip tp = new Tooltip(tooltip);
+					tp.setFont(TOOLTIP_FONT);
+					checkBox.setTooltip(tp);
+				}
+				return;
+			}
+		}
+	}
+	
+	/** Get all items added */
 	public ObservableList<E> getItems() {
 		return items;
 	}
 	
+	/** Clears the selection and sets what items are selected. */
 	public void setSelected(E[] items) {
 		menuItems:
 		for (MenuItem menuItem : menuButton.getItems()) {
@@ -98,6 +127,7 @@ public class CheckMenuButton<E> extends StackPane {
 		}
 	}
 	
+	/** Clears the selection */
 	public void clearSelection() {
 		for (MenuItem menuItem : menuButton.getItems()) {
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
@@ -106,6 +136,7 @@ public class CheckMenuButton<E> extends StackPane {
 		}
 	}
 	
+	/** Get all selected items (read-only list) */
 	public ObservableList<E> getSelectedItems() {
 		return selectedReadOnly;
 	}

@@ -39,7 +39,6 @@ import org.jetbrains.annotations.Nullable;
 public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
 	private static final String DATA_NEEDS_SUBMITION = "-fx-background-color:green";
-	private static final String DATA_BAD = "-fx-background-color:red";
 	private static final String DATA_SUBMITTED = "";
 	
 	private final C dataChecker;
@@ -50,6 +49,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
 	private final Button btnSubmit = new Button("");
 	
+	private @Nullable String valueString = null;
 	private boolean valid = false;
 	private boolean buttonState = true;
 	private String errMsg;
@@ -60,9 +60,12 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 <br><b>"Input State":</b>
 	 <ul>
 	 <li>A normal {@link TextField} is used as the underlying text input. Whatever {@link InputFieldDataChecker#getTypeName()} returns is what will be passed in {@link TextField#setPromptText(String)}</li>
-	 <li>User can enter any text. When enter key is pressed, the text is checked to see if valid (via {@link InputFieldDataChecker#validData(String)}). If not valid, the text field will turn red and an error popup will appear with the error message.</li>
+	 <li>User can enter any text. When enter key is pressed, the text is checked to see if valid (via {@link InputFieldDataChecker#validData(String)}). If not valid, the text field will turn red
+	 and an error popup will appear with the error message and the {@link ValueObserver} will not be notified of a value update.</li>
 	 <li>If the inner TextField instance loses focus, the TextField has no data (no text), and {@link InputFieldDataChecker#allowEmptyData()} is false, and {@link InputFieldDataChecker#getDefaultValue()}==null, the text field will enter Button State.<br>
-	 The scenario where {@link InputFieldDataChecker#getDefaultValue()}!=null, TextField has no data, and the TextField loses focus, the InputField will never enter the Button State. {@link InputFieldDataChecker#getDefaultValue()} will only be used for when the InputField/TextField loses focus.
+	 The scenario where {@link InputFieldDataChecker#getDefaultValue()}!=null, TextField has no data, and the TextField loses focus, the InputField will not enter the Button State and the
+	 {@link ValueObserver#updateValue(Object)} will be set to {@link InputFieldDataChecker#getDefaultValue()}.
+	 {@link InputFieldDataChecker#getDefaultValue()} will only be used for when the InputField/TextField loses focus.
 	 If there can be no data (no text), the InputField will stay in Input State.</li>
 	 </ul>
 	 <br><b>"Button State":</b>
@@ -86,6 +89,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				//do not update value observer since value may be invalid
 				setValueFromText(getText(), true, false);
 			}
 		});
@@ -97,12 +101,21 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
+					//do not update value observer since value may be invalid
 					setValueFromText(getText(), true, false);
-				} else {
-					btnSubmit.setStyle(DATA_NEEDS_SUBMITION);
 				}
 			}
 		};
+		this.textField.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				if (valueString != null && newValue.equals(valueString)) {
+					valueSubmitted(true);
+				} else {
+					valueSubmitted(false);
+				}
+			}
+		});
 		setPromptText(fieldDataChecker.getTypeName());
 		setTooltip(new Tooltip(fieldDataChecker.getTypeName()));
 		this.setOnKeyReleased(keyEvent);
@@ -124,7 +137,6 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 						getValueObserver().updateValue(dataChecker.getDefaultValue());
 					} else {
 						clear();
-						getValueObserver().updateValue(null);
 					}
 					return;
 				}
@@ -140,6 +152,9 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			public void handle(ActionEvent event) {
 				setText("");
 				setToButton(false);
+				if (dataChecker.allowEmptyData()) { //show that the field can be submitted as is
+					valueSubmitted(false);
+				}
 			}
 		});
 		
@@ -157,6 +172,11 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		
 		button.setMaxWidth(Double.MAX_VALUE);
 		getChildren().add(button);
+	}
+	
+	/** If dataSubmitted==true, the submit button will turn to it's default color. if dataSubmitted==false, will turn to green to indicate changes need to be submitted */
+	private void valueSubmitted(boolean dataSubmitted) {
+		btnSubmit.setStyle(dataSubmitted ? DATA_SUBMITTED : DATA_NEEDS_SUBMITION);
 	}
 	
 	/**
@@ -200,8 +220,9 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			valid = false;
 			return;
 		}
-		btnSubmit.setStyle(DATA_SUBMITTED);
-		this.setText(value.toString());
+		valueString = value.toString();
+		this.setText(valueString);
+		valueSubmitted(true);
 		setToButton(false);
 		valid = true;
 		error(false);
@@ -229,6 +250,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			setText(text);
 			setValue(getValue());
 		} else {
+			valueString = null;
 			setToButton(false);
 			if (updateValueIfNotValid) {
 				observer.updateValue(null);
@@ -272,8 +294,12 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		return observer;
 	}
 	
-	/** Clears the text and the error (also hides the error popup). Then sets the InputField to Button State. */
+	/** Clears the text, the error (also hides the error popup), and sets the value to null. Then sets the InputField to Button State. */
 	public void clear() {
+		valueString = null;
+		valueSubmitted(true);
+		setText("");
+		observer.updateValue(null);
 		error(false);
 		setToButton(true);
 	}

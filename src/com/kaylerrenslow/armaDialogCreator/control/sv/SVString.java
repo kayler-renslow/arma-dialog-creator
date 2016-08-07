@@ -45,4 +45,16 @@ public final class SVString extends SerializableValue {
 	public String toString() {
 		return valuesAsArray[0];
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof SVString){
+			SVString other = (SVString) o;
+			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
+		}
+		return false;
+	}
 }

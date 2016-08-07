@@ -54,4 +54,9 @@ public final class SVBoolean extends SerializableValue {
 	public static SerializableValue get(boolean value) {
 		return value ? TRUE : FALSE;
 	}
+	
+	@Override
+	public boolean equals(Object o){
+		return o == this;
+	}
 }

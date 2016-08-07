@@ -14,6 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  Created by Kayler on 07/13/2016.
  */
@@ -55,6 +57,18 @@ public final class SVStringArray extends SerializableValue {
 		String[] copy = new String[valuesAsArray.length];
 		System.arraycopy(valuesAsArray, 0, copy, 0, copy.length);
 		return new SVStringArray(copy);
+	}
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof SVStringArray){
+			SVStringArray other = (SVStringArray) o;
+			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+		}
+		return false;
 	}
 	
 	

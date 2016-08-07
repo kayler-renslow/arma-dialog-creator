@@ -56,6 +56,7 @@ import java.util.List;
  Houses an accordion that allows manuipulating multiple control properties. The data editor for each control property is specialized for the input (e.g. color property gets color picker).
  Created on 07/08/2016. */
 public class ControlPropertiesEditorPane extends StackPane {
+	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private final Accordion accordion = new Accordion();
 	private @Nullable ControlClass control;
 	
@@ -359,7 +360,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			tooltip += "\n";
 		}
 		Tooltip tp = new Tooltip(tooltip);
-		tp.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20));
+		tp.setFont(TOOLTIP_FONT);
 		return tp;
 	}
 	
@@ -484,6 +485,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
 					if (newValue == null) {
+						toggleGroup.selectToggle(null);
 						return;
 					}
 					for (Toggle toggle : toggleGroup.getToggles()) {
@@ -547,6 +549,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 			if (control != null && control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
+				for (ControlStyle style : menuButton.getItems()) {
+					menuButton.bindTooltip(style, style.documentation);
+				}
 			}
 			this.controlProperty = controlProperty;
 			ControlStyleGroup group = (ControlStyleGroup) controlProperty.getValue();
@@ -650,9 +655,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlProperty = controlProperty;
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-			if (controlProperty.getValue() != null) {
-				inputField.setValue((C) controlProperty.getValue());
-			}
+			inputField.setValue((C) controlProperty.getValue());
 			inputField.getValueObserver().addValueListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
@@ -668,7 +671,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
 					if (controlProperty.getValue() != null) {
 						inputField.setToButton(false);
-						inputField.setText(controlProperty.getValue().toString());
+						inputField.setValue((C) controlProperty.getValue());
+					}else{
+						setValue(null);
 					}
 				}
 			});
@@ -805,11 +810,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 		
 		@Override
 		public void resetToDefaultValue() {
-			try {
-				colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
-			} catch (NullPointerException e) {
-				colorPicker.setValue(null);
+			if(controlProperty.getDefaultValue() == null){
+				setValue(null);
+				return;
 			}
+			AColor color = (AColor) controlProperty.getDefaultValue();
+			colorPicker.setValue(color.toJavaFXColor());
 		}
 		
 		@Override
@@ -859,9 +865,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					if (controlProperty.getValue() != null) {
-						choiceBox.setValue((SVBoolean) newValue);
-					}
+					choiceBox.setValue((SVBoolean) newValue);
 				}
 			});
 			
@@ -915,6 +919,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 		
 		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
+			if(true){
+				throw new RuntimeException("implement the rest of this code");
+			}
 			this.controlProperty = controlProperty;
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
@@ -926,7 +933,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				inputField = editors.get(i);
 				final int index = i;
 				if (isDefined) {
-					editors.get(i).setText(values[i]);
+					editors.get(i).setValue(values[i]);
 				}
 				
 				inputField.getValueObserver().addValueListener(new ValueListener() {
@@ -950,7 +957,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 							String[] values = newValue.getAsStringArray();
 							int i = 0;
 							for (InputField field : editors) {
-								field.setText(values[i++]);
+								field.setValue(values[i++]);
 							}
 						}
 					});
@@ -963,7 +970,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (controlProperty.getValue() != null) {
 						String[] values = newValue.getAsStringArray();
 						for (int i = 0; i < editors.size(); i++) {
-							editors.get(i).setValueFromText(values[i]);
+							editors.get(i).setValue(values[i]);
+						}
+					}else{
+						for (InputField<ArmaStringChecker, String> editor : editors) {
+							editor.setValue(null);
 						}
 					}
 				}
@@ -998,7 +1009,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				if (defaultValues[i] == null) {
 					editors.get(i).clear();
 				} else {
-					editors.get(i).setText(defaultValues[i]);
+					editors.get(i).setValue(defaultValues[i]);
 				}
 			}
 		}
@@ -1134,9 +1145,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 						inDb.clear();
 						inPitch.clear();
 					} else {
-						inSoundName.setText(sound.getSoundName());
-						inDb.setText(sound.getDb() + "");
-						inPitch.setText(sound.getPitch() + "");
+						inSoundName.setValue(sound.getSoundName());
+						inDb.setValue(sound.getDb());
+						inPitch.setValue(sound.getPitch());
 					}
 				}
 			});
@@ -1144,7 +1155,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		private void initInputField(InputField inputField, int typeIndex, Object defaultValue) {
-			inputField.setText(defaultValue.toString());
+			inputField.setValue(defaultValue);
 			switch (typeIndex) {
 				case NAME: {
 					name = defaultValue.toString();

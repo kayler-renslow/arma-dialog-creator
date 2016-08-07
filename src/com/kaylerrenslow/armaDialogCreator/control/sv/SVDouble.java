@@ -58,4 +58,10 @@ public final class SVDouble extends SVNumber {
 	public double getNumber() {
 		return d;
 	}
+	
+	/** use the equals method in {@link SerializableValue}*/
+	@Override
+	public boolean equals(Object o){
+		return super.equals(o);
+	}
 }

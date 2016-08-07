@@ -25,22 +25,26 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
-
+	
 	@Override
 	public AColor getValue() {
 		return colorPicker.getValue() == null ? null : new AColor(colorPicker.getValue());
 	}
-
+	
 	@Override
 	public void setValue(AColor val) {
-		colorPicker.setValue(val.toJavaFXColor());
+		if (val == null) {
+			colorPicker.setValue(null);
+		} else {
+			colorPicker.setValue(val.toJavaFXColor());
+		}
 	}
-
+	
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
 	}
-
+	
 	@Override
 	public void setToOverride(boolean override) {
 		masterPane.getChildren().clear();
@@ -50,7 +54,7 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 			masterPane.getChildren().add(colorPicker);
 		}
 	}
-
+	
 	@Override
 	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;

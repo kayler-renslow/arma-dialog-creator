@@ -108,7 +108,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	public void setValue(SVStringArray val) {
 		int i = 0;
 		for (String s : val.getAsStringArray()) {
-			editors.get(i++).setText(s);
+			editors.get(i++).setValue(s);
 		}
 	}
 	

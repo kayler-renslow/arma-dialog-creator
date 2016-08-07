@@ -14,6 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  @author Kayler
  Specifies a sound
@@ -116,5 +118,17 @@ public class ASound extends SerializableValue {
 	@Override
 	public String toString() {
 		return toArrayString();
+	}
+		
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof ASound){
+			ASound other = (ASound) o;
+			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+		}
+		return false;
 	}
 }

@@ -46,4 +46,17 @@ public abstract class SerializableValue {
 	
 	/** Return the instance as a deep copy */
 	public abstract SerializableValue deepCopy();
+	
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof SerializableValue){
+			SerializableValue other = (SerializableValue) o;
+			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+		}
+		return false;
+	}
 }

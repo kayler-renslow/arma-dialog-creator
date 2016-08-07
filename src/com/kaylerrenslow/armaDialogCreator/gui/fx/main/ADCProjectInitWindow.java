@@ -166,6 +166,8 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			tfProjectName.setPrefWidth(200d);
 			tfProjectDescription.setPrefWidth(250d);
 			
+			tfProjectName.setPromptText(Lang.ProjectInitWindow.UNTITLED);
+			
 			final VBox root = getTabVbox(10);
 			
 			final Label lblCreateNewProject = new Label(Lang.ProjectInitWindow.NEW_PROJECT_TITLE);

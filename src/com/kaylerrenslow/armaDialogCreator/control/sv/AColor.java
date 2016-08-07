@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 /**
  @author Kayler
@@ -39,8 +40,6 @@ public class AColor extends SerializableValue {
 	
 	/** Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
 	protected double[] color = new double[4];
-	
-	private final String[] asArray = new String[4];
 	
 	
 	/**
@@ -229,6 +228,19 @@ public class AColor extends SerializableValue {
 			javafxColor = Color.color(getRed(), getGreen(), getBlue(), getAlpha());
 		}
 		return javafxColor;
+	}
+	
+	
+	@Override
+	public boolean equals(Object o){
+		if(o == this){
+			return true;
+		}
+		if(o instanceof AColor){
+			AColor other = (AColor) o;
+			return Arrays.equals(this.color, other.color);
+		}
+		return false;
 	}
 	
 	/**

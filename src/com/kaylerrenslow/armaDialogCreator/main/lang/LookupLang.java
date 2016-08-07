@@ -127,5 +127,48 @@ public interface LookupLang {
 		String MB_BUTTON_OK = "Message Box OK";
 		String MB_BUTTON_CANCEL = "Message Box Cancel";
 		String MB_BUTTON_USER = "Message Box User";
+		
+		interface Doc {
+			String NO_DOC = "No documentation.";
+			String POS = null;
+			String HPOS = null;
+			String VPOS = null;
+			String LEFT = "Text is left-aligned.";
+			String RIGHT = "Text is right-aligned.";
+			String CENTER = "Text is center-aligned.";
+			String DOWN = null;
+			String UP = null;
+			String VCENTER = null;
+			String TYPE = null;
+			String SINGLE = null;
+			String MULTI = "Text can be placed on more than one lines.";
+			String TITLE_BAR = null;
+			String PICTURE = "The 'text' property will read as a link to an image or video file.";
+			String FRAME = "A border line is drawn around control.";
+			String BACKGROUND = null;
+			String GROUP_BOX = null;
+			String GROUP_BOX2 = null;
+			String HUD_BACKGROUND = null;
+			String TILE_PICTURE = null;
+			String WITH_RECT = "Border is drawn around control and background color becomes invisible.";
+			String LINE = "Draws a line from [x,y] to [x+w, y+h].";
+			String SHADOW = "Black drop shadow is placed behind text. (Deprecated-use control property shadow).";
+			String NO_RECT = "If used with multi-line (16), this will suppress border drawn by multi-line controls.";
+			String KEEP_ASPECT_RATIO = "Image/video will retrain it's original proportions.";
+			String TITLE = null;
+			String SL_DIR = null;
+			String SL_VERT = "Orientation of slider is vertical.";
+			String SL_HORZ = "Orientation of slider is horizontal.";
+			String SL_TEXTURES = null;
+			String VERTICAL = null;
+			String HORIZONTAL = null;
+			String LB_TEXTURES = "Solid scrollbar.";
+			String LB_MULTI = "Multiple items can be selected.";
+			String TR_SHOWROOT = "Show the root node.";
+			String TR_AUTOCOLLAPSE = "Only one branch can be expanded.";
+			String MB_BUTTON_OK = null;
+			String MB_BUTTON_CANCEL = null;
+			String MB_BUTTON_USER = null;
+		}
 	}
 }

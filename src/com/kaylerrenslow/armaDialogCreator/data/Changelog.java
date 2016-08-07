@@ -51,30 +51,33 @@ public class Changelog {
 	public void addChange(Change change) {
 		hadChanges = true;
 		undo.addFirst(change);
-		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 		if (undo.size() >= maxChanges) {
 			while (undo.size() >= maxChanges) {
 				undo.removeLast();
 			}
 		}
+		redo.clear();
+		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 	}
 	
-	public void undo() {
+	public void undo() throws ChangeUpdateFailedException{
 		if (undo.size() == 0) {
 			return;
 		}
 		Change undid = undo.removeFirst();
-		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
 		redo.add(undid);
+		undid.getRegistrar().undo(undid);
+		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
 	}
 	
-	public void redo() {
+	public void redo() throws ChangeUpdateFailedException {
 		if (redo.size() == 0) {
 			return;
 		}
 		Change c = redo.removeFirst();
-		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
 		undo.add(c);
+		c.getRegistrar().redo(c);
+		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
 	}
 	
 	@Nullable

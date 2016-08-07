@@ -22,14 +22,18 @@ import java.util.ArrayList;
 public class ValueObserver<V> {
 	private V value;
 	private ArrayList<ValueListener<V>> listeners = new ArrayList<>();
-
+	
 	public ValueObserver(V value) {
 		this.value = value;
 	}
-
-	/** Update the value and notify the value listener. The listeners will only be notified if the value is not equal (via {@link #equals(Object)}).  */
+	
+	/**
+	 Update the value and notify the value listener. The listeners will only be notified if the value is not equal (via {@link #equals(Object)}).
+	 
+	 @param newValue new value to set to
+	 */
 	public void updateValue(@Nullable V newValue) {
-		if((newValue == null && this.value == null) || (newValue != null && newValue.equals(this.value))){
+		if ((newValue == null && this.value == null) || (newValue != null && newValue.equals(this.value))) {
 			return;
 		}
 		V oldValue = this.value;
@@ -38,19 +42,19 @@ public class ValueObserver<V> {
 			listener.valueUpdated(this, oldValue, this.value);
 		}
 	}
-
+	
 	/** Set the listener that listens to the state of the value */
 	public void addValueListener(@NotNull ValueListener<V> listener) {
 		this.listeners.add(listener);
 	}
-
+	
 	/** Remove the listener from the list. Returns true if the listener was inside the list */
 	public boolean removeListener(ValueListener<V> listener) {
 		return listeners.remove(listener);
 	}
-
+	
 	public V getValue() {
 		return value;
 	}
-
+	
 }

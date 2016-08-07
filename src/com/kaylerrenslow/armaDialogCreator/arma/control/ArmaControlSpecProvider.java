@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecificationProvider;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -58,5 +59,9 @@ public class ArmaControlSpecProvider implements ControlClassSpecificationProvide
 	@Override
 	public ControlPropertyLookup[] getOptionalProperties() {
 		return DEFAULT_OPTIONAL_PROPERTIES;
+	}
+	
+	public ControlStyle[] getAllowedStyles(){
+		return ControlStyle.EMPTY;
 	}
 }
