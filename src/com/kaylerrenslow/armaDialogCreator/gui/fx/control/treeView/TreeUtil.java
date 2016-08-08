@@ -43,7 +43,8 @@ public class TreeUtil {
 	}
 
 	/**
-	 Goes through all the descendants of startItem and for each descendant it calls foundAction.found with the descendant as its parameter.
+	 Goes through all the descendants of startItem and for each descendant it calls foundAction.found with the descendant as its parameter.<br>
+	 Uses recursive DFS as traversal algorithm.
 
 	 @param startItem where to start the stepping
 	 @param foundAction action to run for each descendant

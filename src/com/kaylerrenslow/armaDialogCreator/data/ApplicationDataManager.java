@@ -24,8 +24,19 @@ import java.io.IOException;
  Created on 05/26/2016. */
 public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
-	public final ApplicationData applicationData = new ApplicationData();
+	private ApplicationData applicationData;
 	
+	public void setApplicationData(@NotNull ApplicationData applicationData) {
+		this.applicationData = applicationData;
+	}
+	
+	@NotNull
+	public ApplicationData getApplicationData() {
+		if (applicationData == null) {
+			throw new IllegalStateException("application data should be set before accessed");
+		}
+		return applicationData;
+	}
 	
 	/** Set the application save data directory to a new one. Automatically updates application properties. */
 	public void setAppSaveDataLocation(@NotNull File file) {
@@ -67,6 +78,9 @@ public class ApplicationDataManager {
 	
 	/** Saves the project. If exception is thrown, project wasn't successfully saved. */
 	public void saveProject() throws IOException {
+		if (applicationData == null) {
+			return;
+		}
 		Project project = applicationData.getCurrentProject();
 		if (!project.getProjectSaveDirectory().exists()) {
 			project.getProjectSaveDirectory().mkdir();

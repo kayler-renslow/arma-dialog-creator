@@ -66,8 +66,16 @@ public class ProjectSaveXmlWriter {
 	private void writeDisplay(@NotNull FileOutputStream fos, @NotNull ArmaDisplay editingDisplay) throws IOException {
 		fos.write(String.format("<display idd='%d'>", editingDisplay.getIdd()).getBytes());
 		
-		for (ArmaControl control : editingDisplay.getControls()) {
+		for (ArmaControl control : editingDisplay.getBackgroundControls()) {
+			fos.write("<display-controls type='background'>".getBytes());
 			writeControl(fos, control);
+			fos.write("</display-controls>".getBytes());
+		}
+		
+		for (ArmaControl control : editingDisplay.getControls()) {
+			fos.write("<display-controls type='main'>".getBytes());
+			writeControl(fos, control);
+			fos.write("</display-controls>".getBytes());
 		}
 		
 		fos.write("</display>".getBytes());
@@ -85,14 +93,19 @@ public class ProjectSaveXmlWriter {
 				control.getType().typeId,
 				control.getClassName(),
 				control.getExtendControl() != null ? control.getExtendControl().getClassName() : ""
-		).getBytes());
+				).getBytes()
+		);
 		
 		//write control properties
 		if (control.getMissingRequiredProperties().size() != 0) {
 			throw new XmlWriteException(String.format(Lang.XmlWrite.ProjectSave.CONTROL_PROPERTIES_MISSING_F, control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
-			fos.write(String.format("<control-property lookup-id='%d'>", cprop.getPropertyLookup().propertyId).getBytes());
+			fos.write(String.format("<control-property lookup-id='%d' macroKey='%s'>",
+							cprop.getPropertyLookup().propertyId,
+							cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
+					).getBytes()
+			);
 			if (cprop.getValue() == null) {
 				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getAllDefinedProperties())");
 			}
@@ -106,7 +119,7 @@ public class ProjectSaveXmlWriter {
 			}
 		}
 		
-		fos.write(("</"+(controlGroup ? controlGroupStr : controlStr)+">").getBytes());
+		fos.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">").getBytes());
 	}
 	
 	private void writeMacros(@NotNull FileOutputStream fos) throws IOException {

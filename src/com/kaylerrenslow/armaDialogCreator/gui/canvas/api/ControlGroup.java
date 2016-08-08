@@ -10,9 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+
 /**
  Created by Kayler on 08/04/2016.
  */
-public interface ControlGroup extends Control, ControlHolder{
+public interface ControlGroup extends Control, ControlHolder<ArmaControl>{
 	
 }

@@ -10,14 +10,19 @@
 
 package com.kaylerrenslow.armaDialogCreator.util;
 
+import org.intellij.lang.annotations.Flow;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  @author Kayler
  Creates a wrapper around a list such that it is read only
  Created on 06/07/2016. */
-public class ReadOnlyList<E> implements Iterable<E>{
+public class ReadOnlyList<E> implements List<E>{
 	private final List<E> dataList;
 
 	public ReadOnlyList(List<E> dataList) {
@@ -39,9 +44,104 @@ public class ReadOnlyList<E> implements Iterable<E>{
 	public E get(int index) {
 		return dataList.get(index);
 	}
-
+	
+	@Override
+	public E set(int index, @Flow(targetIsContainer = true) E element) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void add(int index, @Flow(targetIsContainer = true) E element) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public E remove(int index) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public int indexOf(Object o) {
+		return dataList.indexOf(o);
+	}
+	
+	@Override
+	public int lastIndexOf(Object o) {
+		return dataList.lastIndexOf(o);
+	}
+	
+	@Override
+	public @NotNull ListIterator<E> listIterator() {
+		return (ListIterator<E>) dataList.iterator();
+	}
+	
+	@NotNull
+	@Override
+	public ListIterator<E> listIterator(int index) {
+		return dataList.listIterator(index);
+	}
+	
+	@NotNull
+	@Override
+	public List<E> subList(int fromIndex, int toIndex) {
+		return dataList.subList(fromIndex, toIndex);
+	}
+	
+	@NotNull
 	public Iterator<E> iterator(){
 		return dataList.iterator();
+	}
+	
+	@NotNull
+	@Override
+	public Object[] toArray() {
+		return dataList.toArray();
+	}
+	
+	@NotNull
+	@Override
+	public <T> T[] toArray(T[] a) {
+		return dataList.toArray(a);
+	}
+	
+	@Override
+	public boolean add(@Flow(targetIsContainer = true) E e) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean remove(Object o) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean containsAll(Collection<?> c) {
+		return dataList.containsAll(c);
+	}
+	
+	@Override
+	public boolean addAll(@Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends E> c) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean addAll(int index, @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends E> c) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean removeAll(Collection<?> c) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean retainAll(Collection<?> c) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public void clear() {
+		throw new UnsupportedOperationException();
 	}
 	
 	@Override

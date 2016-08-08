@@ -23,24 +23,32 @@ import java.util.List;
 public class XmlUtil {
 	
 	/**
-	 Get all children with the given tagName (if tagName.equals("*"), will return {@link Element#getChildNodes()}).
+	 Get all children with the given tagName. If tagName.equals("*"), will return all child elements.
 	 
 	 @param element element to get children with tag name of
 	 @param tagName tag name to search for
 	 @return NodeList containing nodes with the tag name
 	 */
-	public static NodeList getChildElementsWithTagName(Element element, String tagName) {
+	public static List<Element> getChildElementsWithTagName(Element element, String tagName) {
+		ArrayList<Element> elements = new ArrayList<>();
 		if (tagName.equals("*")) {
-			return element.getChildNodes();
-		}
-		ArrayList<Node> nodes = new ArrayList<>(element.getChildNodes().getLength());
-		for (int i = 0 ; i < element.getChildNodes().getLength(); i++) {
-			Node node = element.getChildNodes().item(i);
-			if (node.getNodeName().equals(tagName)) {
-				nodes.add(node);
+			NodeList list = element.getChildNodes();
+			for (int i = 0; i < list.getLength(); i++) {
+				if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
+					elements.add((Element) list.item(i));
+				}
+			}
+		} else {
+			for (int i = 0; i < element.getChildNodes().getLength(); i++) {
+				Node node = element.getChildNodes().item(i);
+				if (node.getNodeType() == Node.ELEMENT_NODE) {
+					if (node.getNodeName().equals(tagName)) {
+						elements.add((Element) node);
+					}
+				}
 			}
 		}
-		return new SimpleNodeList(nodes);
+		return elements;
 	}
 	
 	/** Get the text content of the given node but not the node's descendant nodes' text concatenated with it. */

@@ -8,18 +8,11 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
-
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+package com.kaylerrenslow.armaDialogCreator.main;
 
 /**
- Created by Kayler on 05/20/2016.
+ Created by Kayler on 08/07/2016.
  */
-public class FileCloseProjectAction implements EventHandler<ActionEvent> {
-	@Override
-	public void handle(ActionEvent event) {
-		ArmaDialogCreator.loadNewProject();
-	}
+public interface ApplicationLoadListener {
+	void loaded(ApplicationLoader.ApplicationLoadConfig config);
 }

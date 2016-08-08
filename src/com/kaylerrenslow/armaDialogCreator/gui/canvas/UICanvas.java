@@ -41,7 +41,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
-	protected @NotNull Display display;
+	protected @NotNull Display<? extends Control> display;
 		
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -64,7 +64,7 @@ public abstract class UICanvas extends AnchorPane {
 		}
 	};
 	
-	public UICanvas(@NotNull Resolution resolution, @NotNull Display display) {
+	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends Control> display) {
 		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
 			@Override
 			public void update(Resolution newResolution) {
@@ -102,7 +102,7 @@ public abstract class UICanvas extends AnchorPane {
 		return (int) this.canvas.getHeight();
 	}
 	
-	public void setDisplay(@NotNull Display display) {
+	public void setDisplay(@NotNull Display<? extends Control> display) {
 		this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
 		this.display = display;
 		this.display.getUpdateListenerGroup().addListener(displayListener);

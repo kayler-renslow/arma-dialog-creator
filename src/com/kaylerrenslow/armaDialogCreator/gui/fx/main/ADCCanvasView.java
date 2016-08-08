@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.Selection;
@@ -165,6 +166,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public void updateAbsRegion(int alwaysFront, int showing) {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
+	}
+	
+	@Override
+	public void setTreeStructure(TreeStructure<TreeItemEntry> treeStructure) {
+		canvasControls.getTreeViewMain().loadStructure(treeStructure);
 	}
 	
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {

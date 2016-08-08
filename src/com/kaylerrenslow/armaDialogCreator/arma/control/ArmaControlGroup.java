@@ -17,7 +17,6 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -71,28 +70,22 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup{
 	}
 	
 	@Override
-	public void addControl(Control control) {
-		if(!(control instanceof ArmaControl)){
-			throw new IllegalArgumentException("control does not extend ArmaControl");
-		}
-		controls.add((ArmaControl) control);
+	public void addControl(ArmaControl control) {
+		controls.add(control);
 	}
 	
 	@Override
-	public void addControl(int index, Control toAdd) {
-		if(!(toAdd instanceof ArmaControl)){
-			throw new IllegalArgumentException("toAdd does not extend ArmaControl");
-		}
-		controls.add(index, (ArmaControl) toAdd);
+	public void addControl(int index, ArmaControl toAdd) {
+		controls.add(index, toAdd);
 	}
 	
 	@Override
-	public int indexOf(Control control) {
+	public int indexOf(ArmaControl control) {
 		return controls.indexOf(control);
 	}
 	
 	@Override
-	public boolean removeControl(Control control) {
+	public boolean removeControl(ArmaControl control) {
 		return controls.remove(control);
 	}
 }

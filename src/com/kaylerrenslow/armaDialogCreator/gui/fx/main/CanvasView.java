@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -37,4 +39,6 @@ public interface CanvasView {
 	 @param showing true the region is showing, false if not
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
+	
+	void setTreeStructure(TreeStructure<TreeItemEntry> treeStructure);
 }

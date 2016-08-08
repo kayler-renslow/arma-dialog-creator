@@ -1,4 +1,4 @@
-FEATURES:
+Features:
 -----------------------------------
 >for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
     There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and value(s)
@@ -12,7 +12,7 @@ FEATURES:
 >for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
 >have help button implementation for all popups
 
-GENERAL:
+General:
 -----------------------------------
 >create documentation for all java classes and **well** document it
 >when choosing a macro in control property editor, there should be a way to take off the macro (use controlProperty.setToMacro(null))
@@ -21,14 +21,14 @@ GENERAL:
 >Arma 3 won't allow .png images. All images must be .paa, or .jpg. When we do an export, convert all .png to .paa
     it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
->for project saving, list the control property's macro and if it is using it
 >preview's resolution should be independent from the editor.
 >!!!!when saving/loading, make sure to include the folders
+>for extending control, make sure that you implement the xml loading feature to set extended control as well
 
-BUGS:
+Bugs:
 -----------------------------------
 >ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
 >select many things in tree view and drag into folder
->have check box for "is background control" in control properties popup
 >!!!!!!!!!!!!fix adding controls to tree view resulting in wrong render order or an exception
 >converting paa doesn't work
+>choosing custom color for "change colors" popup crashes

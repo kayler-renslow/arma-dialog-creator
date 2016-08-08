@@ -1,0 +1,99 @@
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+ */
+
+package com.kaylerrenslow.armaDialogCreator.util;
+
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ @author Kayler
+ An iterator used to iterate over all elements across several lists. In times where merging is expensive, this is a cheap way of iterating over each of the items
+ Created on 08/07/2016. */
+public class ListMergeIterator<E, L extends List<E>> implements Iterator<E> {
+	private final boolean backwards;
+	private int ind;
+	private final LinkedList<L> stack = new LinkedList<>();
+	private List<E> current;
+	
+	/**
+	 @param backwards if true, will iterate starting from list at lists.size-1 to 0. For each list being iterated, the list iteration itself will start at index list.size-1 and end at 0.<br>
+	 @param lists lists to iterate over
+	 If backwards is false, will iterate over the lists from index 0 to size - 1. For each list being iterated, will be iterated from index 0 to list.size - 1
+	 */
+	public ListMergeIterator(boolean backwards, L[] lists) {
+		this.backwards = backwards;
+		if (backwards) {
+			for (int i = lists.length - 1; i >= 0; i--) {
+				stack.push(lists[i]);
+			}
+			
+			ind = stack.peek().size() - 1;
+		} else {
+			for (int i = 0; i < lists.length; i++) {
+				stack.push(lists[i]);
+			}
+			ind = 0;
+		}
+		current = stack.pop();
+	}
+	
+	@Override
+	public boolean hasNext() {
+		if (backwards) {
+			if (ind >= 0) {
+				return true;
+			}
+			boolean hasAnotherInd = false;
+			for (List<E> list : stack) {
+				if (list.size() != 0) {
+					hasAnotherInd = true;
+					break;
+				}
+			}
+			return hasAnotherInd;
+		}
+		if (stack.size() == 0) {
+			return false;
+		}
+		if (ind < current.size()) {
+			return true;
+		}
+		boolean hasAnotherInd = false;
+		for (List<E> list : stack) {
+			if (list.size() != 0) {
+				hasAnotherInd = true;
+				break;
+			}
+		}
+		return hasAnotherInd;
+	}
+	
+	
+	@Override
+	public E next() {
+		if (!hasNext()) {
+			throw new IllegalStateException("nothing left to fetch");
+		}
+		if (backwards) {
+			while (ind < 0 && stack.size() > 0) {
+				current = stack.pop();
+				ind = current.size() - 1;
+			}
+			return current.get(ind--);
+		}
+		while (ind >= current.size()) {
+			current = stack.pop();
+			ind = 0;
+		}
+		return current.get(ind++);
+	}
+}

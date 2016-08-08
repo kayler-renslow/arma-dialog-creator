@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -45,9 +46,13 @@ import java.util.LinkedList;
 public class ADCProjectInitWindow extends StagePopup<VBox> {
 	private final LinkedList<ProjectInitTab> initTabs = new LinkedList<>();
 	private final TabPane tabPane = new TabPane();
+	private final DataContext projectLoadContext;
+	private final File appSaveDirectory;
 	
-	public ADCProjectInitWindow() {
+	public ADCProjectInitWindow(DataContext projectLoadContext, File appSaveDirectory) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ProjectInitWindow.WINDOW_TITLE);
+		this.projectLoadContext = projectLoadContext;
+		this.appSaveDirectory = appSaveDirectory;
 		myRootElement.setPadding(new Insets(10));
 		
 		//header
@@ -68,9 +73,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 	}
 	
 	private void initTabPane() {
-		initTabs.add(new NewProjectTab());
-		initTabs.add(new TabOpen());
-		//		initTabs.add(new ImportTab());
+		initTabs.add(new NewProjectTab(this));
+		initTabs.add(new TabOpen(this));
+//				initTabs.add(new ImportTab(this));
 		
 		final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
 			@Override
@@ -162,7 +167,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		private final TextField tfProjectName = new TextField();
 		private final TextField tfProjectDescription = new TextField();
 		
-		public NewProjectTab() {
+		public NewProjectTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tfProjectName.setPrefWidth(200d);
 			tfProjectDescription.setPrefWidth(250d);
 			
@@ -202,10 +207,12 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		private final Tab tabOpen = new Tab(Lang.ProjectInitWindow.TAB_OPEN);
 		private final ListView<Project> lvKnownProjects = new ListView<>();
+		private final ADCProjectInitWindow projectInitWindow;
 		private LinkedList<ProjectXmlLoader.ProjectParseResult> parsedKnownProjects = new LinkedList<>();
-		private Project selectedProject;
+		private ProjectXmlLoader.ProjectParseResult selectedParsedProject;
 		
-		public TabOpen() {
+		public TabOpen(ADCProjectInitWindow projectInitWindow) {
+			this.projectInitWindow = projectInitWindow;
 			btnOkEnabledObserver.updateValue(false);
 			final VBox root = getTabVbox(10d);
 			tabOpen.setContent(root);
@@ -217,7 +224,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				@Override
 				public void handle(ActionEvent event) {
 					FileChooser fc = new FileChooser();
-					fc.setInitialDirectory(ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+					fc.setInitialDirectory(projectInitWindow.appSaveDirectory);
 					fc.setTitle(Lang.ProjectInitWindow.FC_LOCATE_PROJECT_TITLE);
 					fc.getExtensionFilters().add(Lang.ProjectInitWindow.FC_FILTER);
 					
@@ -227,7 +234,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					}
 					ProjectXmlLoader.ProjectParseResult result;
 					try {
-						result = ProjectXmlLoader.parse(ArmaDialogCreator.getApplicationData(), chosen);
+						result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, chosen);
 					} catch (XmlParseException e) {
 						return;
 					}
@@ -245,22 +252,32 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Project>() {
 				@Override
 				public void changed(ObservableValue<? extends Project> observable, Project oldValue, Project selected) {
-					selectedProject = selected;
+					boolean matched = false;
+					for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
+						if (result.getProject() == selected) {
+							selectedParsedProject = result;
+							matched = true;
+							break;
+						}
+					}
+					if (!matched) {
+						throw new IllegalStateException("parsed project should have been matched");
+					}
 					btnOkEnabledObserver.updateValue(selected != null);
 				}
 			});
 		}
 		
 		private Node initKnownProjects() {
-			fetchProjects(parsedKnownProjects);
+			fetchProjects();
 			for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
 				lvKnownProjects.getItems().add(result.getProject());
 			}
 			return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
 		}
 		
-		private void fetchProjects(LinkedList<ProjectXmlLoader.ProjectParseResult> knownProjects) {
-			File[] files = ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory().listFiles();
+		private void fetchProjects() {
+			File[] files = projectInitWindow.appSaveDirectory.listFiles();
 			if (files != null) {
 				for (File f : files) {
 					if (f.isDirectory()) {
@@ -275,8 +292,8 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 						}
 						for (File projectFile : projectFiles) {
 							try {
-								ProjectXmlLoader.ProjectParseResult result = ProjectXmlLoader.parse(ArmaDialogCreator.getApplicationData(), projectFile);
-								knownProjects.add(result);
+								ProjectXmlLoader.ProjectParseResult result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, projectFile);
+								parsedKnownProjects.add(result);
 							} catch (XmlParseException e) {
 								continue;
 							}
@@ -288,15 +305,14 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		@Override
 		boolean prepareProject() {
-			for (ProjectXmlLoader.ProjectParseResult parseResult : parsedKnownProjects) {
-				if (parseResult.getProject() == selectedProject) {
-					if (parseResult.getErrors().size() > 0) {
-						new ProjectImproperResultPopup(parseResult).showAndWait();
-						for (ParseError error : parseResult.getErrors()) {
-							if (!error.recovered()) {
-								return false;
-							}
-						}
+			if(selectedParsedProject == null){
+				throw new IllegalStateException("prepareProject should be invoked when project has been selected.");
+			}
+			if (selectedParsedProject.getErrors().size() > 0) {
+				new ProjectImproperResultPopup(selectedParsedProject).showAndWait();
+				for (ParseError error : selectedParsedProject.getErrors()) {
+					if (!error.recovered()) {
+						return false;
 					}
 				}
 			}
@@ -305,7 +321,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		@Override
 		public ProjectInit getResult() {
-			return new ProjectInit.OpenProject(selectedProject);
+			return new ProjectInit.OpenProject(selectedParsedProject);
 		}
 		
 		@Override
@@ -359,7 +375,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		private final Tab tabImport = new Tab(Lang.ProjectInitWindow.TAB_IMPORT);
 		
-		public ImportTab() {
+		public ImportTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tabImport.setUserData(Lang.ProjectInitWindow.IMPORT_PROJECT_OK);
 			final VBox root = getTabVbox(20);
 			final Label lblOpenProject = new Label(Lang.ProjectInitWindow.IMPORT_PROJECT_TITLE);
@@ -406,14 +422,18 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 		
 		class OpenProject implements ProjectInit {
-			private final Project project;
+			private final ProjectXmlLoader.ProjectParseResult parseResult;
 			
-			public OpenProject(Project project) {
-				this.project = project;
+			public OpenProject(ProjectXmlLoader.ProjectParseResult parseResult) {
+				this.parseResult = parseResult;
+			}
+			
+			public ProjectXmlLoader.ProjectParseResult getParseResult() {
+				return parseResult;
 			}
 			
 			public Project getProject() {
-				return project;
+				return parseResult.getProject();
 			}
 		}
 		

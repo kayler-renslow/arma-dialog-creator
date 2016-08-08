@@ -18,6 +18,8 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoadListener;
+import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoader;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
@@ -29,13 +31,19 @@ import org.jetbrains.annotations.Nullable;
  Created on 06/07/2016. */
 public class ApplicationData extends DataContext {
 	
-	ApplicationData() {
+	private Project currentProject;
+	private final Changelog changelog = new Changelog(20);
+	
+	public ApplicationData(@NotNull ApplicationLoader.ApplicationLoadRequest request) {
+		request.addOnComplete(new ApplicationLoadListener() {
+			@Override
+			public void loaded(ApplicationLoader.ApplicationLoadConfig config) {
+				setCurrentProject(config.getNewProject());
+			}
+		});
 		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT));
 		put(DataKeys.ENV, globalEnv);
 	}
-	
-	private Project currentProject;
-	private final Changelog changelog = new Changelog(20);
 	
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
@@ -72,9 +80,6 @@ public class ApplicationData extends DataContext {
 		return currentProject;
 	}
 	
-	public void setCurrentProject(@NotNull Project currentProject) {
-		this.currentProject = currentProject;
-	}
 	
 	/**
 	 Get the {@link Env} instance used for converting identifiers that match any Macro instances key retrieved from {@link Macro#getKey()}. The identifiers can also be
@@ -85,11 +90,17 @@ public class ApplicationData extends DataContext {
 	 {@link PositionCalculator#SAFE_ZONE_X_ABS},
 	 {@link PositionCalculator#SAFE_ZONE_W_ABS},
 	 */
+	@NotNull
 	public Env getGlobalExpressionEnvironment() {
 		return globalEnv;
 	}
 	
+	@NotNull
 	public Changelog getChangelog() {
 		return changelog;
+	}
+	
+	private void setCurrentProject(Project currentProject) {
+		this.currentProject = currentProject;
 	}
 }

@@ -21,17 +21,19 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlGroupTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
-import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -56,16 +58,22 @@ public class ProjectXmlLoader extends XmlLoader {
 	@NotNull
 	public static ProjectParseResult parse(@NotNull DataContext context, @NotNull File projectSaveXml) throws XmlParseException {
 		ProjectXmlLoader loader = new ProjectXmlLoader(projectSaveXml, context, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
-		return new ProjectParseResult(loader.parseDocument(), loader.getErrors());
+		return new ProjectParseResult(loader.parseDocument(), loader.treeStructureMain, loader.getErrors());
 	}
 	
 	public static class ProjectParseResult extends XmlLoader.ParseResult {
 		
 		private final Project project;
+		private final TreeStructure<TreeItemEntry> treeStructure;
 		
-		private ProjectParseResult(Project project, ArrayList<ParseError> errors) {
+		private ProjectParseResult(Project project, TreeStructure<TreeItemEntry> treeStructure, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;
+			this.treeStructure = treeStructure;
+		}
+		
+		public TreeStructure<TreeItemEntry> getTreeStructure() {
+			return treeStructure;
 		}
 		
 		public Project getProject() {
@@ -74,49 +82,44 @@ public class ProjectXmlLoader extends XmlLoader {
 		
 	}
 	
+	private TreeStructure<TreeItemEntry> treeStructureMain = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
+	private TreeStructure<TreeItemEntry> treeStructureBg = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
+	
 	private ProjectXmlLoader(@NotNull File projectSaveXml, @NotNull DataContext context, @NotNull Key<?>... requiredKeys) throws XmlParseException {
 		super(projectSaveXml, context, requiredKeys);
 	}
 	
 	@Nullable
 	private Project parseDocument() throws XmlParseException {
-		String projectName = document.getDocumentElement().getAttribute("name");
-		Project project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
-		fetchMacros(project.getMacroRegistry().getMacros());
-		ArmaDisplay editingDisplay = fetchEditingDisplay();
-		if (editingDisplay != null) {
-			project.setEditingDisplay(editingDisplay);
+		try {
+			String projectName = document.getDocumentElement().getAttribute("name");
+			Project project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+			fetchMacros(project.getMacroRegistry().getMacros());
+			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros());
+			if (editingDisplay != null) {
+				project.setEditingDisplay(editingDisplay);
+			}
+			project.setProjectDescription(getProjectDescription());
+			return project;
+		} catch (Exception e) {
+			throw new XmlParseException(e.getMessage());
 		}
-		project.setProjectDescription(getProjectDescription());
-		return project;
 	}
 	
 	private String getProjectDescription() {
-		NodeList descriptionNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
-		for (int i = 0; i < descriptionNodeList.getLength(); i++) {
-			if (descriptionNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				Element descElement = (Element) descriptionNodeList.item(i);
-				return XmlUtil.getImmediateTextContent(descElement);
-			}
+		List<Element> descriptionElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
+		if (descriptionElements.size() > 0) {
+			return XmlUtil.getImmediateTextContent(descriptionElements.get(0));
 		}
 		return null;
 	}
 	
 	private List<Macro> fetchMacros(List<Macro> macros) {
-		NodeList macrosNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macro");
-		for (int i = 0; i < macrosNodeList.getLength(); i++) {
-			Node macrosNode = macrosNodeList.item(i);
-			if (macrosNode.getNodeType() != Node.ELEMENT_NODE) {
-				continue;
-			}
-			NodeList macroList = macrosNode.getChildNodes();
-			
-			for (int macroInd = 0; macroInd < macroList.getLength(); macroInd++) {
-				Node macroNode = macroList.item(macroInd);
-				if (macroNode.getNodeType() != Node.ELEMENT_NODE) {
-					continue;
-				}
-				Element macroElement = (Element) macroNode;
+		List<Element> macrosGroupElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macros");
+		List<Element> macroElements;
+		for (Element macrosGroupElement : macrosGroupElements) {
+			macroElements = XmlUtil.getChildElementsWithTagName(macrosGroupElement, "macro");
+			for (Element macroElement : macroElements) {
 				String key = macroElement.getAttribute("key");
 				String type = macroElement.getAttribute("type");
 				String comment = macroElement.getAttribute("comment");
@@ -142,62 +145,86 @@ public class ProjectXmlLoader extends XmlLoader {
 		return macros;
 	}
 	
-	private ArmaDisplay fetchEditingDisplay() {
-		NodeList displayNodeList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "display");
-		
-		Element displayElement = null;
-		for (int i = 0; i < displayNodeList.getLength(); i++) {
-			if (displayNodeList.item(i).getNodeType() == Node.ELEMENT_NODE) {
-				displayElement = (Element) displayNodeList.item(i);
-				break;
+	private ArmaDisplay fetchEditingDisplay(List<Macro> macros) {
+		List<Element> displayElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "display");
+		for (Element displayElement : displayElements) {
+			int idd;
+			String iddStr = displayElement.getAttribute("idd");
+			try {
+				idd = Integer.parseInt(iddStr);
+			} catch (NumberFormatException ex) {
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_IDD_F, iddStr), ParseError.genericRecover("-1")));
+				idd = -1;
 			}
+			
+			ArmaDisplay display = new ArmaDisplay(idd);
+			List<Element> displayControlElements = XmlUtil.getChildElementsWithTagName(displayElement, "display-controls");
+			List<ArmaControl> controls;
+			String controlsType;
+			for (Element displayControlElement : displayControlElements) {
+				controlsType = displayControlElement.getAttribute("type");
+				switch (controlsType) {
+					case "background": {
+						controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros);
+						for (ArmaControl control : controls) {
+							display.addBackgroundControl(control);
+						}
+						break;
+					}
+					case "main": {
+						controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros);
+						for (ArmaControl control : controls) {
+							display.addControl(control);
+						}
+						break;
+					}
+				}
+			}
+			return display;
 		}
-		if (displayElement == null) {
-			return null;
-		}
-		int idd;
-		String iddStr = displayElement.getAttribute("idd");
-		try {
-			idd = Integer.parseInt(iddStr);
-		} catch (NumberFormatException ex) {
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_IDD_F, iddStr), ParseError.genericRecover("-1")));
-			idd = -1;
-		}
-		
-		ArmaDisplay display = new ArmaDisplay(idd);
-		List<ArmaControl> controls = getControls(displayElement);
-		for(ArmaControl control : controls){
-			display.addControl(control);
-		}
-		
-		return display;
+		return null;
 	}
 	
-	private List<ArmaControl> getControls(Element parentElement) {
+	private List<ArmaControl> buildStructureAndGetControls(TreeStructure.TreeNode<TreeItemEntry> parent, Element parentElement, List<Macro> macros) {
 		List<ArmaControl> controls = new LinkedList<>();
-		NodeList tagsNodeList = XmlUtil.getChildElementsWithTagName(parentElement, "*");
-		Node tagNode;
-		Element controlElement;
-		for (int tagInd = 0; tagInd < tagsNodeList.getLength(); tagInd++) {
-			tagNode = tagsNodeList.item(tagInd);
-			if (tagNode.getNodeType() != Node.ELEMENT_NODE || (!tagNode.getNodeName().equals("control") && !tagNode.getNodeName().equals("control-group"))) {
-				continue;
-			}
-			controlElement = (Element) tagNode;
-			ArmaControl control;
-			if (controlElement.getTagName().equals("control-group")) {
-				control = getControl(controlElement, true);
-				if (control == null) {
-					return controls;
+		List<Element> tagElements = XmlUtil.getChildElementsWithTagName(parentElement, "*");
+		ArmaControl control;
+		TreeStructure.TreeNode<TreeItemEntry> treeNode;
+		for (Element controlElement : tagElements) {
+			switch (controlElement.getTagName()) {
+				case "control": {
+					control = getControl(controlElement, false, macros);
+					if (control == null) {
+						return controls;
+					}
+					treeNode = new TreeStructure.TreeNode<>(new ControlTreeItemEntry(control));
+					parent.getChildren().add(treeNode);
+					break;
 				}
-				ArmaControlGroup group = (ArmaControlGroup) control;
-				List<ArmaControl> controlsToAdd =getControls(controlElement);
-				for(ArmaControl add : controlsToAdd){
-					group.addControl(add);
+				case "control-group": {
+					control = getControl(controlElement, true, macros);
+					if (control == null) {
+						return controls;
+					}
+					ArmaControlGroup group = (ArmaControlGroup) control;
+					treeNode = new TreeStructure.TreeNode<>(new ControlGroupTreeItemEntry(group));
+					parent.getChildren().add(treeNode);
+					List<ArmaControl> controlsToAdd = buildStructureAndGetControls(treeNode, controlElement, macros);
+					for (ArmaControl add : controlsToAdd) {
+						group.addControl(add);
+					}
+					
+					break;
 				}
-				
-			} else {
-				control = getControl(controlElement, false);
+				case "folder": {
+					treeNode = new TreeStructure.TreeNode<>(new FolderTreeItemEntry(controlElement.getAttribute("name")));
+					parent.getChildren().add(treeNode);
+					controls.addAll(buildStructureAndGetControls(parent, controlElement, macros));
+					continue;
+				}
+				default: {
+					continue;
+				}
 			}
 			controls.add(control);
 		}
@@ -205,7 +232,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		return controls;
 	}
 	
-	private ArmaControl getControl(Element controlElement, boolean isControlGroup) {
+	private ArmaControl getControl(Element controlElement, boolean isControlGroup, List<Macro> macros) {
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
 			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_NAME, controlElement.getTextContent())));
@@ -238,17 +265,13 @@ public class ProjectXmlLoader extends XmlLoader {
 			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_RENDERER_F, rendererStr, controlClassName)));
 			return null;
 		}
-		NodeList controlPropertiesNodeList = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
-		Element controlPropertyElement;
-		LinkedList<Pair<ControlPropertyLookup, SerializableValue>> properties = new LinkedList<>();
-		for (int controlPropertyInd = 0; controlPropertyInd < controlPropertiesNodeList.getLength(); controlPropertyInd++) {
-			if (controlPropertiesNodeList.item(controlPropertyInd).getNodeType() == Node.ELEMENT_NODE) {
-				controlPropertyElement = (Element) controlPropertiesNodeList.item(controlPropertyInd);
-			} else {
-				continue;
-			}
+		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
+		
+		LinkedList<ControlLoadConfig> properties = new LinkedList<>();
+		for (Element controlPropertyElement : controlPropertyElements) {
 			ControlPropertyLookup lookup;
 			String lookupIdStr = controlPropertyElement.getAttribute("lookup-id");
+			String macroKey = controlPropertyElement.getAttribute("macro-key");
 			try {
 				int id = Integer.parseInt(lookupIdStr);
 				lookup = ControlPropertyLookup.findById(id);
@@ -260,8 +283,9 @@ public class ProjectXmlLoader extends XmlLoader {
 			if (value == null) {
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
-			properties.add(new Pair<>(lookup, value));
+			properties.add(new ControlLoadConfig(lookup, value, macroKey));
 		}
+		
 		
 		ArmaControlSpecProvider specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
@@ -270,22 +294,22 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		Expression x, y, w, h;
 		x = y = w = h = null;
-		for (Pair<ControlPropertyLookup, SerializableValue> pair : properties) {
-			switch (pair.getKey()) {
+		for (ControlLoadConfig config : properties) {
+			switch (config.lookup) {
 				case X: {
-					x = (Expression) pair.getValue();
+					x = (Expression) config.value;
 					break;
 				}
 				case Y: {
-					y = (Expression) pair.getValue();
+					y = (Expression) config.value;
 					break;
 				}
 				case W: {
-					w = (Expression) pair.getValue();
+					w = (Expression) config.value;
 					break;
 				}
 				case H: {
-					h = (Expression) pair.getValue();
+					h = (Expression) config.value;
 					break;
 				}
 				default:
@@ -303,17 +327,19 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
-			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
-				if (saved.getKey() == lookup) {
-					control.findRequiredProperty(lookup).setValue(saved.getValue());
+			for (ControlLoadConfig config : properties) {
+				if (config.lookup == lookup) {
+					ControlProperty property = control.findRequiredProperty(lookup);
+					setControlPropertyValue(macros, config, property);
 				}
 			}
 		}
 		
 		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
-			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
-				if (saved.getKey() == lookup) {
-					control.findOptionalProperty(lookup).setValue(saved.getValue());
+			for (ControlLoadConfig config : properties) {
+				if (config.lookup == lookup) {
+					ControlProperty property = control.findOptionalProperty(lookup);
+					setControlPropertyValue(macros, config, property);
 				}
 			}
 		}
@@ -329,11 +355,22 @@ public class ProjectXmlLoader extends XmlLoader {
 		return control;
 	}
 	
-	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<Pair<ControlPropertyLookup, SerializableValue>> master) {
+	private void setControlPropertyValue(List<Macro> macros, ControlLoadConfig config, ControlProperty property) {
+		property.setValue(config.value);
+		if (config.macroKey != null) {
+			for (Macro macro : macros) {
+				if (macro.getKey().equals(config.macroKey)) {
+					property.setValueToMacro(macro);
+				}
+			}
+		}
+	}
+	
+	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ControlLoadConfig> master) {
 		for (ControlPropertyLookup toMatchLookup : toMatch) {
 			boolean matched = false;
-			for (Pair<ControlPropertyLookup, SerializableValue> masterLookup : master) {
-				if (masterLookup.getKey() == toMatchLookup) {
+			for (ControlLoadConfig masterLookup : master) {
+				if (masterLookup.lookup == toMatchLookup) {
 					matched = true;
 					break;
 				}
@@ -361,21 +398,16 @@ public class ProjectXmlLoader extends XmlLoader {
 	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in {@link #errors}).
 	 */
 	private SerializableValue getValue(PropertyType propertyType, Element parentElement) {
-		NodeList valueNodeList = XmlUtil.getChildElementsWithTagName(parentElement, "value");
-		if (propertyType.propertyValuesSize > valueNodeList.getLength()) { //missing entries
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUE_CREATION_COUNT_F, parentElement.getTagName(), valueNodeList.getLength())));
+		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "value");
+		if (valueElements.size() < propertyType.propertyValuesSize) {
+			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUE_CREATION_COUNT_F, parentElement.getTagName(), valueElements.size())));
 			return null;
 		}
 		String[] values = new String[propertyType.propertyValuesSize];
-		for (int valueInd = 0; valueInd < valueNodeList.getLength(); valueInd++) {
-			Node macroValueNode = valueNodeList.item(valueInd);
-			if (macroValueNode.getNodeType() != Node.ELEMENT_NODE) {
-				continue;
-			}
-			Element macroValueElement = (Element) macroValueNode;
-			values[valueInd] = XmlUtil.getImmediateTextContent(macroValueElement);
+		int valueInd = 0;
+		for (Element valueElement : valueElements) {
+			values[valueInd++] = XmlUtil.getImmediateTextContent(valueElement);
 		}
-		
 		SerializableValue value;
 		try {
 			value = propertyType.converter.convert(dataContext, values);
@@ -385,5 +417,21 @@ public class ProjectXmlLoader extends XmlLoader {
 			return null;
 		}
 		return value;
+	}
+	
+	private static class ControlLoadConfig {
+		private final ControlPropertyLookup lookup;
+		private final SerializableValue value;
+		private final String macroKey;
+		
+		public ControlLoadConfig(ControlPropertyLookup lookup, SerializableValue value, String macroKey) {
+			this.lookup = lookup;
+			this.value = value;
+			if (macroKey.trim().length() == 0) {
+				this.macroKey = null;
+			} else {
+				this.macroKey = macroKey.trim();
+			}
+		}
 	}
 }

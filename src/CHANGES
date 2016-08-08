@@ -1,6 +1,7 @@
-ADDED:
-    background control support
-CHANGED:
-    none
-FIXED:
+Added:
+    for project saving, list the control property's macro and if it is using it
+    support for changing projects
+Changed:
+    loading into tree view will now load folders as well
+Fixed:
     none

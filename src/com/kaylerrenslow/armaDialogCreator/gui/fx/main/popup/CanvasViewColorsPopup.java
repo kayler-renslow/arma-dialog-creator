@@ -23,7 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
@@ -48,8 +47,8 @@ public class CanvasViewColorsPopup extends StagePopup<VBox> {
 		}
 	};
 
-	public CanvasViewColorsPopup(Stage primaryStage) {
-		super(primaryStage, new VBox(10), Lang.Popups.Colors.POPUP_TITLE);
+	public CanvasViewColorsPopup() {
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.Colors.POPUP_TITLE);
 		myStage.initStyle(StageStyle.UTILITY);
 		myStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override

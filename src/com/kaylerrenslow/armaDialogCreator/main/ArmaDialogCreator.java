@@ -13,8 +13,6 @@ package com.kaylerrenslow.armaDialogCreator.main;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
-import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCProjectInitWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
@@ -38,7 +36,7 @@ public final class ArmaDialogCreator extends Application {
 	private static ArmaDialogCreator INSTANCE;
 	
 	public ArmaDialogCreator() {
-		if(INSTANCE != null){
+		if (INSTANCE != null) {
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
@@ -59,7 +57,7 @@ public final class ArmaDialogCreator extends Application {
 	private ADCWindow mainWindow;
 	private ApplicationDataManager applicationDataManager;
 	
-	private LinkedList<StagePopup> showLater = new LinkedList<>();
+	private final LinkedList<StagePopup> showLater = new LinkedList<>();
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -70,8 +68,7 @@ public final class ArmaDialogCreator extends Application {
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		
-		
+				
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
 		
@@ -80,37 +77,23 @@ public final class ArmaDialogCreator extends Application {
 		
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
 		
-		initProject();
-		
-		mainWindow.show();
-		
-		/*don't need iterator here since Java will make the foreach loop behave like an iterator (http://stackoverflow.com/questions/85190/how-does-the-java-for-each-loop-work)*/
-		for (StagePopup aShowLater : showLater) {
-			aShowLater.show();
-		}
-		showLater = null;
+		loadNewProject();
 	}
 	
-	private void initProject() {
-		ADCProjectInitWindow projectInitWindow = new ADCProjectInitWindow();
-		projectInitWindow.showAndWait();
+	public static void loadNewProject() {
+		getPrimaryStage().close();
+		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
+		getApplicationDataManager().setApplicationData(config.getApplicationData());
+		getMainWindow().initialize();
+		getMainWindow().show();
+		getMainWindow().getCanvasView().setTreeStructure(config.getNewTreeStructure());
 		
-		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
-		Project project;
-		if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
-			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
-			String projectName = newProject.getProjectName();
-			project = new Project(projectName, applicationDataManager.getAppSaveDataDirectory());
-		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
-			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
-			project = openProject.getProject();
-		} else {
-			System.err.println("WARNING: project init type wasn't matched with any known types. Just creating new project from scratch.");
-			project = new Project(null, applicationDataManager.getAppSaveDataDirectory());
+		for (StagePopup aShowLater : INSTANCE.showLater) {
+			aShowLater.show();
 		}
-		
-		applicationDataManager.applicationData.setCurrentProject(project);
+		INSTANCE.showLater.clear();
 	}
+	
 	
 	public static CanvasView getCanvasView() {
 		return INSTANCE.mainWindow.getCanvasView();
@@ -147,7 +130,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 	
 	public static ApplicationData getApplicationData() {
-		return INSTANCE.applicationDataManager.applicationData;
+		return INSTANCE.applicationDataManager.getApplicationData();
 	}
 	
 	/** Show the given popup after the application's main window has been initialized */

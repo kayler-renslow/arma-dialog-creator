@@ -36,10 +36,12 @@ import javafx.stage.Stage;
  */
 public class ADCWindow {
 	private final Stage primaryStage;
-	private final VBox rootElement = new VBox();
+	private VBox rootElement = new VBox();
 	private ADCCanvasView canvasView;
 	private ADCMenuBar mainMenuBar;
 	private boolean fullscreen = false;
+	private boolean betaShown = false;
+	
 	
 	public ADCWindow(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -60,7 +62,9 @@ public class ADCWindow {
 		this.primaryStage.setScene(scene);
 	}
 	
-	private void initialize(Scene scene) {
+	public void initialize() {
+		primaryStage.getScene().setRoot(new VBox());
+		Scene scene = primaryStage.getScene();
 		canvasView = new ADCCanvasView();
 		mainMenuBar = new ADCMenuBar();
 		rootElement.getChildren().addAll(mainMenuBar, canvasView);
@@ -75,37 +79,39 @@ public class ADCWindow {
 		scene.setOnKeyPressed(keyEvent);
 		scene.setOnKeyReleased(keyEvent);
 		scene.getMnemonics().clear();
-		
-	}
 	
+	}
+		
 	public void show() {
-		initialize(primaryStage.getScene());
 		this.primaryStage.show();
 		
-		new StagePopup<VBox>(primaryStage, new VBox(5), Lang.Popups.Beta.POPUP_TITLE) {
-			@Override
-			public void show() {
-				myStage.initModality(Modality.APPLICATION_MODAL);
-				
-				myRootElement.setPadding(new Insets(10));
-				myStage.setResizable(false);
-				final Label lblBody = new Label(Lang.Popups.Beta.BODY);
-				final Hyperlink hyperlink = new Hyperlink(Lang.Popups.Beta.REPORT_TO_LINK);
-				hyperlink.setOnAction(new EventHandler<ActionEvent>() {
-					@Override
-					public void handle(ActionEvent event) {
-						BrowserUtil.browse(Lang.Popups.Beta.REPORT_TO_LINK);
-					}
-				});
-				myRootElement.getChildren().addAll(lblBody, hyperlink, new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
-				myStage.sizeToScene();
-				
-				btnOk.requestFocus();
-				btnOk.setDefaultButton(true);
-				
-				super.show();
-			}
-		}.show();
+		if (!betaShown) {
+			new StagePopup<VBox>(primaryStage, new VBox(5), Lang.Popups.Beta.POPUP_TITLE) {
+				@Override
+				public void show() {
+					myStage.initModality(Modality.APPLICATION_MODAL);
+					
+					myRootElement.setPadding(new Insets(10));
+					myStage.setResizable(false);
+					final Label lblBody = new Label(Lang.Popups.Beta.BODY);
+					final Hyperlink hyperlink = new Hyperlink(Lang.Popups.Beta.REPORT_TO_LINK);
+					hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+						@Override
+						public void handle(ActionEvent event) {
+							BrowserUtil.browse(Lang.Popups.Beta.REPORT_TO_LINK);
+						}
+					});
+					myRootElement.getChildren().addAll(lblBody, hyperlink, new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+					myStage.sizeToScene();
+					
+					btnOk.requestFocus();
+					btnOk.setDefaultButton(true);
+					
+					super.show();
+				}
+			}.show();
+			betaShown = true;
+		}
 	}
 	
 	public CanvasView getCanvasView() {

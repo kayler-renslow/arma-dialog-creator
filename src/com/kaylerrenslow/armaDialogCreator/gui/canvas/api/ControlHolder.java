@@ -15,11 +15,11 @@ import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 /**
  Created by Kayler on 08/05/2016.
  */
-public interface ControlHolder {
-	ReadOnlyList<? extends Control> getControls();
+public interface ControlHolder<C extends Control> {
+	ReadOnlyList<C> getControls();
 	
-	void addControl(Control control);
-	void addControl(int index, Control toAdd);
-	int indexOf(Control control);
-	boolean removeControl(Control control);
+	void addControl(C control);
+	void addControl(int index, C toAdd);
+	int indexOf(C control);
+	boolean removeControl(C control);
 }
