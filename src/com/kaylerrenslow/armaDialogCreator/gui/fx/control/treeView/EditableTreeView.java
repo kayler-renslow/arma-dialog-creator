@@ -47,7 +47,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	
 	private void loadStructure(TreeItem<E> parent, TreeStructure.TreeNode<E> parentNode) {
 		TreeItem<E> newItem = new TreeItem<>(parentNode.getData());
-		parent.getChildren().add(newItem);
+		addChildToParent(parent, newItem);
 		for (TreeStructure.TreeNode<E> childNode : parentNode.getChildren()) {
 			loadStructure(newItem, childNode);
 		}

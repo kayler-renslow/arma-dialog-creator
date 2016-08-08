@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.SnapConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
@@ -18,6 +19,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
@@ -50,7 +52,18 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		HBox hboxStep = new HBox(5);
 		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
 		
-		final VBox vbBgControls = new VBox(5, new Label(" "+Lang.CanvasControls.BACKGROUND_CONTROLS), treeViewBg); //placing space before label to give fake padding
+		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.CanvasControls.SHPW_BACKGROUND_CONTROLS);
+		cbShowBackgroundControls.setSelected(true);
+		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+				for(ArmaControl control : canvasView.getEditingDisplay().getBackgroundControls()){
+					control.getRenderer().setGhost(!selected);
+				}
+			}
+		});
+		final VBox vbBgControls = new VBox(5, new HBox(10, new Label(" "+Lang.CanvasControls.BACKGROUND_CONTROLS), cbShowBackgroundControls), treeViewBg); //placing space before label to give fake
+		// padding
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);
 		final SplitPane splitPane = new SplitPane(treeViewMain, vbBgControls);
 		splitPane.setOrientation(Orientation.VERTICAL);

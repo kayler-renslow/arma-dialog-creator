@@ -75,7 +75,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 	private void initTabPane() {
 		initTabs.add(new NewProjectTab(this));
 		initTabs.add(new TabOpen(this));
-//				initTabs.add(new ImportTab(this));
+		//				initTabs.add(new ImportTab(this));
 		
 		final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
 			@Override
@@ -236,7 +236,24 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					try {
 						result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, chosen);
 					} catch (XmlParseException e) {
-						new StagePopup<>(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new TextArea(e.getMessage())), "").show();
+						new StagePopup<VBox>(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ProjectInitWindow.COULD_NOT_LOAD_PROJECT) {
+							@Override
+							public void show() {
+								myRootElement.setPadding(new Insets(10));
+								final TextArea taError = new TextArea(e.getMessage());
+								taError.setEditable(false);
+								myStage.setResizable(false);
+								myRootElement.getChildren().addAll(
+										new Label(Lang.ProjectInitWindow.COULD_NOT_LOAD_PROJECT),
+										new Label(Lang.ProjectInitWindow.REASON),
+										taError,
+										new Separator(Orientation.HORIZONTAL),
+										getResponseFooter(false, true, false)
+								);
+								
+								super.show();
+							}
+						}.show();
 						return;
 					}
 					if (!lvKnownProjects.getItems().contains(result.getProject())) {
@@ -306,7 +323,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		
 		@Override
 		boolean prepareProject() {
-			if(selectedParsedProject == null){
+			if (selectedParsedProject == null) {
 				throw new IllegalStateException("prepareProject should be invoked when project has been selected.");
 			}
 			if (selectedParsedProject.getErrors().size() > 0) {

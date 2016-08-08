@@ -55,9 +55,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
 	private boolean selectFromTreeView = false;
+	private ArmaDisplay display;
 	
 	ADCCanvasView() {
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+		
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
 		initializeUICanvasEditor(display);
 		
@@ -70,6 +72,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	
 	private void initializeUICanvasEditor(ArmaDisplay display) {
 		canvasControls.getTreeViewMain().setToDisplay(display);
+		canvasControls.getTreeViewBackground().setToDisplay(display);
 		
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
@@ -201,6 +204,10 @@ class ADCCanvasView extends HBox implements CanvasView {
 			return;
 		}
 		getChildren().add(canvasControls);
+	}
+	
+	public ArmaDisplay getEditingDisplay() {
+		return this.display;
 	}
 	
 	

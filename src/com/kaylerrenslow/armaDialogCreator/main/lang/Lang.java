@@ -31,6 +31,7 @@ public interface Lang {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
 		String BACKGROUND_CONTROLS = "Background Controls";
+		String SHPW_BACKGROUND_CONTROLS = "Show";
 	}
 	
 	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar} */
@@ -234,6 +235,8 @@ public interface Lang {
 		String OPEN_FROM_FILE = "Open from file";
 		String FC_LOCATE_PROJECT_TITLE = "Locate a project.xml";
 		FileChooser.ExtensionFilter FC_FILTER = new FileChooser.ExtensionFilter("project.xml", "*.xml");
+		String COULD_NOT_LOAD_PROJECT = "Could not load project.";
+		String REASON = "Reason:";
 		
 		interface ProjectResultErrorPopup {
 			String POPUP_TITLE = "Project Parsed With Errors";
@@ -262,6 +265,7 @@ public interface Lang {
 			String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
 			String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";
 			String MISSING_CONTROL_PROPERTY_F = "Missing control property: '%s' for control '%s'.";
+			String NOT_A_PROJECT_SAVE = "Not a project save.";
 		}
 		
 		interface ApplicationPropertyLoad {

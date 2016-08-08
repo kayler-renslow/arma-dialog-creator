@@ -142,7 +142,10 @@ public abstract class UICanvas extends AnchorPane {
 		gc.restore();
 	}
 	
-	/** Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
+	/**
+	 Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
+	 The background controls are painted first, then controls are painted
+	 */
 	protected void paintControls() {
 		for(Control control : display.getBackgroundControls()){
 			paintControl(control);
@@ -152,7 +155,10 @@ public abstract class UICanvas extends AnchorPane {
 		}
 	}
 	
-	/** Paints all components. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component). */
+	/**
+	 Paints all components. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
+	 Before the paint, the components are sorted with {@link CanvasComponent#RENDER_PRIORITY_COMPARATOR}
+	 */
 	protected void paintComponents() {
 		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
 		for (CanvasComponent component : components) {

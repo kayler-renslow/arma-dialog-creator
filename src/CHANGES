@@ -1,6 +1,6 @@
 Added:
-    none
+    ability to hide all background controls
 Changed:
-    project saving and loading now fully works
-Fixed:
     none
+Fixed:
+    background controls being updated from tree view wasn't re-rendering the canvas

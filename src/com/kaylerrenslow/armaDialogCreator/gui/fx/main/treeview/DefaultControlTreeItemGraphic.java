@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -22,6 +24,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
@@ -43,6 +46,12 @@ public class DefaultControlTreeItemGraphic extends HBox{
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				entry.updateVisibilityFromButton(newValue);
+			}
+		});
+		entry.getMyArmaControl().getRenderer().getEnabledObserver().addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
+				updateVisibilityRadioButton(enabled);
 			}
 		});
 		Label lblType = new Label("(" + entry.getControlTypeText() + ")");

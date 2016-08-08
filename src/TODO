@@ -24,6 +24,8 @@ General:
 >preview's resolution should be independent from the editor.
 >!!!!when saving/loading, make sure to include the folders
 >for extending control, make sure that you implement the xml loading feature to set extended control as well
+>instead of converting the .paa and saving it in the project folder, store it in a universal folder where the image is documented on where it was converted from
+    this way, the image doesn't get converted more than one per project and you won't need to create the project folder in order to save the .paa
 
 Bugs:
 -----------------------------------

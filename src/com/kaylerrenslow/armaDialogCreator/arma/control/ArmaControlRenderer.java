@@ -26,7 +26,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	private ValueObserver<AColor> backgroundColorObserver;
 	
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
-	private boolean backgroundControl;
 	
 	public ArmaControlRenderer(ArmaControl control) {
 		super(0, 0, 0, 0);

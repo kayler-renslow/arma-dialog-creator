@@ -83,6 +83,7 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	@Override
 	public void addBackgroundControl(ArmaControl control) {
 		bgControls.add(control);
+		control.getUpdateGroup().addListener(controlListener);
 	}
 	
 	@Override
