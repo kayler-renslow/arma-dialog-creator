@@ -46,7 +46,8 @@ public class ApplicationLoader {
 		
 		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
 		Project project;
-		TreeStructure treeStructure = null;
+		TreeStructure treeStructureMain = null;
+		TreeStructure treeStructureBg = null;
 		if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
 			ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
 			String projectName = newProject.getProjectName();
@@ -54,14 +55,15 @@ public class ApplicationLoader {
 		} else if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
 			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
 			project = openProject.getProject();
-			treeStructure = openProject.getParseResult().getTreeStructure();
+			treeStructureMain = openProject.getParseResult().getTreeStructureMain();
+			treeStructureBg = openProject.getParseResult().getTreeStructureBg();
 			
 		} else {
 			System.err.println("WARNING: project init type wasn't matched with any known types. Just creating new project from scratch.");
 			project = new Project(null, applicationDataManager.getAppSaveDataDirectory());
 		}
 		
-		return new ApplicationLoadConfig(applicationData, request, project, treeStructure);
+		return new ApplicationLoadConfig(applicationData, request, project, treeStructureMain, treeStructureBg);
 	}
 	
 	public static class ApplicationLoadRequest{
@@ -84,13 +86,15 @@ public class ApplicationLoader {
 		private final ApplicationData applicationData;
 		private final ApplicationLoadRequest request;
 		private final Project newProject;
-		private final TreeStructure newTreeStructure;
+		private final TreeStructure newTreeStructureMain;
+		private final TreeStructure newTreeStructureBg;
 		
-		private ApplicationLoadConfig(ApplicationData applicationData, ApplicationLoadRequest request, Project newProject, TreeStructure newTreeStructure) {
+		private ApplicationLoadConfig(ApplicationData applicationData, ApplicationLoadRequest request, Project newProject, TreeStructure newTreeStructureMain, TreeStructure newTreeStructureBg) {
 			this.applicationData = applicationData;
 			this.request = request;
 			this.newProject = newProject;
-			this.newTreeStructure = newTreeStructure;
+			this.newTreeStructureMain = newTreeStructureMain;
+			this.newTreeStructureBg = newTreeStructureBg;
 		}
 		
 		@NotNull
@@ -104,8 +108,12 @@ public class ApplicationLoader {
 		}
 		
 		@Nullable
-		public TreeStructure getNewTreeStructure() {
-			return newTreeStructure;
+		public TreeStructure getNewTreeStructureMain() {
+			return newTreeStructureMain;
+		}
+		
+		public TreeStructure getNewTreeStructureBg() {
+			return newTreeStructureBg;
 		}
 	}
 	

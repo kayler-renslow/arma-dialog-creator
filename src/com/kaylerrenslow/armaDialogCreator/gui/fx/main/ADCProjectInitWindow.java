@@ -236,6 +236,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					try {
 						result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, chosen);
 					} catch (XmlParseException e) {
+						new StagePopup<>(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new TextArea(e.getMessage())), "").show();
 						return;
 					}
 					if (!lvKnownProjects.getItems().contains(result.getProject())) {

@@ -20,7 +20,6 @@ import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoadListener;
 import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoader;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +32,7 @@ public class ApplicationData extends DataContext {
 	
 	private Project currentProject;
 	private final Changelog changelog = new Changelog(20);
+	private ApplicationData self = this;
 	
 	public ApplicationData(@NotNull ApplicationLoader.ApplicationLoadRequest request) {
 		request.addOnComplete(new ApplicationLoadListener() {
@@ -48,7 +48,7 @@ public class ApplicationData extends DataContext {
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
 		public @Nullable Value getValue(String identifier) {
-			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
+			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(self);
 			if (resolution == null) {
 				throw new IllegalStateException("resolution shouldn't be null");
 			}

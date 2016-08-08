@@ -86,7 +86,8 @@ public final class ArmaDialogCreator extends Application {
 		getApplicationDataManager().setApplicationData(config.getApplicationData());
 		getMainWindow().initialize();
 		getMainWindow().show();
-		getMainWindow().getCanvasView().setTreeStructure(config.getNewTreeStructure());
+		getMainWindow().getCanvasView().setTreeStructure(false, config.getNewTreeStructureMain());
+		getMainWindow().getCanvasView().setTreeStructure(true, config.getNewTreeStructureBg());
 		
 		for (StagePopup aShowLater : INSTANCE.showLater) {
 			aShowLater.show();

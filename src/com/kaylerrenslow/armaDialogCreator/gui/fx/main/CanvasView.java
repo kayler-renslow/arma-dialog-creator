@@ -40,5 +40,8 @@ public interface CanvasView {
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
 	
-	void setTreeStructure(TreeStructure<TreeItemEntry> treeStructure);
+	void setTreeStructure(boolean backgroundTree, TreeStructure<TreeItemEntry> treeStructure);
+	
+	TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure();
+	TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure();
 }

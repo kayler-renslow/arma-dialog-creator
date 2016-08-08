@@ -32,7 +32,6 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -58,22 +57,29 @@ public class ProjectXmlLoader extends XmlLoader {
 	@NotNull
 	public static ProjectParseResult parse(@NotNull DataContext context, @NotNull File projectSaveXml) throws XmlParseException {
 		ProjectXmlLoader loader = new ProjectXmlLoader(projectSaveXml, context, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
-		return new ProjectParseResult(loader.parseDocument(), loader.treeStructureMain, loader.getErrors());
+		loader.parseDocument();
+		return new ProjectParseResult(loader.project, loader.treeStructureMain, loader.treeStructureBg, loader.getErrors());
 	}
 	
 	public static class ProjectParseResult extends XmlLoader.ParseResult {
 		
 		private final Project project;
-		private final TreeStructure<TreeItemEntry> treeStructure;
+		private final TreeStructure<TreeItemEntry> treeStructureMain;
+		private final TreeStructure<TreeItemEntry> treeStructureBg;
 		
-		private ProjectParseResult(Project project, TreeStructure<TreeItemEntry> treeStructure, ArrayList<ParseError> errors) {
+		private ProjectParseResult(Project project, TreeStructure<TreeItemEntry> treeStructureMain, TreeStructure<TreeItemEntry> treeStructureBg, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;
-			this.treeStructure = treeStructure;
+			this.treeStructureMain = treeStructureMain;
+			this.treeStructureBg = treeStructureBg;
 		}
 		
-		public TreeStructure<TreeItemEntry> getTreeStructure() {
-			return treeStructure;
+		public TreeStructure<TreeItemEntry> getTreeStructureBg() {
+			return treeStructureBg;
+		}
+		
+		public TreeStructure<TreeItemEntry> getTreeStructureMain() {
+			return treeStructureMain;
 		}
 		
 		public Project getProject() {
@@ -84,23 +90,22 @@ public class ProjectXmlLoader extends XmlLoader {
 	
 	private TreeStructure<TreeItemEntry> treeStructureMain = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
 	private TreeStructure<TreeItemEntry> treeStructureBg = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
+	private Project project;
 	
 	private ProjectXmlLoader(@NotNull File projectSaveXml, @NotNull DataContext context, @NotNull Key<?>... requiredKeys) throws XmlParseException {
 		super(projectSaveXml, context, requiredKeys);
 	}
 	
-	@Nullable
-	private Project parseDocument() throws XmlParseException {
+	private void parseDocument() throws XmlParseException {
 		try {
 			String projectName = document.getDocumentElement().getAttribute("name");
-			Project project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+			project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
 			fetchMacros(project.getMacroRegistry().getMacros());
 			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros());
 			if (editingDisplay != null) {
 				project.setEditingDisplay(editingDisplay);
 			}
 			project.setProjectDescription(getProjectDescription());
-			return project;
 		} catch (Exception e) {
 			throw new XmlParseException(e.getMessage());
 		}
@@ -219,7 +224,7 @@ public class ProjectXmlLoader extends XmlLoader {
 				case "folder": {
 					treeNode = new TreeStructure.TreeNode<>(new FolderTreeItemEntry(controlElement.getAttribute("name")));
 					parent.getChildren().add(treeNode);
-					controls.addAll(buildStructureAndGetControls(parent, controlElement, macros));
+					controls.addAll(buildStructureAndGetControls(treeNode, controlElement, macros));
 					continue;
 				}
 				default: {

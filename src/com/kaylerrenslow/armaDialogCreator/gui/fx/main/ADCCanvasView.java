@@ -142,7 +142,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			uiCanvasEditor.requestFocus();
 		}
 	}
-		
+	
 	@Override
 	public void showGrid(boolean showGrid) {
 		uiCanvasEditor.showGrid(showGrid);
@@ -169,8 +169,22 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 	
 	@Override
-	public void setTreeStructure(TreeStructure<TreeItemEntry> treeStructure) {
-		canvasControls.getTreeViewMain().loadStructure(treeStructure);
+	public void setTreeStructure(boolean background, TreeStructure<TreeItemEntry> treeStructure) {
+		if (background) {
+			canvasControls.getTreeViewBackground().loadStructure(treeStructure);
+		} else {
+			canvasControls.getTreeViewMain().loadStructure(treeStructure);
+		}
+	}
+	
+	@Override
+	public TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure() {
+		return canvasControls.getTreeViewMain().exportStructure();
+	}
+	
+	@Override
+	public TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure() {
+		return canvasControls.getTreeViewBackground().exportStructure();
 	}
 	
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {

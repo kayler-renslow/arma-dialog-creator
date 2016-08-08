@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectSaveXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -86,7 +87,8 @@ public class ApplicationDataManager {
 			project.getProjectSaveDirectory().mkdir();
 		}
 		File projectSaveXml = project.getFileForName("project.xml");
-		new ProjectSaveXmlWriter(project, projectSaveXml).write();
+		new ProjectSaveXmlWriter(project, ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(), ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure(),
+				projectSaveXml).write();
 	}
 	
 	/**

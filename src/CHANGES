@@ -1,7 +1,6 @@
 Added:
-    for project saving, list the control property's macro and if it is using it
-    support for changing projects
+    none
 Changed:
-    loading into tree view will now load folders as well
+    project saving and loading now fully works
 Fixed:
     none

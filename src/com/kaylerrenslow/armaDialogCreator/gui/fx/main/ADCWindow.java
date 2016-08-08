@@ -63,7 +63,8 @@ public class ADCWindow {
 	}
 	
 	public void initialize() {
-		primaryStage.getScene().setRoot(new VBox());
+		rootElement = new VBox();
+		primaryStage.getScene().setRoot(rootElement);
 		Scene scene = primaryStage.getScene();
 		canvasView = new ADCCanvasView();
 		mainMenuBar = new ADCMenuBar();

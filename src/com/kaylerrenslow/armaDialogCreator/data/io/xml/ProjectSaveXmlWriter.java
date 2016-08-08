@@ -18,6 +18,10 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 
@@ -36,10 +40,15 @@ public class ProjectSaveXmlWriter {
 	private static final int SAVE_VERSION = 1;
 	
 	private final Project project;
+	private final TreeStructure<? extends TreeItemEntry> treeStructureMain;
+	private final TreeStructure<? extends TreeItemEntry> treeStructureBg;
 	private final File projectSaveXml;
 	
-	public ProjectSaveXmlWriter(@NotNull Project project, @NotNull File projectSaveXml) {
+	public ProjectSaveXmlWriter(@NotNull Project project, @NotNull TreeStructure<? extends TreeItemEntry> treeStructureMain,
+								@NotNull TreeStructure<? extends TreeItemEntry> treeStructureBg, @NotNull File projectSaveXml) {
 		this.project = project;
+		this.treeStructureMain = treeStructureMain;
+		this.treeStructureBg = treeStructureBg;
 		this.projectSaveXml = projectSaveXml;
 	}
 	
@@ -66,22 +75,39 @@ public class ProjectSaveXmlWriter {
 	private void writeDisplay(@NotNull FileOutputStream fos, @NotNull ArmaDisplay editingDisplay) throws IOException {
 		fos.write(String.format("<display idd='%d'>", editingDisplay.getIdd()).getBytes());
 		
-		for (ArmaControl control : editingDisplay.getBackgroundControls()) {
-			fos.write("<display-controls type='background'>".getBytes());
-			writeControl(fos, control);
-			fos.write("</display-controls>".getBytes());
-		}
+		fos.write("<display-controls type='background'>".getBytes());
+		writeDisplayControls(fos, treeStructureBg.getRoot());
+		fos.write("</display-controls>".getBytes());
 		
-		for (ArmaControl control : editingDisplay.getControls()) {
-			fos.write("<display-controls type='main'>".getBytes());
-			writeControl(fos, control);
-			fos.write("</display-controls>".getBytes());
-		}
+		fos.write("<display-controls type='main'>".getBytes());
+		writeDisplayControls(fos, treeStructureMain.getRoot());
+		fos.write("</display-controls>".getBytes());
 		
 		fos.write("</display>".getBytes());
 	}
 	
-	private void writeControl(@NotNull FileOutputStream fos, @NotNull ArmaControl control) throws IOException {
+	private void writeDisplayControls(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
+		for (TreeStructure.TreeNode<? extends TreeItemEntry> treeNode : parent.getChildren()) {
+			if (treeNode.getData() instanceof FolderTreeItemEntry) {
+				FolderTreeItemEntry folderTreeItemEntry = (FolderTreeItemEntry) treeNode.getData();
+				writeFolder(fos, treeNode, folderTreeItemEntry);
+			} else if (treeNode.getData() instanceof ControlTreeItemEntry) { //control group tree item entry should extend this class
+				ControlTreeItemEntry controlTreeItemEntry = (ControlTreeItemEntry) treeNode.getData();
+				writeControl(fos, treeNode, controlTreeItemEntry.getMyArmaControl());
+			} else {
+				throw new IllegalStateException("unknown tree node data class");
+			}
+		}
+		
+	}
+	
+	private void writeFolder(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
+		fos.write(String.format("<folder name='%s'>", folder.getText()).getBytes());
+		writeDisplayControls(fos, treeNode);
+		fos.write("</folder>".getBytes());
+	}
+	
+	private void writeControl(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull ArmaControl control) throws IOException {
 		final String controlGroupStr = "control-group";
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
@@ -102,8 +128,8 @@ public class ProjectSaveXmlWriter {
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
 			fos.write(String.format("<control-property lookup-id='%d' macroKey='%s'>",
-							cprop.getPropertyLookup().propertyId,
-							cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
+					cprop.getPropertyLookup().propertyId,
+					cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
 					).getBytes()
 			);
 			if (cprop.getValue() == null) {
@@ -114,9 +140,7 @@ public class ProjectSaveXmlWriter {
 		}
 		
 		if (controlGroup) {
-			for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
-				writeControl(fos, subControl);
-			}
+			writeDisplayControls(fos, treeNode);
 		}
 		
 		fos.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">").getBytes());
