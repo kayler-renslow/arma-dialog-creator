@@ -1,6 +1,6 @@
 Added:
     none
 Changed:
-    canvas automatically repaints itself now
+    none
 Fixed:
-    adding controls to tree view resulting in wrong render order or an exception
+    none

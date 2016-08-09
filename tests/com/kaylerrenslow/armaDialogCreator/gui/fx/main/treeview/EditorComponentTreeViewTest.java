@@ -32,8 +32,8 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 /**
- Created by Kayler on 08/08/2016.
- */
+ @author Kayler
+ Created on 08/08/2016. */
 public class EditorComponentTreeViewTest extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {

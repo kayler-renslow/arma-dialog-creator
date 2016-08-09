@@ -239,33 +239,60 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		
 	}
-	
-	//	private int getCorrectedIndex(int rowOriginStart, int row, TreeItem<T> start) {
-	//		//get row after insertion. traverse upwards and count how many folders there are and subtract that from row
-	//		System.out.println("EditorComponentTreeView.getCorrectedIndex row = " + row);
-	//		int correctedIndex = row - rowOriginStart; //index such that the folders weren't used to calculate index
-	//		TreeItem<T> cursor = start;
-	//		while (cursor != getRoot() && cursor.getValue().getCellType() == CellType.FOLDER) {
-	//			for (TreeItem<T> child : cursor.getChildren()) {
-	//				if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
-	//					System.out.println("EditorComponentTreeView.getCorrectedIndex child = " + child);
-	//					correctedIndex--;
-	//				}
-	//			}
-	//			cursor = cursor.getParent();
-	//		}
-	//		for (TreeItem<T> child : cursor.getChildren()) {
-	//			if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
-	//				correctedIndex--;
-	//			}
-	//		}
-	//
-	//		return correctedIndex;
-	//	}
-	
+	//@formatter:off
+	/**
+	 This is meant to insert controls correctly into the tree view and inserted at the right indexes in the display. The algorithm should work as follows:<br>
+	 <ul>
+	 <li>"corrected index" is the index that the control will be inserted at in a controls list (this index can greatly differ from the tree index/row)</li>
+	 <li>the corrected index is the index that does NOT include folders, therefore, if there exists a folder, the index will be -1 the child's index</li>
+	 <li>if there exists a folder with n control children, given_index-n will be corrected index</li>
+	 <li>if there exists a control group, only the control group itself will be a part of the corrected index and not it's children</li>
+	 <li>if adding a control in a control group, the corrected index will not take into account any ancestor controls.<br>
+	 </li>
+	 <pre>
+	 [root]
+	 ..+ first_control
+	 ..+ control group
+	 ....+ control - insert here, corrected index is 0, while the TREE index is 2 (start counting from first_control)
+	 ..+ control
+	 </pre>
+	 <pre>
+	 [root]
+	 ..+ leaf
+	 ..+ folder
+	 ....+ leaf2
+	 ....+ leaf3
+	 ....+ folder2
+	 ......+ leaf4 - insert, corrected index is 3
+	 </pre>
+	 <pre>
+	 [root]
+	 ..+ leaf
+	 ..+ folder
+	 ....+ leaf2
+	 ....+ leaf3
+	 ....+ folder2
+	 ......+ leaf4
+	 ....+ leaf5 - insert, corrected index is 4
+	 </pre>
+	 <pre>
+	 [root]
+	 ..+ leaf
+	 ..+ folder
+	 ....+ leaf2
+	 ....+ leaf3
+	 ....+ folder2
+	 ......+ control group
+	 ........+ leaf 4
+	 ....+ leaf5 - insert, corrected index is 4
+	 </pre>
+	 </ul>
+	 */
 	protected int getCorrectedIndex(@Nullable TreeItem parent, @NotNull TreeItem<T> childAdded) {
 		return getNumNonFolders(parent == null ? getRoot() : parent, childAdded, new BooleanEdit(false));
 	}
+	
+	//@formatter:on
 	
 	/**
 	 Gets the number of descendants of the tree item that aren't a folder. However, when {@link CellType#COMPOSITE} is reached, the depth count will not go deeper and the size counter will only
