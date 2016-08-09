@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -41,6 +42,8 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
+	/**The animation timer that automatically repaints the canvas*/
+	protected final @NotNull AnimationTimer animationTimer;
 	protected @NotNull Display<? extends Control> display;
 		
 	/** Background image of the canvas */
@@ -57,12 +60,6 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected ArrayList<CanvasComponent> components = new ArrayList<>();
 	
-	private final UpdateListener<Object> displayListener = new UpdateListener<Object>() {
-		@Override
-		public void update(Object data) {
-			paint();
-		}
-	};
 	
 	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends Control> display) {
 		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
@@ -73,14 +70,12 @@ public abstract class UICanvas extends AnchorPane {
 					canvas.setHeight(newResolution.getScreenHeight());
 				}
 				display.resolutionUpdate(newResolution);
-				paint();
 			}
 		});
-		
+				
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
 		
 		this.display = display;
-		this.display.getUpdateListenerGroup().addListener(displayListener);
 		
 		this.gc = this.canvas.getGraphicsContext2D();
 		gc.setTextBaseline(VPos.CENTER);
@@ -92,6 +87,15 @@ public abstract class UICanvas extends AnchorPane {
 		this.setOnMouseReleased(mouseEvent);
 		this.setOnMouseMoved(mouseEvent);
 		this.setOnMouseDragged(mouseEvent);
+		
+		
+		this.animationTimer = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				paint();
+			}
+		};
+		this.animationTimer.start();
 	}
 	
 	public int getCanvasWidth() {
@@ -103,15 +107,12 @@ public abstract class UICanvas extends AnchorPane {
 	}
 	
 	public void setDisplay(@NotNull Display<? extends Control> display) {
-		this.display.getUpdateListenerGroup().removeUpdateListener(displayListener);
 		this.display = display;
-		this.display.getUpdateListenerGroup().addListener(displayListener);
 	}
 		
 	/** Adds a component to the canvas and repaints the canvas */
 	public void addComponent(@NotNull CanvasComponent component) {
 		this.components.add(component);
-		paint();
 	}
 	
 	/**
@@ -121,9 +122,7 @@ public abstract class UICanvas extends AnchorPane {
 	 @return true if the component was removed, false if nothing was removed
 	 */
 	public boolean removeComponent(@NotNull CanvasComponent component) {
-		boolean removed = this.components.remove(component);
-		paint();
-		return removed;
+		return this.components.remove(component);
 	}
 	
 	/**
@@ -134,7 +133,7 @@ public abstract class UICanvas extends AnchorPane {
 	 <li>components inserted via {@link #addComponent(CanvasComponent)}</li>
 	 </ol>
 	 */
-	public void paint() {
+	protected void paint() {
 		gc.save();
 		paintBackground();
 		paintControls();
@@ -199,7 +198,6 @@ public abstract class UICanvas extends AnchorPane {
 	/** Sets canvas background color and repaints the canvas */
 	public void setCanvasBackgroundColor(@NotNull Color color) {
 		this.backgroundColor = color;
-		paint();
 	}
 	
 	
@@ -242,7 +240,6 @@ public abstract class UICanvas extends AnchorPane {
 	 */
 	public void keyEvent(String key, boolean keyIsDown, boolean shiftDown, boolean ctrlDown, boolean altDown) {
 		keys.update(key, keyIsDown, shiftDown, ctrlDown, altDown);
-		paint();
 	}
 	
 	
@@ -318,7 +315,7 @@ public abstract class UICanvas extends AnchorPane {
 					canvas.mouseReleased(mousex, mousey, btn);
 				}
 			}
-			canvas.paint();
+//			canvas.paint();
 			
 		}
 		

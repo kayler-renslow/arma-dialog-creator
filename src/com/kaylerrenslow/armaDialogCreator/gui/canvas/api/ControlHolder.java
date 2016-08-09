@@ -10,16 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
+import javafx.collections.ObservableList;
 
 /**
  Created by Kayler on 08/05/2016.
  */
 public interface ControlHolder<C extends Control> {
-	ReadOnlyList<C> getControls();
-	
-	void addControl(C control);
-	void addControl(int index, C toAdd);
-	int indexOf(C control);
-	boolean removeControl(C control);
+	ObservableList<C> getControls();
 }

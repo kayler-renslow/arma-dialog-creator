@@ -123,14 +123,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					case "background": {
 						controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros);
 						for (ArmaControl control : controls) {
-							display.addBackgroundControl(control);
+							display.getBackgroundControls().add(control);
 						}
 						break;
 					}
 					case "main": {
 						controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros);
 						for (ArmaControl control : controls) {
-							display.addControl(control);
+							display.getControls().add(control);
 						}
 						break;
 					}
@@ -167,7 +167,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					parent.getChildren().add(treeNode);
 					List<ArmaControl> controlsToAdd = buildStructureAndGetControls(treeNode, controlElement, macros);
 					for (ArmaControl add : controlsToAdd) {
-						group.addControl(add);
+						group.getControls().add(add);
 					}
 					
 					break;

@@ -31,7 +31,8 @@ public interface Lang {
 		String ALT_STEP = "Alternate Step:";
 		String STEP = "Step:";
 		String BACKGROUND_CONTROLS = "Background Controls";
-		String SHPW_BACKGROUND_CONTROLS = "Show";
+		String SHOW = "Show";
+		String CONTROLS = "Controls";
 	}
 	
 	/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCMenuBar} */

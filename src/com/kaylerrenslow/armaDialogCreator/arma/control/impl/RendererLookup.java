@@ -21,7 +21,10 @@ import java.util.LinkedList;
  Created on 08/03/2016. */
 public enum RendererLookup {
 	/** Renderer for a basic static control */
-	STATIC(0, StaticRenderer.class), CONTROL_GROUP(1, ControlGroupRenderer.class);
+	STATIC(0, StaticRenderer.class),
+	CONTROL_GROUP(1, ControlGroupRenderer.class),
+	/**Renderer for tests. DO NOT USE FOR CLIENT CODE.*/
+	TEST(-1, ArmaControlRenderer.class);
 	
 	/** Unique id for the lookup. */
 	public final int id;

@@ -11,8 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import javafx.collections.ObservableList;
 
 import java.util.Iterator;
 
@@ -21,11 +20,9 @@ import java.util.Iterator;
  */
 public interface Display<C extends Control> extends ControlHolder<C> {
 	
-	/** Any time the display or its controls get updated, notify this group. */
-	UpdateListenerGroup<Object> getUpdateListenerGroup();
 	
 	/** Get controls that are rendered first and have no user interaction */
-	ReadOnlyList<C> getBackgroundControls();
+	ObservableList<C> getBackgroundControls();
 	
 	/**
 	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()})
@@ -34,7 +31,7 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
 	 */
 	default Iterator<C> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<>(backwards, new ReadOnlyList[]{getControls(), getBackgroundControls()});
+		return new ListMergeIterator<>(backwards, new ObservableList[]{getControls(), getBackgroundControls()});
 	}
 	
 	/**
@@ -44,14 +41,6 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	default boolean isBackgroundControl(C control) {
 		return getBackgroundControls().contains(control);
 	}
-	
-	void addBackgroundControl(C control);
-	
-	void addBackgroundControl(int index, C toAdd);
-	
-	int indexOfBackgroundControl(C control);
-	
-	boolean removeBackgroundControl(C control);
 	
 	void resolutionUpdate(Resolution newResolution);
 	

@@ -18,15 +18,16 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeV
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.FoundChild;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -37,11 +38,13 @@ import java.util.List;
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
 	
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
-	private final boolean addsToBackground;
+	private final ArmaDisplay editingDisplay;
+	private final boolean backgroundControlEditor;
 	
-	public EditorComponentTreeView(boolean addsToBackground) {
+	public EditorComponentTreeView(ArmaDisplay editingDisplay, boolean backgroundControlEditor) {
 		super(null);
-		this.addsToBackground = addsToBackground;
+		this.editingDisplay = editingDisplay;
+		this.backgroundControlEditor = backgroundControlEditor;
 		setContextMenu(controlCreationContextMenu);
 		EditorComponentTreeView treeView = this;
 		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<T>>() {
@@ -83,7 +86,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	
 	public void setToDisplay(ArmaDisplay display) {
 		getRoot().getChildren().clear();
-		if (addsToBackground) {
+		if (backgroundControlEditor) {
 			addControls(getRoot(), null, display.getBackgroundControls());
 		} else {
 			addControls(getRoot(), null, display.getControls());
@@ -95,7 +98,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			if (control instanceof ArmaControlGroup) {
 				addControls(getTreeData(parent), control, ((ArmaControlGroup) control).getControls());
 			} else {
-				addChildToParent2(parentTreeItem, getTreeData(control), parentTreeItem.getChildren().size(), false);
+				addChildToParent2(parentTreeItem, getTreeData(control), parentTreeItem.getChildren().size());
 			}
 		}
 	}
@@ -106,50 +109,53 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	}
 	
 	@SuppressWarnings("unchecked")
-	private void addChildToParent2(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index, boolean addToDisplay) {
+	private void addChildToParent2(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
 		super.addChildToParent(parent, child, index);
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		if (addToDisplay) {
-			int correctedIndex;
-			ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-			ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-			
-			ControlGroupTreeItemEntry group = null;
-			TreeItem<? extends TreeItemEntry> groupTreeItem;
-			if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
-				groupTreeItem = parent;
-				group = (ControlGroupTreeItemEntry) parent.getValue();
+		int correctedIndex;
+		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
+		ArmaDisplay display = this.editingDisplay;
+		
+		ControlGroupTreeItemEntry group = null;
+		TreeItem<ControlGroupTreeItemEntry> groupTreeItem;
+		if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
+			groupTreeItem = (TreeItem<ControlGroupTreeItemEntry>) parent;
+			group = (ControlGroupTreeItemEntry) parent.getValue();
+		} else {
+			groupTreeItem = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
+			if (groupTreeItem != null) {
+				group = groupTreeItem.getValue();
+			}
+		}
+		
+		if (group != null) {
+			correctedIndex = getCorrectedIndex(groupTreeItem, child);
+			if (group.getControlGroup().getControls().contains(childControlEntry.getMyArmaControl())) {
+				return;
+			}
+			group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
+		} else { //didn't go into a control group, so it is in a folder.
+			correctedIndex = getCorrectedIndex(getRoot(), child);
+			if (backgroundControlEditor) {
+				if (display.getBackgroundControls().contains(childControlEntry.getMyArmaControl())) {
+					return;
+				}
+				display.getBackgroundControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 			} else {
-				groupTreeItem = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
-				if (groupTreeItem != null) {
-					group = (ControlGroupTreeItemEntry) groupTreeItem.getValue();
+				if (display.getControls().contains(childControlEntry.getMyArmaControl())) {
+					return;
 				}
+				display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 			}
-			
-			if (group != null) {
-				correctedIndex = getCorrectedIndex(getRow((TreeItem<T>) groupTreeItem) + 1, getRow(child), parent);
-				group.getControlGroup().addControl(correctedIndex, childControlEntry.getMyArmaControl());
-			} else { //didn't go into a control group, so it is in a folder.
-				correctedIndex = getCorrectedIndex(0, getRow(child), parent);
-				
-				//was added in a folder
-				if (addsToBackground) {
-					display.addBackgroundControl(childControlEntry.getMyArmaControl());
-				} else {
-					display.addControl(childControlEntry.getMyArmaControl());
-				}
-			}
-			display.getUpdateListenerGroup().update(null);
-			System.out.println("EditorComponentTreeView.addChildToParent correctedIndex = " + correctedIndex);
 		}
 	}
 	
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void addChildToParent(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
-		addChildToParent2(parent, child, index, true);
+		addChildToParent2(parent, child, index);
 	}
 	
 	@Override
@@ -158,15 +164,19 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		System.out.println("EditorComponentTreeView.addChildToRoot getRow = " + getRow(child));
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-		if (addsToBackground) {
-			display.addBackgroundControl(childControlEntry.getMyArmaControl());
+		ArmaDisplay display = this.editingDisplay;
+		if (backgroundControlEditor) {
+			if (display.getBackgroundControls().contains(childControlEntry.getMyArmaControl())) {
+				return;
+			}
+			display.getBackgroundControls().add(childControlEntry.getMyArmaControl());
 		} else {
-			display.addControl(childControlEntry.getMyArmaControl());
+			if (display.getControls().contains(childControlEntry.getMyArmaControl())) {
+				return;
+			}
+			display.getControls().add(childControlEntry.getMyArmaControl());
 		}
-		display.getUpdateListenerGroup().update(null);
 	}
 	
 	@Override
@@ -175,16 +185,20 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		System.out.println("EditorComponentTreeView.addChildToRoot2");
-		int correctedIndex = getCorrectedIndex(0, getRow(child), getRoot());
+		int correctedIndex = getCorrectedIndex(getRoot(), child);
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
-		if (addsToBackground) {
-			display.addBackgroundControl(childControlEntry.getMyArmaControl());
+		ArmaDisplay display = this.editingDisplay;
+		if (backgroundControlEditor) {
+			if (display.getBackgroundControls().contains(childControlEntry.getMyArmaControl())) {
+				return;
+			}
+			display.getBackgroundControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 		} else {
-			display.addControl(childControlEntry.getMyArmaControl());
+			if (display.getControls().contains(childControlEntry.getMyArmaControl())) {
+				return;
+			}
+			display.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 		}
-		display.getUpdateListenerGroup().update(null);
 	}
 	
 	@Override
@@ -195,9 +209,13 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			return;
 		}
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
-		ArmaDisplay display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+		ArmaDisplay display = this.editingDisplay;
 		if (parent == getRoot()) {
-			display.removeControl(toRemoveControlEntry.getMyArmaControl());
+			if (backgroundControlEditor) {
+				display.getBackgroundControls().remove(toRemoveControlEntry.getMyArmaControl());
+			} else {
+				display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
+			}
 			return;
 		}
 		
@@ -211,48 +229,91 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 		if (group != null) {
-			group.getControlGroup().removeControl(toRemoveControlEntry.getMyArmaControl());
+			group.getControlGroup().getControls().remove(toRemoveControlEntry.getMyArmaControl());
 		} else {
-			if (addsToBackground) {
-				display.removeBackgroundControl(toRemoveControlEntry.getMyArmaControl());
+			if (backgroundControlEditor) {
+				display.getBackgroundControls().remove(toRemoveControlEntry.getMyArmaControl());
 			} else {
-				display.removeControl(toRemoveControlEntry.getMyArmaControl());
+				display.getControls().remove(toRemoveControlEntry.getMyArmaControl());
 			}
 		}
-		display.getUpdateListenerGroup().update(null);
 		
 	}
 	
-	private int getCorrectedIndex(int rowOriginStart, int row, TreeItem<T> start) {
-		//get row after insertion. traverse upwards and count how many folders there are and subtract that from row
-		System.out.println("EditorComponentTreeView.getCorrectedIndex row = " + row);
-		int correctedIndex = row - rowOriginStart; //index such that the folders weren't used to calculate index
-		TreeItem<T> cursor = start;
-		while (cursor != getRoot() && cursor.getValue().getCellType() == CellType.FOLDER) {
-			for (TreeItem<T> child : cursor.getChildren()) {
-				if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
-					System.out.println("EditorComponentTreeView.getCorrectedIndex child = " + child);
-					correctedIndex--;
+	//	private int getCorrectedIndex(int rowOriginStart, int row, TreeItem<T> start) {
+	//		//get row after insertion. traverse upwards and count how many folders there are and subtract that from row
+	//		System.out.println("EditorComponentTreeView.getCorrectedIndex row = " + row);
+	//		int correctedIndex = row - rowOriginStart; //index such that the folders weren't used to calculate index
+	//		TreeItem<T> cursor = start;
+	//		while (cursor != getRoot() && cursor.getValue().getCellType() == CellType.FOLDER) {
+	//			for (TreeItem<T> child : cursor.getChildren()) {
+	//				if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
+	//					System.out.println("EditorComponentTreeView.getCorrectedIndex child = " + child);
+	//					correctedIndex--;
+	//				}
+	//			}
+	//			cursor = cursor.getParent();
+	//		}
+	//		for (TreeItem<T> child : cursor.getChildren()) {
+	//			if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
+	//				correctedIndex--;
+	//			}
+	//		}
+	//
+	//		return correctedIndex;
+	//	}
+	
+	protected int getCorrectedIndex(@Nullable TreeItem parent, @NotNull TreeItem<T> childAdded) {
+		return getNumNonFolders(parent == null ? getRoot() : parent, childAdded, new BooleanEdit(false));
+	}
+	
+	/**
+	 Gets the number of descendants of the tree item that aren't a folder. However, when {@link CellType#COMPOSITE} is reached, the depth count will not go deeper and the size counter will only
+	 increment by one.
+	 */
+	private int getNumNonFolders(TreeItem<T> treeItem, TreeItem<T> stopAt, BooleanEdit found) {
+		LinkedList<TreeItem<T>> q = new LinkedList<>();
+		q.addAll(treeItem.getChildren());
+		TreeItem<T> pop;
+		int size = 0;
+		while (q.size() > 0) {
+			pop = q.pop();
+			if (pop == stopAt) {
+				found.setValue(true);
+				return size;
+			}
+			switch (pop.getValue().getCellType()) {
+				case FOLDER: {
+					size += getNumNonFolders(pop, stopAt, found);
+					if (found.isTrue()) {
+						return size;
+					}
+					break;
+				}
+				case COMPOSITE: {
+					size += 1;
+					break;
+				}
+				case LEAF: {
+					size += 1;
+					break;
+				}
+				default: {
+					throw new IllegalStateException("unknown cell type " + pop.getValue().getCellType());
 				}
 			}
-			cursor = cursor.getParent();
 		}
-		for (TreeItem<T> child : cursor.getChildren()) {
-			if (child.getValue().getCellType() == CellType.FOLDER && getRow(child) < row) { //only subtract the folders preceding the row
-				correctedIndex--;
-			}
-		}
+		return size;
 		
-		return correctedIndex;
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static <T extends TreeItemEntry> TreeItem<T> getAncestorOfEntryType(TreeItem<? extends TreeItemEntry> start, Class<T> clazz) {
+	protected static <T, T2 extends TreeItemEntry> TreeItem<T2> getAncestorOfEntryType(TreeItem<T> start, Class<T2> clazz) {
 		if (start.getParent() == null || start.getParent().getValue() == null) {
 			return null;
 		}
 		if (clazz.isAssignableFrom(start.getParent().getValue().getClass())) {
-			return (TreeItem<T>) start.getParent();
+			return (TreeItem<T2>) start.getParent();
 		}
 		return getAncestorOfEntryType(start.getParent(), clazz);
 	}
@@ -264,6 +325,22 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	
 	static ImageView createCompositeIcon() {
 		return new ImageView(ImagePaths.ICON_COMPOSITE);
+	}
+	
+	private static class BooleanEdit {
+		private boolean value;
+		
+		public BooleanEdit(boolean init) {
+			this.value = init;
+		}
+		
+		public void setValue(boolean value) {
+			this.value = value;
+		}
+		
+		public boolean isTrue() {
+			return value;
+		}
 	}
 	
 }

@@ -1,6 +1,6 @@
 Added:
-    ability to hide all background controls
-Changed:
     none
+Changed:
+    canvas automatically repaints itself now
 Fixed:
-    background controls being updated from tree view wasn't re-rendering the canvas
+    adding controls to tree view resulting in wrong render order or an exception

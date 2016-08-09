@@ -34,8 +34,8 @@ import javafx.scene.layout.VBox;
 class CanvasControls extends VBox implements SnapConfiguration {
 	
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain = new EditorComponentTreeView<>(false);
-	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg = new EditorComponentTreeView<>(true);
+	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain;
+	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg;
 	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
 	
@@ -44,6 +44,8 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
+		treeViewMain = new EditorComponentTreeView<>(canvasView.getEditingDisplay(), false);
+		treeViewBg = new EditorComponentTreeView<>(canvasView.getEditingDisplay(), true);
 		initializeUI();
 	}
 	
@@ -52,7 +54,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		HBox hboxStep = new HBox(5);
 		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
 		
-		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.CanvasControls.SHPW_BACKGROUND_CONTROLS);
+		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.CanvasControls.SHOW);
 		cbShowBackgroundControls.setSelected(true);
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -62,10 +64,25 @@ class CanvasControls extends VBox implements SnapConfiguration {
 				}
 			}
 		});
+		final CheckBox cbShowControls = new CheckBox(Lang.CanvasControls.SHOW);
+		cbShowControls.setSelected(true);
+		cbShowControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+				for(ArmaControl control : canvasView.getEditingDisplay().getControls()){
+					control.getRenderer().setGhost(!selected);
+				}
+			}
+		});
+		
+		
 		final VBox vbBgControls = new VBox(5, new HBox(10, new Label(" "+Lang.CanvasControls.BACKGROUND_CONTROLS), cbShowBackgroundControls), treeViewBg); //placing space before label to give fake
+		final VBox vbControls= new VBox(5, new HBox(10, new Label(" "+Lang.CanvasControls.CONTROLS), cbShowControls), treeViewMain);
 		// padding
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);
-		final SplitPane splitPane = new SplitPane(treeViewMain, vbBgControls);
+		VBox.setVgrow(treeViewMain, Priority.ALWAYS);
+		
+		final SplitPane splitPane = new SplitPane(vbBgControls, vbControls);
 		splitPane.setOrientation(Orientation.VERTICAL);
 		getChildren().addAll(hboxStep, splitPane);
 		VBox.setVgrow(splitPane, Priority.ALWAYS);
@@ -82,12 +99,6 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		}
 		cbStep.getSelectionModel().select(1);
 		cbAltStep.getSelectionModel().selectLast();
-		cbStep.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Percentage>() {
-			@Override
-			public void changed(ObservableValue<? extends Percentage> observable, Percentage oldValue, Percentage newValue) {
-				canvasView.repaintCanvas();
-			}
-		});
 	}
 	
 	

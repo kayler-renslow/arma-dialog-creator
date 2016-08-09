@@ -93,7 +93,7 @@ public class UICanvasEditor extends UICanvas {
 	
 	private ValueObserver<Control> doubleClickObserver = new ValueObserver<>(null);
 	
-	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display display) {
+	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display<? extends Control> display) {
 		super(resolution, display);
 		
 		setSnapConfig(calculator);
@@ -168,7 +168,6 @@ public class UICanvasEditor extends UICanvas {
 	 */
 	public void showGrid(boolean showGrid) {
 		this.showGrid = showGrid;
-		paint();
 	}
 	
 	/** Updates the UI colors like selection color, grid color, and bg color */
@@ -192,11 +191,10 @@ public class UICanvasEditor extends UICanvas {
 		if (showing != -1) {
 			absRegionComponent.setGhost(!(showing == 1));
 		}
-		paint();
 	}
 	
 	/** Paint the canvas */
-	public void paint() {
+	protected void paint() {
 		super.paint();
 		if (selection.isSelecting()) {
 			gc.save();

@@ -13,12 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.arma.display;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-
-import java.util.ArrayList;
-import java.util.List;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 /**
  @author Kayler
@@ -28,18 +24,9 @@ public class ArmaDisplay implements Display<ArmaControl>{
 
 	private int idd;
 	private boolean movingEnable, enableSimulation;
-	private final List<ArmaControl> controls = new ArrayList<>();
-	private final ReadOnlyList<ArmaControl> controlReadOnlyList = new ReadOnlyList<>(controls);
-	private final List<ArmaControl> bgControls = new ArrayList<>();
-	private final ReadOnlyList<ArmaControl> bgControlReadOnlyList = new ReadOnlyList<>(bgControls);
-		
-	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
-	private final UpdateListener<Object> controlListener = new UpdateListener<Object>(){
-		@Override
-		public void update(Object data) {
-			updateGroup.update(data);
-		}
-	};
+	private final ObservableList<ArmaControl> controlsList = FXCollections.observableArrayList();
+	private final ObservableList<ArmaControl> bgControlsList = FXCollections.observableArrayList();
+	
 		
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
@@ -70,81 +57,25 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
 	}
-		
-	public UpdateListenerGroup<Object> getUpdateListenerGroup() {
-		return updateGroup;
-	}
 	
 	@Override
-	public ReadOnlyList<ArmaControl> getBackgroundControls() {
-		return bgControlReadOnlyList;
-	}
-	
-	@Override
-	public void addBackgroundControl(ArmaControl control) {
-		bgControls.add(control);
-		control.getUpdateGroup().addListener(controlListener);
-	}
-	
-	@Override
-	public void addBackgroundControl(int index, ArmaControl toAdd) {
-		bgControls.add(index, toAdd);
-		toAdd.getUpdateGroup().addListener(controlListener);
-	}
-	
-	@Override
-	public int indexOfBackgroundControl(ArmaControl control) {
-		return bgControls.indexOf(control);
-	}
-	
-	@Override
-	public boolean removeBackgroundControl(ArmaControl control) {
-		if (bgControls.remove(control)) {
-			control.getUpdateGroup().removeUpdateListener(controlListener);
-			return true;
-		}
-		return false;
+	public ObservableList<ArmaControl> getBackgroundControls() {
+		return bgControlsList;
 	}
 	
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
-		for(ArmaControl control : bgControls){
+		for(ArmaControl control : bgControlsList){
 			control.resolutionUpdate(newResolution);
 		}
-		for(ArmaControl control : controls){
+		for(ArmaControl control : controlsList){
 			control.resolutionUpdate(newResolution);
 		}
 	}
 	
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
-	public ReadOnlyList<ArmaControl> getControls() {
-		return controlReadOnlyList;
-	}
-	
-	@Override
-	public void addControl(ArmaControl control) {
-		controls.add(control);
-		control.getUpdateGroup().addListener(controlListener);
-	}
-	
-	@Override
-	public void addControl(int index, ArmaControl toAdd) {
-		controls.add(index, toAdd);
-		toAdd.getUpdateGroup().addListener(controlListener);
-	}
-	
-	@Override
-	public int indexOf(ArmaControl control) {
-		return controls.indexOf(control);
-	}
-	
-	@Override
-	public boolean removeControl(ArmaControl control) {
-		if (controls.remove(control)) {
-			control.getUpdateGroup().removeUpdateListener(controlListener);
-			return true;
-		}
-		return false;
+	public ObservableList<ArmaControl> getControls() {
+		return controlsList;
 	}
 	
 	

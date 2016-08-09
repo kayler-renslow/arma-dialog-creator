@@ -18,10 +18,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FolderTreeItemEntry extends TreeItemEntry {
 
-	private static int id = 0; //delete later since this is for testing
-
 	public FolderTreeItemEntry(@NotNull String folderText) {
-		super(folderText + id, CellType.FOLDER, EditorComponentTreeView.createFolderIcon());
-		id++;
+		super(folderText, CellType.FOLDER, EditorComponentTreeView.createFolderIcon());
 	}
 }

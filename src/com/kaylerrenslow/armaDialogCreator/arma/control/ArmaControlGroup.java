@@ -19,19 +19,16 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  @author Kayler
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
  Created on 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup{
-	private final List<ArmaControl> controls = new ArrayList<>();
-	private final ReadOnlyList<ArmaControl> controlReadOnlyList = new ReadOnlyList<>(controls);
+	private final ObservableList<ArmaControl> controlsList = FXCollections.observableArrayList();
 	
 	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider(){
 
@@ -65,27 +62,8 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup{
 	
 	
 	@Override
-	public ReadOnlyList<ArmaControl> getControls() {
-		return controlReadOnlyList;
+	public ObservableList<ArmaControl> getControls() {
+		return controlsList;
 	}
 	
-	@Override
-	public void addControl(ArmaControl control) {
-		controls.add(control);
-	}
-	
-	@Override
-	public void addControl(int index, ArmaControl toAdd) {
-		controls.add(index, toAdd);
-	}
-	
-	@Override
-	public int indexOf(ArmaControl control) {
-		return controls.indexOf(control);
-	}
-	
-	@Override
-	public boolean removeControl(ArmaControl control) {
-		return controls.remove(control);
-	}
 }
