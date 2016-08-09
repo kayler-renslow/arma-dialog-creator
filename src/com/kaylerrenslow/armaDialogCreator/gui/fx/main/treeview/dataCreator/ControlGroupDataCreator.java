@@ -25,13 +25,13 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
  Created by Kayler on 07/04/2016.
  */
 public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntry> {
-	private static int id = 0; //delete this later on as its for testing
 
 	public static final ControlGroupDataCreator INSTANCE = new ControlGroupDataCreator();
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup" + (id++), -1, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()),
+		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup", -1, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
+				("1", getEnv()), new Expression("1", getEnv()),
 				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
 	}
 

@@ -291,7 +291,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	protected int getCorrectedIndex(@Nullable TreeItem parent, @NotNull TreeItem<T> childAdded) {
 		return getNumNonFolders(parent == null ? getRoot() : parent, childAdded, new BooleanEdit(false));
 	}
-	
 	//@formatter:on
 	
 	/**

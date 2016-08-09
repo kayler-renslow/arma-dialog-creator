@@ -76,17 +76,17 @@ public class ProjectSaveXmlWriter {
 		fos.write(String.format("<display idd='%d'>", editingDisplay.getIdd()).getBytes());
 		
 		fos.write("<display-controls type='background'>".getBytes());
-		writeDisplayControls(fos, treeStructureBg.getRoot());
+		writeControls(fos, treeStructureBg.getRoot());
 		fos.write("</display-controls>".getBytes());
 		
 		fos.write("<display-controls type='main'>".getBytes());
-		writeDisplayControls(fos, treeStructureMain.getRoot());
+		writeControls(fos, treeStructureMain.getRoot());
 		fos.write("</display-controls>".getBytes());
 		
 		fos.write("</display>".getBytes());
 	}
 	
-	private void writeDisplayControls(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
+	private void writeControls(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
 		for (TreeStructure.TreeNode<? extends TreeItemEntry> treeNode : parent.getChildren()) {
 			if (treeNode.getData() instanceof FolderTreeItemEntry) {
 				FolderTreeItemEntry folderTreeItemEntry = (FolderTreeItemEntry) treeNode.getData();
@@ -103,7 +103,7 @@ public class ProjectSaveXmlWriter {
 	
 	private void writeFolder(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
 		fos.write(String.format("<folder name='%s'>", folder.getText()).getBytes());
-		writeDisplayControls(fos, treeNode);
+		writeControls(fos, treeNode);
 		fos.write("</folder>".getBytes());
 	}
 	
@@ -127,7 +127,7 @@ public class ProjectSaveXmlWriter {
 			throw new XmlWriteException(String.format(Lang.XmlWrite.ProjectSave.CONTROL_PROPERTIES_MISSING_F, control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
-			fos.write(String.format("<control-property lookup-id='%d' macroKey='%s'>",
+			fos.write(String.format("<control-property lookup-id='%d' macro-key='%s'>",
 					cprop.getPropertyLookup().propertyId,
 					cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
 					).getBytes()
@@ -140,7 +140,7 @@ public class ProjectSaveXmlWriter {
 		}
 		
 		if (controlGroup) {
-			writeDisplayControls(fos, treeNode);
+			writeControls(fos, treeNode);
 		}
 		
 		fos.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">").getBytes());
@@ -151,7 +151,7 @@ public class ProjectSaveXmlWriter {
 		
 		MacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
-			fos.write(String.format("<macro key='%s' type='%s' comment='%s'>", macro.getKey(), macro.getPropertyType(), macro.getComment()).getBytes());
+			fos.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, macro.getComment()).getBytes());
 			writeValue(fos, macro.getValue());
 			fos.write("</macro>".getBytes());
 		}

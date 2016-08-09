@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.EditMacrosAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateMacroAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateNewControlAction;
@@ -46,10 +47,14 @@ class ADCMenuBar extends MenuBar {
 	
 	
 	/*Edit*/
-	private final MenuItem edit_undo = addOnAction(new MenuItem(MainMenuBar.EDIT_UNDO, new ImageView(ImagePaths.ICON_UNDO)), new EditUndoAction());
-	private final MenuItem edit_redo = addOnAction(new MenuItem(MainMenuBar.EDIT_REDO, new ImageView(ImagePaths.ICON_REDO)), new EditRedoAction());
+	private final MenuItem edit_undo = new MenuItem(MainMenuBar.EDIT_UNDO, new ImageView(ImagePaths.ICON_UNDO));
+	private final MenuItem edit_redo = new MenuItem(MainMenuBar.EDIT_REDO, new ImageView(ImagePaths.ICON_REDO));
+	{
+		edit_redo.setOnAction(new EditRedoAction(edit_redo));
+		edit_undo.setOnAction(new EditUndoAction(edit_undo));
+	}
 	private final MenuItem edit_viewChanges = addOnAction(new MenuItem(MainMenuBar.EDIT_CHANGES), new EditViewChangesAction());
-	private final MenuItem edit_macros = addOnAction(new MenuItem(MainMenuBar.EDIT_MACROS), new EditViewChangesAction());
+	private final MenuItem edit_macros = addOnAction(new MenuItem(MainMenuBar.EDIT_MACROS), new EditMacrosAction());
 	
 	/*View*/
 	private final MenuItem view_preview = addOnAction(new MenuItem(MainMenuBar.VIEW_PREVIEW, null), new ViewPreviewAction());

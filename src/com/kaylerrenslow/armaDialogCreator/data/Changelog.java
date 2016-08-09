@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,11 @@ import java.util.LinkedList;
  Used for storing changes that happened inside the application
  Created on 08/02/2016. */
 public class Changelog {
+	
+	public static Changelog getInstance(){
+		return ArmaDialogCreator.getApplicationData().getChangelog();
+	}
+	
 	private final LinkedList<Change> undo = new LinkedList<>();
 	private final LinkedList<Change> redo = new LinkedList<>();
 	private final ReadOnlyList<Change> undoReadOnly = new ReadOnlyList<>(undo);

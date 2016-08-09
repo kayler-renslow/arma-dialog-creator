@@ -10,15 +10,49 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
+import com.kaylerrenslow.armaDialogCreator.data.Changelog;
+import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.MenuItem;
 
 /**
  Created by Kayler on 05/20/2016.
  */
-public class EditUndoAction implements EventHandler<ActionEvent>{
+public class EditUndoAction implements EventHandler<ActionEvent> {
+	private final MenuItem undoMenuItem;
+	
+	public EditUndoAction(MenuItem undoMenuItem) {
+		this.undoMenuItem = undoMenuItem;
+		this.undoMenuItem.setDisable(true);
+		Changelog.getInstance().getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
+			@Override
+			public void update(ChangelogUpdate newChange) {
+				switch (newChange.getType()) {
+					case CHANGE_ADDED: {
+						undoMenuItem.setDisable(false);
+						break;
+					}
+					case REDO: {
+						undoMenuItem.setDisable(Changelog.getInstance().getToUndo() == null);
+						break;
+					}
+					case UNDO: {
+						undoMenuItem.setDisable(Changelog.getInstance().getToUndo() == null);
+						break;
+					}
+					default: {
+						throw new IllegalArgumentException("unknown update type:" + newChange.getType());
+					}
+				}
+			}
+		});
+	}
+	
 	@Override
 	public void handle(ActionEvent event) {
-
+		Changelog changelog = Changelog.getInstance();
+		undoMenuItem.setDisable(changelog.getToUndo() == null);
 	}
 }

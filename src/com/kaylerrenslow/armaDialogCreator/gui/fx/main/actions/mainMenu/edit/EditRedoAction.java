@@ -10,15 +10,48 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
+import com.kaylerrenslow.armaDialogCreator.data.Changelog;
+import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.MenuItem;
 
 /**
  Created by Kayler on 05/20/2016.
  */
-public class EditRedoAction implements EventHandler<ActionEvent>{
+public class EditRedoAction implements EventHandler<ActionEvent> {
+	private final MenuItem editRedoMenuItem;
+	
+	public EditRedoAction(MenuItem editRedoMenuItem) {
+		this.editRedoMenuItem = editRedoMenuItem;
+		editRedoMenuItem.setDisable(true);
+		Changelog.getInstance().getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
+			@Override
+			public void update(ChangelogUpdate newChange) {
+				switch (newChange.getType()) {
+					case CHANGE_ADDED: {
+						editRedoMenuItem.setDisable(true);
+						break;
+					}
+					case REDO: {
+						editRedoMenuItem.setDisable(Changelog.getInstance().getToRedo() == null);
+						break;
+					}
+					case UNDO: {
+						editRedoMenuItem.setDisable(false);
+						break;
+					}
+					default: {
+						throw new IllegalArgumentException("unknown update type:" + newChange.getType());
+					}
+				}
+			}
+		});
+	}
+	
 	@Override
 	public void handle(ActionEvent event) {
-
+		
 	}
 }

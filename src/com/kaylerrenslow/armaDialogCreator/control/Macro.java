@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  Created on 07/05/2016. */
 public class Macro<T extends SerializableValue> {
 
-	private final String key;
+	private String key;
 	private final PropertyType propertyType;
 	protected ValueObserver<T> valueObserver;
 	protected String comment;
@@ -76,5 +76,9 @@ public class Macro<T extends SerializableValue> {
 
 	public PropertyType getPropertyType() {
 		return propertyType;
+	}
+	
+	public void setKey(@NotNull String key) {
+		this.key = key;
 	}
 }

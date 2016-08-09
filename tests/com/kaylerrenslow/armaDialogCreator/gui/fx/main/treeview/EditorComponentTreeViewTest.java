@@ -72,7 +72,7 @@ public class EditorComponentTreeViewTest extends Application {
 		}
 		
 		@Override
-		public int getCorrectedIndex(TreeItem parent, TreeItem childAdded) {
+		public int getCorrectedIndex(TreeItem parent, @NotNull TreeItem childAdded) {
 			return super.getCorrectedIndex(parent, childAdded);
 		}
 		

@@ -76,8 +76,9 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 </ul>
 	 The InputField will update it's value when:<br>
 	 <ul>
-	 <li>When submit button is pressed</li>
-	 <li>Pressing the 'enter' key</li>
+	 <li>When submit button is pressed and the data is valid</li>
+	 <li>Pressing the 'enter' key and the data is valid</li>
+	 <li>no data entered and text field loses focus and data is not allowed to be empty</li>
 	 </ul>
 	 
 	 @param fieldDataChecker the {@link InputFieldDataChecker} instance to use
@@ -90,7 +91,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			@Override
 			public void handle(ActionEvent event) {
 				//do not update value observer since value may be invalid
-				setValueFromText(getText(), true, false);
+				submitValue();
 			}
 		});
 		btnSubmit.setTooltip(new Tooltip(FXControlLang.InputField.SUBMIT_BTN_TOOLTIP));
@@ -102,7 +103,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			public void handle(javafx.scene.input.KeyEvent event) {
 				if (event.getCode() == KeyCode.ENTER) {
 					//do not update value observer since value may be invalid
-					setValueFromText(getText(), true, false);
+					submitValue();
 				}
 			}
 		};
@@ -392,6 +393,11 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 		
 		this.applyCss();
+	}
+	
+	/** A programmatically way of submitting the data (will do the same operations as actually pressing the submit button) */
+	public void submitValue() {
+		setValueFromText(getText(), true, false);
 	}
 	
 	

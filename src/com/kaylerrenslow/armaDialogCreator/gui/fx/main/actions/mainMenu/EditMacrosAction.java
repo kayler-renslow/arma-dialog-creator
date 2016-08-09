@@ -8,36 +8,27 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import org.jetbrains.annotations.NotNull;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.EditMacroPopup;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 
 /**
- @author Kayler
- Popup for editing an existing macro.
- Created on 07/10/2016. */
-public class EditMacroPopup extends MacroEditBasePopup {
-	
-	private final Macro editing;
-	
-	public EditMacroPopup(@NotNull Macro toEdit) {
-		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
-		this.editing = toEdit;
-		setToMacro(editing);
-	}
-	
+ Created by Kayler on 08/09/2016.
+ */
+public class EditMacrosAction implements EventHandler<ActionEvent> {
 	@Override
-	protected void ok() {
-		if (checkFields()) {
-			Macro macro = getMacro();
-			if (macro != null) {
-				editing.setValue(macro.getValue());
-				editing.setComment(macro.getComment());
-				editing.setKey(macro.getKey());
-			}
-			close();
+	public void handle(ActionEvent event) {
+		ChooseMacroPopup<SerializableValue> chooseMacroPopup = new ChooseMacroPopup<>(SerializableValue.class);
+		chooseMacroPopup.showAndWait();
+		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenMacro();
+		if (chosenMacro == null) {
+			return;
 		}
+		new EditMacroPopup(chosenMacro).showAndWait();
 	}
 }

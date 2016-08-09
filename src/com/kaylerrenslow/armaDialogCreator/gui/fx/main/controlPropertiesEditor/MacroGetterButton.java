@@ -12,28 +12,21 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.SplitMenuButton;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  @author Kayler
@@ -94,7 +87,7 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 		menuButton.getItems().addAll(miChooseMacro, miSeparator);
 
 		if (recentMacros.size() == 0) {
-			MenuItem miNoRecentMacros = new MenuItem(Lang.Macros.ChooseMacroPopup.NO_RECENT_MACROS);
+			MenuItem miNoRecentMacros = new MenuItem(Lang.Popups.ChooseMacro.NO_RECENT_MACROS);
 			miNoRecentMacros.setDisable(true);
 			menuButton.getItems().add(miNoRecentMacros);
 		} else {
@@ -126,78 +119,5 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 	public ValueObserver<Macro<V>> getChosenMacroValueObserver() {
 		return macroValueObserver;
 	}
-
-	private static class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VBox> {
-
-		private final ListView<Macro<V>> listViewMacros = new ListView<>();
-
-		public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
-			super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Macros.ChooseMacroPopup.POPUP_TITLE);
-			myStage.initModality(Modality.APPLICATION_MODAL);
-			myStage.initStyle(StageStyle.UTILITY);
-
-			initRootElement(macroClassType);
-			myStage.setResizable(false);
-		}
-
-		private void initRootElement(Class<V> macroClassType) {
-			myRootElement.setPadding(new Insets(10));
-			List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
-			for (Macro macro : macroList) {
-				if (macroClassType.isInstance(macro.getValue())) {
-					listViewMacros.getItems().add(macro);
-				}
-			}
-			if (listViewMacros.getItems().size() == 0) {
-				listViewMacros.setDisable(true);
-				Label lblMessage = new Label(Lang.Macros.ChooseMacroPopup.MO_AVAILABLE_MACROS);
-				myRootElement.getChildren().addAll(new Label(Lang.Macros.ChooseMacroPopup.AVAILABLE_MACROS), lblMessage);
-			} else {
-				HBox hbSplit = new HBox(5);
-				Label lblListViewMacros = new Label(Lang.Macros.ChooseMacroPopup.AVAILABLE_MACROS, listViewMacros);
-				lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
-
-				final double height = 100;
-				VBox vbRight = new VBox(10);
-				TextArea taComment = new TextArea();
-				taComment.setPrefHeight(height);
-				taComment.setEditable(false);
-				Label lblComment = new Label(Lang.Macros.COMMENT, taComment);
-				lblComment.setContentDisplay(ContentDisplay.BOTTOM);
-				TextArea taValue = new TextArea();
-				taValue.setEditable(false);
-				taValue.setPrefHeight(height);
-				Label lblValue = new Label(Lang.Macros.VALUE, taValue);
-				lblValue.setContentDisplay(ContentDisplay.BOTTOM);
-
-				vbRight.getChildren().addAll(lblValue, lblComment);
-
-				hbSplit.getChildren().addAll(lblListViewMacros, vbRight);
-				listViewMacros.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Macro>() {
-					@Override
-					public void changed(ObservableValue<? extends Macro> observable, Macro oldValue, Macro selected) {
-						if (selected != null) {
-							taComment.setText(selected.getComment());
-							taValue.setText(selected.getValue().toString());
-						}
-					}
-				});
-				myRootElement.getChildren().addAll(hbSplit);
-			}
-			myStage.sizeToScene();
-			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
-		}
-
-		@Override
-		protected void cancel() {
-			listViewMacros.getSelectionModel().clearSelection();
-			close();
-		}
-
-		/** Return the macro chosen. If null, no macro was chosen. */
-		@Nullable
-		public Macro<V> getChosenMacro() {
-			return listViewMacros.getSelectionModel().getSelectedItem();
-		}
-	}
+	
 }

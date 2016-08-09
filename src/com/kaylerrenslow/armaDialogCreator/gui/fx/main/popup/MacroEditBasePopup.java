@@ -40,7 +40,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
- Base class for a popup that manipulates/creates macro data. Extend this class to provide more functionality.
+ Base class for a popup that manipulates/creates macro data.
  Created on 07/15/2016. */
 public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	private final Env env;
@@ -143,6 +143,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	protected void setToMacro(@Nullable Macro m) {
 		if (m == null) {
 			inMacroKey.clear();
+			cbMacroType.setDisable(false);
 			editor = null;
 			stackPaneEditor.getChildren().clear();
 			stackPaneEditor.getChildren().add(lblNoTypeChosen);
@@ -150,8 +151,10 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 			return;
 		}
 		inMacroKey.setValue(m.getKey());
-		editor = ValueEditor.getEditor(m.getPropertyType(), env);
+		tfMacroDescription.setText(m.getComment());
 		cbMacroType.setValue(m.getPropertyType());
+		cbMacroType.setDisable(true);
+		editor.setValue(m.getValue());
 	}
 	
 	/** Return a new Macro instance with the current settings. */

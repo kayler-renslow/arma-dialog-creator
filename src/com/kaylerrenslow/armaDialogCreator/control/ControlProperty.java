@@ -48,7 +48,6 @@ public class ControlProperty {
 	private boolean dataOverride = false;
 	private SerializableValue cachedValue;
 	private @Nullable Macro myMacro;
-	private boolean allowExpressionEvaluating = false;
 
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
@@ -64,6 +63,7 @@ public class ControlProperty {
 		this.type = type;
 		valueObserver = new ValueObserver<>(value);
 		defaultValue = null;
+		cachedValue = value;
 	}
 
 	/**
@@ -202,14 +202,12 @@ public class ControlProperty {
 			if (this.myMacro != null) {
 				myMacro.getValueObserver().removeListener(macroListener);
 			}
-			if (cachedValue == null) {
-				return;
-			}
-			valueObserver.updateValue(cachedValue);
+			this.myMacro = null;
+			setValue(cachedValue);
 		} else {
-			cachedValue = valueObserver.getValue().deepCopy();
 			this.myMacro = m;
 			this.myMacro.getValueObserver().addValueListener(macroListener);
+			cachedValue = valueObserver.getValue().deepCopy();
 			setValue(this.myMacro.getValue());
 		}
 	}

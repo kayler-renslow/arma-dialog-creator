@@ -20,6 +20,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -58,17 +62,35 @@ public final class ArmaDialogCreator extends Application {
 	private ApplicationDataManager applicationDataManager;
 	
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
+	private final ObservableList<StagePopup> showOnFxThread = FXCollections.observableList(new LinkedList<>());
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
 		ExceptionHandler.init();
+		
+		showOnFxThread.addListener(new ListChangeListener<StagePopup>() {
+			@Override
+			public void onChanged(Change<? extends StagePopup> c) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						for (StagePopup popup : showOnFxThread) {
+							popup.show();
+						}
+						showOnFxThread.clear();
+					}
+				});
+				
+			}
+		});
+		
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator Main Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-				
+		
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
 		
@@ -80,6 +102,7 @@ public final class ArmaDialogCreator extends Application {
 		loadNewProject();
 	}
 	
+		
 	public static void loadNewProject() {
 		getPrimaryStage().close();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
@@ -137,6 +160,11 @@ public final class ArmaDialogCreator extends Application {
 	/** Show the given popup after the application's main window has been initialized */
 	public static void showAfterMainWindowLoaded(StagePopup<?> selectSaveLocationPopup) {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
+	}
+	
+	/**A convenient way of showing a popup on the Javafx thread.*/
+	public static void showOnJavaFxThread(StagePopup<?> popup) {
+		INSTANCE.showOnFxThread.add(popup);
 	}
 	
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

@@ -140,6 +140,14 @@ public interface Lang {
 			String BODY = "This is a beta. Things may be broken or lack features. Please report any issues on the issues page.";
 			String REPORT_TO_LINK = "https://github.com/kayler-renslow/arma-dialog-creator/issues";
 		}
+		
+		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup} */
+		interface ChooseMacro {
+			String POPUP_TITLE = "Choose a Macro";
+			String AVAILABLE_MACROS = "Available Macros";
+			String NO_AVAILABLE_MACROS = "No macros are available.";
+			String NO_RECENT_MACROS = "No recently chosen macros.";
+		}
 	}
 	
 	interface Misc {
@@ -202,13 +210,6 @@ public interface Lang {
 		String VALUE = "Value";
 		String CHOOSE_MACRO = "Choose Macro";
 		
-		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.MacroGetterButton.ChooseMacroPopup} */
-		interface ChooseMacroPopup {
-			String POPUP_TITLE = "Choose a Macro";
-			String AVAILABLE_MACROS = "Available Macros";
-			String MO_AVAILABLE_MACROS = "No macros are available.";
-			String NO_RECENT_MACROS = "No recently chosen macros.";
-		}
 	}
 	
 	static String getPopupWindowTitle(String popupName) {

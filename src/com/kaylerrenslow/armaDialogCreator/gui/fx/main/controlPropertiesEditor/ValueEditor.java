@@ -61,7 +61,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:
-				return new InputFieldValueEditor.DoubleEditor();
+				return new InputFieldValueEditor.ArmaStringEditor();
 			case ARRAY:
 				return new ArrayValueEditor(2);
 			case COLOR:

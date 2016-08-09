@@ -218,6 +218,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 		
+		if(c.getMacro() != null){
+			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
+		}
+		
 		MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
 		MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
 		MenuItem miMacro = new MenuItem(Lang.ControlPropertiesEditorPane.SET_TO_MACRO);

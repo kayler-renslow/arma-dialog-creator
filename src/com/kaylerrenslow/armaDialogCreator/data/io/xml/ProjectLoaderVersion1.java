@@ -77,15 +77,17 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			macroElements = XmlUtil.getChildElementsWithTagName(macrosGroupElement, "macro");
 			for (Element macroElement : macroElements) {
 				String key = macroElement.getAttribute("key");
-				String type = macroElement.getAttribute("type");
+				String propertyTypeAttr = macroElement.getAttribute("property-type-id");
 				String comment = macroElement.getAttribute("comment");
-				if (key.length() == 0 || type.length() == 0) {
-					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_KEY_OR_TYPE_F, key, type)));
+				if (key.length() == 0 || propertyTypeAttr.length() == 0) {
+					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_KEY_OR_TYPE_F, key, propertyTypeAttr)));
 					continue;
 				}
-				PropertyType propertyType = PropertyType.get(type);
-				if (propertyType == null) {
-					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_PROPERTY_TYPE_F, type)));
+				PropertyType propertyType;
+				try{
+					propertyType = PropertyType.findById(Integer.parseInt(propertyTypeAttr));
+				}catch (IllegalArgumentException e){ //will catch number format exception
+					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_PROPERTY_TYPE_F, propertyTypeAttr)));
 					continue;
 				}
 				SerializableValue value = getValue(propertyType, macroElement);
@@ -169,7 +171,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					for (ArmaControl add : controlsToAdd) {
 						group.getControls().add(add);
 					}
-					
 					break;
 				}
 				case "folder": {

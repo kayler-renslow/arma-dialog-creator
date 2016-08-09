@@ -25,14 +25,11 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
  Created by Kayler on 06/19/2016.
  */
 public class StaticDataCreator implements TreeItemDataCreator<TreeItemEntry> {
-	private static int id = 0; //delete this later on as its for testing
-
 	public static final StaticDataCreator INSTANCE = new StaticDataCreator();
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		StaticControl control = new StaticControl("static_control" + id, 0, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv());
-		id++;
+		StaticControl control = new StaticControl("static_control", 0, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression("1", getEnv()), new Expression("1", getEnv()), DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv());
 		return new ControlTreeItemEntry(control);
 	}
 
