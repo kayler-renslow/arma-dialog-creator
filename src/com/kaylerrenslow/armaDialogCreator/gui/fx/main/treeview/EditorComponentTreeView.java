@@ -54,14 +54,14 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		
 		private void doOperations(Change<? extends ArmaControl> c) {
-			ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
-			ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
+			final ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
+			final ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
 			
 			int ind = 0;
 			ArmaControl controlToAdd;
 			while (ind < toAdd.size()) {
 				controlToAdd = toAdd.get(ind);
-				ObservableList<ArmaControl> insertList = backgroundControlEditor ? controlToAdd.getDisplay().getBackgroundControls() : controlToAdd.getDisplay().getControls();
+				ObservableList<ArmaControl> insertList = backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 				int insertIndex = insertList.indexOf(controlToAdd);
 				TreeItem<T> newTreeItem = createTreeItemForControl(controlToAdd);
 				getRoot().getChildren().add(insertIndex, newTreeItem);
@@ -71,7 +71,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				ind++;
 			}
 			if (toRemove.size() > 0) {
-				LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
+				final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
 				TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
 					
 					@Override
@@ -96,6 +96,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				while (removeMeWhenDone.size() > 0) {
 					Pair<TreeItem<T>, TreeItem<T>> removed = removeMeWhenDone.removeFirst();
 					removed.getKey().getChildren().remove(removed.getValue());
+					if(removed.getValue().getValue() instanceof ControlGroupTreeItemEntry){
+						ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removed.getValue().getValue();
+						removeTreeItemEntry.getControlGroup().getControls().removeListener(controlGroupListener);
+					}
 				}
 			}
 		}
@@ -110,12 +114,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		
 		private void doOperations(Change<? extends ArmaControl> c) {
-			ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
-			ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
+			final ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
+			final ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
 			
-			LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
-			LinkedList<Pair<TreeItem<T>, ArmaControl>> addMeWhenDone = new LinkedList<>();
-			
+			final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
+			final LinkedList<Pair<TreeItem<T>, ArmaControl>> addMeWhenDone = new LinkedList<>();
 			
 			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
 				
@@ -150,6 +153,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			if (addMeWhenDone.size() != toAdd.size()) {
 				throw new IllegalStateException("too many or too few controls were located for insertion. found:" + addMeWhenDone.size() + ", requested:" + toAdd.size());
 			}
+			
 			if (removeMeWhenDone.size() != toRemove.size()) {
 				throw new IllegalStateException("too many or too few controls were located for removal. found:" + removeMeWhenDone.size() + ", requested:" + toRemove.size());
 			}
@@ -157,9 +161,14 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			while (removeMeWhenDone.size() > 0) {
 				removeMe = removeMeWhenDone.removeFirst();
 				removeMe.getKey().getChildren().remove(removeMe.getValue());
+				if(removeMe.getValue().getValue() instanceof ControlGroupTreeItemEntry){
+					ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removeMe.getValue().getValue();
+					removeTreeItemEntry.getControlGroup().getControls().removeListener(controlGroupListener);
+				}
+				
 			}
-			Pair<TreeItem<T>, ArmaControl> addMe;
 			
+			Pair<TreeItem<T>, ArmaControl> addMe;
 			while (addMeWhenDone.size() > 0) {
 				addMe = addMeWhenDone.removeFirst();
 				ArmaControlGroup group = (ArmaControlGroup) addMe.getValue().getParent();
@@ -170,11 +179,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 	};
 	
-	public EditorComponentTreeView(ArmaDisplay editingDisplay, boolean backgroundControlEditor) {
+	public EditorComponentTreeView(boolean backgroundControlEditor) {
 		super(null);
-		this.editingDisplay = editingDisplay;
 		this.backgroundControlEditor = backgroundControlEditor;
-		setDisplayListener(true);
 		setContextMenu(controlCreationContextMenu);
 		EditorComponentTreeView treeView = this;
 		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<T>>() {
@@ -200,7 +207,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 	}
 	
-	/**Set whether or not the given control group's controls listener is activated*/
+	/** Set whether or not the given control group's controls listener is activated */
 	private void setControlGroupListener(boolean activate, ArmaControlGroup group) {
 		if (activate) {
 			group.getControls().addListener(controlGroupListener);
@@ -253,7 +260,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			if (control instanceof ArmaControlGroup) {
 				addControls(createTreeItemForControl(control), ((ArmaControlGroup) control).getControls());
 			} else {
-				addChildToParent(parentTreeItem, createTreeItemForControl(control), parentTreeItem.getChildren().size());
+				parentTreeItem.getChildren().add(createTreeItemForControl(control));
 			}
 		}
 	}
@@ -354,7 +361,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				editingDisplay.getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 			}
 		}
-		setDisplayListener(false);
+		setDisplayListener(true);
 	}
 	
 	@Override
@@ -364,7 +371,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		if (toRemove.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		setDisplayListener(false);
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
 		if (parent == getRoot()) {
 			if (backgroundControlEditor) {
@@ -388,14 +394,15 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				group.getControlGroup().getControls().remove(toRemoveControlEntry.getMyArmaControl());
 				setControlGroupListener(true, group.getControlGroup());
 			} else {
+				setDisplayListener(false);
 				if (backgroundControlEditor) {
 					editingDisplay.getBackgroundControls().remove(toRemoveControlEntry.getMyArmaControl());
 				} else {
 					editingDisplay.getControls().remove(toRemoveControlEntry.getMyArmaControl());
 				}
+				setDisplayListener(true);
 			}
 		}
-		setDisplayListener(false);
 		
 	}
 	//@formatter:off

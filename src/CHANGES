@@ -1,6 +1,6 @@
 Added:
-    tree view syncing between control and display editing
+    none
 Changed:
     none
 Fixed:
-    none
+    when removing control group from tree view, the control group listener wasn't removed

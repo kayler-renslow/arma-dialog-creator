@@ -44,8 +44,8 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
-		treeViewMain = new EditorComponentTreeView<>(canvasView.getEditingDisplay(), false);
-		treeViewBg = new EditorComponentTreeView<>(canvasView.getEditingDisplay(), true);
+		treeViewMain = new EditorComponentTreeView<>(false);
+		treeViewBg = new EditorComponentTreeView<>(true);
 		initializeUI();
 	}
 	

@@ -99,11 +99,11 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
-		e.printStackTrace();
+		e.printStackTrace(System.out);
 		try {
 			error(t, e);
 		} catch (Throwable t1) {
-			t1.printStackTrace();
+			t1.printStackTrace(System.out);
 		}
 	}
 }

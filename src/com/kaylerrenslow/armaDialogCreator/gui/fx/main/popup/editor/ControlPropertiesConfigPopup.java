@@ -102,6 +102,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					if (popup.isMoveOut()) {
 						ArmaControlGroup group = (ArmaControlGroup) c.getParent();
 						group.getControls().remove(c);
+					} else {
+						return;
 					}
 				} else if (c.getParent() instanceof ArmaDisplay) {
 					if (selected) {
@@ -182,8 +184,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myStage.initStyle(StageStyle.UTILITY);
 			myRootElement.setPadding(new Insets(10d));
-			btnOk.setText(Lang.Confirmation.YES);
-			btnCancel.setText(Lang.Confirmation.NO);
+			myStage.sizeToScene();
 		}
 		
 		@Override

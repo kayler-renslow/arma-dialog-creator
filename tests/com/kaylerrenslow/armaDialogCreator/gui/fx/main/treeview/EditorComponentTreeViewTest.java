@@ -13,7 +13,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
@@ -68,7 +67,7 @@ public class EditorComponentTreeViewTest extends Application {
 	private static class TestTreeView extends EditorComponentTreeView {
 		
 		public TestTreeView() {
-			super(new ArmaDisplay(0), true);
+			super(true);
 		}
 		
 		@Override
