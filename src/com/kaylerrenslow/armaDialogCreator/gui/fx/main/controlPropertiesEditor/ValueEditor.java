@@ -41,6 +41,14 @@ public interface ValueEditor<V extends SerializableValue> {
 	
 	/** Used for {@link Node#requestFocus()} but should target the specific editor (TextField, ColorPicker, etc) */
 	void focusToEditor();
+		
+	/**
+	 Return true if the {@link #getRootNode()}'s width should fill the parent's width.
+	 False if the width should be whatever it is initially. By default, will return false.
+	 */
+	default boolean displayFullWidth() {
+		return false;
+	}
 	
 	/**
 	 Get a new ValueEditor instance associated with the given property type.

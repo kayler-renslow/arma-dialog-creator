@@ -18,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
  */
 public enum ControlStyle {
 	// Static styles
+	NA(0, LookupLang.ControlStyle.NA, LookupLang.ControlStyle.Doc.NA),
 	POS(0x0F, LookupLang.ControlStyle.POS, LookupLang.ControlStyle.Doc.POS),
 	HPOS(0x03, LookupLang.ControlStyle.HPOS, LookupLang.ControlStyle.Doc.HPOS),
 	VPOS(0x0C, LookupLang.ControlStyle.VPOS, LookupLang.ControlStyle.Doc.VPOS),
@@ -73,15 +74,18 @@ public enum ControlStyle {
 	public static final ControlStyle[] EMPTY = new ControlStyle[0];
 	public final int styleId;
 	public final String displayName;
-	/** A ControlStyleGroup instance with only this instance's ControlStyle inside */
-	public final ControlStyleGroup styleGroup;
 	public final String documentation;
 	
 	ControlStyle(int styleId, String displayName, String documentation) {
 		this.styleId = styleId;
 		this.displayName = displayName;
 		this.documentation = documentation != null ? documentation : LookupLang.ControlStyle.Doc.NO_DOC;
-		styleGroup = new ControlStyleGroup(new ControlStyle[]{this});
+		
+	}
+	
+	/** A ControlStyleGroup instance with only this instance's ControlStyle inside */
+	public ControlStyleGroup getStyleGroup(){
+		return new ControlStyleGroup(new ControlStyle[]{this});
 	}
 	
 	/** @throws IllegalArgumentException when id couldn't be matched */

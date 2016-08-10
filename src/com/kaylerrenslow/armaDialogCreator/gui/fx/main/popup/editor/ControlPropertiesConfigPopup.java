@@ -11,6 +11,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
@@ -20,16 +22,18 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.geometry.Orientation;
+import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
@@ -37,31 +41,32 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- Created by Kayler on 05/31/2016.
- */
+ @author Kayler
+ Used for editing a control and it's control properties.
+ Created on 05/31/2016. */
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
-
+	
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
 		initializePopup();
 		editorPane = new ControlPropertiesEditorPane(control);
 		initializeToControl(control);
 	}
-
+	
 	private void initializePopup() {
 		myRootElement.getStyleClass().add("rounded-node");
 		myStage.initStyle(StageStyle.TRANSPARENT);
-
+		
 		myScene.setFill(Color.TRANSPARENT);
 		final double padding = 20.0;
 		myRootElement.setPadding(new Insets(padding, padding, padding, padding));
 	}
-
+	
 	/**
 	 Configures the popup to edit the given control.
-
+	 
 	 @return true if the initialization was successful, or false if the initialization was canceled
 	 */
 	public boolean initializeToControl(ArmaControl c) {
@@ -84,10 +89,44 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.getChildren().clear();
 		addCloseButton();
 		myRootElement.getChildren().add(editorPane);
+		
+		CheckBox cbIsBackgroundControl = new CheckBox(Lang.Popups.ControlPropertiesConfig.IS_BACKGROUND_CONTROL);
+		cbIsBackgroundControl.setSelected(c.isBackgroundControl());
+		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+				ArmaDisplay display = c.getDisplay();
+				if (c.getParent() instanceof ArmaControlGroup) {
+					MoveOutOfControlGroupPopup popup = new MoveOutOfControlGroupPopup(c);
+					popup.showAndWait();
+					if (popup.isMoveOut()) {
+						ArmaControlGroup group = (ArmaControlGroup) c.getParent();
+						group.getControls().remove(c);
+					}
+				} else if (c.getParent() instanceof ArmaDisplay) {
+					if (selected) {
+						display.getControls().remove(c);
+					} else {
+						display.getBackgroundControls().remove(c);
+					}
+				} else {
+					throw new IllegalStateException("unknown parent type:" + c.getParent().getClass().getName());
+				}
+				
+				if (selected) {
+					display.getBackgroundControls().add(c);
+				} else {
+					display.getControls().add(c);
+				}
+			}
+		});
+		
+		myRootElement.getChildren().add(cbIsBackgroundControl);
+		
 		return true;
 	}
-
-
+	
+	
 	private void addCloseButton() {
 		Button btnClose = new Button("x");
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
@@ -108,25 +147,54 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		});
 		btnClose.getStyleClass().add("close-button");
-
+		
 		ComboBox<String> cbExtendClass = new ComboBox<>(FXCollections.observableArrayList("-", "RscStatic", "RscPicture"));
 		cbExtendClass.getSelectionModel().select(0);
 		Label lblExtendClass = new Label(Lang.Popups.ControlPropertiesConfig.EXTEND_CLASS, cbExtendClass);
-
+		
 		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
-
+	
 	private void setBorderColor(Color bg) {
 		myRootElement.setStyle(String.format("-fx-border-color: rgba(%f%%,%f%%,%f%%,%f);", bg.getRed() * 100.0, bg.getGreen() * 100.0, bg.getBlue() * 100.0, bg.getOpacity()));
 	}
-
+	
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
 		super.onCloseRequest(event);
 	}
-
+	
 	public ArmaControl getControl() {
 		return control;
 	}
-
+	
+	private static class MoveOutOfControlGroupPopup extends StagePopup<VBox> {
+		
+		private boolean moveOut = false;
+		
+		public MoveOutOfControlGroupPopup(ArmaControl c) {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE);
+			myRootElement.getChildren().addAll(
+					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName())),
+					new Separator(Orientation.HORIZONTAL),
+					getResponseFooter(true, true, false)
+			);
+			myStage.initModality(Modality.APPLICATION_MODAL);
+			myStage.initStyle(StageStyle.UTILITY);
+			myRootElement.setPadding(new Insets(10d));
+			btnOk.setText(Lang.Confirmation.YES);
+			btnCancel.setText(Lang.Confirmation.NO);
+		}
+		
+		@Override
+		protected void ok() {
+			moveOut = true;
+			super.ok();
+		}
+		
+		public boolean isMoveOut() {
+			return moveOut;
+		}
+	}
+	
 }

@@ -72,18 +72,18 @@ public class ControlStyleGroup extends SerializableValue {
 		}
 		return s;
 	}
-		
+	
 	@Override
 	public String toString() {
 		return toString(values);
 	}
 	
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
-		if(o instanceof ControlStyleGroup){
+		if (o instanceof ControlStyleGroup) {
 			ControlStyleGroup other = (ControlStyleGroup) o;
 			return Arrays.equals(this.values, other.values);
 		}

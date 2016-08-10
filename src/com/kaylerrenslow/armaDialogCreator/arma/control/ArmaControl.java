@@ -18,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,6 +44,8 @@ public class ArmaControl extends ControlClass implements Control {
 	
 	private Expression x, y, width, height;
 	
+	private ControlHolder<ArmaControl> parent;
+	private ArmaDisplay display;
 	
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
@@ -222,6 +225,26 @@ public class ArmaControl extends ControlClass implements Control {
 		setHSilent(this.height);
 	}
 	
+	void setParent(@NotNull ControlHolder<ArmaControl> parent){
+		this.parent = parent;
+	}
+	
+	void setDisplay(@NotNull ArmaDisplay display){
+		this.display = display;
+	}
+	
+	@Override
+	@NotNull
+	public ControlHolder<ArmaControl> getParent() {
+		return parent;
+	}
+	
+	@Override
+	@NotNull
+	public ArmaDisplay getDisplay() {
+		return display;
+	}
+	
 	@Override
 	protected void updateProperties() {
 		if (xProperty.getValue() != this.x || yProperty.getValue() != this.y || wProperty.getValue() != this.width || hProperty.getValue() != this.height) {
@@ -254,6 +277,7 @@ public class ArmaControl extends ControlClass implements Control {
 	
 	/** Set and define the style control property */
 	protected final void defineStyle(ControlStyleGroup style) {
+		styleProperty.setValue(style);
 		setStyle(style);
 	}
 	

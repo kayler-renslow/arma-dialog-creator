@@ -10,14 +10,18 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Comparator;
 
 /**
  Created by Kayler on 08/04/2016.
  */
 public interface Control {
+	/** Get the {@link CanvasComponent} instance used for rendering the control is a {@link com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas} */
 	CanvasComponent getRenderer();
 	
+	/** Invoked when the resolution is changed */
 	void resolutionUpdate(Resolution newResolution);
 	
 	Comparator<Control> RENDER_PRIORITY_COMPARATOR = new Comparator<Control>() {
@@ -26,4 +30,27 @@ public interface Control {
 			return CanvasComponent.RENDER_PRIORITY_COMPARATOR.compare(o1.getRenderer(), o2.getRenderer());
 		}
 	};
+	
+	/** Get the parent of the control. */
+	@NotNull
+	ControlHolder<? extends Control> getParent();
+	
+	/**Get the display that the control is associated with*/
+	@NotNull
+	Display<? extends Control> getDisplay();
+	
+	/**
+	 Return true if the control is a background control (inside {@link Display#getBackgroundControls()}), false otherwise.<br>
+	 Will return true if the control is within a {@link ControlGroup} which is then inside the background controls.
+	 */
+	default boolean isBackgroundControl() {
+		if (getParent() instanceof Display) {
+			return ((Display) getParent()).getBackgroundControls().contains(this);
+		}
+		if (getParent() instanceof ControlGroup) {
+			return ((ControlGroup) getParent()).isBackgroundControl();
+		} else {
+			throw new IllegalStateException("unknown parent type:" + getParent().getClass().getName());
+		}
+	}
 }

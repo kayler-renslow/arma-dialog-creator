@@ -127,9 +127,11 @@ public interface LookupLang {
 		String MB_BUTTON_OK = "Message Box OK";
 		String MB_BUTTON_CANCEL = "Message Box Cancel";
 		String MB_BUTTON_USER = "Message Box User";
+		String NA = "None Applicable";
 		
 		interface Doc {
 			String NO_DOC = "No documentation.";
+			String NA = "Used for when there are no styles, but an entry is required regardless.";
 			String POS = null;
 			String HPOS = null;
 			String VPOS = null;

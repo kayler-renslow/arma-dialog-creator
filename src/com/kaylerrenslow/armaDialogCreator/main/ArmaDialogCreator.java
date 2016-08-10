@@ -62,21 +62,24 @@ public final class ArmaDialogCreator extends Application {
 	private ApplicationDataManager applicationDataManager;
 	
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
-	private final ObservableList<StagePopup> showOnFxThread = FXCollections.observableList(new LinkedList<>());
+	private final LinkedList<StagePopup> showOnFxThread = new LinkedList<>();
+	private final ObservableList<StagePopup> showOnFxThreadOL = FXCollections.observableList(showOnFxThread);
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
 		ExceptionHandler.init();
 		
-		showOnFxThread.addListener(new ListChangeListener<StagePopup>() {
+		showOnFxThreadOL.addListener(new ListChangeListener<StagePopup>() {
 			@Override
 			public void onChanged(Change<? extends StagePopup> c) {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						for (StagePopup popup : showOnFxThread) {
-							popup.show();
+						while (c.next()) {
+							for (StagePopup popup : c.getAddedSubList()) {
+								popup.show();
+							}
 						}
 						showOnFxThread.clear();
 					}
@@ -102,7 +105,7 @@ public final class ArmaDialogCreator extends Application {
 		loadNewProject();
 	}
 	
-		
+	
 	public static void loadNewProject() {
 		getPrimaryStage().close();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
@@ -162,9 +165,9 @@ public final class ArmaDialogCreator extends Application {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
 	}
 	
-	/**A convenient way of showing a popup on the Javafx thread.*/
+	/** A convenient way of showing a popup on the Javafx thread. */
 	public static void showOnJavaFxThread(StagePopup<?> popup) {
-		INSTANCE.showOnFxThread.add(popup);
+		INSTANCE.showOnFxThreadOL.add(popup);
 	}
 	
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

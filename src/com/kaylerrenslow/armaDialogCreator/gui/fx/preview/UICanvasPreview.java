@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.preview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import javafx.scene.input.MouseButton;

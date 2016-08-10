@@ -95,12 +95,20 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 				editor = ValueEditor.getEditor(selected, env);
 				stackPaneEditor.getChildren().clear();
 				stackPaneEditor.getChildren().add(editor.getRootNode());
+				if (editor.displayFullWidth()) {
+					HBox.setHgrow(stackPaneEditor, Priority.ALWAYS);
+				} else {
+					HBox.setHgrow(stackPaneEditor, Priority.SOMETIMES);
+				}
 			}
 		});
 		
 		VBox vbTop = new VBox(5);
 		vbTop.setFillWidth(true);
-		vbTop.getChildren().addAll(hbox(Lang.Popups.MacroEdit.MACRO_KEY, inMacroKey), hbox(Lang.Popups.MacroEdit.MACRO_TYPE, cbMacroType), hbox(Lang.Popups.MacroEdit.MACRO_VALUE, stackPaneEditor), hbox(Lang.Popups.MacroEdit.MACRO_COMMENT, tfMacroDescription));
+		HBox hboxValueEditor = new HBox(new Label(Lang.Popups.MacroEdit.MACRO_VALUE), stackPaneEditor);
+		
+		vbTop.getChildren().addAll(hbox(Lang.Popups.MacroEdit.MACRO_KEY, inMacroKey), hbox(Lang.Popups.MacroEdit.MACRO_TYPE, cbMacroType), hboxValueEditor, hbox(Lang.Popups.MacroEdit.MACRO_COMMENT,
+				tfMacroDescription));
 		myRootElement.getChildren().add(vbTop);
 		VBox.setVgrow(vbTop, Priority.ALWAYS);
 		

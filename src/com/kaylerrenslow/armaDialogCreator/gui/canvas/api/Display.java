@@ -25,22 +25,16 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	ObservableList<C> getBackgroundControls();
 	
 	/**
-	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()})
+	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()}). This will not iterate through controls
+	 within possible control groups in either controls list or background controls list.
 	 
 	 @param backwards if true, the iterator will iterate through the other controls from size-1 to 0 and then the background controls in reverse (starting from size-1 to 0).<br>
 	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
 	 */
 	default Iterator<C> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<>(backwards, new ObservableList[]{getControls(), getBackgroundControls()});
+		return new ListMergeIterator<C, ObservableList<C>>(backwards, new ObservableList[]{getControls(), getBackgroundControls()});
 	}
 	
-	/**
-	 Return true if the contorl is a background control (inside {@link #getBackgroundControls()}), false otherwise.<br>
-	 Default implementation is <pre>{@link #getBackgroundControls()}.contains(control)</pre>
-	 */
-	default boolean isBackgroundControl(C control) {
-		return getBackgroundControls().contains(control);
-	}
 	
 	void resolutionUpdate(Resolution newResolution);
 	

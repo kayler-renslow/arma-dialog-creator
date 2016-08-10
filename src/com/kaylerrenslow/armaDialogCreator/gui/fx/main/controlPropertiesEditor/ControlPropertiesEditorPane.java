@@ -218,7 +218,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 		
-		if(c.getMacro() != null){
+		if (c.getMacro() != null) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
 		
@@ -550,6 +550,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private boolean updateFromSelection = false;
 		
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
 			if (control != null && control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
@@ -632,13 +633,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 		
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return ControlStyleGroup.class;
+		public boolean displayFullWidth() {
+			return false;
 		}
 		
 		@Override
-		public boolean displayFullWidth() {
-			return true;
+		public Class<? extends SerializableValue> getMacroClass() {
+			return ControlStyleGroup.class;
 		}
 	}
 	
@@ -676,7 +677,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					if (controlProperty.getValue() != null) {
 						inputField.setToButton(false);
 						inputField.setValue((C) controlProperty.getValue());
-					}else{
+					} else {
 						setValue(null);
 					}
 				}
@@ -814,7 +815,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		
 		@Override
 		public void resetToDefaultValue() {
-			if(controlProperty.getDefaultValue() == null){
+			if (controlProperty.getDefaultValue() == null) {
 				setValue(null);
 				return;
 			}
@@ -836,6 +837,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return AColor.class;
+		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return false;
 		}
 	}
 	
@@ -899,7 +905,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-				
+		
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -909,6 +915,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public Class<? extends SerializableValue> getMacroClass() {
 			return SVBoolean.class;
 		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return false;
+		}
 	}
 	
 	/**
@@ -917,13 +928,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	@SuppressWarnings("unchecked")
 	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
-				
+		
 		private final ControlProperty controlProperty;
 		private SVStringArray svStringArray;
 		
 		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
-			if(true){
+			if (true) {
 				throw new RuntimeException("implement the rest of this code");
 			}
 			this.controlProperty = controlProperty;
@@ -976,7 +987,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 						for (int i = 0; i < editors.size(); i++) {
 							editors.get(i).setValue(values[i]);
 						}
-					}else{
+					} else {
 						for (InputField<ArmaStringChecker, String> editor : editors) {
 							editor.setValue(null);
 						}
@@ -1022,7 +1033,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-				
+		
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -1031,6 +1042,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return SVStringArray.class;
+		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return false;
 		}
 	}
 	
@@ -1109,6 +1125,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return AFont.class;
+		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return false;
 		}
 	}
 	
@@ -1238,7 +1259,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void disableEditing(boolean disable) {
 			getRootNode().setDisable(disable);
 		}
-				
+		
 		@Override
 		public void setToMode(EditMode mode) {
 			setToOverride(mode == EditMode.OVERRIDE);
@@ -1247,6 +1268,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return ASound.class;
+		}
+		
+		@Override
+		public boolean displayFullWidth() {
+			return false;
 		}
 	}
 }

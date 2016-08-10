@@ -67,6 +67,11 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	public void focusToEditor() {
 		inputField.requestFocus();
 	}
+		
+	@Override
+	public boolean displayFullWidth() {
+		return true;
+	}
 	
 	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{
 		public IntegerEditor() {

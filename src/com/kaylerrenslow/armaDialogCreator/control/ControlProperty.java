@@ -24,12 +24,12 @@ import java.util.Arrays;
  */
 public class ControlProperty {
 	public static final ControlProperty[] EMPTY = new ControlProperty[0];
-
+	
 	/** Truncates the double to remove insignificant decimal places */
 	public static double truncate(double x) {
 		return MathUtil.truncate(x, 8);
 	}
-
+	
 	private final ValueListener<?> macroListener = new ValueListener<Object>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
@@ -39,19 +39,20 @@ public class ControlProperty {
 			setValue(myMacro.getValue());
 		}
 	};
-
+	
 	private final String name;
 	private final PropertyType type;
 	private final ControlPropertyLookup propertyLookup;
 	private ValueObserver<SerializableValue> valueObserver;
 	private SerializableValue defaultValue;
 	private boolean dataOverride = false;
-	private SerializableValue cachedValue;
+	/** Value to switch to when the set macro becomes null. */
+	private SerializableValue beforeMacroValue;
 	private @Nullable Macro myMacro;
-
+	
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
-
+	 
 	 @param propertyLookup unique lookup for the property.
 	 @param name name of the property
 	 @param type type of the property (integer, float, array, String)
@@ -63,12 +64,12 @@ public class ControlProperty {
 		this.type = type;
 		valueObserver = new ValueObserver<>(value);
 		defaultValue = null;
-		cachedValue = value;
+		beforeMacroValue = value;
 	}
-
+	
 	/**
 	 This constructor is used for when the values of the property are not set but the number of values stored is determined. For more information on this class, see constructor ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type, @NotNull String[] values)
-
+	 
 	 @param propertyLookup propertyLookup
 	 @param name name of property
 	 @param type type of property
@@ -76,8 +77,8 @@ public class ControlProperty {
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, @NotNull PropertyType type) {
 		this(propertyLookup, name, type, null);
 	}
-
-
+	
+	
 	/**
 	 Creates a control property of type {@link SVInteger}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
@@ -85,7 +86,7 @@ public class ControlProperty {
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, int value) {
 		this(propertyLookup, name, PropertyType.INT, new SVInteger(value));
 	}
-
+	
 	/**
 	 Creates a control property of type {@link SVDouble}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
@@ -93,7 +94,7 @@ public class ControlProperty {
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, double value) {
 		this(propertyLookup, name, PropertyType.FLOAT, new SVDouble(value));
 	}
-
+	
 	/**
 	 Creates a control property of type {@link SVBoolean}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
@@ -101,7 +102,7 @@ public class ControlProperty {
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, boolean value) {
 		this(propertyLookup, name, PropertyType.BOOLEAN, SVBoolean.get(value));
 	}
-
+	
 	/**
 	 Creates a control property of type {@link SVString}<br>
 	 See constructor ControlProperty(ControlPropertyLookup propertyLookup, String name, PropertyType type, String[] values) for more information
@@ -109,51 +110,51 @@ public class ControlProperty {
 	public ControlProperty(ControlPropertyLookup propertyLookup, @NotNull String name, String value) {
 		this(propertyLookup, name, PropertyType.BOOLEAN, new SVString(value));
 	}
-
+	
 	@NotNull
 	public ControlPropertyLookup getPropertyLookup() {
 		return propertyLookup;
 	}
-
+	
 	/** Return true if the data may not match the type of the control property. This is set by invoking {@link #setDataOverride(boolean)} */
 	public boolean isDataOverride() {
 		return dataOverride;
 	}
-
+	
 	/** @see #isDataOverride() */
 	public void setDataOverride(boolean dataOverride) {
 		this.dataOverride = dataOverride;
 	}
-
+	
 	@NotNull
 	public String getName() {
 		return name;
 	}
-
+	
 	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
 	public boolean isPropertyType(PropertyType type) {
 		return this.type == type;
 	}
-
+	
 	@NotNull
 	public PropertyType getPropertyType() {
 		return type;
 	}
-
+	
 	@Nullable
 	public SerializableValue getValue() {
 		return valueObserver.getValue();
 	}
-
+	
 	/** Get the default value for the property */
 	@Nullable
 	public SerializableValue getDefaultValue() {
 		return defaultValue;
 	}
-
+	
 	/**
 	 Set the default value.
-
+	 
 	 @param setValue if true, the ControlProperty value will also be set to the given defaultValue
 	 @param defaultValue new default value
 	 */
@@ -163,38 +164,38 @@ public class ControlProperty {
 			setValue(defaultValue);
 		}
 	}
-
+	
 	/**
 	 Sets the default value to an integer (uses {@link SVInteger}) (same thing as calling setDefaultValue(new SVInteger(defaultValue)))
-
+	 
 	 @see #setDefaultValue(boolean, SerializableValue)
 	 */
 	public void setDefaultValue(boolean setValue, int defaultValue) {
 		setDefaultValue(setValue, new SVInteger(defaultValue));
 	}
-
+	
 	/**
 	 Sets the default value to an integer (uses {@link SVDouble}) (same thing as calling setDefaultValue(new SVDouble(defaultValue)))
-
+	 
 	 @see #setDefaultValue(boolean, SerializableValue)
 	 */
 	public void setDefaultValue(boolean setValue, double defaultValue) {
 		setDefaultValue(setValue, new SVDouble(defaultValue));
 	}
-
+	
 	/**
 	 Sets the default value to a String (uses {@link SVString}) (same thing as calling setDefaultValue(new SVString(defaultValue)))
-
+	 
 	 @see #setDefaultValue(boolean, SerializableValue)
 	 */
 	public void setDefaultValue(boolean setValue, String defaultValue) {
 		setDefaultValue(setValue, new SVString(defaultValue));
 	}
-
+	
 	/**
 	 Set the control property's values equal to a macro. The properties prior to being set to the macro will be preserved.
 	 If this method is invoked again with the macro=null, the preserved values will be inserted. In either scenario, the values observer will be notified of the change.
-
+	 
 	 @param m the macro to set to, or null if not to set to macro
 	 */
 	public void setValueToMacro(@Nullable Macro m) {
@@ -203,24 +204,24 @@ public class ControlProperty {
 				myMacro.getValueObserver().removeListener(macroListener);
 			}
 			this.myMacro = null;
-			setValue(cachedValue);
+			setValue(beforeMacroValue);
 		} else {
 			this.myMacro = m;
 			this.myMacro.getValueObserver().addValueListener(macroListener);
-			cachedValue = valueObserver.getValue().deepCopy();
+			beforeMacroValue = valueObserver.getValue();
 			setValue(this.myMacro.getValue());
 		}
 	}
-
+	
 	/** Get the macro that the control property is using, or null if not using a macro */
 	@Nullable
 	public Macro getMacro() {
 		return myMacro;
 	}
-
+	
 	/**
 	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger}, this method will succeed.
-
+	 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger}
 	 */
 	public int getIntValue() {
@@ -232,10 +233,10 @@ public class ControlProperty {
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
-
+	
 	/**
 	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble}, this method will succeed.
-
+	 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble}
 	 */
 	public double getFloatValue() {
@@ -247,10 +248,10 @@ public class ControlProperty {
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
-
+	
 	/**
 	 Get the ControlProperty's value as an boolean. If the value is of type {@link SVBoolean}, this method will succeed.
-
+	 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVBoolean}
 	 */
 	public boolean getBooleanValue() {
@@ -262,7 +263,7 @@ public class ControlProperty {
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
-
+	
 	/** Return a String with all the value(s) formatted for header export. If there is more than 1 value in this control property, the curly braces ('{','}') will be prepended and appended before the values */
 	public String getValuesForExport() {
 		if (getValue() == null) {
@@ -286,39 +287,40 @@ public class ControlProperty {
 		}
 		return ret + "}";
 	}
-
-
+	
+	
 	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
 	@NotNull
 	public ValueObserver<SerializableValue> getValueObserver() {
 		return valueObserver;
 	}
-
-	/** Set ControlProperty's value. */
+	
+	/** Set ControlProperty's value. If a macro is set to the control property, the macro's value will be undisturbed, however, the control property's value will be set to this value. */
 	public void setValue(@Nullable SerializableValue v) {
+		beforeMacroValue = v;
 		valueObserver.updateValue(v);
 	}
-
+	
 	/** Set the first value to int. This will just wrap the int in {@link SVInteger} */
 	public void setValue(int v) {
-		valueObserver.updateValue(new SVInteger(v));
+		setValue(new SVInteger(v));
 	}
-
+	
 	/** Set the first value to int. This will just wrap the int in {@link SVDouble} */
 	public void setValue(double v) {
-		valueObserver.updateValue(new SVDouble(v));
+		setValue(new SVDouble(v));
 	}
-
+	
 	/** Set the first value to int. This will just wrap the int in {@link SVBoolean} */
 	public void setValue(boolean v) {
-		valueObserver.updateValue(SVBoolean.get(v));
+		setValue(SVBoolean.get(v));
 	}
-
+	
 	/** Set the first value to String. This will just wrap the String in {@link SVString} */
 	public void setValue(String v) {
-		valueObserver.updateValue(new SVString(v));
+		setValue(new SVString(v));
 	}
-
+	
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -330,7 +332,7 @@ public class ControlProperty {
 		ControlProperty other = (ControlProperty) o;
 		return getName().equals(other.getName()) && type == other.type;
 	}
-
+	
 	@Override
 	public String toString() {
 		return "ControlProperty{" +

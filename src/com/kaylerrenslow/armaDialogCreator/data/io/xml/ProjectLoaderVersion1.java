@@ -13,9 +13,9 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
-import com.kaylerrenslow.armaDialogCreator.arma.display.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -278,9 +278,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		ArmaControl control;
 		if (isControlGroup) {
-			control = new ArmaControlGroup(controlClassName, idc, controlType, ControlStyle.CENTER.styleGroup, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControlGroup(controlClassName, idc, controlType, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		} else {
-			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER.styleGroup, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER.getStyleGroup(), x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		}
 		
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {

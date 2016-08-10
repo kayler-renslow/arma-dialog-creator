@@ -107,6 +107,11 @@ public interface Lang {
 			String NO_PROPERTIES_AVAILABLE = "No properties available.";
 			String EXTEND_CLASS = "Extend Class";
 			String IS_BACKGROUND_CONTROL = "Background Control";
+			
+			interface MoveOutOfGroupPopup {
+				String POPUP_TITLE = "Control is in a Control Group";
+				String MESSAGE_F = "Control '%s' is inside a Control Group. Move out of the control group?";
+			}
 		}
 		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.MissingControlPropertiesConfigPopup} */
@@ -199,7 +204,8 @@ public interface Lang {
 				String CONVERT_ERROR_POPUP_TITLE = "Conversion Failed";
 			}
 		}
-		interface ControlStyleGroupEditor{
+		
+		interface ControlStyleGroupEditor {
 			String SELECT_STYLES = "Select Styles";
 		}
 	}
@@ -279,5 +285,10 @@ public interface Lang {
 		interface ProjectSave {
 			String CONTROL_PROPERTIES_MISSING_F = "Control '%s' is missing at least 1 required control property.";
 		}
+	}
+	
+	interface Confirmation {
+		String YES = "Yes";
+		String NO = "No";
 	}
 }

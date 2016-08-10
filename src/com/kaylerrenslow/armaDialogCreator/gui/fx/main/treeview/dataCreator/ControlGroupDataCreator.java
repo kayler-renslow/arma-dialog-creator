@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ControlGroupControl;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -30,7 +29,7 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntr
 
 	@Override
 	public TreeItemEntry createNew(CellType cellType) {
-		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup", -1, ControlStyle.CENTER.styleGroup, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
+		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup", -1, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
 				("1", getEnv()), new Expression("1", getEnv()),
 				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
 	}
