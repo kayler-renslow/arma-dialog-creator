@@ -10,9 +10,39 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- Created by Kayler on 08/05/2016.
+ Created by Kayler on 08/12/2016.
  */
-public interface ControlHolder<C extends Control> {
-	ControlList<C> getControls();
+public class ControlMove<C extends Control> {
+	private final ControlHolder<C> oldParent;
+	private final ControlHolder<C> newParent;
+	private final int oldIndex;
+	private final int newParentIndex;
+	
+	public ControlMove(ControlHolder<C> oldParent, int oldIndex, ControlHolder<C> newParent, int newParentIndex) {
+		this.oldParent = oldParent;
+		this.oldIndex = oldIndex;
+		this.newParent = newParent;
+		this.newParentIndex = newParentIndex;
+	}
+	
+	@NotNull
+	public ControlHolder<C> getOldParent() {
+		return oldParent;
+	}
+		
+	public int getOldIndex() {
+		return oldIndex;
+	}
+	
+	@NotNull
+	public ControlHolder<C> getNewParent() {
+		return newParent;
+	}
+	
+	public int getNewIndex() {
+		return newParentIndex;
+	}
 }

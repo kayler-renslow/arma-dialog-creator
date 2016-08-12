@@ -33,7 +33,7 @@ public interface Control {
 	
 	/** Get the parent of the control. */
 	@NotNull
-	ControlHolder<? extends Control> getParent();
+	ControlHolder<? extends Control> getHolder();
 	
 	/**Get the display that the control is associated with*/
 	@NotNull
@@ -44,13 +44,13 @@ public interface Control {
 	 Will return true if the control is within a {@link ControlGroup} which is then inside the background controls.
 	 */
 	default boolean isBackgroundControl() {
-		if (getParent() instanceof Display) {
-			return ((Display) getParent()).getBackgroundControls().contains(this);
+		if (getHolder() instanceof Display) {
+			return ((Display) getHolder()).getBackgroundControls().contains(this);
 		}
-		if (getParent() instanceof ControlGroup) {
-			return ((ControlGroup) getParent()).isBackgroundControl();
+		if (getHolder() instanceof ControlGroup) {
+			return ((ControlGroup) getHolder()).isBackgroundControl();
 		} else {
-			throw new IllegalStateException("unknown parent type:" + getParent().getClass().getName());
+			throw new IllegalStateException("unknown holder type:" + getHolder().getClass().getName());
 		}
 	}
 }

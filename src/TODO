@@ -31,3 +31,4 @@ Bugs:
 >select many things in tree view and drag into folder
 >converting paa doesn't work
 >choosing custom color for "change colors" popup crashes
+>moving control group in display throws exception

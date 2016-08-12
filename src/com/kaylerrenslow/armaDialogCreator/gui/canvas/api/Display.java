@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
-import javafx.collections.ObservableList;
 
 import java.util.Iterator;
 
@@ -22,7 +21,7 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	
 	
 	/** Get controls that are rendered first and have no user interaction */
-	ObservableList<C> getBackgroundControls();
+	ControlList<C> getBackgroundControls();
 	
 	/**
 	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()}). This will not iterate through controls
@@ -32,7 +31,7 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
 	 */
 	default Iterator<C> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<C, ObservableList<C>>(backwards, new ObservableList[]{getControls(), getBackgroundControls()});
+		return new ListMergeIterator<C, ControlList<C>>(backwards, new ControlList[]{getControls(), getBackgroundControls()});
 	}
 	
 	

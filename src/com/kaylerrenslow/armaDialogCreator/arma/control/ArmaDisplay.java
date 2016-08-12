@@ -20,11 +20,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 
 /**
  @author Kayler
@@ -34,34 +30,27 @@ public class ArmaDisplay implements Display<ArmaControl>{
 
 	private int idd;
 	private boolean movingEnable, enableSimulation;
-	private final ObservableList<ArmaControl> controlsList = FXCollections.observableArrayList();
-	private final ObservableList<ArmaControl> bgControlsList = FXCollections.observableArrayList();
+	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
+	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 		
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
 		final ArmaDisplay display = this;
-		controlsList.addListener(new ListChangeListener<ArmaControl>() {
+		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
 			@Override
-			public void onChanged(Change<? extends ArmaControl> c) {
-				while(c.next()){
-					for(ArmaControl armaControl : c.getAddedSubList()){
-						armaControl.setParent(display);
-						armaControl.setDisplay(display);
-					}
+			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+				if(change.wasAdded()){
+					change.getAdded().getControl().setParent(display);
+					change.getAdded().getControl().setDisplay(display);
+				}
+				if(change.wasSet()){
+					change.getSet().getNewControl().setParent(display);
+					change.getSet().getNewControl().setDisplay(display);
 				}
 			}
-		});
-		bgControlsList.addListener(new ListChangeListener<ArmaControl>() {
-			@Override
-			public void onChanged(Change<? extends ArmaControl> c) {
-				while(c.next()){
-					for(ArmaControl armaControl : c.getAddedSubList()){
-						armaControl.setParent(display);
-						armaControl.setDisplay(display);
-					}
-				}
-			}
-		});
+		};
+		controlsList.addChangeListener(controlListListener);
+		bgControlsList.addChangeListener(controlListListener);
 	}
 
 	public int getIdd() {
@@ -91,7 +80,7 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	}
 	
 	@Override
-	public ObservableList<ArmaControl> getBackgroundControls() {
+	public ControlList<ArmaControl> getBackgroundControls() {
 		return bgControlsList;
 	}
 	
@@ -106,7 +95,7 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	}
 	
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
-	public ObservableList<ArmaControl> getControls() {
+	public ControlList<ArmaControl> getControls() {
 		return controlsList;
 	}
 	

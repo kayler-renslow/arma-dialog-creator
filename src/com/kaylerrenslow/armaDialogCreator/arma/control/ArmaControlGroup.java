@@ -17,12 +17,8 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
  Created on 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup {
-	private final ObservableList<ArmaControl> controlsList = FXCollections.observableArrayList();
+	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	
 	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
 		
@@ -73,13 +69,16 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	/** Called by the constructor and only the constructor */
 	private void init() {
 		ArmaControlGroup group = this;
-		controlsList.addListener(new ListChangeListener<ArmaControl>() {
+		controlsList.addChangeListener(new ControlListChangeListener<ArmaControl>() {
 			@Override
-			public void onChanged(Change<? extends ArmaControl> c) {
-				while (c.next()) {
-					for (ArmaControl armaControl : c.getAddedSubList()) {
-						armaControl.setParent(group);
-					}
+			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+				if(change.wasAdded()){
+					change.getAdded().getControl().setParent(group);
+					change.getAdded().getControl().setDisplay(group.getDisplay());
+				}
+				if(change.wasSet()){
+					change.getSet().getNewControl().setParent(group);
+					change.getSet().getNewControl().setDisplay(group.getDisplay());
 				}
 			}
 		});
@@ -94,7 +93,7 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	}
 	
 	@Override
-	public ObservableList<ArmaControl> getControls() {
+	public ControlList<ArmaControl> getControls() {
 		return controlsList;
 	}
 	

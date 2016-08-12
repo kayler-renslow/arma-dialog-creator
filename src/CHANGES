@@ -1,8 +1,6 @@
 Added:
     none
 Changed:
-    color picker now updates control property when color is confirmed
-    changed the purpose of ControlClass update group
-    the ArmaControlRender will now handle x,y,w,h property updates and recalc as needed
+    none
 Fixed:
     none

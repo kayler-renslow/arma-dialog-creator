@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -32,12 +33,12 @@ public class ControlClass {
 	private final ControlClassSpecificationProvider specProvider;
 	private ControlClass extend;
 	
-	private final ArrayList<ControlProperty> requiredProperties = new ArrayList<>();
-	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
-	private final ArrayList<ControlProperty> eventProperties = new ArrayList<>();
+	private final LinkedList<ControlProperty> requiredProperties = new LinkedList<>();
+	private final LinkedList<ControlProperty> optionalProperties = new LinkedList<>();
+	private final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
 	
-	private final ArrayList<ControlClass> requiredSubClasses = new ArrayList<>();
-	private final ArrayList<ControlClass> optionalSubClasses = new ArrayList<>();
+	private final LinkedList<ControlClass> requiredSubClasses = new LinkedList<>();
+	private final LinkedList<ControlClass> optionalSubClasses = new LinkedList<>();
 	
 	protected String className;
 	
@@ -150,7 +151,7 @@ public class ControlClass {
 		return defined;
 	}
 	
-	private void addProperties(ArrayList<ControlProperty> propertiesList, ControlPropertyLookup[] props) {
+	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookup[] props) {
 		for (ControlPropertyLookup lookup : props) {
 			propertiesList.add(lookup.getPropertyWithNoData());
 		}

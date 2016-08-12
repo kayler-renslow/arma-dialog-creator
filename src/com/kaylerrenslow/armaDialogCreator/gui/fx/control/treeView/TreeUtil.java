@@ -14,12 +14,11 @@ import javafx.scene.control.TreeItem;
 import org.jetbrains.annotations.NotNull;
 
 public class TreeUtil {
-
-
-
+	
+	
 	/**
 	 Checks if the given start TreeItem contains the searchingFor TreeItem as a descendant. Checks are done recursively.
-
+	 
 	 @param startItem where to start searching
 	 @param searchingFor TreeItem to look for
 	 @return if startItem has the descendant searchingFor
@@ -36,23 +35,34 @@ public class TreeUtil {
 			if (contains) {
 				return true;
 			}
-
+			
 		}
-
+		
 		return false;
 	}
-
+	
 	/**
 	 Goes through all the descendants of startItem and for each descendant it calls foundAction.found with the descendant as its parameter.<br>
 	 Uses recursive DFS as traversal algorithm.
-
+	 
 	 @param startItem where to start the stepping
 	 @param foundAction action to run for each descendant
 	 */
 	public static <E> void stepThroughDescendants(@NotNull TreeItem<E> startItem, @NotNull FoundChild<E> foundAction) {
+		stepThroughDescendantsHelper(startItem, foundAction);
+	}
+	
+	private static <E> boolean stepThroughDescendantsHelper(@NotNull TreeItem<E> startItem, @NotNull FoundChild<E> foundAction) {
 		for (TreeItem<E> item : startItem.getChildren()) {
-			foundAction.found(item);
-			stepThroughDescendants(item, foundAction);
+			boolean cont = foundAction.found(item);
+			if (!cont) {
+				return false;
+			}
+			cont = stepThroughDescendantsHelper(item, foundAction);
+			if (!cont) {
+				return false;
+			}
 		}
+		return true;
 	}
 }

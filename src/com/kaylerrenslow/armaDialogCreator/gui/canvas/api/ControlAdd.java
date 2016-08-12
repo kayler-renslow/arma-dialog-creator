@@ -10,9 +10,26 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- Created by Kayler on 08/05/2016.
+ Created by Kayler on 08/12/2016.
  */
-public interface ControlHolder<C extends Control> {
-	ControlList<C> getControls();
+public class ControlAdd<C extends Control> {
+	private final C added;
+	private final int index;
+	
+	public ControlAdd(C added, int index) {
+		this.added = added;
+		this.index = index;
+	}
+	
+	@NotNull
+	public C getControl() {
+		return added;
+	}
+	
+	public int getIndex() {
+		return index;
+	}
 }

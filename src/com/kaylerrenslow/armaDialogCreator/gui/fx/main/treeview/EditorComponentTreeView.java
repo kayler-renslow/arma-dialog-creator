@@ -13,6 +13,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeListener;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.FoundChild;
@@ -20,8 +23,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.ImageView;
@@ -29,7 +30,6 @@ import javafx.util.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,140 +44,132 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
-	private final ListChangeListener<? super ArmaControl> displayListener = new ListChangeListener<ArmaControl>() {
+	private final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
 		
 		@Override
-		public void onChanged(Change<? extends ArmaControl> c) {
-			while (c.next()) {
-				doOperations(c);
-			}
-		}
-		
-		private void doOperations(Change<? extends ArmaControl> c) {
-			final ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
-			final ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
-			
-			int ind = 0;
-			ArmaControl controlToAdd;
-			while (ind < toAdd.size()) {
-				controlToAdd = toAdd.get(ind);
-				ObservableList<ArmaControl> insertList = backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
-				int insertIndex = insertList.indexOf(controlToAdd);
-				TreeItem<T> newTreeItem = createTreeItemForControl(controlToAdd);
-				getRoot().getChildren().add(insertIndex, newTreeItem);
-				if (controlToAdd instanceof ArmaControlGroup) {
-					addControls(newTreeItem, ((ArmaControlGroup) controlToAdd).getControls());
+		public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+			if (change.wasSet()) {
+				final LinkedList<Pair<TreeItem<T>, Integer>> setMeWhenDone = new LinkedList<>();
+				TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
+					
+					@Override
+					public boolean found(TreeItem<T> found) {
+						if (found.getValue() instanceof ControlTreeItemEntry) {
+							ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
+							if (treeItemEntry.getMyArmaControl() == change.getRemoved().getControl()) {
+								setMeWhenDone.add(new Pair<>(found.getParent(), found.getParent().getChildren().indexOf(found))); //tree view index != control index in list
+								return true;
+							}
+						}
+						return false;
+					}
+				});
+				if (setMeWhenDone.size() != 1) {
+					throw new IllegalStateException("too many or too few controls were located for changing. found:" + setMeWhenDone.size() + ", requested:1");
 				}
-				ind++;
-			}
-			if (toRemove.size() > 0) {
+				while (setMeWhenDone.size() > 0) {
+					Pair<TreeItem<T>, Integer> removed = setMeWhenDone.removeFirst();
+					removed.getKey().getChildren().set(removed.getValue(), createTreeItemForControl(change.getSet().getNewControl()));
+				}
+			} else if (change.wasRemoved()) {
 				final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
 				TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
 					
 					@Override
-					public void found(TreeItem<T> found) {
+					public boolean found(TreeItem<T> found) {
 						if (found.getValue() instanceof ControlTreeItemEntry) {
 							ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
-							int ind = 0;
-							ArmaControl control;
-							while (ind < toRemove.size()) {
-								control = toRemove.get(ind);
-								if (treeItemEntry.getMyArmaControl() == control) {
-									removeMeWhenDone.add(new Pair<>(found.getParent(), found));
-								}
-								ind++;
+							if (treeItemEntry.getMyArmaControl() == change.getRemoved().getControl()) {
+								removeMeWhenDone.add(new Pair<>(found.getParent(), found));
+								return true;
 							}
 						}
+						return false;
 					}
 				});
-				if (removeMeWhenDone.size() != toRemove.size()) {
-					throw new IllegalStateException("too many or too few controls were located for removal. found:" + removeMeWhenDone.size() + ", requested:" + toRemove.size());
+				if (removeMeWhenDone.size() != 1) {
+					throw new IllegalStateException("too many or too few controls were located for removal. found:" + removeMeWhenDone.size() + ", requested:1");
 				}
 				while (removeMeWhenDone.size() > 0) {
 					Pair<TreeItem<T>, TreeItem<T>> removed = removeMeWhenDone.removeFirst();
 					removed.getKey().getChildren().remove(removed.getValue());
-					if(removed.getValue().getValue() instanceof ControlGroupTreeItemEntry){
+					if (removed.getValue().getValue() instanceof ControlGroupTreeItemEntry) {
 						ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removed.getValue().getValue();
-						removeTreeItemEntry.getControlGroup().getControls().removeListener(controlGroupListener);
+						removeTreeItemEntry.getControlGroup().getControls().removeChangeListener(controlListChangeListener);
 					}
 				}
-			}
-		}
-	};
-	private final ListChangeListener<? super ArmaControl> controlGroupListener = new ListChangeListener<ArmaControl>() {
-		
-		@Override
-		public void onChanged(Change<? extends ArmaControl> c) {
-			while (c.next()) {
-				doOperations(c);
-			}
-		}
-		
-		private void doOperations(Change<? extends ArmaControl> c) {
-			final ArrayList<ArmaControl> toAdd = new ArrayList<>(c.getAddedSubList());
-			final ArrayList<ArmaControl> toRemove = new ArrayList<>(c.getRemoved());
-			
-			final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
-			final LinkedList<Pair<TreeItem<T>, ArmaControl>> addMeWhenDone = new LinkedList<>();
-			
-			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
+			} else if (change.wasAdded()) {
+				//todo wrong implementation. look for control's parent
+				int insertIndex = controlList.indexOf(change.getAdded().getControl());
+				TreeItem<T> newTreeItem = createTreeItemForControl(change.getAdded().getControl());
+				if (change.getAdded().getControl().getHolder() instanceof ArmaDisplay) {
+					getRoot().getChildren().add(insertIndex, newTreeItem);
+					return;
+				}
 				
-				@Override
-				public void found(TreeItem<T> found) {
-					if (found.getValue() instanceof ControlTreeItemEntry) {
-						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
-						int ind = 0;
-						ArmaControl controlToAdd;
-						while (ind < toAdd.size()) {
-							controlToAdd = toAdd.get(ind);
-							
-							if (controlToAdd.getParent() == treeItemEntry.getMyArmaControl()) {
-								addMeWhenDone.add(new Pair<>(found, controlToAdd));
+				final LinkedList<TreeItem<T>> addMeWhenDone = new LinkedList<>();
+				TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
+					
+					@Override
+					public boolean found(TreeItem<T> found) {
+						if (found.getValue() instanceof ControlGroupTreeItemEntry) {
+							ControlGroupTreeItemEntry treeItemEntry = (ControlGroupTreeItemEntry) found.getValue();
+							if (treeItemEntry.getMyArmaControl() == change.getAdded().getControl().getHolder()) {
+								addMeWhenDone.add(found);
+								return true;
 							}
-							ind++;
 						}
-						
-						ind = 0;
-						ArmaControl control;
-						while (ind < toRemove.size()) {
-							control = toRemove.get(ind);
-							if (treeItemEntry.getMyArmaControl() == control) {
+						return false;
+					}
+				});
+				if (addMeWhenDone.size() != 1) {
+					throw new IllegalStateException("too many or too few controls were located for insertion. found:" + addMeWhenDone.size() + ", requested:1");
+				}
+				while (addMeWhenDone.size() > 0) {
+					TreeItem<T> parent = addMeWhenDone.removeFirst();
+					//					removed.getParent().getChildren().remove(removed.getValue());
+					//					if (removed.getValue().getValue() instanceof ControlGroupTreeItemEntry) {
+					//						ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removed.getValue().getValue();
+					//						removeTreeItemEntry.getControlGroup().getControls().removeChangeListener(controlListChangeListener);
+					//					}
+				}
+				
+				getRoot().getChildren().add(insertIndex, newTreeItem);
+				if (change.getAdded().getControl() instanceof ArmaControlGroup) {
+					addControls(newTreeItem, ((ArmaControlGroup) change.getAdded().getControl()).getControls());
+				}
+			} else if (change.wasMoved()) {
+				final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> removeMeWhenDone = new LinkedList<>();
+				final LinkedList<Pair<TreeItem<T>, TreeItem<T>>> addMeWhenDone = new LinkedList<>();
+				TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
+					
+					@Override
+					public boolean found(TreeItem<T> found) {
+						if (found.getValue() instanceof ControlTreeItemEntry) {
+							ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
+							if (treeItemEntry.getMyArmaControl() == change.getMoved().getControl()) {
 								removeMeWhenDone.add(new Pair<>(found.getParent(), found));
+								return true;
 							}
-							ind++;
 						}
-						
+						return false;
+					}
+				});
+				if (removeMeWhenDone.size() != 1) {
+					throw new IllegalStateException("too many or too few controls were located for removal. found:" + removeMeWhenDone.size() + ", requested:1");
+				}
+				while (removeMeWhenDone.size() > 0) {
+					Pair<TreeItem<T>, TreeItem<T>> removed = removeMeWhenDone.removeFirst();
+					removed.getKey().getChildren().remove(removed.getValue());
+					if (removed.getValue().getValue() instanceof ControlGroupTreeItemEntry) {
+						ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removed.getValue().getValue();
+						removeTreeItemEntry.getControlGroup().getControls().removeChangeListener(controlListChangeListener);
 					}
 				}
-			});
-			if (addMeWhenDone.size() != toAdd.size()) {
-				throw new IllegalStateException("too many or too few controls were located for insertion. found:" + addMeWhenDone.size() + ", requested:" + toAdd.size());
 			}
-			
-			if (removeMeWhenDone.size() != toRemove.size()) {
-				throw new IllegalStateException("too many or too few controls were located for removal. found:" + removeMeWhenDone.size() + ", requested:" + toRemove.size());
-			}
-			Pair<TreeItem<T>, TreeItem<T>> removeMe;
-			while (removeMeWhenDone.size() > 0) {
-				removeMe = removeMeWhenDone.removeFirst();
-				removeMe.getKey().getChildren().remove(removeMe.getValue());
-				if(removeMe.getValue().getValue() instanceof ControlGroupTreeItemEntry){
-					ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) removeMe.getValue().getValue();
-					removeTreeItemEntry.getControlGroup().getControls().removeListener(controlGroupListener);
-				}
-				
-			}
-			
-			Pair<TreeItem<T>, ArmaControl> addMe;
-			while (addMeWhenDone.size() > 0) {
-				addMe = addMeWhenDone.removeFirst();
-				ArmaControlGroup group = (ArmaControlGroup) addMe.getValue().getParent();
-				int index = group.getControls().indexOf(addMe.getValue());
-				addMe.getKey().getChildren().add(index, createTreeItemForControl(addMe.getValue()));
-			}
-			
 		}
 	};
+	
 	
 	public EditorComponentTreeView(boolean backgroundControlEditor) {
 		super(null);
@@ -199,11 +191,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	/**Set whether or not this tree view's display control/background control listener is activated. The listener is required to be disabled when a new tree item is being inserted into the tree
 	 because if it wasn't, the tree view would get 2 tree items inserted*/
 	private void setDisplayListener(boolean activate) {
-		ObservableList<ArmaControl> list = backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
+		ControlList<ArmaControl> list = backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 		if (activate) {
-			list.addListener(displayListener);
+			list.addChangeListener(controlListChangeListener);
 		} else {
-			list.removeListener(displayListener);
+			list.removeChangeListener(controlListChangeListener);
 		}
 	}
 	

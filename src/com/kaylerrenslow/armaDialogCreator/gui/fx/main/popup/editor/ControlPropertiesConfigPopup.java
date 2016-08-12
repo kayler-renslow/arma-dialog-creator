@@ -96,23 +96,23 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
 				ArmaDisplay display = c.getDisplay();
-				if (c.getParent() instanceof ArmaControlGroup) {
+				if (c.getHolder() instanceof ArmaControlGroup) {
 					MoveOutOfControlGroupPopup popup = new MoveOutOfControlGroupPopup(c);
 					popup.showAndWait();
 					if (popup.isMoveOut()) {
-						ArmaControlGroup group = (ArmaControlGroup) c.getParent();
+						ArmaControlGroup group = (ArmaControlGroup) c.getHolder();
 						group.getControls().remove(c);
 					} else {
 						return;
 					}
-				} else if (c.getParent() instanceof ArmaDisplay) {
+				} else if (c.getHolder() instanceof ArmaDisplay) {
 					if (selected) {
 						display.getControls().remove(c);
 					} else {
 						display.getBackgroundControls().remove(c);
 					}
 				} else {
-					throw new IllegalStateException("unknown parent type:" + c.getParent().getClass().getName());
+					throw new IllegalStateException("unknown holder type:" + c.getHolder().getClass().getName());
 				}
 				
 				if (selected) {
