@@ -8,12 +8,35 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.main.lang;
 
 /**
- Created by Kayler on 08/02/2016.
+ Created by Kayler on 08/10/2016.
  */
-public interface ChangeRegistrar {
-	void undo(Change c) throws ChangeUpdateFailedException;
-	void redo(Change c) throws ChangeUpdateFailedException;
+public interface ChangeLang {
+	interface DisplayChange {
+		interface Background{
+			interface ControlAdd {
+				String DESCRIPTION_F = "Control '%s' was added to the display's background controls.";
+				String SHORT_NAME = "Control Add to Display";
+			}
+			
+			interface ControlRemove {
+				String DESCRIPTION_F = "Control '%s' was removed from the display's background controls.";
+				String SHORT_NAME = "Control Remove from Display";
+			}
+		}
+		interface Main{
+			interface ControlAdd {
+				String DESCRIPTION_F = "Control '%s' was added to the display's controls.";
+				String SHORT_NAME = "Control Add to Display";
+			}
+			
+			interface ControlRemove {
+				String DESCRIPTION_F = "Control '%s' was removed from the display's background controls.";
+				String SHORT_NAME = "Control Remove from Display";
+			}
+		}
+		
+	}
 }

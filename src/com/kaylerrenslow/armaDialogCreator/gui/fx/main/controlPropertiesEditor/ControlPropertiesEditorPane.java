@@ -425,9 +425,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 					controlProperty.setValue(new SVString(newValue));
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
 				}
 			});
 			return rawInput;
@@ -478,9 +475,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 						controlProperty.setValue((SerializableValue) null);
 					} else {
 						controlProperty.setValue(newValue.getUserData().toString());
-					}
-					if (control != null) {
-						control.getUpdateGroup().update(control);
 					}
 					
 				}
@@ -573,9 +567,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					}
 					updateFromSelection = true;
 					controlProperty.setValue(getValue());
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
 					updateFromSelection = false;
 				}
 			});
@@ -665,10 +656,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 					controlProperty.setValue((C) newValue);
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
-					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -774,19 +761,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 			} else {
 				colorPicker.setValue(null);
 			}
-			colorPicker.valueProperty().addListener(new ChangeListener<Color>() {
+			colorPicker.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
-				public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
+				public void handle(ActionEvent event) {
+					Color newValue = colorPicker.getValue();
 					if (newValue == null) {
 						controlProperty.setValue((SerializableValue) null);
 					} else {
 						AColor newColor = new AColor(newValue);
 						controlProperty.setValue(newColor);
 					}
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
-					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -866,10 +850,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void changed(ObservableValue<? extends SVBoolean> observable, SVBoolean oldValue, SVBoolean newValue) {
 					controlProperty.setValue(newValue);
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
-					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -959,10 +939,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 						}
 						svStringArray.setString(newValue.toString(), index);
 						controlProperty.setValue(svStringArray);
-						if (control != null) {
-							control.getUpdateGroup().update(control);
-						}
-						
 					}
 				});
 				if (control != null) {
@@ -1077,10 +1053,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				@Override
 				public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
 					controlProperty.setValue(newValue);
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
-					
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -1223,10 +1195,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 						}
 					}
 					controlProperty.setValue(aSound);
-					if (control != null) {
-						control.getUpdateGroup().update(control);
-					}
-					
 				}
 			});
 			if (control != null) {

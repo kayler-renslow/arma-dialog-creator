@@ -18,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -97,4 +98,11 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 		return controlsList;
 	}
 	
+	@Override
+	public void resolutionUpdate(Resolution newResolution) {
+		super.resolutionUpdate(newResolution);
+		for(ArmaControl control : controlsList){
+			control.resolutionUpdate(newResolution);
+		}
+	}
 }

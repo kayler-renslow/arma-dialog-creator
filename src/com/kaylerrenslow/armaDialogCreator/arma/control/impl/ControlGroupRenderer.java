@@ -13,6 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
@@ -21,14 +23,14 @@ import javafx.scene.canvas.GraphicsContext;
  Created on 07/04/2016. */
 public class ControlGroupRenderer extends ArmaControlRenderer {
 	
-	public ControlGroupRenderer(ArmaControl control) {
-		super(control);
+	public ControlGroupRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
+		super(control, resolution, env);
 	}
 	
 	@Override
 	public void paint(GraphicsContext gc) {
 		super.paint(gc);
-		if(getArea() < 2){
+		if (getArea() < 2) {
 			return;
 		}
 		gc.save();
@@ -42,6 +44,9 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 		gc.clip();
 		ArmaControlGroup controlGroup = (ArmaControlGroup) getMyControl();
 		for (ArmaControl control : controlGroup.getControls()) {
+			if (control.getRenderer().isGhost()) {
+				continue;
+			}
 			control.getRenderer().paint(gc);
 		}
 		gc.restore();

@@ -12,9 +12,11 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -34,8 +36,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 	
 	private Text textObj = new Text();
 	
-	public StaticRenderer(ArmaControl control) {
-		super(control);
+	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
+		super(control, resolution, env);
 		init();
 	}
 	

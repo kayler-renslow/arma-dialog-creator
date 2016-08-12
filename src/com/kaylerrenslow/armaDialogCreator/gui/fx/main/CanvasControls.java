@@ -59,7 +59,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for(ArmaControl control : canvasView.getEditingDisplay().getBackgroundControls()){
+				for (ArmaControl control : canvasView.getEditingDisplay().getBackgroundControls()) {
 					control.getRenderer().setGhost(!selected);
 				}
 			}
@@ -69,18 +69,22 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		cbShowControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for(ArmaControl control : canvasView.getEditingDisplay().getControls()){
+				for (ArmaControl control : canvasView.getEditingDisplay().getControls()) {
 					control.getRenderer().setGhost(!selected);
 				}
 			}
 		});
 		
-		
-		final VBox vbBgControls = new VBox(5, new HBox(10, new Label(" "+Lang.CanvasControls.BACKGROUND_CONTROLS), cbShowBackgroundControls), treeViewBg); //placing space before label to give fake
-		final VBox vbControls= new VBox(5, new HBox(10, new Label(" "+Lang.CanvasControls.CONTROLS), cbShowControls), treeViewMain);
+		final double vertSpacing = 5;
+		final HBox bgControlsHbox = new HBox(10, new Label(Lang.CanvasControls.BACKGROUND_CONTROLS), cbShowBackgroundControls);
+		final VBox vbBgControls = new VBox(vertSpacing, bgControlsHbox, treeViewBg);
+		final HBox controlHbox = new HBox(10, new Label(Lang.CanvasControls.CONTROLS), cbShowControls);
+		final VBox vbControls = new VBox(vertSpacing, controlHbox, treeViewMain);
 		// padding
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);
 		VBox.setVgrow(treeViewMain, Priority.ALWAYS);
+		bgControlsHbox.setPadding(new Insets(vertSpacing, vertSpacing, 0, vertSpacing));
+		controlHbox.setPadding(bgControlsHbox.getPadding());
 		
 		final SplitPane splitPane = new SplitPane(vbBgControls, vbControls);
 		splitPane.setOrientation(Orientation.VERTICAL);

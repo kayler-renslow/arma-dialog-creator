@@ -36,8 +36,8 @@ import java.util.List;
 
 /**
  @author Kayler
- Houses the actual tree view. This class is the link between the application data and the tree view's data.
- Anything that happens to the gui tree view will echo through the application data and vice versa through this class.
+ Houses the actual tree view for showing what controls and folders exist in the current project. This class is the link between the project's display and the tree view's data.
+ Anything that happens to the gui tree view will echo through the display and vice versa through this class.
  Created on 06/08/2016. */
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
 	
@@ -260,7 +260,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			if (control instanceof ArmaControlGroup) {
 				addControls(createTreeItemForControl(control), ((ArmaControlGroup) control).getControls());
 			} else {
-				parentTreeItem.getChildren().add(createTreeItemForControl(control));
+				parentTreeItem.getChildren().add(createTreeItemForControl(control)); //faster than addChildToParent()
 			}
 		}
 	}

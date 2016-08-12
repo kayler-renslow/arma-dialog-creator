@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
@@ -30,19 +29,13 @@ import org.jetbrains.annotations.NotNull;
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
  Created on 05/20/2016. */
 public class ArmaControl extends ControlClass implements Control {
-	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
-	protected final ArmaResolution resolution;
-	private final Env env;
 	private final RendererLookup rendererLookup;
 	private final ControlStyle[] allowedStyles;
 	/** Type of the control */
 	private ControlType type = ControlType.STATIC;
-	/** Style of the control TODO: allow multiple styles */
-	private ControlStyleGroup style = new ControlStyleGroup(new ControlStyle[]{ControlStyle.CENTER});
+	
 	/** Renderer of the control for the canvas */
 	protected final ArmaControlRenderer renderer;
-	
-	private Expression x, y, width, height;
 	
 	private ControlHolder<ArmaControl> parent;
 	private ArmaDisplay display;
@@ -50,7 +43,7 @@ public class ArmaControl extends ControlClass implements Control {
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
 	
-	private final ControlProperty idcProperty, typeProperty, styleProperty, xProperty, yProperty, wProperty, hProperty, accessProperty;
+	private final ControlProperty idcProperty, typeProperty, accessProperty;
 	
 	/**
 	 Create a control where the position is to be determined
@@ -62,11 +55,9 @@ public class ArmaControl extends ControlClass implements Control {
 	 */
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
-		this.resolution = resolution;
-		this.env = env;
 		try {
 			this.rendererLookup = rendererLookup;
-			this.renderer = rendererLookup.rendererClass.getConstructor(ArmaControl.class).newInstance(this);
+			this.renderer = rendererLookup.rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
@@ -76,12 +67,6 @@ public class ArmaControl extends ControlClass implements Control {
 		idcProperty.setDefaultValue(true, -1);
 		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
 		typeProperty.setDefaultValue(true, type.typeId);
-		styleProperty = findRequiredProperty(ControlPropertyLookup.STYLE);
-		styleProperty.setDefaultValue(true, style);
-		xProperty = findRequiredProperty(ControlPropertyLookup.X);
-		yProperty = findRequiredProperty(ControlPropertyLookup.Y);
-		wProperty = findRequiredProperty(ControlPropertyLookup.W);
-		hProperty = findRequiredProperty(ControlPropertyLookup.H);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		this.allowedStyles = provider.getAllowedStyles();
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
@@ -107,11 +92,11 @@ public class ArmaControl extends ControlClass implements Control {
 					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
 		typeProperty.setDefaultValue(false, type.typeId);
-		styleProperty.setDefaultValue(false, style);
-		xProperty.setDefaultValue(false, x);
-		yProperty.setDefaultValue(false, y);
-		wProperty.setDefaultValue(false, width);
-		hProperty.setDefaultValue(false, height);
+		renderer.styleProperty.setDefaultValue(false, style);
+		renderer.xProperty.setDefaultValue(false, x);
+		renderer.yProperty.setDefaultValue(false, y);
+		renderer.wProperty.setDefaultValue(false, width);
+		renderer.hProperty.setDefaultValue(false, height);
 		
 		defineType(type);
 		defineIdc(idc);
@@ -124,105 +109,27 @@ public class ArmaControl extends ControlClass implements Control {
 	
 	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(Expression x) {
-		xProperty.setValue(x);
-		setXSilent(x);
+		renderer.defineX(x);
 	}
 	
 	/** Set y and define the y control property. This will also update the renderer's position. */
 	public void defineY(Expression y) {
-		yProperty.setValue(y);
-		setYSilent(y);
+		renderer.defineY(y);
 	}
 	
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
 	public void defineW(Expression width) {
-		wProperty.setValue(width);
-		setWSilent(width);
+		renderer.defineW(width);
 	}
 	
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
 	public void defineH(Expression height) {
-		hProperty.setValue(height);
-		setHSilent(height);
+		renderer.defineH(height);
 	}
-	
-	/** Just set x position without updating the property. This will also update the renderer's position. */
-	protected void setXSilent(Expression x) {
-		this.x = x;
-		renderer.setX1Silent(calcScreenX(x.getNumVal()));
-	}
-	
-	/** Just set the y position without updating the y property. This will also update the renderer's position. */
-	protected void setYSilent(Expression y) {
-		this.y = y;
-		renderer.setY1Silent(calcScreenY(y.getNumVal()));
-	}
-	
-	/** Set the width without updating it's control property. This will also update the renderer's position. */
-	protected void setWSilent(Expression width) {
-		this.width = width;
-		int w = calcScreenWidth(width.getNumVal());
-		renderer.setX2Silent(renderer.getX1() + w);
-	}
-	
-	/** Just set height without setting control property. This will also update the renderer's position. */
-	protected void setHSilent(Expression height) {
-		this.height = height;
-		int h = calcScreenHeight(height.getNumVal());
-		renderer.setY2Silent(renderer.getY1() + h);
-	}
-	
-	protected final int calcScreenX(double percentX) {
-		return PositionCalculator.getScreenX(resolution, percentX);
-	}
-	
-	protected final int calcScreenY(double percentY) {
-		return PositionCalculator.getScreenY(resolution, percentY);
-	}
-	
-	protected final int calcScreenWidth(double percentWidth) {
-		return PositionCalculator.getScreenWidth(resolution, percentWidth);
-	}
-	
-	protected final int calcScreenHeight(double percentHeight) {
-		return PositionCalculator.getScreenHeight(resolution, percentHeight);
-	}
-	
-	/** Set the x,y,w,h properties. This will also update the renderer's position. If x, y, w, or h are null, this method will do nothing. This will not update the value observers.*/
-	protected final void setPositionWHSilent(Expression x, Expression y, Expression w, Expression h) {
-		//do not use @NotNull annotations for parameters because this method is called from updateProperties. updateProperties is only invoked when a ControlProperty is edited.
-		//when a ControlProperty is edited, required (like x,y,w,h), and has no input, the user should not be allowed to exit editing until valid input is entered
-		if (x == null || y == null || w == null || h == null) {
-			return;
-		}
-		this.x = x;
-		this.y = y;
-		this.width = w;
-		this.height = h;
-		renderer.setPositionWHSilent(calcScreenX(x.getNumVal()), calcScreenY(y.getNumVal()), calcScreenWidth(w.getNumVal()), calcScreenHeight(h.getNumVal()));
-	}
-	
-	/** Set the x and y values (and width and height) based upon the renderer's position */
-	protected final void calcPositionFromRenderer() {
-		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(this.resolution, renderer.getX1()), env);
-		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(this.resolution, renderer.getY1()), env);
-		xProperty.setValue(x);
-		yProperty.setValue(y);
 		
-		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(this.resolution, renderer.getWidth()), env);
-		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(this.resolution, renderer.getHeight()), env);
-		wProperty.setValue(width);
-		hProperty.setValue(height);
-		
-		getUpdateGroup().update(null); //don't execute updateProperties
-	}
-	
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
-		setXSilent(this.x);
-		setYSilent(this.y);
-		setWSilent(this.width);
-		setHSilent(this.height);
+		renderer.resolutionUpdate(newResolution);
 	}
 	
 	void setParent(@NotNull ControlHolder<ArmaControl> parent){
@@ -244,16 +151,7 @@ public class ArmaControl extends ControlClass implements Control {
 	public ArmaDisplay getDisplay() {
 		return display;
 	}
-	
-	@Override
-	protected void updateProperties() {
-		if (xProperty.getValue() != this.x || yProperty.getValue() != this.y || wProperty.getValue() != this.width || hProperty.getValue() != this.height) {
-			setPositionWHSilent((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
-		}
-		renderer.updateProperties();
-		//		defineStyle(styleProperty.);
-	}
-	
+		
 	/** Set idc and define the idc control property */
 	public final void defineIdc(int idc) {
 		setIdc(idc);
@@ -277,13 +175,7 @@ public class ArmaControl extends ControlClass implements Control {
 	
 	/** Set and define the style control property */
 	protected final void defineStyle(ControlStyleGroup style) {
-		styleProperty.setValue(style);
-		setStyle(style);
-	}
-	
-	/** Just set the style */
-	protected final void setStyle(ControlStyleGroup style) {
-		this.style = style;
+		renderer.defineStyle(style);
 	}
 	
 	/** Set and define the access property */
@@ -299,11 +191,7 @@ public class ArmaControl extends ControlClass implements Control {
 	public final ControlType getType() {
 		return type;
 	}
-	
-	public final ControlStyleGroup getStyle() {
-		return style;
-	}
-	
+		
 	public final ArmaControlRenderer getRenderer() {
 		return renderer;
 	}

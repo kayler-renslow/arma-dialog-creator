@@ -10,8 +10,10 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,64 +28,80 @@ import java.util.List;
  Created on 05/23/2016. */
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
-
+	
 	private final ControlClassSpecificationProvider specProvider;
 	private ControlClass extend;
-
+	
 	private final ArrayList<ControlProperty> requiredProperties = new ArrayList<>();
 	private final ArrayList<ControlProperty> optionalProperties = new ArrayList<>();
 	private final ArrayList<ControlProperty> eventProperties = new ArrayList<>();
-
+	
 	private final ArrayList<ControlClass> requiredSubClasses = new ArrayList<>();
 	private final ArrayList<ControlClass> optionalSubClasses = new ArrayList<>();
-
+	
 	protected String className;
-
-	private UpdateListenerGroup<Object> updateGroup = new UpdateListenerGroup<>();
-
+	
+	private final UpdateListenerGroup<ControlPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
+	
 	public ControlClass(@NotNull String name, @NotNull ControlClassSpecificationProvider provider) {
 		this.className = name;
 		this.specProvider = provider;
-		updateGroup.addListener(new UpdateListener<Object>() {
-			@Override
-			public void update(@Nullable Object data) {
-				if (data != null) {
-					updateProperties();
-				}
-			}
-		});
+		
 		addProperties(requiredProperties, specProvider.getRequiredProperties());
 		addProperties(optionalProperties, specProvider.getOptionalProperties());
 		addProperties(eventProperties, specProvider.getEventProperties());
 		addRequiredSubClasses(specProvider.getRequiredSubClasses());
 		addOptionalSubClasses(specProvider.getOptionalSubClasses());
-
+		
+		for (ControlProperty controlProperty : requiredProperties) {
+			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+		}
+		for (ControlProperty controlProperty : optionalProperties) {
+			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+		}
+		for (ControlProperty controlProperty : eventProperties) {
+			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+		}
 	}
-
+	
+	@NotNull
+	private ValueListener<SerializableValue> getControlPropertyListener(final ControlProperty controlProperty) {
+		return new ValueListener<SerializableValue>() {
+			private final ControlPropertyUpdate update = new ControlPropertyUpdate(controlProperty, null, null);
+			
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				update.setOldValue(oldValue);
+				update.setNewValue(newValue);
+				updateGroup.update(update);
+			}
+		};
+	}
+	
 	public void setClassName(String className) {
 		this.className = className;
 	}
-
+	
 	public String getClassName() {
 		return className;
 	}
-
+	
 	public final void extendControlClass(@Nullable ControlClass armaControl) {
 		if (armaControl == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
 		this.extend = armaControl;
 	}
-
+	
 	public final @Nullable ControlClass getExtendControl() {
 		return extend;
 	}
-
+	
 	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
-	public final ControlClassSpecificationProvider getSpecProvider(){
+	public final ControlClassSpecificationProvider getSpecProvider() {
 		return specProvider;
 	}
-
+	
 	private void addRequiredSubClasses(@NotNull ControlClass... subClasses) {
 		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
@@ -92,7 +110,7 @@ public class ControlClass {
 			requiredSubClasses.add(subClass);
 		}
 	}
-
+	
 	private void addOptionalSubClasses(@NotNull ControlClass... subClasses) {
 		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
@@ -101,21 +119,21 @@ public class ControlClass {
 			optionalSubClasses.add(subClass);
 		}
 	}
-
+	
 	@NotNull
 	public ControlClass[] getRequiredSubClasses() {
 		return requiredSubClasses.toArray(new ControlClass[requiredSubClasses.size()]);
 	}
-
+	
 	@NotNull
 	public ControlClass[] getOptionalSubClasses() {
 		return optionalSubClasses.toArray(new ControlClass[optionalSubClasses.size()]);
 	}
-
+	
 	@NotNull
 	public final List<ControlProperty> getMissingRequiredProperties() {
 		List<ControlProperty> defined = getAllDefinedProperties();
-
+		
 		boolean found;
 		for (ControlProperty req : requiredProperties) {
 			found = false;
@@ -131,21 +149,16 @@ public class ControlClass {
 		}
 		return defined;
 	}
-
-	private void addProperties(ArrayList<ControlProperty> propertiesList, ControlPropertyLookup... props) {
-		main:
+	
+	private void addProperties(ArrayList<ControlProperty> propertiesList, ControlPropertyLookup[] props) {
 		for (ControlPropertyLookup lookup : props) {
-			for(ControlProperty req : propertiesList){
-				if(req.getPropertyLookup() == lookup){
-					continue main;
-				}
-			}
 			propertiesList.add(lookup.getPropertyWithNoData());
 		}
 	}
+	
 	/**
 	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
-
+	 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in required properties
 	 */
@@ -156,12 +169,12 @@ public class ControlClass {
 				return controlProperty;
 			}
 		}
-		throw new IllegalArgumentException("Lookup element '"+lookup.name()+"' wasn't in required properties.");
+		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in required properties.");
 	}
-
+	
 	/**
 	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
-
+	 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in optional properties
 	 */
@@ -172,19 +185,19 @@ public class ControlClass {
 				return controlProperty;
 			}
 		}
-		throw new IllegalArgumentException("Lookup element '"+lookup.name()+"' wasn't in optional properties.");
+		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in optional properties.");
 	}
-
+	
 	@NotNull
 	public final ControlProperty[] getRequiredProperties() {
 		return requiredProperties.toArray(new ControlProperty[requiredProperties.size()]);
 	}
-
+	
 	@NotNull
 	public final ControlProperty[] getOptionalProperties() {
 		return optionalProperties.toArray(new ControlProperty[optionalProperties.size()]);
 	}
-
+	
 	public @NotNull List<ControlProperty> getAllDefinedProperties() {
 		List<ControlProperty> properties = new ArrayList<>();
 		for (ControlProperty property : getInheritedProperties()) {
@@ -204,7 +217,7 @@ public class ControlClass {
 		}
 		return properties;
 	}
-
+	
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {
 		if (extend == null) {
@@ -214,11 +227,11 @@ public class ControlClass {
 		appendInheritedProperties(extend, list);
 		return list;
 	}
-
+	
 	public final ControlProperty[] getEventProperties() {
 		return eventProperties.toArray(new ControlProperty[eventProperties.size()]);
 	}
-
+	
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
 		for (ControlProperty c : extend.getAllDefinedProperties()) {
 			if (!list.contains(c)) {
@@ -234,21 +247,15 @@ public class ControlClass {
 			appendInheritedProperties(extend.extend, list);
 		}
 	}
-
+	
 	/**
-	 Gets the update listener group that listens to this object. Instead of adding listeners to all {@link ControlProperty}'s, anytime a control property is changed inside this control the listeners should be notified from where it was changed.<br>
-	 Also, since it will not automatically change, it will cut down on the number of renders performed by the editor's canvas<br>
-	 The value inside the listener can be null, which means all listeners except this control class's inner listener will be notified
+	 Gets the update listener group that listens to all {@link ControlProperty} instances. Instead of adding listeners to all {@link ControlProperty}'s potentially hundreds of times scattered
+	 across the program, the ControlClass listens to it's own ControlProperties. Any time any of the ControlProperty's receive an update, the value inside the listener will be the
+	 {@link ControlProperty} that was updated as well as the property's old value and the updated/new value. If this ControlClass extends some ControlClass via
+	 {@link #extendControlClass(ControlClass)}, the update groups will <b>not</b> be synced. You will have to listen to each ControlClass separately.
 	 */
-	public UpdateListenerGroup<Object> getUpdateGroup() {
+	public UpdateListenerGroup<ControlPropertyUpdate> getUpdateGroup() {
 		return updateGroup;
 	}
-
-
-	/** Called when update listeners have been notified of an update and the new value is not null. Default implementation is nothing.
-	 @see #getUpdateGroup() */
-	protected void updateProperties() {
-
-	}
-
+	
 }
