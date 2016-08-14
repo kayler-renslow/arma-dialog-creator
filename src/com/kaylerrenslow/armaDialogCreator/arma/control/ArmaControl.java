@@ -19,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -44,6 +45,7 @@ public class ArmaControl extends ControlClass implements Control {
 	private int idc = -1;
 	
 	private final ControlProperty idcProperty, typeProperty, accessProperty;
+	private final DataContext userdata = new DataContext();
 	
 	/**
 	 Create a control where the position is to be determined
@@ -151,7 +153,12 @@ public class ArmaControl extends ControlClass implements Control {
 	public ArmaDisplay getDisplay() {
 		return display;
 	}
-		
+	
+	@Override
+	public DataContext getUserData() {
+		return userdata;
+	}
+	
 	/** Set idc and define the idc control property */
 	public final void defineIdc(int idc) {
 		setIdc(idc);

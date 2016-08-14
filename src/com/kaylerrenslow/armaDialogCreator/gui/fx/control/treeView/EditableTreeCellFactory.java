@@ -147,13 +147,11 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 				TreeItem<E> dragging = getDragging();
 				event.acceptTransferModes(TransferMode.MOVE);
 
-				// remove the dragging item's last position
-				treeView.removeChild(dragging.getParent(), dragging);
 				if (getTreeItem().getValue().canHaveChildren()) {
-					treeView.addChildToParent(getTreeItem(), dragging);
+					treeView.moveTreeItem(dragging, getTreeItem(), getTreeItem().getChildren().size());
 				}else {
 					int index = getTreeItem().getParent().getChildren().lastIndexOf(getTreeItem());
-					treeView.addChildToParent(getTreeItem().getParent(), dragging, index);
+					treeView.moveTreeItem(dragging, getTreeItem().getParent(), index);
 					getTreeView().getSelectionModel().select(index + 1);
 				}
 

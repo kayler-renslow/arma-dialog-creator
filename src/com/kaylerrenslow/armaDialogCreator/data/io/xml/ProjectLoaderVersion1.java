@@ -58,6 +58,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 			project.setProjectDescription(getProjectDescription());
 		} catch (Exception e) {
+			e.printStackTrace(System.out);
 			throw new XmlParseException(e.getMessage());
 		}
 	}

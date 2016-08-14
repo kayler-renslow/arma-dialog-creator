@@ -94,31 +94,27 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		cbIsBackgroundControl.setSelected(c.isBackgroundControl());
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
 				ArmaDisplay display = c.getDisplay();
 				if (c.getHolder() instanceof ArmaControlGroup) {
 					MoveOutOfControlGroupPopup popup = new MoveOutOfControlGroupPopup(c);
 					popup.showAndWait();
 					if (popup.isMoveOut()) {
 						ArmaControlGroup group = (ArmaControlGroup) c.getHolder();
-						group.getControls().remove(c);
+						group.getControls().move(c, (isBackground ? display.getBackgroundControls() : display.getControls()));
+						return;
 					} else {
 						return;
 					}
 				} else if (c.getHolder() instanceof ArmaDisplay) {
-					if (selected) {
-						display.getControls().remove(c);
+					if (isBackground) {
+						display.getControls().move(c, display.getBackgroundControls());
 					} else {
-						display.getBackgroundControls().remove(c);
+						display.getBackgroundControls().move(c, display.getControls());
 					}
+					return;
 				} else {
 					throw new IllegalStateException("unknown holder type:" + c.getHolder().getClass().getName());
-				}
-				
-				if (selected) {
-					display.getBackgroundControls().add(c);
-				} else {
-					display.getControls().add(c);
 				}
 			}
 		});

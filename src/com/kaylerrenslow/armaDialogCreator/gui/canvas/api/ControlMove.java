@@ -16,21 +16,28 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 08/12/2016.
  */
 public class ControlMove<C extends Control> {
-	private final ControlHolder<C> oldParent;
-	private final ControlHolder<C> newParent;
+	private final C controlMoved;
+	private final ControlList<C> oldList;
 	private final int oldIndex;
+	private final ControlList<C> newList;
 	private final int newParentIndex;
 	
-	public ControlMove(ControlHolder<C> oldParent, int oldIndex, ControlHolder<C> newParent, int newParentIndex) {
-		this.oldParent = oldParent;
+	public ControlMove(C controlMoved, ControlList<C> oldList, int oldIndex, ControlList<C> newList, int newParentIndex) {
+		this.controlMoved = controlMoved;
+		this.oldList = oldList;
 		this.oldIndex = oldIndex;
-		this.newParent = newParent;
+		this.newList = newList;
 		this.newParentIndex = newParentIndex;
 	}
 	
 	@NotNull
-	public ControlHolder<C> getOldParent() {
-		return oldParent;
+	public C getControlMoved() {
+		return controlMoved;
+	}
+	
+	@NotNull
+	public ControlHolder<C> getOldHolder() {
+		return oldList.getHolder();
 	}
 		
 	public int getOldIndex() {
@@ -38,11 +45,22 @@ public class ControlMove<C extends Control> {
 	}
 	
 	@NotNull
-	public ControlHolder<C> getNewParent() {
-		return newParent;
+	public ControlHolder<C> getNewHolder() {
+		return newList.getHolder();
 	}
 	
 	public int getNewIndex() {
 		return newParentIndex;
 	}
+	
+	@NotNull
+	public ControlList<C> getOldList() {
+		return oldList;
+	}
+	
+	@NotNull
+	public ControlList<C> getNewList() {
+		return newList;
+	}
+	
 }

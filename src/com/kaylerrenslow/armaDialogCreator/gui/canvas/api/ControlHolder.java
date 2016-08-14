@@ -10,9 +10,12 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+
 /**
  Created by Kayler on 08/05/2016.
  */
 public interface ControlHolder<C extends Control> {
 	ControlList<C> getControls();
+	DataContext getUserData();
 }

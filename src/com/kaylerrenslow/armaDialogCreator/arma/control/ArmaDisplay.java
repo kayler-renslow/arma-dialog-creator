@@ -21,6 +21,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 
 /**
  @author Kayler
@@ -32,7 +33,8 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	private boolean movingEnable, enableSimulation;
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
-		
+	private final DataContext userdata = new DataContext();
+	
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
 		final ArmaDisplay display = this;
@@ -97,6 +99,11 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;
+	}
+	
+	@Override
+	public DataContext getUserData() {
+		return userdata;
 	}
 	
 	

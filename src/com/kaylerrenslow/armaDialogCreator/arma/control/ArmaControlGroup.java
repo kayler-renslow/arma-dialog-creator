@@ -72,13 +72,12 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 		controlsList.addChangeListener(new ControlListChangeListener<ArmaControl>() {
 			@Override
 			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+				//do not set the display in here
 				if(change.wasAdded()){
 					change.getAdded().getControl().setParent(group);
-					change.getAdded().getControl().setDisplay(group.getDisplay());
 				}
 				if(change.wasSet()){
 					change.getSet().getNewControl().setParent(group);
-					change.getSet().getNewControl().setDisplay(group.getDisplay());
 				}
 			}
 		});

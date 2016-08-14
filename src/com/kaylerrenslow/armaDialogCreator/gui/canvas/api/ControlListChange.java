@@ -10,14 +10,21 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 08/12/2016.
  */
 public class ControlListChange<C extends Control> {
+	private final ControlList<C> modifiedList;
 	private ControlAdd<C> added;
 	private ControlRemove<C> removed;
 	private ControlMove<C> moved;
 	private ControlSet<C> set;
+	
+	public ControlListChange(ControlList<C> modifiedList) {
+		this.modifiedList = modifiedList;
+	}
 	
 	void setSet(ControlSet<C> set) {
 		this.set = set;
@@ -42,6 +49,12 @@ public class ControlListChange<C extends Control> {
 			throw new IllegalStateException("only one state is allowed at once");
 		}
 		this.moved = move;
+	}
+	
+	/**Get the list that had the change*/
+	@NotNull
+	public ControlList<C> getModifiedList() {
+		return modifiedList;
 	}
 	
 	public boolean wasSet() {

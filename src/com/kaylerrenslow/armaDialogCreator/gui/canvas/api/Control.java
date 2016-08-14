@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -53,4 +54,6 @@ public interface Control {
 			throw new IllegalStateException("unknown holder type:" + getHolder().getClass().getName());
 		}
 	}
+	
+	DataContext getUserData();
 }

@@ -42,7 +42,7 @@ public class StagePopup<E extends Parent> {
 	protected final E myRootElement;
 	private FXMLLoader myLoader;
 	/** The buttons used when invoking {@link #getResponseFooter(boolean, boolean, boolean)}. These are no longer null after invoking the method. */
-	protected @Nullable Button btnOk, btnCancel, btnHelp;
+	protected Button btnOk, btnCancel, btnHelp;
 	
 	/**
 	 Creates a new JavaFX Stage based popup window. This popup window will inherit the first icon from the primary stage as well as all the stylesheets.<br>

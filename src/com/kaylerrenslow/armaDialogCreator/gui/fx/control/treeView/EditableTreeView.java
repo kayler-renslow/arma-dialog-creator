@@ -94,8 +94,9 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	protected void removeChild(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> toRemove) {
 		FoundChild<E> found = new FoundChild<E>() {
 			@Override
-			public void found(TreeItem<E> found) {
+			public boolean found(TreeItem<E> found) {
 				found.getValue().delete();
+				return false;
 			}
 		};
 		TreeUtil.stepThroughDescendants(toRemove, found);
@@ -167,5 +168,23 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		return getSelectionModel().getSelectedItem();
 	}
 	
-	
+	/**
+	 Used to move a TreeItem from it's current parent to a new parent. When toMove is removed from it's original parent, {@link #removeChild(TreeItem, TreeItem)}
+	 will be used
+	 
+	 @param toMove TreeItem to move
+	 @param newParent the new parent of the TreeItem.
+	 @param index where to place toMove
+	 @throws IllegalArgumentException If newParent can't have children ({@link TreeItemData#canHaveChildren()}==false)
+	 */
+	protected void moveTreeItem(@NotNull TreeItem<E> toMove, @NotNull TreeItem<E> newParent, int index) {
+		removeChild(toMove.getParent(), toMove);
+		//move into children
+		if (newParent.getValue().canHaveChildren()) {
+			newParent.getChildren().add(index, toMove); //don't use addToParent so that a move and addition can be easily detected on their own
+			return;
+		}
+		
+		throw new IllegalArgumentException("newParent can't have children");
+	}
 }
