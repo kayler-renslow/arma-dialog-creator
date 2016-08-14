@@ -152,6 +152,7 @@ public interface Lang {
 			String AVAILABLE_MACROS = "Available Macros";
 			String NO_AVAILABLE_MACROS = "No macros are available.";
 			String NO_RECENT_MACROS = "No recently chosen macros.";
+			String CHOOSE_MACRO_TITLE = "Choose a Macro below.";
 		}
 	}
 	

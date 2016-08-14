@@ -73,11 +73,12 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 			@Override
 			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
 				//do not set the display in here
-				if(change.wasAdded()){
-					change.getAdded().getControl().setParent(group);
-				}
-				if(change.wasSet()){
-					change.getSet().getNewControl().setParent(group);
+				if (change.wasAdded()) {
+					change.getAdded().getControl().setHolder(group);
+				} else if (change.wasSet()) {
+					change.getSet().getNewControl().setHolder(group);
+				} else if (change.wasMoved() && change.getMoved().getDestinationList() == group.getControls()) {
+					change.getMoved().getMovedControl().setHolder(group);
 				}
 			}
 		});
@@ -99,7 +100,7 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
 		super.resolutionUpdate(newResolution);
-		for(ArmaControl control : controlsList){
+		for (ArmaControl control : controlsList) {
 			control.resolutionUpdate(newResolution);
 		}
 	}

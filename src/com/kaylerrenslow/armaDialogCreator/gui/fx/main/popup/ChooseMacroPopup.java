@@ -22,6 +22,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -36,6 +37,7 @@ import java.util.List;
  Created on 08/09/2016. */
 public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VBox> {
 	
+	private static final Font TITLE_FONT = Font.font(15d);
 	private final ListView<Macro<V>> listViewMacros = new ListView<>();
 	
 	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
@@ -49,6 +51,11 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 	
 	private void initRootElement(Class<V> macroClassType) {
 		myRootElement.setPadding(new Insets(10));
+		final Label lblChooseMacro = new Label(Lang.Popups.ChooseMacro.CHOOSE_MACRO_TITLE);
+		lblChooseMacro.setFont(TITLE_FONT);
+		myRootElement.getChildren().add(lblChooseMacro);
+		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
+		
 		List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
 		for (Macro macro : macroList) {
 			if (macroClassType.isInstance(macro.getValue())) {

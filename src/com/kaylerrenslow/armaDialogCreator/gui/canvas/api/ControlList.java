@@ -148,7 +148,7 @@ public class ControlList<C extends Control> implements List<C> {
 	
 	/**
 	 Moves a control at index indexOfControlToMove from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null. When the internal
-	 operation is completed, this list's change listeners will be notified and not newList's listeners.
+	 operation is completed, this list's change listeners will be notified and then newList's listeners.
 	 
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to
@@ -168,6 +168,7 @@ public class ControlList<C extends Control> implements List<C> {
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex));
 		notifyListeners(change);
+		newList.notifyListeners(change);
 	}
 	
 	/**

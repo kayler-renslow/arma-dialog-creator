@@ -88,7 +88,6 @@ public abstract class UICanvas extends AnchorPane {
 		this.setOnMouseMoved(mouseEvent);
 		this.setOnMouseDragged(mouseEvent);
 		
-		
 		this.animationTimer = new AnimationTimer() {
 			@Override
 			public void handle(long now) {
@@ -315,8 +314,6 @@ public abstract class UICanvas extends AnchorPane {
 					canvas.mouseReleased(mousex, mousey, btn);
 				}
 			}
-//			canvas.paint();
-			
 		}
 		
 	}

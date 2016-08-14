@@ -54,13 +54,13 @@ public class TreeUtil {
 	
 	private static <E> boolean stepThroughDescendantsHelper(@NotNull TreeItem<E> startItem, @NotNull FoundChild<E> foundAction) {
 		for (TreeItem<E> item : startItem.getChildren()) {
-			boolean cont = foundAction.found(item);
-			if (!cont) {
-				return false;
+			boolean stop = foundAction.found(item);
+			if (stop) {
+				return true;
 			}
-			cont = stepThroughDescendantsHelper(item, foundAction);
-			if (!cont) {
-				return false;
+			stop = stepThroughDescendantsHelper(item, foundAction);
+			if (stop) {
+				return true;
 			}
 		}
 		return true;

@@ -22,18 +22,23 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
+
+import java.util.Iterator;
 
 /**
  @author Kayler
  Interface that specifies something that is displayable in preview and in Arma 3 (title, dialog, display)
  Created on 06/14/2016. */
-public class ArmaDisplay implements Display<ArmaControl>{
-
+public class ArmaDisplay implements Display<ArmaControl> {
+	
 	private int idd;
 	private boolean movingEnable, enableSimulation;
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 	private final DataContext userdata = new DataContext();
+	@SuppressWarnings("unchecked")
+	private final ControlList<ArmaControl>[] controls = new ControlList[]{getBackgroundControls(), getControls()};
 	
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
@@ -41,42 +46,49 @@ public class ArmaDisplay implements Display<ArmaControl>{
 		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
 			@Override
 			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-				if(change.wasAdded()){
-					change.getAdded().getControl().setParent(display);
+				if (change.wasAdded()) {
+					change.getAdded().getControl().setHolder(display);
 					change.getAdded().getControl().setDisplay(display);
-				}
-				if(change.wasSet()){
-					change.getSet().getNewControl().setParent(display);
+				} else if (change.wasSet()) {
+					change.getSet().getNewControl().setHolder(display);
 					change.getSet().getNewControl().setDisplay(display);
+				} else if (change.wasMoved() && (change.getMoved().getDestinationHolder() == display)) {
+					change.getMoved().getMovedControl().setHolder(display);
+					change.getMoved().getMovedControl().setDisplay(display);
 				}
 			}
 		};
 		controlsList.addChangeListener(controlListListener);
 		bgControlsList.addChangeListener(controlListListener);
 	}
-
+	
+	@Override
+	public Iterator<ArmaControl> iteratorForAllControls(boolean backwards) {
+		return new ListMergeIterator<>(backwards, controls);
+	}
+	
 	public int getIdd() {
 		return idd;
 	}
-
+	
 	public void setIdd(int idd) {
 		this.idd = idd;
 	}
-
+	
 	/** Return true if the display/dialog is allowed to move. If it isn't, return false. */
 	public boolean movingEnabled() {
 		return movingEnable;
 	}
-
+	
 	public void setMovingEnable(boolean movingEnable) {
 		this.movingEnable = movingEnable;
 	}
-
+	
 	/** Return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
 	public boolean simulationEnabled() {
 		return enableSimulation;
 	}
-
+	
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
 	}
@@ -88,10 +100,10 @@ public class ArmaDisplay implements Display<ArmaControl>{
 	
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
-		for(ArmaControl control : bgControlsList){
+		for (ArmaControl control : bgControlsList) {
 			control.resolutionUpdate(newResolution);
 		}
-		for(ArmaControl control : controlsList){
+		for (ArmaControl control : controlsList) {
 			control.resolutionUpdate(newResolution);
 		}
 	}

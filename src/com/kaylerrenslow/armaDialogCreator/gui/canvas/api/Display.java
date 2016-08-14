@@ -10,8 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
-import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
-
 import java.util.Iterator;
 
 /**
@@ -30,11 +28,8 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	 @param backwards if true, the iterator will iterate through the other controls from size-1 to 0 and then the background controls in reverse (starting from size-1 to 0).<br>
 	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
 	 */
-	default Iterator<C> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<C, ControlList<C>>(backwards, new ControlList[]{getControls(), getBackgroundControls()});
-	}
-	
-	
+	Iterator<C> iteratorForAllControls(boolean backwards);
+		
 	void resolutionUpdate(Resolution newResolution);
 	
 }

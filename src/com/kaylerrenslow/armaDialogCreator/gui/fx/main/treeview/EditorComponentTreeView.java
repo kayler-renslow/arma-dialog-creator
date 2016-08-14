@@ -49,13 +49,19 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		
 		@Override
 		public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-			if (change.wasSet()) {
-				handleSet(change);
-			} else if (change.wasRemoved()) {
-				handleRemove(change);
-			} else if (change.wasAdded()) {
-				handleAdd(controlList, change);
-			} else if (change.wasMoved()) {
+			if(change.getModifiedList() == getTargetControlList()){//no need to search for things that shouldn't exist in the tree view
+				if (change.wasSet()) {
+					handleSet(change);
+					return;
+				} else if (change.wasRemoved()) {
+					handleRemove(change);
+					return;
+				} else if (change.wasAdded()) {
+					handleAdd(controlList, change);
+					return;
+				}
+			}
+			if (change.wasMoved()) {
 				handleMove(change);
 			}
 		}
@@ -63,7 +69,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		private void handleMove(final ControlListChange<ArmaControl> change) {
 			final LinkedList<TreeItem<T>> removeMeWhenDone = new LinkedList<>();
 			final LinkedList<TreeItem<T>> addToMeWhenDone = new LinkedList<>();
-			if (change.getMoved().getNewHolder() instanceof Display && change.getMoved().getNewList() == getTargetControlList()) {
+			if (change.getMoved().getDestinationList() == getTargetControlList()) {
 				addToMeWhenDone.add(getRoot());
 			}
 				
@@ -74,20 +80,19 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				private boolean foundOldTreeItem = false;
 				
 				//no need to find parent if the parent is the display (will be the root of the tree)
-				private boolean foundNewParent = change.getMoved().getNewHolder() instanceof Display;
+				private boolean foundNewParent = change.getMoved().getDestinationHolder() instanceof Display;
 				
 				@Override
 				public boolean found(TreeItem<T> found) {
 					if (found.getValue() instanceof ControlTreeItemEntry) { //maybe found old tree item
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
-						if (treeItemEntry.getMyArmaControl() == change.getMoved().getControlMoved()) { //found old tree item
-							System.out.println("EditorComponentTreeView.found found=" + found);
+						if (treeItemEntry.getMyArmaControl() == change.getMoved().getMovedControl()) { //found old tree item
 							removeMeWhenDone.add(found);
 							foundOldTreeItem = true;
 						}
 						if (!foundNewParent && found.getValue() instanceof ControlGroupTreeItemEntry) {
 							ControlGroupTreeItemEntry groupTreeItemEntry = (ControlGroupTreeItemEntry) found.getValue();
-							if (groupTreeItemEntry.getMyArmaControl() == change.getMoved().getNewHolder()) { //found new parent
+							if (groupTreeItemEntry.getMyArmaControl() == change.getMoved().getDestinationHolder()) { //found new parent
 								addToMeWhenDone.add(found);
 								foundNewParent = true;
 							}
@@ -96,14 +101,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					return foundOldTreeItem && foundNewParent;
 				}
 			});
-			
 			while (removeMeWhenDone.size() > 0) {
-				
-				System.out.println("EditorComponentTreeView.handleMove removeMeWhenDone=" + removeMeWhenDone);
 				TreeItem<T> toRemove = removeMeWhenDone.removeFirst();
-				boolean removed = toRemove.getParent().getChildren().remove(toRemove);
-				System.out.println("EditorComponentTreeView.handleMove removed=" + removed);
-				System.out.println("EditorComponentTreeView.handleMove backgroundControlEditor=" + backgroundControlEditor);
+				toRemove.getParent().getChildren().remove(toRemove);
 				if (toRemove.getValue() instanceof ControlGroupTreeItemEntry) {
 					ControlGroupTreeItemEntry removeTreeItemEntry = (ControlGroupTreeItemEntry) toRemove.getValue();
 					removeListeners(removeTreeItemEntry.getControlGroup().getControls());
@@ -111,10 +111,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 			while (addToMeWhenDone.size() > 0) {
 				TreeItem<T> addToMe = addToMeWhenDone.removeFirst();
-				TreeItem<T> newTreeItem = createTreeItemForControl(change.getMoved().getControlMoved());
-				addToMe.getChildren().add(change.getMoved().getNewIndex(), newTreeItem);
-				if (change.getMoved().getControlMoved() instanceof ArmaControlGroup) {
-					ArmaControlGroup group = (ArmaControlGroup) change.getMoved().getControlMoved();
+				TreeItem<T> newTreeItem = createTreeItemForControl(change.getMoved().getMovedControl());
+				addToMe.getChildren().add(change.getMoved().getDestinationIndex(), newTreeItem);
+				if (change.getMoved().getMovedControl() instanceof ArmaControlGroup) {
+					ArmaControlGroup group = (ArmaControlGroup) change.getMoved().getMovedControl();
 					group.getControls().addChangeListener(controlListChangeListener);
 					addControls(newTreeItem, group.getControls());
 				}

@@ -30,36 +30,41 @@ public class ControlMove<C extends Control> {
 		this.newParentIndex = newParentIndex;
 	}
 	
+	/** The control that was moved from one list to another */
 	@NotNull
-	public C getControlMoved() {
+	public C getMovedControl() {
 		return controlMoved;
 	}
 	
+	/** Equivalent to {@link #getOldList()} as the ControlList in {@link ControlList#getHolder()} */
 	@NotNull
 	public ControlHolder<C> getOldHolder() {
 		return oldList.getHolder();
 	}
-		
+	
 	public int getOldIndex() {
 		return oldIndex;
 	}
 	
+	/** Equivalent to {@link #getDestinationList()} as the ControlList in {@link ControlList#getHolder()} */
 	@NotNull
-	public ControlHolder<C> getNewHolder() {
+	public ControlHolder<C> getDestinationHolder() {
 		return newList.getHolder();
 	}
 	
-	public int getNewIndex() {
+	public int getDestinationIndex() {
 		return newParentIndex;
 	}
 	
+	/** Get the list that the moved control belonged to before the move */
 	@NotNull
 	public ControlList<C> getOldList() {
 		return oldList;
 	}
 	
+	/** Get the list that the control moved to */
 	@NotNull
-	public ControlList<C> getNewList() {
+	public ControlList<C> getDestinationList() {
 		return newList;
 	}
 	

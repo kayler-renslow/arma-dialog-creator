@@ -38,7 +38,7 @@ public class ArmaControl extends ControlClass implements Control {
 	/** Renderer of the control for the canvas */
 	protected final ArmaControlRenderer renderer;
 	
-	private ControlHolder<ArmaControl> parent;
+	private ControlHolder<ArmaControl> holder;
 	private ArmaDisplay display;
 	
 	/** Control id (-1 if doesn't matter) */
@@ -134,8 +134,8 @@ public class ArmaControl extends ControlClass implements Control {
 		renderer.resolutionUpdate(newResolution);
 	}
 	
-	void setParent(@NotNull ControlHolder<ArmaControl> parent){
-		this.parent = parent;
+	void setHolder(@NotNull ControlHolder<ArmaControl> holder){
+		this.holder = holder;
 	}
 	
 	void setDisplay(@NotNull ArmaDisplay display){
@@ -145,7 +145,7 @@ public class ArmaControl extends ControlClass implements Control {
 	@Override
 	@NotNull
 	public ControlHolder<ArmaControl> getHolder() {
-		return parent;
+		return holder;
 	}
 	
 	@Override

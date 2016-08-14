@@ -89,7 +89,7 @@ public final class ArmaDialogCreator extends Application {
 		});
 		
 		this.primaryStage = primaryStage;
-		Thread.currentThread().setName("Arma Dialog Creator Main Thread");
+		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
