@@ -40,7 +40,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private static final String BAD_FIELD = "bad-input-text-field";
 	private static final String DATA_NEEDS_SUBMITION = "-fx-background-color:green";
 	private static final String DATA_SUBMITTED = "";
-	
+
 	private final C dataChecker;
 	private final ValueObserver<V> observer = new ValueObserver<>(null);
 	private final TextField textField = new TextField();
@@ -48,13 +48,13 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private final Button button = new Button();
 	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
 	private final Button btnSubmit = new Button("");
-	
+
 	private @Nullable String valueString = null;
 	private boolean valid = false;
 	private boolean buttonState = true;
 	private String errMsg;
 	private boolean isError;
-	
+
 	/**
 	 Creates a new InputField (TextField with additional features). The InputField has two states: "Input State" and "Button State".
 	 <br><b>"Input State":</b>
@@ -80,7 +80,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 <li>Pressing the 'enter' key and the data is valid</li>
 	 <li>no data entered and text field loses focus and data is not allowed to be empty</li>
 	 </ul>
-	 
+
 	 @param fieldDataChecker the {@link InputFieldDataChecker} instance to use
 	 */
 	public InputField(@NotNull C fieldDataChecker) {
@@ -97,7 +97,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		btnSubmit.setTooltip(new Tooltip(FXControlLang.InputField.SUBMIT_BTN_TOOLTIP));
 		this.hboxTextField.getChildren().add(btnSubmit);
 		textField.setStyle("-fx-background-radius:0px");
-		
+
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
@@ -121,7 +121,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		setTooltip(new Tooltip(fieldDataChecker.getTypeName()));
 		this.setOnKeyReleased(keyEvent);
 		this.setOnKeyTyped(keyEvent);
-		
+
 		textField.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -147,7 +147,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 				}
 			}
 		});
-		
+
 		button.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -158,38 +158,28 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 				}
 			}
 		});
-		
-		EventHandler<MouseEvent> mouseEvent = new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
-					button.setCursor(Cursor.TEXT);
-				} else if (event.getEventType() == MouseEvent.MOUSE_EXITED) {
-					button.setCursor(Cursor.DEFAULT);
-				}
-			}
-		};
-		button.setOnMouseEntered(mouseEvent);
-		
+
+		button.setCursor(Cursor.TEXT);
+
 		button.setMaxWidth(Double.MAX_VALUE);
 		getChildren().add(button);
 	}
-	
+
 	/** If dataSubmitted==true, the submit button will turn to it's default color. if dataSubmitted==false, will turn to green to indicate changes need to be submitted */
 	private void valueSubmitted(boolean dataSubmitted) {
 		btnSubmit.setStyle(dataSubmitted ? DATA_SUBMITTED : DATA_NEEDS_SUBMITION);
 	}
-	
+
 	/**
 	 Creates an InputField with the value set to defaultValue
-	 
+
 	 @see #InputField(InputFieldDataChecker)
 	 */
 	public InputField(@NotNull C fieldDataChecker, @Nullable V defaultValue) {
 		this(fieldDataChecker);
 		setValue(defaultValue);
 	}
-	
+
 	/**
 	 Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from {@link InputFieldDataChecker#parse(String)}.
 	 If no text was inputted and the InputFieldDataChecker doesn't allow empty data, will return null. Also, if the InputField is in Button State, will return null.
@@ -204,12 +194,12 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 		return dataChecker.parse(this.getText());
 	}
-	
+
 	/** Return true if the data inside the text field is valid, false otherwise. If the InputField is in the Button State, will return false. */
 	public boolean hasValidData() {
 		return !buttonState && valid;
 	}
-	
+
 	/**
 	 Set the value from an object. The text in the control is set to whatever {@link V#toString()} returns. If value given is null, will set field to Button State.
 	 No matter what is passed, the internal {@link ValueObserver} instance will be notified of the value update.
@@ -228,7 +218,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		valid = true;
 		error(false);
 	}
-	
+
 	/**
 	 Set the value from text. If text==null, the InputField will be set to the Button State and the InputField's {@link ValueObserver#getValue()} will be null.<br>
 	 If text != null, the text will be checked to see if valid (via {@link InputFieldDataChecker#validData(String)}.<br>
@@ -238,7 +228,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	public void setValueFromText(@Nullable String text) {
 		setValueFromText(text, true, true);
 	}
-	
+
 	private void setValueFromText(@Nullable String text, boolean updateCursor, boolean updateValueIfNotValid) {
 		if (text == null) {
 			setValue(null);
@@ -264,37 +254,37 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			textField.selectRange(selection.getStart(), selection.getEnd());
 		}
 	}
-	
+
 	/** @see TextField#getCaretPosition() */
 	public int getCaretPosition() {
 		return textField.getCaretPosition();
 	}
-	
+
 	/** @see TextField#getSelection() */
 	public IndexRange getSelection() {
 		return textField.getSelection();
 	}
-	
+
 	/** @see TextField#positionCaret(int) */
 	public void positionCaret(int position) {
 		textField.positionCaret(position);
 	}
-	
+
 	/** @see TextField#selectRange(int, int) */
 	public void selectRange(int start, int end) {
 		textField.selectRange(start, end);
 	}
-	
+
 	/** @see TextField#selectAll() */
 	public void selectAll() {
 		textField.selectAll();
 	}
-	
+
 	/** Get the value observer */
 	public ValueObserver<V> getValueObserver() {
 		return observer;
 	}
-	
+
 	/** Clears the text, the error (also hides the error popup), and sets the value to null. Then sets the InputField to Button State. */
 	public void clear() {
 		valueString = null;
@@ -304,7 +294,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		error(false);
 		setToButton(true);
 	}
-	
+
 	/** Sets the text without updating the error state or value observer. If text is null, will be put into button state. */
 	public void setText(@Nullable String text) {
 		if (text == null) {
@@ -313,7 +303,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			textField.setText(text);
 		}
 	}
-	
+
 	/** Get the inputted text, or empty String if in Button State (may also not be in Button State and the text is actually just ""). */
 	@NotNull
 	public String getText() {
@@ -325,25 +315,25 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 		return textField.getText();
 	}
-	
+
 	/** Set the prompt text of the text field and the text of the button */
 	public void setPromptText(String text) {
 		textField.setPromptText(text);
 		button.setText(text);
 	}
-	
+
 	/** Set the tooltip for the inner {@link TextField} and {@link Button} */
 	public void setTooltip(Tooltip tooltip) {
 		textField.setTooltip(tooltip);
 		button.setTooltip(tooltip);
 	}
-	
+
 	private boolean checkIfValid(@NotNull String text) {
 		errMsg = dataChecker.validData(text);
 		valid = (errMsg == null);
 		return valid;
 	}
-	
+
 	/** Set the state of the InputField. if toButton==true, will set to Button state. If toButton == false, will set to TextField state. */
 	public void setToButton(boolean toButton) {
 		if (buttonState == toButton) {
@@ -359,7 +349,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			textField.requestFocus();
 		}
 	}
-	
+
 	@Override
 	public void requestFocus() {
 		if (buttonState) {
@@ -368,7 +358,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			textField.requestFocus();
 		}
 	}
-	
+
 	/**
 	 If e==true:
 	 <ul>
@@ -391,20 +381,20 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			textField.getStyleClass().removeAll(BAD_FIELD);
 			errorMsgPopup.hide();
 		}
-		
+
 		this.applyCss();
 	}
-	
+
 	/** A programmatically way of submitting the data (will do the same operations as actually pressing the submit button) */
 	public void submitValue() {
 		setValueFromText(getText(), true, false);
 	}
-	
-	
+
+
 	private static class ErrorMsgPopup extends Popup {
 		private final InputField inputField;
 		private Label lblMsg = new Label();
-		
+
 		public ErrorMsgPopup(InputField inputField) {
 			this.inputField = inputField;
 			StackPane stackPane = new StackPane(lblMsg);
@@ -413,14 +403,14 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			stackPane.setStyle("-fx-background-color:red;");
 			lblMsg.setTextFill(Color.WHITE);
 			this.setAutoHide(true);
-			
+
 			getContent().add(stackPane);
 		}
-		
+
 		public void setMsg(@NotNull String msg) {
 			this.lblMsg.setText(msg);
 		}
-		
+
 		public void showPopup() {
 			Point2D p = inputField.localToScreen(0, -inputField.getHeight());
 			show(inputField, p.getX(), p.getY());

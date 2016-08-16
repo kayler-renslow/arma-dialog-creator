@@ -362,16 +362,16 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		
 		if (group != null) {
-			correctedIndex = getCorrectedIndex(groupTreeItem, child);
 			if (!group.getControlGroup().getControls().contains(childControlEntry.getMyArmaControl())) {
+				correctedIndex = getCorrectedIndex(groupTreeItem, child);
 				setControlGroupListener(false, group.getControlGroup());
 				group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
 				setControlGroupListener(true, group.getControlGroup());
 			}
 		} else { //didn't go into a control group, so it is in a folder.
 			setDisplayListener(false);
-			correctedIndex = getCorrectedIndex(getRoot(), child);
 			if (!getTargetControlList().contains(childControlEntry.getMyArmaControl())) {
+				correctedIndex = getCorrectedIndex(getRoot(), child);
 				getTargetControlList().add(correctedIndex, childControlEntry.getMyArmaControl());
 			}
 			setDisplayListener(true);
@@ -400,9 +400,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			return;
 		}
 		setDisplayListener(false);
-		int correctedIndex = getCorrectedIndex(getRoot(), child);
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
 		if (!getTargetControlList().contains(childControlEntry.getMyArmaControl())) {
+			int correctedIndex = getCorrectedIndex(getRoot(), child);
 			getTargetControlList().add(correctedIndex, childControlEntry.getMyArmaControl());
 		}
 		
@@ -431,19 +431,18 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		if (group == null) {
 			setDisplayListener(false);
+
+			//todo moving indexes are wrong
 			int correctedIndex = getCorrectedIndex(getRoot(), toMove);
-			if (!getTargetControlList().contains(controlEntry.getMyArmaControl())) {
-				getTargetControlList().add(correctedIndex, controlEntry.getMyArmaControl());
-			}
+			getTargetControlList().move(controlEntry.getMyArmaControl(), correctedIndex);
 			
 			setDisplayListener(true);
 		} else {
+			//todo moving indexes are wrong
 			int correctedIndex = getCorrectedIndex(groupTreeItem, toMove);
-			if (!group.getControlGroup().getControls().contains(controlEntry.getMyArmaControl())) {
-				setControlGroupListener(false, group.getControlGroup());
-				group.getControlGroup().getControls().add(correctedIndex, controlEntry.getMyArmaControl());
-				setControlGroupListener(true, group.getControlGroup());
-			}
+			setControlGroupListener(false, group.getControlGroup());
+			group.getControlGroup().getControls().move(controlEntry.getMyArmaControl(), correctedIndex);
+			setControlGroupListener(true, group.getControlGroup());
 		}
 	}
 	

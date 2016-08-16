@@ -298,7 +298,7 @@ public abstract class UICanvas extends AnchorPane {
 			if (!(event.getTarget() instanceof Canvas)) {
 				return;
 			}
-			
+
 			Canvas c = (Canvas) event.getTarget();
 			Point2D p = c.sceneToLocal(event.getSceneX(), event.getSceneY());
 			int mousex = (int) p.getX();

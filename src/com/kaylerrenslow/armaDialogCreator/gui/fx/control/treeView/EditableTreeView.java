@@ -17,20 +17,20 @@ import org.jetbrains.annotations.Nullable;
 
 /** Creates a new EditableTreeView with a root node already in place. This class extends javafx.scene.control.TreeView of type TreeItemData */
 public class EditableTreeView<E extends TreeItemData> extends javafx.scene.control.TreeView<E> {
-	
+
 	public EditableTreeView(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		super(new TreeItem<>());
 		this.showRootProperty().set(false);
-		
+
 		this.setEditable(true);
 		getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setCellSelectionUpdate(selectionUpdate);
 	}
-	
+
 	public void setCellSelectionUpdate(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
-	
+
 	/** Clears the TreeView and loads the given tree structure. If treeStructure is null, will just clear the tree */
 	public void loadStructure(@Nullable TreeStructure treeStructure) {
 		if (treeStructure == null) {
@@ -44,7 +44,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 			loadStructure(parent, node);
 		}
 	}
-	
+
 	private void loadStructure(TreeItem<E> parent, TreeStructure.TreeNode<E> parentNode) {
 		TreeItem<E> newItem = new TreeItem<>(parentNode.getData());
 		addChildToParent(parent, newItem);
@@ -52,23 +52,23 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 			loadStructure(newItem, childNode);
 		}
 	}
-	
+
 	public TreeStructure<E> exportStructure() {
 		return TreeStructure.getStructure(this);
 	}
-	
+
 	/**
 	 Adds a new TreeItem to the tree.
-	 
+
 	 @param data data inside tree node
 	 */
 	public void addChildDataToRoot(E data) {
 		addChildToRoot(new TreeItem<>(data));
 	}
-	
+
 	/**
 	 Adds a new TreeItem to the tree.
-	 
+
 	 @param index where to add the child at
 	 @param data data inside node
 	 */
@@ -79,15 +79,15 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		}
 		addChildToRoot(index, new TreeItem<>(data));
 	}
-	
+
 	/** Return the most recent selected index */
 	public int getSelectedIndex() {
 		return getSelectionModel().getSelectedIndex();
 	}
-	
+
 	/**
 	 Removes the specified child from the tree of the given parent.
-	 
+
 	 @param parent what TreeItem the item is a child of
 	 @param toRemove item to remove
 	 */
@@ -103,21 +103,21 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		toRemove.getValue().delete();
 		parent.getChildren().remove(toRemove);
 	}
-	
-	
+
+
 	/**
 	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<E> parent, TreeItem<E> child, int index) with index set to parent.getChildren().size()
-	 
+
 	 @param parent parent node
 	 @param child node to be made the child of parent
 	 */
 	protected void addChildToParent(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> child) {
 		addChildToParent(parent, child, parent.getChildren().size());
 	}
-	
+
 	/**
 	 Adds a child to a designated parent.
-	 
+
 	 @param parent parent node
 	 @param child node to be made the child of parent
 	 @param index index for where child is to be inserted (use child count to add to end)
@@ -129,29 +129,29 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 			parent.getChildren().add(index, child);
 		}
 	}
-	
+
 	/**
 	 Puts the child data into a TreeItem and then adds to designated parent.
-	 
+
 	 @param parent parent node
 	 @param childData node to be made the child of parent
 	 */
 	protected void addChildDataToParent(@NotNull TreeItem<E> parent, @NotNull E childData) {
 		addChildToParent(parent, new TreeItem<>(childData));
 	}
-	
+
 	/**
 	 Adds a child to the root
-	 
+
 	 @param item item to be added
 	 */
 	protected void addChildToRoot(@NotNull TreeItem<E> item) {
 		getRoot().getChildren().add(item);
 	}
-	
+
 	/**
 	 Adds a new TreeItem to the tree's root.
-	 
+
 	 @param index where to add the child at
 	 @param item tree item to add
 	 */
@@ -162,29 +162,30 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		}
 		getRoot().getChildren().add(index, item);
 	}
-	
+
 	@Nullable
 	protected TreeItem<E> getSelectedItem() {
 		return getSelectionModel().getSelectedItem();
 	}
-	
+
 	/**
 	 Used to move a TreeItem from it's current parent to a new parent. When toMove is removed from it's original parent, {@link #removeChild(TreeItem, TreeItem)}
 	 will be used
-	 
+
 	 @param toMove TreeItem to move
 	 @param newParent the new parent of the TreeItem.
 	 @param index where to place toMove
 	 @throws IllegalArgumentException If newParent can't have children ({@link TreeItemData#canHaveChildren()}==false)
 	 */
 	protected void moveTreeItem(@NotNull TreeItem<E> toMove, @NotNull TreeItem<E> newParent, int index) {
-		removeChild(toMove.getParent(), toMove);
 		//move into children
-		if (newParent.getValue().canHaveChildren()) {
-			newParent.getChildren().add(index, toMove); //don't use addToParent so that a move and addition can be easily detected on their own
+		if (newParent == getRoot() || newParent.getValue().canHaveChildren()) {
+			TreeItem<E> newTreeItem = new TreeItem<>(toMove.getValue()); //create new tree item since they can't be placed in multiple spots
+			newParent.getChildren().add(index, newTreeItem); //don't use addToParent so that a move and addition can be easily detected on their own
+			toMove.getParent().getChildren().remove(toMove);
 			return;
 		}
-		
+
 		throw new IllegalArgumentException("newParent can't have children");
 	}
 }

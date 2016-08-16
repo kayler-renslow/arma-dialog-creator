@@ -29,7 +29,11 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	
 	private ExceptionHandler() {
 	}
-	
+
+	public static ExceptionHandler getInstance() {
+		return INSTANCE;
+	}
+
 	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)} */
 	public static void error(Throwable t) {
 		error(Thread.currentThread(), t);
@@ -105,5 +109,10 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		} catch (Throwable t1) {
 			t1.printStackTrace(System.out);
 		}
+	}
+
+	/**Does same thing as {@link #uncaughtException(Thread, Throwable)} with {@link Thread#currentThread()} as the thread parameter*/
+	public void uncaughtException(Throwable e) {
+		uncaughtException(Thread.currentThread(), e);
 	}
 }
