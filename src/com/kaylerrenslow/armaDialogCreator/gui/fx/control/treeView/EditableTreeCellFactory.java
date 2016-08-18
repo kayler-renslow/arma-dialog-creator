@@ -190,7 +190,6 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 				if (location != MouseTreeCellLocation.MIDDLE) {
 					clearChildParentStyle();
 				}
-				System.out.println("EditableTreeCellFactory.handle location=" + location);
 				setEffect(cellEffect);
 				// when it reaches this point, the tree item is okay to move
 				event.acceptTransferModes(TransferMode.MOVE);
@@ -219,7 +218,6 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 							treeView.moveTreeItem(dragging, getTreeItem(), getTreeItem().getChildren().size());
 						} else {
 							int index = getTreeItem().getParent().getChildren().indexOf(getTreeItem());
-							index = Math.max(0, index - 1);
 							treeView.moveTreeItem(dragging, getTreeItem().getParent(), index);
 						}
 						break;

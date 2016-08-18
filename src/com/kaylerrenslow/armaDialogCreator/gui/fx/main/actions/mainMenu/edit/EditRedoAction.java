@@ -10,8 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
+import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,24 +25,28 @@ import javafx.scene.control.MenuItem;
  */
 public class EditRedoAction implements EventHandler<ActionEvent> {
 	private final MenuItem editRedoMenuItem;
-	
+
 	public EditRedoAction(MenuItem editRedoMenuItem) {
 		this.editRedoMenuItem = editRedoMenuItem;
 		editRedoMenuItem.setDisable(true);
-		Changelog.getInstance().getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
+		final Changelog changelog = Changelog.getInstance();
+		changelog.getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
 			@Override
 			public void update(ChangelogUpdate newChange) {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						editRedoMenuItem.setDisable(true);
+						editRedoMenuItem.setText(Lang.MainMenuBar.EDIT_REDO);
 						break;
 					}
-					case REDO: {
-						editRedoMenuItem.setDisable(Changelog.getInstance().getToRedo() == null);
-						break;
-					}
+					case REDO: //intentional fall through
 					case UNDO: {
-						editRedoMenuItem.setDisable(false);
+						if (changelog.getToRedo() == null) {
+							editRedoMenuItem.setText(Lang.MainMenuBar.EDIT_REDO);
+						} else {
+							editRedoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_REDO_F, changelog.getToRedo().getShortName()));
+						}
+						editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 						break;
 					}
 					default: {
@@ -49,9 +56,15 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 			}
 		});
 	}
-	
+
 	@Override
 	public void handle(ActionEvent event) {
-		
+		final Changelog changelog = Changelog.getInstance();
+		try {
+			changelog.redo();
+		} catch (ChangeUpdateFailedException e) {
+			ExceptionHandler.getInstance().uncaughtException(e);
+		}
+		editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 	}
 }

@@ -10,8 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
+import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,37 +25,46 @@ import javafx.scene.control.MenuItem;
  */
 public class EditUndoAction implements EventHandler<ActionEvent> {
 	private final MenuItem undoMenuItem;
-	
+
 	public EditUndoAction(MenuItem undoMenuItem) {
 		this.undoMenuItem = undoMenuItem;
 		this.undoMenuItem.setDisable(true);
-		Changelog.getInstance().getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
+		final Changelog changelog = Changelog.getInstance();
+		changelog.getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
 			@Override
 			public void update(ChangelogUpdate newChange) {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						undoMenuItem.setDisable(false);
+						undoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_UNDO_F, newChange.getChange().getShortName()));
 						break;
 					}
-					case REDO: {
-						undoMenuItem.setDisable(Changelog.getInstance().getToUndo() == null);
-						break;
-					}
+					case REDO: //intentional fall through
 					case UNDO: {
-						undoMenuItem.setDisable(Changelog.getInstance().getToUndo() == null);
+						if (changelog.getToUndo() == null) {
+							undoMenuItem.setText(Lang.MainMenuBar.EDIT_UNDO);
+						} else {
+							undoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_UNDO_F, changelog.getToUndo().getShortName()));
+						}
+						undoMenuItem.setDisable(changelog.getToUndo() == null);
 						break;
 					}
 					default: {
-						throw new IllegalArgumentException("unknown update type:" + newChange.getType());
+						throw new IllegalArgumentException("unexpected update type:" + newChange.getType());
 					}
 				}
 			}
 		});
 	}
-	
+
 	@Override
 	public void handle(ActionEvent event) {
-		Changelog changelog = Changelog.getInstance();
+		final Changelog changelog = Changelog.getInstance();
+		try {
+			changelog.undo();
+		} catch (ChangeUpdateFailedException e) {
+			ExceptionHandler.getInstance().uncaughtException(e);
+		}
 		undoMenuItem.setDisable(changelog.getToUndo() == null);
 	}
 }

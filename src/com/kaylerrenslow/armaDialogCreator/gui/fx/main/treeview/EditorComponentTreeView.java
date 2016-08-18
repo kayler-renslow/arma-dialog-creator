@@ -41,15 +41,15 @@ import java.util.List;
  Anything that happens to the gui tree view will echo through the display and vice versa through this class.
  Created on 06/08/2016. */
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
-	
+
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
 	private final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
-		
+
 		@Override
 		public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-			if(change.getModifiedList() == getTargetControlList()){//no need to search for things that shouldn't exist in the tree view
+			if (change.getModifiedList() == getTargetControlList()) {//no need to search for things that shouldn't exist in the tree view
 				if (change.wasSet()) {
 					handleSet(change);
 					return;
@@ -65,7 +65,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				handleMove(change);
 			}
 		}
-		
+
 		private void handleMove(final ControlListChange<ArmaControl> change) {
 			final LinkedList<TreeItem<T>> removeMeWhenDone = new LinkedList<>();
 			final LinkedList<TreeItem<T>> addToMeWhenDone = new LinkedList<>();
@@ -78,10 +78,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			*/
 			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
 				private boolean foundOldTreeItem = false;
-				
+
 				//no need to find parent if the parent is the display (will be the root of the tree)
 				private boolean foundNewParent = change.getMoved().getDestinationHolder() instanceof Display;
-				
+
 				@Override
 				public boolean found(TreeItem<T> found) {
 					if (found.getValue() instanceof ControlTreeItemEntry) { //maybe found old tree item
@@ -120,7 +120,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				}
 			}
 		}
-		
+
 		private void handleAdd(ControlList<ArmaControl> controlList, final ControlListChange<ArmaControl> change) {
 			int insertIndex = controlList.indexOf(change.getAdded().getControl());
 			TreeItem<T> newTreeItem = createTreeItemForControl(change.getAdded().getControl());
@@ -136,7 +136,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			*/
 			final LinkedList<TreeItem<T>> addMeWhenDone = new LinkedList<>();
 			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
-				
+
 				@Override
 				public boolean found(TreeItem<T> found) {
 					if (found.getValue() instanceof ControlGroupTreeItemEntry) {
@@ -149,7 +149,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					return false;
 				}
 			});
-			
+
 			while (addMeWhenDone.size() > 0) {
 				TreeItem<T> parent = addMeWhenDone.removeFirst();
 				parent.getChildren().add(change.getAdded().getIndex(), newTreeItem);
@@ -158,14 +158,14 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				}
 			}
 		}
-		
+
 		private void handleRemove(final ControlListChange<ArmaControl> change) {
 			final LinkedList<TreeItem<T>> removeMeWhenDone = new LinkedList<>();
 			/*
 			Search for the TreeItem that holds the control that was removed
 			*/
 			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
-				
+
 				@Override
 				public boolean found(TreeItem<T> found) {
 					if (found.getValue() instanceof ControlTreeItemEntry) {
@@ -178,7 +178,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					return false;
 				}
 			});
-			
+
 			while (removeMeWhenDone.size() > 0) {
 				TreeItem<T> toRemove = removeMeWhenDone.removeFirst();
 				//remove the matched tree item
@@ -190,14 +190,14 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				}
 			}
 		}
-		
+
 		private void handleSet(final ControlListChange<ArmaControl> change) {
 			final LinkedList<Pair<TreeItem<T>, Integer>> setMeWhenDone = new LinkedList<>();
 			/*
 			Search for the TreeItem that holds the control that was modified.
 			*/
 			TreeUtil.stepThroughDescendants(getRoot(), new FoundChild<T>() {
-				
+
 				@Override
 				public boolean found(TreeItem<T> found) {
 					if (found.getValue() instanceof ControlTreeItemEntry) {
@@ -210,7 +210,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					return false;
 				}
 			});
-			
+
 			while (setMeWhenDone.size() > 0) {
 				Pair<TreeItem<T>, Integer> removed = setMeWhenDone.removeFirst();
 				//update the old tree item to a new one with the correct control
@@ -222,8 +222,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 	};
-	
-	
+
+
 	public EditorComponentTreeView(boolean backgroundControlEditor) {
 		super(null);
 		this.backgroundControlEditor = backgroundControlEditor;
@@ -240,12 +240,12 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		});
 	}
-	
+
 	/**Get either the display's background controls ({@link #backgroundControlEditor} == true) or the display main controls ({@link #backgroundControlEditor} == false).*/
 	private ControlList<ArmaControl> getTargetControlList() {
 		return backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 	}
-	
+
 	/**
 	 Set whether or not this tree view's display control/background control listener is activated. The listener is required to be disabled when a new tree item is being inserted into the tree
 	 because if it wasn't, the tree view would get 2 tree items inserted
@@ -259,7 +259,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			editingDisplay.getControls().removeChangeListener(controlListChangeListener);
 		}
 	}
-	
+
 	/** Set whether or not the given control group's controls listener is activated */
 	private void setControlGroupListener(boolean activate, ArmaControlGroup group) {
 		if (activate) {
@@ -268,10 +268,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			group.getControls().removeChangeListener(controlListChangeListener);
 		}
 	}
-	
+
 	/**
 	 Sets the selection such that only the given controls are selected
-	 
+
 	 @param controlList list of controls to select
 	 */
 	public void setSelectedControls(List<ArmaControl> controlList) {
@@ -294,7 +294,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		});
 	}
-	
+
 	public void setToDisplay(ArmaDisplay display) {
 		if (this.editingDisplay != null) {
 			setDisplayListener(false); //clear the old listeners on the old editing display since they are no longer needed
@@ -304,7 +304,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		getRoot().getChildren().clear();
 		addControls(getRoot(), getTargetControlList());
 	}
-	
+
 	private void addControls(TreeItem<T> parentTreeItem, ControlList<ArmaControl> controls) {
 		for (ArmaControl control : controls) {
 			if (control instanceof ArmaControlGroup) {
@@ -314,7 +314,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 	}
-	
+
 	/**Removes the control list listener from the list*/
 	private void removeListeners(ControlList<ArmaControl> controls) {
 		controls.removeChangeListener(controlListChangeListener);
@@ -325,8 +325,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	private TreeItem<T> createTreeItemForControl(ArmaControl control) {
 		if (control instanceof ArmaControlGroup) {
@@ -336,8 +336,8 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		return new TreeItem<>((T) new ControlTreeItemEntry(control));
 	}
-	
-	
+
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void addChildToParent(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> child, int index) {
@@ -345,10 +345,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		if (child.getValue().getCellType() == CellType.FOLDER) {
 			return;
 		}
-		
+
 		int correctedIndex;
 		ControlTreeItemEntry childControlEntry = (ControlTreeItemEntry) child.getValue();
-		
+
 		ControlGroupTreeItemEntry group = null;
 		TreeItem<ControlGroupTreeItemEntry> groupTreeItem;
 		if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
@@ -360,7 +360,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				group = groupTreeItem.getValue();
 			}
 		}
-		
+
 		if (group != null) {
 			if (!group.getControlGroup().getControls().contains(childControlEntry.getMyArmaControl())) {
 				correctedIndex = getCorrectedIndex(groupTreeItem, child);
@@ -376,9 +376,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 			setDisplayListener(true);
 		}
-		
+
 	}
-	
+
 	@Override
 	protected void addChildToRoot(@NotNull TreeItem<T> child) {
 		super.addChildToRoot(child);
@@ -392,7 +392,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		setDisplayListener(true);
 	}
-	
+
 	@Override
 	protected void addChildToRoot(int index, @NotNull TreeItem<T> child) {
 		super.addChildToRoot(index, child);
@@ -405,10 +405,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			int correctedIndex = getCorrectedIndex(getRoot(), child);
 			getTargetControlList().add(correctedIndex, childControlEntry.getMyArmaControl());
 		}
-		
+
 		setDisplayListener(true);
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void moveTreeItem(@NotNull TreeItem<T> toMove, @NotNull TreeItem<T> newParent, int index) {
@@ -417,7 +417,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			return;
 		}
 		ControlTreeItemEntry controlEntry = (ControlTreeItemEntry) toMove.getValue();
-		
+
 		ControlGroupTreeItemEntry group = null;
 		TreeItem<ControlGroupTreeItemEntry> groupTreeItem;
 		if (newParent.getValue() instanceof ControlGroupTreeItemEntry) {
@@ -431,11 +431,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		if (group == null) {
 			setDisplayListener(false);
-
 			//todo moving indexes are wrong
 			int correctedIndex = getCorrectedIndex(getRoot(), toMove);
+			System.out.printf("EditorComponentTreeView.moveTreeItem index=%d correctedIndex=%d toMove=%s\n", index, correctedIndex, toMove.getValue().getText());
 			getTargetControlList().move(controlEntry.getMyArmaControl(), correctedIndex);
-			
+
 			setDisplayListener(true);
 		} else {
 			//todo moving indexes are wrong
@@ -445,7 +445,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			setControlGroupListener(true, group.getControlGroup());
 		}
 	}
-	
+
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void removeChild(@NotNull TreeItem<T> parent, @NotNull TreeItem<T> toRemove) {
@@ -477,7 +477,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			ControlGroupTreeItemEntry groupTreeItemEntry = (ControlGroupTreeItemEntry) toRemoveControlEntry;
 			removeListeners(groupTreeItemEntry.getControlGroup().getControls());
 		}
-		
+
 	}
 	//@formatter:off
 	/**
@@ -527,12 +527,17 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	 ....+ leaf5 - insert, corrected index is 4
 	 </pre>
 	 </ul>
+	 @param parent parent of where to get corrected index from. This should either be a control group or the root. If null, the root will be used
+	 @param childAdded child that was added to the parent (must already be added to parent)
 	 */
 	protected int getCorrectedIndex(@Nullable TreeItem parent, @NotNull TreeItem<T> childAdded) {
+		if(parent != null && !(parent.getValue() instanceof ControlGroupTreeItemEntry) && parent != getRoot()){
+			throw new IllegalArgumentException("parent is not the root or a control group");
+		}
 		return getNumNonFolders(parent == null ? getRoot() : parent, childAdded, new BooleanEdit(false));
 	}
 	//@formatter:on
-	
+
 	/**
 	 Gets the number of descendants of the tree item that aren't a folder. However, when {@link CellType#COMPOSITE} is reached, the depth count will not go deeper and the size counter will only
 	 increment by one.
@@ -544,7 +549,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		int size = 0;
 		while (q.size() > 0) {
 			pop = q.pop();
-			if (pop == stopAt) {
+			if (pop.equals(stopAt)) {
 				found.setValue(true);
 				return size;
 			}
@@ -554,15 +559,15 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					if (found.isTrue()) {
 						return size;
 					}
-					break;
+					break; //break switch
 				}
 				case COMPOSITE: {
 					size += 1;
-					break;
+					break; //break switch
 				}
 				case LEAF: {
 					size += 1;
-					break;
+					break; //break switch
 				}
 				default: {
 					throw new IllegalStateException("unknown cell type " + pop.getValue().getCellType());
@@ -570,9 +575,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 		return size;
-		
+
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	protected static <T, T2 extends TreeItemEntry> TreeItem<T2> getAncestorOfEntryType(TreeItem<T> start, Class<T2> clazz) {
 		if (start.getParent() == null || start.getParent().getValue() == null) {
@@ -583,30 +588,30 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		return getAncestorOfEntryType(start.getParent(), clazz);
 	}
-	
-	
+
+
 	static ImageView createFolderIcon() {
 		return new ImageView(ImagePaths.ICON_FOLDER);
 	}
-	
+
 	static ImageView createCompositeIcon() {
 		return new ImageView(ImagePaths.ICON_COMPOSITE);
 	}
-	
+
 	private static class BooleanEdit {
 		private boolean value;
-		
+
 		public BooleanEdit(boolean init) {
 			this.value = init;
 		}
-		
+
 		public void setValue(boolean value) {
 			this.value = value;
 		}
-		
+
 		public boolean isTrue() {
 			return value;
 		}
 	}
-	
+
 }

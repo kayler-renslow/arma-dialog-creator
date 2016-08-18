@@ -1,5 +1,6 @@
 Added:
-    none
+    more test cases for editor component tree view
+    simple change log implementation (needs more change detection)
 Changed:
     none
 Fixed:

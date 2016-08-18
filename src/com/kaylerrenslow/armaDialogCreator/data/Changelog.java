@@ -22,40 +22,34 @@ import java.util.LinkedList;
  Used for storing changes that happened inside the application
  Created on 08/02/2016. */
 public class Changelog {
-	
-	public static Changelog getInstance(){
+
+	public static Changelog getInstance() {
 		return ArmaDialogCreator.getApplicationData().getChangelog();
 	}
-	
+
 	private final LinkedList<Change> undo = new LinkedList<>();
 	private final LinkedList<Change> redo = new LinkedList<>();
 	private final ReadOnlyList<Change> undoReadOnly = new ReadOnlyList<>(undo);
 	private final ReadOnlyList<Change> redoReadOnly = new ReadOnlyList<>(redo);
 	private final UpdateListenerGroup<ChangelogUpdate> changeUpdateGroup = new UpdateListenerGroup<>();
-	private boolean hadChanges = false;
 	private int maxChanges;
-	
+
 	public Changelog(int maxChanges) {
 		setMaxChanges(maxChanges);
 	}
-	
+
 	public int getMaxChanges() {
 		return maxChanges;
 	}
-	
+
 	public void setMaxChanges(int maxChanges) {
 		if (maxChanges <= 0) {
-			throw new IllegalArgumentException("maxChanges must be >= 0");
+			throw new IllegalArgumentException("maxChanges must be > 0");
 		}
 		this.maxChanges = maxChanges;
 	}
-	
-	public boolean hadChanges() {
-		return hadChanges;
-	}
-	
+
 	public void addChange(Change change) {
-		hadChanges = true;
 		undo.addFirst(change);
 		if (undo.size() >= maxChanges) {
 			while (undo.size() >= maxChanges) {
@@ -65,8 +59,8 @@ public class Changelog {
 		redo.clear();
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 	}
-	
-	public void undo() throws ChangeUpdateFailedException{
+
+	public void undo() throws ChangeUpdateFailedException {
 		if (undo.size() == 0) {
 			return;
 		}
@@ -75,7 +69,7 @@ public class Changelog {
 		undid.getRegistrar().undo(undid);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
 	}
-	
+
 	public void redo() throws ChangeUpdateFailedException {
 		if (redo.size() == 0) {
 			return;
@@ -85,7 +79,7 @@ public class Changelog {
 		c.getRegistrar().redo(c);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
 	}
-	
+
 	@Nullable
 	public Change getToUndo() {
 		if (undo.size() == 0) {
@@ -93,7 +87,7 @@ public class Changelog {
 		}
 		return undo.getFirst();
 	}
-	
+
 	@Nullable
 	public Change getToRedo() {
 		if (redo.size() == 0) {
@@ -101,15 +95,18 @@ public class Changelog {
 		}
 		return redo.getFirst();
 	}
-	
+
+	/** Get the list of things that can be undone */
 	public ReadOnlyList<Change> getUndoList() {
 		return undoReadOnly;
 	}
-	
+
+	/** Get the list of things that can be redone */
 	public ReadOnlyList<Change> getRedoList() {
 		return redoReadOnly;
 	}
-	
+
+	/** Add a listener to this group for when a change occurs. */
 	public UpdateListenerGroup<ChangelogUpdate> getChangeUpdateGroup() {
 		return changeUpdateGroup;
 	}

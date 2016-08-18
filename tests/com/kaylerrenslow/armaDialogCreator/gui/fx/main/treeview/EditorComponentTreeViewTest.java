@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
@@ -36,11 +37,11 @@ import static org.junit.Assert.assertEquals;
 public class EditorComponentTreeViewTest extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		
+
 	}
-	
+
 	private static class TestArmaControlClass extends ArmaControl {
-		
+
 		public TestArmaControlClass() {
 			super("", new ArmaControlSpecProvider(), new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
 				@Override
@@ -50,9 +51,9 @@ public class EditorComponentTreeViewTest extends Application {
 			});
 		}
 	}
-	
+
 	private static class TestArmaControlGroupClass extends ArmaControlGroup {
-		
+
 		public TestArmaControlGroupClass() {
 			super("", new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
 				@Override
@@ -62,19 +63,20 @@ public class EditorComponentTreeViewTest extends Application {
 			});
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	private static class TestTreeView extends EditorComponentTreeView {
-		
+
 		public TestTreeView() {
 			super(true);
+			setToDisplay(new ArmaDisplay(0));
 		}
-		
+
 		@Override
 		public int getCorrectedIndex(TreeItem parent, @NotNull TreeItem childAdded) {
 			return super.getCorrectedIndex(parent, childAdded);
 		}
-		
+
 		private TreeItem<? extends TreeItemEntry> getEntry(CellType type) {
 			switch (type) {
 				case LEAF:
@@ -83,52 +85,52 @@ public class EditorComponentTreeViewTest extends Application {
 					return new TreeItem<>(new FolderTreeItemEntry(""));
 				case COMPOSITE:
 					return new TreeItem<>(new ControlGroupTreeItemEntry(new TestArmaControlGroupClass()));
-				
+
 			}
 			throw new IllegalStateException("type not known: " + type.name());
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addToRoot(CellType type) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToRoot(item);
 			return item;
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addToRoot(CellType type, int index) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToRoot(index, item);
 			return item;
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addChildToParent(TreeItem<? extends TreeItemEntry> parent, CellType type, int index) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToParent(parent, item, index);
 			return item;
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addChildToParent(TreeItem<? extends TreeItemEntry> parent, CellType type) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToParent(parent, item);
 			return item;
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addChildToRoot(CellType type) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToRoot(item);
 			return item;
 		}
-		
+
 		public TreeItem<? extends TreeItemEntry> _addChildToRoot(int index, CellType type) {
 			TreeItem<? extends TreeItemEntry> item = getEntry(type);
 			addChildToRoot(index, item);
 			return item;
 		}
-		
+
 		public void _removeChild(@NotNull TreeItem parent, @NotNull TreeItem toRemove) {
 			super.removeChild(parent, toRemove);
 		}
 	}
-	
+
 	@BeforeClass
 	public static void setupClass() throws InterruptedException {
 		Thread t = new Thread("JavaFX testing thread") {
@@ -139,10 +141,10 @@ public class EditorComponentTreeViewTest extends Application {
 		};
 		t.setDaemon(true);
 		t.start();
-		
-		
+
+
 	}
-	
+
 	@Test
 	public void getCorrectedIndex() throws Exception {
 		/*
@@ -154,8 +156,8 @@ public class EditorComponentTreeViewTest extends Application {
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
 		assertEquals(0, testTreeView.getCorrectedIndex(null, leaf));
 	}
-	
-	
+
+
 	@Test
 	public void getCorrectedIndex1() throws Exception {
 		/*
@@ -167,13 +169,13 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		assertEquals(1, testTreeView.getCorrectedIndex(null, leaf2));
 	}
-	
-	
+
+
 	@Test
 	public void getCorrectedIndex2() throws Exception {
 		/*
@@ -186,13 +188,13 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		assertEquals(2, testTreeView.getCorrectedIndex(null, leaf3));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex3() throws Exception {
 		/*
@@ -207,17 +209,17 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
-		
+
+
 		assertEquals(3, testTreeView.getCorrectedIndex(null, leaf4));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex4() throws Exception {
 		/*
@@ -235,22 +237,22 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
-		
+
+
 		assertEquals(5, testTreeView.getCorrectedIndex(null, leaf6));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex5() throws Exception {
 		/*
@@ -268,21 +270,21 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		assertEquals(1, testTreeView.getCorrectedIndex(group, leaf6));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex6() throws Exception {
 		/*
@@ -303,25 +305,25 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(group, CellType.LEAF);
 		TreeItem folder3 = testTreeView._addChildToParent(group, CellType.FOLDER);
 		TreeItem group2 = testTreeView._addChildToParent(folder3, CellType.COMPOSITE);
-		
+
 		TreeItem leaf7 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		assertEquals(3, testTreeView.getCorrectedIndex(group, leaf7));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex7() throws Exception {
 		/*
@@ -342,25 +344,25 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(group, CellType.LEAF);
 		TreeItem folder3 = testTreeView._addChildToParent(group, CellType.FOLDER);
 		TreeItem group2 = testTreeView._addChildToParent(folder3, CellType.COMPOSITE);
-		
+
 		TreeItem leaf7 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		assertEquals(2, testTreeView.getCorrectedIndex(group, group2));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex8() throws Exception {
 		/*
@@ -381,25 +383,25 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(group, CellType.LEAF);
 		TreeItem folder3 = testTreeView._addChildToParent(group, CellType.FOLDER);
 		TreeItem group2 = testTreeView._addChildToParent(folder3, CellType.COMPOSITE);
-		
+
 		TreeItem leaf7 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		assertEquals(3, testTreeView.getCorrectedIndex(null, leaf4));
 	}
-	
+
 	@Test
 	public void getCorrectedIndex9() throws Exception {
 		/*
@@ -421,25 +423,74 @@ public class EditorComponentTreeViewTest extends Application {
 		TestTreeView testTreeView = new TestTreeView();
 		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
 		TreeItem folder = testTreeView._addChildToRoot(CellType.FOLDER);
-		
+
 		TreeItem leaf2 = testTreeView._addChildToParent(folder, CellType.LEAF);
 		TreeItem leaf3 = testTreeView._addChildToParent(folder, CellType.LEAF);
-		
+
 		TreeItem folder2 = testTreeView._addChildToParent(folder, CellType.FOLDER);
 		TreeItem leaf4 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
+
 		TreeItem group = testTreeView._addChildToParent(folder2, CellType.COMPOSITE);
 		TreeItem leaf5 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf6 = testTreeView._addChildToParent(group, CellType.LEAF);
 		TreeItem folder3 = testTreeView._addChildToParent(group, CellType.FOLDER);
 		TreeItem group2 = testTreeView._addChildToParent(folder3, CellType.COMPOSITE);
-		
+
 		TreeItem leaf7 = testTreeView._addChildToParent(group, CellType.LEAF);
-		
+
 		TreeItem leaf8 = testTreeView._addChildToParent(folder2, CellType.LEAF);
-		
-		
+
+
 		assertEquals(5, testTreeView.getCorrectedIndex(null, leaf8));
+	}
+
+
+	@Test
+	public void getCorrectedIndexJustRoot0() throws Exception {
+		/*
+		* leaf -test
+		* leaf1
+		* leaf2
+		* */
+		TestTreeView testTreeView = new TestTreeView();
+		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf1 = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf2 = testTreeView._addChildToRoot(CellType.LEAF);
+
+		assertEquals(0, testTreeView.getCorrectedIndex(null, leaf));
+	}
+
+
+	@Test
+	public void getCorrectedIndexJustRoot1() throws Exception {
+		/*
+		* leaf
+		* leaf1 -test
+		* leaf2
+		* */
+		TestTreeView testTreeView = new TestTreeView();
+		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf1 = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf2 = testTreeView._addChildToRoot(CellType.LEAF);
+
+		assertEquals(1, testTreeView.getCorrectedIndex(null, leaf1));
+	}
+
+
+
+	@Test
+	public void getCorrectedIndexJustRoot2() throws Exception {
+		/*
+		* leaf
+		* leaf1
+		* leaf2 -test
+		* */
+		TestTreeView testTreeView = new TestTreeView();
+		TreeItem leaf = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf1 = testTreeView._addChildToRoot(CellType.LEAF);
+		TreeItem leaf2 = testTreeView._addChildToRoot(CellType.LEAF);
+
+		assertEquals(2, testTreeView.getCorrectedIndex(null, leaf2));
 	}
 }

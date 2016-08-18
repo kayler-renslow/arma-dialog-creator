@@ -11,10 +11,11 @@
 package com.kaylerrenslow.armaDialogCreator.data.changeRegistrars;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
-import com.kaylerrenslow.armaDialogCreator.data.Change;
-import com.kaylerrenslow.armaDialogCreator.data.ChangeRegistrar;
-import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
+import com.kaylerrenslow.armaDialogCreator.data.*;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ChangeType;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeListener;
 import com.kaylerrenslow.armaDialogCreator.main.lang.ChangeLang;
 
 /**
@@ -22,109 +23,96 @@ import com.kaylerrenslow.armaDialogCreator.main.lang.ChangeLang;
  */
 public class DisplayChangeRegistrar implements ChangeRegistrar {
 	public DisplayChangeRegistrar(ApplicationData data) {
-		DisplayChangeRegistrar self = this;
-//		data.getCurrentProject().getEditingDisplay().getBackgroundControls().addListener(new ListChangeListener<ArmaControl>() {
-//			@Override
-//			public void onChanged(Change<? extends ArmaControl> c) {
-//				while (c.next()) {
-//					for (ArmaControl control : c.getAddedSubList()) {
-//						Changelog.getInstance().addChange(new DisplayControlChange(self, true, true, control));
-//					}
-//					for (ArmaControl control : c.getRemoved()) {
-//						Changelog.getInstance().addChange(new DisplayControlChange(self, true, false, control));
-//					}
-//				}
-//			}
-//		});
-//		//todo detect swap.
-//		data.getCurrentProject().getEditingDisplay().getControls().addListener(new ListChangeListener<ArmaControl>() {
-//			@Override
-//			public void onChanged(Change<? extends ArmaControl> c) {
-//				ObservableList<ArmaControl> list = data.getCurrentProject().getEditingDisplay().getControls();
-//				while (c.next()) {
-//					if(c.wasAdded()){
-//						for(int i = c.getFrom(); i < c.getTo(); i++){
-//							Changelog.getInstance().addChange(new DisplayControlChange(self, false, true, list.get(i), i));
-//						}
-//					}else if(c.wasRemoved()){
-//
-//					}
-//					for (ArmaControl control : c.getAddedSubList()) {
-//					}
-//					for (ArmaControl control : c.getRemoved()) {
-//						Changelog.getInstance().addChange(new DisplayControlChange(self, false, false, control));
-//					}
-//				}
-//			}
-//		});
+		final DisplayChangeRegistrar self = this;
+		final Changelog changelog = Changelog.getInstance();
+		final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
+			@Override
+			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+				changelog.addChange(new DisplayControlChange(self, controlList == data.getCurrentProject().getEditingDisplay().getBackgroundControls(), change));
+			}
+		};
+		data.getCurrentProject().getEditingDisplay().getBackgroundControls().addChangeListener(controlListChangeListener);
+		data.getCurrentProject().getEditingDisplay().getControls().addChangeListener(controlListChangeListener);
 	}
-	
+
 	@Override
 	public void undo(Change c) throws ChangeUpdateFailedException {
 		DisplayControlChange change = (DisplayControlChange) c;
 	}
-	
+
 	@Override
 	public void redo(Change c) throws ChangeUpdateFailedException {
 		DisplayControlChange change = (DisplayControlChange) c;
 	}
-	
+
 	private static class DisplayControlChange implements Change {
-		
+
 		private final DisplayChangeRegistrar registrar;
 		private final boolean background;
-		private final boolean added;
-		private final ArmaControl control;
-		private final int controlIndex;
-		
-		public DisplayControlChange(DisplayChangeRegistrar registrar, boolean background, boolean added, ArmaControl control, int controlIndex) {
+		private final ControlListChange<ArmaControl> controlControlListChange;
+		private final String shortName;
+		private final String description;
+
+		public DisplayControlChange(DisplayChangeRegistrar registrar, boolean background, ControlListChange<ArmaControl> controlControlListChange) {
 			this.registrar = registrar;
 			this.background = background;
-			this.added = added;
-			this.control = control;
-			this.controlIndex = controlIndex;
+			this.controlControlListChange = controlControlListChange;
+
+			final ChangeType changeType = controlControlListChange.getChangeType();
+			switch (changeType) {
+				case ADD: {
+					shortName = ChangeLang.DisplayChange.ShortName.ADD;
+					description = String.format(ChangeLang.DisplayChange.Description.ADD, controlControlListChange.getAdded().getControl().getClassName());
+					break;
+				}
+				case SET: {
+					shortName = ChangeLang.DisplayChange.ShortName.SET;
+					description = String.format(ChangeLang.DisplayChange.Description.SET,
+							controlControlListChange.getSet().getOldControl().getClassName(),
+							controlControlListChange.getSet().getNewControl().getClassName()
+					);
+					break;
+				}
+				case REMOVE: {
+					shortName = ChangeLang.DisplayChange.ShortName.REMOVE;
+					description = String.format(ChangeLang.DisplayChange.Description.REMOVE, controlControlListChange.getRemoved().getControl().getClassName());
+					break;
+				}
+				case MOVE: {
+					shortName = ChangeLang.DisplayChange.ShortName.MOVE;
+					description = String.format(ChangeLang.DisplayChange.Description.MOVE, controlControlListChange.getMoved().getMovedControl().getClassName());
+					break;
+				}
+				default: {
+					throw new IllegalStateException("unexpected change type:" + changeType);
+				}
+
+			}
 		}
-		
-		public int getControlIndex() {
-			return controlIndex;
-		}
-		
-		public ArmaControl getControl() {
-			return control;
-		}
-		
+
 		public boolean isBackground() {
 			return background;
 		}
-		
-		public boolean isAdded() {
-			return added;
+
+		public ChangeType getChangeType() {
+			return controlControlListChange.getChangeType();
 		}
-		
+
 		@Override
 		public String getShortName() {
-			if (background) {
-				return isAdded() ? ChangeLang.DisplayChange.Background.ControlAdd.SHORT_NAME : ChangeLang.DisplayChange.Background.ControlRemove.SHORT_NAME;
-			}
-			return isAdded() ? ChangeLang.DisplayChange.Main.ControlAdd.SHORT_NAME : ChangeLang.DisplayChange.Main.ControlRemove.SHORT_NAME;
+			return shortName;
 		}
-		
+
 		@Override
 		public String getDescription() {
-			String f;
-			if (background) {
-				f = isAdded() ? ChangeLang.DisplayChange.Background.ControlAdd.DESCRIPTION_F : ChangeLang.DisplayChange.Background.ControlRemove.DESCRIPTION_F;
-			} else {
-				f = isAdded() ? ChangeLang.DisplayChange.Main.ControlAdd.DESCRIPTION_F : ChangeLang.DisplayChange.Main.ControlRemove.DESCRIPTION_F;
-			}
-			return String.format(f, getControl().getClassName());
+			return description;
 		}
-		
+
 		@Override
 		public ChangeRegistrar getRegistrar() {
 			return registrar;
 		}
 	}
-	
-	
+
+
 }

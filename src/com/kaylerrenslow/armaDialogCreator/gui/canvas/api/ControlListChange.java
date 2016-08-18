@@ -21,70 +21,81 @@ public class ControlListChange<C extends Control> {
 	private ControlRemove<C> removed;
 	private ControlMove<C> moved;
 	private ControlSet<C> set;
-	
+	private ChangeType changeType = null;
+
 	public ControlListChange(ControlList<C> modifiedList) {
 		this.modifiedList = modifiedList;
 	}
-	
+
+	@NotNull
+	public ChangeType getChangeType() {
+		return changeType;
+	}
+
 	void setSet(ControlSet<C> set) {
 		this.set = set;
+		checkType();
+		changeType = ChangeType.SET;
 	}
-	
+
 	void setAdded(ControlAdd<C> added) {
-		if (wasSet() || wasMoved() || wasRemoved()) {
-			throw new IllegalStateException("only one state is allowed at once");
-		}
 		this.added = added;
+		checkType();
+		changeType = ChangeType.ADD;
 	}
-	
+
 	void setRemoved(ControlRemove<C> removed) {
-		if (wasSet() || wasMoved() || wasAdded()) {
-			throw new IllegalStateException("only one state is allowed at once");
-		}
 		this.removed = removed;
+		checkType();
+		changeType = ChangeType.REMOVE;
 	}
-	
+
 	void setMoved(ControlMove<C> move) {
-		if (wasSet() || wasAdded() || wasRemoved()) {
-			throw new IllegalStateException("only one state is allowed at once");
-		}
 		this.moved = move;
+		checkType();
+		changeType = ChangeType.MOVE;
 	}
-	
-	/**Get the list that had the change*/
+
+	private void checkType() {
+		if (changeType != null) {
+			throw new IllegalStateException("only one changeType is allowed at once");
+		}
+	}
+
+	/** Get the list that had the change */
 	@NotNull
 	public ControlList<C> getModifiedList() {
 		return modifiedList;
 	}
-	
+
 	public boolean wasSet() {
-		return getSet() != null;
+		return changeType == ChangeType.SET;
 	}
-	
+
 	public boolean wasAdded() {
-		return getAdded() != null;
+		return changeType == ChangeType.ADD;
 	}
-	
+
 	public boolean wasRemoved() {
-		return getRemoved() != null;
+		return changeType == ChangeType.REMOVE;
 	}
-	
+
 	public boolean wasMoved() {
-		return getMoved() != null;
+		return changeType == ChangeType.MOVE;
 	}
-	
+
 	public ControlSet<C> getSet() {
 		return set;
 	}
-	
+
 	public ControlAdd<C> getAdded() {
 		return added;
 	}
-	
+
 	public ControlRemove<C> getRemoved() {
 		return removed;
 	}
-	
+
 	public ControlMove<C> getMoved() {
 		return moved;
 	}
