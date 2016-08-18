@@ -431,9 +431,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		if (group == null) {
 			setDisplayListener(false);
-			//todo moving indexes are wrong
 			int correctedIndex = getCorrectedIndex(getRoot(), toMove);
-			System.out.printf("EditorComponentTreeView.moveTreeItem index=%d correctedIndex=%d toMove=%s\n", index, correctedIndex, toMove.getValue().getText());
 			getTargetControlList().move(controlEntry.getMyArmaControl(), correctedIndex);
 
 			setDisplayListener(true);
@@ -549,7 +547,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		int size = 0;
 		while (q.size() > 0) {
 			pop = q.pop();
-			if (pop.equals(stopAt)) {
+			if (pop == stopAt) {
 				found.setValue(true);
 				return size;
 			}

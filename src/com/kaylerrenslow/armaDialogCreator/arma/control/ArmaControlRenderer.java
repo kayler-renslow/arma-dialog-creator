@@ -35,7 +35,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
-	private ValueObserver<AColor> backgroundColorObserver;
+	protected final ValueObserver<AColor> globalBackgroundColorObserver;
 	
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
@@ -48,8 +48,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		backgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
-		backgroundColorObserver.addValueListener(new ValueListener<AColor>() {
+		globalBackgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
+		globalBackgroundColorObserver.addValueListener(new ValueListener<AColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue != null) {
@@ -186,7 +186,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	}
 	
 	public ValueObserver<AColor> getBackgroundColorObserver() {
-		return backgroundColorObserver;
+		return globalBackgroundColorObserver;
 	}
 		
 	/** Set and define the style control property */

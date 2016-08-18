@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeNodeUpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -55,12 +54,6 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
 			DefaultControlTreeItemGraphic graphic = (DefaultControlTreeItemGraphic) getGraphic();
 			graphic.init(this);
-			control.getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-					graphic.setBoxColor(newValue.toJavaFXColor());
-				}
-			});
 		}
 	}
 

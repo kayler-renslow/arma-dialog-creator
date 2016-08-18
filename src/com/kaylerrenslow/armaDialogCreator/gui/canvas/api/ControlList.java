@@ -27,28 +27,28 @@ public class ControlList<C extends Control> implements List<C> {
 	private final LinkedList<ControlListChangeListener<C>> listeners = new LinkedList<>();
 	private final ControlHolder<C> holder;
 	private final UpdateListenerGroup<Object> onClear = new UpdateListenerGroup<>();
-	
-	
+
+
 	public ControlList(ControlHolder<C> holder) {
 		this.holder = holder;
 	}
-	
+
 	@Override
 	public void clear() {
 		controls.clear();
 		onClear.update(null);
 	}
-	
+
 	/** Listeners for when the list is cleared. */
 	public UpdateListenerGroup<Object> getOnClear() {
 		return onClear;
 	}
-	
+
 	@Override
 	public C get(int index) {
 		return controls.get(index);
 	}
-	
+
 	@Override
 	public C set(int index, @Flow(targetIsContainer = true) C element) {
 		boundTest(index);
@@ -58,14 +58,14 @@ public class ControlList<C extends Control> implements List<C> {
 		notifyListeners(change);
 		return old;
 	}
-	
+
 	/** Add a control to end of list. Returns true. */
 	public boolean add(C control) {
 		controls.add(control);
 		afterAdd(controls.size() - 1, control);//size -1 because control was already added and size of list has changed
 		return true;
 	}
-	
+
 	/** Add a control at index */
 	public void add(int index, C control) {
 		if (index != controls.size()) {
@@ -74,13 +74,13 @@ public class ControlList<C extends Control> implements List<C> {
 		controls.add(index, control);
 		afterAdd(index, control);
 	}
-	
+
 	private void afterAdd(int index, C control) {
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setAdded(new ControlAdd<>(control, index));
 		notifyListeners(change);
 	}
-	
+
 	/** Remove a control. Returns true if control could be located and removed, false otherwise. */
 	@Override
 	public boolean remove(Object control) {
@@ -91,7 +91,7 @@ public class ControlList<C extends Control> implements List<C> {
 		remove(index);
 		return true;
 	}
-	
+
 	/** Removes a control at index */
 	public C remove(int index) {
 		boundTest(index);
@@ -101,10 +101,10 @@ public class ControlList<C extends Control> implements List<C> {
 		notifyListeners(change);
 		return removedControl;
 	}
-	
+
 	/**
 	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)} with the index of toMove and this list's control holder as the new parent
-	 
+
 	 @param toMove control to move in this list
 	 @param newIndex new index to place the control in this list
 	 @return true if the operation succeeded, false if it didn't (occurs when control couldn't be found)
@@ -117,20 +117,20 @@ public class ControlList<C extends Control> implements List<C> {
 		move(index, this, newIndex);
 		return true;
 	}
-	
+
 	/**
 	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)} with the index and this list's control holder as the new parent
-	 
+
 	 @param index index of control to move in this list
 	 @param newIndex new index to place the control in this list
 	 */
 	public void move(int index, int newIndex) {
 		move(index, this, newIndex);
 	}
-	
+
 	/**
 	 Moves a control from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
-	 
+
 	 @param toMove control to move
 	 @param newList list to move control to
 	 @param newIndex index of the new holder's control list to move to
@@ -144,46 +144,49 @@ public class ControlList<C extends Control> implements List<C> {
 		move(index, newList, newIndex);
 		return true;
 	}
-	
-	
+
+
 	/**
 	 Moves a control at index indexOfControlToMove from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null. When the internal
 	 operation is completed, this list's change listeners will be notified and then newList's listeners.
-	 
+
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to
 	 @param newParentIndex index of the new holder's control list to move to
 	 */
 	public void move(int indexOfControlToMove, ControlList<C> newList, int newParentIndex) {
 		boundTest(indexOfControlToMove);
+		if (indexOfControlToMove == newParentIndex && newList == this) { //not actually moving
+			return;
+		}
 		C toMove = controls.get(indexOfControlToMove);
+		controls.remove(indexOfControlToMove);
 		if (newParentIndex != newList.size()) {
 			newList.boundTest(newParentIndex);
 			newList.controls.add(newParentIndex, toMove);
 		} else {
 			newList.controls.add(toMove);
 		}
-		controls.remove(indexOfControlToMove); //remove after insertion to prevent index mis-align
-		
+
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex));
 		notifyListeners(change);
 		newList.notifyListeners(change);
 	}
-	
+
 	/**
 	 Moves a control at index indexOfControlToMove from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
-	 
+
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to (will move control to end of list)
 	 */
 	public void move(int indexOfControlToMove, ControlList<C> newList) {
 		move(indexOfControlToMove, newList, newList.size());
 	}
-	
+
 	/**
 	 Moves a control from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
-	 
+
 	 @param control control to move inside this ControlList
 	 @param newList list to move the control to (will move control to end of list)
 	 @return true if the operation succeed, or false if it didn't (happens when control couldn't be located)
@@ -191,7 +194,7 @@ public class ControlList<C extends Control> implements List<C> {
 	public boolean move(C control, ControlList<C> newList) {
 		return move(control, newList, newList.size());
 	}
-	
+
 	/** Adds a listener. If the listener already has been added, will not be added again */
 	public void addChangeListener(ControlListChangeListener<C> l) {
 		if (listeners.contains(l)) {
@@ -199,109 +202,109 @@ public class ControlList<C extends Control> implements List<C> {
 		}
 		listeners.add(l);
 	}
-	
+
 	/** Removes a listener. Returns true if the listener was added and not removed, false otherwise */
 	public boolean removeChangeListener(ControlListChangeListener<C> l) {
 		return listeners.remove(l);
 	}
-	
+
 	private void notifyListeners(ControlListChange<C> change) {
 		for (ControlListChangeListener<C> l : listeners) {
 			l.onChanged(this, change);
 		}
 	}
-	
+
 	private void boundTest(int index) {
 		if (index < 0 || index >= controls.size()) {
 			throw new IndexOutOfBoundsException("index is out of range. index:" + index + " size of list:" + controls.size());
 		}
 	}
-	
+
 	@NotNull
 	public ControlHolder<C> getHolder() {
 		return holder;
 	}
-	
+
 	@Override
 	public int size() {
 		return controls.size();
 	}
-	
+
 	@Override
 	public boolean isEmpty() {
 		return controls.isEmpty();
 	}
-	
+
 	@Override
 	public boolean contains(Object o) {
 		return controls.contains(o);
 	}
-	
+
 	@NotNull
 	@Override
 	public Iterator<C> iterator() {
 		return controls.iterator();
 	}
-	
+
 	@NotNull
 	@Override
 	public Object[] toArray() {
 		return controls.toArray();
 	}
-	
+
 	@NotNull
 	@Override
 	public <T> T[] toArray(@NotNull T[] a) {
 		return controls.toArray(a);
 	}
-	
+
 	@Override
 	public boolean containsAll(@NotNull Collection<?> c) {
 		return controls.containsAll(c);
 	}
-	
+
 	@Override
 	public boolean addAll(@NotNull @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends C> c) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public boolean addAll(int index, @NotNull @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends C> c) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public boolean removeAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public boolean retainAll(@NotNull Collection<?> c) {
 		throw new UnsupportedOperationException();
 	}
-	
+
 	@Override
 	public int indexOf(Object o) {
 		return controls.indexOf(o);
 	}
-	
+
 	@Override
 	public int lastIndexOf(Object o) {
 		return controls.lastIndexOf(o);
 	}
-	
+
 	@NotNull
 	@Override
 	public ListIterator<C> listIterator() {
 		return controls.listIterator();
 	}
-	
+
 	@NotNull
 	@Override
 	public ListIterator<C> listIterator(int index) {
 		return controls.listIterator(index);
 	}
-	
+
 	@NotNull
 	@Override
 	public List<C> subList(int fromIndex, int toIndex) {

@@ -29,27 +29,24 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 05/25/2016.
  */
 public class StaticRenderer extends ArmaControlRenderer {
-	
+
 	protected static final Font DEFAULT_FX_FONT = Font.font(20d);
-	
+
 	protected Color textColor = backgroundColor.invert();
-	
+
 	private Text textObj = new Text();
-	
+
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		init();
 	}
-	
+
 	private void init() {
 		textObj.setFont(DEFAULT_FX_FONT);
-		
 		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof AColor) {
-					setBackgroundColor(((AColor) newValue).toJavaFXColor());
-				}
+				globalBackgroundColorObserver.updateValue((AColor) newValue);
 			}
 		});
 		myControl.findRequiredProperty(ControlPropertyLookup.TEXT).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -70,42 +67,42 @@ public class StaticRenderer extends ArmaControlRenderer {
 				}
 			}
 		});
-		
+
 	}
-	
+
 	private int getTextX() {
 		int textWidth = (int) textObj.getLayoutBounds().getWidth();
 		return getLeftX() + (getWidth() - textWidth) / 2;
 	}
-	
+
 	private int getTextY() {
 		int textHeight = (int) (textObj.getLayoutBounds().getHeight() * 0.25);
 		return getTopY() + (getHeight() - textHeight) / 2;
 	}
-	
+
 	public void paint(GraphicsContext gc) {
 		super.paint(gc);
 		gc.setFont(getFont());
 		gc.setFill(textColor);
 		gc.fillText(getText(), getTextX(), getTextY());
 	}
-	
+
 	private Font getFont() {
 		return textObj.getFont();
 	}
-		
+
 	public void setText(String text) {
 		this.textObj.setText(text);
 	}
-	
+
 	public String getText() {
 		return this.textObj.getText();
 	}
-	
+
 	public void setTextColor(@NotNull Color color) {
 		this.textColor = color;
 	}
-	
+
 	public Color getTextColor() {
 		return textColor;
 	}

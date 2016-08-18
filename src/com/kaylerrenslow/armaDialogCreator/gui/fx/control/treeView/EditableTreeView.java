@@ -180,9 +180,8 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	protected void moveTreeItem(@NotNull TreeItem<E> toMove, @NotNull TreeItem<E> newParent, int index) {
 		//move into children
 		if (newParent == getRoot() || newParent.getValue().canHaveChildren()) {
-			TreeItem<E> toMoveCopy = new TreeItem<>(toMove.getValue()); //create new tree item since they can't be placed in multiple spots
-			newParent.getChildren().add(index, toMoveCopy); //add before remove to preserve index. Don't use addToParent so that a move and addition can be easily detected on their own
-			toMove.getParent().getChildren().remove(toMove); //don't use removeChild since the child isn't actually being removed
+			toMove.getParent().getChildren().remove(toMove);
+			newParent.getChildren().add(index, toMove); //add before remove to preserve index. Don't use addToParent so that a move and addition can be easily detected on their own
 			return;
 		}
 

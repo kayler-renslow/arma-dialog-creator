@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -52,6 +53,12 @@ public class DefaultControlTreeItemGraphic extends HBox{
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
 				updateVisibilityRadioButton(enabled);
+			}
+		});
+		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+				fillBox(newValue.toJavaFXColor());
 			}
 		});
 		Label lblType = new Label("(" + entry.getControlTypeText() + ")");
