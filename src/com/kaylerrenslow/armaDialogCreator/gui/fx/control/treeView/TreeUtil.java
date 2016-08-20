@@ -63,6 +63,6 @@ public class TreeUtil {
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 }

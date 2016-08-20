@@ -84,7 +84,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 				@Override
 				public boolean found(TreeItem<T> found) {
-					System.out.println("EditorComponentTreeView.found found.getValue()=" + found.getValue());
 					if (found.getValue() instanceof ControlTreeItemEntry) { //maybe found old tree item
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) found.getValue();
 						if (treeItemEntry.getMyArmaControl() == change.getMoved().getMovedControl()) { //found old tree item
