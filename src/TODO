@@ -32,3 +32,4 @@ Bugs:
 >converting paa doesn't work
 >choosing custom color for "change colors" popup crashes
 >moving control group in display throws exception
+>moving control around will create to move events. changelog should only register one

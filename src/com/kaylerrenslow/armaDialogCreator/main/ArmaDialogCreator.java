@@ -36,16 +36,16 @@ import java.util.LinkedList;
  Contains main method for running Arma Dialog Creator
  Created on 05/11/2016. */
 public final class ArmaDialogCreator extends Application {
-	
+
 	private static ArmaDialogCreator INSTANCE;
-	
+
 	public ArmaDialogCreator() {
 		if (INSTANCE != null) {
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
 	}
-	
+
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
 	 */
@@ -56,20 +56,19 @@ public final class ArmaDialogCreator extends Application {
 		}
 		ArmaDialogCreator.launch(args);
 	}
-	
+
 	private Stage primaryStage;
 	private ADCWindow mainWindow;
 	private ApplicationDataManager applicationDataManager;
-	
+
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
 	private final LinkedList<StagePopup> showOnFxThread = new LinkedList<>();
 	private final ObservableList<StagePopup> showOnFxThreadOL = FXCollections.observableList(showOnFxThread);
-	
+
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
 		ExceptionHandler.init();
-		
 		showOnFxThreadOL.addListener(new ListChangeListener<StagePopup>() {
 			@Override
 			public void onChanged(Change<? extends StagePopup> c) {
@@ -84,28 +83,27 @@ public final class ArmaDialogCreator extends Application {
 						showOnFxThread.clear();
 					}
 				});
-				
+
 			}
 		});
-		
+
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
 		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		
+
 		//now can load save manager
 		applicationDataManager = new ApplicationDataManager();
-		
+
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
-		
+
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
-		
+
 		loadNewProject();
 	}
-	
-	
+
 	public static void loadNewProject() {
 		getPrimaryStage().close();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
@@ -114,26 +112,26 @@ public final class ArmaDialogCreator extends Application {
 		getMainWindow().show();
 		getMainWindow().getCanvasView().setTreeStructure(false, config.getNewTreeStructureMain());
 		getMainWindow().getCanvasView().setTreeStructure(true, config.getNewTreeStructureBg());
-		
+
 		for (StagePopup aShowLater : INSTANCE.showLater) {
 			aShowLater.show();
 		}
 		INSTANCE.showLater.clear();
 	}
-	
-	
+
+
 	public static CanvasView getCanvasView() {
 		return INSTANCE.mainWindow.getCanvasView();
 	}
-	
+
 	public static Stage getPrimaryStage() {
 		return INSTANCE.primaryStage;
 	}
-	
+
 	public static ADCWindow getMainWindow() {
 		return INSTANCE.mainWindow;
 	}
-	
+
 	public static void setToDarkTheme(boolean set) {
 		final String darkTheme = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
 		if (set) {
@@ -151,27 +149,27 @@ public final class ArmaDialogCreator extends Application {
 		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
 		getApplicationDataManager().saveApplicationProperties();
 	}
-	
+
 	public static ApplicationDataManager getApplicationDataManager() {
 		return INSTANCE.applicationDataManager;
 	}
-	
+
 	public static ApplicationData getApplicationData() {
 		return INSTANCE.applicationDataManager.getApplicationData();
 	}
-	
+
 	/** Show the given popup after the application's main window has been initialized */
 	public static void showAfterMainWindowLoaded(StagePopup<?> selectSaveLocationPopup) {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
 	}
-	
+
 	/** A convenient way of showing a popup on the Javafx thread. */
 	public static void showOnJavaFxThread(StagePopup<?> popup) {
 		INSTANCE.showOnFxThreadOL.add(popup);
 	}
-	
+
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
-		
+
 		@Override
 		public void handle(WindowEvent event) {
 			//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();

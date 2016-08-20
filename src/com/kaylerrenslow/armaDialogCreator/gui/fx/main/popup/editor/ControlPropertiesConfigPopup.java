@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -28,12 +29,13 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.Modality;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
@@ -97,8 +99,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
 				ArmaDisplay display = c.getDisplay();
 				if (c.getHolder() instanceof ArmaControlGroup) {
-					MoveOutOfControlGroupPopup popup = new MoveOutOfControlGroupPopup(c);
-					popup.showAndWait();
+					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(c);
+					popup.show();
 					if (popup.isMoveOut()) {
 						ArmaControlGroup group = (ArmaControlGroup) c.getHolder();
 						group.getControls().move(c, (isBackground ? display.getBackgroundControls() : display.getControls()));
@@ -166,23 +168,19 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		return control;
 	}
 	
-	private static class MoveOutOfControlGroupPopup extends StagePopup<VBox> {
+	private static class MoveOutOfControlGroupDialog extends StageDialog<VBox> {
 		
 		private boolean moveOut = false;
 		
-		public MoveOutOfControlGroupPopup(ArmaControl c) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE);
+		public MoveOutOfControlGroupDialog(ArmaControl c) {
+			super(ArmaDialogCreator.getPrimaryStage(), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE, new VBox(5), true, true, false);
 			myRootElement.getChildren().addAll(
-					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName())),
-					new Separator(Orientation.HORIZONTAL),
-					getResponseFooter(true, true, false)
+					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName()))
 			);
-			myStage.initModality(Modality.APPLICATION_MODAL);
-			myStage.initStyle(StageStyle.UTILITY);
-			myRootElement.setPadding(new Insets(10d));
-			myStage.sizeToScene();
+			setInitStageStyle(StageStyle.UTILITY);
+			sizeToScene();
 		}
-		
+
 		@Override
 		protected void ok() {
 			moveOut = true;

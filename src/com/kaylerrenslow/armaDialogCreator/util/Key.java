@@ -26,7 +26,11 @@ public class Key<V> {
 		this.name = name;
 		this.defaultValue = defaultValue;
 	}
-	
+
+	public Key(@NotNull String name) {
+		this(name, null);
+	}
+
 	@NotNull
 	public String getName() {
 		return name;

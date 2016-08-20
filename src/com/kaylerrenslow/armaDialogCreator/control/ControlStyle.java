@@ -83,7 +83,7 @@ public enum ControlStyle {
 		
 	}
 	
-	/** A ControlStyleGroup instance with only this instance's ControlStyle inside */
+	/** A new ControlStyleGroup instance with only this instance's ControlStyle inside */
 	public ControlStyleGroup getStyleGroup(){
 		return new ControlStyleGroup(new ControlStyle[]{this});
 	}

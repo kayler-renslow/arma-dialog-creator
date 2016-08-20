@@ -1,6 +1,6 @@
 Added:
-    none
+    dialog class
 Changed:
     none
 Fixed:
-    none
+    treeview adding control in 2 spots
