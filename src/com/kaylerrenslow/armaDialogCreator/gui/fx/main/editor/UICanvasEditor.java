@@ -19,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
@@ -115,8 +116,13 @@ public class UICanvasEditor extends UICanvas {
 				keyUpdate(newValue);
 			}
 		});
-		
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
+		selection.selected.addListener(new ListChangeListener<Control>() {
+			@Override
+			public void onChanged(Change<? extends Control> c) {
+				paint();
+			}
+		});
 	}
 	
 	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */

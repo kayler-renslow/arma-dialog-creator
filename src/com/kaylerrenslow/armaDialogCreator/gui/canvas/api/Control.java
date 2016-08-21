@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -21,25 +22,28 @@ import java.util.Comparator;
 public interface Control {
 	/** Get the {@link CanvasComponent} instance used for rendering the control is a {@link com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas} */
 	CanvasComponent getRenderer();
-	
+
 	/** Invoked when the resolution is changed */
 	void resolutionUpdate(Resolution newResolution);
-	
+
 	Comparator<Control> RENDER_PRIORITY_COMPARATOR = new Comparator<Control>() {
 		@Override
 		public int compare(Control o1, Control o2) {
 			return CanvasComponent.RENDER_PRIORITY_COMPARATOR.compare(o1.getRenderer(), o2.getRenderer());
 		}
 	};
-	
+
 	/** Get the parent of the control. */
 	@NotNull
 	ControlHolder<? extends Control> getHolder();
-	
-	/**Get the display that the control is associated with*/
+
+	/** Get the display that the control is associated with */
 	@NotNull
 	Display<? extends Control> getDisplay();
-	
+
+	/** Get the update group that will update anytime the control needs to be re-rendered */
+	UpdateListenerGroup<Object> getReRenderUpdateGroup();
+
 	/**
 	 Return true if the control is a background control (inside {@link Display#getBackgroundControls()}), false otherwise.<br>
 	 Will return true if the control is within a {@link ControlGroup} which is then inside the background controls.
@@ -54,6 +58,6 @@ public interface Control {
 			throw new IllegalStateException("unknown holder type:" + getHolder().getClass().getName());
 		}
 	}
-	
+
 	DataContext getUserData();
 }

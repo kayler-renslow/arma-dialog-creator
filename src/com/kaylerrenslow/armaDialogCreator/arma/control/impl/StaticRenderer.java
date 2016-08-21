@@ -57,6 +57,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				} else {
 					setText(newValue.toString().replaceAll("\"\"", "\""));
 				}
+				rerender();
 			}
 		});
 		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
@@ -65,6 +66,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				if (newValue instanceof AColor) {
 					setTextColor(((AColor) newValue).toJavaFXColor());
 				}
+				rerender();
 			}
 		});
 

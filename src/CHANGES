@@ -1,6 +1,6 @@
 Added:
     none
 Changed:
-    none
+    uicanvas no longer re-paints automatically. :(
 Fixed:
     moving control out of control group didn't actually move control out of group

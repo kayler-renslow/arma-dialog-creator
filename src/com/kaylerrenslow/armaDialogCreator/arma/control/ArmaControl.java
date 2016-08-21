@@ -20,6 +20,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -46,7 +47,8 @@ public class ArmaControl extends ControlClass implements Control {
 	
 	private final ControlProperty idcProperty, typeProperty, accessProperty;
 	private final DataContext userdata = new DataContext();
-	
+	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
+
 	/**
 	 Create a control where the position is to be determined
 	 
@@ -64,7 +66,6 @@ public class ArmaControl extends ControlClass implements Control {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
 		}
-		
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setDefaultValue(true, -1);
 		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
@@ -153,61 +154,66 @@ public class ArmaControl extends ControlClass implements Control {
 	public ArmaDisplay getDisplay() {
 		return display;
 	}
-	
+
 	@Override
 	public DataContext getUserData() {
 		return userdata;
 	}
-	
+
 	/** Set idc and define the idc control property */
 	public final void defineIdc(int idc) {
 		setIdc(idc);
 		idcProperty.setValue(idc);
 	}
-	
+
 	/** Set idc without telling control property */
 	protected final void setIdc(int idc) {
 		this.idc = idc;
 	}
-	
+
 	/** Set the control type and define the type control property */
 	protected final void defineType(ControlType type) {
 		setType(type);
 	}
-	
+
 	/** Just set the control type without changing control property */
 	protected final void setType(ControlType type) {
 		this.type = type;
 	}
-	
+
 	/** Set and define the style control property */
 	protected final void defineStyle(ControlStyleGroup style) {
 		renderer.defineStyle(style);
 	}
-	
+
 	/** Set and define the access property */
 	public final void defineAccess(int access) {
 		this.accessProperty.setValue(access);
 	}
-		
+
 	/** Get idc (control id for arma) */
 	public final int getIdc() {
 		return idc;
 	}
-	
+
 	public final ControlType getType() {
 		return type;
 	}
-		
+
 	public final ArmaControlRenderer getRenderer() {
 		return renderer;
 	}
-	
+
 	public final RendererLookup getRendererLookup() {
 		return rendererLookup;
 	}
-	
+
 	public final ControlStyle[] getAllowedStyles() {
 		return allowedStyles;
+	}
+
+	@Override
+	public UpdateListenerGroup<Object> getReRenderUpdateGroup() {
+		return rerenderUpdateGroup;
 	}
 }

@@ -80,7 +80,7 @@ public final class ArmaDialogCreator extends Application {
 								popup.show();
 							}
 						}
-						showOnFxThread.clear();
+						showOnFxThread.clear(); //prevent another change event by not removing from ObservableList
 					}
 				});
 
@@ -159,13 +159,13 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	/** Show the given popup after the application's main window has been initialized */
-	public static void showAfterMainWindowLoaded(StagePopup<?> selectSaveLocationPopup) {
+	public static void showAfterMainWindowLoaded(StagePopup selectSaveLocationPopup) {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
 	}
 
 	/** A convenient way of showing a popup on the Javafx thread. */
-	public static void showOnJavaFxThread(StagePopup<?> popup) {
-		INSTANCE.showOnFxThreadOL.add(popup);
+	public static void showOnJavaFxThread(StagePopup<?>... popups) {
+		INSTANCE.showOnFxThreadOL.addAll(popups);
 	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

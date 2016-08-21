@@ -26,11 +26,15 @@ public class UpdateListenerGroup<T> {
 		return updateListeners;
 	}
 
+	/**Will add the given listener. If the listener has already been added, will do nothing (no duplicates allowed).*/
 	public void addListener(UpdateListener<T> listener) {
+		if (updateListeners.contains(listener)) {
+			return;
+		}
 		updateListeners.add(listener);
 	}
 
-	public boolean removeUpdateListener(UpdateListener<T> listener) {
+	public boolean removeListener(UpdateListener<T> listener) {
 		return updateListeners.remove(listener);
 	}
 

@@ -54,6 +54,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
+					rerender();
 				}
 			}
 		});
@@ -68,6 +69,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				setPositionWHSilent((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
+				rerender();
 			}
 		};
 		xProperty.getValueObserver().addValueListener(positionValueListener);
@@ -76,7 +78,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		hProperty.getValueObserver().addValueListener(positionValueListener);
 		
 	}
-	
+
+	protected final void rerender() {
+		myControl.getReRenderUpdateGroup().update(null);
+	}
+
 	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(Expression x) {
 		xProperty.setValue(x);
