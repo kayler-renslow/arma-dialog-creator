@@ -177,7 +177,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			myRootElement.getChildren().addAll(
 					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName()))
 			);
-			setInitStageStyle(StageStyle.UTILITY);
+			myStage.initStyle(StageStyle.UTILITY);
 			sizeToScene();
 		}
 

@@ -3,4 +3,4 @@ Added:
 Changed:
     none
 Fixed:
-    moving control around will create to move events. changelog should only register one
+    moving control out of control group didn't actually move control out of group

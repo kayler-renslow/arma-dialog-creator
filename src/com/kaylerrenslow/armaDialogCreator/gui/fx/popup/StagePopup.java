@@ -127,7 +127,12 @@ public class StagePopup<E extends Parent> {
 		T root = FXMLLoader.load(fxmlLocation);
 		return new StagePopup<>(primaryStage, new Stage(), root, title);
 	}
-	
+
+	/**@see Stage#sizeToScene() */
+	public void sizeToScene() {
+		myStage.sizeToScene();
+	}
+
 	/**
 	 Make the popup appear
 	 

@@ -17,7 +17,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
-import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -42,8 +41,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
-	/**The animation timer that automatically repaints the canvas*/
-	protected final @NotNull AnimationTimer animationTimer;
+
 	protected @NotNull Display<? extends Control> display;
 		
 	/** Background image of the canvas */
@@ -87,14 +85,7 @@ public abstract class UICanvas extends AnchorPane {
 		this.setOnMouseReleased(mouseEvent);
 		this.setOnMouseMoved(mouseEvent);
 		this.setOnMouseDragged(mouseEvent);
-		
-		this.animationTimer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				paint();
-			}
-		};
-		this.animationTimer.start();
+
 	}
 	
 	public int getCanvasWidth() {
