@@ -28,6 +28,9 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 		final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
 			@Override
 			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
+				if (change.wasMoved() && change.getMoved().getDestinationList() == controlList) {
+					return; //only register the change once (register the change when the old list is notified and not the destination list)
+				}
 				changelog.addChange(new DisplayControlChange(self, controlList == data.getCurrentProject().getEditingDisplay().getBackgroundControls(), change));
 			}
 		};

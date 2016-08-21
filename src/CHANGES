@@ -3,4 +3,4 @@ Added:
 Changed:
     none
 Fixed:
-    none
+    moving control around will create to move events. changelog should only register one
