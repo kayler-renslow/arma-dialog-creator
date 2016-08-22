@@ -58,7 +58,12 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		HBox.setHgrow(textField, Priority.ALWAYS);
 		textField.setEditable(false);
 	}
-	
+
+	@Override
+	public void submitCurrentData() {
+
+	}
+
 	@Nullable
 	@Override
 	public ControlStyleGroup getValue() {

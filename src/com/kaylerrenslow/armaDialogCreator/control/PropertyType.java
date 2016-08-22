@@ -48,10 +48,8 @@ public enum PropertyType {
 	HEX_COLOR_STRING(12, AHexColor.CONVERTER, LookupLang.PropertyType.HEX_COLOR_STRING, true),
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
 	TEXTURE(13, SVString.CONVERTER, LookupLang.PropertyType.TEXTURE, true),
-	/** Is an SQF code string, but this propertyType is an easy way to categorize all event handlers. */
-	EVENT(14, SVString.CONVERTER, LookupLang.PropertyType.EVENT, true),
 	/** SQF code String */
-	SQF(15, SVString.CONVERTER, LookupLang.PropertyType.SQF, true);
+	SQF(14, SVString.CONVERTER, LookupLang.PropertyType.SQF, true);
 	
 	/** Number of values used to represent the data */
 	public final int propertyValuesSize;

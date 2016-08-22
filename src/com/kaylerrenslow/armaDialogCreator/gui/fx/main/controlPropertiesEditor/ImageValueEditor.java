@@ -100,7 +100,12 @@ public class ImageValueEditor implements ValueEditor {
 		convertingPaaPopup.show();
 		
 	}
-	
+
+	@Override
+	public void submitCurrentData() {
+
+	}
+
 	@Override
 	public @Nullable SerializableValue getValue() {
 		return imageValue;

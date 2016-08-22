@@ -28,6 +28,11 @@ public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	private final StackPane masterPane = new StackPane(colorPicker);
 
 	@Override
+	public void submitCurrentData() {
+
+	}
+
+	@Override
 	public AHexColor getValue() {
 		return new AHexColor(colorPicker.getValue());
 	}

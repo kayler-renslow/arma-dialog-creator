@@ -90,7 +90,14 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		tf.setPrefWidth(tfPrefWidth);
 		return tf;
 	}
-	
+
+	@Override
+	public void submitCurrentData() {
+		for(InputField tf : editors){
+			tf.submitValue();
+		}
+	}
+
 	@Override
 	public SVStringArray getValue() {
 		String[] values = new String[editors.size()];

@@ -52,7 +52,7 @@ public interface Lang {
 		String EDIT_MACROS = "Edit Macros";
 		
 		String VIEW = "View";
-		String VIEW_PREVIEW = "Preview";
+		String VIEW_PREVIEW = "Arma Preview";
 		String VIEW_SHOW_GRID = "Show Grid";
 		String VIEW_CHANGE_COLORS = "Change Colors";
 		String VIEW_BACKGROUND_IMAGE = "Background Image";

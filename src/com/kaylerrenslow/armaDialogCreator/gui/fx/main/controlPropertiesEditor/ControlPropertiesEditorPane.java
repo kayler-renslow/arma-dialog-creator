@@ -31,6 +31,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -113,10 +114,15 @@ public class ControlPropertiesEditorPane extends StackPane {
 		this();
 		ControlPropertyLookup[] requiredLookup = specProvider.getRequiredProperties();
 		ControlPropertyLookup[] optionalLookup = specProvider.getOptionalProperties();
-		ControlPropertyLookup[] eventLookup = specProvider.getEventProperties();
+		ArrayList<ControlPropertyLookup> eventLookup = new ArrayList<>();
+		for(ControlPropertyLookup lookup : requiredLookup){
+			if(ControlPropertyEventLookup.getEventProperty(lookup) != null){
+				eventLookup.add(lookup);
+			}
+		}
 		ControlProperty[] requiredProperties = new ControlProperty[requiredLookup.length];
 		ControlProperty[] optionalProperties = new ControlProperty[optionalLookup.length];
-		ControlProperty[] eventProperties = new ControlProperty[eventLookup.length];
+		ControlProperty[] eventProperties = new ControlProperty[eventLookup.size()];
 		for (int i = 0; i < requiredProperties.length; i++) {
 			if (requiredLookup[i] == ControlPropertyLookup.TYPE) {
 				requiredProperties[i] = requiredLookup[i].getIntProperty(controlType.typeId);
@@ -128,10 +134,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			optionalProperties[i] = optionalLookup[i].getPropertyWithNoData();
 		}
 		for (int i = 0; i < eventProperties.length; i++) {
-			eventProperties[i] = eventLookup[i].getPropertyWithNoData();
+			eventProperties[i] = eventLookup.get(i).getPropertyWithNoData();
 		}
 		
-		setupAccordion(requiredProperties, optionalProperties, eventProperties);
+		setupAccordion(new ReadOnlyList<>(requiredProperties), new ReadOnlyList<>(optionalProperties), new ReadOnlyList<>(eventProperties));
 	}
 	
 	/**
@@ -177,7 +183,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return properties;
 	}
 	
-	private void setupAccordion(ControlProperty[] requiredProperties, ControlProperty[] optionalProperties, ControlProperty[] eventProperties) {
+	private void setupAccordion(ReadOnlyList<ControlProperty> requiredProperties, ReadOnlyList<ControlProperty> optionalProperties, ReadOnlyList<ControlProperty> eventProperties) {
 		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.REQUIRED, requiredProperties, false));
 		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.OPTIONAL, optionalProperties, true));
 		accordion.getPanes().add(getTitledPane(Lang.ControlPropertiesEditorPane.EVENTS, eventProperties, true));
@@ -190,11 +196,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 	
 	/** Get a titled pane for the accordion that holds all control properties */
-	private TitledPane getTitledPane(String title, ControlProperty[] properties, boolean optional) {
+	private TitledPane getTitledPane(String title, List<ControlProperty> properties, boolean optional) {
 		VBox vb = new VBox(10);
 		TitledPane tp = new TitledPane(title, vb);
 		tp.setAnimated(false);
-		if (properties.length == 0) {
+		if (properties.size() == 0) {
 			vb.getChildren().add(new Label(Lang.Popups.ControlPropertiesConfig.NO_PROPERTIES_AVAILABLE));
 		} else {
 			for (ControlProperty controlProperty : properties) {
@@ -341,8 +347,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				return new ControlPropertyColorPicker(control, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
 			case TEXTURE:
 				return new ControlPropertyInputFieldString(control, controlProperty);
-			case EVENT:
-				return new ControlPropertyInputFieldString(control, controlProperty);
 			case SQF:
 				return new ControlPropertyInputFieldString(control, controlProperty);
 		}
@@ -352,16 +356,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static Tooltip getTooltip(ControlPropertyLookup lookup) {
 		String tooltip = "";
 		for (int i = 0; i < lookup.about.length; i++) {
-			if (lookup.propertyType == PropertyType.EVENT) {
-				if (i == 2) { //priority
-					tooltip += "Priority: " + lookup.about[i];
-				} else if (i == 3) { //scope
-					continue;
-				}
-			} else {
-				tooltip += lookup.about[i];
-			}
-			tooltip += "\n";
+			tooltip += lookup.about[i] + "\n";
 		}
 		Tooltip tp = new Tooltip(tooltip);
 		tp.setFont(TOOLTIP_FONT);

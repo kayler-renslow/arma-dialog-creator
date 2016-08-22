@@ -34,6 +34,11 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	}
 
 	@Override
+	public void submitCurrentData() {
+		inputField.submitValue();
+	}
+
+	@Override
 	public V getValue() {
 		return inputField.getValue();
 	}

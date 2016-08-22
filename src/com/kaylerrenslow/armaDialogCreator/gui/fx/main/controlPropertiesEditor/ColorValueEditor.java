@@ -25,7 +25,12 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
-	
+
+	@Override
+	public void submitCurrentData() {
+
+	}
+
 	@Override
 	public AColor getValue() {
 		return colorPicker.getValue() == null ? null : new AColor(colorPicker.getValue());

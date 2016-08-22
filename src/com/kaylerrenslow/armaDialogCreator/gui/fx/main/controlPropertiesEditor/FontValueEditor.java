@@ -44,6 +44,11 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	}
 
 	@Override
+	public void submitCurrentData() {
+
+	}
+
+	@Override
 	public AFont getValue() {
 		return comboBox.getValue();
 	}

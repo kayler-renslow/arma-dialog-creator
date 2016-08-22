@@ -37,7 +37,14 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	public SoundValueEditor() {
 		flowPane.setPrefWrapLength(300d);
 	}
-	
+
+	@Override
+	public void submitCurrentData() {
+		inSoundName.submitValue();
+		inDb.submitValue();
+		inPitch.submitValue();
+	}
+
 	@Override
 	public ASound getValue() {
 		if (inSoundName.getValue() == null) {

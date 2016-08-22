@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -29,47 +30,50 @@ import java.util.List;
  Created on 05/23/2016. */
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
-	
+
 	private final ControlClassSpecificationProvider specProvider;
 	private ControlClass extend;
-	
+
+
 	private final LinkedList<ControlProperty> requiredProperties = new LinkedList<>();
 	private final LinkedList<ControlProperty> optionalProperties = new LinkedList<>();
-	private final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
-	
+
 	private final LinkedList<ControlClass> requiredSubClasses = new LinkedList<>();
 	private final LinkedList<ControlClass> optionalSubClasses = new LinkedList<>();
-	
+
+	private final ReadOnlyList<ControlProperty> requiredPropertiesReadOnly = new ReadOnlyList<>(requiredProperties);
+	private final ReadOnlyList<ControlProperty> optionalPropertiesReadOnly = new ReadOnlyList<>(optionalProperties);
+
+	private final ReadOnlyList<ControlClass> requiredSubClassesReadOnly = new ReadOnlyList<>(requiredSubClasses);
+	private final ReadOnlyList<ControlClass> optionalSubClassesReadOnly = new ReadOnlyList<>(optionalSubClasses);
+
+
 	protected String className;
-	
+
 	private final UpdateListenerGroup<ControlPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
-	
+
 	public ControlClass(@NotNull String name, @NotNull ControlClassSpecificationProvider provider) {
 		this.className = name;
 		this.specProvider = provider;
-		
+
 		addProperties(requiredProperties, specProvider.getRequiredProperties());
 		addProperties(optionalProperties, specProvider.getOptionalProperties());
-		addProperties(eventProperties, specProvider.getEventProperties());
 		addRequiredSubClasses(specProvider.getRequiredSubClasses());
 		addOptionalSubClasses(specProvider.getOptionalSubClasses());
-		
+
 		for (ControlProperty controlProperty : requiredProperties) {
 			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
 		}
 		for (ControlProperty controlProperty : optionalProperties) {
 			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
 		}
-		for (ControlProperty controlProperty : eventProperties) {
-			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
-		}
 	}
-	
+
 	@NotNull
 	private ValueListener<SerializableValue> getControlPropertyListener(final ControlProperty controlProperty) {
 		return new ValueListener<SerializableValue>() {
 			private final ControlPropertyUpdate update = new ControlPropertyUpdate(controlProperty, null, null);
-			
+
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				update.setOldValue(oldValue);
@@ -78,31 +82,31 @@ public class ControlClass {
 			}
 		};
 	}
-	
+
 	public void setClassName(String className) {
 		this.className = className;
 	}
-	
+
 	public String getClassName() {
 		return className;
 	}
-	
+
 	public final void extendControlClass(@Nullable ControlClass armaControl) {
 		if (armaControl == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
 		this.extend = armaControl;
 	}
-	
+
 	public final @Nullable ControlClass getExtendControl() {
 		return extend;
 	}
-	
+
 	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
 	public final ControlClassSpecificationProvider getSpecProvider() {
 		return specProvider;
 	}
-	
+
 	private void addRequiredSubClasses(@NotNull ControlClass... subClasses) {
 		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
@@ -111,7 +115,7 @@ public class ControlClass {
 			requiredSubClasses.add(subClass);
 		}
 	}
-	
+
 	private void addOptionalSubClasses(@NotNull ControlClass... subClasses) {
 		for (ControlClass subClass : subClasses) {
 			if (subClass == this) {
@@ -120,21 +124,21 @@ public class ControlClass {
 			optionalSubClasses.add(subClass);
 		}
 	}
-	
+
 	@NotNull
-	public ControlClass[] getRequiredSubClasses() {
-		return requiredSubClasses.toArray(new ControlClass[requiredSubClasses.size()]);
+	public ReadOnlyList<ControlClass> getRequiredSubClasses() {
+		return requiredSubClassesReadOnly;
 	}
-	
+
 	@NotNull
-	public ControlClass[] getOptionalSubClasses() {
-		return optionalSubClasses.toArray(new ControlClass[optionalSubClasses.size()]);
+	public ReadOnlyList<ControlClass> getOptionalSubClasses() {
+		return optionalSubClassesReadOnly;
 	}
-	
+
 	@NotNull
 	public final List<ControlProperty> getMissingRequiredProperties() {
 		List<ControlProperty> defined = getAllDefinedProperties();
-		
+
 		boolean found;
 		for (ControlProperty req : requiredProperties) {
 			found = false;
@@ -150,16 +154,16 @@ public class ControlClass {
 		}
 		return defined;
 	}
-	
+
 	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookup[] props) {
 		for (ControlPropertyLookup lookup : props) {
 			propertiesList.add(lookup.getPropertyWithNoData());
 		}
 	}
-	
+
 	/**
 	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
-	 
+
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in required properties
 	 */
@@ -172,10 +176,10 @@ public class ControlClass {
 		}
 		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in required properties.");
 	}
-	
+
 	/**
 	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
-	 
+
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in optional properties
 	 */
@@ -188,17 +192,18 @@ public class ControlClass {
 		}
 		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in optional properties.");
 	}
-	
+
 	@NotNull
-	public final ControlProperty[] getRequiredProperties() {
-		return requiredProperties.toArray(new ControlProperty[requiredProperties.size()]);
+	public final ReadOnlyList<ControlProperty> getRequiredProperties() {
+		return requiredPropertiesReadOnly;
 	}
-	
+
 	@NotNull
-	public final ControlProperty[] getOptionalProperties() {
-		return optionalProperties.toArray(new ControlProperty[optionalProperties.size()]);
+	public final ReadOnlyList<ControlProperty> getOptionalProperties() {
+		return optionalPropertiesReadOnly;
 	}
-	
+
+	/**Will return all properties that are defined (including inherited properties that are defined)*/
 	public @NotNull List<ControlProperty> getAllDefinedProperties() {
 		List<ControlProperty> properties = new ArrayList<>();
 		for (ControlProperty property : getInheritedProperties()) {
@@ -218,7 +223,7 @@ public class ControlClass {
 		}
 		return properties;
 	}
-	
+
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {
 		if (extend == null) {
@@ -228,11 +233,22 @@ public class ControlClass {
 		appendInheritedProperties(extend, list);
 		return list;
 	}
-	
-	public final ControlProperty[] getEventProperties() {
-		return eventProperties.toArray(new ControlProperty[eventProperties.size()]);
+
+	public final ReadOnlyList<ControlProperty> getEventProperties() {
+		final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
+		for (ControlProperty controlProperty : requiredProperties) {
+			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
+				eventProperties.add(controlProperty);
+			}
+		}
+		for (ControlProperty controlProperty : optionalProperties) {
+			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
+				eventProperties.add(controlProperty);
+			}
+		}
+		return new ReadOnlyList<>(eventProperties);
 	}
-	
+
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
 		for (ControlProperty c : extend.getAllDefinedProperties()) {
 			if (!list.contains(c)) {
@@ -248,7 +264,7 @@ public class ControlClass {
 			appendInheritedProperties(extend.extend, list);
 		}
 	}
-	
+
 	/**
 	 Gets the update listener group that listens to all {@link ControlProperty} instances. Instead of adding listeners to all {@link ControlProperty}'s potentially hundreds of times scattered
 	 across the program, the ControlClass listens to it's own ControlProperties. Any time any of the ControlProperty's receive an update, the value inside the listener will be the
@@ -258,5 +274,5 @@ public class ControlClass {
 	public UpdateListenerGroup<ControlPropertyUpdate> getUpdateGroup() {
 		return updateGroup;
 	}
-	
+
 }

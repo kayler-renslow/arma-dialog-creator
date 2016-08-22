@@ -42,10 +42,4 @@ public interface ControlClassSpecificationProvider {
 	default ControlPropertyLookup[] getOptionalProperties() {
 		return ControlPropertyLookup.EMPTY;
 	}
-
-	/** Get all <b>optional event</b> properties for the control class. Default implementation returns {@link ControlProperty#EMPTY} */
-	@NotNull
-	default ControlPropertyLookup[] getEventProperties(){
-		return ControlPropertyLookup.EMPTY;
-	}
 }

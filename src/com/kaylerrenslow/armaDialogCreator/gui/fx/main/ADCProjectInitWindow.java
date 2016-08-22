@@ -28,6 +28,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
@@ -48,35 +49,35 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 	private final TabPane tabPane = new TabPane();
 	private final DataContext projectLoadContext;
 	private final File appSaveDirectory;
-	
+
 	public ADCProjectInitWindow(DataContext projectLoadContext, File appSaveDirectory) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ProjectInitWindow.WINDOW_TITLE);
 		this.projectLoadContext = projectLoadContext;
 		this.appSaveDirectory = appSaveDirectory;
 		myRootElement.setPadding(new Insets(10));
-		
+
 		//header
 		final Label lblProjectSetup = new Label(Lang.ProjectInitWindow.PROJECT_SETUP);
 		lblProjectSetup.setFont(Font.font(18d));
-		
+
 		initTabPane();
-		
+
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
-		
+
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
 		myStage.setHeight(400d);
 		myStage.setResizable(false);
-		
+
 		this.btnOk.setPrefWidth(130d);
 	}
-	
+
 	private void initTabPane() {
 		initTabs.add(new NewProjectTab(this));
 		initTabs.add(new TabOpen(this));
 		//				initTabs.add(new ImportTab(this));
-		
+
 		final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
@@ -87,7 +88,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			tabPane.getTabs().add(initTab.getTab());
 			initTab.getTab().setClosable(false);
 			initTab.btnOkEnabledObserver.addValueListener(enabledListener);
-			
+
 			tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 				@Override
 				public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab selectedTab) {
@@ -101,10 +102,10 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					throw new IllegalStateException("tab should have been matched");
 				}
 			});
-			
+
 		}
 	}
-	
+
 	@Override
 	protected void ok() {
 		Tab selected = tabPane.getSelectionModel().getSelectedItem();
@@ -118,23 +119,23 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 		super.ok();
 	}
-	
+
 	private Button getOkButton() {
 		return this.btnOk;
 	}
-	
+
 	private static VBox getTabVbox(double spacing) {
 		VBox vBox = new VBox(spacing);
 		vBox.setPadding(new Insets(10));
 		vBox.setMinHeight(200d);
 		return vBox;
 	}
-	
+
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
 		System.exit(0);
 	}
-	
+
 	public ProjectInit getProjectInit() {
 		Tab selected = tabPane.getSelectionModel().getSelectedItem();
 		for (ProjectInitTab initTab : initTabs) {
@@ -144,73 +145,71 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		}
 		throw new IllegalStateException("Should provide implementation for selected tab");
 	}
-	
+
 	private abstract class ProjectInitTab {
 		protected final ValueObserver<Boolean> btnOkEnabledObserver = new ValueObserver<>(true);
-		
+
 		abstract ProjectInit getResult();
-		
+
 		abstract String getOkBtnLabel();
-		
+
 		abstract Tab getTab();
-		
+
 		boolean prepareProject() {
 			return true;
 		}
 	}
-	
+
 	public class NewProjectTab extends ProjectInitTab {
-		
+
 		private final Tab tabNew = new Tab(Lang.ProjectInitWindow.TAB_NEW);
-		
+
 		/** TextField used for getting project name in new tab */
 		private final TextField tfProjectName = new TextField();
-		private final TextField tfProjectDescription = new TextField();
-		
+		private final TextArea tfProjectDescription = new TextArea();
+
 		public NewProjectTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tfProjectName.setPrefWidth(200d);
-			tfProjectDescription.setPrefWidth(250d);
-			
 			tfProjectName.setPromptText(Lang.ProjectInitWindow.UNTITLED);
-			
+			tfProjectDescription.setPrefRowCount(6);
+
 			final VBox root = getTabVbox(10);
-			
+
 			final Label lblCreateNewProject = new Label(Lang.ProjectInitWindow.NEW_PROJECT_TITLE);
 			VBox.setMargin(lblCreateNewProject, new Insets(0, 0, 10, 0));
 			final Label lblProjectName = new Label(Lang.ProjectInitWindow.PROJECT_NAME, tfProjectName);
 			lblProjectName.setContentDisplay(ContentDisplay.RIGHT);
-			final Label lblProjectDescription = new Label(Lang.ProjectInitWindow.NEW_PROJECT_DESCRIPTION, tfProjectDescription);
-			lblProjectDescription.setContentDisplay(ContentDisplay.RIGHT);
-			
-			root.getChildren().addAll(lblCreateNewProject, lblProjectName, lblProjectDescription);
-			
+			final HBox hboxProjectDescription = new HBox(5, new Label(Lang.ProjectInitWindow.NEW_PROJECT_DESCRIPTION), tfProjectDescription);
+
+			root.getChildren().addAll(lblCreateNewProject, lblProjectName, hboxProjectDescription);
+
 			tabNew.setContent(root);
 		}
-		
+
 		@Override
 		public ProjectInit getResult() {
 			return new ProjectInit.NewProject(tfProjectName.getText(), tfProjectDescription.getText());
 		}
-		
+
 		@Override
 		public String getOkBtnLabel() {
 			return Lang.ProjectInitWindow.NEW_PROJECT_OK;
 		}
-		
+
 		@Override
 		public Tab getTab() {
 			return tabNew;
 		}
 	}
-	
+
 	public class TabOpen extends ProjectInitTab {
-		
+
 		private final Tab tabOpen = new Tab(Lang.ProjectInitWindow.TAB_OPEN);
 		private final ListView<Project> lvKnownProjects = new ListView<>();
 		private final ADCProjectInitWindow projectInitWindow;
 		private LinkedList<ProjectXmlLoader.ProjectParseResult> parsedKnownProjects = new LinkedList<>();
 		private ProjectXmlLoader.ProjectParseResult selectedParsedProject;
-		
+
 		public TabOpen(ADCProjectInitWindow projectInitWindow) {
 			this.projectInitWindow = projectInitWindow;
 			btnOkEnabledObserver.updateValue(false);
@@ -218,7 +217,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			tabOpen.setContent(root);
 			final Label lblOpenProject = new Label(Lang.ProjectInitWindow.OPEN_PROJECT_TITLE);
 			VBox.setMargin(lblOpenProject, new Insets(0d, 0d, 10d, 0d));
-			
+
 			final Button btnLocateProject = new Button(Lang.ProjectInitWindow.OPEN_FROM_FILE);
 			btnLocateProject.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
@@ -227,7 +226,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					fc.setInitialDirectory(projectInitWindow.appSaveDirectory);
 					fc.setTitle(Lang.ProjectInitWindow.FC_LOCATE_PROJECT_TITLE);
 					fc.getExtensionFilters().add(Lang.ProjectInitWindow.FC_FILTER);
-					
+
 					File chosen = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
 					if (chosen == null) {
 						return;
@@ -250,7 +249,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 										new Separator(Orientation.HORIZONTAL),
 										getResponseFooter(false, true, false)
 								);
-								
+
 								super.show();
 							}
 						}.show();
@@ -264,9 +263,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					lvKnownProjects.requestFocus();
 				}
 			});
-			
+
 			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ProjectInitWindow.OPEN_FROM_FILE_TITLE), btnLocateProject);
-			
+
 			lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Project>() {
 				@Override
 				public void changed(ObservableValue<? extends Project> observable, Project oldValue, Project selected) {
@@ -285,7 +284,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				}
 			});
 		}
-		
+
 		private Node initKnownProjects() {
 			fetchProjects();
 			for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
@@ -293,7 +292,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			}
 			return new VBox(0, new Label(Lang.ProjectInitWindow.DETECTED_PROJECTS), lvKnownProjects);
 		}
-		
+
 		private void fetchProjects() {
 			File[] files = projectInitWindow.appSaveDirectory.listFiles();
 			if (files != null) {
@@ -320,7 +319,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				}
 			}
 		}
-		
+
 		@Override
 		boolean prepareProject() {
 			if (selectedParsedProject == null) {
@@ -336,24 +335,24 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			}
 			return true;
 		}
-		
+
 		@Override
 		public ProjectInit getResult() {
 			return new ProjectInit.OpenProject(selectedParsedProject);
 		}
-		
+
 		@Override
 		public String getOkBtnLabel() {
 			return Lang.ProjectInitWindow.OPEN_PROJECT_OK;
 		}
-		
+
 		@Override
 		public Tab getTab() {
 			return tabOpen;
 		}
-		
+
 		private class ProjectImproperResultPopup extends StagePopup<ScrollPane> {
-			
+
 			public ProjectImproperResultPopup(ProjectXmlLoader.ProjectParseResult result) {
 				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ProjectInitWindow.ProjectResultErrorPopup.POPUP_TITLE);
 				myRootElement.setFitToWidth(true);
@@ -370,98 +369,98 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					if (error.recovered()) {
 						vbErrorMsg.getChildren().add(getLabel(Lang.ProjectInitWindow.ProjectResultErrorPopup.RECOVER_MESSAGE + " " + error.getRecoverMessage(), null));
 					}
-					
+
 					root.getChildren().add(vbErrorMsg);
 				}
 				root.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
-				
+
 				myRootElement.setPadding(new Insets(10d));
 				myStage.setWidth(340d);
 			}
-			
+
 			private Label getLabel(String text, Node graphic) {
 				Label label = new Label(text, graphic);
 				label.setContentDisplay(ContentDisplay.RIGHT);
 				return label;
 			}
-			
+
 		}
-		
+
 	}
-	
+
 	public class ImportTab extends ProjectInitTab {
-		
+
 		private final Tab tabImport = new Tab(Lang.ProjectInitWindow.TAB_IMPORT);
-		
+
 		public ImportTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tabImport.setUserData(Lang.ProjectInitWindow.IMPORT_PROJECT_OK);
 			final VBox root = getTabVbox(20);
 			final Label lblOpenProject = new Label(Lang.ProjectInitWindow.IMPORT_PROJECT_TITLE);
-			
+
 			root.getChildren().addAll(lblOpenProject);
-			
+
 			tabImport.setContent(root);
 		}
-		
+
 		@Override
 		public ProjectInit getResult() {
 			return null;
 		}
-		
+
 		@Override
 		public String getOkBtnLabel() {
 			return Lang.ProjectInitWindow.IMPORT_PROJECT_OK;
 		}
-		
+
 		@Override
 		public Tab getTab() {
 			return tabImport;
 		}
 	}
-	
+
 	public interface ProjectInit {
-		
+
 		class NewProject implements ProjectInit {
 			private final String projectName;
 			private final String projectDescription;
-			
+
 			public NewProject(String projectName, String projectDescription) {
 				this.projectName = projectName;
 				this.projectDescription = projectDescription;
 			}
-			
+
 			public String getProjectDescription() {
 				return projectDescription;
 			}
-			
+
 			public String getProjectName() {
 				return projectName;
 			}
 		}
-		
+
 		class OpenProject implements ProjectInit {
 			private final ProjectXmlLoader.ProjectParseResult parseResult;
-			
+
 			public OpenProject(ProjectXmlLoader.ProjectParseResult parseResult) {
 				this.parseResult = parseResult;
 			}
-			
+
 			public ProjectXmlLoader.ProjectParseResult getParseResult() {
 				return parseResult;
 			}
-			
+
 			public Project getProject() {
 				return parseResult.getProject();
 			}
 		}
-		
+
 		class ImportProject implements ProjectInit {
 			private final File descriptionExt;
-			
+
 			public ImportProject(File descriptionExt) {
 				this.descriptionExt = descriptionExt;
 			}
-			
+
 			public File getDescriptionExt() {
 				return descriptionExt;
 			}

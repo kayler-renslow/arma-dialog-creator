@@ -23,25 +23,31 @@ import org.jetbrains.annotations.Nullable;
  Created by Kayler on 07/13/2016.
  */
 public interface ValueEditor<V extends SerializableValue> {
-	
+
+	/**
+	 Tells the editor to submit whatever data it has as a value. However, this method does <b>not</b> guarantee the value is actually updated. Any time the value isn't updated, the user should be
+	 notified.
+	 */
+	void submitCurrentData();
+
 	/** Get the value stored inside the editor */
 	@Nullable V getValue();
-	
+
 	/** Set the value the editor is editing */
 	void setValue(@Nullable V val);
-	
+
 	/** Get the root node used to display the entire editor */
 	@NotNull Node getRootNode();
-	
+
 	/** Set to override mode. Override mode is used for allowing the user to enter whatever they want, even if it appears invalid to the normal editor. Use this with caution. */
 	void setToOverride(boolean override);
-	
+
 	/** Get the TextField used for entering the raw text */
 	InputField<StringChecker, String> getOverrideTextField();
-	
+
 	/** Used for {@link Node#requestFocus()} but should target the specific editor (TextField, ColorPicker, etc) */
 	void focusToEditor();
-		
+
 	/**
 	 Return true if the {@link #getRootNode()}'s width should fill the parent's width.
 	 False if the width should be whatever it is initially. By default, will return false.
@@ -49,10 +55,10 @@ public interface ValueEditor<V extends SerializableValue> {
 	default boolean displayFullWidth() {
 		return false;
 	}
-	
+
 	/**
 	 Get a new ValueEditor instance associated with the given property type.
-	 
+
 	 @param propertyType type of property to get editor for
 	 @param env used only for {@link InputFieldValueEditor.ExpressionEditor}. If propertyType != {@link PropertyType#EXP}, this parameter is ignored.
 	 */
@@ -86,12 +92,10 @@ public interface ValueEditor<V extends SerializableValue> {
 				return new HexColorValueEditor();
 			case TEXTURE:
 				return new InputFieldValueEditor.ArmaStringEditor();
-			case EVENT:
-				return new InputFieldValueEditor.ArmaStringEditor();
 			case SQF:
 				return new InputFieldValueEditor.ArmaStringEditor();
 		}
 		throw new IllegalStateException("Should have made a match");
 	}
-	
+
 }

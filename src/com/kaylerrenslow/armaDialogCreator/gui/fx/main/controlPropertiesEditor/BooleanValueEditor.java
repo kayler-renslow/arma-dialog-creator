@@ -28,6 +28,11 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
 	@Override
+	public void submitCurrentData() {
+
+	}
+
+	@Override
 	public SVBoolean getValue() {
 		return choiceBox.getValue();
 	}
