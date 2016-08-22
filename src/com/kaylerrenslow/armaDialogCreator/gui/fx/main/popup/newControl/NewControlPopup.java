@@ -21,7 +21,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.C
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -70,7 +72,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 			}
 		});
 		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, true));
 		myStage.sizeToScene();
 	}
 
@@ -101,6 +103,11 @@ public class NewControlPopup extends StagePopup<VBox> {
 		}
 
 		updatePreview();
+	}
+
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.NEW_CONTROL_POPUP);
 	}
 
 	private void updatePreview() {

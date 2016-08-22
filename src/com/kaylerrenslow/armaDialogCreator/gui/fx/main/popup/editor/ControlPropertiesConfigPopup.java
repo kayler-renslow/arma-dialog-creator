@@ -173,7 +173,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		private boolean moveOut = false;
 		
 		public MoveOutOfControlGroupDialog(ArmaControl c) {
-			super(ArmaDialogCreator.getPrimaryStage(), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE, new VBox(5), true, true, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE, true, true, false);
 			myRootElement.getChildren().addAll(
 					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName()))
 			);

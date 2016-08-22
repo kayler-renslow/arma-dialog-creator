@@ -74,6 +74,9 @@ public interface Lang {
 		String CREATE = "Create";
 		String CREATE_MACRO = "New Macro";
 		String CREATE_CONTROL_CLASS = "New Control Class";
+
+		String HELP = "Help";
+		String HELP_WIKI = "Open Wiki";
 	}
 	
 	interface Popups {
@@ -159,6 +162,7 @@ public interface Lang {
 	interface Misc {
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 		String NO_ITEMS_AVAILABLE = "No items available.";
+		String VISIT_LINK_IN_BROWSER_F = "Visit this link in your web browser:\n%s";
 	}
 	
 	interface ContextMenu {

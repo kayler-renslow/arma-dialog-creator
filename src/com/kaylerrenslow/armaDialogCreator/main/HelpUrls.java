@@ -8,27 +8,16 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.util;
-
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
-import javafx.scene.control.TextArea;
-
-import java.awt.*;
-import java.net.URI;
+package com.kaylerrenslow.armaDialogCreator.main;
 
 /**
- Created by Kayler on 05/26/2016.
+ Created by Kayler on 08/22/2016.
  */
-public class BrowserUtil {
-	/** Attempts to open the browser at the specified url. If the operation succeeded, this method will return true. If the operation failed, will return false. */
-	public static void browse(String url) {
-		try {
-			Desktop.getDesktop().browse(new URI(url));
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-			new StageDialog<>(ArmaDialogCreator.getPrimaryStage(), new TextArea(String.format(Lang.Misc.VISIT_LINK_IN_BROWSER_F, url)), Lang.Popups.GENERIC_POPUP_TITLE, false, true, false).show();
-		}
-	}
+public interface HelpUrls {
+
+	String WIKI_URL = "https://github.com/kayler-renslow/arma-dialog-creator/wiki";
+	String MACROS = "https://github.com/kayler-renslow/arma-dialog-creator/wiki/Macros";
+	String PROJECT_INIT_WINDOW = "https://github.com/kayler-renslow/arma-dialog-creator/wiki/Create,-Open,-and-Export-Projects";
+	String CONFIGURE_DIRECTORIES_POPUP = "https://github.com/kayler-renslow/arma-dialog-creator/wiki/Configuring-Directories";
+	String NEW_CONTROL_POPUP = "https://github.com/kayler-renslow/arma-dialog-creator/wiki/Creating-a-New-Control";
 }

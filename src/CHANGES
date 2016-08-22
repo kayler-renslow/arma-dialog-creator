@@ -1,7 +1,0 @@
-Added:
-    none
-Changed:
-    removed EVENT property types and changed them to SQF property type. Made EVENT lookup enum.
-    closing macro edit/create popup will automatically submit entered key and value
-Fixed:
-    none

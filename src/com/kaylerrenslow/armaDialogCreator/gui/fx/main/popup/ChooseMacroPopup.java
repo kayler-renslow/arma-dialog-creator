@@ -14,7 +14,9 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -99,9 +101,14 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 			myRootElement.getChildren().addAll(hbSplit);
 		}
 		myStage.sizeToScene();
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, true));
 	}
-	
+
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.MACROS);
+	}
+
 	@Override
 	protected void cancel() {
 		listViewMacros.getSelectionModel().clearSelection();

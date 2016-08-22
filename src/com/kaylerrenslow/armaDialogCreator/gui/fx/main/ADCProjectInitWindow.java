@@ -14,9 +14,12 @@ import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ParseError;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -63,7 +66,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		initTabPane();
 
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, true));
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
@@ -118,6 +121,11 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			}
 		}
 		super.ok();
+	}
+
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.PROJECT_INIT_WINDOW);
 	}
 
 	private Button getOkButton() {
@@ -351,10 +359,10 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			return tabOpen;
 		}
 
-		private class ProjectImproperResultPopup extends StagePopup<ScrollPane> {
+		private class ProjectImproperResultPopup extends StageDialog<ScrollPane> {
 
 			public ProjectImproperResultPopup(ProjectXmlLoader.ProjectParseResult result) {
-				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ProjectInitWindow.ProjectResultErrorPopup.POPUP_TITLE);
+				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ProjectInitWindow.ProjectResultErrorPopup.POPUP_TITLE, false, true, false);
 				myRootElement.setFitToWidth(true);
 				myRootElement.setFitToHeight(true);
 				VBox root = (VBox) myRootElement.getContent();
@@ -372,9 +380,6 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 					root.getChildren().add(vbErrorMsg);
 				}
-				root.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
-
-				myRootElement.setPadding(new Insets(10d));
 				myStage.setWidth(340d);
 			}
 
