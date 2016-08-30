@@ -68,7 +68,30 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		final ValueListener<SerializableValue> positionValueListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				setPositionWHSilent((Expression) xProperty.getValue(), (Expression) yProperty.getValue(), (Expression) wProperty.getValue(), (Expression) hProperty.getValue());
+				if (xProperty.getValue() == null) {
+					return;
+				}
+				if (yProperty.getValue() == null) {
+					return;
+				}
+				if (wProperty.getValue() == null) {
+					return;
+				}
+				if (hProperty.getValue() == null) {
+					return;
+				}
+				if (!xProperty.getValue().equals(x)) {
+					setXSilent((Expression) xProperty.getValue());
+				}
+				if (!yProperty.getValue().equals(y)) {
+					setYSilent((Expression) yProperty.getValue());
+				}
+				if (!wProperty.getValue().equals(width)) {
+					setWSilent((Expression) wProperty.getValue());
+				}
+				if (!hProperty.getValue().equals(height)) {
+					setHSilent((Expression) hProperty.getValue());
+				}
 				rerender();
 			}
 		};
@@ -171,11 +194,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected final void recalcPosition() {
 		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
 		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
+		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
+		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
 		xProperty.setValue(x);
 		yProperty.setValue(y);
 
-		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
-		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
 		wProperty.setValue(width);
 		hProperty.setValue(height);
 
