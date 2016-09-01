@@ -42,6 +42,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private Expression x, y, width, height;
 	private final Env env;
+	private boolean waitToRender = false;
 
 	public ArmaControlRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(0, 0, 0, 0);
@@ -82,17 +83,16 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				}
 				if (!xProperty.getValue().equals(x)) {
 					setXSilent((Expression) xProperty.getValue());
-				}
-				if (!yProperty.getValue().equals(y)) {
+				} else if (!yProperty.getValue().equals(y)) {
 					setYSilent((Expression) yProperty.getValue());
-				}
-				if (!wProperty.getValue().equals(width)) {
+				} else if (!wProperty.getValue().equals(width)) {
 					setWSilent((Expression) wProperty.getValue());
-				}
-				if (!hProperty.getValue().equals(height)) {
+				} else if (!hProperty.getValue().equals(height)) {
 					setHSilent((Expression) hProperty.getValue());
 				}
-				rerender();
+				if(!waitToRender){
+					rerender();
+				}
 			}
 		};
 		xProperty.getValueObserver().addValueListener(positionValueListener);
@@ -192,15 +192,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 
 	/** Set the x and y values (and width and height) based upon the renderer's position */
 	protected final void recalcPosition() {
-		this.x = new Expression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
-		this.y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
-		this.width = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
-		this.height = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
+		final Expression x = new Expression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
+		final Expression y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
+		final Expression w = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
+		final Expression h = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
+		this.waitToRender = true;
 		xProperty.setValue(x);
 		yProperty.setValue(y);
 
-		wProperty.setValue(width);
-		hProperty.setValue(height);
+		wProperty.setValue(w);
+		this.waitToRender = false;
+		hProperty.setValue(h);
 
 	}
 
