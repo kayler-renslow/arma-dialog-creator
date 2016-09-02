@@ -10,18 +10,33 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- Created by Kayler on 07/19/2016.
+ @author Kayler
+ A ResourceRegistry is a per-project storage of all resources the project needs.
+ Created on 07/19/2016.
  */
 public class ResourceRegistry {
 	private final List<ExternalResource> externalResourceList = new ArrayList<>();
-	
+
+	public static final String RESOURCES_FILE_NAME = ".resources";
+	private static final File resourcesFile = new File(ApplicationDataManager.getInstance().getAppSaveDataDirectory() + "/" + RESOURCES_FILE_NAME);
+
+	public static File getResourcesFile() {
+		return resourcesFile;
+	}
+
+	/**Get the path for the given filename relative to the {@link #getResourcesFile()} path (APP_SAVE_DIRECTORY/.resources/fileName).*/
+	public static File getResourcesFilePathForName(String fileName) {
+		return new File(resourcesFile + "/" + fileName);
+	}
+
 	ResourceRegistry() {
 	}
-	
+
 	public List<ExternalResource> getExternalResourceList() {
 		return externalResourceList;
 	}

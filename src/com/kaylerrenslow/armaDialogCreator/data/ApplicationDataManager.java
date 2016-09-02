@@ -26,7 +26,11 @@ import java.io.IOException;
 public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
 	private ApplicationData applicationData;
-		
+
+	public static ApplicationDataManager getInstance(){
+		return ArmaDialogCreator.getApplicationDataManager();
+	}
+
 	public void setApplicationData(@NotNull ApplicationData applicationData) {
 		this.applicationData = applicationData;
 		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);

@@ -44,6 +44,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	/** Millisecond epoch when this cell was selected (used for double click detection) */
 	private long lastSelectedTime = -1;
 
+	/**TreeItem's being dragged*/
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
 	private boolean hasDoubleClicked;
 	private static TreeCell<?> hoveredChildParent; //static for the same reasons as dragging

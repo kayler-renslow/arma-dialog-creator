@@ -16,17 +16,19 @@ import java.io.File;
 
 /**
  @author Kayler
- Used to create a link to a resource outside the Project path
+ Used to create a link to a resource outside the Project path (APP_SAVE_DIRECTORY/projectname) in the .resources folder (APP_SAVE_DIRECTORY/.resources)
  Created on 07/19/2016.
  */
 public class ExternalResource {
+	private final Project project;
 	private File externalPath;
 	
 	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
-	 @param externalPath path of the external resource
+	 @param resourceFileName file name of the external resource that is located in the .resources directory
 	 */
-	public ExternalResource(@NotNull File externalPath) {
-		this.externalPath = externalPath;
+	public ExternalResource(@NotNull Project project, @NotNull String resourceFileName) {
+		this.project = project;
+		this.externalPath = ResourceRegistry.getResourcesFilePathForName(resourceFileName);
 	}
 	
 	@NotNull

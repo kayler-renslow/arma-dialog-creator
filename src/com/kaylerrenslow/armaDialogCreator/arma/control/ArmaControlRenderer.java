@@ -99,7 +99,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		yProperty.getValueObserver().addValueListener(positionValueListener);
 		wProperty.getValueObserver().addValueListener(positionValueListener);
 		hProperty.getValueObserver().addValueListener(positionValueListener);
-
+		enabledObserver.addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
+				rerender();
+			}
+		});
 	}
 
 	/**
@@ -313,7 +318,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	@Override
 	public void setGhost(boolean ghost) {
 		super.setGhost(ghost);
-		myControl.getUpdateGroup().update(null);
+		//enable observer is already handled
 	}
 
 	public void resolutionUpdate(Resolution newResolution) {

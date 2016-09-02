@@ -33,4 +33,4 @@ Bugs:
 >converting paa doesn't work
 >choosing custom color for "change colors" popup crashes
 >moving control group in display throws exception
->ctrl scaling is broken. this is because x,y,w,h are being updated and breaking calculations for each other
+>square scaling: doesn't scale up and back down with same snap amount

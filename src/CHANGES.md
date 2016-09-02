@@ -5,4 +5,4 @@
 * none
 
 **Fixed:**
-* none
+* enabling/disabling/ghosting controls didn't work
