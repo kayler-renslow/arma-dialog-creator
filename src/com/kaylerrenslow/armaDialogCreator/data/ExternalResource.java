@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -20,17 +22,34 @@ import java.io.File;
  Created on 07/19/2016.
  */
 public class ExternalResource {
-	private final Project project;
+	private KeyValue<String, ? extends ValueConverter>[] otherData;
 	private File externalPath;
 	
 	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
+	 @param otherData other data to save in the resource
 	 */
-	public ExternalResource(@NotNull Project project, @NotNull String resourceFileName) {
-		this.project = project;
+	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValue<String, ? extends ValueConverter>[] otherData) {
 		this.externalPath = ResourceRegistry.getResourcesFilePathForName(resourceFileName);
+		this.otherData = otherData;
 	}
-	
+
+	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+	 @param resourceFileName file name of the external resource that is located in the .resources directory
+	 */
+	public ExternalResource(@NotNull String resourceFileName) {
+		this(resourceFileName, KeyValue.EMPTY);
+	}
+
+	protected final void setOtherData(@NotNull KeyValue<String, ? extends ValueConverter>[] otherData){
+		this.otherData = otherData;
+	}
+
+	@NotNull
+	public KeyValue<String, ? extends ValueConverter>[] getOtherData() {
+		return otherData;
+	}
+
 	@NotNull
 	public final File getExternalPath() {
 		return externalPath;

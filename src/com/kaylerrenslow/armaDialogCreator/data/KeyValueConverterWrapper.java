@@ -10,40 +10,24 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.FileConverter;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-
 /**
- @author Kayler
- Used for creating a link between a .paa image and the converted .png image stored inside the project
- Created on 07/19/2016. */
-public class PaaImageExternalResource extends ExternalResource {
-	private final File paaImagePath;
+ Created by Kayler on 09/08/2016.
+ */
+public class KeyValueConverterWrapper<K, V> extends KeyValue<K, V> implements ValueConverter<V>{
+	private final ValueConverter<V> converter;
 
-	private static final String keyPaaImagePath = "paa-image-path";
-
-	/**
-	 Create a link for a .paa image
-	 
-	 @param paaImagePath path of the .paa image file
-	 */
-	public PaaImageExternalResource(@NotNull File paaImagePath, @NotNull String convertedImageName) {
-		super(convertedImageName, new KeyValueConverterWrapper[]{new FileKeyValue(keyPaaImagePath, paaImagePath)});
-		this.paaImagePath = paaImagePath;
-	}
-	
-	/**Get the path to the converted .paa image (stored as a .png)*/
-	@NotNull
-	public File getPaaImagePath() {
-		return paaImagePath;
+	public KeyValueConverterWrapper(K key, V value, ValueConverter<V> converter) {
+		super(key, value);
+		this.converter = converter;
 	}
 
-	private static class FileKeyValue extends KeyValueConverterWrapper<String, File>{
-
-		public FileKeyValue(String key, File value) {
-			super(key, value, FileConverter.INSTANCE);
-		}
+	@Override
+	public V convert(DataContext context, @NotNull String... values) throws Exception {
+		return converter.convert(context, values);
 	}
 }
