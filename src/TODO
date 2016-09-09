@@ -34,3 +34,5 @@ Bugs:
 >choosing custom color for "change colors" popup crashes
 >moving control group in display throws exception
 >square scaling: doesn't scale up and back down with same snap amount
+>save global resources
+>load resources from project save

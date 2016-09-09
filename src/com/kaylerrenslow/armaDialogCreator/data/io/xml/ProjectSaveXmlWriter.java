@@ -18,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
@@ -61,7 +62,8 @@ public class ProjectSaveXmlWriter {
 		fos.write("<project-description>".getBytes());
 		fos.write((project.getProjectDescription() != null ? project.getProjectDescription() : "").getBytes());
 		fos.write("</project-description>".getBytes());
-		
+
+		writeResources(fos, project.getResourceRegistry());
 		writeMacros(fos);
 		writeDisplay(fos, project.getEditingDisplay());
 		
@@ -71,7 +73,11 @@ public class ProjectSaveXmlWriter {
 		fos.flush();
 		fos.close();
 	}
-	
+
+	private void writeResources(FileOutputStream fos, @NotNull ResourceRegistry resourceRegistry) throws IOException{
+		new ResourceRegistryXmlWriter(resourceRegistry).write(fos);
+	}
+
 	private void writeDisplay(@NotNull FileOutputStream fos, @NotNull ArmaDisplay editingDisplay) throws IOException {
 		fos.write(String.format("<display idd='%d'>", editingDisplay.getIdd()).getBytes());
 		

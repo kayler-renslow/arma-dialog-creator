@@ -12,11 +12,11 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
-import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -29,13 +29,18 @@ public class ResourceRegistryXmlWriter {
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
 			super(ResourceRegistry.getGlobalRegistry());
-			try {
-				FileOutputStream fos = new FileOutputStream(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile());
-				fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
-				write(fos);
-			} catch (IOException e) {
-				ExceptionHandler.error(e);
-			}
+		}
+
+		@NotNull
+		public FileOutputStream getFileOutputStream() throws FileNotFoundException {
+			return new FileOutputStream(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile());
+		}
+
+
+		@Override
+		public void write(@NotNull FileOutputStream fos) throws IOException {
+			fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
+			super.write(fos);
 		}
 	}
 
@@ -44,11 +49,11 @@ public class ResourceRegistryXmlWriter {
 	}
 
 	public void write(@NotNull FileOutputStream fos) throws IOException {
-		fos.write("<resources>".getBytes());
+		fos.write("<external-resources>".getBytes());
 		for (ExternalResource resource : resourceRegistry.getExternalResourceList()) {
 			writeResource(fos, resource);
 		}
-		fos.write("</resources>".getBytes());
+		fos.write("</external-resources>".getBytes());
 		fos.flush();
 		fos.close();
 	}
@@ -58,8 +63,8 @@ public class ResourceRegistryXmlWriter {
 		for (KeyValue<String, ? extends ValueConverter> keyValue : resource.getOtherData()) {
 			attrs += " " + keyValue.getKey() + "=\"" + keyValue.getValue().toString() + "\"";
 		}
-		fos.write(String.format("<resource%s>", attrs).getBytes());
+		fos.write(String.format("<external-resource%s>", attrs).getBytes());
 		fos.write(resource.getExternalPath().getPath().getBytes());
-		fos.write("</resource>".getBytes());
+		fos.write("</external-resource>".getBytes());
 	}
 }
