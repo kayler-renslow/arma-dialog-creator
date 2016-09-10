@@ -10,9 +10,9 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
-import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Attr;
 
 import java.io.File;
 
@@ -22,14 +22,14 @@ import java.io.File;
  Created on 07/19/2016.
  */
 public class ExternalResource {
-	private KeyValue<String, ? extends ValueConverter>[] otherData;
+	private KeyValueConverterWrapper<String, ?>[] otherData;
 	private File externalPath;
 	
 	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
 	 @param otherData other data to save in the resource
 	 */
-	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValue<String, ? extends ValueConverter>[] otherData) {
+	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueConverterWrapper<String, ?>[] otherData) {
 		this.externalPath = ResourceRegistry.getResourcesFilePathForName(resourceFileName);
 		this.otherData = otherData;
 	}
@@ -38,15 +38,33 @@ public class ExternalResource {
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
 	 */
 	public ExternalResource(@NotNull String resourceFileName) {
-		this(resourceFileName, KeyValue.EMPTY);
+		this(resourceFileName, KeyValueConverterWrapper.EMPTY);
 	}
 
-	protected final void setOtherData(@NotNull KeyValue<String, ? extends ValueConverter>[] otherData){
+	protected final void setOtherData(@NotNull KeyValueConverterWrapper<String, ?>[] otherData){
 		this.otherData = otherData;
 	}
 
+	@Nullable
+	public final KeyValueConverterWrapper<String, ?> getOtherDataValue(@NotNull String keyName){
+		for(KeyValueConverterWrapper<String, ?> keyValue : otherData){
+			if(keyValue.getKey().equals(keyName)){
+				return keyValue;
+			}
+		}
+		return null;
+	}
+
+	/** Override this method to provide support for loading attributes from an xml file. Default implementation returns {@link KeyValueConverterWrapper#EMPTY}
+	 @param attrs attributes of the xml tag
+	 @return array to be used in {@link #setOtherData(KeyValueConverterWrapper[])}
+	 */
+	public KeyValueConverterWrapper<String, ?>[] getOtherDataInstance(@NotNull Attr[] attrs){
+		return KeyValueConverterWrapper.EMPTY;
+	}
+
 	@NotNull
-	public KeyValue<String, ? extends ValueConverter>[] getOtherData() {
+	public KeyValueConverterWrapper<String, ?>[] getOtherData() {
 		return otherData;
 	}
 

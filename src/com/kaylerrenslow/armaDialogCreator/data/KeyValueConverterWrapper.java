@@ -19,6 +19,8 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 09/08/2016.
  */
 public class KeyValueConverterWrapper<K, V> extends KeyValue<K, V> implements ValueConverter<V>{
+	public static final KeyValueConverterWrapper[] EMPTY = new KeyValueConverterWrapper[0];
+
 	private final ValueConverter<V> converter;
 
 	public KeyValueConverterWrapper(K key, V value, ValueConverter<V> converter) {

@@ -157,6 +157,11 @@ public interface Lang {
 			String NO_RECENT_MACROS = "No recently chosen macros.";
 			String CHOOSE_MACRO_TITLE = "Choose a Macro below.";
 		}
+
+		interface SaveProject {
+			String POPUP_TITLE = "Save Project?";
+			String MESSAGE = "Do you wish to save changes to the current project?";
+		}
 	}
 	
 	interface Misc {

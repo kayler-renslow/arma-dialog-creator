@@ -11,9 +11,8 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.KeyValueConverterWrapper;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
-import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
-import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
@@ -25,6 +24,9 @@ import java.io.IOException;
  */
 public class ResourceRegistryXmlWriter {
 	private final ResourceRegistry resourceRegistry;
+
+	public static final String EXTERNAL_RESOURCES_TAG_NAME = "external-resources";
+	public static final String EXTERNAL_RESOURCE_TAG_NAME = "external-resource";
 
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
@@ -42,6 +44,13 @@ public class ResourceRegistryXmlWriter {
 			fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
 			super.write(fos);
 		}
+
+		public void writeAndClose() throws IOException {
+			FileOutputStream fos = getFileOutputStream();
+			write(fos);
+			fos.flush();
+			fos.close();
+		}
 	}
 
 	public ResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
@@ -49,22 +58,20 @@ public class ResourceRegistryXmlWriter {
 	}
 
 	public void write(@NotNull FileOutputStream fos) throws IOException {
-		fos.write("<external-resources>".getBytes());
+		fos.write(("<" + EXTERNAL_RESOURCES_TAG_NAME + ">").getBytes());
 		for (ExternalResource resource : resourceRegistry.getExternalResourceList()) {
 			writeResource(fos, resource);
 		}
-		fos.write("</external-resources>".getBytes());
-		fos.flush();
-		fos.close();
+		fos.write(("</" + EXTERNAL_RESOURCES_TAG_NAME + ">").getBytes());
 	}
 
 	private void writeResource(@NotNull FileOutputStream fos, ExternalResource resource) throws IOException {
 		String attrs = "";
-		for (KeyValue<String, ? extends ValueConverter> keyValue : resource.getOtherData()) {
+		for (KeyValueConverterWrapper<String, ?> keyValue : resource.getOtherData()) {
 			attrs += " " + keyValue.getKey() + "=\"" + keyValue.getValue().toString() + "\"";
 		}
-		fos.write(String.format("<external-resource%s>", attrs).getBytes());
+		fos.write(String.format("<%s%s>", EXTERNAL_RESOURCE_TAG_NAME, attrs).getBytes());
 		fos.write(resource.getExternalPath().getPath().getBytes());
-		fos.write("</external-resource>".getBytes());
+		fos.write(("</" + EXTERNAL_RESOURCE_TAG_NAME + ">").getBytes());
 	}
 }

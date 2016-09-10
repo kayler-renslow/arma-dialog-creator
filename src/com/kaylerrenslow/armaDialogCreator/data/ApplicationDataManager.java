@@ -11,8 +11,13 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectSaveXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -111,5 +116,49 @@ public class ApplicationDataManager {
 		}
 		return true;
 	}
-	
+
+	public void saveGlobalResources(){
+		try {
+			new ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter().writeAndClose();
+		} catch (IOException e) {
+			e.printStackTrace(System.out);
+		}
+	}
+
+	public void applicationExitSave() {
+		SaveProjectDialog popup = new SaveProjectDialog();
+		popup.show();
+		boolean saveProgress = popup.isSaveProgress();
+		if (saveProgress) {
+			try {
+				saveProject();
+			} catch (IOException e) {
+				e.printStackTrace(System.out);
+			}
+		}
+		saveGlobalResources();
+
+	}
+
+	private static class SaveProjectDialog extends StageDialog<VBox>{
+
+		private boolean saveProgress = false;
+
+		public SaveProjectDialog() {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.SaveProject.POPUP_TITLE, true, true, false);
+			myRootElement.getChildren().add(new Label(Lang.Popups.SaveProject.MESSAGE));
+			btnOk.setText(Lang.Confirmation.YES);
+			btnCancel.setText(Lang.Confirmation.NO);
+		}
+
+		@Override
+		protected void ok() {
+			saveProgress = true;
+			super.ok();
+		}
+
+		public boolean isSaveProgress() {
+			return saveProgress;
+		}
+	}
 }

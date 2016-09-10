@@ -172,6 +172,7 @@ public final class ArmaDialogCreator extends Application {
 
 		@Override
 		public void handle(WindowEvent event) {
+			ApplicationDataManager.getInstance().applicationExitSave();
 			//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
 		}
 	}
