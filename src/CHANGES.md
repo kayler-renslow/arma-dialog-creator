@@ -1,8 +1,8 @@
 **Added:**
-* load resources from project save
+* none
 
 **Changed:**
 * none
 
 **Fixed:**
-* converting paa didn't work
+* none

@@ -25,8 +25,14 @@ import java.io.IOException;
 public class ResourceRegistryXmlWriter {
 	private final ResourceRegistry resourceRegistry;
 
+	/** xml tag used for holding all {@link #EXTERNAL_INDIV_RESOURCE_TAG_NAME} tags */
 	public static final String EXTERNAL_RESOURCES_TAG_NAME = "external-resources";
-	public static final String EXTERNAL_RESOURCE_TAG_NAME = "external-resource";
+	/** xml tag used for holding all {@link #RESOURCE_PROPERTY_TAG_NAME} tags */
+	public static final String EXTERNAL_INDIV_RESOURCE_TAG_NAME = "external-resource";
+	/** xml tag used for holding a resource property */
+	public static final String RESOURCE_PROPERTY_TAG_NAME = "resource-property";
+	/** attribute name used for tag {@link #RESOURCE_PROPERTY_TAG_NAME} */
+	public static final String RESOURCE_PROPERTY_KEY = "key";
 
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
@@ -67,11 +73,12 @@ public class ResourceRegistryXmlWriter {
 
 	private void writeResource(@NotNull FileOutputStream fos, ExternalResource resource) throws IOException {
 		String attrs = "";
-		for (KeyValueString keyValue : resource.getOtherData()) {
-			attrs += " " + keyValue.getKey() + "=\"" + keyValue.getValue() + "\"";
+		for (KeyValueString keyValue : resource.getProperties()) {
+			attrs += String.format("<%s %s='%s'>%s</%1$s>", RESOURCE_PROPERTY_TAG_NAME, RESOURCE_PROPERTY_KEY, keyValue.getKey(), keyValue.getValue());
 		}
-		fos.write(String.format("<%s%s>", EXTERNAL_RESOURCE_TAG_NAME, attrs).getBytes());
+		fos.write(("<" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
 		fos.write(resource.getExternalPath().getPath().getBytes());
-		fos.write(("</" + EXTERNAL_RESOURCE_TAG_NAME + ">").getBytes());
+		fos.write(attrs.getBytes());
+		fos.write(("</" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
 	}
 }

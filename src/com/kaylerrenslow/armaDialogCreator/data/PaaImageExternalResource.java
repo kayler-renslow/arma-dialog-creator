@@ -33,7 +33,7 @@ public class PaaImageExternalResource extends ExternalResource {
 	}
 
 	public static File getPaaImagePath(@NotNull ExternalResource resource) {
-		KeyValueString kv = resource.getOtherDataValue(keyPaaImagePath);
+		KeyValueString kv = resource.getPropertyValue(keyPaaImagePath);
 		if (kv == null) {
 			return null;
 		}

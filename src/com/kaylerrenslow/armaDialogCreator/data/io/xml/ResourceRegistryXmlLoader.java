@@ -17,9 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Attr;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 
 import java.io.File;
 import java.util.List;
@@ -49,13 +47,14 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 		if (!externalResourcesTag.getTagName().equals(ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME)) {
 			throw new IllegalArgumentException("externalResourcesTag does not have the tag name '" + ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME + "'");
 		}
-		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, ResourceRegistryXmlWriter.EXTERNAL_RESOURCE_TAG_NAME);
+		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, ResourceRegistryXmlWriter.EXTERNAL_INDIV_RESOURCE_TAG_NAME);
 		for (Element externalResourceElement : externalResourceList) {
-			NamedNodeMap attributes = externalResourceElement.getAttributes();
-			KeyValueString[] keyValues = new KeyValueString[attributes.getLength()];
-			for (int i = 0; i < attributes.getLength(); i++) {
-				Attr attr = (Attr) attributes.item(i);
-				keyValues[i] = new KeyValueString(attr.getName(), attr.getValue());
+			List<Element> externalResourcePropertyElements = XmlUtil.getChildElementsWithTagName(externalResourceElement, ResourceRegistryXmlWriter.RESOURCE_PROPERTY_TAG_NAME);
+			KeyValueString[] keyValues = new KeyValueString[externalResourcePropertyElements.size()];
+			for (int i = 0; i < externalResourcePropertyElements.size(); i++) {
+				Element resourcePropertyElement = externalResourcePropertyElements.get(i);
+				String key = resourcePropertyElement.getAttribute(ResourceRegistryXmlWriter.RESOURCE_PROPERTY_KEY);
+				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement));
 			}
 			ExternalResource externalResource = new ExternalResource(XmlUtil.getImmediateTextContent(externalResourceElement), keyValues);
 			resourceRegistry.getExternalResourceList().add(externalResource);

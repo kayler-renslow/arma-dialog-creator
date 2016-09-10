@@ -23,28 +23,28 @@ import java.io.File;
  <b>Do not check if a class is instanceof a sub-class of this class. When a resource is loaded from file, {@link ExternalResource} is only used for instantiation.</b>
  Created on 07/19/2016. */
 public class ExternalResource {
-	private KeyValueString[] otherData;
+	private KeyValueString[] properties;
 	private File externalPath;
 
 	/**
 	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
 
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
-	 @param otherData other data to save in the resource
+	 @param properties other data to save in the resource
 	 */
-	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueString[] otherData) {
-		this(ResourceRegistry.getResourcesFilePathForName(resourceFileName), otherData);
+	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueString[] properties) {
+		this(ResourceRegistry.getResourcesFilePathForName(resourceFileName), properties);
 	}
 
 	/**
 	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
 
 	 @param resourceFile file of the external resource
-	 @param otherData other data to save in the resource
+	 @param properties other data to save in the resource
 	 */
-	public ExternalResource(@NotNull File resourceFile, @NotNull KeyValueString[] otherData) {
+	public ExternalResource(@NotNull File resourceFile, @NotNull KeyValueString[] properties) {
 		this.externalPath = resourceFile;
-		this.otherData = otherData;
+		this.properties = properties;
 	}
 
 	/**
@@ -65,8 +65,8 @@ public class ExternalResource {
 		this(resourceFile, KeyValueString.EMPTY);
 	}
 
-	protected final void setOtherData(@NotNull KeyValueString[] otherData) {
-		this.otherData = otherData;
+	protected final void setProperties(@NotNull KeyValueString[] properties) {
+		this.properties = properties;
 	}
 
 	/** Return true if the external resource links to a file that exists, return false if the linked false doesn't exist */
@@ -75,8 +75,8 @@ public class ExternalResource {
 	}
 
 	@Nullable
-	public final KeyValueString getOtherDataValue(@NotNull String keyName) {
-		for (KeyValueString keyValue : otherData) {
+	public final KeyValueString getPropertyValue(@NotNull String keyName) {
+		for (KeyValueString keyValue : properties) {
 			if (keyValue.getKey().equals(keyName)) {
 				return keyValue;
 			}
@@ -85,8 +85,8 @@ public class ExternalResource {
 	}
 
 	@NotNull
-	public KeyValueString[] getOtherData() {
-		return otherData;
+	public KeyValueString[] getProperties() {
+		return properties;
 	}
 
 	@NotNull
