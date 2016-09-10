@@ -11,8 +11,8 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.KeyValueConverterWrapper;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
@@ -67,8 +67,8 @@ public class ResourceRegistryXmlWriter {
 
 	private void writeResource(@NotNull FileOutputStream fos, ExternalResource resource) throws IOException {
 		String attrs = "";
-		for (KeyValueConverterWrapper<String, ?> keyValue : resource.getOtherData()) {
-			attrs += " " + keyValue.getKey() + "=\"" + keyValue.getValue().toString() + "\"";
+		for (KeyValueString keyValue : resource.getOtherData()) {
+			attrs += " " + keyValue.getKey() + "=\"" + keyValue.getValue() + "\"";
 		}
 		fos.write(String.format("<%s%s>", EXTERNAL_RESOURCE_TAG_NAME, attrs).getBytes());
 		fos.write(resource.getExternalPath().getPath().getBytes());

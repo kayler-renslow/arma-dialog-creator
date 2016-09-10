@@ -10,61 +10,82 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Attr;
 
 import java.io.File;
 
 /**
  @author Kayler
- Used to create a link to a resource outside the Project path (APP_SAVE_DIRECTORY/projectname) in the .resources folder (APP_SAVE_DIRECTORY/.resources)
- Created on 07/19/2016.
- */
+ Used to create a link to a resource outside the Project path (APP_SAVE_DIRECTORY/projectname) in the .resources folder (APP_SAVE_DIRECTORY/.resources).
+ <br>
+ <b>Do not check if a class is instanceof a sub-class of this class. When a resource is loaded from file, {@link ExternalResource} is only used for instantiation.</b>
+ Created on 07/19/2016. */
 public class ExternalResource {
-	private KeyValueConverterWrapper<String, ?>[] otherData;
+	private KeyValueString[] otherData;
 	private File externalPath;
-	
-	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+
+	/**
+	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
 	 @param otherData other data to save in the resource
 	 */
-	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueConverterWrapper<String, ?>[] otherData) {
-		this.externalPath = ResourceRegistry.getResourcesFilePathForName(resourceFileName);
+	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueString[] otherData) {
+		this(ResourceRegistry.getResourcesFilePathForName(resourceFileName), otherData);
+	}
+
+	/**
+	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+
+	 @param resourceFile file of the external resource
+	 @param otherData other data to save in the resource
+	 */
+	public ExternalResource(@NotNull File resourceFile, @NotNull KeyValueString[] otherData) {
+		this.externalPath = resourceFile;
 		this.otherData = otherData;
 	}
 
-	/** An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+	/**
+	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+
 	 @param resourceFileName file name of the external resource that is located in the .resources directory
 	 */
 	public ExternalResource(@NotNull String resourceFileName) {
-		this(resourceFileName, KeyValueConverterWrapper.EMPTY);
+		this(resourceFileName, KeyValueString.EMPTY);
 	}
 
-	protected final void setOtherData(@NotNull KeyValueConverterWrapper<String, ?>[] otherData){
+	/**
+	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
+
+	 @param resourceFile file name of the external resource
+	 */
+	public ExternalResource(@NotNull File resourceFile) {
+		this(resourceFile, KeyValueString.EMPTY);
+	}
+
+	protected final void setOtherData(@NotNull KeyValueString[] otherData) {
 		this.otherData = otherData;
 	}
 
+	/** Return true if the external resource links to a file that exists, return false if the linked false doesn't exist */
+	public boolean resourceExists() {
+		return externalPath.exists();
+	}
+
 	@Nullable
-	public final KeyValueConverterWrapper<String, ?> getOtherDataValue(@NotNull String keyName){
-		for(KeyValueConverterWrapper<String, ?> keyValue : otherData){
-			if(keyValue.getKey().equals(keyName)){
+	public final KeyValueString getOtherDataValue(@NotNull String keyName) {
+		for (KeyValueString keyValue : otherData) {
+			if (keyValue.getKey().equals(keyName)) {
 				return keyValue;
 			}
 		}
 		return null;
 	}
 
-	/** Override this method to provide support for loading attributes from an xml file. Default implementation returns {@link KeyValueConverterWrapper#EMPTY}
-	 @param attrs attributes of the xml tag
-	 @return array to be used in {@link #setOtherData(KeyValueConverterWrapper[])}
-	 */
-	public KeyValueConverterWrapper<String, ?>[] getOtherDataInstance(@NotNull Attr[] attrs){
-		return KeyValueConverterWrapper.EMPTY;
-	}
-
 	@NotNull
-	public KeyValueConverterWrapper<String, ?>[] getOtherData() {
+	public KeyValueString[] getOtherData() {
 		return otherData;
 	}
 
@@ -72,9 +93,9 @@ public class ExternalResource {
 	public final File getExternalPath() {
 		return externalPath;
 	}
-	
+
 	public final void setExternalPath(@NotNull File externalPath) {
 		this.externalPath = externalPath;
 	}
-	
+
 }

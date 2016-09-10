@@ -11,9 +11,9 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.KeyValueConverterWrapper;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,15 +50,15 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 			throw new IllegalArgumentException("externalResourcesTag does not have the tag name '" + ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME + "'");
 		}
 		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, ResourceRegistryXmlWriter.EXTERNAL_RESOURCE_TAG_NAME);
-		for(Element externalResourceElement : externalResourceList){
-			ExternalResource externalResource = new ExternalResource(XmlUtil.getImmediateTextContent(externalResourceElement));
+		for (Element externalResourceElement : externalResourceList) {
 			NamedNodeMap attributes = externalResourceElement.getAttributes();
-			Attr[] attrs = new Attr[attributes.getLength()];
-			for(int i = 0; i < attributes.getLength(); i++){
+			KeyValueString[] keyValues = new KeyValueString[attributes.getLength()];
+			for (int i = 0; i < attributes.getLength(); i++) {
 				Attr attr = (Attr) attributes.item(i);
-				attrs[i] = attr;
+				keyValues[i] = new KeyValueString(attr.getName(), attr.getValue());
 			}
-			KeyValueConverterWrapper<String, ?>[] keyValues = new KeyValueConverterWrapper[attributes.getLength()];
+			ExternalResource externalResource = new ExternalResource(XmlUtil.getImmediateTextContent(externalResourceElement), keyValues);
+			resourceRegistry.getExternalResourceList().add(externalResource);
 		}
 	}
 }

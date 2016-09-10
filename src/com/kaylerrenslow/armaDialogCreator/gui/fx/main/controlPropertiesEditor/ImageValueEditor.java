@@ -13,6 +13,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.PaaImageExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
@@ -170,6 +174,7 @@ public class ImageValueEditor implements ValueEditor {
 			convertPaaTask.exceptionProperty().addListener(new ChangeListener<Throwable>() {
 				@Override
 				public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
+					newValue.printStackTrace();
 					conversionError(newValue.getMessage() != null ? newValue.getMessage() : Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
 				}
 			});
@@ -178,6 +183,13 @@ public class ImageValueEditor implements ValueEditor {
 				public void handle(WorkerStateEvent event) {
 					imageValueEditor.setValue(convertPaaTask.getValue());
 					close();
+				}
+			});
+			convertPaaTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+				@Override
+				public void handle(WorkerStateEvent event) {
+					System.out.println("ConvertingPaaPopup.handle 555555555555=" + 555555555);
+					conversionError(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
 				}
 			});
 			convertPaaTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
@@ -228,9 +240,8 @@ public class ImageValueEditor implements ValueEditor {
 		
 		@Override
 		protected SVImage call() throws Exception {
-			cancel();
 			updateProgress(-1, 1);
-			File f = ArmaDialogCreator.getApplicationData().getCurrentProject().getFileForName(toConvert.getName() + ".png");
+			File f = ResourceRegistry.getResourcesFilePathForName(toConvert.getName() + ".png");
 			boolean good = ArmaTools.imageToPAA(a3Tools, toConvert, f, TIMEOUT);
 			if (!good) {
 				cancel();
@@ -238,6 +249,11 @@ public class ImageValueEditor implements ValueEditor {
 			}
 			updateProgress(1, 1);
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
+
+			ExternalResource resource = new PaaImageExternalResource(toConvert, f);
+			ResourceRegistry.getGlobalRegistry().getExternalResourceList().add(resource);
+			ApplicationDataManager.getInstance().getApplicationData().getCurrentProject().getResourceRegistry().getExternalResourceList().add(resource);
+
 			return new SVImage(f);
 		}
 	}

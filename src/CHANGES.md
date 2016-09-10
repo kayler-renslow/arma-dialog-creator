@@ -1,9 +1,8 @@
 **Added:**
-* save global resources on application exit
-* save project on application exit
+* load resources from project save
 
 **Changed:**
 * none
 
 **Fixed:**
-* none
+* converting paa didn't work

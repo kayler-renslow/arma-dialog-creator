@@ -8,28 +8,15 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.data;
-
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
-import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
-import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
-import org.jetbrains.annotations.NotNull;
+package com.kaylerrenslow.armaDialogCreator.util;
 
 /**
- Created by Kayler on 09/08/2016.
+ Created by Kayler on 09/10/2016.
  */
-public class KeyValueConverterWrapper<K, V> extends KeyValue<K, V> implements ValueConverter<V>{
-	public static final KeyValueConverterWrapper[] EMPTY = new KeyValueConverterWrapper[0];
+public class KeyValueString extends KeyValue<String, String> {
+	public static final KeyValueString[] EMPTY = new KeyValueString[0];
 
-	private final ValueConverter<V> converter;
-
-	public KeyValueConverterWrapper(K key, V value, ValueConverter<V> converter) {
+	public KeyValueString(String key, String value) {
 		super(key, value);
-		this.converter = converter;
-	}
-
-	@Override
-	public V convert(DataContext context, @NotNull String... values) throws Exception {
-		return converter.convert(context, values);
 	}
 }

@@ -30,8 +30,6 @@ Bugs:
 -----------------------------------
 >ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
 >select many things in tree view and drag into folder
->converting paa doesn't work
 >choosing custom color for "change colors" popup crashes
 >moving control group in display throws exception
 >square scaling: doesn't scale up and back down with same snap amount
->load resources from project save

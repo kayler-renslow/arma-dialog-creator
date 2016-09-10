@@ -10,9 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.FileConverter;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
-import org.w3c.dom.Attr;
 
 import java.io.File;
 
@@ -21,52 +20,28 @@ import java.io.File;
  Used for creating a link between a .paa image and the converted .png image stored inside the project
  Created on 07/19/2016. */
 public class PaaImageExternalResource extends ExternalResource {
-	private File paaImagePath;
-
 	private static final String keyPaaImagePath = "paa-image-path";
 
 	/**
 	 Create a link for a .paa image
 
-	 @param convertedImageName name of the image that was converted
+	 @param paaImagePath path to the .paa image that was used
+	 @param convertedImage image that was converted
 	 */
-	public PaaImageExternalResource(@NotNull String convertedImageName) {
-		super(convertedImageName);
+	public PaaImageExternalResource(@NotNull File paaImagePath, @NotNull File convertedImage) {
+		super(convertedImage, new KeyValueString[]{new KeyValueString(keyPaaImagePath, paaImagePath.getPath())});
 	}
 
-	public KeyValueConverterWrapper[] getNewOtherDataInstance(@NotNull File paaImagePath) {
-		return new KeyValueConverterWrapper[]{new FileKeyValue(keyPaaImagePath, paaImagePath)};
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public KeyValueConverterWrapper<String, ?>[] getOtherDataInstance(@NotNull Attr[] attrs) {
-		KeyValueConverterWrapper[] arr = new KeyValueConverterWrapper[1];
-		for (Attr attr : attrs) {
-			if (attr.getName().equals(keyPaaImagePath)) {
-				arr[0] = new FileKeyValue(keyPaaImagePath, new File(attr.getValue()));
-			}
+	public static File getPaaImagePath(@NotNull ExternalResource resource) {
+		KeyValueString kv = resource.getOtherDataValue(keyPaaImagePath);
+		if (kv == null) {
+			return null;
 		}
-		if (arr[0] == null) {
-			return KeyValueConverterWrapper.EMPTY;
-		}
-		return arr;
+		return new File(kv.getValue());
 	}
 
 	/** Get the path to the converted .paa image (stored as a .png) */
-	@NotNull
 	public File getPaaImagePath() {
-		FileKeyValue fkv = (FileKeyValue) getOtherDataValue(keyPaaImagePath);
-		if (fkv == null) {
-			throw new NullPointerException("fkv should not be null");
-		}
-		return fkv.getValue();
-	}
-
-	private static class FileKeyValue extends KeyValueConverterWrapper<String, File> {
-
-		public FileKeyValue(String key, File value) {
-			super(key, value, FileConverter.INSTANCE);
-		}
+		return getPaaImagePath(this);
 	}
 }
