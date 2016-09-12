@@ -35,4 +35,12 @@ public class KeyValue<K, V> {
 	public void setValue(V value) {
 		this.value = value;
 	}
+
+	@Override
+	public String toString() {
+		return "KeyValue{" +
+				"key=" + key +
+				", value=" + value +
+				'}';
+	}
 }

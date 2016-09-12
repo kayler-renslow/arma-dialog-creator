@@ -13,6 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.main;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
+import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
@@ -100,6 +102,9 @@ public final class ArmaDialogCreator extends Application {
 		mainWindow = new ADCWindow(primaryStage);
 
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
+
+		//load global resources
+		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		loadNewProject();
 	}

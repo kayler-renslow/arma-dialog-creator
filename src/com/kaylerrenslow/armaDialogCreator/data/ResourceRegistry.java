@@ -42,7 +42,7 @@ public class ResourceRegistry {
 		return resourcesFile;
 	}
 
-	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path (APP_SAVE_DIRECTORY/.resources/fileName). */
+	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path ({@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/fileName). */
 	public static File getResourcesFilePathForName(String fileName) {
 		return new File(resourcesFile + "/" + fileName);
 	}
@@ -66,6 +66,7 @@ public class ResourceRegistry {
 		private GlobalResourceRegistry() {
 		}
 
+		/** {@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/global-resources.xml*/
 		public File getGlobalResourcesXmlFile(){
 			return globalResourcesXmlFile;
 		}

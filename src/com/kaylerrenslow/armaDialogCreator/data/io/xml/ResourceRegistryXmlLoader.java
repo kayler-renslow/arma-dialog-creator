@@ -38,9 +38,8 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 	 @param context data context
 	 @throws XmlParseException
 	 */
-	protected ResourceRegistryXmlLoader(@NotNull File xmlFile, @Nullable DataContext context) throws XmlParseException {
+	public ResourceRegistryXmlLoader(@NotNull File xmlFile, @Nullable DataContext context) throws XmlParseException {
 		super(xmlFile, context, null);
-		loadRegistryFromElement(ResourceRegistry.getGlobalRegistry(), this.getDocumentElement());
 	}
 
 	public static void loadRegistryFromElement(@NotNull ResourceRegistry resourceRegistry, @NotNull Element externalResourcesTag) {
@@ -54,10 +53,14 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 			for (int i = 0; i < externalResourcePropertyElements.size(); i++) {
 				Element resourcePropertyElement = externalResourcePropertyElements.get(i);
 				String key = resourcePropertyElement.getAttribute(ResourceRegistryXmlWriter.RESOURCE_PROPERTY_KEY);
-				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement));
+				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement).trim());
 			}
-			ExternalResource externalResource = new ExternalResource(XmlUtil.getImmediateTextContent(externalResourceElement), keyValues);
+			ExternalResource externalResource = new ExternalResource(new File(XmlUtil.getImmediateTextContent(externalResourceElement).trim()), keyValues);
 			resourceRegistry.getExternalResourceList().add(externalResource);
 		}
+	}
+
+	public void load(ResourceRegistry registry) {
+		loadRegistryFromElement(registry, this.getDocumentElement());
 	}
 }

@@ -62,7 +62,7 @@ public class ApplicationLoader {
 			System.err.println("WARNING: project init type wasn't matched with any known types. Just creating new project from scratch.");
 			project = new Project(null, applicationDataManager.getAppSaveDataDirectory());
 		}
-		
+
 		return new ApplicationLoadConfig(applicationData, request, project, treeStructureMain, treeStructureBg);
 	}
 	

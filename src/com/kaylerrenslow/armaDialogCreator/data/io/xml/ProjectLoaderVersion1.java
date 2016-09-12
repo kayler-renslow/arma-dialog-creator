@@ -57,12 +57,20 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				project.setEditingDisplay(editingDisplay);
 			}
 			project.setProjectDescription(getProjectDescription());
+			loadResourceRegistry();
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new XmlParseException(e.getMessage());
 		}
 	}
-	
+
+	private void loadResourceRegistry() {
+		List<Element> externalResourcesElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME);
+		for(Element externalResourcesElement : externalResourcesElementList){
+			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElement);
+		}
+	}
+
 	private String getProjectDescription() {
 		List<Element> descriptionElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
 		if (descriptionElements.size() > 0) {

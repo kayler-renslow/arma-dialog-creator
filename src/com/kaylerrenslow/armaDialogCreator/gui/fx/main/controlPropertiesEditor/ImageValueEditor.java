@@ -188,14 +188,12 @@ public class ImageValueEditor implements ValueEditor {
 			convertPaaTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
 				@Override
 				public void handle(WorkerStateEvent event) {
-					System.out.println("ConvertingPaaPopup.handle 555555555555=" + 555555555);
 					conversionError(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
 				}
 			});
 			convertPaaTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
 				@Override
 				public void handle(WorkerStateEvent event) {
-					System.out.println("ConvertingPaaPopup.handle");
 					conversionError(Lang.ValueEditors.ImageValueEditor.ConvertingPaaPopup.UNKNOWN_IMAGE_CONVERSION_ERROR);
 				}
 			});

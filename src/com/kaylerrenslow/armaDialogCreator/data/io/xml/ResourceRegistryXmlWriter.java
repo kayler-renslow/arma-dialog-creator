@@ -77,7 +77,7 @@ public class ResourceRegistryXmlWriter {
 			attrs += String.format("<%s %s='%s'>%s</%1$s>", RESOURCE_PROPERTY_TAG_NAME, RESOURCE_PROPERTY_KEY, keyValue.getKey(), keyValue.getValue());
 		}
 		fos.write(("<" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
-		fos.write(resource.getExternalPath().getPath().getBytes());
+		fos.write(resource.getExternalFile().getPath().getBytes());
 		fos.write(attrs.getBytes());
 		fos.write(("</" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
 	}

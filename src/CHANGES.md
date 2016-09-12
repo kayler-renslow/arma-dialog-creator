@@ -5,4 +5,5 @@
 * none
 
 **Fixed:**
-* none
+* loading external resources (using wrong constructor)
+* wasn't loading global resources

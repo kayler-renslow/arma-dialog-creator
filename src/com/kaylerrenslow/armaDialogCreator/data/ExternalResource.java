@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  @author Kayler
@@ -24,7 +25,7 @@ import java.io.File;
  Created on 07/19/2016. */
 public class ExternalResource {
 	private KeyValueString[] properties;
-	private File externalPath;
+	private File externalFile;
 
 	/**
 	 An ExternalResource is something that is referenced in the Project, but the actual file isn't inside the Project folder.
@@ -43,7 +44,7 @@ public class ExternalResource {
 	 @param properties other data to save in the resource
 	 */
 	public ExternalResource(@NotNull File resourceFile, @NotNull KeyValueString[] properties) {
-		this.externalPath = resourceFile;
+		this.externalFile = resourceFile;
 		this.properties = properties;
 	}
 
@@ -71,7 +72,7 @@ public class ExternalResource {
 
 	/** Return true if the external resource links to a file that exists, return false if the linked false doesn't exist */
 	public boolean resourceExists() {
-		return externalPath.exists();
+		return externalFile.exists();
 	}
 
 	@Nullable
@@ -90,12 +91,19 @@ public class ExternalResource {
 	}
 
 	@NotNull
-	public final File getExternalPath() {
-		return externalPath;
+	public final File getExternalFile() {
+		return externalFile;
 	}
 
-	public final void setExternalPath(@NotNull File externalPath) {
-		this.externalPath = externalPath;
+	public final void setExternalFile(@NotNull File externalFile) {
+		this.externalFile = externalFile;
 	}
 
+	@Override
+	public String toString() {
+		return "ExternalResource{" +
+				"properties=" + Arrays.toString(properties) +
+				", externalFile=" + externalFile +
+				'}';
+	}
 }
