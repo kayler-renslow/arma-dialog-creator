@@ -1,9 +1,8 @@
 **Added:**
-* none
+* when converting paa image, will check if output image already exists. if it does, popup will appear asking if want to overwrite, use new name, or cancel
 
 **Changed:**
 * none
 
 **Fixed:**
-* loading external resources (using wrong constructor)
-* wasn't loading global resources
+* none

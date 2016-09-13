@@ -213,6 +213,14 @@ public interface Lang {
 				String UNKNOWN_IMAGE_CONVERSION_ERROR = "An un-described error occurred during the conversion.";
 				String CONVERT_ERROR_POPUP_TITLE = "Conversion Failed";
 			}
+
+			interface ImageAlreadyExistsDialog {
+				String DIALOG_TITLE = "Image Already Exists";
+				String MESSAGE_F = "Image '%s' already exists. Do you wish to overwrite, save as a new name, or cancel this operation?";
+				String EXISTING_IMAGE = "Existing image:";
+				String OVERWRITE = "Overwrite.";
+				String NEW_NAME = "Use new name.";
+			}
 		}
 		
 		interface ControlStyleGroupEditor {

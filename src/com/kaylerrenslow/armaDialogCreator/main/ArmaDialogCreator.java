@@ -169,7 +169,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	/** A convenient way of showing a popup on the Javafx thread. */
-	public static void showOnJavaFxThread(StagePopup<?>... popups) {
+	public static void showOnJavaFxThread(StagePopup<?> ... popups) {
 		INSTANCE.showOnFxThreadOL.addAll(popups);
 	}
 
@@ -179,6 +179,16 @@ public final class ArmaDialogCreator extends Application {
 		public void handle(WindowEvent event) {
 			ApplicationDataManager.getInstance().applicationExitSave();
 			//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
+		}
+	}
+
+	private static class ShowLaterPopup{
+		private final Class<StagePopup<?>> popupClass;
+		private final Class<?>[] args;
+
+		public ShowLaterPopup(Class<StagePopup<?>> popupClass, Class<?>...args) {
+			this.popupClass = popupClass;
+			this.args = args;
 		}
 	}
 }
