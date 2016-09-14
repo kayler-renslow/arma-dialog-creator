@@ -42,6 +42,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)} */
 	public static void error(Thread threadWhereErrorOccurred, Throwable t) {
+		t.printStackTrace(System.out);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -58,6 +59,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	/** Makes an error window popup with the stack trace printed. This method should be used when a <b>non-recoverable</b> error occurred. After the error window is closed, the application will also close. */
 	public static void fatal(Thread threadWereErrorOccurred, Throwable t) {
+		t.printStackTrace(System.out);
 		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) { //can be null if this method is called when ApplicationDataManager had an error before constructor finished
 			JOptionPane.showMessageDialog(null, getExceptionString(t), "FATAL ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
@@ -114,7 +116,6 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
-		e.printStackTrace(System.out);
 		try {
 			error(t, e);
 		} catch (Throwable t1) {

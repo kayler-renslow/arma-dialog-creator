@@ -8,7 +8,7 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.data.export;
+package com.kaylerrenslow.armaDialogCreator.data.io.export;
 
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import org.jetbrains.annotations.NotNull;
@@ -20,26 +20,16 @@ import java.io.File;
  */
 public class ProjectExportConfiguration {
 
-	private final String headerFileName;
 	private final String exportClassName;
-	private final boolean exportMacrosToNewFile;
 	private final File exportLocation;
 	private final Project project;
 	private final boolean placeAdcNotice;
 
-	public ProjectExportConfiguration(@NotNull String headerFileName, @NotNull String exportClassName, boolean exportMacrosToNewFile, @NotNull File exportLocation, @NotNull Project project, boolean
-			placeAdcNotice) {
-		this.headerFileName = headerFileName;
+	public ProjectExportConfiguration(@NotNull String exportClassName, @NotNull File exportLocation, @NotNull Project project, boolean placeAdcNotice) {
 		this.exportClassName = exportClassName;
-		this.exportMacrosToNewFile = exportMacrosToNewFile;
 		this.exportLocation = exportLocation;
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
-	}
-
-	@NotNull
-	public String getHeaderFileName() {
-		return headerFileName;
 	}
 
 	public boolean shouldPlaceAdcNotice() {
@@ -54,10 +44,6 @@ public class ProjectExportConfiguration {
 	@NotNull
 	public String getExportClassName() {
 		return exportClassName;
-	}
-
-	public boolean exportMacrosToNewFile() {
-		return exportMacrosToNewFile;
 	}
 
 	@NotNull

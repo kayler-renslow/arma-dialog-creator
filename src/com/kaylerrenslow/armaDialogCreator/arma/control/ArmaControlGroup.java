@@ -27,25 +27,25 @@ import org.jetbrains.annotations.NotNull;
  Created on 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
-	
-	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
+
+	public static final ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
 		
-		private final ControlPropertyLookup[] REQUIRED_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
+		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 		});
 		
-		private final ControlPropertyLookup[] OPTIONAL_PROPERTIES = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
+		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
 		});
-		
+
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getRequiredProperties() {
-			return REQUIRED_PROPERTIES;
+			return requiredProperties;
 		}
 		
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getOptionalProperties() {
-			return OPTIONAL_PROPERTIES;
+			return optionalProperties;
 		}
 		
 		@Override
@@ -53,7 +53,7 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 			return ControlStyle.NA.getStyleGroup().getValues();
 		}
 	};
-	
+
 	
 	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, resolution, renderer, env);

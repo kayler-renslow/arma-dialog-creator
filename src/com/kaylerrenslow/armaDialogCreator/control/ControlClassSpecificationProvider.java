@@ -19,6 +19,10 @@ import org.jetbrains.annotations.NotNull;
  Created on 07/07/2016. */
 public interface ControlClassSpecificationProvider {
 
+	/** Trivial implementation of the interface */
+	ControlClassSpecificationProvider TRIVIAL_IMPL = new ControlClassSpecificationProvider() {
+	};
+
 	/** Get all required sub-classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
 	@NotNull
 	default ControlClass[] getRequiredSubClasses() {

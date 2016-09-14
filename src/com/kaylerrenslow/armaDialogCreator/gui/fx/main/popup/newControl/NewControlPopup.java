@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExporter;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;

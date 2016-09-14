@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.EditMacrosAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateMacroAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateNewControlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
@@ -120,6 +121,9 @@ class ADCMenuBar extends MenuBar {
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);
+		if(ArmaDialogCreator.getLaunchParameters().getUnnamed().contains(ArmaDialogCreator.ProgramArguments.ShowDebugFeatures.argText)){
+			this.getMenus().add(new Menu("Test", null, addOnAction(new MenuItem("Test"), new TestAction())));
+		}
 	}
 	
 }

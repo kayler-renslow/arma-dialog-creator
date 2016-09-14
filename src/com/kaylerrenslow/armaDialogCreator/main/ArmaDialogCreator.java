@@ -37,6 +37,16 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 
+	public enum ProgramArguments{
+		ShowDebugFeatures("-showDebugFeatures");
+
+		public final String argText;
+
+		ProgramArguments(String argText) {
+			this.argText = argText;
+		}
+	}
+
 	public ArmaDialogCreator() {
 		if (INSTANCE != null) {
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
@@ -143,6 +153,10 @@ public final class ArmaDialogCreator extends Application {
 	/** Show the given popup after the application's main window has been initialized */
 	public static void showAfterMainWindowLoaded(StagePopup selectSaveLocationPopup) {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
+	}
+
+	public static Parameters getLaunchParameters() {
+		return INSTANCE.getParameters();
 	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

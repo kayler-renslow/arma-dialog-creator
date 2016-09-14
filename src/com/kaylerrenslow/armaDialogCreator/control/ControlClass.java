@@ -25,8 +25,7 @@ import java.util.List;
 /**
  @author Kayler
  Base class for ArmaControl that may or may not be a control (could be missing properties like style or type, which are required for all controls)<br>
- This class is useful for creating base control classes and not having to type a bunch of redundant information.<br>
- Be sure to remember that classes inside Controls class of dialogs require types and things. These "macro" classes must stay out of the Controls class.
+ This class is useful for creating base control classes and not having to type a bunch of redundant information.
  Created on 05/23/2016. */
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
@@ -280,6 +279,52 @@ public class ControlClass {
 	 */
 	public UpdateListenerGroup<ControlPropertyUpdate> getUpdateGroup() {
 		return updateGroup;
+	}
+
+	/**
+	 Checks if the given {@link ControlClass} matches the following criteria:<br>
+	 <ul>
+	 <li>{@code this.getClassName().equals(controlClass.getClassName())}</li>
+	 <li>this class's required properties matches {@code controlClass}'s required properties</li>
+	 <li>this class's required sub-classes matches {@code controlClass}'s required sub-classes (recursive check with this method)</li>
+	 </ul>
+
+	 @param controlClass class to check if equals
+	 @return true if the criteria are met, false otherwise
+	 */
+	public boolean classEquals(@NotNull ControlClass controlClass) {
+		boolean name = this.getClassName().equals(controlClass.getClassName());
+		if (!name) {
+			return false;
+		}
+
+		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
+			boolean found = false;
+			for (ControlPropertyLookup lookup2 : controlClass.specProvider.getRequiredProperties()) {
+				if (lookup == lookup2) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
+			}
+		}
+
+		for (ControlClass requiredClass : getRequiredSubClasses()) {
+			boolean found = false;
+			for (ControlClass requiredClass2 : controlClass.getRequiredSubClasses()) {
+				if (requiredClass.classEquals(requiredClass2)) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 }

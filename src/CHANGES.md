@@ -1,8 +1,8 @@
 **Added:**
-* beginning of project export
+* none
 
 **Changed:**
-* removed beta popup window at window init
+* none
 
 **Fixed:**
-* choosing custom color for "change colors" popup crashes
+* none
