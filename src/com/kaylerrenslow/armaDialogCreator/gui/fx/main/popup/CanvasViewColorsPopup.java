@@ -50,19 +50,16 @@ public class CanvasViewColorsPopup extends StagePopup<VBox> {
 	public CanvasViewColorsPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.Colors.POPUP_TITLE);
 		myStage.initStyle(StageStyle.UTILITY);
-		myStage.focusedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
-				if (!focused) {
-					myStage.close();
-				}
-			}
-		});
 		setupColorPickers();
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
-		myRootElement.getChildren().addAll(colorOption(Lang.Popups.Colors.SELECTION, cpSelection), colorOption(Lang.Popups.Colors.ABS_REGION, cpAbsRegion), colorOption(Lang.Popups.Colors.GRID, cpGrid), colorOption(Lang.Popups.Colors.BACKGROUND, cpEditorBg));
+		myRootElement.getChildren().addAll(
+				colorOption(Lang.Popups.Colors.SELECTION, cpSelection),
+				colorOption(Lang.Popups.Colors.ABS_REGION, cpAbsRegion),
+				colorOption(Lang.Popups.Colors.GRID, cpGrid),
+				colorOption(Lang.Popups.Colors.BACKGROUND, cpEditorBg)
+		);
 	}
 
 	private void setupColorPickers() {
@@ -74,7 +71,6 @@ public class CanvasViewColorsPopup extends StagePopup<VBox> {
 
 	private static HBox colorOption(String label, ColorPicker cp) {
 		HBox hb = new HBox(10);
-		hb.setAlignment(Pos.TOP_LEFT);
 		hb.getChildren().addAll(cp, new Label(label));
 		return hb;
 	}

@@ -98,7 +98,7 @@ public class ControlClass {
 		this.extend = armaControl;
 	}
 
-	public final @Nullable ControlClass getExtendControl() {
+	public final @Nullable ControlClass getExtendClass() {
 		return extend;
 	}
 
@@ -133,6 +133,13 @@ public class ControlClass {
 	@NotNull
 	public ReadOnlyList<ControlClass> getOptionalSubClasses() {
 		return optionalSubClassesReadOnly;
+	}
+
+	public final List<ControlClass> getAllSubClasses() {
+		List<ControlClass> all = new ArrayList<>();
+		all.addAll(requiredSubClasses);
+		all.addAll(optionalSubClasses);
+		return all;
 	}
 
 	@NotNull
@@ -203,7 +210,7 @@ public class ControlClass {
 		return optionalPropertiesReadOnly;
 	}
 
-	/**Will return all properties that are defined (including inherited properties that are defined)*/
+	/** Will return all properties that are defined (including inherited properties that are defined) */
 	public @NotNull List<ControlProperty> getAllDefinedProperties() {
 		List<ControlProperty> properties = new ArrayList<>();
 		for (ControlProperty property : getInheritedProperties()) {
@@ -234,21 +241,6 @@ public class ControlClass {
 		return list;
 	}
 
-	public final ReadOnlyList<ControlProperty> getEventProperties() {
-		final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
-		for (ControlProperty controlProperty : requiredProperties) {
-			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
-				eventProperties.add(controlProperty);
-			}
-		}
-		for (ControlProperty controlProperty : optionalProperties) {
-			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
-				eventProperties.add(controlProperty);
-			}
-		}
-		return new ReadOnlyList<>(eventProperties);
-	}
-
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
 		for (ControlProperty c : extend.getAllDefinedProperties()) {
 			if (!list.contains(c)) {
@@ -263,6 +255,21 @@ public class ControlClass {
 			}
 			appendInheritedProperties(extend.extend, list);
 		}
+	}
+
+	public final ReadOnlyList<ControlProperty> getEventProperties() {
+		final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
+		for (ControlProperty controlProperty : requiredProperties) {
+			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
+				eventProperties.add(controlProperty);
+			}
+		}
+		for (ControlProperty controlProperty : optionalProperties) {
+			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
+				eventProperties.add(controlProperty);
+			}
+		}
+		return new ReadOnlyList<>(eventProperties);
 	}
 
 	/**

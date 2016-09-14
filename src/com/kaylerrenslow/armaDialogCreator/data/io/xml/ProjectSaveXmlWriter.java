@@ -124,7 +124,7 @@ public class ProjectSaveXmlWriter {
 				control.getRendererLookup().id,
 				control.getType().typeId,
 				control.getClassName(),
-				control.getExtendControl() != null ? control.getExtendControl().getClassName() : ""
+				control.getExtendClass() != null ? control.getExtendClass().getClassName() : ""
 				).getBytes()
 		);
 		

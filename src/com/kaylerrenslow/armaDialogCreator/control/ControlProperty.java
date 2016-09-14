@@ -263,31 +263,7 @@ public class ControlProperty {
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
-	
-	/** Return a String with all the value(s) formatted for header export. If there is more than 1 value in this control property, the curly braces ('{','}') will be prepended and appended before the values */
-	public String getValuesForExport() {
-		if (getValue() == null) {
-			throw new NullPointerException("value is null");
-		}
-		String[] arr = getValue().getAsStringArray();
-		if (arr.length == 1) {
-			if (type.exportHasQuotes) {
-				return "\"" + arr[0] + "\"";
-			}
-			return arr[0];
-		}
-		String ret = "{";
-		String v;
-		for (int i = 0; i < arr.length; i++) {
-			v = arr[i];
-			if (type.exportHasQuotes) {
-				v = "\"" + v + "\"";
-			}
-			ret += v + (i != arr.length - 1 ? "," : "");
-		}
-		return ret + "}";
-	}
-	
+
 	
 	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
 	@NotNull

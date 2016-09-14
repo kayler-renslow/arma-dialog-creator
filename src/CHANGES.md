@@ -1,8 +1,8 @@
 **Added:**
-* when converting paa image, will check if output image already exists. if it does, popup will appear asking if want to overwrite, use new name, or cancel
+* beginning of project export
 
 **Changed:**
-* none
+* removed beta popup window at window init
 
 **Fixed:**
-* none
+* choosing custom color for "change colors" popup crashes

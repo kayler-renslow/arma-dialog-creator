@@ -22,10 +22,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -64,30 +60,11 @@ public final class ArmaDialogCreator extends Application {
 	private ApplicationDataManager applicationDataManager;
 
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
-	private final LinkedList<StagePopup> showOnFxThread = new LinkedList<>();
-	private final ObservableList<StagePopup> showOnFxThreadOL = FXCollections.observableList(showOnFxThread);
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
 		ExceptionHandler.init();
-		showOnFxThreadOL.addListener(new ListChangeListener<StagePopup>() {
-			@Override
-			public void onChanged(Change<? extends StagePopup> c) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						while (c.next()) {
-							for (StagePopup popup : c.getAddedSubList()) {
-								popup.show();
-							}
-						}
-						showOnFxThread.clear(); //prevent another change event by not removing from ObservableList
-					}
-				});
-
-			}
-		});
 
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
@@ -168,27 +145,11 @@ public final class ArmaDialogCreator extends Application {
 		INSTANCE.showLater.add(selectSaveLocationPopup);
 	}
 
-	/** A convenient way of showing a popup on the Javafx thread. */
-	public static void showOnJavaFxThread(StagePopup<?> ... popups) {
-		INSTANCE.showOnFxThreadOL.addAll(popups);
-	}
-
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
 
 		@Override
 		public void handle(WindowEvent event) {
 			ApplicationDataManager.getInstance().applicationExitSave();
-			//			ArmaDialogCreator.INSTANCE.applicationDataManager.forceSave();
-		}
-	}
-
-	private static class ShowLaterPopup{
-		private final Class<StagePopup<?>> popupClass;
-		private final Class<?>[] args;
-
-		public ShowLaterPopup(Class<StagePopup<?>> popupClass, Class<?>...args) {
-			this.popupClass = popupClass;
-			this.args = args;
 		}
 	}
 }

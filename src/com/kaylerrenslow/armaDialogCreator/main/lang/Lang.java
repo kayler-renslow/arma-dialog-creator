@@ -142,12 +142,7 @@ public interface Lang {
 			String MACRO_COMMENT = "Comment (optional):";
 			String NO_TYPE_CHOSEN = "No type chosen.";
 		}
-		
-		interface Beta {
-			String POPUP_TITLE = getPopupWindowTitle("Notification");
-			String BODY = "This is a beta. Things may be broken or lack features. Please report any issues on the issues page.";
-			String REPORT_TO_LINK = "https://github.com/kayler-renslow/arma-dialog-creator/issues";
-		}
+
 		
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup} */
 		interface ChooseMacro {
@@ -168,6 +163,7 @@ public interface Lang {
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 		String NO_ITEMS_AVAILABLE = "No items available.";
 		String VISIT_LINK_IN_BROWSER_F = "Visit this link in your web browser:\n%s";
+		String ADC_EXPORT_NOTICE = "Exported via Arma Dialog Creator (https://github.com/kayler-renslow/arma-dialog-creator)";
 	}
 	
 	interface ContextMenu {

@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
@@ -127,9 +128,9 @@ public class NewControlPopup extends StagePopup<VBox> {
 				continue;
 			}
 			if (property.getValue().getAsStringArray().length == 1) {
-				body += String.format(itemFormatString, property.getName(), property.getValuesForExport());
+				body += String.format(itemFormatString, property.getName(), ProjectExporter.getExportValueString(property.getValue(), property.getPropertyType()));
 			} else {
-				body += String.format(itemArrayFormatString, property.getName(), property.getValuesForExport());
+				body += String.format(itemArrayFormatString, property.getName(), ProjectExporter.getExportValueString(property.getValue(), property.getPropertyType()));
 			}
 		}
 		return String.format(classFormatString, inClassName.getValue(), body);

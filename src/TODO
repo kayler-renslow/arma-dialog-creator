@@ -26,10 +26,13 @@ General:
     this way, the image doesn't get converted more than one per project and you won't need to create the project folder in order to save the .paa
 >in project folder, store links to converted .paa images in resources tag or something.
 
+
+>for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
+>for exporting display, write enableSimulation and other properties (rename ControlProperty class to ControlClassProperty?)
+
 Bugs:
 -----------------------------------
 >ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
 >select many things in tree view and drag into folder
->choosing custom color for "change colors" popup crashes
 >moving control group in display throws exception
 >square scaling: doesn't scale up and back down with same snap amount
