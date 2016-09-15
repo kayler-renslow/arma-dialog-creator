@@ -44,6 +44,14 @@ public class ProjectExporter {
 		this.project = configuration.getProject();
 	}
 
+	public static void export(@NotNull ProjectExportConfiguration configuration, @NotNull String displayHeaderFileName, @Nullable File macrosExportDirectory) throws IOException {
+		new ProjectExporter(configuration).export(displayHeaderFileName, macrosExportDirectory);
+	}
+
+	public static void export(@NotNull ProjectExportConfiguration configuration, @NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
+		new ProjectExporter(configuration).export(displayOutputStream, macrosOutputStream);
+	}
+
 	public void export(@NotNull String displayHeaderFileName, @Nullable File macrosExportDirectory) throws IOException {
 		if (!configuration.getExportLocation().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation is not a directory");
@@ -68,6 +76,11 @@ public class ProjectExporter {
 		}
 
 		export(fosDisplay, fosMacros);
+
+		fosDisplay.close();
+		if (fosMacros != null) {
+			fosMacros.close();
+		}
 	}
 
 	public void export(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
@@ -84,20 +97,16 @@ public class ProjectExporter {
 		exportDisplay(displayOutputStream);
 
 		displayOutputStream.flush();
-		displayOutputStream.close();
 		if (macrosOutputStream != null && macrosOutputStream != displayOutputStream) {
 			macrosOutputStream.flush();
-			macrosOutputStream.close();
 		}
 	}
 
 	private void exportMacros(@NotNull OutputStream os) throws IOException {
 		if (configuration.shouldPlaceAdcNotice()) {
 			writelnComment(os, Lang.Misc.ADC_EXPORT_NOTICE);
+			writeln(os, "");
 		}
-
-		writelnComment(os, "---------Begin Macros for " + configuration.getExportClassName() + "---------");
-		writeln(os, "");
 
 		for (Macro macro : project.getMacroRegistry().getMacros()) {
 			if (macro.getComment().length() != 0) {
@@ -106,7 +115,6 @@ public class ProjectExporter {
 			writeln(os, "#define " + macro.getKey() + " " + getExportValueString(macro.getValue(), macro.getPropertyType()));
 		}
 
-		writelnComment(os, "---------End Macros for " + configuration.getExportClassName()+"---------");
 		writeln(os, "");
 	}
 

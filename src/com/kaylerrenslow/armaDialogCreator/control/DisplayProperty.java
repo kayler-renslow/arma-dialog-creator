@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -26,5 +27,11 @@ public class DisplayProperty extends ControlProperty{
 
 	public DisplayProperty(DisplayPropertyLookup propertyLookup) {
 		super(propertyLookup);
+	}
+
+	@NotNull
+	@Override
+	public DisplayPropertyLookup getPropertyLookup() {
+		return (DisplayPropertyLookup) super.getPropertyLookup();
 	}
 }

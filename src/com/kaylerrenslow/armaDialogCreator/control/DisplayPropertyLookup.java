@@ -83,6 +83,17 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 		return new DisplayProperty(this);
 	}
 
+	/**@throws IllegalArgumentException when id couldn't be matched*/
+	@NotNull
+	public static DisplayPropertyLookup findById(int id) {
+		for (DisplayPropertyLookup lookup : values()) {
+			if (lookup.propertyId == id) {
+				return lookup;
+			}
+		}
+		throw new IllegalArgumentException("id " + id + " couldn't be matched");
+	}
+
 	public DisplayProperty getIntProperty(int defaultValue) {
 		if(getPropertyType() != PropertyType.INT){
 			throw new IllegalStateException("can't get int property when property type isn't int");
@@ -101,7 +112,7 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 		if(getPropertyType() != PropertyType.BOOLEAN){
 			throw new IllegalStateException("can't get boolean property when property type isn't boolean");
 		}
-		return new DisplayProperty(this, defaultValue ? SVBoolean.TRUE : SVBoolean.FALSE);
+		return new DisplayProperty(this, SVBoolean.get(defaultValue));
 	}
 
 	public DisplayProperty getProperty(SerializableValue defaultValue) {

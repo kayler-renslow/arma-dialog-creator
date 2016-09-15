@@ -85,7 +85,7 @@ public enum ControlPropertyEventLookup {
 
 	/**Return the {@link ControlPropertyEventLookup} instance that is associated with the given lookup. If no correlation exists, will return null. */
 	@Nullable
-	public static ControlPropertyEventLookup getEventProperty(ControlPropertyLookup lookup) {
+	public static ControlPropertyEventLookup getEventProperty(ControlPropertyLookupConstant lookup) {
 		for (ControlPropertyEventLookup eventLookup : values()) {
 			if (eventLookup.lookup == lookup) {
 				return eventLookup;

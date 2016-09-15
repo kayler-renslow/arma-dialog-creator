@@ -1,8 +1,8 @@
 **Added:**
-* none
+* export preview tab implementation to export dialog
 
 **Changed:**
-* restructured how the display's save idd, enableSimulation, etc
+* all display properties are now saved and loaded properly
 
 **Fixed:**
-* escaping strings when saving to xml
+* none

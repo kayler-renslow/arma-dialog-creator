@@ -165,6 +165,9 @@ public interface Lang {
 			String EXPORT_PARAMETERS = "Export Parameters";
 			String EXPORT_PREVIEW = "Export Preview";
 
+			String DISPLAY_FILE_F = "%s.h";
+			String MACROS_FILE = "%s_Macros.h";
+
 			interface DisplayProperties{
 				String CLASS_NAME_F = "%s's Class Name:";
 				String DISPLAY_TYPE = "Display Type:";
@@ -177,8 +180,7 @@ public interface Lang {
 			}
 
 			interface ExportPreview{
-				String DISPLAY_F = "%s File";
-				String MACROS_FILE = "Macros File";
+
 			}
 		}
 	}
@@ -304,9 +306,9 @@ public interface Lang {
 			String BAD_MACRO_KEY_OR_TYPE_F = "Bad macro key or type. key:'%s', type:'%s'";
 			String BAD_MACRO_PROPERTY_TYPE_F = "Bad macro property type: '%s'.";
 			String BAD_VALUE_CREATION_COUNT_F = "Not enough values for %s. Count:'%d'.";
-			String BAD_DISPLAY_IDD_F = "Bad display idd: '%s'.";
 			String MISSING_CONTROL_NAME = "Missing control name for tag:'%s'.";
-			String BAD_LOOKUP_ID_F = "Bad lookup id: '%s' for control '%s'.";
+			String BAD_CONTROL_PROPERTY_LOOKUP_ID_F = "Bad control property lookup id: '%s' for control '%s'.";
+			String BAD_DISPLAY_PROPERTY_LOOKUP_ID_F = "Bad display property lookup id: '%s'.";
 			String BAD_CONTROL_TYPE_F = "Bad control type: '%s' for control '%s'.";
 			String BAD_RENDERER_F = "Bad renderer ('%s') for control '%s'.";
 			String BAD_CONTROL_IDC_F = "Bad control idc: '%s' for control '%s'.";

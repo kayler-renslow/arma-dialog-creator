@@ -104,8 +104,8 @@ public class ControlProperty {
 	}
 
 	@NotNull
-	public ControlPropertyLookup getPropertyLookup() {
-		return (ControlPropertyLookup) propertyLookup;
+	public ControlPropertyLookupConstant getPropertyLookup() {
+		return propertyLookup;
 	}
 
 	/** Return true if the data may not match the type of the control property. This is set by invoking {@link #setDataOverride(boolean)} */

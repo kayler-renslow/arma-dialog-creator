@@ -38,14 +38,13 @@ import java.util.List;
 /**
  @author Kayler
  A project loader for save-verison='1'
- Created on 08/07/2016.
- */
+ Created on 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
-	
+
 	protected ProjectLoaderVersion1(ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
 	}
-	
+
 	@Override
 	public void parseDocument() throws XmlParseException {
 		try {
@@ -66,7 +65,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private void loadResourceRegistry() {
 		List<Element> externalResourcesElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME);
-		for(Element externalResourcesElement : externalResourcesElementList){
+		for (Element externalResourcesElement : externalResourcesElementList) {
 			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElement);
 		}
 	}
@@ -78,7 +77,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		return null;
 	}
-	
+
 	private List<Macro> fetchMacros(List<Macro> macros) {
 		List<Element> macrosGroupElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macros");
 		List<Element> macroElements;
@@ -93,9 +92,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					continue;
 				}
 				PropertyType propertyType;
-				try{
+				try {
 					propertyType = PropertyType.findById(Integer.parseInt(propertyTypeAttr));
-				}catch (IllegalArgumentException e){ //will catch number format exception
+				} catch (IllegalArgumentException e) { //will catch number format exception
 					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_PROPERTY_TYPE_F, propertyTypeAttr)));
 					continue;
 				}
@@ -108,50 +107,74 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				macro.setComment(comment);
 			}
 		}
-		
+
 		return macros;
 	}
-	
+
 	private ArmaDisplay fetchEditingDisplay(List<Macro> macros) {
 		List<Element> displayElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "display");
-		for (Element displayElement : displayElements) {
-			int idd;
-			String iddStr = displayElement.getAttribute("idd");
+		if (displayElements.size() <= 0) {
+			return null;
+		}
+		Element displayElement = displayElements.get(0);
+		ArmaDisplay display = new ArmaDisplay();
+
+		List<Element> displayPropertyElements = XmlUtil.getChildElementsWithTagName(displayElement, "display-property");
+		for (Element displayPropertyElement : displayPropertyElements) {
+			String lookupId = displayPropertyElement.getAttribute("lookup-id");
 			try {
-				idd = Integer.parseInt(iddStr);
-			} catch (NumberFormatException ex) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_IDD_F, iddStr), ParseError.genericRecover("-1")));
-				idd = -1;
-			}
-			
-			ArmaDisplay display = new ArmaDisplay(idd);
-			List<Element> displayControlElements = XmlUtil.getChildElementsWithTagName(displayElement, "display-controls");
-			List<ArmaControl> controls;
-			String controlsType;
-			for (Element displayControlElement : displayControlElements) {
-				controlsType = displayControlElement.getAttribute("type");
-				switch (controlsType) {
-					case "background": {
-						controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros);
-						for (ArmaControl control : controls) {
-							display.getBackgroundControls().add(control);
-						}
+				int id = Integer.parseInt(lookupId);
+				DisplayPropertyLookup lookup = DisplayPropertyLookup.findById(id);
+				SerializableValue value = getValue(lookup.getPropertyType(), displayPropertyElement);
+				switch (lookup) {
+					case IDD: {
+						display.getIddProperty().setValue(value);
 						break;
 					}
-					case "main": {
-						controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros);
-						for (ArmaControl control : controls) {
-							display.getControls().add(control);
-						}
+					case ENABLE_SIMULATION: {
+						display.getEnableSimulationProperty().setValue(value);
+						break;
+					}
+					case MOVING_ENABLE: {
+						display.getMovingEnableProperty().setValue(value);
+						break;
+					}
+					default: {
+						display.getDisplayProperties().add(new DisplayProperty(lookup, value));
 						break;
 					}
 				}
+
+			} catch (IllegalArgumentException e) {
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_PROPERTY_LOOKUP_ID_F, lookupId), ParseError.genericRecover("-1")));
 			}
-			return display;
 		}
-		return null;
+
+		List<Element> displayControlElements = XmlUtil.getChildElementsWithTagName(displayElement, "display-controls");
+		List<ArmaControl> controls;
+		String controlsType;
+		for (Element displayControlElement : displayControlElements) {
+			controlsType = displayControlElement.getAttribute("type");
+			switch (controlsType) {
+				case "background": {
+					controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros);
+					for (ArmaControl control : controls) {
+						display.getBackgroundControls().add(control);
+					}
+					break;
+				}
+				case "main": {
+					controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros);
+					for (ArmaControl control : controls) {
+						display.getControls().add(control);
+					}
+					break;
+				}
+			}
+		}
+		return display;
 	}
-	
+
 	private List<ArmaControl> buildStructureAndGetControls(TreeStructure.TreeNode<TreeItemEntry> parent, Element parentElement, List<Macro> macros) {
 		List<ArmaControl> controls = new LinkedList<>();
 		List<Element> tagElements = XmlUtil.getChildElementsWithTagName(parentElement, "*");
@@ -194,10 +217,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 			controls.add(control);
 		}
-		
+
 		return controls;
 	}
-	
+
 	private ArmaControl getControl(Element controlElement, boolean isControlGroup, List<Macro> macros) {
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
@@ -221,7 +244,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
 			return null;
 		}
-		
+
 		String extendClassName = controlElement.getAttribute("extend-class");
 		RendererLookup rendererLookup;
 		String rendererStr = controlElement.getAttribute("renderer-id");
@@ -232,7 +255,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
-		
+
 		LinkedList<ProjectXmlLoader.ControlLoadConfig> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
 			ControlPropertyLookup lookup;
@@ -242,7 +265,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				int id = Integer.parseInt(lookupIdStr);
 				lookup = ControlPropertyLookup.findById(id);
 			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_PROPERTY_LOOKUP_ID_F, lookupIdStr, controlClassName)));
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
 			SerializableValue value = getValue(lookup.getPropertyType(), controlPropertyElement);
@@ -251,8 +274,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 			properties.add(new ProjectXmlLoader.ControlLoadConfig(lookup, value, macroKey));
 		}
-		
-		
+
+
 		ArmaControlSpecProvider specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
 		if (!containsAll) {
@@ -291,7 +314,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		} else {
 			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER.getStyleGroup(), x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		}
-		
+
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
 			for (ProjectXmlLoader.ControlLoadConfig config : properties) {
 				if (config.lookup == lookup) {
@@ -300,7 +323,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 			}
 		}
-		
+
 		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
 			for (ProjectXmlLoader.ControlLoadConfig config : properties) {
 				if (config.lookup == lookup) {
@@ -309,7 +332,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 			}
 		}
-		
+
 		//		for (ControlPropertyLookup lookup : specProvider.getEventProperties()) {
 		//			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
 		//				if (saved.getKey() == lookup) {
@@ -317,10 +340,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		//				}
 		//			}
 		//		}
-		
+
 		return control;
 	}
-	
+
 	private void setControlPropertyValue(List<Macro> macros, ProjectXmlLoader.ControlLoadConfig config, ControlProperty property) {
 		property.setValue(config.value);
 		if (config.macroKey != null) {
@@ -331,7 +354,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 		}
 	}
-	
+
 	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ProjectXmlLoader.ControlLoadConfig> master) {
 		for (ControlPropertyLookup toMatchLookup : toMatch) {
 			boolean matched = false;
@@ -348,7 +371,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		return true;
 	}
-	
+
 	/**
 	 Converts an xml element where it's children are value tags.<br>
 	 Sample:<br>
@@ -358,7 +381,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	 &nbsp;&nbsp;&lt;value&gt;value text&lt;/value&gt;<br>
 	 &lt;/parentElement&gt;
 	 </code>
-	 
+
 	 @param propertyType type that will be used to determine the type of {@link com.kaylerrenslow.armaDialogCreator.util.ValueConverter}
 	 @param parentElement element that is the parent of the value tags
 	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in errors).
@@ -384,5 +407,5 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		return value;
 	}
-	
+
 }

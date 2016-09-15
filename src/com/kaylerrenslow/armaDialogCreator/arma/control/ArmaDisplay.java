@@ -26,8 +26,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 
@@ -37,22 +38,24 @@ import java.util.Iterator;
  Created on 06/14/2016. */
 public class ArmaDisplay implements Display<ArmaControl> {
 	
-	private int idd;
-	private DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
-	private boolean movingEnable, enableSimulation;
+	private int idd = -1;
+	private boolean movingEnable = true;
+	private boolean enableSimulation = true;
+	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
+	private final DisplayProperty movingEnableProperty = DisplayPropertyLookup.MOVING_ENABLE.getBooleanProperty(movingEnable);
+	private final DisplayProperty enableSimulationProperty = DisplayPropertyLookup.ENABLE_SIMULATION.getBooleanProperty(enableSimulation);
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 	private final DataContext userdata = new DataContext();
 	@SuppressWarnings("unchecked")
 	private final ControlList<ArmaControl>[] controls = new ControlList[]{getBackgroundControls(), getControls()};
 
-	private final ObservableList<DisplayProperty> displayProperties = FXCollections.observableArrayList();
+	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
 
-	public ArmaDisplay(int idd) {
-		this.idd = idd;
-
+	public ArmaDisplay() {
 		displayProperties.add(iddProperty);
-		iddProperty.setValue(idd);
+		displayProperties.add(enableSimulationProperty);
+		displayProperties.add(movingEnableProperty);
 
 		final ArmaDisplay display = this;
 		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
@@ -87,7 +90,22 @@ public class ArmaDisplay implements Display<ArmaControl> {
 		this.idd = idd;
 		iddProperty.setValue(idd);
 	}
-	
+
+	@NotNull
+	public DisplayProperty getIddProperty() {
+		return iddProperty;
+	}
+
+	@Nullable
+	public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup){
+		for(DisplayProperty displayProperty : displayProperties){
+			if(propertyLookup == displayProperty.getPropertyLookup()){
+				return displayProperty;
+			}
+		}
+		return null;
+	}
+
 	/** Return true if the display/dialog is allowed to move. If it isn't, return false. */
 	public boolean movingEnabled() {
 		return movingEnable;
@@ -95,19 +113,31 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	
 	public void setMovingEnable(boolean movingEnable) {
 		this.movingEnable = movingEnable;
+		movingEnableProperty.setValue(movingEnable);
 	}
-	
+
+	@NotNull
+	public DisplayProperty getMovingEnableProperty() {
+		return movingEnableProperty;
+	}
+
 	/** Return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
 	public boolean simulationEnabled() {
 		return enableSimulation;
 	}
-	
+
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
+		enableSimulationProperty.setValue(enableSimulation);
 	}
 
 	@NotNull
-	public ObservableList<DisplayProperty> getDisplayProperties() {
+	public DisplayProperty getEnableSimulationProperty() {
+		return enableSimulationProperty;
+	}
+
+	@NotNull
+	public ObservableSet<DisplayProperty> getDisplayProperties() {
 		return displayProperties;
 	}
 

@@ -69,7 +69,7 @@ public class EditorComponentTreeViewTest extends Application {
 
 		public TestTreeView() {
 			super(true);
-			setToDisplay(new ArmaDisplay(0));
+			setToDisplay(new ArmaDisplay());
 		}
 
 		@Override

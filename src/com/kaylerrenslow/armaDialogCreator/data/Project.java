@@ -30,7 +30,7 @@ public class Project {
 	private final File appSaveDirectory;
 	private final File projectSaveDirectory;
 	
-	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay(0));
+	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 	private final MacroRegistry macroRegistry = new MacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
 	

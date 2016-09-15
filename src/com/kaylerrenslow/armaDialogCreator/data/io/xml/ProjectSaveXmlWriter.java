@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
@@ -39,12 +40,12 @@ public class ProjectSaveXmlWriter {
 	 This is meant for ensuring the project is loaded correctly, despite an older save format (be sure to store each loader for each save version).
 	 */
 	private static final int SAVE_VERSION = 1;
-	
+
 	private final Project project;
 	private final TreeStructure<? extends TreeItemEntry> treeStructureMain;
 	private final TreeStructure<? extends TreeItemEntry> treeStructureBg;
 	private final File projectSaveXml;
-	
+
 	public ProjectSaveXmlWriter(@NotNull Project project, @NotNull TreeStructure<? extends TreeItemEntry> treeStructureMain,
 								@NotNull TreeStructure<? extends TreeItemEntry> treeStructureBg, @NotNull File projectSaveXml) {
 		this.project = project;
@@ -52,13 +53,13 @@ public class ProjectSaveXmlWriter {
 		this.treeStructureBg = treeStructureBg;
 		this.projectSaveXml = projectSaveXml;
 	}
-	
+
 	public void write() throws IOException {
 		FileOutputStream fos = new FileOutputStream(projectSaveXml);
-		
+
 		fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
 		fos.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION).getBytes());
-		
+
 		fos.write("<project-description>".getBytes());
 		fos.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : "").getBytes());
 		fos.write("</project-description>".getBytes());
@@ -66,32 +67,45 @@ public class ProjectSaveXmlWriter {
 		writeResources(fos, project.getResourceRegistry());
 		writeMacros(fos);
 		writeDisplay(fos, project.getEditingDisplay());
-		
+
 		fos.write("</project>".getBytes());
-		
-		
+
+
 		fos.flush();
 		fos.close();
 	}
 
-	private void writeResources(FileOutputStream fos, @NotNull ResourceRegistry resourceRegistry) throws IOException{
+	private void writeResources(FileOutputStream fos, @NotNull ResourceRegistry resourceRegistry) throws IOException {
 		new ResourceRegistryXmlWriter(resourceRegistry).write(fos);
 	}
 
 	private void writeDisplay(@NotNull FileOutputStream fos, @NotNull ArmaDisplay editingDisplay) throws IOException {
-		fos.write(String.format("<display idd='%d'>", editingDisplay.getIdd()).getBytes());
-		
+		fos.write("<display>".getBytes());
+
+		writeDisplayProperties(fos, editingDisplay);
+
 		fos.write("<display-controls type='background'>".getBytes());
 		writeControls(fos, treeStructureBg.getRoot());
 		fos.write("</display-controls>".getBytes());
-		
+
 		fos.write("<display-controls type='main'>".getBytes());
 		writeControls(fos, treeStructureMain.getRoot());
 		fos.write("</display-controls>".getBytes());
-		
+
 		fos.write("</display>".getBytes());
 	}
-	
+
+	private void writeDisplayProperties(@NotNull FileOutputStream fos, @NotNull ArmaDisplay display) throws IOException {
+		for (DisplayProperty property : display.getDisplayProperties()) {
+			if (property.getValue() == null) {
+				continue;
+			}
+			fos.write(String.format("<display-property lookup-id='%s'>", property.getPropertyLookup().getPropertyId()).getBytes());
+			writeValue(fos, property.getValue());
+			fos.write("</display-property>".getBytes());
+		}
+	}
+
 	private void writeControls(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
 		for (TreeStructure.TreeNode<? extends TreeItemEntry> treeNode : parent.getChildren()) {
 			if (treeNode.getData() instanceof FolderTreeItemEntry) {
@@ -104,20 +118,20 @@ public class ProjectSaveXmlWriter {
 				throw new IllegalStateException("unknown tree node data class");
 			}
 		}
-		
+
 	}
-	
+
 	private void writeFolder(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
 		fos.write(String.format("<folder name='%s'>", esc(folder.getText())).getBytes());
 		writeControls(fos, treeNode);
 		fos.write("</folder>".getBytes());
 	}
-	
+
 	private void writeControl(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull ArmaControl control) throws IOException {
 		final String controlGroupStr = "control-group";
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
-		
+
 		fos.write(String.format("<%s idc='%d' renderer-id='%d' control-type-id='%d' class-name='%s' extend-class='%s'>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getIdc(),
@@ -127,7 +141,7 @@ public class ProjectSaveXmlWriter {
 				control.getExtendClass() != null ? control.getExtendClass().getClassName() : ""
 				).getBytes()
 		);
-		
+
 		//write control properties
 		if (control.getMissingRequiredProperties().size() != 0) {
 			throw new XmlWriteException(String.format(Lang.XmlWrite.ProjectSave.CONTROL_PROPERTIES_MISSING_F, control.getClassName()));
@@ -144,27 +158,27 @@ public class ProjectSaveXmlWriter {
 			writeValue(fos, cprop.getValue());
 			fos.write("</control-property>".getBytes());
 		}
-		
+
 		if (controlGroup) {
 			writeControls(fos, treeNode);
 		}
-		
+
 		fos.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">").getBytes());
 	}
-	
+
 	private void writeMacros(@NotNull FileOutputStream fos) throws IOException {
 		fos.write("<macros>".getBytes());
-		
+
 		MacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
 			fos.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())).getBytes());
 			writeValue(fos, macro.getValue());
 			fos.write("</macro>".getBytes());
 		}
-		
+
 		fos.write("</macros>".getBytes());
 	}
-	
+
 	private void writeValue(@NotNull FileOutputStream fos, @NotNull SerializableValue svalue) throws IOException {
 		for (String value : svalue.getAsStringArray()) {
 			fos.write("<value>".getBytes());
@@ -173,7 +187,7 @@ public class ProjectSaveXmlWriter {
 		}
 	}
 
-	private static String esc(String value){
-		return value.replaceAll("'", "&#39;").replaceAll("<","&lt;").replaceAll(">", "&gt;");
+	private static String esc(String value) {
+		return value.replaceAll("'", "&#39;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}
 }

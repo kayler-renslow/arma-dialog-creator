@@ -40,7 +40,13 @@ public class ApplicationDataManager {
 		this.applicationData = applicationData;
 		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);
 	}
-	
+
+	/**Calls {@code getApplicationData().getCurrentProject()}*/
+	@NotNull
+	public Project getCurrentProject(){
+		return getApplicationData().getCurrentProject();
+	}
+
 	@NotNull
 	public ApplicationData getApplicationData() {
 		if (applicationData == null) {

@@ -52,19 +52,19 @@ public class ProjectExportConfiguration {
 		return project;
 	}
 
-	void setExportClassName(@NotNull String exportClassName) {
+	public void setExportClassName(@NotNull String exportClassName) {
 		this.exportClassName = exportClassName;
 	}
 
-	void setExportLocation(@NotNull File exportLocation) {
+	public void setExportLocation(@NotNull File exportLocation) {
 		this.exportLocation = exportLocation;
 	}
 
-	void setProject(@NotNull Project project) {
+	public void setProject(@NotNull Project project) {
 		this.project = project;
 	}
 
-	void setPlaceAdcNotice(boolean placeAdcNotice) {
+	public void setPlaceAdcNotice(boolean placeAdcNotice) {
 		this.placeAdcNotice = placeAdcNotice;
 	}
 }
