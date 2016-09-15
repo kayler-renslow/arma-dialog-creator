@@ -157,6 +157,30 @@ public interface Lang {
 			String POPUP_TITLE = "Save Project?";
 			String MESSAGE = "Do you wish to save changes to the current project?";
 		}
+
+		interface ExportProject {
+			String DIALOG_TITLE = getPopupWindowTitle("Export Project");
+			String TITLE_LABEL = "Project Export Configuration";
+			String DISPLAY_PROPERTIES = "Display Properties";
+			String EXPORT_PARAMETERS = "Export Parameters";
+			String EXPORT_PREVIEW = "Export Preview";
+
+			interface DisplayProperties{
+				String CLASS_NAME_F = "%s's Class Name:";
+				String DISPLAY_TYPE = "Display Type:";
+				String DIALOG = "Dialog";
+				String TITLE = "Title";
+			}
+
+			interface ExportParameters{
+
+			}
+
+			interface ExportPreview{
+				String DISPLAY_F = "%s File";
+				String MACROS_FILE = "Macros File";
+			}
+		}
 	}
 	
 	interface Misc {

@@ -15,6 +15,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -33,6 +34,7 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox>{
 		super(primaryStage, new VBox(5), title);
 		this.myRootElement = myRootDialogElement;
 		super.myRootElement.setPadding(new Insets(10));
+		VBox.setVgrow(myRootElement, Priority.ALWAYS);
 		super.myRootElement.getChildren().addAll(myRootDialogElement, new Separator(Orientation.HORIZONTAL), getResponseFooter(canCancel, canOk, hasHelp));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 	}

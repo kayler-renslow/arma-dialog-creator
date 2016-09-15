@@ -10,17 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
-import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
-import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.stage.DirectoryChooser;
-
-import java.io.File;
-import java.io.IOException;
 
 /**
  @author Kayler
@@ -29,15 +20,15 @@ import java.io.IOException;
 public class TestAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		File f = new DirectoryChooser().showDialog(ArmaDialogCreator.getPrimaryStage());
-		if (f == null) {
-			return;
-		}
-		ProjectExporter exporter = new ProjectExporter(new ProjectExportConfiguration("testDialog", f, ApplicationDataManager.getInstance().getApplicationData().getCurrentProject(), true));
-		try {
-			exporter.export("test.h", null);
-		} catch (IOException e) {
-			ExceptionHandler.error(e);
-		}
+//		File f = new DirectoryChooser().showDialog(ArmaDialogCreator.getPrimaryStage());
+//		if (f == null) {
+//			return;
+//		}
+//		ProjectExporter exporter = new ProjectExporter(new ProjectExportConfiguration("testDialog", f, ApplicationDataManager.getInstance().getApplicationData().getCurrentProject(), true));
+//		try {
+//			exporter.export("test.h", null);
+//		} catch (IOException e) {
+//			ExceptionHandler.error(e);
+//		}
 	}
 }

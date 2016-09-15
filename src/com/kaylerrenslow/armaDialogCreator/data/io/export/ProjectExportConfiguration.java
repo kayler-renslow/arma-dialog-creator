@@ -20,10 +20,10 @@ import java.io.File;
  */
 public class ProjectExportConfiguration {
 
-	private final String exportClassName;
-	private final File exportLocation;
-	private final Project project;
-	private final boolean placeAdcNotice;
+	private String exportClassName;
+	private File exportLocation;
+	private Project project;
+	private boolean placeAdcNotice;
 
 	public ProjectExportConfiguration(@NotNull String exportClassName, @NotNull File exportLocation, @NotNull Project project, boolean placeAdcNotice) {
 		this.exportClassName = exportClassName;
@@ -49,5 +49,21 @@ public class ProjectExportConfiguration {
 	@NotNull
 	public Project getProject() {
 		return project;
+	}
+
+	void setExportClassName(@NotNull String exportClassName) {
+		this.exportClassName = exportClassName;
+	}
+
+	void setExportLocation(@NotNull File exportLocation) {
+		this.exportLocation = exportLocation;
+	}
+
+	void setProject(@NotNull Project project) {
+		this.project = project;
+	}
+
+	void setPlaceAdcNotice(boolean placeAdcNotice) {
+		this.placeAdcNotice = placeAdcNotice;
 	}
 }
