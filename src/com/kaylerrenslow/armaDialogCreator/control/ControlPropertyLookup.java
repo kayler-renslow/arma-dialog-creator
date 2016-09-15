@@ -22,7 +22,7 @@ import java.util.Arrays;
  @author Kayler
  A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
  Created on 05/22/2016. */
-public enum ControlPropertyLookup {
+public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 	IDC(0, "idc", PropertyType.INT, "Control id, or -1 if doesn't matter."),
 	X(1, "x", PropertyType.EXP, "X position."),
 	Y(2, "y", PropertyType.EXP, "Y position."),
@@ -253,16 +253,12 @@ public enum ControlPropertyLookup {
 	
 	
 	public static final ControlPropertyLookup[] EMPTY = new ControlPropertyLookup[0];
-	/** All values that the property can be, or null if user defined. */
-	public final @Nullable ControlPropertyOption[] options;
-	public final String propertyName;
-	public final PropertyType propertyType;
-	public final String[] about;
-	/**
-	 A unique id for the lookup item to guarantee a match by despite order change or property name change, or some other change.
-	 <br>When the lookup item is written, the propertyId must <b>NEVER</b> change.
-	 */
-	public final int propertyId;
+
+	private final @Nullable ControlPropertyOption[] options;
+	private final String propertyName;
+	private final PropertyType propertyType;
+	private final String[] about;
+	private final int propertyId;
 	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable ControlPropertyOption... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
@@ -298,34 +294,70 @@ public enum ControlPropertyLookup {
 	public String toString() {
 		return propertyName;
 	}
-	
-	public ControlProperty getIntProperty(int defaultValue) {
-		return new ControlProperty(this, propertyName, defaultValue);
+
+	@Nullable
+	@Override
+	public ControlPropertyOption[] getOptions() {
+		return options;
 	}
-	
-	public ControlProperty getFloatProperty(double defaultValue) {
-		return new ControlProperty(this, propertyName, defaultValue);
+
+	@Override
+	public String getPropertyName() {
+		return propertyName;
 	}
-	
-	public ControlProperty getBooleanProperty(boolean defaultValue) {
-		return new ControlProperty(this, propertyName, defaultValue);
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return propertyType;
 	}
-	
-	public ControlProperty getProperty(SerializableValue defaultValue) {
-		return new ControlProperty(this, propertyName, PropertyType.STRING, defaultValue);
+
+	@Override
+	public int getPropertyId() {
+		return propertyId;
 	}
-	
-	public ControlProperty getPropertyFromOption(int optionNum) {
-		if (options == null || optionNum < 0 || optionNum > options.length) {
-			throw new IllegalStateException("options and optionNum are bad. options=" + (options != null ? Arrays.toString(options) : "null") + " optionNum=" + optionNum);
-		}
-		return new ControlProperty(this, propertyName, propertyType, new SVString(options[optionNum].value));
+
+	@Override
+	public String[] getAbout() {
+		return about;
 	}
-	
+
 	public ControlProperty getPropertyWithNoData() {
-		return new ControlProperty(this, propertyName, propertyType);
+		return new ControlProperty(this);
 	}
-	
+
+	public ControlProperty getIntProperty(int defaultValue) {
+		if(getPropertyType() != PropertyType.INT){
+			throw new IllegalStateException("can't get int property when property type isn't int");
+		}
+		return new ControlProperty(this, defaultValue);
+	}
+
+	public ControlProperty getFloatProperty(double defaultValue) {
+		if(getPropertyType()!= PropertyType.FLOAT){
+			throw new IllegalStateException("can't get float property when property type isn't float");
+		}
+		return new ControlProperty(this, defaultValue);
+	}
+
+	public ControlProperty getBooleanProperty(boolean defaultValue) {
+		if(getPropertyType() != PropertyType.BOOLEAN){
+			throw new IllegalStateException("can't get boolean property when property type isn't boolean");
+		}
+		return new ControlProperty(this, defaultValue);
+	}
+
+	public ControlProperty getProperty(SerializableValue defaultValue) {
+		return new ControlProperty(this, defaultValue);
+	}
+
+	public ControlProperty getPropertyFromOption(int optionNum) {
+		if (getOptions() == null || optionNum < 0 || optionNum > getOptions().length) {
+			throw new IllegalStateException("options and optionNum are bad. options=" + (getOptions() != null ? Arrays.toString(getOptions()) : "null") + " optionNum=" + optionNum);
+		}
+		return new ControlProperty(this, new SVString(getOptions()[optionNum].value));
+	}
+
 	/** Get all lookup enums where their property type is equal to find */
 	public static ControlPropertyLookup[] getAllOfTypeControlProperties(PropertyType find) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);

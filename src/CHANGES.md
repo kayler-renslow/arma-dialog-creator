@@ -1,8 +1,8 @@
 **Added:**
-* export dialog
+* none
 
 **Changed:**
-* none
+* restructured how the display's save idd, enableSimulation, etc
 
 **Fixed:**
-* none
+* escaping strings when saving to xml

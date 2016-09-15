@@ -245,7 +245,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_LOOKUP_ID_F, lookupIdStr, controlClassName)));
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
-			SerializableValue value = getValue(lookup.propertyType, controlPropertyElement);
+			SerializableValue value = getValue(lookup.getPropertyType(), controlPropertyElement);
 			if (value == null) {
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
@@ -342,7 +342,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 			}
 			if (!matched) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_PROPERTY_F, toMatchLookup.propertyName, controlClassName)));
+				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_PROPERTY_F, toMatchLookup.getPropertyName(), controlClassName)));
 				return false;
 			}
 		}

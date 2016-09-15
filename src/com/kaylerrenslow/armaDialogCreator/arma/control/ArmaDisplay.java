@@ -20,9 +20,14 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
+import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
+import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
@@ -33,15 +38,22 @@ import java.util.Iterator;
 public class ArmaDisplay implements Display<ArmaControl> {
 	
 	private int idd;
+	private DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
 	private boolean movingEnable, enableSimulation;
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 	private final DataContext userdata = new DataContext();
 	@SuppressWarnings("unchecked")
 	private final ControlList<ArmaControl>[] controls = new ControlList[]{getBackgroundControls(), getControls()};
-	
+
+	private final ObservableList<DisplayProperty> displayProperties = FXCollections.observableArrayList();
+
 	public ArmaDisplay(int idd) {
 		this.idd = idd;
+
+		displayProperties.add(iddProperty);
+		iddProperty.setValue(idd);
+
 		final ArmaDisplay display = this;
 		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
 			@Override
@@ -73,6 +85,7 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	
 	public void setIdd(int idd) {
 		this.idd = idd;
+		iddProperty.setValue(idd);
 	}
 	
 	/** Return true if the display/dialog is allowed to move. If it isn't, return false. */
@@ -92,7 +105,12 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	public void setEnableSimulation(boolean enableSimulation) {
 		this.enableSimulation = enableSimulation;
 	}
-	
+
+	@NotNull
+	public ObservableList<DisplayProperty> getDisplayProperties() {
+		return displayProperties;
+	}
+
 	@Override
 	public ControlList<ArmaControl> getBackgroundControls() {
 		return bgControlsList;

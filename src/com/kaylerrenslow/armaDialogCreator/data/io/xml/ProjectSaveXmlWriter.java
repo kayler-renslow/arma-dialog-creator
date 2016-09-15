@@ -57,10 +57,10 @@ public class ProjectSaveXmlWriter {
 		FileOutputStream fos = new FileOutputStream(projectSaveXml);
 		
 		fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
-		fos.write(String.format("<project name='%s' save-version='%d'>", project.getProjectName(), SAVE_VERSION).getBytes());
+		fos.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION).getBytes());
 		
 		fos.write("<project-description>".getBytes());
-		fos.write((project.getProjectDescription() != null ? project.getProjectDescription() : "").getBytes());
+		fos.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : "").getBytes());
 		fos.write("</project-description>".getBytes());
 
 		writeResources(fos, project.getResourceRegistry());
@@ -108,7 +108,7 @@ public class ProjectSaveXmlWriter {
 	}
 	
 	private void writeFolder(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
-		fos.write(String.format("<folder name='%s'>", folder.getText()).getBytes());
+		fos.write(String.format("<folder name='%s'>", esc(folder.getText())).getBytes());
 		writeControls(fos, treeNode);
 		fos.write("</folder>".getBytes());
 	}
@@ -134,7 +134,7 @@ public class ProjectSaveXmlWriter {
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
 			fos.write(String.format("<control-property lookup-id='%d' macro-key='%s'>",
-					cprop.getPropertyLookup().propertyId,
+					cprop.getPropertyLookup().getPropertyId(),
 					cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
 					).getBytes()
 			);
@@ -157,7 +157,7 @@ public class ProjectSaveXmlWriter {
 		
 		MacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
-			fos.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, macro.getComment()).getBytes());
+			fos.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())).getBytes());
 			writeValue(fos, macro.getValue());
 			fos.write("</macro>".getBytes());
 		}
@@ -168,8 +168,12 @@ public class ProjectSaveXmlWriter {
 	private void writeValue(@NotNull FileOutputStream fos, @NotNull SerializableValue svalue) throws IOException {
 		for (String value : svalue.getAsStringArray()) {
 			fos.write("<value>".getBytes());
-			fos.write(value.getBytes());
+			fos.write(esc(value).getBytes());
 			fos.write("</value>".getBytes());
 		}
+	}
+
+	private static String esc(String value){
+		return value.replaceAll("'", "&#39;").replaceAll("<","&lt;").replaceAll(">", "&gt;");
 	}
 }

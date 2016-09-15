@@ -314,10 +314,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 	/** Get node that holds the controls to input data. */
 	private ControlPropertyInput getPropertyInputNode(ControlProperty controlProperty) {
 		ControlPropertyLookup lookup = controlProperty.getPropertyLookup();
-		if (lookup.options != null && lookup.options.length > 0) {
+		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
 			return new ControlPropertyInputOption(control, controlProperty);
 		}
-		PropertyType propertyType = lookup.propertyType;
+		PropertyType propertyType = lookup.getPropertyType();
 		switch (propertyType) {
 			case INT:
 				return new ControlPropertyInputFieldInteger(control, controlProperty);
@@ -355,8 +355,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 	
 	private static Tooltip getTooltip(ControlPropertyLookup lookup) {
 		String tooltip = "";
-		for (int i = 0; i < lookup.about.length; i++) {
-			tooltip += lookup.about[i] + "\n";
+		for (int i = 0; i < lookup.getAbout().length; i++) {
+			tooltip += lookup.getAbout()[i] + "\n";
 		}
 		Tooltip tp = new Tooltip(tooltip);
 		tp.setFont(TOOLTIP_FONT);
@@ -441,11 +441,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
 			boolean validData = controlProperty.getValue() != null;
-			if (lookup.options == null) {
+			if (lookup.getOptions() == null) {
 				throw new IllegalStateException("options shouldn't be null");
 			}
-			radioButtons = new ArrayList<>(lookup.options.length);
-			for (ControlPropertyOption option : lookup.options) {
+			radioButtons = new ArrayList<>(lookup.getOptions().length);
+			for (ControlPropertyOption option : lookup.getOptions()) {
 				if (option == null) {
 					throw new IllegalStateException("option shouldn't be null");
 				}

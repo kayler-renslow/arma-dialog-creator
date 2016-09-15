@@ -32,6 +32,7 @@ public class ProjectExportConfiguration {
 		this.placeAdcNotice = placeAdcNotice;
 	}
 
+
 	public boolean shouldPlaceAdcNotice() {
 		return placeAdcNotice;
 	}
