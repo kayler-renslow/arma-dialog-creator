@@ -52,5 +52,9 @@ public interface FXControlLang {
 			}
 		}
 	}
+
+	interface FileChooserPane {
+		String LOCATE = "Locate";
+	}
 }
 

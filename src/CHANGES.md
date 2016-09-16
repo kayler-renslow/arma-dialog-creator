@@ -1,8 +1,8 @@
 **Added:**
-* export preview tab implementation to export dialog
+* added help button to export dialog
 
 **Changed:**
-* all display properties are now saved and loaded properly
+* added more features to export dialog
 
 **Fixed:**
 * none

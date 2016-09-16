@@ -176,7 +176,11 @@ public interface Lang {
 			}
 
 			interface ExportParameters{
-
+				String EXPORT_MACROS_TO_FILE = "Export Macros to Own File";
+				String EXPORT_MACROS_TO_FILE_TOOLTIP = "Export all Macros to their own file instead of placing them in the display/dialog's header file.";
+				String EXPORT_DIRECTORY = "Export Directory:";
+				String EXPORT_DIRECTORY_TOOLTIP = "Choose the directory to export all project contents to.";
+				String LOCATE_EXPORT_DIRECTORY = "Locate the Export Directory";
 			}
 
 			interface ExportPreview{

@@ -14,16 +14,15 @@ import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.FileChooserPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -38,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 
 /**
  Created by Kayler on 05/20/2016.
@@ -47,7 +47,15 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		ExportProjectConfigurationDialog dialog = new ExportProjectConfigurationDialog(ApplicationDataManager.getInstance().getCurrentProject());
 		dialog.show();
-		System.out.println("FileExportAction.handle dialog.getConfiguration()=" + dialog.getConfiguration());
+		if (dialog.getConfiguration() == null || true) {
+			System.out.println("FileExportAction.handle uncomment || true when ready to actually export to file");
+			return;
+		}
+		try {
+			ProjectExporter.export(dialog.getConfiguration());
+		} catch (IOException e) {
+			ExceptionHandler.error(e);
+		}
 	}
 
 	private static class ExportProjectConfigurationDialog extends StageDialog<VBox> {
@@ -64,20 +72,34 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			public static final DisplayType DEFAULT = DIALOG;
 
 		}
+
 		private boolean cancel = false;
 		private DisplayType selectedDisplayType = DisplayType.DEFAULT;
 
 		private final Insets padding10 = new Insets(10);
 		private final ProjectExportConfiguration configuration;
+		private final Project project;
+
+		/*display properties things*/
+		/** observer for the exporting display's class name */
+		private ValueObserver<String> classNameObserver;
+		private static final String DEFAULT_CLASS_NAME = "MyDialog";
+
+
+		/*export parameter things*/
+		/** the observer for the directory of where to export the project/display */
+		private ValueObserver<File> exportDirectoryObserver;
+		/** observer to detect when the macros are being exported to their own file, or being placed in the display's header file */
+		private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
+
+		/*export preview things*/
+		/** group that should be notified when the export preview should be updated */
 		private final UpdateListenerGroup<Object> updatePreviewGroup = new UpdateListenerGroup<>();
 
-		private final ValueObserver<File> exportDirectoryObserver = new ValueObserver<>(ApplicationDataManager.getInstance().getAppSaveDataDirectory());
-		private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
-		private ValueObserver<String> classNameObserver;
-
 		public ExportProjectConfigurationDialog(@NotNull Project project) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, false);
-			configuration = new ProjectExportConfiguration("", exportDirectoryObserver.getValue(), project, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
+			this.project = project;
+			configuration = new ProjectExportConfiguration("", project.getProjectSaveDirectory(), project, false, exportMacrosToFileObserver.getValue());
 			setStageSize(720, 480);
 			myRootElement.setPadding(new Insets(10d));
 			final Label lblTitle = new Label(Lang.Popups.ExportProject.TITLE_LABEL);
@@ -100,22 +122,14 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			initTabExportParameters(tabExportParameters);
 			initTabExportPreview(tabExportPreview);
 
-			classNameObserver.addValueListener(new ValueListener<String>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					updatePreviewGroup.update("");
-				}
-			});
-			exportMacrosToFileObserver.addValueListener(new ValueListener<Boolean>() {
-				@Override
-				public void valueUpdated(ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-					updatePreviewGroup.update("");
-				}
-			});
-
-			updatePreviewGroup.update("");
+			classNameObserver.updateValue(DEFAULT_CLASS_NAME);
 		}
 
+		/*
+		*
+		* TAB INIT: Display Properties
+		*
+		*/
 		private void initTabDisplayProperties(Tab tabDisplayProperties) {
 			final VBox tabRoot = new VBox(10);
 			tabRoot.setPadding(padding10);
@@ -128,6 +142,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 					configuration.setExportClassName(newValue);
+					updateExportPreview();
 				}
 			});
 			HBox.setHgrow(inputFieldClassName, Priority.ALWAYS);
@@ -157,10 +172,52 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.getChildren().add(hboxDisplayType);
 		}
 
+		/*
+		*
+		* TAB INIT: Export Parameters
+		*
+		*/
 		private void initTabExportParameters(Tab tabExportParameters) {
+			final VBox tabRoot = new VBox(10);
+			tabRoot.setPadding(padding10);
+			tabExportParameters.setContent(tabRoot);
 
+			/*set export directory*/
+			final Label lblExportDirectory = new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_DIRECTORY);
+			final FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
+					Lang.Popups.ExportProject.ExportParameters.LOCATE_EXPORT_DIRECTORY, configuration.getExportLocation());
+			Tooltip.install(chooserPane, new Tooltip(Lang.Popups.ExportProject.ExportParameters.EXPORT_DIRECTORY_TOOLTIP));
+			exportDirectoryObserver = chooserPane.getChosenFileObserver();
+			chooserPane.setChosenFile(configuration.getExportLocation());
+			exportDirectoryObserver.addValueListener(new ValueListener<File>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
+					configuration.setExportLocation(newValue);
+				}
+			});
+			tabRoot.getChildren().add(new VBox(5, lblExportDirectory, chooserPane));
+
+
+			/*export macros to own file*/
+			final CheckBox checkBoxExportMacrosToFile = new CheckBox(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE);
+			checkBoxExportMacrosToFile.setTooltip(new Tooltip(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE_TOOLTIP));
+			checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					configuration.setExportMacrosToFile(selected);
+					exportMacrosToFileObserver.updateValue(selected);
+					updateExportPreview();
+				}
+			});
+
+			tabRoot.getChildren().add(checkBoxExportMacrosToFile);
 		}
 
+		/*
+		*
+		* TAB INIT: Export Preview
+		*
+		*/
 		private void initTabExportPreview(Tab tabExportPreview) {
 			final StackPane tabRoot = new StackPane();
 			tabExportPreview.setContent(tabRoot);
@@ -170,7 +227,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.getChildren().add(splitPane);
 
 			final VBox vboxDisplayPreview = new VBox(5);
-			final Label lblDisplayExportPreview = new Label(String.format(Lang.Popups.ExportProject.DISPLAY_FILE_F, ""));
+			final Label lblDisplayExportPreview = new Label("");
 			final TextArea textAreaDisplay = new TextArea();
 			textAreaDisplay.setEditable(false);
 			vboxDisplayPreview.getChildren().add(textAreaDisplay);
@@ -178,9 +235,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			VBox.setVgrow(textAreaDisplay, Priority.ALWAYS);
 
 			final VBox vboxMacrosPreview = new VBox(5);
-			final Label lblMacrosExportPreview = new Label(String.format(Lang.Popups.ExportProject.MACROS_FILE, ""));
+			final Label lblMacrosExportPreview = new Label("");
 			final TextArea textAreaMacros = new TextArea();
 			textAreaMacros.setEditable(false);
+
 			vboxMacrosPreview.getChildren().add(textAreaMacros);
 			vboxMacrosPreview.getChildren().add(lblMacrosExportPreview);
 			VBox.setVgrow(textAreaMacros, Priority.ALWAYS);
@@ -196,10 +254,13 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			exportMacrosToFileObserver.addValueListener(new ValueListener<Boolean>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean export) {
-					vboxMacrosPreview.setDisable(!export);
+					if (export) {
+						splitPane.getItems().add(vboxMacrosPreview);
+					} else {
+						splitPane.getItems().remove(vboxMacrosPreview);
+					}
 				}
 			});
-
 
 			updatePreviewGroup.addListener(new UpdateListener<Object>() {
 				@Override
@@ -224,13 +285,24 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			});
 
 			splitPane.getItems().add(vboxDisplayPreview);
-			splitPane.getItems().add(vboxMacrosPreview);
+			if (configuration.shouldExportMacrosToFile()) {
+				splitPane.getItems().add(vboxMacrosPreview);
+			}
+		}
+
+		private void updateExportPreview() {
+			updatePreviewGroup.update("");
 		}
 
 		@Override
 		protected void cancel() {
 			super.cancel();
 			this.cancel = true;
+		}
+
+		@Override
+		protected void help() {
+			BrowserUtil.browse(HelpUrls.EXPORT);
 		}
 
 		@Nullable

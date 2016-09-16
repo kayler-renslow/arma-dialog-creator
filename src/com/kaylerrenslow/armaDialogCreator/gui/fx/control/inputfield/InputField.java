@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
 import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -163,6 +164,13 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 
 		button.setMaxWidth(Double.MAX_VALUE);
 		getChildren().add(button);
+
+		getValueObserver().addValueListener(new ValueListener<V>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
+				setValue(newValue);
+			}
+		});
 	}
 
 	/** If dataSubmitted==true, the submit button will turn to it's default color. if dataSubmitted==false, will turn to green to indicate changes need to be submitted */

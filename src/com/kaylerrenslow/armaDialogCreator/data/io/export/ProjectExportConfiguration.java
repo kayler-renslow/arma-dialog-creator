@@ -24,14 +24,19 @@ public class ProjectExportConfiguration {
 	private File exportLocation;
 	private Project project;
 	private boolean placeAdcNotice;
+	private boolean exportMacrosToFile;
 
-	public ProjectExportConfiguration(@NotNull String exportClassName, @NotNull File exportLocation, @NotNull Project project, boolean placeAdcNotice) {
+	public ProjectExportConfiguration(@NotNull String exportClassName, @NotNull File exportLocation, @NotNull Project project, boolean placeAdcNotice, boolean exportMacrosToFile) {
 		this.exportClassName = exportClassName;
 		this.exportLocation = exportLocation;
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
+		this.exportMacrosToFile = exportMacrosToFile;
 	}
 
+	public boolean shouldExportMacrosToFile() {
+		return exportMacrosToFile;
+	}
 
 	public boolean shouldPlaceAdcNotice() {
 		return placeAdcNotice;
@@ -66,5 +71,9 @@ public class ProjectExportConfiguration {
 
 	public void setPlaceAdcNotice(boolean placeAdcNotice) {
 		this.placeAdcNotice = placeAdcNotice;
+	}
+
+	public void setExportMacrosToFile(boolean exportMacrosToFile) {
+		this.exportMacrosToFile = exportMacrosToFile;
 	}
 }

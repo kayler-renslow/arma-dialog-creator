@@ -44,33 +44,30 @@ public class ProjectExporter {
 		this.project = configuration.getProject();
 	}
 
-	public static void export(@NotNull ProjectExportConfiguration configuration, @NotNull String displayHeaderFileName, @Nullable File macrosExportDirectory) throws IOException {
-		new ProjectExporter(configuration).export(displayHeaderFileName, macrosExportDirectory);
+	public static void export(@NotNull ProjectExportConfiguration configuration) throws IOException {
+		new ProjectExporter(configuration).export();
 	}
 
 	public static void export(@NotNull ProjectExportConfiguration configuration, @NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
 		new ProjectExporter(configuration).export(displayOutputStream, macrosOutputStream);
 	}
 
-	public void export(@NotNull String displayHeaderFileName, @Nullable File macrosExportDirectory) throws IOException {
+	public void export() throws IOException {
 		if (!configuration.getExportLocation().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation is not a directory");
 		}
-		if (macrosExportDirectory != null && !macrosExportDirectory.isDirectory()) {
-			throw new IllegalArgumentException("macrosExportDirectory is not a directory");
-		}
-		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/adc export " + displayHeaderFileName.substring(0, displayHeaderFileName.indexOf('.')) + "/";
+		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/adc export " + configuration.getExportClassName().replaceAll("$","") + "/";
 		final File exportDirectory = new File(exportDirectoryPath);
 
 		exportDirectory.mkdir();
 
-		exportDisplayFile = new File(exportDirectoryPath + displayHeaderFileName);
+		exportDisplayFile = new File(exportDirectoryPath + configuration.getExportClassName());
 		exportDisplayFile.createNewFile();
 		final FileOutputStream fosDisplay = getFos(exportDisplayFile);
 
 		FileOutputStream fosMacros = null;
-		if (macrosExportDirectory != null) {
-			this.macrosExportFile = new File(getMacrosExportFilePath(macrosExportDirectory, configuration.getExportClassName()));
+		if (configuration.shouldExportMacrosToFile()) {
+			this.macrosExportFile = new File(getMacrosExportFilePath(exportDirectory, configuration.getExportClassName()));
 			macrosExportFile.createNewFile();
 			fosMacros = getFos(macrosExportFile);
 		}
@@ -84,7 +81,7 @@ public class ProjectExporter {
 	}
 
 	public void export(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
-		if (macrosOutputStream == null) {
+		if (macrosOutputStream == null || !configuration.shouldExportMacrosToFile()) {
 			exportMacros(displayOutputStream); //save the macros inside the display header file
 		} else {
 			exportMacros(macrosOutputStream);
