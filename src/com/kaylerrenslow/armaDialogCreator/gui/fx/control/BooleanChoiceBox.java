@@ -8,30 +8,45 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.control;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.FXCollections;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
- A {@link DisplayProperty} is similar to a {@link ControlProperty}. However, {@link DisplayProperty} is used to separate {@link ControlPropertyLookupConstant}
- instances such that {@link DisplayProperty}'s lookups are not from {@link ControlPropertyLookup}
- Created on 09/15/2016.
+ Created by Kayler on 09/16/2016.
  */
-public class DisplayProperty extends ControlProperty{
-	public DisplayProperty(DisplayPropertyLookup propertyLookup, @Nullable SerializableValue value) {
-		super(propertyLookup, value);
+public class BooleanChoiceBox extends StackPane{
+	private final ValueObserver<Boolean> valueObserver = new ValueObserver<>(null);
+	private final ChoiceBox<Boolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(true, false));
+
+	public BooleanChoiceBox() {
+		valueObserver.addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
+				choiceBox.setValue(newValue);
+			}
+		});
+
+		this.getChildren().add(choiceBox);
 	}
 
-	public DisplayProperty(DisplayPropertyLookup propertyLookup) {
-		super(propertyLookup);
+	public void setValue(@Nullable Boolean value){
+		choiceBox.setValue(value);
+	}
+
+	@Nullable
+	public Boolean getValue(){
+		return choiceBox.getValue();
 	}
 
 	@NotNull
-	@Override
-	public DisplayPropertyLookup getPropertyLookup() {
-		return (DisplayPropertyLookup) super.getPropertyLookup();
+	public ValueObserver<Boolean> getValueObserver() {
+		return valueObserver;
 	}
 }

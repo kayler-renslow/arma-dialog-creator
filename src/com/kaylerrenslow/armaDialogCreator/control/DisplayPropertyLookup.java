@@ -37,7 +37,10 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 
 	DisplayPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable ControlPropertyOption... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
-			throw new IllegalStateException("display property id for " + name() + " is not unique");
+			throw new IllegalArgumentException("display propertyId for " + name() + " is not unique");
+		}
+		if (propertyId < 0) {
+			throw new IllegalArgumentException("propertyId for " + name() + " can't be <0");
 		}
 		PropertiesLookupDataVerifier.usedIds.add(propertyId);
 		this.propertyId = propertyId;
@@ -83,7 +86,7 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 		return new DisplayProperty(this);
 	}
 
-	/**@throws IllegalArgumentException when id couldn't be matched*/
+	/** @throws IllegalArgumentException when id couldn't be matched */
 	@NotNull
 	public static DisplayPropertyLookup findById(int id) {
 		for (DisplayPropertyLookup lookup : values()) {
@@ -95,21 +98,21 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 	}
 
 	public DisplayProperty getIntProperty(int defaultValue) {
-		if(getPropertyType() != PropertyType.INT){
+		if (getPropertyType() != PropertyType.INT) {
 			throw new IllegalStateException("can't get int property when property type isn't int");
 		}
 		return new DisplayProperty(this, new SVInteger(defaultValue));
 	}
 
 	public DisplayProperty getFloatProperty(double defaultValue) {
-		if(getPropertyType()!= PropertyType.FLOAT){
+		if (getPropertyType() != PropertyType.FLOAT) {
 			throw new IllegalStateException("can't get float property when property type isn't float");
 		}
 		return new DisplayProperty(this, new SVDouble(defaultValue));
 	}
 
 	public DisplayProperty getBooleanProperty(boolean defaultValue) {
-		if(getPropertyType() != PropertyType.BOOLEAN){
+		if (getPropertyType() != PropertyType.BOOLEAN) {
 			throw new IllegalStateException("can't get boolean property when property type isn't boolean");
 		}
 		return new DisplayProperty(this, SVBoolean.get(defaultValue));

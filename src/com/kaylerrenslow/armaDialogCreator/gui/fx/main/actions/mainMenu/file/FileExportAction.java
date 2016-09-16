@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
+import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
@@ -17,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.FileChooserPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -47,8 +49,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		ExportProjectConfigurationDialog dialog = new ExportProjectConfigurationDialog(ApplicationDataManager.getInstance().getCurrentProject());
 		dialog.show();
-		if (dialog.getConfiguration() == null || true) {
-			System.out.println("FileExportAction.handle uncomment || true when ready to actually export to file");
+		if (dialog.getConfiguration() == null) {
 			return;
 		}
 		try {
@@ -78,7 +79,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 		private final Insets padding10 = new Insets(10);
 		private final ProjectExportConfiguration configuration;
-		private final Project project;
 
 		/*display properties things*/
 		/** observer for the exporting display's class name */
@@ -98,10 +98,11 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 		public ExportProjectConfigurationDialog(@NotNull Project project) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
-			this.project = project;
+			btnOk.setText(Lang.Popups.ExportProject.OK_BUTTON_EXPORT);
 			configuration = new ProjectExportConfiguration("", project.getProjectSaveDirectory(), project, false, exportMacrosToFileObserver.getValue());
 			setStageSize(720, 480);
 			myRootElement.setPadding(new Insets(10d));
+
 			final Label lblTitle = new Label(Lang.Popups.ExportProject.TITLE_LABEL);
 			lblTitle.setFont(Font.font(17));
 			myRootElement.getChildren().add(lblTitle);
@@ -135,6 +136,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.setPadding(padding10);
 			tabDisplayProperties.setContent(tabRoot);
 
+			/*class name*/
 			final Label lblClassName = new Label("");
 			final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker());
 			classNameObserver = inputFieldClassName.getValueObserver();
@@ -149,6 +151,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			final HBox hboxClassName = new HBox(5, lblClassName, inputFieldClassName);
 			tabRoot.getChildren().add(hboxClassName);
 
+			/*display type*/
 			final Label lblDisplayType = new Label(Lang.Popups.ExportProject.DisplayProperties.DISPLAY_TYPE);
 			final ToggleGroup toggleGroup = new ToggleGroup();
 			final FlowPane flowPaneDisplayType = new FlowPane(Orientation.HORIZONTAL, 5, 10);
@@ -170,6 +173,18 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				flowPaneDisplayType.getChildren().add(radioButton);
 			}
 			tabRoot.getChildren().add(hboxDisplayType);
+
+			/*display properties*/
+			final VBox vboxDisplayProperties = new VBox(5);
+			for (DisplayProperty displayProperty : configuration.getProject().getEditingDisplay().getDisplayProperties()) {
+				final ValueEditor editor = ValueEditor.getEditor(displayProperty.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
+				//todo add value listener
+				if(editor.displayFullWidth()){
+					HBox.setHgrow(editor.getRootNode(), Priority.ALWAYS);
+				}
+
+				vboxDisplayProperties.getChildren().add(new HBox(5, new Label(displayProperty.getName() + ":")));
+			}
 		}
 
 		/*
@@ -178,7 +193,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		*
 		*/
 		private void initTabExportParameters(Tab tabExportParameters) {
-			final VBox tabRoot = new VBox(10);
+			final VBox tabRoot = new VBox(20);
 			tabRoot.setPadding(padding10);
 			tabExportParameters.setContent(tabRoot);
 
@@ -209,7 +224,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 					updateExportPreview();
 				}
 			});
-
 			tabRoot.getChildren().add(checkBoxExportMacrosToFile);
 		}
 
@@ -230,8 +244,8 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			final Label lblDisplayExportPreview = new Label("");
 			final TextArea textAreaDisplay = new TextArea();
 			textAreaDisplay.setEditable(false);
-			vboxDisplayPreview.getChildren().add(textAreaDisplay);
 			vboxDisplayPreview.getChildren().add(lblDisplayExportPreview);
+			vboxDisplayPreview.getChildren().add(textAreaDisplay);
 			VBox.setVgrow(textAreaDisplay, Priority.ALWAYS);
 
 			final VBox vboxMacrosPreview = new VBox(5);
@@ -239,15 +253,15 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			final TextArea textAreaMacros = new TextArea();
 			textAreaMacros.setEditable(false);
 
-			vboxMacrosPreview.getChildren().add(textAreaMacros);
 			vboxMacrosPreview.getChildren().add(lblMacrosExportPreview);
+			vboxMacrosPreview.getChildren().add(textAreaMacros);
 			VBox.setVgrow(textAreaMacros, Priority.ALWAYS);
 
 			classNameObserver.addValueListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					lblDisplayExportPreview.setText(String.format(Lang.Popups.ExportProject.DISPLAY_FILE_F, newValue));
-					lblMacrosExportPreview.setText(String.format(Lang.Popups.ExportProject.MACROS_FILE, newValue));
+					lblDisplayExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
+					lblMacrosExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
 				}
 			});
 

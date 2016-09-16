@@ -36,7 +36,6 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -535,8 +534,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
-		private boolean updateFromProperty = false;
-		private boolean updateFromSelection = false;
 
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
@@ -550,34 +547,22 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlProperty = controlProperty;
 			ControlStyleGroup group = (ControlStyleGroup) controlProperty.getValue();
 			if (group != null) {
-				updateFromSelection = true;
 				menuButton.setSelected(group.getValues());
-				updateFromSelection = false;
 			}
-			menuButton.getSelectedItems().addListener(new ListChangeListener<ControlStyle>() {
+			this.addValueListener(new ValueListener<ControlStyleGroup>() {
 				@Override
-				public void onChanged(Change<? extends ControlStyle> c) {
-					if (updateFromProperty) { //prevent stack overflow
-						return;
-					}
-					updateFromSelection = true;
-					controlProperty.setValue(getValue());
-					updateFromSelection = false;
+				public void valueUpdated(@NotNull ValueObserver<ControlStyleGroup> observer, ControlStyleGroup oldValue, ControlStyleGroup newValue) {
+					controlProperty.setValue(newValue);
 				}
 			});
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-					if (updateFromSelection) {
-						return;
-					}
-					updateFromProperty = true; //prevent stack overflow
 					if (newValue == null) {
 						menuButton.clearSelection();
 					} else {
 						setValue((ControlStyleGroup) newValue);
 					}
-					updateFromProperty = false; //prevent stack overflow
 				}
 			});
 		}

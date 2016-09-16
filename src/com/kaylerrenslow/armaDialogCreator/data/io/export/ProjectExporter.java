@@ -56,18 +56,18 @@ public class ProjectExporter {
 		if (!configuration.getExportLocation().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation is not a directory");
 		}
-		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/adc export " + configuration.getExportClassName().replaceAll("$","") + "/";
+		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/adc export " + configuration.getExportClassName().replaceAll("$", "") + "/";
 		final File exportDirectory = new File(exportDirectoryPath);
 
 		exportDirectory.mkdir();
 
-		exportDisplayFile = new File(exportDirectoryPath + configuration.getExportClassName());
+		exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(configuration));
 		exportDisplayFile.createNewFile();
 		final FileOutputStream fosDisplay = getFos(exportDisplayFile);
 
 		FileOutputStream fosMacros = null;
 		if (configuration.shouldExportMacrosToFile()) {
-			this.macrosExportFile = new File(getMacrosExportFilePath(exportDirectory, configuration.getExportClassName()));
+			this.macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(configuration));
 			macrosExportFile.createNewFile();
 			fosMacros = getFos(macrosExportFile);
 		}
@@ -106,7 +106,7 @@ public class ProjectExporter {
 		}
 
 		for (Macro macro : project.getMacroRegistry().getMacros()) {
-			if (macro.getComment().length() != 0) {
+			if (macro.getComment() != null && macro.getComment().length() != 0) {
 				writelnComment(os, macro.getComment());
 			}
 			writeln(os, "#define " + macro.getKey() + " " + getExportValueString(macro.getValue(), macro.getPropertyType()));
@@ -116,8 +116,9 @@ public class ProjectExporter {
 	}
 
 	private void exportDisplay(@NotNull OutputStream os) throws IOException {
-		if (macrosExportFile != null) {
-			writeln(os, "#include </*TODO !!IMPORTANT!!: Set the location of the macros file that holds the display's macros*/>");
+		if (configuration.shouldExportMacrosToFile()) {
+			writeln(os, "#include \"" + getMacrosFileName(configuration) + "\"");
+			writeln(os, "");
 		}
 		if (project.getProjectDescription() != null && project.getProjectDescription().length() > 0) {
 			writelnComment(os, project.getProjectDescription());
@@ -210,6 +211,16 @@ public class ProjectExporter {
 		return s;
 	}
 
+	@NotNull
+	public static String getMacrosFileName(@NotNull ProjectExportConfiguration configuration) {
+		return configuration.getExportClassName() + "_Macros.hpp";
+	}
+
+	@NotNull
+	public static String getDisplayFileName(@NotNull ProjectExportConfiguration configuration) {
+		return configuration.getExportClassName() + ".hpp";
+	}
+
 	public static String getExportValueString(@NotNull SerializableValue value, @NotNull PropertyType type) {
 		String[] arr = value.getAsStringArray();
 		if (arr.length == 1) {
@@ -250,9 +261,5 @@ public class ProjectExporter {
 		} catch (FileNotFoundException e) {
 			throw new IllegalArgumentException(e);
 		}
-	}
-
-	private static String getMacrosExportFilePath(@NotNull File macrosExportDirectory, @NotNull String displayClassName) {
-		return macrosExportDirectory.getPath() + "/" + displayClassName + "_Macros.h";
 	}
 }

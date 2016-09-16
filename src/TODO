@@ -30,9 +30,13 @@ General:
 >for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
 >for exporting display, write enableSimulation and other properties (rename ControlProperty class to ControlClassProperty?)
 
+>for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
+    -also, we need to save display's class name and make sure that is put inside the export dialog
+
 Bugs:
 -----------------------------------
 >ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
 >select many things in tree view and drag into folder
 >moving control group in display throws exception
 >square scaling: doesn't scale up and back down with same snap amount
+>hiding controls when control group is in editor won't hide them until moving mouse into canvas (use the "Show" button above the "Controls" tree view)

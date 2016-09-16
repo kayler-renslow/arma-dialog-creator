@@ -165,8 +165,7 @@ public interface Lang {
 			String EXPORT_PARAMETERS = "Export Parameters";
 			String EXPORT_PREVIEW = "Export Preview";
 
-			String DISPLAY_FILE_F = "%s.h";
-			String MACROS_FILE = "%s_Macros.h";
+			String OK_BUTTON_EXPORT = "Export";
 
 			interface DisplayProperties{
 				String CLASS_NAME_F = "%s's Class Name:";
@@ -176,7 +175,7 @@ public interface Lang {
 			}
 
 			interface ExportParameters{
-				String EXPORT_MACROS_TO_FILE = "Export Macros to Own File";
+				String EXPORT_MACROS_TO_FILE = "Export Macros to Separate File";
 				String EXPORT_MACROS_TO_FILE_TOOLTIP = "Export all Macros to their own file instead of placing them in the display/dialog's header file.";
 				String EXPORT_DIRECTORY = "Export Directory:";
 				String EXPORT_DIRECTORY_TOOLTIP = "Choose the directory to export all project contents to.";

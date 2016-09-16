@@ -27,6 +27,7 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,11 +40,7 @@ import java.util.Iterator;
 public class ArmaDisplay implements Display<ArmaControl> {
 	
 	private int idd = -1;
-	private boolean movingEnable = true;
-	private boolean enableSimulation = true;
 	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
-	private final DisplayProperty movingEnableProperty = DisplayPropertyLookup.MOVING_ENABLE.getBooleanProperty(movingEnable);
-	private final DisplayProperty enableSimulationProperty = DisplayPropertyLookup.ENABLE_SIMULATION.getBooleanProperty(enableSimulation);
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 	private final DataContext userdata = new DataContext();
@@ -54,8 +51,15 @@ public class ArmaDisplay implements Display<ArmaControl> {
 
 	public ArmaDisplay() {
 		displayProperties.add(iddProperty);
-		displayProperties.add(enableSimulationProperty);
-		displayProperties.add(movingEnableProperty);
+
+		displayProperties.addListener(new SetChangeListener<DisplayProperty>() {
+			@Override
+			public void onChanged(Change<? extends DisplayProperty> change) {
+				if(change.wasRemoved() && change.getElementAdded().getPropertyLookup() == DisplayPropertyLookup.IDD){
+					throw new IllegalStateException("can't remove idd from display");
+				}
+			}
+		});
 
 		final ArmaDisplay display = this;
 		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
@@ -108,32 +112,14 @@ public class ArmaDisplay implements Display<ArmaControl> {
 
 	/** Return true if the display/dialog is allowed to move. If it isn't, return false. */
 	public boolean movingEnabled() {
-		return movingEnable;
-	}
-	
-	public void setMovingEnable(boolean movingEnable) {
-		this.movingEnable = movingEnable;
-		movingEnableProperty.setValue(movingEnable);
-	}
-
-	@NotNull
-	public DisplayProperty getMovingEnableProperty() {
-		return movingEnableProperty;
+		DisplayProperty property = getProperty(DisplayPropertyLookup.MOVING_ENABLE);
+		return property != null && property.getBooleanValue();
 	}
 
 	/** Return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
 	public boolean simulationEnabled() {
-		return enableSimulation;
-	}
-
-	public void setEnableSimulation(boolean enableSimulation) {
-		this.enableSimulation = enableSimulation;
-		enableSimulationProperty.setValue(enableSimulation);
-	}
-
-	@NotNull
-	public DisplayProperty getEnableSimulationProperty() {
-		return enableSimulationProperty;
+		DisplayProperty property = getProperty(DisplayPropertyLookup.ENABLE_SIMULATION);
+		return property != null && property.getBooleanValue();
 	}
 
 	@NotNull

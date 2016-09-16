@@ -17,6 +17,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
@@ -35,7 +37,8 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ValueEditors.ControlStyleGroupEditor.SELECT_STYLES, null);
 	private final TextField textField = new TextField();
 	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
-	
+	protected final ValueObserver<ControlStyleGroup> valueObserver = new ValueObserver<>(null);
+
 	public ControlStyleValueEditor() {
 		super(5);
 		getChildren().add(menuButton);
@@ -53,6 +56,9 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 					s += selected.get(i).styleId + (i != selected.size() - 1 ? ControlStyleGroup.DEFAULT_DELIMITER : "");
 				}
 				textField.setText(s);
+				ControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? null :
+						new ControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
+				valueObserver.updateValue(group);
 			}
 		});
 		HBox.setHgrow(textField, Priority.ALWAYS);
@@ -67,19 +73,23 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	@Nullable
 	@Override
 	public ControlStyleGroup getValue() {
-		return menuButton.getSelectedItems().size() == 0 ? null : new ControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
+		return valueObserver.getValue();
 	}
-	
+
 	@Override
 	public void setValue(ControlStyleGroup val) {
-		menuButton.setSelected(val.getValues());
+		if (val == null) {
+			menuButton.clearSelection();
+		} else {
+			menuButton.setSelected(val.getValues());
+		}
 	}
-	
+
 	@Override
 	public @NotNull Node getRootNode() {
 		return this;
 	}
-	
+
 	@Override
 	public void setToOverride(boolean override) {
 		getChildren().clear();
@@ -90,14 +100,24 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 			getChildren().add(textField);
 		}
 	}
-	
+
 	@Override
 	public InputField<StringChecker, String> getOverrideTextField() {
 		return tfOverride;
 	}
-	
+
 	@Override
 	public void focusToEditor() {
 		menuButton.requestFocus();
+	}
+
+	@Override
+	public void addValueListener(@NotNull ValueListener<ControlStyleGroup> listener) {
+		valueObserver.addValueListener(listener);
+	}
+
+	@Override
+	public boolean removeValueListener(@NotNull ValueListener<ControlStyleGroup> listener) {
+		return valueObserver.removeListener(listener);
 	}
 }

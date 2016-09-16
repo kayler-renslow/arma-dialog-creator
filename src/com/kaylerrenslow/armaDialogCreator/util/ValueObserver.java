@@ -13,7 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  @author Kayler
@@ -21,7 +21,7 @@ import java.util.ArrayList;
  Created on 05/31/2016. */
 public class ValueObserver<V> {
 	private V value;
-	private ArrayList<ValueListener<V>> listeners = new ArrayList<>();
+	private final LinkedList<ValueListener<V>> listeners = new LinkedList<>();
 	
 	public ValueObserver(V value) {
 		this.value = value;
@@ -45,6 +45,9 @@ public class ValueObserver<V> {
 	
 	/** Set the listener that listens to the state of the value */
 	public void addValueListener(@NotNull ValueListener<V> listener) {
+		if(listeners.contains(listener)){
+			return;
+		}
 		this.listeners.add(listener);
 	}
 	

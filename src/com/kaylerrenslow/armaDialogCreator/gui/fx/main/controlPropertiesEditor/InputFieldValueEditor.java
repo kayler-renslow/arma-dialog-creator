@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
@@ -77,7 +78,17 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	public boolean displayFullWidth() {
 		return true;
 	}
-	
+
+	@Override
+	public void addValueListener(@NotNull ValueListener<V> listener) {
+		inputField.getValueObserver().addValueListener(listener);
+	}
+
+	@Override
+	public boolean removeValueListener(@NotNull ValueListener<V> listener) {
+		return inputField.getValueObserver().removeListener(listener);
+	}
+
 	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{
 		public IntegerEditor() {
 			super(new SVIntegerChecker());

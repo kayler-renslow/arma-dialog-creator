@@ -1,8 +1,8 @@
 **Added:**
-* added help button to export dialog
+* none
 
 **Changed:**
-* added more features to export dialog
+* none
 
 **Fixed:**
 * none

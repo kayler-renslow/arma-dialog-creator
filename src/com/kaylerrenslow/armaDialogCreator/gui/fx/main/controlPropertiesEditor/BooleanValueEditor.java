@@ -11,11 +11,12 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVBoolean;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BooleanChoiceBox;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import javafx.collections.FXCollections;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,9 +24,10 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/13/2016.
  */
 public class BooleanValueEditor implements ValueEditor<SVBoolean> {
-	protected final ChoiceBox<SVBoolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(SVBoolean.TRUE, SVBoolean.FALSE));
+	protected final BooleanChoiceBox choiceBox = new BooleanChoiceBox();
 	private final StackPane masterPane = new StackPane(choiceBox);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+
 
 	@Override
 	public void submitCurrentData() {
@@ -34,12 +36,12 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 
 	@Override
 	public SVBoolean getValue() {
-		return choiceBox.getValue();
+		return choiceBox.getValue() == null ? null : SVBoolean.get(choiceBox.getValue());
 	}
 
 	@Override
 	public void setValue(SVBoolean val) {
-		choiceBox.setValue(val);
+		choiceBox.setValue(val.isTrue());
 	}
 
 	@Override
@@ -65,5 +67,48 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	@Override
 	public void focusToEditor() {
 		choiceBox.requestFocus();
+	}
+
+	@Override
+	public void addValueListener(@NotNull ValueListener<SVBoolean> listener) {
+		choiceBox.getValueObserver().addValueListener(new WrapperBooleanValueListener(listener, choiceBox.getValueObserver()));
+	}
+
+	@Override
+	public boolean removeValueListener(@NotNull ValueListener<SVBoolean> listener) {
+		return choiceBox.getValueObserver().removeListener(new WrapperBooleanValueListener(listener, choiceBox.getValueObserver()));
+	}
+
+	private static class WrapperBooleanValueListener implements ValueListener<Boolean>{
+
+		private final ValueListener<SVBoolean> l;
+		private final ValueObserver<SVBoolean> observer = new ValueObserver<>(null);
+
+		public WrapperBooleanValueListener(ValueListener<SVBoolean> l, ValueObserver<Boolean> syncObserver) {
+			this.l = l;
+			observer.addValueListener(new ValueListener<SVBoolean>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
+					syncObserver.updateValue(newValue == null ? null : newValue.isTrue());
+				}
+			});
+		}
+
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
+			observer.updateValue(newValue);
+			l.valueUpdated(this.observer, SVBoolean.get(oldValue), SVBoolean.get(newValue));
+		}
+
+		public boolean equals(Object o){
+			if(o == this){
+				return true;
+			}
+			if(o instanceof WrapperBooleanValueListener){
+				WrapperBooleanValueListener other = (WrapperBooleanValueListener) o;
+				return other.l == this.l;
+			}
+			return false;
+		}
 	}
 }

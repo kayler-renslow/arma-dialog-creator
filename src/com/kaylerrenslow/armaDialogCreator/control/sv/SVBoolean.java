@@ -51,8 +51,8 @@ public final class SVBoolean extends SerializableValue {
 	}
 	
 	/** Return {@link #TRUE} if value==true. Return {@link #FALSE} if value==false */
-	public static SerializableValue get(boolean value) {
-		return value ? TRUE : FALSE;
+	public static SVBoolean get(Boolean value) {
+		return value == null ? null : value ? TRUE : FALSE;
 	}
 	
 	@Override
