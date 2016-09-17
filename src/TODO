@@ -40,5 +40,3 @@ Bugs:
 >moving control group in display throws exception
 >square scaling: doesn't scale up and back down with same snap amount
 >hiding controls when control group is in editor won't hide them until moving mouse into canvas (use the "Show" button above the "Controls" tree view)
-
-> FIX FIX FIX: can't select more than one control style when creating a new control

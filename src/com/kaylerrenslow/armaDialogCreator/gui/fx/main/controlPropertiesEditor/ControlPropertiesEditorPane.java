@@ -546,10 +546,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			}
 			this.controlProperty = controlProperty;
-			ControlStyleGroup group = (ControlStyleGroup) controlProperty.getValue();
-			if (group != null) {
-				menuButton.setSelected(group.getValues());
-			}
+			setValue((ControlStyleGroup) controlProperty.getValue());
 			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ControlStyleGroup>() {
 				@Override
 				public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlStyleGroup> observer, ControlStyleGroup oldValue, ControlStyleGroup newValue) {

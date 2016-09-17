@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* rewrote a lot of the ValueEditor and ControlPropertiesEditorPane code
+* none
 
 **Fixed:**
-* none
+* can't select more than one control style when creating a new control

@@ -35,12 +35,12 @@ public class CheckMenuButton<E> extends StackPane {
 	private final MenuButton menuButton;
 	private final ObservableList<E> selected = FXCollections.observableArrayList();
 	private final ObservableList<E> selectedReadOnly = FXCollections.unmodifiableObservableList(selected);
-	
+
 	private final ObservableList<E> items;
-	
+
 	/**
 	 Creates a {@link MenuButton} that allows for selecting many items.
-	 
+
 	 @param title text to display on the button
 	 @param graphic graphic to put on the button
 	 @param initialItems items to initially add
@@ -51,33 +51,37 @@ public class CheckMenuButton<E> extends StackPane {
 			@Override
 			public void onChanged(Change<? extends E> c) {
 				while (c.next()) {
-					for (E item : c.getAddedSubList()) {
-						CheckBox checkBox = new CheckBox(item.toString());
-						CustomMenuItem check = new CustomMenuItem(checkBox, false);
-						check.setUserData(item);
-						checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-							@Override
-							public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
-								if (checked) {
-									if (!selected.contains(item)) {
-										selected.add(item);
+					if (c.wasAdded()) {
+						for (E item : c.getAddedSubList()) {
+							CheckBox checkBox = new CheckBox(item.toString());
+							CustomMenuItem check = new CustomMenuItem(checkBox, false);
+							check.setUserData(item);
+							checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+								@Override
+								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
+									if (checked) {
+										if (!selected.contains(item)) {
+											selected.add(item);
+										}
+									} else {
+										selected.remove(item);
 									}
-								} else {
-									selected.remove(item);
 								}
-							}
-						});
-						menuButton.getItems().add(check);
+							});
+							menuButton.getItems().add(check);
+						}
 					}
-					List<MenuItem> items = menuButton.getItems();
-					int i = 0;
-					for (E item : c.getRemoved()) {
-						while (i < items.size()) {
-							if (items.get(i).getUserData() == item) {
-								items.remove(i);
-								break;
+					if (c.wasRemoved()) {
+						List<MenuItem> items = menuButton.getItems();
+						int i = 0;
+						for (E item : c.getRemoved()) {
+							while (i < items.size()) {
+								if (items.get(i).getUserData() == item) {
+									items.remove(i);
+									break;
+								}
+								i++;
 							}
-							i++;
 						}
 					}
 				}
@@ -87,7 +91,7 @@ public class CheckMenuButton<E> extends StackPane {
 		getChildren().add(menuButton);
 		Collections.addAll(this.items, initialItems);
 	}
-	
+
 	/** Bind a tooltip to one of the items, If the tooltip is null, will remove the tooltip. */
 	public void bindTooltip(@NotNull E itemToBindTo, @Nullable String tooltip) {
 		for (MenuItem menuItem : menuButton.getItems()) {
@@ -105,28 +109,32 @@ public class CheckMenuButton<E> extends StackPane {
 			}
 		}
 	}
-	
+
 	/** Get all items added */
 	public ObservableList<E> getItems() {
 		return items;
 	}
-	
+
 	/** Clears the selection and sets what items are selected. */
 	public void setSelected(E[] items) {
-		menuItems:
 		for (MenuItem menuItem : menuButton.getItems()) {
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
-			checkBox.setSelected(false);
+			boolean found = false;
 			for (E item : items) {
 				if (customMenuItem.getUserData() == item) {
 					checkBox.setSelected(true);
-					continue menuItems;
+					found = true;
+					break;
 				}
 			}
+			if (!found) {
+				checkBox.setSelected(false);
+			}
+
 		}
 	}
-	
+
 	/** Clears the selection */
 	public void clearSelection() {
 		for (MenuItem menuItem : menuButton.getItems()) {
@@ -135,7 +143,7 @@ public class CheckMenuButton<E> extends StackPane {
 			checkBox.setSelected(false);
 		}
 	}
-	
+
 	/** Get all selected items (read-only list) */
 	public ObservableList<E> getSelectedItems() {
 		return selectedReadOnly;
