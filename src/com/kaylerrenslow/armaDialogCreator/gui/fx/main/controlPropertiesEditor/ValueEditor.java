@@ -15,7 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,11 +57,8 @@ public interface ValueEditor<V extends SerializableValue> {
 		return false;
 	}
 
-	/**Adds a listener (should not contain duplicates).*/
-	void addValueListener(@NotNull ValueListener<V> listener);
-
-	/**Removes the given listener. Returns true if the listener existed in the list.*/
-	boolean removeValueListener(@NotNull ValueListener<V> listener);
+	/** Get the observer that observes to the value. */
+	ReadOnlyValueObserver<V> getReadOnlyObserver();
 
 	/**
 	 Get a new ValueEditor instance associated with the given property type.

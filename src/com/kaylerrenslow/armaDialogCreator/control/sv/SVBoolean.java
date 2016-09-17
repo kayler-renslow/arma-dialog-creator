@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.control.sv;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** A generic wrapper implementation for a boolean. */
 public final class SVBoolean extends SerializableValue {
@@ -51,7 +52,7 @@ public final class SVBoolean extends SerializableValue {
 	}
 	
 	/** Return {@link #TRUE} if value==true. Return {@link #FALSE} if value==false */
-	public static SVBoolean get(Boolean value) {
+	public static SVBoolean get(@Nullable Boolean value) {
 		return value == null ? null : value ? TRUE : FALSE;
 	}
 	

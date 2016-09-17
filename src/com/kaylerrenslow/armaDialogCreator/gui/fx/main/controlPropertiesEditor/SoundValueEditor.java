@@ -15,6 +15,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.Node;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
@@ -33,9 +36,28 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(flowPane);
-	
+	private final ValueObserver<ASound> valueObserver = new ValueObserver<>(null);
+
 	public SoundValueEditor() {
 		flowPane.setPrefWrapLength(300d);
+		inSoundName.getValueObserver().addValueListener(new ValueListener<String>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+				valueObserver.updateValue(createValue());
+			}
+		});
+		inDb.getValueObserver().addValueListener(new ValueListener<Double>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Double> observer, Double oldValue, Double newValue) {
+				valueObserver.updateValue(createValue());
+			}
+		});
+		inPitch.getValueObserver().addValueListener(new ValueListener<Double>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Double> observer, Double oldValue, Double newValue) {
+				valueObserver.updateValue(createValue());
+			}
+		});
 	}
 
 	@Override
@@ -47,6 +69,11 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 
 	@Override
 	public ASound getValue() {
+		return valueObserver.getValue();
+	}
+
+	@Nullable
+	private ASound createValue() {
 		if (inSoundName.getValue() == null) {
 			return null;
 		}
@@ -58,7 +85,7 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 		}
 		return new ASound(inSoundName.getValue(), inDb.getValue(), inPitch.getValue());
 	}
-	
+
 	@Override
 	public void setValue(@Nullable ASound val) {
 		if (val == null) {
@@ -103,5 +130,10 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 		} else {
 			inSoundName.requestFocus();
 		}
+	}
+
+	@Override
+	public ReadOnlyValueObserver<ASound> getReadOnlyObserver() {
+		return valueObserver.getReadOnlyValueObserver();
 	}
 }

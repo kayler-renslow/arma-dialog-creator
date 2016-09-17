@@ -11,62 +11,44 @@
 package com.kaylerrenslow.armaDialogCreator.util;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 
 /**
  @author Kayler
- Simple value observer implementation
- Created on 05/31/2016. */
-public class ValueObserver<V> {
-	private V value;
-	private final LinkedList<ValueListener<V>> listeners = new LinkedList<>();
-	private ReadOnlyValueObserver<V> readOnlyValueObserver;
+ A wrapper class for a {@link ValueObserver} instance that provides read-only functionality
+ Created on 09/16/2016.
+ */
+public class ReadOnlyValueObserver<V> {
+	private final ValueObserver<V> observer;
+	private final LinkedList<ReadOnlyValueListener<V>> listeners = new LinkedList<>();
 
-	public ValueObserver(V value) {
-		this.value = value;
+	public ReadOnlyValueObserver(@NotNull ValueObserver<V> observer) {
+		this.observer = observer;
+		observer.addValueListener(new ValueListener<V>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
+				for(ReadOnlyValueListener<V> listener : listeners){
+					listener.valueUpdated(ReadOnlyValueObserver.this, oldValue, newValue);
+				}
+			}
+		});
 	}
 
-	@NotNull
-	public ReadOnlyValueObserver<V> getReadOnlyValueObserver() {
-		if(readOnlyValueObserver == null){
-			readOnlyValueObserver = new ReadOnlyValueObserver<>(this); //only initialize it when needed
-		}
-		return readOnlyValueObserver;
-	}
-
-	/**
-	 Update the value and notify the value listener. The listeners will only be notified if the value is not equal (via {@link #equals(Object)}).
-	 
-	 @param newValue new value to set to
-	 */
-	public void updateValue(@Nullable V newValue) {
-		if ((newValue == null && this.value == null) || (newValue != null && newValue.equals(this.value))) {
-			return;
-		}
-		V oldValue = this.value;
-		this.value = newValue;
-		for (ValueListener<V> listener : listeners) {
-			listener.valueUpdated(this, oldValue, this.value);
-		}
-	}
-	
 	/** Set the listener that listens to the state of the value */
-	public void addValueListener(@NotNull ValueListener<V> listener) {
+	public void addValueListener(@NotNull ReadOnlyValueListener<V> listener) {
 		if(listeners.contains(listener)){
 			return;
 		}
 		this.listeners.add(listener);
 	}
-	
+
 	/** Remove the listener from the list. Returns true if the listener was inside the list */
-	public boolean removeListener(ValueListener<V> listener) {
+	public boolean removeListener(@NotNull ReadOnlyValueListener<V> listener) {
 		return listeners.remove(listener);
 	}
-	
+
 	public V getValue() {
-		return value;
+		return observer.getValue();
 	}
-	
 }

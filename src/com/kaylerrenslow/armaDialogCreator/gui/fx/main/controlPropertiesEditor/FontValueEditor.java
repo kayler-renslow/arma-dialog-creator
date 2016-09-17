@@ -14,6 +14,10 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -33,12 +37,19 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(editorHbox);
+	private final ValueObserver<AFont> valueObserver = new ValueObserver<>(null);
 
 	public FontValueEditor() {
 		btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				comboBox.getSelectionModel().select(AFont.DEFAULT);
+			}
+		});
+		comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
+			@Override
+			public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
+				valueObserver.updateValue(newValue);
 			}
 		});
 	}
@@ -81,5 +92,10 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	@Override
 	public void focusToEditor() {
 		comboBox.requestFocus();
+	}
+
+	@Override
+	public ReadOnlyValueObserver<AFont> getReadOnlyObserver() {
+		return valueObserver.getReadOnlyValueObserver();
 	}
 }

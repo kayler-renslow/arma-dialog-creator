@@ -12,19 +12,20 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
 import com.kaylerrenslow.armaDialogCreator.data.PaaImageExternalResource;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -56,8 +57,8 @@ import java.io.FileNotFoundException;
  A ValueEditor implementation for selecting image files. This editor also has an implementation for discovering if the image file is a .paa or .tga file and will automatically
  convert it to a read-able format and store it.
  Created on 07/16/2016. */
-public class ImageValueEditor implements ValueEditor {
-	private final InputField<ArmaStringChecker, String> overrideField = new InputField<>(new ArmaStringChecker());
+public class ImageValueEditor implements ValueEditor<SVImage> {
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
 	private final Button btnChooseImage = new Button(Lang.ValueEditors.ImageValueEditor.LOCATE_IMAGE);
 	protected final TextField tfFilePath = new TextField("");
@@ -67,6 +68,8 @@ public class ImageValueEditor implements ValueEditor {
 	private final StackPane masterPane = new StackPane(hBox);
 
 	protected @Nullable SVImage imageValue = null;
+
+	private final ValueObserver<SVImage> valueObserver = new ValueObserver<>(null);
 
 	public ImageValueEditor() {
 		HBox.setHgrow(tfFilePath, Priority.ALWAYS);
@@ -116,13 +119,15 @@ public class ImageValueEditor implements ValueEditor {
 	}
 
 	@Override
-	public @Nullable SerializableValue getValue() {
+	@Nullable
+	public SVImage getValue() {
 		return imageValue;
 	}
 
 	@Override
-	public void setValue(SerializableValue val) {
-		imageValue = (SVImage) val;
+	public void setValue(SVImage val) {
+		imageValue = val;
+		valueObserver.updateValue(val);
 		if (val == null) {
 			tfFilePath.setText("");
 		} else {
@@ -146,13 +151,18 @@ public class ImageValueEditor implements ValueEditor {
 	}
 
 	@Override
-	public InputField<ArmaStringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getOverrideTextField() {
 		return overrideField;
 	}
 
 	@Override
 	public void focusToEditor() {
 		btnChooseImage.requestFocus();
+	}
+
+	@Override
+	public ReadOnlyValueObserver<SVImage> getReadOnlyObserver() {
+		return valueObserver.getReadOnlyValueObserver();
 	}
 
 	private static class ConvertingPaaPopup extends StagePopup<VBox> {

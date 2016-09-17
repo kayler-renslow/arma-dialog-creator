@@ -16,7 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +29,7 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	private final StackPane masterPane;
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
-	public InputFieldValueEditor(@NotNull InputFieldDataChecker dataChecker) {
+	public InputFieldValueEditor(@NotNull InputFieldDataChecker<V> dataChecker) {
 		this.inputField = new InputField<>(dataChecker);
 		this.masterPane = new StackPane(inputField);
 	}
@@ -80,13 +80,8 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	}
 
 	@Override
-	public void addValueListener(@NotNull ValueListener<V> listener) {
-		inputField.getValueObserver().addValueListener(listener);
-	}
-
-	@Override
-	public boolean removeValueListener(@NotNull ValueListener<V> listener) {
-		return inputField.getValueObserver().removeListener(listener);
+	public ReadOnlyValueObserver<V> getReadOnlyObserver() {
+		return inputField.getValueObserver().getReadOnlyValueObserver();
 	}
 
 	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{

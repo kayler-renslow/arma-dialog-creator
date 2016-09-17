@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* none
+* rewrote a lot of the ValueEditor and ControlPropertiesEditorPane code
 
 **Fixed:**
 * none

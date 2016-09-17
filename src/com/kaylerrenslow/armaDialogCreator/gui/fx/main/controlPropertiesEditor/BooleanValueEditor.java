@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVBoolean;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BooleanChoiceBox;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.Node;
@@ -27,7 +28,16 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	protected final BooleanChoiceBox choiceBox = new BooleanChoiceBox();
 	private final StackPane masterPane = new StackPane(choiceBox);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+	private final ValueObserver<SVBoolean> svBooleanValueObserver = new ValueObserver<>(null);
 
+	public BooleanValueEditor() {
+		choiceBox.getValueObserver().addValueListener(new ValueListener<Boolean>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
+				svBooleanValueObserver.updateValue(SVBoolean.get(newValue));
+			}
+		});
+	}
 
 	@Override
 	public void submitCurrentData() {
@@ -70,45 +80,8 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	}
 
 	@Override
-	public void addValueListener(@NotNull ValueListener<SVBoolean> listener) {
-		choiceBox.getValueObserver().addValueListener(new WrapperBooleanValueListener(listener, choiceBox.getValueObserver()));
+	public ReadOnlyValueObserver<SVBoolean> getReadOnlyObserver() {
+		return svBooleanValueObserver.getReadOnlyValueObserver();
 	}
 
-	@Override
-	public boolean removeValueListener(@NotNull ValueListener<SVBoolean> listener) {
-		return choiceBox.getValueObserver().removeListener(new WrapperBooleanValueListener(listener, choiceBox.getValueObserver()));
-	}
-
-	private static class WrapperBooleanValueListener implements ValueListener<Boolean>{
-
-		private final ValueListener<SVBoolean> l;
-		private final ValueObserver<SVBoolean> observer = new ValueObserver<>(null);
-
-		public WrapperBooleanValueListener(ValueListener<SVBoolean> l, ValueObserver<Boolean> syncObserver) {
-			this.l = l;
-			observer.addValueListener(new ValueListener<SVBoolean>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
-					syncObserver.updateValue(newValue == null ? null : newValue.isTrue());
-				}
-			});
-		}
-
-		@Override
-		public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-			observer.updateValue(newValue);
-			l.valueUpdated(this.observer, SVBoolean.get(oldValue), SVBoolean.get(newValue));
-		}
-
-		public boolean equals(Object o){
-			if(o == this){
-				return true;
-			}
-			if(o instanceof WrapperBooleanValueListener){
-				WrapperBooleanValueListener other = (WrapperBooleanValueListener) o;
-				return other.l == this.l;
-			}
-			return false;
-		}
-	}
 }

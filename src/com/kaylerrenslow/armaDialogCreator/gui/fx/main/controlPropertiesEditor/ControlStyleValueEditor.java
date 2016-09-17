@@ -17,7 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
@@ -112,12 +112,8 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	}
 
 	@Override
-	public void addValueListener(@NotNull ValueListener<ControlStyleGroup> listener) {
-		valueObserver.addValueListener(listener);
+	public ReadOnlyValueObserver<ControlStyleGroup> getReadOnlyObserver() {
+		return valueObserver.getReadOnlyValueObserver();
 	}
 
-	@Override
-	public boolean removeValueListener(@NotNull ValueListener<ControlStyleGroup> listener) {
-		return valueObserver.removeListener(listener);
-	}
 }

@@ -131,14 +131,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 						display.getIddProperty().setValue(value);
 						break;
 					}
-					case ENABLE_SIMULATION: {
-						display.getEnableSimulationProperty().setValue(value);
-						break;
-					}
-					case MOVING_ENABLE: {
-						display.getMovingEnableProperty().setValue(value);
-						break;
-					}
 					default: {
 						display.getDisplayProperties().add(new DisplayProperty(lookup, value));
 						break;

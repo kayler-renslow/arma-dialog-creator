@@ -13,9 +13,14 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,6 +30,24 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
+	private final ValueObserver<AColor> valueObserver = new ValueObserver<>(null);
+
+	public ColorValueEditor() {
+		colorPicker.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				Color newValue = colorPicker.getValue();
+				AColor aColor;
+				if (newValue == null) {
+					aColor = null;
+				} else {
+					aColor = new AColor(newValue);
+
+				}
+				valueObserver.updateValue(aColor);
+			}
+		});
+	}
 
 	@Override
 	public void submitCurrentData() {
@@ -33,7 +56,7 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 
 	@Override
 	public AColor getValue() {
-		return colorPicker.getValue() == null ? null : new AColor(colorPicker.getValue());
+		return valueObserver.getValue();
 	}
 	
 	@Override
@@ -68,5 +91,10 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	@Override
 	public void focusToEditor() {
 		colorPicker.requestFocus();
+	}
+
+	@Override
+	public ReadOnlyValueObserver<AColor> getReadOnlyObserver() {
+		return valueObserver.getReadOnlyValueObserver();
 	}
 }
