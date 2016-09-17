@@ -12,17 +12,20 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.displayPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
+import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.collections.SetChangeListener;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -39,12 +42,14 @@ public class DisplayPropertiesEditorPane extends StackPane {
 	private final ArmaDisplay display;
 	private final LinkedList<DisplayPropertyEditorPane> editorPanes = new LinkedList<>();
 	private final VBox root = new VBox(5);
+	private final MenuButton menuButtonAddDisplayProperty = new MenuButton(Lang.DisplayPropertiesEditorPane.ADD_DISPLAY_PROPERTY);
 
 	/**
 	 @param display display to edit
 	 */
 	public DisplayPropertiesEditorPane(@NotNull ArmaDisplay display) {
 		initRootPane();
+		initAddDisplayPropertyMB();
 		this.display = display;
 		display.getDisplayProperties().addListener(new SetChangeListener<DisplayProperty>() {
 			@Override
@@ -59,8 +64,26 @@ public class DisplayPropertiesEditorPane extends StackPane {
 		addPropertyEditors();
 	}
 
+	private void initAddDisplayPropertyMB() {
+		menuButtonAddDisplayProperty.setTooltip(new Tooltip(Lang.DisplayPropertiesEditorPane.ADD_DISPLAY_PROPERTY_TOOLTIP));
+		for (DisplayPropertyLookup propertyLookup : DisplayPropertyLookup.values()) {
+			final MenuItem mi = new MenuItem(propertyLookup.getPropertyName());
+			mi.setUserData(propertyLookup);
+			mi.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					addPropertyEditor(propertyLookup.getPropertyWithNoData());
+				}
+			});
+			menuButtonAddDisplayProperty.getItems().add(mi);
+		}
+	}
+
 	private void initRootPane() {
-		final ScrollPane scrollPane = new ScrollPane(root);
+		final VBox vboxWrapperRoot = new VBox(10, root);
+		vboxWrapperRoot.setFillWidth(true);
+		vboxWrapperRoot.getChildren().add(menuButtonAddDisplayProperty);
+		final ScrollPane scrollPane = new ScrollPane(vboxWrapperRoot);
 		scrollPane.setPadding(new Insets(5));
 		getChildren().add(scrollPane);
 		scrollPane.setFitToHeight(true);
@@ -81,22 +104,34 @@ public class DisplayPropertiesEditorPane extends StackPane {
 				break;
 			}
 		}
-		if(found == null){
+		if (found == null) {
 			return;
 		}
 		root.getChildren().remove(found.getRootNode());
+		editorPanes.remove(found);
+		disableAddPropertyMenuItem(property, false);
 	}
 
-	private void addPropertyEditor(@NotNull DisplayProperty displayProperty) {
-		editorPanes.add(new DisplayPropertyEditorPane(displayProperty));
+	private void disableAddPropertyMenuItem(@NotNull DisplayProperty property, boolean disable) {
+		for (MenuItem mi : menuButtonAddDisplayProperty.getItems()) {
+			if (mi.getUserData() == property.getPropertyLookup()) {
+				mi.setDisable(disable);
+				break;
+			}
+		}
+	}
+
+	private void addPropertyEditor(@NotNull DisplayProperty property) {
+		editorPanes.add(new DisplayPropertyEditorPane(property, this));
 		root.getChildren().add(editorPanes.getLast().getRootNode());
+		disableAddPropertyMenuItem(property, true);
 	}
 
 	private static class DisplayPropertyEditorPane {
 		private final HBox hBox;
 		private DisplayProperty displayProperty;
 
-		public DisplayPropertyEditorPane(@NotNull DisplayProperty property) {
+		public DisplayPropertyEditorPane(@NotNull DisplayProperty property, @NotNull DisplayPropertiesEditorPane editorPane) {
 			this.displayProperty = property;
 			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 			editor.setValue(property.getValue());
@@ -109,8 +144,17 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			if (editor.displayFullWidth()) {
 				HBox.setHgrow(editor.getRootNode(), Priority.ALWAYS);
 			}
+			final Button btnRemoveProperty = new Button("-");
+			btnRemoveProperty.setDisable(property.getPropertyLookup() == DisplayPropertyLookup.IDD);
+			btnRemoveProperty.setTooltip(new Tooltip(Lang.DisplayPropertiesEditorPane.REMOVE_PROPERTY_TOOLTIP));
+			btnRemoveProperty.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					editorPane.removePropertyEditor(property);
+				}
+			});
+			hBox = new HBox(5, btnRemoveProperty, new Label(property.getName() + "="), editor.getRootNode());
 
-			hBox = new HBox(5, new Label(property.getName() + "="), editor.getRootNode());
 			hBox.setAlignment(Pos.CENTER_LEFT);
 		}
 

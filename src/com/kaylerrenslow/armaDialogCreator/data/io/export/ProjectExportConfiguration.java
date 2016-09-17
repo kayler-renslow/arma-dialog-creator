@@ -25,13 +25,22 @@ public class ProjectExportConfiguration {
 	private Project project;
 	private boolean placeAdcNotice;
 	private boolean exportMacrosToFile;
+	private HeaderFileType fileType;
 
-	public ProjectExportConfiguration(@NotNull String exportClassName, @NotNull File exportLocation, @NotNull Project project, boolean placeAdcNotice, boolean exportMacrosToFile) {
+	public ProjectExportConfiguration(
+			@NotNull String exportClassName,
+			@NotNull File exportLocation,
+			@NotNull Project project,
+			boolean placeAdcNotice,
+			boolean exportMacrosToFile,
+			@NotNull HeaderFileType fileType
+	) {
 		this.exportClassName = exportClassName;
 		this.exportLocation = exportLocation;
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
 		this.exportMacrosToFile = exportMacrosToFile;
+		this.fileType = fileType;
 	}
 
 	public boolean shouldExportMacrosToFile() {
@@ -55,6 +64,15 @@ public class ProjectExportConfiguration {
 	@NotNull
 	public Project getProject() {
 		return project;
+	}
+
+	@NotNull
+	public HeaderFileType getHeaderFileType() {
+		return fileType;
+	}
+
+	public void setFileType(@NotNull HeaderFileType fileType) {
+		this.fileType = fileType;
 	}
 
 	public void setExportClassName(@NotNull String exportClassName) {

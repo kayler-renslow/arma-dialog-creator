@@ -130,7 +130,7 @@ public class ProjectExporter {
 		for (ArmaControl control : display.getBackgroundControls()) {
 			body += getExportControlString(control, 2);
 		}
-		displayBody += getExportClassString(CONTROLS_BACKGROUND, null, 1, body);
+		displayBody += getExportClassString(CONTROLS_BACKGROUND, null, 1, body) + "\n";
 
 		body = "";
 		for (ArmaControl control : display.getControls()) {
@@ -173,7 +173,7 @@ public class ProjectExporter {
 	}
 
 	private String getExportClassString(@NotNull String className, @Nullable String extendClass, int parentTab, String body) {
-		final String classFormatString = "%3$sclass %s%s\n%3$s{\n%4$s\n%3$s};\n";
+		final String classFormatString = "%3$sclass %s%s\n%3$s{\n%4$s\n%3$s};";
 		return String.format(classFormatString, className, extendClass != null ? (" : " + extendClass) : "", tab(parentTab), body);
 	}
 
@@ -213,12 +213,12 @@ public class ProjectExporter {
 
 	@NotNull
 	public static String getMacrosFileName(@NotNull ProjectExportConfiguration configuration) {
-		return configuration.getExportClassName() + "_Macros.hpp";
+		return configuration.getExportClassName() + "_Macros" + configuration.getHeaderFileType().getExtension();
 	}
 
 	@NotNull
 	public static String getDisplayFileName(@NotNull ProjectExportConfiguration configuration) {
-		return configuration.getExportClassName() + ".hpp";
+		return configuration.getExportClassName() + configuration.getHeaderFileType().getExtension();
 	}
 
 	public static String getExportValueString(@NotNull SerializableValue value, @NotNull PropertyType type) {

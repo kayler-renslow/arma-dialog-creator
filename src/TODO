@@ -11,6 +11,7 @@ Features:
 >add check to see if safeZone should be applied to control(s). This is checked by seeing if x,y,w,h properties are < 0 or > 1
 >for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
 >have help button implementation for all popups
+>save export configuration to file?
 
 General:
 -----------------------------------

@@ -51,7 +51,7 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 
 	@Override
 	public void setValue(SVBoolean val) {
-		choiceBox.setValue(val.isTrue());
+		choiceBox.setValue(val == null ? null : val.isTrue());
 	}
 
 	@Override

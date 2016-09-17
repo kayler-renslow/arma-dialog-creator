@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.FileChooserPane;
@@ -91,6 +92,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		private ValueObserver<File> exportDirectoryObserver;
 		/** observer to detect when the macros are being exported to their own file, or being placed in the display's header file */
 		private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
+		private final ValueObserver<HeaderFileType> headerFileTypeValueObserver = new ValueObserver<>(null);
 
 		/*export preview things*/
 		/** group that should be notified when the export preview should be updated */
@@ -99,7 +101,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		public ExportProjectConfigurationDialog(@NotNull Project project) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
 			btnOk.setText(Lang.Popups.ExportProject.OK_BUTTON_EXPORT);
-			configuration = new ProjectExportConfiguration("", project.getProjectSaveDirectory(), project, false, exportMacrosToFileObserver.getValue());
+			configuration = new ProjectExportConfiguration("", project.getProjectSaveDirectory(), project, false, exportMacrosToFileObserver.getValue(), HeaderFileType.DEFAULT);
 			setStageSize(720, 480);
 			myRootElement.setPadding(new Insets(10d));
 
@@ -216,6 +218,33 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				}
 			});
 			tabRoot.getChildren().add(checkBoxExportMacrosToFile);
+
+			/*export file extension*/
+			final ToggleGroup toggleGroupFileExt = new ToggleGroup();
+			final FlowPane flowPaneFileExt = new FlowPane(Orientation.HORIZONTAL, 5, 10);
+			for(HeaderFileType headerFileType : HeaderFileType.values()){
+				final RadioButton radioButtonFileExt = new RadioButton(headerFileType.getExtension());
+				radioButtonFileExt.setToggleGroup(toggleGroupFileExt);
+				if(headerFileType == HeaderFileType.DEFAULT){
+					toggleGroupFileExt.selectToggle(radioButtonFileExt);
+				}
+				radioButtonFileExt.setUserData(headerFileType);
+				flowPaneFileExt.getChildren().add(radioButtonFileExt);
+			}
+			toggleGroupFileExt.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+				@Override
+				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+					headerFileTypeValueObserver.updateValue((HeaderFileType) newValue.getUserData());
+				}
+			});
+			headerFileTypeValueObserver.addValueListener(new ValueListener<HeaderFileType>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<HeaderFileType> observer, HeaderFileType oldValue, HeaderFileType newValue) {
+					configuration.setFileType(newValue);
+					updateExportPreview();
+				}
+			});
+			tabRoot.getChildren().add(new VBox(5, new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_FILE_EXTENSION), flowPaneFileExt));
 		}
 
 		/*
@@ -223,6 +252,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		* TAB INIT: Export Preview
 		*
 		*/
+		@SuppressWarnings("unchecked")
 		private void initTabExportPreview(Tab tabExportPreview) {
 			final StackPane tabRoot = new StackPane();
 			tabExportPreview.setContent(tabRoot);
@@ -232,29 +262,32 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.getChildren().add(splitPane);
 
 			final VBox vboxDisplayPreview = new VBox(5);
-			final Label lblDisplayExportPreview = new Label("");
+			final Label lblDisplayFileExportPreview = new Label("");
 			final TextArea textAreaDisplay = new TextArea();
 			textAreaDisplay.setEditable(false);
-			vboxDisplayPreview.getChildren().add(lblDisplayExportPreview);
+			vboxDisplayPreview.getChildren().add(lblDisplayFileExportPreview);
 			vboxDisplayPreview.getChildren().add(textAreaDisplay);
 			VBox.setVgrow(textAreaDisplay, Priority.ALWAYS);
 
 			final VBox vboxMacrosPreview = new VBox(5);
-			final Label lblMacrosExportPreview = new Label("");
+			final Label lblMacrosFileExportPreview = new Label("");
 			final TextArea textAreaMacros = new TextArea();
 			textAreaMacros.setEditable(false);
 
-			vboxMacrosPreview.getChildren().add(lblMacrosExportPreview);
+			vboxMacrosPreview.getChildren().add(lblMacrosFileExportPreview);
 			vboxMacrosPreview.getChildren().add(textAreaMacros);
 			VBox.setVgrow(textAreaMacros, Priority.ALWAYS);
 
-			classNameObserver.addValueListener(new ValueListener<String>() {
+
+			final ValueListener fileLblListener = new ValueListener() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					lblDisplayExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
-					lblMacrosExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
+				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+					lblDisplayFileExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
+					lblMacrosFileExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
 				}
-			});
+			};
+			classNameObserver.addValueListener(fileLblListener);
+			headerFileTypeValueObserver.addValueListener(fileLblListener);
 
 			exportMacrosToFileObserver.addValueListener(new ValueListener<Boolean>() {
 				@Override
