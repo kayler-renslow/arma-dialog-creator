@@ -10,7 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
-import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
@@ -18,7 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.FileChooserPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.displayPropertiesEditor.DisplayPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -78,6 +77,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		private DisplayType selectedDisplayType = DisplayType.DEFAULT;
 
 		private final Insets padding10 = new Insets(10);
+		private final Insets padding10t = new Insets(10,0,10,0);
 		private final ProjectExportConfiguration configuration;
 
 		/*display properties things*/
@@ -133,7 +133,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		*/
 		private void initTabDisplayProperties(Tab tabDisplayProperties) {
 			final VBox tabRoot = new VBox(10);
-			tabRoot.setPadding(padding10);
+			tabRoot.setPadding(padding10t);
 			tabDisplayProperties.setContent(tabRoot);
 
 			/*class name*/
@@ -175,16 +175,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.getChildren().add(hboxDisplayType);
 
 			/*display properties*/
-			final VBox vboxDisplayProperties = new VBox(5);
-			for (DisplayProperty displayProperty : configuration.getProject().getEditingDisplay().getDisplayProperties()) {
-				final ValueEditor editor = ValueEditor.getEditor(displayProperty.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
-				//todo add value listener
-				if(editor.displayFullWidth()){
-					HBox.setHgrow(editor.getRootNode(), Priority.ALWAYS);
-				}
-
-				vboxDisplayProperties.getChildren().add(new HBox(5, new Label(displayProperty.getName() + ":")));
-			}
+			tabRoot.getChildren().add(new DisplayPropertiesEditorPane(configuration.getProject().getEditingDisplay()));
 		}
 
 		/*
@@ -194,7 +185,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		*/
 		private void initTabExportParameters(Tab tabExportParameters) {
 			final VBox tabRoot = new VBox(20);
-			tabRoot.setPadding(padding10);
+			tabRoot.setPadding(padding10t);
 			tabExportParameters.setContent(tabRoot);
 
 			/*set export directory*/

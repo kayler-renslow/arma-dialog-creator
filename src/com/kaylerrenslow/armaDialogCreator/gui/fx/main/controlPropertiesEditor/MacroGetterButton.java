@@ -13,14 +13,13 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.EditMacroPopup;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.SplitMenuButton;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +35,7 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
-	private Label lblChosenMacro = new Label("Macro:?");
+	private Hyperlink hyplinkChosenMacro = new Hyperlink();
 
 	private final MenuItem miChooseMacro = new MenuItem(Lang.Macros.CHOOSE_MACRO);
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
@@ -45,11 +44,25 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 
 	public MacroGetterButton(@NotNull Class<V> clazz, @Nullable Macro<V> currentMacro) {
 		super(5);
+		hyplinkChosenMacro.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (macroValueObserver.getValue() == null) {
+					return;
+				}
+				EditMacroPopup editMacroPopup = new EditMacroPopup(macroValueObserver.getValue());
+				editMacroPopup.show();
+				hyplinkChosenMacro.setVisited(false);
+			}
+		});
 		macroValueObserver = new ValueObserver<>(null);
 		setToMacro(currentMacro);
 		SplitMenuButton menuButton = new SplitMenuButton();
 		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
-		getChildren().addAll(menuButton, lblChosenMacro);
+		setAlignment(Pos.CENTER_LEFT);
+		final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), hyplinkChosenMacro);
+		hboxMacroLbl.setAlignment(Pos.CENTER_LEFT);
+		getChildren().addAll(menuButton, hboxMacroLbl);
 
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -109,9 +122,11 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 
 	private void setToMacro(@Nullable Macro<V> macro) {
 		if (macro == null) {
-			lblChosenMacro.setText(Lang.Macros.MACRO + "=?");
+			hyplinkChosenMacro.setText("?");
+			hyplinkChosenMacro.setDisable(true);
 		} else {
-			lblChosenMacro.setText(Lang.Macros.MACRO + "=" + macro.getKey());
+			hyplinkChosenMacro.setText(macro.getKey());
+			hyplinkChosenMacro.setDisable(false);
 		}
 		macroValueObserver.updateValue(macro);
 	}
@@ -119,5 +134,5 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 	public ValueObserver<Macro<V>> getChosenMacroValueObserver() {
 		return macroValueObserver;
 	}
-	
+
 }
