@@ -1,5 +1,5 @@
 **Added:**
-* export header file types option in export parameters 
+* save export configuration to project.xml 
 
 **Changed:**
 * none

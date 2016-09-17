@@ -20,6 +20,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.displayPropertiesEditor.DisplayPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
@@ -32,6 +33,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
@@ -84,7 +86,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		/*display properties things*/
 		/** observer for the exporting display's class name */
 		private ValueObserver<String> classNameObserver;
-		private static final String DEFAULT_CLASS_NAME = "MyDialog";
+
 
 
 		/*export parameter things*/
@@ -101,7 +103,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		public ExportProjectConfigurationDialog(@NotNull Project project) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
 			btnOk.setText(Lang.Popups.ExportProject.OK_BUTTON_EXPORT);
-			configuration = new ProjectExportConfiguration("", project.getProjectSaveDirectory(), project, false, exportMacrosToFileObserver.getValue(), HeaderFileType.DEFAULT);
+			configuration = project.getExportConfiguration();
 			setStageSize(720, 480);
 			myRootElement.setPadding(new Insets(10d));
 
@@ -125,7 +127,8 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			initTabExportParameters(tabExportParameters);
 			initTabExportPreview(tabExportPreview);
 
-			classNameObserver.updateValue(DEFAULT_CLASS_NAME);
+			updateExportPreview();
+
 		}
 
 		/*
@@ -140,7 +143,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 			/*class name*/
 			final Label lblClassName = new Label("");
-			final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker());
+			final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker(), configuration.getExportClassName());
 			classNameObserver = inputFieldClassName.getValueObserver();
 			classNameObserver.addValueListener(new ValueListener<String>() {
 				@Override
@@ -209,6 +212,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			/*export macros to own file*/
 			final CheckBox checkBoxExportMacrosToFile = new CheckBox(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE);
 			checkBoxExportMacrosToFile.setTooltip(new Tooltip(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE_TOOLTIP));
+			checkBoxExportMacrosToFile.setSelected(configuration.shouldExportMacrosToFile());
 			checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
@@ -225,7 +229,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			for(HeaderFileType headerFileType : HeaderFileType.values()){
 				final RadioButton radioButtonFileExt = new RadioButton(headerFileType.getExtension());
 				radioButtonFileExt.setToggleGroup(toggleGroupFileExt);
-				if(headerFileType == HeaderFileType.DEFAULT){
+				if(headerFileType == configuration.getHeaderFileType()){
 					toggleGroupFileExt.selectToggle(radioButtonFileExt);
 				}
 				radioButtonFileExt.setUserData(headerFileType);
@@ -245,6 +249,20 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				}
 			});
 			tabRoot.getChildren().add(new VBox(5, new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_FILE_EXTENSION), flowPaneFileExt));
+
+
+			/*place adc notice*/
+			final CheckBox checkBoxPlaceAdcNotice = new CheckBox(Lang.Popups.ExportProject.ExportParameters.PLACE_ADC_NOTICE);
+			checkBoxPlaceAdcNotice.setSelected(configuration.shouldPlaceAdcNotice());
+			checkBoxPlaceAdcNotice.setTooltip(new Tooltip(Lang.Popups.ExportProject.ExportParameters.PLACE_ADC_NOTICE_TOOLTIP));
+			checkBoxPlaceAdcNotice.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					configuration.setPlaceAdcNotice(newValue);
+					updateExportPreview();
+				}
+			});
+			tabRoot.getChildren().add(new HBox(5, checkBoxPlaceAdcNotice, new ImageView(ImagePaths.ICON_HEART)));
 		}
 
 		/*

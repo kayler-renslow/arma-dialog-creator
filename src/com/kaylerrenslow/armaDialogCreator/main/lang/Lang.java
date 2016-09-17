@@ -181,6 +181,8 @@ public interface Lang {
 				String EXPORT_DIRECTORY_TOOLTIP = "Choose the directory to export all project contents to.";
 				String LOCATE_EXPORT_DIRECTORY = "Locate the Export Directory";
 				String EXPORT_FILE_EXTENSION = "Export File Extension:";
+				String PLACE_ADC_NOTICE = "Place ADC Notice";
+				String PLACE_ADC_NOTICE_TOOLTIP = "Place a comment inside the exported files saying it was exported with Arma Dialog Creator.";
 			}
 
 			interface ExportPreview {

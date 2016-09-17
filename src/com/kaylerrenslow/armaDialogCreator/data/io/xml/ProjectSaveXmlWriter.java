@@ -20,6 +20,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
@@ -68,11 +69,28 @@ public class ProjectSaveXmlWriter {
 		writeMacros(fos);
 		writeDisplay(fos, project.getEditingDisplay());
 
-		fos.write("</project>".getBytes());
+		writeProjectExportConfiguration(fos, project.getExportConfiguration());
 
+		fos.write("</project>".getBytes());
 
 		fos.flush();
 		fos.close();
+	}
+
+	private void writeProjectExportConfiguration(FileOutputStream fos, @NotNull ProjectExportConfiguration configuration) throws IOException {
+		fos.write("<export-config>".getBytes());
+		writeProjectExportConfigurationAttribute(fos, "export-class-name", configuration.getExportClassName());
+		writeProjectExportConfigurationAttribute(fos, "export-location", configuration.getExportLocation().getPath());
+		writeProjectExportConfigurationAttribute(fos, "place-adc-notice", configuration.shouldPlaceAdcNotice() + "");
+		writeProjectExportConfigurationAttribute(fos, "export-macros-to-file", configuration.shouldExportMacrosToFile() + "");
+		writeProjectExportConfigurationAttribute(fos, "export-file-type-ext", configuration.getHeaderFileType().getExtension());
+		fos.write("</export-config>".getBytes());
+	}
+
+	private void writeProjectExportConfigurationAttribute(FileOutputStream fos, @NotNull String attributeName, @NotNull String value) throws IOException {
+		fos.write(String.format("<config-attribute name='%s'>", attributeName).getBytes());
+		fos.write(value.getBytes());
+		fos.write("</config-attribute>".getBytes());
 	}
 
 	private void writeResources(FileOutputStream fos, @NotNull ResourceRegistry resourceRegistry) throws IOException {

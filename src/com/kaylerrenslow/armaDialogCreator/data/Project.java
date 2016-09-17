@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +34,8 @@ public class Project {
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 	private final MacroRegistry macroRegistry = new MacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
-	
+	private ProjectExportConfiguration exportConfiguration;
+
 	public Project(@Nullable String projectName, @NotNull File appSaveDirectory) {
 		if (projectName == null || projectName.trim().length() == 0) {
 			int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -50,75 +52,86 @@ public class Project {
 		this.appSaveDirectory = appSaveDirectory;
 		
 		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
+
+		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);
 	}
-	
-	
+
 	private File getProjectFile(String projectName, File appSaveDirectory) {
 		return new File(appSaveDirectory.getPath() + "\\" + projectName);
 	}
-	
+
 	/**
 	 Get the path for the fileName that is based inside the Project path
-	 
+
 	 @param fileName name of the file
 	 @return File instance that is project_path\fileName
 	 */
 	public File getFileForName(@NotNull String fileName) {
 		return new File(projectSaveDirectory.getPath() + "\\" + fileName);
 	}
-	
+
 	@NotNull
 	public String getProjectName() {
 		return projectName;
 	}
-	
+
 	public void setProjectName(@NotNull String projectName) throws IOException {
 		this.projectName = projectName;
 		//		Files.move(projectSaveDirectory.toPath(), getProjectFile(projectName, appSaveDirectory).toPath(), StandardCopyOption.ATOMIC_MOVE);
 	}
-	
+
 	@Nullable
 	public String getProjectDescription() {
 		return projectDescription;
 	}
-	
+
 	public void setProjectDescription(@Nullable String projectDescription) {
 		this.projectDescription = projectDescription;
 	}
-	
+
 	@NotNull
 	public File getProjectSaveDirectory() {
 		return projectSaveDirectory;
 	}
-	
+
 	/** Get the display that the dialog creator is editing right now. */
 	@NotNull
 	public ArmaDisplay getEditingDisplay() {
 		return editingDisplayObserver.getValue();
 	}
-	
+
 	@NotNull
 	public ValueObserver<ArmaDisplay> getEditingDisplayObserver() {
 		return editingDisplayObserver;
 	}
-	
+
 	/** Set the display that the dialog creator is to edit (notifies the valueObserver for the display as well). */
 	public void setEditingDisplay(@NotNull ArmaDisplay display) {
 		this.editingDisplayObserver.updateValue(display);
 	}
-	
+
 	@NotNull
 	public MacroRegistry getMacroRegistry() {
 		return macroRegistry;
 	}
-	
+
 	@NotNull
 	public ResourceRegistry getResourceRegistry() {
 		return resourceRegistry;
 	}
-	
+
 	@Override
+	@NotNull
 	public String toString() {
 		return projectName;
+	}
+
+	@NotNull
+	public ProjectExportConfiguration getExportConfiguration() {
+		return exportConfiguration;
+	}
+
+	public void setExportConfiguration(@NotNull ProjectExportConfiguration exportConfiguration) {
+		this.exportConfiguration = exportConfiguration;
 	}
 }

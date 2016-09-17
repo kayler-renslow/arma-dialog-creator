@@ -20,6 +20,8 @@ import java.io.File;
  */
 public class ProjectExportConfiguration {
 
+	private static final String DEFAULT_CLASS_NAME = "MyDialog";
+
 	private String exportClassName;
 	private File exportLocation;
 	private Project project;
@@ -94,4 +96,45 @@ public class ProjectExportConfiguration {
 	public void setExportMacrosToFile(boolean exportMacrosToFile) {
 		this.exportMacrosToFile = exportMacrosToFile;
 	}
+
+	public static ProjectExportConfiguration getDefaultConfiguration(@NotNull Project project) {
+		return new ProjectExportConfiguration(
+				DEFAULT_CLASS_NAME,
+				project.getProjectSaveDirectory(),
+				project,
+				false,
+				false,
+				HeaderFileType.DEFAULT
+				);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (!(o instanceof ProjectExportConfiguration)) {
+			return false;
+		}
+
+		ProjectExportConfiguration that = (ProjectExportConfiguration) o;
+
+		if (placeAdcNotice != that.placeAdcNotice) {
+			return false;
+		}
+		if (exportMacrosToFile != that.exportMacrosToFile) {
+			return false;
+		}
+		if (!exportClassName.equals(that.exportClassName)) {
+			return false;
+		}
+		if (!exportLocation.equals(that.exportLocation)) {
+			return false;
+		}
+		if (project != that.project) {
+			return false;
+		}
+		return fileType == that.fileType;
+	}
+
 }

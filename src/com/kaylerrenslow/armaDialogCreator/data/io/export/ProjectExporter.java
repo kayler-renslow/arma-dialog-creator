@@ -24,7 +24,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
-import java.util.List;
 
 /**
  Created by Kayler on 09/13/2016.
@@ -125,7 +124,7 @@ public class ProjectExporter {
 		}
 		ArmaDisplay display = project.getEditingDisplay();
 
-		String displayBody = "";
+		String displayBody = getExportControlPropertyString(1, display.getDisplayProperties()) + "\n\n";
 		String body = "";
 		for (ArmaControl control : display.getBackgroundControls()) {
 			body += getExportControlString(control, 2);
@@ -177,12 +176,11 @@ public class ProjectExporter {
 		return String.format(classFormatString, className, extendClass != null ? (" : " + extendClass) : "", tab(parentTab), body);
 	}
 
-	private static String getExportControlPropertyString(int tabNum, @NotNull List<ControlProperty> controlProperties) {
+	private static String getExportControlPropertyString(int tabNum, @NotNull Iterable<? extends ControlProperty> controlProperties) {
 		String body = "";
 		final String tab = tab(tabNum);
 		final String itemFormatString = tab + "%s = %s;";
 		final String itemArrayFormatString = tab + "%s[] = %s;";
-		int remainder = controlProperties.size();
 		for (ControlProperty property : controlProperties) {
 			if (property.getValue() == null/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
 				continue;
@@ -196,11 +194,9 @@ public class ProjectExporter {
 					body += String.format(itemArrayFormatString, property.getName(), getExportValueString(property.getValue(), property.getPropertyType()));
 				}
 			}
-			if (--remainder > 0) {
-				body += "\n";
-			}
+			body += "\n";
 		}
-		return body;
+		return body.substring(0, body.length() - 1); //exclude the last newline character
 	}
 
 	private static String tab(int num) {

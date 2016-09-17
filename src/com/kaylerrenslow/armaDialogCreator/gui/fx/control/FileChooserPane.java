@@ -85,6 +85,7 @@ public class FileChooserPane extends HBox {
 				}
 			}
 		});
+		tfFile.setEditable(false);
 	}
 
 	public void setChosenFile(File f) {

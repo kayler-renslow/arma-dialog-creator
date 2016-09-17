@@ -21,6 +21,8 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.HeaderFileType;
+import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlGroupTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
@@ -31,6 +33,7 @@ import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.w3c.dom.Element;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,10 +59,62 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				project.setEditingDisplay(editingDisplay);
 			}
 			project.setProjectDescription(getProjectDescription());
+			fetchExportConfiguration();
 			loadResourceRegistry();
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new XmlParseException(e.getMessage());
+		}
+	}
+
+	private void fetchExportConfiguration() {
+		List<Element> exportConfigElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "export-config");
+		if (exportConfigElementList.size() <= 0) {
+			return;
+		}
+		Element exportConfigElement = exportConfigElementList.get(0);
+		List<Element> configAttributeElementList = XmlUtil.getChildElementsWithTagName(exportConfigElement, "config-attribute");
+		if (configAttributeElementList.size() == 0) {
+			return;
+		}
+		final ProjectExportConfiguration exportConfiguration = project.getExportConfiguration();
+		for (Element configAttributeElement : configAttributeElementList) {
+			String attributeName = configAttributeElement.getAttribute("name");
+			switch (attributeName) {
+				case "export-class-name": {
+					String exportClassName = XmlUtil.getImmediateTextContent(configAttributeElement);
+					exportConfiguration.setExportClassName(exportClassName);
+					break;
+				}
+				case "export-location": {
+					String exportLocation = XmlUtil.getImmediateTextContent(configAttributeElement);
+					exportConfiguration.setExportLocation(new File(exportLocation));
+					break;
+				}
+				case "place-adc-notice": {
+					boolean placeAdcNotice = XmlUtil.getImmediateTextContent(configAttributeElement).trim().equalsIgnoreCase("true");
+					exportConfiguration.setPlaceAdcNotice(placeAdcNotice);
+					break;
+				}
+				case "export-macros-to-file": {
+					boolean exportMacrosToFile = XmlUtil.getImmediateTextContent(configAttributeElement).trim().equalsIgnoreCase("true");
+					exportConfiguration.setExportMacrosToFile(exportMacrosToFile);
+					break;
+				}
+				case "export-file-type-ext": {
+					String fileTypeExt = XmlUtil.getImmediateTextContent(configAttributeElement).trim();
+					for(HeaderFileType type : HeaderFileType.values()){
+						if(type.getExtension().equalsIgnoreCase(fileTypeExt)){
+							exportConfiguration.setFileType(type);
+							break;
+						}
+					}
+					break;
+				}
+				default: {
+					break;
+				}
+			}
 		}
 	}
 
