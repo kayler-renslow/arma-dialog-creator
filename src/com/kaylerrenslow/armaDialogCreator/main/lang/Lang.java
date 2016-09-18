@@ -196,6 +196,7 @@ public interface Lang {
 		String NO_ITEMS_AVAILABLE = "No items available.";
 		String VISIT_LINK_IN_BROWSER_F = "Visit this link in your web browser:\n%s";
 		String ADC_EXPORT_NOTICE = "Exported via Arma Dialog Creator (https://github.com/kayler-renslow/arma-dialog-creator)";
+		String NO_DOCUMENTATION = "No Documentation.";
 	}
 
 	interface ContextMenu {

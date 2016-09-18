@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -37,4 +38,15 @@ public interface ControlPropertyLookupConstant {
 
 	/** Get documentation on the property. Each index corresponds to a newline (\n) separator being inserted in the end result. */
 	String[] getAbout();
+
+	default String getAboutText() {
+		String r = "";
+		if(getAbout() == null){
+			return Lang.Misc.NO_DOCUMENTATION;
+		}
+		for (String s : getAbout()) {
+			r += s + "\n";
+		}
+		return r.substring(0, r.length() - 1);//remove last newline
+	}
 }

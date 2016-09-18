@@ -55,7 +55,7 @@ public class ArmaDisplay implements Display<ArmaControl> {
 		displayProperties.addListener(new SetChangeListener<DisplayProperty>() {
 			@Override
 			public void onChanged(Change<? extends DisplayProperty> change) {
-				if(change.wasRemoved() && change.getElementAdded().getPropertyLookup() == DisplayPropertyLookup.IDD){
+				if(change.wasRemoved() && change.getElementRemoved().getPropertyLookup() == DisplayPropertyLookup.IDD){
 					throw new IllegalStateException("can't remove idd from display");
 				}
 			}

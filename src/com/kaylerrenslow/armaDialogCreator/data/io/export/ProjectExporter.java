@@ -35,8 +35,6 @@ public class ProjectExporter {
 	private static final String CONTROLS_BACKGROUND = "ControlsBackground";
 	private static final String OBJECTS = "Objects";
 	private static final String CONTROLS = "Controls";
-	private File macrosExportFile;
-	private File exportDisplayFile;
 
 	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
 		this.configuration = configuration;
@@ -55,18 +53,18 @@ public class ProjectExporter {
 		if (!configuration.getExportLocation().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation is not a directory");
 		}
-		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/adc export " + configuration.getExportClassName().replaceAll("$", "") + "/";
+		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/export " + configuration.getExportClassName().replaceAll("$", "") + "/";
 		final File exportDirectory = new File(exportDirectoryPath);
 
 		exportDirectory.mkdir();
 
-		exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(configuration));
+		final File exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(configuration));
 		exportDisplayFile.createNewFile();
 		final FileOutputStream fosDisplay = getFos(exportDisplayFile);
 
 		FileOutputStream fosMacros = null;
 		if (configuration.shouldExportMacrosToFile()) {
-			this.macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(configuration));
+			final File macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(configuration));
 			macrosExportFile.createNewFile();
 			fosMacros = getFos(macrosExportFile);
 		}
@@ -138,8 +136,6 @@ public class ProjectExporter {
 		displayBody += getExportClassString(CONTROLS, null, 1, body);
 
 		writeln(os, getExportClassString(configuration.getExportClassName(), null, 0, displayBody));
-
-		//todo write movingEnable and other properties
 
 	}
 

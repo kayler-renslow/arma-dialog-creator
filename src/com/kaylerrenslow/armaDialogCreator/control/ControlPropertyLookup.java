@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -287,7 +288,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 	}
 	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable ControlPropertyOption... options) {
-		this(propertyId, propertyName, propertyType, about == null ? strArr("No documentation.") : strArr(about), options);
+		this(propertyId, propertyName, propertyType, about == null ? strArr(Lang.Misc.NO_DOCUMENTATION) : strArr(about), options);
 	}
 	
 	@Override

@@ -12,6 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.StackPane;
@@ -30,6 +32,12 @@ public class BooleanChoiceBox extends StackPane{
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				choiceBox.setValue(newValue);
+			}
+		});
+		choiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				valueObserver.updateValue(newValue);
 			}
 		});
 

@@ -1,8 +1,8 @@
 **Added:**
-* save export configuration to project.xml 
+* tooltip to DisplayPropertiesEditorPane property name label
 
 **Changed:**
-* none
+* revised how export preview is updated (only updates when tab is selected)
 
 **Fixed:**
 * none

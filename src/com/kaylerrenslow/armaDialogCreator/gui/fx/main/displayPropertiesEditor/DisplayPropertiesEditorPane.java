@@ -19,6 +19,10 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -32,15 +36,14 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-
 /**
  @author Kayler
  Editor pane that edits {@link ArmaDisplay#getDisplayProperties()}
  Created on 09/17/2016. */
 public class DisplayPropertiesEditorPane extends StackPane {
 	private final ArmaDisplay display;
-	private final LinkedList<DisplayPropertyEditorPane> editorPanes = new LinkedList<>();
+	private final ObservableSet<DisplayPropertyEditor> editorPanes = FXCollections.observableSet();
+	private final ObservableSet<DisplayPropertyEditor> editorPanesRO = FXCollections.unmodifiableObservableSet(editorPanes);
 	private final VBox root = new VBox(5);
 	private final MenuButton menuButtonAddDisplayProperty = new MenuButton(Lang.DisplayPropertiesEditorPane.ADD_DISPLAY_PROPERTY);
 
@@ -51,6 +54,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 		initRootPane();
 		initAddDisplayPropertyMB();
 		this.display = display;
+		addPropertyEditors();
 		display.getDisplayProperties().addListener(new SetChangeListener<DisplayProperty>() {
 			@Override
 			public void onChanged(Change<? extends DisplayProperty> change) {
@@ -61,7 +65,6 @@ public class DisplayPropertiesEditorPane extends StackPane {
 				}
 			}
 		});
-		addPropertyEditors();
 	}
 
 	private void initAddDisplayPropertyMB() {
@@ -72,7 +75,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			mi.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					addPropertyEditor(propertyLookup.getPropertyWithNoData());
+					display.getDisplayProperties().add(propertyLookup.getPropertyWithNoData());
 				}
 			});
 			menuButtonAddDisplayProperty.getItems().add(mi);
@@ -97,8 +100,8 @@ public class DisplayPropertiesEditorPane extends StackPane {
 	}
 
 	private void removePropertyEditor(@NotNull DisplayProperty property) {
-		DisplayPropertyEditorPane found = null;
-		for (DisplayPropertyEditorPane pane : editorPanes) {
+		DisplayPropertyEditor found = null;
+		for (DisplayPropertyEditor pane : editorPanes) {
 			if (pane.getDisplayProperty().equals(property)) {
 				found = pane;
 				break;
@@ -112,6 +115,18 @@ public class DisplayPropertiesEditorPane extends StackPane {
 		disableAddPropertyMenuItem(property, false);
 	}
 
+	private void addPropertyEditor(@NotNull DisplayProperty property) {
+		for (DisplayPropertyEditor editorPane : editorPanes) {
+			if (editorPane.getDisplayProperty().getPropertyLookup() == property.getPropertyLookup()) {
+				return;
+			}
+		}
+		DisplayPropertyEditorPane newEditor = new DisplayPropertyEditorPane(property, this);
+		editorPanes.add(newEditor);
+		root.getChildren().add(newEditor.getRootNode());
+		disableAddPropertyMenuItem(property, true);
+	}
+
 	private void disableAddPropertyMenuItem(@NotNull DisplayProperty property, boolean disable) {
 		for (MenuItem mi : menuButtonAddDisplayProperty.getItems()) {
 			if (mi.getUserData() == property.getPropertyLookup()) {
@@ -121,16 +136,24 @@ public class DisplayPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	private void addPropertyEditor(@NotNull DisplayProperty property) {
-		editorPanes.add(new DisplayPropertyEditorPane(property, this));
-		root.getChildren().add(editorPanes.getLast().getRootNode());
-		disableAddPropertyMenuItem(property, true);
+	@NotNull
+	public ObservableSet<DisplayPropertyEditor> getEditorsReadOnlySet() {
+		return editorPanesRO;
 	}
 
-	private static class DisplayPropertyEditorPane {
+	public interface DisplayPropertyEditor {
+		@NotNull
+		DisplayProperty getDisplayProperty();
+
+		@NotNull
+		Node getRootNode();
+	}
+
+	private static class DisplayPropertyEditorPane implements DisplayPropertyEditor {
 		private final HBox hBox;
 		private DisplayProperty displayProperty;
 
+		@SuppressWarnings("unchecked")
 		public DisplayPropertyEditorPane(@NotNull DisplayProperty property, @NotNull DisplayPropertiesEditorPane editorPane) {
 			this.displayProperty = property;
 			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
@@ -139,6 +162,12 @@ public class DisplayPropertiesEditorPane extends StackPane {
 				@Override
 				public void valueUpdated(@NotNull ReadOnlyValueObserver observer, Object oldValue, Object newValue) {
 					property.setValue((SerializableValue) newValue);
+				}
+			});
+			displayProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+					editor.setValue(newValue);
 				}
 			});
 			if (editor.displayFullWidth()) {
@@ -150,20 +179,23 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			btnRemoveProperty.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					editorPane.removePropertyEditor(property);
+					editorPane.display.getDisplayProperties().remove(property);
 				}
 			});
-			hBox = new HBox(5, btnRemoveProperty, new Label(property.getName() + "="), editor.getRootNode());
-
+			final Label lblPropertyName = new Label(property.getName() + "=");
+			hBox = new HBox(5, btnRemoveProperty, lblPropertyName, editor.getRootNode());
+			lblPropertyName.setTooltip(new Tooltip(property.getPropertyLookup().getAboutText()));
 			hBox.setAlignment(Pos.CENTER_LEFT);
 		}
 
 		@NotNull
+		@Override
 		public Node getRootNode() {
 			return hBox;
 		}
 
 		@NotNull
+		@Override
 		public DisplayProperty getDisplayProperty() {
 			return displayProperty;
 		}

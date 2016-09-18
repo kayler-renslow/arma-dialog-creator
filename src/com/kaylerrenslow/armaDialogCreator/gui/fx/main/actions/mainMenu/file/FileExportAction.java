@@ -25,7 +25,9 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -79,8 +81,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		private boolean cancel = false;
 		private DisplayType selectedDisplayType = DisplayType.DEFAULT;
 
-		private final Insets padding10 = new Insets(10);
-		private final Insets padding10t = new Insets(10,0,10,0);
+		private final Insets padding10t = new Insets(10, 0, 10, 0);
 		private final ProjectExportConfiguration configuration;
 
 		/*display properties things*/
@@ -96,14 +97,11 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
 		private final ValueObserver<HeaderFileType> headerFileTypeValueObserver = new ValueObserver<>(null);
 
-		/*export preview things*/
-		/** group that should be notified when the export preview should be updated */
-		private final UpdateListenerGroup<Object> updatePreviewGroup = new UpdateListenerGroup<>();
-
 		public ExportProjectConfigurationDialog(@NotNull Project project) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
 			btnOk.setText(Lang.Popups.ExportProject.OK_BUTTON_EXPORT);
 			configuration = project.getExportConfiguration();
+
 			setStageSize(720, 480);
 			myRootElement.setPadding(new Insets(10d));
 
@@ -126,9 +124,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			initTabDisplayProperties(tabDisplayProperties);
 			initTabExportParameters(tabExportParameters);
 			initTabExportPreview(tabExportPreview);
-
-			updateExportPreview();
-
 		}
 
 		/*
@@ -149,7 +144,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 					configuration.setExportClassName(newValue);
-					updateExportPreview();
 				}
 			});
 			HBox.setHgrow(inputFieldClassName, Priority.ALWAYS);
@@ -180,7 +174,8 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			tabRoot.getChildren().add(hboxDisplayType);
 
 			/*display properties*/
-			tabRoot.getChildren().add(new DisplayPropertiesEditorPane(configuration.getProject().getEditingDisplay()));
+			DisplayPropertiesEditorPane editorPane = new DisplayPropertiesEditorPane(configuration.getProject().getEditingDisplay());
+			tabRoot.getChildren().add(editorPane);
 		}
 
 		/*
@@ -218,7 +213,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
 					configuration.setExportMacrosToFile(selected);
 					exportMacrosToFileObserver.updateValue(selected);
-					updateExportPreview();
 				}
 			});
 			tabRoot.getChildren().add(checkBoxExportMacrosToFile);
@@ -226,10 +220,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			/*export file extension*/
 			final ToggleGroup toggleGroupFileExt = new ToggleGroup();
 			final FlowPane flowPaneFileExt = new FlowPane(Orientation.HORIZONTAL, 5, 10);
-			for(HeaderFileType headerFileType : HeaderFileType.values()){
+			for (HeaderFileType headerFileType : HeaderFileType.values()) {
 				final RadioButton radioButtonFileExt = new RadioButton(headerFileType.getExtension());
 				radioButtonFileExt.setToggleGroup(toggleGroupFileExt);
-				if(headerFileType == configuration.getHeaderFileType()){
+				if (headerFileType == configuration.getHeaderFileType()) {
 					toggleGroupFileExt.selectToggle(radioButtonFileExt);
 				}
 				radioButtonFileExt.setUserData(headerFileType);
@@ -245,7 +239,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<HeaderFileType> observer, HeaderFileType oldValue, HeaderFileType newValue) {
 					configuration.setFileType(newValue);
-					updateExportPreview();
 				}
 			});
 			tabRoot.getChildren().add(new VBox(5, new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_FILE_EXTENSION), flowPaneFileExt));
@@ -259,10 +252,9 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 					configuration.setPlaceAdcNotice(newValue);
-					updateExportPreview();
 				}
 			});
-			tabRoot.getChildren().add(new HBox(5, checkBoxPlaceAdcNotice, new ImageView(ImagePaths.ICON_HEART)));
+			tabRoot.getChildren().add(new HBox(2, checkBoxPlaceAdcNotice, new ImageView(ImagePaths.ICON_HEART)));
 		}
 
 		/*
@@ -297,16 +289,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			VBox.setVgrow(textAreaMacros, Priority.ALWAYS);
 
 
-			final ValueListener fileLblListener = new ValueListener() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
-					lblDisplayFileExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
-					lblMacrosFileExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
-				}
-			};
-			classNameObserver.addValueListener(fileLblListener);
-			headerFileTypeValueObserver.addValueListener(fileLblListener);
-
 			exportMacrosToFileObserver.addValueListener(new ValueListener<Boolean>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean export) {
@@ -317,10 +299,15 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 					}
 				}
 			});
-
-			updatePreviewGroup.addListener(new UpdateListener<Object>() {
+			tabExportPreview.selectedProperty().addListener(new ChangeListener<Boolean>() {
 				@Override
-				public void update(Object data) {
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					if(!selected){
+						return;
+					}
+					lblDisplayFileExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
+					lblMacrosFileExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
+
 					final ByteArrayOutputStream outDisplay = new ByteArrayOutputStream();
 					final ByteArrayOutputStream outMacros = new ByteArrayOutputStream();
 					try {
@@ -344,10 +331,6 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			if (configuration.shouldExportMacrosToFile()) {
 				splitPane.getItems().add(vboxMacrosPreview);
 			}
-		}
-
-		private void updateExportPreview() {
-			updatePreviewGroup.update("");
 		}
 
 		@Override
