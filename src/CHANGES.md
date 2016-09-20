@@ -1,8 +1,8 @@
 **Added:**
-* tooltip to DisplayPropertiesEditorPane property name label
+* edit project menu option
 
 **Changed:**
-* revised how export preview is updated (only updates when tab is selected)
+* none
 
 **Fixed:**
 * none

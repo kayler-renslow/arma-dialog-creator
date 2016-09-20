@@ -50,6 +50,7 @@ public interface Lang {
 		String EDIT_UNDO_F = "Undo %s";
 		String EDIT_REDO_F = "Redo %s";
 		String EDIT_MACROS = "Edit Macros";
+		String EDIT_PROJECT = "Edit Project";
 
 		String VIEW = "View";
 		String VIEW_PREVIEW = "Arma Preview";

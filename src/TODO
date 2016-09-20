@@ -15,25 +15,19 @@ Features:
 General:
 -----------------------------------
 >create documentation for all java classes and **well** document it
->when choosing a macro in control property editor, there should be a way to take off the macro (use controlProperty.setToMacro(null))
 >for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
 >Arma 3 won't allow .png images. All images must be .paa, or .jpg. When we do an export, convert all .png to .paa
     it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     https://resources.bisimulations.com/wiki/Dialogs_Static#Images
 >preview's resolution should be independent from the editor.
 >for extending control, make sure that you implement the xml loading feature to set extended control as well
->instead of converting the .paa and saving it in the project folder, store it in a universal folder where the image is documented on where it was converted from
-    this way, the image doesn't get converted more than one per project and you won't need to create the project folder in order to save the .paa
->in project folder, store links to converted .paa images in resources tag or something.
 
 
 >for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
->for exporting display, write enableSimulation and other properties (rename ControlProperty class to ControlClassProperty?)
 
 >for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     -also, we need to save display's class name and make sure that is put inside the export dialog
 >add "Export Complete" popup after export is done
->for export dialog, choose file extension (choose from .h, .hh, .hpp)
 
 Bugs:
 -----------------------------------
