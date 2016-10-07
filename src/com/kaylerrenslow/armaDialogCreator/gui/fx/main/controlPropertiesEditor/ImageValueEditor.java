@@ -335,7 +335,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			myRootElement.getChildren().add(new Label(Lang.ValueEditors.ImageValueEditor.A3_TOOLS_DIR_NOT_SET));
 			myRootElement.getChildren().add(btnLocate);
 
-			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, false));
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, false));
 		}
 
 		@Nullable
@@ -354,7 +354,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			myRootElement.getChildren().addAll(new HBox(10, new ImageView("/com/kaylerrenslow/armaDialogCreator/gui/img/icons/error64.png"), new Label(message)));
 			myStage.setMinWidth(340d);
 
-			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, false));
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, false));
 		}
 	}
 

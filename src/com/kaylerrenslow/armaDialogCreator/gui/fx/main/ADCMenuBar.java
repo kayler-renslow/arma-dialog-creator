@@ -19,7 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.Settings
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateMacroAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateNewControlAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditProjectAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditExportConfigAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
@@ -58,7 +58,7 @@ class ADCMenuBar extends MenuBar {
 	}
 	private final MenuItem edit_viewChanges = addOnAction(new MenuItem(MainMenuBar.EDIT_CHANGES), new EditViewChangesAction());
 	private final MenuItem edit_macros = addOnAction(new MenuItem(MainMenuBar.EDIT_MACROS), new EditMacrosAction());
-	private final MenuItem edit_project = addOnAction(new MenuItem(MainMenuBar.EDIT_PROJECT), new EditProjectAction());
+	private final MenuItem edit_exportConfig = addOnAction(new MenuItem(MainMenuBar.EDIT_EXPORT_CONFIG), new EditExportConfigAction());
 
 
 	/*View*/
@@ -116,7 +116,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem help_wiki = addOnAction(new MenuItem(MainMenuBar.HELP_WIKI), new WikiUrlAction());
 
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject);
-	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_project);
+	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_exportConfig);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, settings_configureDirs);
 	private final Menu menuCreate = new Menu(MainMenuBar.CREATE, null, create_macro, create_control_class);

@@ -1,5 +1,6 @@
 **Added:**
-* edit project menu option
+* preloader
+* changes to export config things (don't remember what they were)
 
 **Changed:**
 * none

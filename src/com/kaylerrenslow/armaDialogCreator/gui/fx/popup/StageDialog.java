@@ -14,7 +14,6 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Parent;
 import javafx.scene.control.Separator;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -35,13 +34,13 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox>{
 		this.myRootElement = myRootDialogElement;
 		super.myRootElement.setPadding(new Insets(10));
 		VBox.setVgrow(myRootElement, Priority.ALWAYS);
-		super.myRootElement.getChildren().addAll(myRootDialogElement, new Separator(Orientation.HORIZONTAL), getResponseFooter(canCancel, canOk, hasHelp));
+		super.myRootElement.getChildren().addAll(myRootDialogElement, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(canCancel, canOk, hasHelp));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 	}
 
 	@Override
-	protected final BorderPane getResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
-		return super.getResponseFooter(addCancel, addOk, addHelpButton);
+	protected final GenericResponseFooter getBoundResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
+		return super.getBoundResponseFooter(addCancel, addOk, addHelpButton);
 	}
 
 	/** Implementation is: {@link Stage#showAndWait()} */

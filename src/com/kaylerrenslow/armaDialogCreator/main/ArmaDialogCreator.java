@@ -22,6 +22,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Application;
+import javafx.application.Preloader;
 import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
@@ -37,7 +38,7 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 
-	public enum ProgramArguments{
+	public enum ProgramArguments {
 		ShowDebugFeatures("-showDebugFeatures");
 
 		public final String argText;
@@ -62,7 +63,8 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
-		ArmaDialogCreator.launch(args);
+		ExceptionHandler.init();
+		ADCPreloader.launch(ArmaDialogCreator.class, args);
 	}
 
 	private Stage primaryStage;
@@ -72,10 +74,17 @@ public final class ArmaDialogCreator extends Application {
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
 
 	@Override
+	public void init() throws Exception {
+		for (int i = 0; i <= 100; i++) {
+			Thread.sleep(100);
+			notifyPreloader(new Preloader.ProgressNotification(i / 100.0));
+		}
+
+	}
+
+	@Override
 	public void start(Stage primaryStage) throws Exception {
 		//load this stuff first
-		ExceptionHandler.init();
-
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
@@ -94,6 +103,7 @@ public final class ArmaDialogCreator extends Application {
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		loadNewProject();
+
 	}
 
 	public static void loadNewProject() {

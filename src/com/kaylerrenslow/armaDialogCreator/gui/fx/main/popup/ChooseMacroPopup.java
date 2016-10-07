@@ -101,7 +101,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 			myRootElement.getChildren().addAll(hbSplit);
 		}
 		myStage.sizeToScene();
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, true));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 	}
 
 	@Override

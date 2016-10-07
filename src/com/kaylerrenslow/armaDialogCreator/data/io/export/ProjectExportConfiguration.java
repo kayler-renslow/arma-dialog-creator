@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.data.io.export;
 
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -21,6 +22,8 @@ import java.io.File;
 public class ProjectExportConfiguration {
 
 	private static final String DEFAULT_CLASS_NAME = "MyDialog";
+	private static final String DEFAULT_EXPORT_CONFIG_NAME = "Default";
+	private static final String UNSET_EXPORT_CONFIG_NAME = "Untitled config";
 
 	private String exportClassName;
 	private File exportLocation;
@@ -28,6 +31,7 @@ public class ProjectExportConfiguration {
 	private boolean placeAdcNotice;
 	private boolean exportMacrosToFile;
 	private HeaderFileType fileType;
+	private String exportConfigName;
 
 	public ProjectExportConfiguration(
 			@NotNull String exportClassName,
@@ -37,12 +41,34 @@ public class ProjectExportConfiguration {
 			boolean exportMacrosToFile,
 			@NotNull HeaderFileType fileType
 	) {
+		this(exportClassName, exportLocation, project, placeAdcNotice, exportMacrosToFile, fileType, null);
+	}
+
+	public ProjectExportConfiguration(
+			@NotNull String exportClassName,
+			@NotNull File exportLocation,
+			@NotNull Project project,
+			boolean placeAdcNotice,
+			boolean exportMacrosToFile,
+			@NotNull HeaderFileType fileType,
+			@Nullable String exportConfigName
+	) {
 		this.exportClassName = exportClassName;
 		this.exportLocation = exportLocation;
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
 		this.exportMacrosToFile = exportMacrosToFile;
 		this.fileType = fileType;
+		setExportConfigName(exportConfigName);
+	}
+
+	@NotNull
+	public String getExportConfigName() {
+		return exportConfigName;
+	}
+
+	public void setExportConfigName(@Nullable String exportConfigName) {
+		this.exportConfigName = exportConfigName == null ? UNSET_EXPORT_CONFIG_NAME : exportConfigName;
 	}
 
 	public boolean shouldExportMacrosToFile() {
@@ -97,6 +123,7 @@ public class ProjectExportConfiguration {
 		this.exportMacrosToFile = exportMacrosToFile;
 	}
 
+	@NotNull
 	public static ProjectExportConfiguration getDefaultConfiguration(@NotNull Project project) {
 		return new ProjectExportConfiguration(
 				DEFAULT_CLASS_NAME,
@@ -104,8 +131,14 @@ public class ProjectExportConfiguration {
 				project,
 				false,
 				false,
-				HeaderFileType.DEFAULT
-				);
+				HeaderFileType.DEFAULT,
+				DEFAULT_EXPORT_CONFIG_NAME
+		);
+	}
+
+	@NotNull
+	public ProjectExportConfiguration copy() {
+		return new ProjectExportConfiguration(this.exportClassName, exportLocation, project, placeAdcNotice, exportMacrosToFile, fileType, exportConfigName);
 	}
 
 	@Override

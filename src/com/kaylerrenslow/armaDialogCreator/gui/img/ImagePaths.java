@@ -25,4 +25,5 @@ public class ImagePaths {
 	public static final String ICON_UNDO = prefix + "icons/undo.png";
 	public static final String ICON_REDO = prefix + "icons/redo.png";
 	public static final String ICON_HEART = prefix + "icons/heart.png";
+	public static final String PRELOAD_SCREEN = prefix + "preload_screen.png";
 }

@@ -66,7 +66,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		initTabPane();
 
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(false, true, true));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, true));
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
@@ -255,7 +255,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 										new Label(Lang.ProjectInitWindow.REASON),
 										taError,
 										new Separator(Orientation.HORIZONTAL),
-										getResponseFooter(false, true, false)
+										getBoundResponseFooter(false, true, false)
 								);
 
 								super.show();

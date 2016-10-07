@@ -116,7 +116,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getResponseFooter(true, true, true));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 
 		myStage.setMinWidth(480d);
 		myStage.setWidth(500d);

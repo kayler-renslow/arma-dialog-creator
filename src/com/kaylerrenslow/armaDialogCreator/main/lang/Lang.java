@@ -50,7 +50,7 @@ public interface Lang {
 		String EDIT_UNDO_F = "Undo %s";
 		String EDIT_REDO_F = "Redo %s";
 		String EDIT_MACROS = "Edit Macros";
-		String EDIT_PROJECT = "Edit Project";
+		String EDIT_EXPORT_CONFIG = "Edit Export Configuration";
 
 		String VIEW = "View";
 		String VIEW_PREVIEW = "Arma Preview";
@@ -85,6 +85,7 @@ public interface Lang {
 		String BTN_HELP_TOOLTIP = "Get help with this dialog.";
 		String BTN_CANCEL = "Cancel";
 		String BTN_OK = "OK";
+		String BTN_APPLY = "Apply";
 		String GENERIC_POPUP_TITLE = "Notification";
 
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.CanvasViewColorsPopup} */

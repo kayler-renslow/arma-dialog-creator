@@ -16,8 +16,8 @@ import javafx.event.EventHandler;
 /**
  Created by Kayler on 09/19/2016.
  */
-public class EditProjectAction implements EventHandler<ActionEvent> {
-	public EditProjectAction() {
+public class EditExportConfigAction implements EventHandler<ActionEvent> {
+	public EditExportConfigAction() {
 	}
 	@Override
 	public void handle(ActionEvent event) {
