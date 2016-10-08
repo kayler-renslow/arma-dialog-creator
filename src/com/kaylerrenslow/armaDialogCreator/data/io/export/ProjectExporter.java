@@ -51,7 +51,7 @@ public class ProjectExporter {
 
 	public void export() throws IOException {
 		if (!configuration.getExportLocation().isDirectory()) {
-			throw new IllegalArgumentException("exportLocation is not a directory");
+			throw new IllegalArgumentException("exportLocation ('"+configuration.getExportLocation().getPath()+"') is not a directory");
 		}
 		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/export " + configuration.getExportClassName().replaceAll("$", "") + "/";
 		final File exportDirectory = new File(exportDirectoryPath);

@@ -83,12 +83,16 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			switch (attributeName) {
 				case "export-class-name": {
 					String exportClassName = XmlUtil.getImmediateTextContent(configAttributeElement);
-					exportConfiguration.setExportClassName(exportClassName);
+					exportConfiguration.setExportClassName(exportClassName.trim());
 					break;
 				}
 				case "export-location": {
 					String exportLocation = XmlUtil.getImmediateTextContent(configAttributeElement);
-					exportConfiguration.setExportLocation(new File(exportLocation));
+					File exportLocationFile = new File(exportLocation.trim());
+					if(!exportLocationFile.isDirectory()){
+						return;
+					}
+					exportConfiguration.setExportLocation(exportLocationFile);
 					break;
 				}
 				case "place-adc-notice": {

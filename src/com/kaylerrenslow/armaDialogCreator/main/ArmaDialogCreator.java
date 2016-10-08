@@ -19,14 +19,15 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.application.Preloader;
 import javafx.event.EventHandler;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
@@ -38,12 +39,17 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 
-	public enum ProgramArguments {
-		ShowDebugFeatures("-showDebugFeatures");
+	/** Closes the application after asking if user wants to save. */
+	public static void closeApplication() {
+		Platform.exit();
+	}
+
+	public enum ProgramArgument {
+		ShowDebugFeatures("-showDebugFeatures"), LOG_INIT_PROGRESS("-logInitProgress");
 
 		public final String argText;
 
-		ProgramArguments(String argText) {
+		ProgramArgument(String argText) {
 			this.argText = argText;
 		}
 	}
@@ -64,7 +70,7 @@ public final class ArmaDialogCreator extends Application {
 			return;
 		}
 		ExceptionHandler.init();
-		ADCPreloader.launch(ArmaDialogCreator.class, args);
+		launch(args);
 	}
 
 	private Stage primaryStage;
@@ -75,11 +81,22 @@ public final class ArmaDialogCreator extends Application {
 
 	@Override
 	public void init() throws Exception {
-		for (int i = 0; i <= 100; i++) {
-			Thread.sleep(100);
-			notifyPreloader(new Preloader.ProgressNotification(i / 100.0));
+		int progress = 0;
+
+		applicationDataManager = new ApplicationDataManager();
+
+		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
+
+		for (;progress < 100; progress++) {
+			Thread.sleep(40);
+			notifyPreloader(new Preloader.ProgressNotification(progress / 100.0));
 		}
 
+	}
+
+	@Override
+	public void stop() throws Exception {
+		ApplicationDataManager.getInstance().applicationExitSave();
 	}
 
 	@Override
@@ -88,19 +105,13 @@ public final class ArmaDialogCreator extends Application {
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
-		primaryStage.getIcons().add(new Image(ImagePaths.ICON_APP));
+		primaryStage.getIcons().add(Images.IMAGE_ADC_ICON);
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
-
-		//now can load save manager
-		applicationDataManager = new ApplicationDataManager();
 
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
 
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
-
-		//load global resources
-		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		loadNewProject();
 
@@ -169,11 +180,15 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.getParameters();
 	}
 
+	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument){
+		return getLaunchParameters().getUnnamed().contains(argument.argText);
+	}
+
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
 
 		@Override
 		public void handle(WindowEvent event) {
-			ApplicationDataManager.getInstance().applicationExitSave();
+
 		}
 	}
 }

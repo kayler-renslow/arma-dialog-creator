@@ -21,6 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,13 +32,16 @@ import java.util.LinkedList;
  @author Kayler
  A menu button that will make a popup to choose a macro. There is also a drop down menu of recently used macros of the same type to save time.
  Created on 07/09/2016. */
-class MacroGetterButton<V extends SerializableValue> extends HBox {
+public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
-	private Hyperlink hyplinkChosenMacro = new Hyperlink();
+	private final Hyperlink hyplinkChosenMacro = new Hyperlink();
+	private final Label lblNoChosenMacro = new Label("?");
+	private final StackPane stackPaneChosenMacroText = new StackPane();
 
 	private final MenuItem miChooseMacro = new MenuItem(Lang.Macros.CHOOSE_MACRO);
+	private final MenuItem miClearMacro = new MenuItem(Lang.Macros.CLEAR_MACRO);
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
 
 	private ValueObserver<Macro<V>> macroValueObserver;
@@ -60,7 +64,7 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 		SplitMenuButton menuButton = new SplitMenuButton();
 		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
 		setAlignment(Pos.CENTER_LEFT);
-		final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), hyplinkChosenMacro);
+		final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), stackPaneChosenMacroText);
 		hboxMacroLbl.setAlignment(Pos.CENTER_LEFT);
 		getChildren().addAll(menuButton, hboxMacroLbl);
 
@@ -87,6 +91,12 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 			}
 		});
 		miChooseMacro.setOnAction(menuButton.getOnAction());
+		miClearMacro.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				setToMacro(null);
+			}
+		});
 		LinkedList<Macro<?>> recentMacros = recentMacrosMap.get(clazz);
 		if (recentMacros == null) {
 			recentMacros = new LinkedList<>();
@@ -97,7 +107,7 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 
 	private void updateRecentMacrosList(SplitMenuButton menuButton, LinkedList<Macro<?>> recentMacros) {
 		menuButton.getItems().clear();
-		menuButton.getItems().addAll(miChooseMacro, miSeparator);
+		menuButton.getItems().addAll(miChooseMacro, miClearMacro, miSeparator);
 
 		if (recentMacros.size() == 0) {
 			MenuItem miNoRecentMacros = new MenuItem(Lang.Popups.ChooseMacro.NO_RECENT_MACROS);
@@ -121,12 +131,12 @@ class MacroGetterButton<V extends SerializableValue> extends HBox {
 	}
 
 	private void setToMacro(@Nullable Macro<V> macro) {
+		stackPaneChosenMacroText.getChildren().clear();
 		if (macro == null) {
-			hyplinkChosenMacro.setText("?");
-			hyplinkChosenMacro.setDisable(true);
+			stackPaneChosenMacroText.getChildren().add(lblNoChosenMacro);
 		} else {
+			stackPaneChosenMacroText.getChildren().add(hyplinkChosenMacro);
 			hyplinkChosenMacro.setText(macro.getKey());
-			hyplinkChosenMacro.setDisable(false);
 		}
 		macroValueObserver.updateValue(macro);
 	}

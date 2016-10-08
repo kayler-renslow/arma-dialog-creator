@@ -21,7 +21,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.FoundChild;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeUtil;
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -589,11 +589,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 
 	static ImageView createFolderIcon() {
-		return new ImageView(ImagePaths.ICON_FOLDER);
+		return new ImageView(Images.IMAGE_ICON_FOLDER);
 	}
 
 	static ImageView createCompositeIcon() {
-		return new ImageView(ImagePaths.ICON_COMPOSITE);
+		return new ImageView(Images.IMAGE_ICON_COMPOSITE);
 	}
 
 	private static class BooleanEdit {

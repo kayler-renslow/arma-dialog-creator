@@ -38,70 +38,70 @@ import java.util.List;
  Used for displaying known macros of a given type and allowing the user to choose which macro they want.
  Created on 08/09/2016. */
 public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VBox> {
-	
+
 	private static final Font TITLE_FONT = Font.font(15d);
 	private final ListView<Macro<V>> listViewMacros = new ListView<>();
-	
+
 	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
 		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.Popups.ChooseMacro.POPUP_TITLE);
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
-		
+
 		initRootElement(macroClassType);
 		myStage.setResizable(false);
 	}
-	
+
 	private void initRootElement(Class<V> macroClassType) {
 		myRootElement.setPadding(new Insets(10));
 		final Label lblChooseMacro = new Label(Lang.Popups.ChooseMacro.CHOOSE_MACRO_TITLE);
 		lblChooseMacro.setFont(TITLE_FONT);
 		myRootElement.getChildren().add(lblChooseMacro);
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
-		
+
+		listViewMacros.setPlaceholder(new Label(Lang.Popups.ChooseMacro.NO_AVAILABLE_MACROS));
+		listViewMacros.setMinWidth(250d);
 		List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
 		for (Macro macro : macroList) {
 			if (macroClassType.isInstance(macro.getValue())) {
 				listViewMacros.getItems().add(macro);
 			}
 		}
-		if (listViewMacros.getItems().size() == 0) {
-			listViewMacros.setDisable(true);
-			Label lblMessage = new Label(Lang.Popups.ChooseMacro.NO_AVAILABLE_MACROS);
-			myRootElement.getChildren().addAll(new Label(Lang.Popups.ChooseMacro.AVAILABLE_MACROS), lblMessage);
-		} else {
-			HBox hbSplit = new HBox(5);
-			Label lblListViewMacros = new Label(Lang.Popups.ChooseMacro.AVAILABLE_MACROS, listViewMacros);
-			lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
-			
-			final double height = 100;
-			VBox vbRight = new VBox(10);
-			TextArea taComment = new TextArea();
-			taComment.setPrefHeight(height);
-			taComment.setEditable(false);
-			Label lblComment = new Label(Lang.Macros.COMMENT, taComment);
-			lblComment.setContentDisplay(ContentDisplay.BOTTOM);
-			TextArea taValue = new TextArea();
-			taValue.setEditable(false);
-			taValue.setPrefHeight(height);
-			Label lblValue = new Label(Lang.Macros.VALUE, taValue);
-			lblValue.setContentDisplay(ContentDisplay.BOTTOM);
-			
-			vbRight.getChildren().addAll(lblValue, lblComment);
-			
-			hbSplit.getChildren().addAll(lblListViewMacros, vbRight);
-			listViewMacros.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Macro>() {
-				@Override
-				public void changed(ObservableValue<? extends Macro> observable, Macro oldValue, Macro selected) {
-					if (selected != null) {
-						taComment.setText(selected.getComment());
-						taValue.setText(selected.getValue().toString());
-					}
+
+		HBox hbSplit = new HBox(5);
+		Label lblListViewMacros = new Label(Lang.Popups.ChooseMacro.AVAILABLE_MACROS, listViewMacros);
+		lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
+
+		final double height = 100;
+		VBox vbRight = new VBox(10);
+		TextArea taComment = new TextArea();
+		taComment.setPrefHeight(height);
+		taComment.setEditable(false);
+		Label lblComment = new Label(Lang.Macros.COMMENT, taComment);
+		lblComment.setContentDisplay(ContentDisplay.BOTTOM);
+		TextArea taValue = new TextArea();
+		taValue.setEditable(false);
+		taValue.setPrefHeight(height);
+		Label lblValue = new Label(Lang.Macros.VALUE, taValue);
+		lblValue.setContentDisplay(ContentDisplay.BOTTOM);
+
+		vbRight.getChildren().addAll(lblValue, lblComment);
+
+		hbSplit.getChildren().addAll(lblListViewMacros, vbRight);
+		listViewMacros.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Macro>() {
+			@Override
+			public void changed(ObservableValue<? extends Macro> observable, Macro oldValue, Macro selected) {
+				if (selected != null) {
+					taComment.setText(selected.getComment());
+					taValue.setText(selected.getValue().toString());
 				}
-			});
-			myRootElement.getChildren().addAll(hbSplit);
-		}
+			}
+		});
+		myRootElement.getChildren().addAll(hbSplit);
+
+		final boolean noMacros = listViewMacros.getItems().size() == 0;
 		myStage.sizeToScene();
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
+		btnOk.setDisable(noMacros);
 	}
 
 	@Override
@@ -114,13 +114,13 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 		listViewMacros.getSelectionModel().clearSelection();
 		close();
 	}
-	
+
 	/** Return the macro chosen. If null, no macro was chosen. */
 	@Nullable
 	public Macro<V> getChosenMacro() {
 		return listViewMacros.getSelectionModel().getSelectedItem();
 	}
-	
+
 	@Override
 	public void show() {
 		showAndWait();

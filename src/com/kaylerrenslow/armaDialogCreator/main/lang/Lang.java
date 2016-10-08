@@ -42,6 +42,7 @@ public interface Lang {
 		String FILE_CLOSE_PROJECT = "Close Project";
 		String FILE_SAVE = "Save";
 		String FILE_EXPORT = "Export";
+		String FILE_EXIT = "Exit";
 
 		String EDIT = "Edit";
 		String EDIT_CHANGES = "View Changes";
@@ -87,6 +88,7 @@ public interface Lang {
 		String BTN_OK = "OK";
 		String BTN_APPLY = "Apply";
 		String GENERIC_POPUP_TITLE = "Notification";
+		String BTN_CLOSE = "Close";
 
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.CanvasViewColorsPopup} */
 		interface Colors {
@@ -264,6 +266,7 @@ public interface Lang {
 		String COMMENT = "Comment";
 		String VALUE = "Value";
 		String CHOOSE_MACRO = "Choose Macro";
+		String CLEAR_MACRO = "Clear Macro";
 
 	}
 

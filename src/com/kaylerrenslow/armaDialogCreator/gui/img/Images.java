@@ -10,21 +10,14 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.img;
 
+import javafx.scene.image.Image;
+
 /**
- Created by Kayler on 05/17/2016.
+ Created by Kayler on 10/07/2016.
  */
-public class ImagePaths {
-	private static final String prefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
-	public static final String BG_1 = prefix + "backgroundImages/image1.jpg";
-	public static final String BG_2 = prefix + "backgroundImages/image2.jpg";
-	public static final String BG_3 = prefix + "backgroundImages/image3.jpg";
+public class Images {
+	public static final Image IMAGE_ADC_ICON = new Image(ImagePaths.ICON_APP);
 
-	public static final String ICON_FOLDER = prefix + "icons/folder.png";
-	public static final String ICON_APP = prefix + "icons/app.png";
-	public static final String ICON_COMPOSITE = prefix + "icons/composite.png";
-	public static final String ICON_UNDO = prefix + "icons/undo.png";
-	public static final String ICON_REDO = prefix + "icons/redo.png";
-	public static final String ICON_HEART = prefix + "icons/heart.png";
-
-	public static final String PRELOAD_SCREEN = prefix + "preload_screen.png";
+	public static final Image IMAGE_ICON_FOLDER = new Image(ImagePaths.ICON_FOLDER);
+	public static final Image IMAGE_ICON_COMPOSITE = new Image(ImagePaths.ICON_COMPOSITE);
 }

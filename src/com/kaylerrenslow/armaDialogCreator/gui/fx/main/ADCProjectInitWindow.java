@@ -66,7 +66,9 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		initTabPane();
 
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, true));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
+
+		btnCancel.setText(Lang.Popups.BTN_CLOSE);
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
@@ -74,6 +76,11 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		myStage.setResizable(false);
 
 		this.btnOk.setPrefWidth(130d);
+
+
+		//update ok button's text
+		tabPane.getSelectionModel().selectLast();
+		tabPane.getSelectionModel().selectFirst();
 	}
 
 	private void initTabPane() {
@@ -140,8 +147,13 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 	}
 
 	@Override
-	protected void onCloseRequest(WindowEvent event) {
+	protected void cancel() {
 		System.exit(0);
+	}
+
+	@Override
+	protected void onCloseRequest(WindowEvent event) {
+		cancel();
 	}
 
 	public ProjectInit getProjectInit() {

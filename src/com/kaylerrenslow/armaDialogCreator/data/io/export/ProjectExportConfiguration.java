@@ -107,7 +107,15 @@ public class ProjectExportConfiguration {
 		this.exportClassName = exportClassName;
 	}
 
+	/**
+	 Sets the export location
+
+	 @throws IllegalArgumentException when exportLocation isn't a directory
+	 */
 	public void setExportLocation(@NotNull File exportLocation) {
+		if (!exportLocation.isDirectory()) {
+			throw new IllegalArgumentException("exportLocation ('" + exportLocation.getPath() + "') is not a directory");
+		}
 		this.exportLocation = exportLocation;
 	}
 

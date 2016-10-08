@@ -300,8 +300,8 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void cancel() {
-		super.cancel();
 		this.cancel = true;
+		super.cancel();
 	}
 
 	@Override

@@ -1,9 +1,9 @@
 **Added:**
-* preloader
-* changes to export config things (don't remember what they were)
+* preloader text
+* added option to clear macro in MacroGetterButton
 
 **Changed:**
-* none
+* changed ChooseMacroPopup to more intuitively show there are no macros (also more aesthetically pleasing)
 
 **Fixed:**
 * none

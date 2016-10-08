@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.beans.value.ChangeListener;
@@ -29,7 +29,7 @@ import javafx.stage.StageStyle;
  @author Kayler
  Creates a popup for changing the canvas colors
  Created on 05/20/2016. */
-public class CanvasViewColorsPopup extends StagePopup<VBox> {
+public class CanvasViewColorsPopup extends StageDialog<VBox> {
 
 	private final ColorPicker cpSelection = new ColorPicker(CanvasViewColors.SELECTION);
 	private final ColorPicker cpGrid = new ColorPicker(CanvasViewColors.GRID);
@@ -48,7 +48,7 @@ public class CanvasViewColorsPopup extends StagePopup<VBox> {
 	};
 
 	public CanvasViewColorsPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.Colors.POPUP_TITLE);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.Colors.POPUP_TITLE, false, true, false);
 		myStage.initStyle(StageStyle.UTILITY);
 		setupColorPickers();
 		myStage.setMinWidth(400);
