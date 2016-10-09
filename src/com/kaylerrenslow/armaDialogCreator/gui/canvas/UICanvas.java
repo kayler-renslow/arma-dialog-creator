@@ -140,8 +140,7 @@ public abstract class UICanvas extends AnchorPane {
 
 		//do this last
 		this.display = display;
-		this.display.getControls().addChangeListener(controlListChangeListener);
-		this.display.getBackgroundControls().addChangeListener(controlListChangeListener);
+		setDisplayListeners(display);
 
 	}
 
@@ -158,9 +157,20 @@ public abstract class UICanvas extends AnchorPane {
 		this.display.getControls().removeChangeListener(controlListChangeListener);
 		this.display.getBackgroundControls().removeChangeListener(controlListChangeListener);
 		this.display = display;
+		setDisplayListeners(display);
+		paint();
+	}
+
+	private void setDisplayListeners(@NotNull Display<? extends Control> display) {
+		this.display = display;
+		for(Control control : display.getControls()){
+			setControlUpdateListener(control, true);
+		}
+		for(Control control : display.getBackgroundControls()){
+			setControlUpdateListener(control, true);
+		}
 		this.display.getControls().addChangeListener(controlListChangeListener);
 		this.display.getBackgroundControls().addChangeListener(controlListChangeListener);
-		paint();
 	}
 
 	/** Adds a component to the canvas and repaints the canvas */

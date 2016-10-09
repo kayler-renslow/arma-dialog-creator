@@ -1,9 +1,8 @@
 **Added:**
-* launch4j configuration xml for creating "Arma Dialog Creator.exe"
-* .ico and icon png images for "Arma Dialog Creator.exe"
+* none
 
 **Changed:**
-* when closing the main window, it will now keep the window visible when asking to save changes to project
+* ControlStyle's now save a unique id rather than their value since the values can duplicate
 
 **Fixed:**
-* none
+* hiding controls when control group is in editor won't hide them until moving mouse into canvas (use the "Show" button above the "Controls" tree view)

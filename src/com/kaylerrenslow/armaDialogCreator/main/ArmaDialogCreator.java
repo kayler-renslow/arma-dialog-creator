@@ -88,11 +88,24 @@ public final class ArmaDialogCreator extends Application {
 
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
-		for (;progress < 100; progress++) {
+		for (; progress < 100; progress++) {
 			Thread.sleep(40);
-			notifyPreloader(new Preloader.ProgressNotification(progress / 100.0));
+			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
 		}
 
+	}
+
+	private void notifyPreloaderLog(Preloader.PreloaderNotification notification) {
+		if (containsUnamedLaunchParameter(ProgramArgument.LOG_INIT_PROGRESS)) {
+			if (notification instanceof Preloader.ProgressNotification) {
+				System.out.println("Preloader Log Progress: " + ((Preloader.ProgressNotification) notification).getProgress());
+			} else if (notification instanceof Preloader.StateChangeNotification) {
+				System.out.println("Preloader Stage Change: " + ((Preloader.StateChangeNotification) notification).getType());
+			} else if (notification instanceof Preloader.ErrorNotification) {
+				System.out.println("Preloader Error: " + notification);
+			}
+		}
+		notifyPreloader(notification);
 	}
 
 	@Override
@@ -181,7 +194,7 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.getParameters();
 	}
 
-	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument){
+	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
 		return getLaunchParameters().getUnnamed().contains(argument.argText);
 	}
 

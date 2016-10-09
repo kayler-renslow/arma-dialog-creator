@@ -58,14 +58,18 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, resolution, renderer, env);
 		defineStyle(ControlStyle.NA.getStyleGroup());
-		init();
+		afterConstructor();
 	}
 	
 	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, idc, type, ControlStyle.NA.getStyleGroup(), x, y, width, height, resolution, renderer, env);
+		afterConstructor();
+	}
+
+	private void afterConstructor() {
 		init();
 	}
-	
+
 	/** Called by the constructor and only the constructor */
 	private void init() {
 		ArmaControlGroup group = this;

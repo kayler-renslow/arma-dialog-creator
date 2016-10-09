@@ -538,7 +538,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			if (control != null && control instanceof ArmaControl) {
+			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
 				for (ControlStyle style : menuButton.getItems()) {
@@ -546,6 +546,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			}
 			this.controlProperty = controlProperty;
+			System.out.println("ControlStylePropertyInput.ControlStylePropertyInput controlProperty.getValue()=" + controlProperty.getValue());
 			setValue((ControlStyleGroup) controlProperty.getValue());
 			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ControlStyleGroup>() {
 				@Override

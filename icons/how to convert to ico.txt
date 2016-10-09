@@ -1,1 +1,1 @@
-use icofx and open the 64x64.png. icofx will then present many different sizes. we need down to 16x16. export to ico
+use icofx and open the 48x48.png. icofx will then present many different sizes. we need down to 16x16. export to ico

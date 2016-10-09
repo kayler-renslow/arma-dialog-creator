@@ -68,7 +68,7 @@ public class ControlStyleGroup extends SerializableValue {
 	public static String toString(ControlStyle[] values) {
 		String s = "";
 		for (int i = 0; i < values.length; i++) {
-			s += values[i].styleId + (i != values.length - 1 ? "+" : "");
+			s += values[i].styleValue + (i != values.length - 1 ? "+" : "");
 		}
 		return s;
 	}

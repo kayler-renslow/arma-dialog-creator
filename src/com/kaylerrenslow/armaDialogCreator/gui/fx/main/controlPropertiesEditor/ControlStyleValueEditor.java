@@ -53,7 +53,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 				String s = "";
 				List<ControlStyle> selected = menuButton.getSelectedItems();
 				for (int i = 0; i < selected.size(); i++) {
-					s += selected.get(i).styleId + (i != selected.size() - 1 ? ControlStyleGroup.DEFAULT_DELIMITER : "");
+					s += selected.get(i).styleValue + (i != selected.size() - 1 ? ControlStyleGroup.DEFAULT_DELIMITER : "");
 				}
 				textField.setText(s);
 				ControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? null :

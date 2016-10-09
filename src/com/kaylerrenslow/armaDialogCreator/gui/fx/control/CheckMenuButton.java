@@ -122,6 +122,7 @@ public class CheckMenuButton<E> extends StackPane {
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
 			boolean found = false;
 			for (E item : items) {
+				System.out.println("CheckMenuButton.setSelected item=" + item);
 				if (customMenuItem.getUserData() == item) {
 					checkBox.setSelected(true);
 					found = true;

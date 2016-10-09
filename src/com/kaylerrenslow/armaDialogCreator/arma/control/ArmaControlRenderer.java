@@ -235,7 +235,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		setStyle(style);
 	}
 
-	/** Just set the style */
+	/** Just set the style without telling the {@link ValueObserver} instance*/
 	protected final void setStyle(ControlStyleGroup style) {
 		this.style = style;
 	}
