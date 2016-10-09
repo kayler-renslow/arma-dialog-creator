@@ -41,6 +41,7 @@ public final class ArmaDialogCreator extends Application {
 
 	/** Closes the application after asking if user wants to save. */
 	public static void closeApplication() {
+		//do not execute window closing event
 		Platform.exit();
 	}
 
@@ -188,7 +189,10 @@ public final class ArmaDialogCreator extends Application {
 
 		@Override
 		public void handle(WindowEvent event) {
-
+			/*we want to keep the Arma Dialog Creator window still open when asking to save progress before exiting.
+			Consuming the event will keep window open and then we call closeApplication to execute the closing procedure and in turn, close the window*/
+			event.consume();
+			closeApplication();
 		}
 	}
 }

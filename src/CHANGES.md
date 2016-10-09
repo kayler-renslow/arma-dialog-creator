@@ -1,9 +1,9 @@
 **Added:**
-* preloader text
-* added option to clear macro in MacroGetterButton
+* launch4j configuration xml for creating "Arma Dialog Creator.exe"
+* .ico and icon png images for "Arma Dialog Creator.exe"
 
 **Changed:**
-* changed ChooseMacroPopup to more intuitively show there are no macros (also more aesthetically pleasing)
+* when closing the main window, it will now keep the window visible when asking to save changes to project
 
 **Fixed:**
 * none

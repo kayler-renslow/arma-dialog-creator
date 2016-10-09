@@ -37,8 +37,9 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
 	private final Hyperlink hyplinkChosenMacro = new Hyperlink();
-	private final Label lblNoChosenMacro = new Label("?");
-	private final StackPane stackPaneChosenMacroText = new StackPane();
+	private final Label lblNoChosenMacro = new Label(Lang.Macros.NO_MACRO_SET);
+	private final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), hyplinkChosenMacro);
+	private final StackPane stackPaneChosenMacroText = new StackPane(hboxMacroLbl);
 
 	private final MenuItem miChooseMacro = new MenuItem(Lang.Macros.CHOOSE_MACRO);
 	private final MenuItem miClearMacro = new MenuItem(Lang.Macros.CLEAR_MACRO);
@@ -64,9 +65,8 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		SplitMenuButton menuButton = new SplitMenuButton();
 		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
 		setAlignment(Pos.CENTER_LEFT);
-		final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), stackPaneChosenMacroText);
 		hboxMacroLbl.setAlignment(Pos.CENTER_LEFT);
-		getChildren().addAll(menuButton, hboxMacroLbl);
+		getChildren().addAll(menuButton, stackPaneChosenMacroText);
 
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -135,7 +135,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		if (macro == null) {
 			stackPaneChosenMacroText.getChildren().add(lblNoChosenMacro);
 		} else {
-			stackPaneChosenMacroText.getChildren().add(hyplinkChosenMacro);
+			stackPaneChosenMacroText.getChildren().add(hboxMacroLbl);
 			hyplinkChosenMacro.setText(macro.getKey());
 		}
 		macroValueObserver.updateValue(macro);

@@ -268,6 +268,7 @@ public interface Lang {
 		String CHOOSE_MACRO = "Choose Macro";
 		String CLEAR_MACRO = "Clear Macro";
 
+		String NO_MACRO_SET = "No Macro Set";
 	}
 
 	static String getPopupWindowTitle(String popupName) {
