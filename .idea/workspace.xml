@@ -84,17 +84,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3462ee9a-c867-4c94-ae0d-32bf6e94598f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/ADC_Application.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/ADC_Release_Automation.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__TEST_.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_exe.xml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" afterPath="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_Jar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" afterPath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" />
     </list>
     <ignored path="Arma Dialog Creator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -198,8 +189,8 @@
       <file leaf-file-name="ADCReleaseAutomation.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="238">
-              <caret line="22" column="94" selection-start-line="22" selection-start-column="94" selection-end-line="22" selection-end-column="94" />
+            <state relative-caret-position="153">
+              <caret line="32" column="62" selection-start-line="32" selection-start-column="62" selection-end-line="32" selection-end-column="62" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -1499,13 +1490,6 @@
       <option name="presentableId" value="Default" />
       <updated>1463947108168</updated>
     </task>
-    <task id="LOCAL-00092" summary="still attempting to fix tree view">
-      <created>1471137812953</created>
-      <option name="number" value="00092" />
-      <option name="presentableId" value="LOCAL-00092" />
-      <option name="project" value="LOCAL" />
-      <updated>1471137812953</updated>
-    </task>
     <task id="LOCAL-00093" summary="polishing tree view for better editing">
       <created>1471149765512</created>
       <option name="number" value="00093" />
@@ -1842,7 +1826,14 @@
       <option name="project" value="LOCAL" />
       <updated>1476134371153</updated>
     </task>
-    <option name="localTasksCounter" value="141" />
+    <task id="LOCAL-00141" summary="some launch4j automation things">
+      <created>1476136580953</created>
+      <option name="number" value="00141" />
+      <option name="presentableId" value="LOCAL-00141" />
+      <option name="project" value="LOCAL" />
+      <updated>1476136580953</updated>
+    </task>
+    <option name="localTasksCounter" value="142" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1976,7 +1967,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="SHOW_FILE_HISTORY_DETAILS" value="false" />
-    <MESSAGE value="project export earlier beginning" />
     <MESSAGE value="project export prototype" />
     <MESSAGE value="export dialog start" />
     <MESSAGE value="display properties" />
@@ -2001,7 +1991,8 @@
     <MESSAGE value="added other lib jars" />
     <MESSAGE value="added exe artifact" />
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="some launch4j automation things" />
+    <option name="LAST_COMMIT_MESSAGE" value="some launch4j automation things" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -2419,8 +2410,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="238">
-          <caret line="22" column="94" selection-start-line="22" selection-start-column="94" selection-end-line="22" selection-end-column="94" />
+        <state relative-caret-position="153">
+          <caret line="32" column="62" selection-start-line="32" selection-start-column="62" selection-end-line="32" selection-end-column="62" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
