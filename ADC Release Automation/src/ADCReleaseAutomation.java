@@ -28,7 +28,7 @@ public class ADCReleaseAutomation {
 		File templateFile = new File("launch4j/configuration_template.xml");
 		System.out.println(templateFile.getAbsolutePath());
 		if (!templateFile.exists()) {
-			throw new IllegalStateException("templateFile should exist");
+			throw new IllegalStateException("templateFile should exist. Current path:" + templateFile.getPath());
 		}
 		FileInputStream fis = new FileInputStream(templateFile);
 		FileOutputStream fos = new FileOutputStream(new File("launch4j/configuration.xml"));
