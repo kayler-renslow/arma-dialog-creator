@@ -83,7 +83,9 @@
     </treeState>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3462ee9a-c867-4c94-ae0d-32bf6e94598f" name="Default" comment="">
+    <list default="true" id="3462ee9a-c867-4c94-ae0d-32bf6e94598f" name="Default" comment="fixed path">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/launch4j/configuration_template.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" afterPath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" />
     </list>
@@ -189,8 +191,8 @@
       <file leaf-file-name="ADCReleaseAutomation.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="30" column="109" selection-start-line="30" selection-start-column="109" selection-end-line="30" selection-end-column="109" />
+            <state relative-caret-position="238">
+              <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -201,8 +203,8 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+            <state relative-caret-position="51">
+              <caret line="3" column="19" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="19" />
               <folding />
             </state>
           </provider>
@@ -1036,6 +1038,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="launch4j" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="ADC Release Automation" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -1514,13 +1530,6 @@
       <option name="presentableId" value="Default" />
       <updated>1463947108168</updated>
     </task>
-    <task id="LOCAL-00095" summary="treeview still buggy. simple change log logging for control moving/adding/removing/setting">
-      <created>1471487094803</created>
-      <option name="number" value="00095" />
-      <option name="presentableId" value="LOCAL-00095" />
-      <option name="project" value="LOCAL" />
-      <updated>1471487094804</updated>
-    </task>
     <task id="LOCAL-00096" summary="appear to have fixed treeview">
       <created>1471494575785</created>
       <option name="number" value="00096" />
@@ -1857,7 +1866,14 @@
       <option name="project" value="LOCAL" />
       <updated>1476140530560</updated>
     </task>
-    <option name="localTasksCounter" value="144" />
+    <task id="LOCAL-00144" summary="fixed path">
+      <created>1476140699706</created>
+      <option name="number" value="00144" />
+      <option name="presentableId" value="LOCAL-00144" />
+      <option name="project" value="LOCAL" />
+      <updated>1476140699706</updated>
+    </task>
+    <option name="localTasksCounter" value="145" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -2416,26 +2432,26 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="0" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
+        <state relative-caret-position="656">
+          <caret line="1173" column="3" selection-start-line="1173" selection-start-column="3" selection-end-line="1173" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.idea/workspace.xml">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="19941">
-          <caret line="1173" column="3" selection-start-line="1173" selection-start-column="3" selection-end-line="1173" selection-end-column="3" />
+        <state relative-caret-position="51">
+          <caret line="3" column="19" selection-start-line="3" selection-start-column="19" selection-end-line="3" selection-end-column="19" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="30" column="109" selection-start-line="30" selection-start-column="109" selection-end-line="30" selection-end-column="109" />
+        <state relative-caret-position="238">
+          <caret line="28" column="0" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

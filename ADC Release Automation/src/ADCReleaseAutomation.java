@@ -26,7 +26,6 @@ public class ADCReleaseAutomation {
 	/**create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j*/
 	private static void createLaunch4jConfig() throws IOException {
 		File templateFile = new File("launch4j/configuration_template.xml");
-		System.out.println(templateFile.getAbsolutePath());
 		if (!templateFile.exists()) {
 			throw new IllegalStateException("templateFile should exist. Current path:" + templateFile.getPath());
 		}
