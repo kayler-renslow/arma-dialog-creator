@@ -11,6 +11,7 @@ Features
 * add check to see if safeZone should be applied to control(s). This is checked by seeing if x,y,w,h properties are < 0 or >  1
 * for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
 * have help button implementation for all popups
+* allow for setting the current pixel location values for controls (then convert the x,y,w,h to new safeZone values based off pixel values)
 
 General
 -----------------------------------
@@ -28,8 +29,6 @@ General
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * add "Export Complete" popup after export is done
-
-* **ControlGroup style doesn't load. Also, check to make sure that the style's are saving correctly (saving the id rather than value)**
 
 
 Bugs

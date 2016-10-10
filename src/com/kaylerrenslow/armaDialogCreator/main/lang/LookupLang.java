@@ -131,7 +131,7 @@ public interface LookupLang {
 		
 		interface Doc {
 			String NO_DOC = "No documentation.";
-			String NA = "Used for when there are no styles, but an entry is required regardless.";
+			String NA = "Used for when there are no styles applicable, but an entry is required regardless.";
 			String POS = null;
 			String HPOS = null;
 			String VPOS = null;

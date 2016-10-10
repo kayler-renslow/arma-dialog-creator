@@ -546,7 +546,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			}
 			this.controlProperty = controlProperty;
-			System.out.println("ControlStylePropertyInput.ControlStylePropertyInput controlProperty.getValue()=" + controlProperty.getValue());
 			setValue((ControlStyleGroup) controlProperty.getValue());
 			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ControlStyleGroup>() {
 				@Override
