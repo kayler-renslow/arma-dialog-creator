@@ -84,10 +84,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3462ee9a-c867-4c94-ae0d-32bf6e94598f" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" afterPath="" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/ADC_Application.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/ADC_Release_Automation.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__TEST_.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_exe.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_Jar.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" afterPath="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_Jar.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" />
     </list>
     <ignored path="Arma Dialog Creator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -178,11 +185,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="FileExportAction.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="FileExportAction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/gui/fx/main/actions/mainMenu/file/FileExportAction.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="119">
               <caret line="22" column="33" selection-start-line="22" selection-start-column="33" selection-end-line="22" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ADCReleaseAutomation.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="238">
+              <caret line="22" column="94" selection-start-line="22" selection-start-column="94" selection-end-line="22" selection-end-column="94" />
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Lang.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="289">
+              <caret line="27" column="49" selection-start-line="27" selection-start-column="49" selection-end-line="27" selection-end-column="49" />
               <folding />
             </state>
           </provider>
@@ -234,7 +263,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/gui/fx/control/BooleanChoiceBox.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/arma/control/ArmaDisplay.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/control/ControlPropertyLookupConstant.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/control/ControlPropertyLookup.java" />
@@ -267,7 +295,6 @@
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/ADCPreloader.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/gui/fx/main/ADCProjectInitWindow.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/gui/fx/main/controlPropertiesEditor/MacroGetterButton.java" />
-        <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" />
         <option value="$PROJECT_DIR$/src/TODO" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/gui/canvas/UICanvas.java" />
         <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/ArmaDialogCreator.java" />
@@ -285,6 +312,8 @@
         <option value="$PROJECT_DIR$/src/TODO.md" />
         <option value="$PROJECT_DIR$/.idea/workspace.xml" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java" />
+        <option value="$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java" />
       </list>
     </option>
   </component>
@@ -463,6 +492,32 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="armaDialogCreator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lang" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -970,6 +1025,38 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ADC Release Automation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Arma Dialog Creator" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ADC Release Automation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
       <pane id="PackagesPane" />
@@ -1017,7 +1104,7 @@
     <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="ignore_missing_gitignore" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.14844903" />
     <property name="project.structure.side.proportion" value="0.1925412" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
@@ -1092,7 +1179,7 @@
       <recent name="com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor" />
     </key>
   </component>
-  <component name="RunManager" selected="JAR Application.Arma Dialog Creator (RELEASE)">
+  <component name="RunManager" selected="Application.ADC Release Automation">
     <configuration default="false" name="EditorComponentTreeViewTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -1383,13 +1470,14 @@
         </option>
       </method>
     </configuration>
-    <list size="6">
-      <item index="0" class="java.lang.String" itemvalue="Application.ADC Application" />
-      <item index="1" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator (RELEASE)" />
-      <item index="2" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator" />
-      <item index="3" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator (TEST)" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.All Tests in Arma Dialog Creator" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.EditorComponentTreeViewTest" />
+    <list size="7">
+      <item index="0" class="java.lang.String" itemvalue="Application.ADC Release Automation" />
+      <item index="1" class="java.lang.String" itemvalue="Application.ADC Application" />
+      <item index="2" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator (RELEASE)" />
+      <item index="3" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator" />
+      <item index="4" class="java.lang.String" itemvalue="JAR Application.Arma Dialog Creator (TEST)" />
+      <item index="5" class="java.lang.String" itemvalue="JUnit.All Tests in Arma Dialog Creator" />
+      <item index="6" class="java.lang.String" itemvalue="JUnit.EditorComponentTreeViewTest" />
     </list>
     <recent_temporary>
       <list size="1">
@@ -1410,13 +1498,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1463947108168</updated>
-    </task>
-    <task id="LOCAL-00091" summary="re-working tree view implementation">
-      <created>1471043802643</created>
-      <option name="number" value="00091" />
-      <option name="presentableId" value="LOCAL-00091" />
-      <option name="project" value="LOCAL" />
-      <updated>1471043802648</updated>
     </task>
     <task id="LOCAL-00092" summary="still attempting to fix tree view">
       <created>1471137812953</created>
@@ -1754,7 +1835,14 @@
       <option name="project" value="LOCAL" />
       <updated>1476133735016</updated>
     </task>
-    <option name="localTasksCounter" value="140" />
+    <task id="LOCAL-00140" summary=".">
+      <created>1476134371153</created>
+      <option name="number" value="00140" />
+      <option name="presentableId" value="LOCAL-00140" />
+      <option name="project" value="LOCAL" />
+      <updated>1476134371153</updated>
+    </task>
+    <option name="localTasksCounter" value="141" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1800,7 +1888,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980973" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1816,7 +1904,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19189766" sideWeight="0.48949918" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.19189766" sideWeight="0.48949918" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Reviews" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="false" content_ui="tabs" />
       <window_info id="TeamCity" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3856988" sideWeight="0.5" order="15" side_tool="false" content_ui="tabs" />
       <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
@@ -1888,7 +1976,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="SHOW_FILE_HISTORY_DETAILS" value="false" />
-    <MESSAGE value="image conversion-new name/overwrite" />
     <MESSAGE value="project export earlier beginning" />
     <MESSAGE value="project export prototype" />
     <MESSAGE value="export dialog start" />
@@ -1913,7 +2000,8 @@
     <MESSAGE value="added generated antlr file to repo" />
     <MESSAGE value="added other lib jars" />
     <MESSAGE value="added exe artifact" />
-    <option name="LAST_COMMIT_MESSAGE" value="added exe artifact" />
+    <MESSAGE value="." />
+    <option name="LAST_COMMIT_MESSAGE" value="." />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -1927,20 +2015,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/arma/util/PositionCalculator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3082">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/arma/util/ArmaTools.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="952">
-          <caret line="70" column="39" selection-start-line="70" selection-start-column="39" selection-end-line="70" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files/Java/jdk1.8.0_51/javafx-src.zip!/javafx/application/Application.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="214">
@@ -2076,14 +2150,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="908">
-          <caret line="269" column="0" selection-start-line="269" selection-start-column="0" selection-end-line="269" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/arma/control/ArmaControlRenderer.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3251">
@@ -2135,6 +2201,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1988">
           <caret line="37" column="13" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2142,6 +2209,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-136">
           <caret line="365" column="88" selection-start-line="365" selection-start-column="88" selection-end-line="365" selection-end-column="88" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -2333,13 +2401,39 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/main/lang/Lang.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="27" column="49" selection-start-line="27" selection-start-column="49" selection-end-line="27" selection-end-column="49" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files/Java/jdk1.8.0_51/src.zip!/java/io/FileInputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="230">
+          <caret line="300" column="22" selection-start-line="300" selection-start-column="22" selection-end-line="300" selection-end-column="22" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/ADC Release Automation/src/ADCReleaseAutomation.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="22" column="94" selection-start-line="22" selection-start-column="94" selection-end-line="22" selection-end-column="94" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
   <component name="masterDetails">
     <states>
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
-          <last-edited>Arma Dialog Creator Jar</last-edited>
+          <last-edited>Arma Dialog Creator</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
@@ -2368,7 +2462,7 @@
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.2" />
+                <option value="0.1925412" />
               </list>
             </option>
           </splitter-proportions>
@@ -2400,12 +2494,11 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>Arma Dialog Creator</last-edited>
+          <last-edited>ADC Release Automation</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.20208153" />
-                <option value="0.6" />
+                <option value="0.1925412" />
               </list>
             </option>
           </splitter-proportions>

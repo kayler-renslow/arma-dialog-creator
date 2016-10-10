@@ -18,8 +18,15 @@ public interface Lang {
 
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";
-		String VERSION = "0.0.1b";
+		String VERSION = "1.0.0";
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
+
+		interface Executable{
+			String FILE_VERSION = "1.0.0.0";
+			String TXT_FILE_VERSION ="1.0";
+			String PRODUCT_VERSION = "1.0.0.0";
+			String TXT_PRODUCT_VERSION = "1.0.0";
+		}
 	}
 
 	interface Expression {
