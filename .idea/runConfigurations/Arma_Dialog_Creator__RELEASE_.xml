@@ -9,7 +9,7 @@
     <module name="Arma Dialog Creator" />
     <method>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="Arma Dialog Creator" />
+        <artifact name="Arma Dialog Creator Jar" />
       </option>
       <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Run Launch4j" />
     </method>

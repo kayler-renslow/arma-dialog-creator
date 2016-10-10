@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
-  <artifact type="javafx" name="Arma Dialog Creator">
-    <output-path>$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator</output-path>
+  <artifact type="javafx" name="Arma Dialog Creator Jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator_Jar</output-path>
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator" />

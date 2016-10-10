@@ -84,8 +84,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3462ee9a-c867-4c94-ae0d-32bf6e94598f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_exe.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" afterPath="$PROJECT_DIR$/.idea/runConfigurations/Arma_Dialog_Creator__RELEASE_.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator.xml" afterPath="$PROJECT_DIR$/.idea/artifacts/Arma_Dialog_Creator_Jar.xml" />
     </list>
     <ignored path="Arma Dialog Creator.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -1017,7 +1019,7 @@
     <property name="last_opened_file_path" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe" />
     <property name="project.structure.last.edited" value="Artifacts" />
     <property name="project.structure.proportion" value="0.14844903" />
-    <property name="project.structure.side.proportion" value="0.20208153" />
+    <property name="project.structure.side.proportion" value="0.1925412" />
     <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
     <property name="settings.editor.splitter.proportion" value="0.2" />
     <property name="$PROJECT_DIR$/src/com/kaylerrenslow/armaDialogCreator/arma/header/Header.g4::/auto-gen" value="true" />
@@ -1090,7 +1092,7 @@
       <recent name="com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ADC Application">
+  <component name="RunManager" selected="JAR Application.Arma Dialog Creator (RELEASE)">
     <configuration default="false" name="EditorComponentTreeViewTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
@@ -1367,21 +1369,6 @@
       <listeners />
       <method />
     </configuration>
-    <configuration default="false" name="ADC Application" type="Application" factoryName="Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="MAIN_CLASS_NAME" value="com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator" />
-      <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="-logInitProgress" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="Arma Dialog Creator" />
-      <envs />
-      <method />
-    </configuration>
     <configuration default="false" name="Arma Dialog Creator" type="JarApplication" factoryName="JAR Application">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator___No_Extract/Arma_Dialog_Creator.jar" />
@@ -1393,19 +1380,6 @@
       <method>
         <option name="BuildArtifacts" enabled="true">
           <artifact name="Arma Dialog Creator - No Extract" />
-        </option>
-      </method>
-    </configuration>
-    <configuration default="false" name="Arma Dialog Creator (TEST)" type="JarApplication" factoryName="JAR Application">
-      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-      <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.jar" />
-      <option name="PROGRAM_PARAMETERS" value="-showDebugFeatures" />
-      <option name="WORKING_DIRECTORY" value="D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator" />
-      <option name="ALTERNATIVE_JRE_PATH" />
-      <envs />
-      <method>
-        <option name="BuildArtifacts" enabled="true">
-          <artifact name="Arma Dialog Creator" />
         </option>
       </method>
     </configuration>
@@ -1436,13 +1410,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1463947108168</updated>
-    </task>
-    <task id="LOCAL-00090" summary="restructure of x,y,w,h control property update handling">
-      <created>1470971592949</created>
-      <option name="number" value="00090" />
-      <option name="presentableId" value="LOCAL-00090" />
-      <option name="project" value="LOCAL" />
-      <updated>1470971592949</updated>
     </task>
     <task id="LOCAL-00091" summary="re-working tree view implementation">
       <created>1471043802643</created>
@@ -1780,7 +1747,14 @@
       <option name="project" value="LOCAL" />
       <updated>1476133430998</updated>
     </task>
-    <option name="localTasksCounter" value="139" />
+    <task id="LOCAL-00139" summary="added exe artifact">
+      <created>1476133735016</created>
+      <option name="number" value="00139" />
+      <option name="presentableId" value="LOCAL-00139" />
+      <option name="project" value="LOCAL" />
+      <updated>1476133735016</updated>
+    </task>
+    <option name="localTasksCounter" value="140" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1914,7 +1888,6 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
     <option name="SHOW_FILE_HISTORY_DETAILS" value="false" />
-    <MESSAGE value="ext resource bug fixes" />
     <MESSAGE value="image conversion-new name/overwrite" />
     <MESSAGE value="project export earlier beginning" />
     <MESSAGE value="project export prototype" />
@@ -1939,7 +1912,8 @@
     <MESSAGE value="added antlr to repo" />
     <MESSAGE value="added generated antlr file to repo" />
     <MESSAGE value="added other lib jars" />
-    <option name="LAST_COMMIT_MESSAGE" value="added other lib jars" />
+    <MESSAGE value="added exe artifact" />
+    <option name="LAST_COMMIT_MESSAGE" value="added exe artifact" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
@@ -2365,11 +2339,11 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
-          <last-edited>Arma Dialog Creator.exe</last-edited>
+          <last-edited>Arma Dialog Creator Jar</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
-                <option value="0.20208153" />
+                <option value="0.1925412" />
                 <option value="0.5" />
               </list>
             </option>
