@@ -17,6 +17,7 @@
         <element id="extracted-dir" path="$PROJECT_DIR$/../../../Files/antlr/antlr-runtime-4.5.3.jar" path-in-jar="/" />
       </element>
       <element id="artifact" artifact-name="Arma Dialog Creator Preloader" />
+      <element id="file-copy" path="$PROJECT_DIR$/Arma Dialog Creator.exe" />
     </root>
   </artifact>
 </component>
