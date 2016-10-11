@@ -8,9 +8,11 @@
     <envs />
     <module name="Arma Dialog Creator" />
     <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation" run_configuration_type="Application" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="Arma Dialog Creator" />
       </option>
+      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Build Arma Dialog Creator" />
     </method>
   </configuration>
 </component>
