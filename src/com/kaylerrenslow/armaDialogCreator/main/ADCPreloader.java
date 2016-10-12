@@ -82,7 +82,7 @@ public class ADCPreloader extends Preloader {
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
-		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(System.getProperty("build.number", "unknown build")));
+		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(System.getProperty("BUILD_NUMBER", "unknown build")));
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
