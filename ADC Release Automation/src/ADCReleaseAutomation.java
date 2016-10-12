@@ -16,6 +16,8 @@ import java.io.*;
  Created by Kayler on 10/10/2016.
  */
 public class ADCReleaseAutomation {
+	private static final String workingDirectoryPath = new File("").getAbsolutePath();
+
 	public static void main(String[] args) throws Exception {
 		createLaunch4jConfig();
 		createBuildInfo();
@@ -72,6 +74,13 @@ public class ADCReleaseAutomation {
 					case "TXT_PRODUCT_VERSION": {
 						fos.write(Lang.Application.Executable.TXT_PRODUCT_VERSION.getBytes());
 						break;
+					}
+					case "PROJECT_OUT_PATH": {
+						fos.write((workingDirectoryPath + "out\\artifacts\\Arma_Dialog_Creator").getBytes());
+						break;
+					}
+					default: {
+						throw new IllegalStateException("unknown variable:" + variable);
 					}
 				}
 			} else {
