@@ -10,10 +10,7 @@
 
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  Created by Kayler on 10/10/2016.
@@ -21,9 +18,25 @@ import java.io.IOException;
 public class ADCReleaseAutomation {
 	public static void main(String[] args) throws Exception {
 		createLaunch4jConfig();
+		createBuildInfo();
 	}
 
-	/**create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j*/
+	private static void createBuildInfo() throws Exception {
+		File buildInfoFile = new File("resources/com/kaylerrenslow/armaDialogCreator/.build");
+		buildInfoFile.createNewFile();
+		PrintWriter pw = new PrintWriter(buildInfoFile);
+		pw.println(getPropertiesString("build.number", System.getenv("BUILD_NUMBER")));
+		pw.println(getPropertiesString("build.vcs.number", System.getenv("BUILD_VCS_NUMBER_ADC_KAYLER_RENSLOW_GITHUB")));
+
+		pw.flush();
+		pw.close();
+	}
+
+	private static String getPropertiesString(String key, Object value) {
+		return key + "=" + (value == null ? "null" : value.toString());
+	}
+
+	/** create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j */
 	private static void createLaunch4jConfig() throws IOException {
 		File templateFile = new File("launch4j/configuration_template.xml");
 		if (!templateFile.exists()) {

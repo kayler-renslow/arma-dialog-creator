@@ -28,8 +28,12 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.Properties;
 
 /**
  @author Kayler
@@ -38,6 +42,7 @@ import java.util.LinkedList;
 public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
+	private static Properties versionInfoProperties;
 
 	/** Closes the application after asking if user wants to save. */
 	public static void closeApplication() {
@@ -45,10 +50,40 @@ public final class ArmaDialogCreator extends Application {
 		Platform.exit();
 	}
 
+	/**
+	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
+	 */
+	public static void main(String[] args) {
+		if (INSTANCE != null) {
+			getPrimaryStage().requestFocus();
+			return;
+		}
+		loadBuildInfo();
+
+		ExceptionHandler.init();
+		launch(args);
+	}
+
+	private static void loadBuildInfo() {
+		Properties versionInfo = new Properties();
+		InputStream is = ArmaDialogCreator.class.getResourceAsStream("/com/kaylerrenslow/armaDialogCreator/.build");
+		try {
+			versionInfo.load(is);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		versionInfoProperties = versionInfo;
+	}
+
+	@NotNull
+	public static String getBuildProperty(@NotNull String property, @Nullable String defaultVal) {
+		return versionInfoProperties.getProperty(property, defaultVal);
+	}
+
 	public enum ProgramArgument {
 		ShowDebugFeatures("-showDebugFeatures"), LOG_INIT_PROGRESS("-logInitProgress");
 
-		public final String argText;
+		private final String argText;
 
 		ProgramArgument(String argText) {
 			this.argText = argText;
@@ -60,18 +95,6 @@ public final class ArmaDialogCreator extends Application {
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
-	}
-
-	/**
-	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
-	 */
-	public static void main(String[] args) {
-		if (INSTANCE != null) {
-			getPrimaryStage().requestFocus();
-			return;
-		}
-		ExceptionHandler.init();
-		launch(args);
 	}
 
 	private Stage primaryStage;
@@ -89,7 +112,7 @@ public final class ArmaDialogCreator extends Application {
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		for (; progress < 100; progress++) {
-			Thread.sleep(4000);
+			Thread.sleep(4);
 			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
 		}
 

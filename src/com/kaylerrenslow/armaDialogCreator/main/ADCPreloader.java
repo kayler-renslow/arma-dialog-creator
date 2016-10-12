@@ -24,6 +24,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Preloader;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -35,6 +36,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 /**
  Created by Kayler on 10/07/2016.
@@ -78,14 +80,21 @@ public class ADCPreloader extends Preloader {
 	@Override
 	public void start(Stage preloaderStage) throws Exception {
 		this.preloaderStage = preloaderStage;
+		preloaderStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				System.exit(0);
+			}
+		});
+
 		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
 		preloaderStage.getIcons().add(Images.IMAGE_ADC_ICON);
 		progressIndicator = new ProgressIndicator(-1);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
-		final String build = System.getenv("BUILD_NUMBER");
-		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(build != null ? build : "unknown build"));
+
+		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(ArmaDialogCreator.getBuildProperty("build.number", "unknown build")));
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
