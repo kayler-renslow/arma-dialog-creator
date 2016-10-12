@@ -8,24 +8,24 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.img;
+package com.kaylerrenslow.armaDialogCreator.main;
+
+import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 05/17/2016.
+ Created by Kayler on 10/12/2016.
  */
-public class ImagePaths {
-	private static final String prefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
-	public static final String BG_1 = prefix + "backgroundImages/image1.jpg";
-	public static final String BG_2 = prefix + "backgroundImages/image2.jpg";
-	public static final String BG_3 = prefix + "backgroundImages/image3.jpg";
+public enum BuildProperty {
+	BUILD_NUMBER("build.number"), BUILD_VCS_NUMBER("build.vcs.number");
 
-	public static final String ICON_FOLDER = prefix + "icons/folder.png";
-	public static final String ICON_APP = prefix + "icons/app.png";
-	public static final String ICON_COMPOSITE = prefix + "icons/composite.png";
-	public static final String ICON_UNDO = prefix + "icons/undo.png";
-	public static final String ICON_REDO = prefix + "icons/redo.png";
-	public static final String ICON_HEART = prefix + "icons/heart.png";
+	private final String key;
 
-	public static final String PRELOAD_SCREEN = prefix + "preload_screen.png";
-	public static final String ABOUT_HEADER = prefix + "about.png";
+	BuildProperty(String key) {
+		this.key = key;
+	}
+
+	@NotNull
+	public String getKey() {
+		return key;
+	}
 }

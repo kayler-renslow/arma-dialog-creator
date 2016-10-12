@@ -8,6 +8,7 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
+import com.kaylerrenslow.armaDialogCreator.main.BuildProperty;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 
 import java.io.*;
@@ -27,15 +28,15 @@ public class ADCReleaseAutomation {
 		File buildInfoFile = new File("resources/.build");
 		buildInfoFile.createNewFile();
 		PrintWriter pw = new PrintWriter(buildInfoFile);
-		pw.println(getPropertiesString("build.number", System.getenv("BUILD_NUMBER")));
-		pw.println(getPropertiesString("build.vcs.number", System.getenv("BUILD_VCS_NUMBER_ADC_KAYLER_RENSLOW_GITHUB")));
+		pw.println(getPropertiesString(BuildProperty.BUILD_NUMBER, System.getenv("BUILD_NUMBER")));
+		pw.println(getPropertiesString(BuildProperty.BUILD_VCS_NUMBER, System.getenv("BUILD_VCS_NUMBER_ADC_KAYLER_RENSLOW_GITHUB")));
 
 		pw.flush();
 		pw.close();
 	}
 
-	private static String getPropertiesString(String key, Object value) {
-		return key + "=" + (value == null ? "null" : value.toString());
+	private static String getPropertiesString(BuildProperty key, Object value) {
+		return key.getKey() + "=" + (value == null ? "null" : value.toString());
 	}
 
 	/** create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j */

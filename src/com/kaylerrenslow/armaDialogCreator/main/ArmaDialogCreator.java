@@ -76,18 +76,8 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	@NotNull
-	public static String getBuildProperty(@NotNull String property, @Nullable String defaultVal) {
-		return versionInfoProperties.getProperty(property, defaultVal);
-	}
-
-	public enum ProgramArgument {
-		ShowDebugFeatures("-showDebugFeatures"), LOG_INIT_PROGRESS("-logInitProgress");
-
-		private final String argText;
-
-		ProgramArgument(String argText) {
-			this.argText = argText;
-		}
+	public static String getBuildProperty(@NotNull BuildProperty property, @Nullable String defaultVal) {
+		return versionInfoProperties.getProperty(property.getKey(), defaultVal);
 	}
 
 	public ArmaDialogCreator() {
@@ -112,7 +102,7 @@ public final class ArmaDialogCreator extends Application {
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		for (; progress < 100; progress++) {
-			Thread.sleep(4);
+			Thread.sleep(40);
 			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
 		}
 
@@ -225,7 +215,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
-		return getLaunchParameters().getUnnamed().contains(argument.argText);
+		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
 	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

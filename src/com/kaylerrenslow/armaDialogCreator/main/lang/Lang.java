@@ -21,7 +21,7 @@ public interface Lang {
 		String VERSION = "1.0.0";
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 
-		interface Executable{
+		interface Executable {
 			String FILE_VERSION = "1.0.0.0"; //x.x.x.x
 			String TXT_FILE_VERSION = "1.0"; //x.x
 			String PRODUCT_VERSION = "1.0.0.0";//x.x.x.x
@@ -86,6 +86,7 @@ public interface Lang {
 
 		String HELP = "Help";
 		String HELP_WIKI = "Open Wiki";
+		String HELP_ABOUT = "About";
 	}
 
 	interface Popups {
@@ -200,13 +201,22 @@ public interface Lang {
 
 			}
 		}
+
+		interface About {
+			String DIALOG_TITLE = "About " + APPLICATION_NAME;
+			String AUTHOR = "Author";
+			String VERSION = "Version";
+			String BUILD = "Build";
+			String REPOSITORY = "GitHub Repository";
+		}
 	}
 
 	interface Misc {
+		String REPO_URL = "https://github.com/kayler-renslow/arma-dialog-creator";
 		String FILE_CHOOSER_BACKGROUND_IMG_TITLE = "Locate an Image";
 		String NO_ITEMS_AVAILABLE = "No items available.";
 		String VISIT_LINK_IN_BROWSER_F = "Visit this link in your web browser:\n%s";
-		String ADC_EXPORT_NOTICE = "Exported via Arma Dialog Creator (https://github.com/kayler-renslow/arma-dialog-creator)";
+		String ADC_EXPORT_NOTICE = "Exported via Arma Dialog Creator (" + REPO_URL + ")";
 		String NO_DOCUMENTATION = "No Documentation.";
 	}
 

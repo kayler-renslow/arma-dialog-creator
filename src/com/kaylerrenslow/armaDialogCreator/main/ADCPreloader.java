@@ -31,6 +31,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -93,13 +94,18 @@ public class ADCPreloader extends Preloader {
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
+		final String build = ArmaDialogCreator.getBuildProperty(BuildProperty.BUILD_NUMBER, "unknown");
 
-		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(ArmaDialogCreator.getBuildProperty("build.number", "unknown build")));
+		VBox vBox = new VBox(5, progressIndicator, lblProgressText);
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
-		StackPane.setMargin(vBox, new Insets(220, 0, 0, 0));
-		StackPane stackpane = new StackPane(new ImageView(ImagePaths.PRELOAD_SCREEN), vBox);
+		final Label lblBuild = new Label("Build: " + build);
+		final BorderPane borderPane = new BorderPane(vBox, null, null, lblBuild, null);
+		borderPane.setPadding(new Insets(5));
+
+		StackPane.setMargin(borderPane, new Insets(248, 0, 0, 0));
+		StackPane stackpane = new StackPane(new ImageView(ImagePaths.PRELOAD_SCREEN), borderPane);
 		Scene scene = new Scene(stackpane);
 		preloaderStage.initStyle(StageStyle.UNDECORATED);
 		preloaderStage.setScene(scene);

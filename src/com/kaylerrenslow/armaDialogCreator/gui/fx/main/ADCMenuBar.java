@@ -26,8 +26,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.Edi
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.help.WikiUrlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.AboutDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ProgramArgument;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang.MainMenuBar;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -112,17 +114,18 @@ class ADCMenuBar extends MenuBar {
 	
 	/*help*/
 	private final MenuItem help_wiki = addOnAction(new MenuItem(MainMenuBar.HELP_WIKI), new WikiUrlAction());
+	private final MenuItem help_about = addOnAction(new MenuItem(MainMenuBar.HELP_ABOUT), event -> new AboutDialog().show());
 
 	private final Menu menuFile = new Menu(MainMenuBar.FILE, null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject, file_exit);
 	private final Menu menuEdit = new Menu(MainMenuBar.EDIT, null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_exportConfig);
 	private final Menu menuView = new Menu(MainMenuBar.VIEW, null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(MainMenuBar.SETTINGS, null, settings_configureDirs);
 	private final Menu menuCreate = new Menu(MainMenuBar.CREATE, null, create_macro, create_control_class);
-	private final Menu menuHelp = new Menu(MainMenuBar.HELP, null, help_wiki);
+	private final Menu menuHelp = new Menu(MainMenuBar.HELP, null, help_wiki, help_about);
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);
-		if(ArmaDialogCreator.containsUnamedLaunchParameter(ArmaDialogCreator.ProgramArgument.ShowDebugFeatures)){
+		if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
 			this.getMenus().add(new Menu("Test", null, addOnAction(new MenuItem("Test"), new TestAction())));
 		}
 	}
