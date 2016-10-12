@@ -76,7 +76,7 @@ public class ADCReleaseAutomation {
 						break;
 					}
 					case "PROJECT_OUT_PATH": {
-						fos.write((workingDirectoryPath + "out\\artifacts\\Arma_Dialog_Creator").getBytes());
+						fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
 						break;
 					}
 					default: {
