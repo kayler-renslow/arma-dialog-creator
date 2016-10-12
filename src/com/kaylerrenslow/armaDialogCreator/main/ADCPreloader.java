@@ -22,6 +22,7 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Preloader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -77,12 +78,14 @@ public class ADCPreloader extends Preloader {
 	@Override
 	public void start(Stage preloaderStage) throws Exception {
 		this.preloaderStage = preloaderStage;
+		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
 		preloaderStage.getIcons().add(Images.IMAGE_ADC_ICON);
 		progressIndicator = new ProgressIndicator(-1);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
-		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(System.getProperty("BUILD_NUMBER", "unknown build")));
+		final String build = System.getenv("BUILD_NUMBER");
+		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(build != null ? build : "unknown build"));
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
