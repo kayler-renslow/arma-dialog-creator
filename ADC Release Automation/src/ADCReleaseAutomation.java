@@ -22,7 +22,7 @@ public class ADCReleaseAutomation {
 	}
 
 	private static void createBuildInfo() throws Exception {
-		File buildInfoFile = new File("resources/com/kaylerrenslow/armaDialogCreator/.build");
+		File buildInfoFile = new File("resources/.build");
 		buildInfoFile.createNewFile();
 		PrintWriter pw = new PrintWriter(buildInfoFile);
 		pw.println(getPropertiesString("build.number", System.getenv("BUILD_NUMBER")));
