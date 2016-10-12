@@ -131,7 +131,7 @@ public class ApplicationDataManager {
 		}
 	}
 
-	public void applicationExitSave() {
+	public void saveAll() {
 		SaveProjectDialog popup = new SaveProjectDialog();
 		popup.show();
 		boolean saveProgress = popup.isSaveProgress();

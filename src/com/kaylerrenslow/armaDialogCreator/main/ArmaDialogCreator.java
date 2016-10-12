@@ -110,7 +110,7 @@ public final class ArmaDialogCreator extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		ApplicationDataManager.getInstance().applicationExitSave();
+		ApplicationDataManager.getInstance().saveAll();
 	}
 
 	@Override
@@ -127,11 +127,18 @@ public final class ArmaDialogCreator extends Application {
 
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
 
-		loadNewProject();
-
+		loadNewProject(false);
 	}
 
 	public static void loadNewProject() {
+		loadNewProject(true);
+	}
+
+	private static void loadNewProject(boolean save) {
+		if (save) {
+			ApplicationDataManager.getInstance().saveAll();
+		}
+
 		getPrimaryStage().close();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
 		getApplicationDataManager().setApplicationData(config.getApplicationData());
