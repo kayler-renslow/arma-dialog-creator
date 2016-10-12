@@ -89,7 +89,7 @@ public final class ArmaDialogCreator extends Application {
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
 		for (; progress < 100; progress++) {
-			Thread.sleep(40);
+			Thread.sleep(4000);
 			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
 		}
 

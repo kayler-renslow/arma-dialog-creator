@@ -22,10 +22,10 @@ public interface Lang {
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 
 		interface Executable{
-			String FILE_VERSION = "1.0.0.0";
-			String TXT_FILE_VERSION ="1.0";
-			String PRODUCT_VERSION = "1.0.0.0";
-			String TXT_PRODUCT_VERSION = "1.0.0";
+			String FILE_VERSION = "1.0.0.0"; //x.x.x.x
+			String TXT_FILE_VERSION = "1.0"; //x.x
+			String PRODUCT_VERSION = "1.0.0.0";//x.x.x.x
+			String TXT_PRODUCT_VERSION = "1.0.0";//x.x.x
 		}
 	}
 

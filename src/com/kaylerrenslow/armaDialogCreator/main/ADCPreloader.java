@@ -57,7 +57,7 @@ public class ADCPreloader extends Preloader {
 
 	@Override
 	public void handleStateChangeNotification(StateChangeNotification info) {
-		if(info.getType() == StateChangeNotification.Type.BEFORE_START){
+		if (info.getType() == StateChangeNotification.Type.BEFORE_START) {
 			closePreloader();
 		}
 	}
@@ -82,11 +82,11 @@ public class ADCPreloader extends Preloader {
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
-		VBox vBox = new VBox(5, progressIndicator, lblProgressText);
+		VBox vBox = new VBox(5, progressIndicator, lblProgressText, new Label(System.getProperty("system.adc.buildCounter", "unknown build")));
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
-		StackPane.setMargin(vBox, new Insets(248, 0, 0, 0));
+		StackPane.setMargin(vBox, new Insets(220, 0, 0, 0));
 		StackPane stackpane = new StackPane(new ImageView(ImagePaths.PRELOAD_SCREEN), vBox);
 		Scene scene = new Scene(stackpane);
 		preloaderStage.initStyle(StageStyle.UNDECORATED);
