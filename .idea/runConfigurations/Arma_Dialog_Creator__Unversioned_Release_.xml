@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Arma Dialog Creator (RELEASE)" type="JarApplication" factoryName="JAR Application">
+  <configuration default="false" name="Arma Dialog Creator (Unversioned Release)" type="JarApplication" factoryName="JAR Application">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.jar" />
     <option name="WORKING_DIRECTORY" value="D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator" />

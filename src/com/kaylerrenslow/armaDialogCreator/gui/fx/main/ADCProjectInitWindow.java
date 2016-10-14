@@ -68,7 +68,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 
-		btnCancel.setText(Lang.Popups.BTN_CLOSE);
+		btnCancel.setText(Lang.Popups.BTN_EXIT);
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);

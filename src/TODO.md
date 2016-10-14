@@ -29,6 +29,8 @@ General
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * add "Export Complete" popup after export is done
+* tooltip isn't showing for choicebox control property editors
+* for selecting syles, turn checkbox green (or some other color) when checked
 
 
 Bugs

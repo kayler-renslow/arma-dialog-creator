@@ -97,6 +97,7 @@ public interface Lang {
 		String BTN_APPLY = "Apply";
 		String GENERIC_POPUP_TITLE = "Notification";
 		String BTN_CLOSE = "Close";
+		String BTN_EXIT = "Exit";
 
 		/** {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.CanvasViewColorsPopup} */
 		interface Colors {
