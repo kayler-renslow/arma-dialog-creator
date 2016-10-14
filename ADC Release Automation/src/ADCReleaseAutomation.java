@@ -12,6 +12,7 @@ import com.kaylerrenslow.armaDialogCreator.main.BuildProperty;
 import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 
 import java.io.*;
+import java.nio.file.Files;
 
 /**
  Created by Kayler on 10/10/2016.
@@ -22,6 +23,18 @@ public class ADCReleaseAutomation {
 	public static void main(String[] args) throws Exception {
 		createLaunch4jConfig();
 		createBuildInfo();
+		removeOldExe();
+	}
+
+	private static void removeOldExe() {
+		File oldExe = new File("out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe");
+		if (oldExe.exists()) {
+			try {
+				Files.delete(oldExe.toPath());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	private static void createBuildInfo() throws Exception {

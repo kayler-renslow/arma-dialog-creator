@@ -142,6 +142,10 @@ public class StagePopup<E extends Parent> {
 		myStage.sizeToScene();
 	}
 
+	public void setTitle(String title) {
+		myStage.setTitle(title);
+	}
+
 	/**
 	 Make the popup appear
 

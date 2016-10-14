@@ -13,10 +13,20 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.export.EditExportConfigurationDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.VBox;
 
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -30,10 +40,53 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		if (dialog.getConfiguration() == null) {
 			return;
 		}
+		ExportAftermathDialog exportAftermathDialog;
 		try {
 			ProjectExporter.export(dialog.getConfiguration());
+			exportAftermathDialog = new ExportAftermathDialog(dialog.getConfiguration().getExportLocation(), null);
 		} catch (IOException e) {
-			ExceptionHandler.error(e);
+			exportAftermathDialog = new ExportAftermathDialog(null, e);
+		}
+		exportAftermathDialog.show();
+
+	}
+
+	private static class ExportAftermathDialog extends StageDialog<VBox> {
+
+		public ExportAftermathDialog(File exportDir, Throwable error) {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), "", false, true, false);
+			myStage.setMinWidth(300d);
+			myStage.setMinHeight(100d);
+			if (error == null) {
+				setTitle(Lang.Popups.ExportProject.ExportAftermathPopup.DIALOG_TITLE_SUCCESS);
+				myRootElement.getChildren().add(new Label(String.format(Lang.Popups.ExportProject.ExportAftermathPopup.EXPORT_COMPLETE_F, exportDir.getPath())));
+			} else {
+				setTitle(Lang.Popups.ExportProject.ExportAftermathPopup.DIALOG_TITLE_FAILED);
+				myRootElement.getChildren().add(new Label(Lang.Popups.ExportProject.ExportAftermathPopup.EXPORT_FAILED));
+				final ToggleButton toggleButton = new ToggleButton(Lang.Popups.ExportProject.ExportAftermathPopup.SHOW_ERROR_MESSAGE);
+				myRootElement.getChildren().add(toggleButton);
+
+				toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+					final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
+					boolean firstExpansion = true;
+
+					@Override
+					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+						if (selected) {
+							toggleButton.setText(Lang.Popups.ExportProject.ExportAftermathPopup.HIDE_ERROR_MESSAGE);
+							myRootElement.getChildren().add(taErrorMessage);
+						} else {
+							toggleButton.setText(Lang.Popups.ExportProject.ExportAftermathPopup.SHOW_ERROR_MESSAGE);
+							myRootElement.getChildren().remove(taErrorMessage);
+						}
+						if (firstExpansion) {
+							firstExpansion = false;
+							ExportAftermathDialog.this.sizeToScene();
+						}
+					}
+				});
+			}
+
 		}
 	}
 

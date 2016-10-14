@@ -38,6 +38,8 @@ public class CheckMenuButton<E> extends StackPane {
 
 	private final ObservableList<E> items;
 
+	private static final String CHECK_BOX_BOLD_TEXT = "-fx-font-weight:900";
+
 	/**
 	 Creates a {@link MenuButton} that allows for selecting many items.
 
@@ -53,9 +55,9 @@ public class CheckMenuButton<E> extends StackPane {
 				while (c.next()) {
 					if (c.wasAdded()) {
 						for (E item : c.getAddedSubList()) {
-							CheckBox checkBox = new CheckBox(item.toString());
-							CustomMenuItem check = new CustomMenuItem(checkBox, false);
-							check.setUserData(item);
+							final CheckBox checkBox = new CheckBox(item.toString());
+							final CustomMenuItem menuItem = new CustomMenuItem(checkBox, false);
+							menuItem.setUserData(item);
 							checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
 								@Override
 								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
@@ -63,21 +65,23 @@ public class CheckMenuButton<E> extends StackPane {
 										if (!selected.contains(item)) {
 											selected.add(item);
 										}
+										checkBox.setStyle(CHECK_BOX_BOLD_TEXT);
 									} else {
 										selected.remove(item);
+										checkBox.setStyle(null);
 									}
 								}
 							});
-							menuButton.getItems().add(check);
+							menuButton.getItems().add(menuItem);
 						}
 					}
 					if (c.wasRemoved()) {
-						List<MenuItem> items = menuButton.getItems();
+						List<MenuItem> menuItems = menuButton.getItems();
 						int i = 0;
 						for (E item : c.getRemoved()) {
-							while (i < items.size()) {
-								if (items.get(i).getUserData() == item) {
-									items.remove(i);
+							while (i < menuItems.size()) {
+								if (menuItems.get(i).getUserData() == item) {
+									menuItems.remove(i);
 									break;
 								}
 								i++;
@@ -108,6 +112,11 @@ public class CheckMenuButton<E> extends StackPane {
 				return;
 			}
 		}
+	}
+
+	/** Set the tooltip of the underlying {@link MenuButton} (equivalent to {@link MenuButton#setTooltip(Tooltip)}) */
+	public void setTooltip(Tooltip tooltip) {
+		menuButton.setTooltip(tooltip);
 	}
 
 	/** Get all items added */

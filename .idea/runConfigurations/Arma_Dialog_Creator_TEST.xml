@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Arma Dialog Creator (TEST)" type="JarApplication" factoryName="JAR Application">
+  <configuration default="false" name="Arma Dialog Creator TEST" type="JarApplication" factoryName="JAR Application">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.jar" />
     <option name="PROGRAM_PARAMETERS" value="-showDebugFeatures" />

@@ -198,8 +198,13 @@ public interface Lang {
 				String PLACE_ADC_NOTICE_TOOLTIP = "Place a comment inside the exported files saying it was exported with Arma Dialog Creator.";
 			}
 
-			interface ExportPreview {
-
+			interface ExportAftermathPopup {
+				String DIALOG_TITLE_SUCCESS = "Export Complete";
+				String DIALOG_TITLE_FAILED = "Export Failed";
+				String EXPORT_COMPLETE_F = "Exported the project to '%s' successfully.";
+				String EXPORT_FAILED = "Export failed.";
+				String SHOW_ERROR_MESSAGE = "Show Error Message";
+				String HIDE_ERROR_MESSAGE = "Hide Error Message";
 			}
 		}
 
@@ -276,6 +281,7 @@ public interface Lang {
 
 		interface ControlStyleGroupEditor {
 			String SELECT_STYLES = "Select Styles";
+			String TOOLTIP_SELECT_STYLES = "Select applicable style(s).";
 		}
 	}
 

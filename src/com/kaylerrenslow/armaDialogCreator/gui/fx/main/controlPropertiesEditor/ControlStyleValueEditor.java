@@ -22,6 +22,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import org.jetbrains.annotations.NotNull;
@@ -44,6 +45,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		getChildren().add(menuButton);
 		getChildren().add(textField);
 		menuButton.getItems().addAll(ControlStyle.values());
+		menuButton.setTooltip(new Tooltip(Lang.ValueEditors.ControlStyleGroupEditor.TOOLTIP_SELECT_STYLES));
 		for (ControlStyle style : menuButton.getItems()) {
 			menuButton.bindTooltip(style, style.documentation);
 		}

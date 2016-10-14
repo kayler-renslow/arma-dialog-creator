@@ -212,7 +212,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		pane.setAlignment(Pos.TOP_LEFT);
 		StackPane stackPanePropertyInput = new StackPane();
 
-		ControlPropertyInput propertyInput = getPropertyInputNode(c);
+		final ControlPropertyInput propertyInput = getPropertyInputNode(c);
 
 		propertyInput.disableEditing(c.getPropertyLookup() == ControlPropertyLookup.TYPE);
 
@@ -224,11 +224,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
 
-		MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
-		MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
-		MenuItem miMacro = new MenuItem(Lang.ControlPropertiesEditorPane.SET_TO_MACRO);
-		MenuItem miOverride = new MenuItem(Lang.ControlPropertiesEditorPane.VALUE_OVERRIDE);//broken. Maybe fix it later. Don't delete this in case you change your mind
-		MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
+		final MenuItem miDefaultEditor = new MenuItem(Lang.ControlPropertiesEditorPane.USE_DEFAULT_EDITOR);
+		final MenuItem miResetToDefault = new MenuItem(Lang.ControlPropertiesEditorPane.RESET_TO_DEFAULT);
+		final MenuItem miMacro = new MenuItem(Lang.ControlPropertiesEditorPane.SET_TO_MACRO);
+		final MenuItem miOverride = new MenuItem(Lang.ControlPropertiesEditorPane.VALUE_OVERRIDE);//broken. Maybe fix it later. Don't delete this in case you change your mind
+		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
+		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
 
 		switch ((ControlPropertyLookup) c.getPropertyLookup()) {
 			case TYPE: {
@@ -349,7 +350,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		throw new IllegalStateException("Should have made a match");
 	}
 
-	private static Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
+	private Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
 		String tooltip = "";
 		for (int i = 0; i < lookup.getAbout().length; i++) {
 			tooltip += lookup.getAbout()[i] + "\n";
@@ -359,16 +360,17 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return tp;
 	}
 
-	private static void placeTooltip(Control c, ControlPropertyLookupConstant lookup) {
-		c.setTooltip(getTooltip(lookup));
-	}
+	/**
+	 Places tooltip on n
 
-	private static void placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
-		Tooltip.install(n, getTooltip(lookup));
-	}
-
-	private static void placeTooltip(InputField inputField, ControlPropertyLookupConstant lookup) {
-		inputField.setTooltip(getTooltip(lookup));
+	 @param n Node to place tooltip on
+	 @param lookup constant to create tooltip of
+	 @return tooltip placed inside n
+	 */
+	private Tooltip placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
+		Tooltip tip = getTooltip(lookup);
+		Tooltip.install(n, tip);
+		return tip;
 	}
 
 	private interface ControlPropertyInput extends ControlPropertyEditor {
@@ -603,7 +605,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public boolean displayFullWidth() {
-			return false;
+			return true;
 		}
 
 		@Override
@@ -647,7 +649,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					}
 				}
 			});
-			placeTooltip(inputField, lookup);
 			if (promptText != null) {
 				inputField.setPromptText(promptText);
 			}
@@ -755,8 +756,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					}
 				}
 			});
-
-			placeTooltip(colorPicker, lookup);
 		}
 
 		@Override
@@ -827,11 +826,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					choiceBox.setValue(newValue == null ? null : ((SVBoolean)newValue).isTrue());
+					choiceBox.setValue(newValue == null ? null : ((SVBoolean) newValue).isTrue());
 				}
 			});
 
-			placeTooltip(choiceBox, lookup);
 		}
 
 		@Override
@@ -904,7 +902,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			setValue((SVStringArray) controlProperty.getValue());
 			for (InputField<ArmaStringChecker, String> editor : editors) {
 				inputField = editor;
-				placeTooltip(inputField, lookup);
 			}
 			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
 				@Override
@@ -995,7 +992,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 					comboBox.setValue((AFont) controlProperty.getValue());
 				}
 			});
-			placeTooltip(comboBox, lookup);
 		}
 
 		@Override
@@ -1048,8 +1044,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.controlProperty = controlProperty;
 
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-
-			placeTooltip(getRootNode(), controlProperty.getPropertyLookup());
 
 			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ASound>() {
 				@Override

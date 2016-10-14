@@ -93,19 +93,39 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		});
 	}
 
+	/**
+	 Returns a TextArea with the Throwable's stack trace printed inside it
+
+	 @param thread thread where the Throwable occurred
+	 @param t throwable
+	 @return TextArea
+	 */
 	@NotNull
-	private static TextArea getExceptionTextArea(Thread thread, Throwable t) {
+	public static TextArea getExceptionTextArea(Thread thread, Throwable t) {
 		String err = getExceptionString(t);
 		TextArea ta = new TextArea();
 		ta.setPrefSize(700, 700);
 		ta.setText("THREAD:" + thread.getName() + "\n" + err);
+		ta.setEditable(false);
 		return ta;
+	}
+
+	/**
+	 Runs {@link #getExceptionTextArea(Thread, Throwable)} with {@link Thread#currentThread()}
+
+	 @param t throwable
+	 @return TextArea
+	 */
+	@NotNull
+	public static TextArea getExceptionTextArea(Throwable t) {
+		return getExceptionTextArea(Thread.currentThread(), t);
 	}
 
 	private static String getExceptionString(Throwable t) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		t.printStackTrace(pw);
+		pw.close();
 		return "An error occurred. Please report this message to the developer(s).\n" + sw.toString();
 	}
 
