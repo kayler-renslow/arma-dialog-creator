@@ -63,6 +63,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			} else {
 				setTitle(Lang.Popups.ExportProject.ExportAftermathPopup.DIALOG_TITLE_FAILED);
 				myRootElement.getChildren().add(new Label(Lang.Popups.ExportProject.ExportAftermathPopup.EXPORT_FAILED));
+				myRootElement.getChildren().add(new Label(error.getMessage()));
 				final ToggleButton toggleButton = new ToggleButton(Lang.Popups.ExportProject.ExportAftermathPopup.SHOW_ERROR_MESSAGE);
 				myRootElement.getChildren().add(toggleButton);
 

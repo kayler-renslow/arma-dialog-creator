@@ -592,10 +592,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		return new ImageView(Images.IMAGE_ICON_FOLDER);
 	}
 
-	static ImageView createCompositeIcon() {
-		return new ImageView(Images.IMAGE_ICON_COMPOSITE);
-	}
-
 	private static class BooleanEdit {
 		private boolean value;
 

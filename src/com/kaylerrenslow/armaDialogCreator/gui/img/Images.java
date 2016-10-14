@@ -19,5 +19,4 @@ public class Images {
 	public static final Image IMAGE_ADC_ICON = new Image(ImagePaths.ICON_APP);
 
 	public static final Image IMAGE_ICON_FOLDER = new Image(ImagePaths.ICON_FOLDER);
-	public static final Image IMAGE_ICON_COMPOSITE = new Image(ImagePaths.ICON_COMPOSITE);
 }

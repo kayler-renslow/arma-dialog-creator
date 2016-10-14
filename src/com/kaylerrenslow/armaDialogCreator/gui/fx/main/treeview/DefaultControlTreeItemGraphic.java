@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -20,6 +21,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -39,6 +41,7 @@ public class DefaultControlTreeItemGraphic extends HBox{
 	private final Canvas box = new Canvas(16, 16);
 
 	public DefaultControlTreeItemGraphic() {
+		super(5);
 		rbSelected.setSelected(true);
 	}
 
@@ -63,12 +66,16 @@ public class DefaultControlTreeItemGraphic extends HBox{
 		});
 		Label lblType = new Label("(" + entry.getControlTypeText() + ")");
 		lblType.setFont(LABEL_FONT);
+		ImageView imageView = new ImageView(ArmaControlLookup.STATIC.iconPath);
+
+		final StackPane stackPaneImageView = new StackPane(imageView);
+		stackPaneImageView.setStyle("-fx-border-color:#b3b3b3;-fx-border-width:1px");
 
 		fillBox(entry.getPrimaryColor());
 		StackPane boxBorder = new StackPane(box);
 		boxBorder.setStyle(BORDER_STYLE);
 		HBox.setMargin(boxBorder, margin);
-		getChildren().addAll(boxBorder, rbSelected, lblType);
+		getChildren().addAll(stackPaneImageView, boxBorder, rbSelected, lblType);
 	}
 
 	private void fillBox(Color color) {

@@ -23,7 +23,7 @@ public class ControlGroupTreeItemEntry extends ControlTreeItemEntry {
 	private final ArmaControlGroup controlGroup;
 
 	public ControlGroupTreeItemEntry(@NotNull ArmaControlGroup group) {
-		super(CellType.COMPOSITE, EditorComponentTreeView.createCompositeIcon(), group);
+		super(CellType.COMPOSITE, new DefaultControlTreeItemGraphic(), group);
 		this.controlGroup = group;
 	}
 

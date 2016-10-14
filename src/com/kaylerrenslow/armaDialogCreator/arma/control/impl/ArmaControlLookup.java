@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/07/2016.
  */
 public enum ArmaControlLookup {
-	STATIC(ControlType.STATIC, StaticControl.SPEC_PROVIDER),
+	STATIC(ControlType.STATIC, StaticControl.SPEC_PROVIDER, "control_static.png"),
 	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER),
 	EDIT(ControlType.EDIT, StaticControl.SPEC_PROVIDER),
 	STRUCTURED_TEXT(ControlType.STRUCTURED_TEXT, StaticControl.SPEC_PROVIDER),
@@ -32,7 +32,7 @@ public enum ArmaControlLookup {
 	STATIC_SKEW(ControlType.STATIC_SKEW, StaticControl.SPEC_PROVIDER),
 	LINEBREAK(ControlType.LINEBREAK, StaticControl.SPEC_PROVIDER),
 	TREE(ControlType.TREE, StaticControl.SPEC_PROVIDER),
-	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupControl.SPEC_PROVIDER),
+	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupControl.SPEC_PROVIDER, "control_group.png"),
 	XKEYDESC(ControlType.XKEYDESC, StaticControl.SPEC_PROVIDER),
 	ANIMATED_TEXTURE(ControlType.ANIMATED_TEXTURE, StaticControl.SPEC_PROVIDER),
 	ANIMATED_USER(ControlType.ANIMATED_USER, StaticControl.SPEC_PROVIDER),
@@ -66,10 +66,16 @@ public enum ArmaControlLookup {
 
 	public final ControlType controlType;
 	public final ArmaControlSpecProvider specProvider;
+	public final String iconPath;
 
 	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider) {
+		this(controlType, specProvider, "control_static.png");
+	}
+
+	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider, String iconPath) {
 		this.controlType = controlType;
 		this.specProvider = specProvider;
+		this.iconPath = "/com/kaylerrenslow/armaDialogCreator/gui/img/icons/arma/" + iconPath;
 	}
 
 	@NotNull

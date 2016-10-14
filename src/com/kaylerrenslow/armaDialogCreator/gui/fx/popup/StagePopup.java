@@ -78,11 +78,14 @@ public class StagePopup<E extends Parent> {
 		});
 	}
 
-	/**Set's the popup's primary stage.
-	 @throws IllegalStateException if invoked when popup has already been made visible at some point*/
+	/**
+	 Set's the popup's primary stage.
+
+	 @throws IllegalStateException if invoked when popup has already been made visible at some point
+	 */
 	protected void setPrimaryStage(@Nullable final Stage primaryStage) {
 		if (primaryStage != null) {
-			if(myStage.getOwner() != null){
+			if (myStage.getOwner() != null) {
 				myStage.getIcons().remove(primaryStage.getIcons().get(0));
 				myStage.getScene().getStylesheets().removeAll(primaryStage.getScene().getStylesheets());
 				primaryStage.getScene().getStylesheets().removeListener(stageStylesheetListener);
@@ -142,6 +145,7 @@ public class StagePopup<E extends Parent> {
 		myStage.sizeToScene();
 	}
 
+	/** Set the title of the stage */
 	public void setTitle(String title) {
 		myStage.setTitle(title);
 	}

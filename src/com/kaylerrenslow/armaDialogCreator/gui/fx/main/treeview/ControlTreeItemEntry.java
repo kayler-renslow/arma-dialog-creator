@@ -35,6 +35,10 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 				setEnabledFromListener(newValue);
 			}
 		});
+		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
+			DefaultControlTreeItemGraphic graphic1 = (DefaultControlTreeItemGraphic) getGraphic();
+			graphic1.init(this);
+		}
 	}
 
 	public ControlTreeItemEntry(ArmaControl control) {
@@ -50,11 +54,6 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 				getMyArmaControl().setClassName(newName);
 			}
 		});
-
-		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
-			DefaultControlTreeItemGraphic graphic = (DefaultControlTreeItemGraphic) getGraphic();
-			graphic.init(this);
-		}
 	}
 
 	/** Sets whether or not the user can interact with the control in the editor. */
