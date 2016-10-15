@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionEvaluationException;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +35,7 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 			ExpressionInterpreter.getInstance().evaluate(data, env);
 			return null;
 		} catch (ExpressionEvaluationException ex) {
-			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? FXControlLang.InputField.DataCheckers.Expression.UNKNOWN_ERROR : ex.getMessage();
+			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? Lang.FxControlBundle.getString("InputField.DataCheckers.Expression.unknown_error") : ex.getMessage();
 		}
 	}
 
@@ -47,7 +47,7 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 
 	@Override
 	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.Expression.TYPE_NAME;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.Expression.type_name");
 	}
 
 	@Override

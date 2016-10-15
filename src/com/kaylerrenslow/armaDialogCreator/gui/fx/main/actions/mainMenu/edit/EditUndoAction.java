@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,15 +36,15 @@ public class EditUndoAction implements EventHandler<ActionEvent> {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						undoMenuItem.setDisable(false);
-						undoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_UNDO_F, newChange.getChange().getShortName()));
+						undoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo_f"), newChange.getChange().getShortName()));
 						break;
 					}
 					case REDO: //intentional fall through
 					case UNDO: {
 						if (changelog.getToUndo() == null) {
-							undoMenuItem.setText(Lang.MainMenuBar.EDIT_UNDO);
+							undoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo"));
 						} else {
-							undoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_UNDO_F, changelog.getToUndo().getShortName()));
+							undoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo_f"), changelog.getToUndo().getShortName()));
 						}
 						undoMenuItem.setDisable(changelog.getToUndo() == null);
 						break;

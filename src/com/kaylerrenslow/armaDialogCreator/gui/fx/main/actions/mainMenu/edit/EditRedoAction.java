@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,15 +36,15 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						editRedoMenuItem.setDisable(true);
-						editRedoMenuItem.setText(Lang.MainMenuBar.EDIT_REDO);
+						editRedoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo"));
 						break;
 					}
 					case REDO: //intentional fall through
 					case UNDO: {
 						if (changelog.getToRedo() == null) {
-							editRedoMenuItem.setText(Lang.MainMenuBar.EDIT_REDO);
+							editRedoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo"));
 						} else {
-							editRedoMenuItem.setText(String.format(Lang.MainMenuBar.EDIT_REDO_F, changelog.getToRedo().getShortName()));
+							editRedoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo_f"), changelog.getToRedo().getShortName()));
 						}
 						editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 						break;

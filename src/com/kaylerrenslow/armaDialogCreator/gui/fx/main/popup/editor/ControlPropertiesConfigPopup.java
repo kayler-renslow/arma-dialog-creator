@@ -20,7 +20,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -91,8 +91,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.getChildren().clear();
 		addCloseButton();
 		myRootElement.getChildren().add(editorPane);
-		
-		CheckBox cbIsBackgroundControl = new CheckBox(Lang.Popups.ControlPropertiesConfig.IS_BACKGROUND_CONTROL);
+
+		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.is_background_control"));
 		cbIsBackgroundControl.setSelected(c.isBackgroundControl());
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -150,7 +150,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		
 		ComboBox<String> cbExtendClass = new ComboBox<>(FXCollections.observableArrayList("-", "RscStatic", "RscPicture"));
 		cbExtendClass.getSelectionModel().select(0);
-		Label lblExtendClass = new Label(Lang.Popups.ControlPropertiesConfig.EXTEND_CLASS, cbExtendClass);
+		Label lblExtendClass = new Label(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.extend_class"), cbExtendClass);
 		
 		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
@@ -173,9 +173,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		private boolean moveOut = false;
 		
 		public MoveOutOfControlGroupDialog(ArmaControl c) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.POPUP_TITLE, true, true, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
 			myRootElement.getChildren().addAll(
-					new Label(String.format(Lang.Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.MESSAGE_F, c.getClassName()))
+					new Label(String.format(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.message_f"), c.getClassName()))
 			);
 			myStage.initStyle(StageStyle.UTILITY);
 			sizeToScene();

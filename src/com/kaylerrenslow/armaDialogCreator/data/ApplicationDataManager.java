@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
@@ -151,10 +151,10 @@ public class ApplicationDataManager {
 		private boolean saveProgress = false;
 
 		public SaveProjectDialog() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.Popups.SaveProject.POPUP_TITLE, true, true, false);
-			myRootElement.getChildren().add(new Label(Lang.Popups.SaveProject.MESSAGE));
-			btnOk.setText(Lang.Confirmation.YES);
-			btnCancel.setText(Lang.Confirmation.NO);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.SaveProject.popup_title"), true, true, false);
+			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle.getString("Popups.SaveProject.message")));
+			btnOk.setText(Lang.ApplicationBundle.getString("Confirmation.yes"));
+			btnCancel.setText(Lang.ApplicationBundle.getString("Confirmation.no"));
 		}
 
 		@Override

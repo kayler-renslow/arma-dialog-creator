@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -37,7 +37,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 	/**
 	 */
 	MissingControlPropertiesConfigPopup(@Nullable Stage primaryStage, @NotNull List<ControlProperty> missing) {
-		super(primaryStage, new VBox(5), Lang.Popups.MissingControlPropertiesConfig.POPUP_TITLE);
+		super(primaryStage, new VBox(5), Lang.ApplicationBundle.getString("Popups.MissingControlPropertiesConfig.popup_title"));
 		myRootElement.setPadding(new Insets(5));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
@@ -46,7 +46,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 		for (ControlProperty controlProperty : missing) {
 			listView.getItems().add(controlProperty.getName());
 		}
-		Button btnOk = new Button(Lang.Popups.BTN_OK);
+		Button btnOk = new Button(Lang.ApplicationBundle.getString("Popups.btn_ok"));
 		btnOk.setPrefWidth(100d);
 		btnOk.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -56,7 +56,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 		});
 		HBox hbox = new HBox(btnOk);
 		hbox.setAlignment(Pos.BOTTOM_RIGHT);
-		myRootElement.getChildren().addAll(new Label(Lang.Popups.MissingControlPropertiesConfig.MISSING_PROPERTIES_MESSAGE), listView, hbox);
+		myRootElement.getChildren().addAll(new Label(Lang.ApplicationBundle.getString("Popups.MissingControlPropertiesConfig.missing_properties_message")), listView, hbox);
 		myRootElement.setFillWidth(true);
 		setStageSize(500, 300);
 	}

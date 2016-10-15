@@ -23,7 +23,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -47,7 +47,7 @@ import java.io.File;
 public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 	private enum DisplayType {
-		DIALOG(Lang.Popups.ExportProject.DisplayProperties.DIALOG), TITLE(Lang.Popups.ExportProject.DisplayProperties.TITLE);
+		DIALOG(Lang.ApplicationBundle.getString("Popups.ExportProject.DisplayProperties.dialog")), TITLE(Lang.ApplicationBundle.getString("Popups.ExportProject.DisplayProperties.title"));
 
 		private final String displayName;
 
@@ -70,22 +70,22 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
 
 	public EditExportConfigurationDialog(@NotNull Project project) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.ExportProject.DIALOG_TITLE, true, true, true);
-		btnOk.setText(Lang.Popups.ExportProject.OK_BUTTON_EXPORT);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle.getString("Popups.ExportProject.dialog_title"), true, true, true);
+		btnOk.setText(Lang.ApplicationBundle.getString("Popups.ExportProject.ok_button_export"));
 		configuration = project.getExportConfiguration().copy();
 
 		setStageSize(720, 480);
 		myRootElement.setPadding(new Insets(10d));
 
-		final Label lblTitle = new Label(Lang.Popups.ExportProject.TITLE_LABEL);
+		final Label lblTitle = new Label(Lang.ApplicationBundle.getString("Popups.ExportProject.title_label"));
 		lblTitle.setFont(Font.font(17));
 		myRootElement.getChildren().add(lblTitle);
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
-		final Tab tabDisplayProperties = new Tab(Lang.Popups.ExportProject.DISPLAY_PROPERTIES);
+		final Tab tabDisplayProperties = new Tab(Lang.ApplicationBundle.getString("Popups.ExportProject.display_properties"));
 		tabDisplayProperties.setClosable(false);
-		final Tab tabExportParameters = new Tab(Lang.Popups.ExportProject.EXPORT_PARAMETERS);
+		final Tab tabExportParameters = new Tab(Lang.ApplicationBundle.getString("Popups.ExportProject.export_parameters"));
 		tabExportParameters.setClosable(false);
-		final Tab tabExportPreview = new Tab(Lang.Popups.ExportProject.EXPORT_PREVIEW);
+		final Tab tabExportPreview = new Tab(Lang.ApplicationBundle.getString("Popups.ExportProject.export_preview"));
 		tabExportPreview.setClosable(false);
 
 		final TabPane tabPane = new TabPane(tabDisplayProperties, tabExportParameters, tabExportPreview);
@@ -123,7 +123,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		tabRoot.getChildren().add(hboxClassName);
 
 		/*display type*/
-		final Label lblDisplayType = new Label(Lang.Popups.ExportProject.DisplayProperties.DISPLAY_TYPE);
+		final Label lblDisplayType = new Label(Lang.ApplicationBundle.getString("Popups.ExportProject.DisplayProperties.display_type"));
 		final ToggleGroup toggleGroup = new ToggleGroup();
 		final FlowPane flowPaneDisplayType = new FlowPane(Orientation.HORIZONTAL, 5, 10);
 		final HBox hboxDisplayType = new HBox(5, lblDisplayType, flowPaneDisplayType);
@@ -131,7 +131,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 			@Override
 			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
 				selectedDisplayType = (DisplayType) newValue.getUserData();
-				lblClassName.setText(String.format(Lang.Popups.ExportProject.DisplayProperties.CLASS_NAME_F, selectedDisplayType.displayName));
+				lblClassName.setText(String.format(Lang.ApplicationBundle.getString("Popups.ExportProject.DisplayProperties.class_name_f"), selectedDisplayType.displayName));
 			}
 		});
 		for (DisplayType type : DisplayType.values()) {
@@ -161,10 +161,10 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		tabExportParameters.setContent(tabRoot);
 
 		/*set export directory*/
-		final Label lblExportDirectory = new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_DIRECTORY);
+		final Label lblExportDirectory = new Label(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.export_directory"));
 		final FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-				Lang.Popups.ExportProject.ExportParameters.LOCATE_EXPORT_DIRECTORY, configuration.getExportLocation());
-		Tooltip.install(chooserPane, new Tooltip(Lang.Popups.ExportProject.ExportParameters.EXPORT_DIRECTORY_TOOLTIP));
+				Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.locate_export_directory"), configuration.getExportLocation());
+		Tooltip.install(chooserPane, new Tooltip(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.export_directory_tooltip")));
 		chooserPane.setChosenFile(configuration.getExportLocation());
 		chooserPane.getChosenFileObserver().addValueListener(new ValueListener<File>() {
 			@Override
@@ -176,8 +176,8 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 
 		/*export macros to own file*/
-		final CheckBox checkBoxExportMacrosToFile = new CheckBox(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE);
-		checkBoxExportMacrosToFile.setTooltip(new Tooltip(Lang.Popups.ExportProject.ExportParameters.EXPORT_MACROS_TO_FILE_TOOLTIP));
+		final CheckBox checkBoxExportMacrosToFile = new CheckBox(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.export_macros_to_file"));
+		checkBoxExportMacrosToFile.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.export_macros_to_file_tooltip")));
 		checkBoxExportMacrosToFile.setSelected(configuration.shouldExportMacrosToFile());
 		checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -206,13 +206,13 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				configuration.setFileType((HeaderFileType) newValue.getUserData());
 			}
 		});
-		tabRoot.getChildren().add(new VBox(5, new Label(Lang.Popups.ExportProject.ExportParameters.EXPORT_FILE_EXTENSION), flowPaneFileExt));
+		tabRoot.getChildren().add(new VBox(5, new Label(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.export_file_extension")), flowPaneFileExt));
 
 
 		/*place adc notice*/
-		final CheckBox checkBoxPlaceAdcNotice = new CheckBox(Lang.Popups.ExportProject.ExportParameters.PLACE_ADC_NOTICE);
+		final CheckBox checkBoxPlaceAdcNotice = new CheckBox(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.place_adc_notice"));
 		checkBoxPlaceAdcNotice.setSelected(configuration.shouldPlaceAdcNotice());
-		checkBoxPlaceAdcNotice.setTooltip(new Tooltip(Lang.Popups.ExportProject.ExportParameters.PLACE_ADC_NOTICE_TOOLTIP));
+		checkBoxPlaceAdcNotice.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("Popups.ExportProject.ExportParameters.place_adc_notice_tooltip")));
 		checkBoxPlaceAdcNotice.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {

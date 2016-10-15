@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.expression;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -78,7 +78,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	public Value visit(AST.IdentifierExpr expr, Env env) throws ExpressionEvaluationException {
 		Value v = env.getValue(expr.getIdentifier());
 		if (v == null) {
-			throw new ExpressionEvaluationException(String.format(Lang.Expression.IDENTIFIER_NOT_SET_F, expr.getIdentifier()));
+			throw new ExpressionEvaluationException(String.format(Lang.ApplicationBundle.getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
 		}
 		return v;
 	}

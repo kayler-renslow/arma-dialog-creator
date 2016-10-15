@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeViewMenuItemBuilder;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -29,7 +29,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 	
 	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {
 		if (showNewFolderOption) {
-			MenuItem newFolder = new MenuItem(Lang.ContextMenu.ComponentTreeView.NEW_FOLDER, createFolderIcon());
+			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle.getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
 			getItems().add(newFolder);
 			TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<TreeItemEntry>() {
 				@Override
@@ -64,7 +64,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				groupMenu.getItems().add(menuItemType);
 			}
 			if(groupMenu.getItems().size() == 0){
-				MenuItem miNone = new MenuItem(Lang.Misc.NO_ITEMS_AVAILABLE);
+				MenuItem miNone = new MenuItem(Lang.ApplicationBundle.getString("Misc.no_items_available"));
 				miNone.setDisable(true);
 				groupMenu.getItems().add(miNone);
 			}

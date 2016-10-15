@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -30,7 +30,7 @@ public class StringChecker implements InputFieldDataChecker<String> {
 	
 	@Override
 	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.StringChecker.TYPE_NAME;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.StringChecker.type_name");
 	}
 	
 	@Override

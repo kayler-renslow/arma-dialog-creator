@@ -13,7 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/13/2016.
  */
 public class FontValueEditor implements ValueEditor<AFont> {
-	private final Button btnChooseDefault = new Button(Lang.ValueEditors.FontValueEditor.DEFAULT_FONT);
+	private final Button btnChooseDefault = new Button(Lang.ApplicationBundle.getString("ValueEditors.FontValueEditor.default_font"));
 	protected final ComboBox<AFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(AFont.values()));
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());

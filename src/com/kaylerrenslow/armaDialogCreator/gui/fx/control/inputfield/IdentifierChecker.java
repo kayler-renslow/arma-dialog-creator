@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,7 +25,7 @@ public class IdentifierChecker implements InputFieldDataChecker<String> {
 		if(match){
 			return null;
 		}
-		return FXControlLang.InputField.DataCheckers.Identifier.NOT_IDENTIFIER;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.Identifier.not_identifier");
 	}
 
 	@Override
@@ -35,7 +35,7 @@ public class IdentifierChecker implements InputFieldDataChecker<String> {
 
 	@Override
 	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.Identifier.TYPE_NAME;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.Identifier.type_name");
 	}
 
 	@Override

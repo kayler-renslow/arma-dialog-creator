@@ -11,67 +11,68 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
-import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 import java.util.LinkedList;
+import java.util.MissingResourceException;
 
 /**
  Created by Kayler on 05/22/2016.
  */
 public enum ControlStyle {
 	// Static styles
-	NA(0, 0, LookupLang.ControlStyle.NA, LookupLang.ControlStyle.Doc.NA),
-	POS(1, 0x0F, LookupLang.ControlStyle.POS, LookupLang.ControlStyle.Doc.POS),
-	HPOS(2, 0x03, LookupLang.ControlStyle.HPOS, LookupLang.ControlStyle.Doc.HPOS),
-	VPOS(3, 0x0C, LookupLang.ControlStyle.VPOS, LookupLang.ControlStyle.Doc.VPOS),
-	LEFT(4, 0x00, LookupLang.ControlStyle.LEFT, LookupLang.ControlStyle.Doc.LEFT),
-	RIGHT(5, 0x01, LookupLang.ControlStyle.RIGHT, LookupLang.ControlStyle.Doc.RIGHT),
-	CENTER(6, 0x02, LookupLang.ControlStyle.CENTER, LookupLang.ControlStyle.Doc.CENTER),
-	DOWN(7, 0x04, LookupLang.ControlStyle.DOWN, LookupLang.ControlStyle.Doc.DOWN),
-	UP(8, 0x08, LookupLang.ControlStyle.UP, LookupLang.ControlStyle.Doc.UP),
-	VCENTER(9, 0x0c, LookupLang.ControlStyle.VCENTER, LookupLang.ControlStyle.Doc.VCENTER),
+	NA(0, 0, getString("ControlStyle.na"), getString("ControlStyle.Doc.na")),
+	POS(1, 0x0F, getString("ControlStyle.pos"), getString("ControlStyle.Doc.pos")),
+	HPOS(2, 0x03, getString("ControlStyle.hpos"), getString("ControlStyle.Doc.hpos")),
+	VPOS(3, 0x0C, getString("ControlStyle.vpos"), getString("ControlStyle.Doc.vpos")),
+	LEFT(4, 0x00, getString("ControlStyle.left"), getString("ControlStyle.Doc.left")),
+	RIGHT(5, 0x01, getString("ControlStyle.right"), getString("ControlStyle.Doc.right")),
+	CENTER(6, 0x02, getString("ControlStyle.center"), getString("ControlStyle.Doc.center")),
+	DOWN(7, 0x04, getString("ControlStyle.down"), getString("ControlStyle.Doc.down")),
+	UP(8, 0x08, getString("ControlStyle.up"), getString("ControlStyle.Doc.up")),
+	VCENTER(9, 0x0c, getString("ControlStyle.vcenter"), getString("ControlStyle.Doc.vcenter")),
 
-	TYPE(10, 0xF0, LookupLang.ControlStyle.TYPE, LookupLang.ControlStyle.Doc.TYPE),
-	SINGLE(11, 0, LookupLang.ControlStyle.SINGLE, LookupLang.ControlStyle.Doc.SINGLE),
-	MULTI(12, 16, LookupLang.ControlStyle.MULTI, LookupLang.ControlStyle.Doc.MULTI),
-	TITLE_BAR(13, 32, LookupLang.ControlStyle.TITLE_BAR, LookupLang.ControlStyle.Doc.TITLE_BAR),
-	PICTURE(14, 48, LookupLang.ControlStyle.PICTURE, LookupLang.ControlStyle.Doc.PICTURE),
-	FRAME(15, 64, LookupLang.ControlStyle.FRAME, LookupLang.ControlStyle.Doc.FRAME),
-	BACKGROUND(16, 80, LookupLang.ControlStyle.BACKGROUND, LookupLang.ControlStyle.Doc.BACKGROUND),
-	GROUP_BOX(17, 96, LookupLang.ControlStyle.GROUP_BOX, LookupLang.ControlStyle.Doc.GROUP_BOX),
-	GROUP_BOX2(18, 112, LookupLang.ControlStyle.GROUP_BOX2, LookupLang.ControlStyle.Doc.GROUP_BOX2),
-	HUD_BACKGROUND(19, 128, LookupLang.ControlStyle.HUD_BACKGROUND, LookupLang.ControlStyle.Doc.HUD_BACKGROUND),
-	TILE_PICTURE(20, 144, LookupLang.ControlStyle.TILE_PICTURE, LookupLang.ControlStyle.Doc.TILE_PICTURE),  //tileH and tileW params required for tiled image
-	WITH_RECT(21, 160, LookupLang.ControlStyle.WITH_RECT, LookupLang.ControlStyle.Doc.WITH_RECT),
-	LINE(22, 176, LookupLang.ControlStyle.LINE, LookupLang.ControlStyle.Doc.LINE),
+	TYPE(10, 0xF0, getString("ControlStyle.type"), getString("ControlStyle.Doc.type")),
+	SINGLE(11, 0, getString("ControlStyle.single"), getString("ControlStyle.Doc.single")),
+	MULTI(12, 16, getString("ControlStyle.multi"), getString("ControlStyle.Doc.multi")),
+	TITLE_BAR(13, 32, getString("ControlStyle.title_bar"), getString("ControlStyle.Doc.title_bar")),
+	PICTURE(14, 48, getString("ControlStyle.picture"), getString("ControlStyle.Doc.picture")),
+	FRAME(15, 64, getString("ControlStyle.frame"), getString("ControlStyle.Doc.frame")),
+	BACKGROUND(16, 80, getString("ControlStyle.background"), getString("ControlStyle.Doc.background")),
+	GROUP_BOX(17, 96, getString("ControlStyle.group_box"), getString("ControlStyle.Doc.group_box")),
+	GROUP_BOX2(18, 112, getString("ControlStyle.group_box2"), getString("ControlStyle.Doc.group_box2")),
+	HUD_BACKGROUND(19, 128, getString("ControlStyle.hud_background"), getString("ControlStyle.Doc.hud_background")),
+	TILE_PICTURE(20, 144, getString("ControlStyle.tile_picture"), getString("ControlStyle.Doc.tile_picture")),  //tileH and tileW params required for tiled image
+	WITH_RECT(21, 160, getString("ControlStyle.with_rect"), getString("ControlStyle.Doc.with_rect")),
+	LINE(22, 176, getString("ControlStyle.line"), getString("ControlStyle.Doc.line")),
 
-	SHADOW(23, 0x100, LookupLang.ControlStyle.SHADOW, LookupLang.ControlStyle.Doc.SHADOW),
-	NO_RECT(24, 0x200, LookupLang.ControlStyle.NO_RECT, LookupLang.ControlStyle.Doc.NO_RECT), // this style works for CT_STATIC in conjunction with MULTI
-	KEEP_ASPECT_RATIO(25, 0x800, LookupLang.ControlStyle.KEEP_ASPECT_RATIO, LookupLang.ControlStyle.Doc.KEEP_ASPECT_RATIO),
-	TITLE(26, TITLE_BAR.styleValue + CENTER.styleValue, LookupLang.ControlStyle.TITLE, LookupLang.ControlStyle.Doc.TITLE),
+	SHADOW(23, 0x100, getString("ControlStyle.shadow"), getString("ControlStyle.Doc.shadow")),
+	NO_RECT(24, 0x200, getString("ControlStyle.no_rect"), getString("ControlStyle.Doc.no_rect")), // this style works for CT_STATIC in conjunction with MULTI
+	KEEP_ASPECT_RATIO(25, 0x800, getString("ControlStyle.keep_aspect_ratio"), getString("ControlStyle.Doc.keep_aspect_ratio")),
+	TITLE(26, TITLE_BAR.styleValue + CENTER.styleValue, getString("ControlStyle.title"), getString("ControlStyle.Doc.title")),
 
 	// Slider styles
-	SL_DIR(27, 0x400, LookupLang.ControlStyle.SL_DIR, LookupLang.ControlStyle.Doc.SL_DIR),
-	SL_VERT(28, 0, LookupLang.ControlStyle.SL_VERT, LookupLang.ControlStyle.Doc.SL_VERT),
-	SL_HORZ(29, 1024, LookupLang.ControlStyle.SL_HORZ, LookupLang.ControlStyle.Doc.SL_HORZ),
-	SL_TEXTURES(30, 0x10, LookupLang.ControlStyle.SL_TEXTURES, LookupLang.ControlStyle.Doc.SL_TEXTURES),
+	SL_DIR(27, 0x400, getString("ControlStyle.sl_dir"), getString("ControlStyle.Doc.sl_dir")),
+	SL_VERT(28, 0, getString("ControlStyle.sl_vert"), getString("ControlStyle.Doc.sl_vert")),
+	SL_HORZ(29, 1024, getString("ControlStyle.sl_horz"), getString("ControlStyle.Doc.sl_horz")),
+	SL_TEXTURES(30, 0x10, getString("ControlStyle.sl_textures"), getString("ControlStyle.Doc.sl_textures")),
 
 	// progress bar
-	VERTICAL(31, 0x01, LookupLang.ControlStyle.VERTICAL, LookupLang.ControlStyle.Doc.VERTICAL),
-	HORIZONTAL(32, 0, LookupLang.ControlStyle.HORIZONTAL, LookupLang.ControlStyle.Doc.HORIZONTAL),
+	VERTICAL(31, 0x01, getString("ControlStyle.vertical"), getString("ControlStyle.Doc.vertical")),
+	HORIZONTAL(32, 0, getString("ControlStyle.horizontal"), getString("ControlStyle.Doc.horizontal")),
 
 	// Listbox styles
-	LB_TEXTURES(33, 0x10, LookupLang.ControlStyle.LB_TEXTURES, LookupLang.ControlStyle.Doc.LB_TEXTURES),
-	LB_MULTI(34, 0x20, LookupLang.ControlStyle.LB_MULTI, LookupLang.ControlStyle.Doc.LB_MULTI),
+	LB_TEXTURES(33, 0x10, getString("ControlStyle.lb_textures"), getString("ControlStyle.Doc.lb_textures")),
+	LB_MULTI(34, 0x20, getString("ControlStyle.lb_multi"), getString("ControlStyle.Doc.lb_multi")),
 
 	// Tree styles
-	TR_SHOWROOT(35, 1, LookupLang.ControlStyle.TR_SHOWROOT, LookupLang.ControlStyle.Doc.TR_SHOWROOT),
-	TR_AUTOCOLLAPSE(36, 2, LookupLang.ControlStyle.TR_AUTOCOLLAPSE, LookupLang.ControlStyle.Doc.TR_AUTOCOLLAPSE),
+	TR_SHOWROOT(35, 1, getString("ControlStyle.tr_showroot"), getString("ControlStyle.Doc.tr_showroot")),
+	TR_AUTOCOLLAPSE(36, 2, getString("ControlStyle.tr_autocollapse"), getString("ControlStyle.Doc.tr_autocollapse")),
 
 	// MessageBox styles
-	MB_BUTTON_OK(37, 1, LookupLang.ControlStyle.MB_BUTTON_OK, LookupLang.ControlStyle.Doc.MB_BUTTON_OK),
-	MB_BUTTON_CANCEL(38, 2, LookupLang.ControlStyle.MB_BUTTON_CANCEL, LookupLang.ControlStyle.Doc.MB_BUTTON_CANCEL),
-	MB_BUTTON_USER(39, 4, LookupLang.ControlStyle.MB_BUTTON_USER, LookupLang.ControlStyle.Doc.MB_BUTTON_USER);
+	MB_BUTTON_OK(37, 1, getString("ControlStyle.mb_button_ok"), getString("ControlStyle.Doc.mb_button_ok")),
+	MB_BUTTON_CANCEL(38, 2, getString("ControlStyle.mb_button_cancel"), getString("ControlStyle.Doc.mb_button_cancel")),
+	MB_BUTTON_USER(39, 4, getString("ControlStyle.mb_button_user"), getString("ControlStyle.Doc.mb_button_user"));
 
 	public static final ControlStyle[] EMPTY = new ControlStyle[0];
 	public final int styleValue;
@@ -89,7 +90,7 @@ public enum ControlStyle {
 		this.styleId = styleId;
 		this.styleValue = styleValue;
 		this.displayName = displayName;
-		this.documentation = documentation != null ? documentation : LookupLang.ControlStyle.Doc.NO_DOC;
+		this.documentation = documentation;
 
 	}
 
@@ -114,6 +115,14 @@ public enum ControlStyle {
 	@Override
 	public String toString() {
 		return displayName + " (" + styleValue + ")";
+	}
+
+	private static String getString(String s) {
+		try {
+			return Lang.LookupBundle.getString(s);
+		} catch (MissingResourceException e) {
+		}
+		return Lang.LookupBundle.getString("ControlStyle.Doc.no_doc");
 	}
 
 	private static class StyleIdVerifier {

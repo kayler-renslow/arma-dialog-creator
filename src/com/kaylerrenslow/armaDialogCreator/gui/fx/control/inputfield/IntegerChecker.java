@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,7 +24,7 @@ public class IntegerChecker implements InputFieldDataChecker<Integer> {
 			Integer.parseInt(data);
 			return null;
 		} catch (NumberFormatException e) {
-			return FXControlLang.InputField.DataCheckers.Integer.NOT_INTEGER;
+			return Lang.FxControlBundle.getString("InputField.DataCheckers.Integer.not_integer");
 		}
 	}
 
@@ -35,7 +35,7 @@ public class IntegerChecker implements InputFieldDataChecker<Integer> {
 
 	@Override
 	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.Integer.TYPE_NAME;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.Integer.type_name");
 	}
 
 	@Override

@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view;
 
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.RadioMenuItem;
@@ -57,7 +57,7 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Images", "*.png", "*.gif", "*.jpg", "*.mpo");
 			c.getExtensionFilters().add(filter);
 			c.setSelectedExtensionFilter(filter);
-			c.setTitle(Lang.Misc.FILE_CHOOSER_BACKGROUND_IMG_TITLE);
+			c.setTitle(Lang.ApplicationBundle.getString("Misc.file_chooser_background_img_title"));
 			File chosen = c.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
 			if (chosen != null) {
 				ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(chosen.toURI().toString());

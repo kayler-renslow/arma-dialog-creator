@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -35,8 +35,8 @@ public class GenericResponseFooter extends BorderPane {
 	) {
 		rightContainer = new HBox(5);
 		if (addHelpButton) {
-			btnHelp = new Button(Lang.Popups.BTN_HELP);
-			btnHelp.setTooltip(new Tooltip(Lang.Popups.BTN_HELP_TOOLTIP));
+			btnHelp = new Button(Lang.ApplicationBundle.getString("Popups.btn_help"));
+			btnHelp.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("Popups.btn_help_tooltip")));
 			btnHelp.setOnAction(helpEvent);
 			btnHelp.setPrefWidth(50d);
 			setLeft(btnHelp);
@@ -44,7 +44,7 @@ public class GenericResponseFooter extends BorderPane {
 			btnHelp = null;
 		}
 		if (addCancel) {
-			btnCancel = new Button(Lang.Popups.BTN_CANCEL);
+			btnCancel = new Button(Lang.ApplicationBundle.getString("Popups.btn_cancel"));
 			btnCancel.setOnAction(cancelEvent);
 			btnCancel.setPrefWidth(75d);
 			rightContainer.getChildren().add(btnCancel);
@@ -52,7 +52,7 @@ public class GenericResponseFooter extends BorderPane {
 			btnCancel = null;
 		}
 		if (addOk) {
-			btnOk = new Button(Lang.Popups.BTN_OK);
+			btnOk = new Button(Lang.ApplicationBundle.getString("Popups.btn_ok"));
 			btnOk.setOnAction(okEvent);
 			btnOk.setPrefWidth(100d);
 			rightContainer.getChildren().add(btnOk);

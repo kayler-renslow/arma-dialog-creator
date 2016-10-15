@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 
 /**
@@ -23,7 +23,7 @@ public class NewMacroPopup extends MacroEditBasePopup {
 	
 	public NewMacroPopup() {
 		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
-		myStage.setTitle(Lang.Popups.MacroNew.POPUP_TITLE);
+		myStage.setTitle(Lang.ApplicationBundle.getString("Popups.MacroNew.popup_title"));
 	}
 	
 	@Override

@@ -15,8 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CheckMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
-import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
@@ -32,10 +31,11 @@ import java.util.List;
 
 /**
  @author Kayler
- A value editor for {@link LookupLang.PropertyType#CONTROL_STYLE}. By default, all {@link ControlStyle}'s are added in the MenuButton.
+ A value editor for {@link ControlStyle}. By default, all {@link ControlStyle}'s are added in the MenuButton.
  Created on 08/05/2016. */
 public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
-	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ValueEditors.ControlStyleGroupEditor.SELECT_STYLES, null);
+	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle.getString("ValueEditors.ControlStyleGroupEditor.select_styles"),
+			null);
 	private final TextField textField = new TextField();
 	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
 	protected final ValueObserver<ControlStyleGroup> valueObserver = new ValueObserver<>(null);
@@ -45,7 +45,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		getChildren().add(menuButton);
 		getChildren().add(textField);
 		menuButton.getItems().addAll(ControlStyle.values());
-		menuButton.setTooltip(new Tooltip(Lang.ValueEditors.ControlStyleGroupEditor.TOOLTIP_SELECT_STYLES));
+		menuButton.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("ValueEditors.ControlStyleGroupEditor.tooltip_select_styles")));
 		for (ControlStyle style : menuButton.getItems()) {
 			menuButton.bindTooltip(style, style.documentation);
 		}

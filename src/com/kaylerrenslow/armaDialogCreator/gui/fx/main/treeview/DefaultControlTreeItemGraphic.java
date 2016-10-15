@@ -19,14 +19,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,7 +32,6 @@ import org.jetbrains.annotations.NotNull;
  Graphic for tree items that represent a control
  Created on 06/08/2016. */
 public class DefaultControlTreeItemGraphic extends HBox{
-	private static final Font LABEL_FONT = Font.font(Font.getDefault().getFamily(), FontPosture.ITALIC, Font.getDefault().getSize());
 	private static final Insets margin = new Insets(0, 5, 0, 0);
 	private static final String BORDER_STYLE = "-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:1px;";
 	private final RadioButton rbSelected = new RadioButton();
@@ -64,18 +61,17 @@ public class DefaultControlTreeItemGraphic extends HBox{
 				fillBox(newValue.toJavaFXColor());
 			}
 		});
-		Label lblType = new Label("(" + entry.getControlTypeText() + ")");
-		lblType.setFont(LABEL_FONT);
-		ImageView imageView = new ImageView(ArmaControlLookup.STATIC.iconPath);
 
-		final StackPane stackPaneImageView = new StackPane(imageView);
+		final ImageView imageViewTypeImage = new ImageView(ArmaControlLookup.findByControlType(entry.getMyArmaControl().getType()).iconPath);
+		final StackPane stackPaneImageView = new StackPane(imageViewTypeImage);
+		Tooltip.install(imageViewTypeImage, new Tooltip(entry.getMyArmaControl().getType().displayName));
 		stackPaneImageView.setStyle("-fx-border-color:#b3b3b3;-fx-border-width:1px");
 
 		fillBox(entry.getPrimaryColor());
 		StackPane boxBorder = new StackPane(box);
 		boxBorder.setStyle(BORDER_STYLE);
 		HBox.setMargin(boxBorder, margin);
-		getChildren().addAll(stackPaneImageView, boxBorder, rbSelected, lblType);
+		getChildren().addAll(stackPaneImageView, boxBorder, rbSelected);
 	}
 
 	private void fillBox(Color color) {

@@ -13,7 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -48,17 +48,17 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 	};
 
 	public CanvasViewColorsPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.Popups.Colors.POPUP_TITLE, false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle.getString("Popups.Colors.popup_title"), false, true, false);
 		myStage.initStyle(StageStyle.UTILITY);
 		setupColorPickers();
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
 		myRootElement.getChildren().addAll(
-				colorOption(Lang.Popups.Colors.SELECTION, cpSelection),
-				colorOption(Lang.Popups.Colors.ABS_REGION, cpAbsRegion),
-				colorOption(Lang.Popups.Colors.GRID, cpGrid),
-				colorOption(Lang.Popups.Colors.BACKGROUND, cpEditorBg)
+				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.selection"), cpSelection),
+				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.abs_region"), cpAbsRegion),
+				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.grid"), cpGrid),
+				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.background"), cpEditorBg)
 		);
 	}
 

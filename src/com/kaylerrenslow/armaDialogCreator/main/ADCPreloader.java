@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Preloader;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;

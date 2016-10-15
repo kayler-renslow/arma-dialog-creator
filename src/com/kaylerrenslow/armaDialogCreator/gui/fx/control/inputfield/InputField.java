@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -95,7 +95,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 				submitValue();
 			}
 		});
-		btnSubmit.setTooltip(new Tooltip(FXControlLang.InputField.SUBMIT_BTN_TOOLTIP));
+		btnSubmit.setTooltip(new Tooltip(Lang.FxControlBundle.getString("InputField.submit_btn_tooltip")));
 		this.hboxTextField.getChildren().add(btnSubmit);
 		textField.setStyle("-fx-background-radius:0px");
 

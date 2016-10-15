@@ -9,7 +9,7 @@
  */
 
 import com.kaylerrenslow.armaDialogCreator.main.BuildProperty;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 import java.io.*;
 import java.nio.file.Files;

@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseMacroPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.EditMacroPopup;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -37,12 +37,12 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
 	private final Hyperlink hyplinkChosenMacro = new Hyperlink();
-	private final Label lblNoChosenMacro = new Label(Lang.Macros.NO_MACRO_SET);
-	private final HBox hboxMacroLbl = new HBox(0, new Label(Lang.Macros.MACRO + "="), hyplinkChosenMacro);
+	private final Label lblNoChosenMacro = new Label(Lang.ApplicationBundle.getString("Macros.no_macro_set"));
+	private final HBox hboxMacroLbl = new HBox(0, new Label(Lang.ApplicationBundle.getString("Macros.macro") + "="), hyplinkChosenMacro);
 	private final StackPane stackPaneChosenMacroText = new StackPane(hboxMacroLbl);
 
-	private final MenuItem miChooseMacro = new MenuItem(Lang.Macros.CHOOSE_MACRO);
-	private final MenuItem miClearMacro = new MenuItem(Lang.Macros.CLEAR_MACRO);
+	private final MenuItem miChooseMacro = new MenuItem(Lang.ApplicationBundle.getString("Macros.choose_macro"));
+	private final MenuItem miClearMacro = new MenuItem(Lang.ApplicationBundle.getString("Macros.clear_macro"));
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
 
 	private ValueObserver<Macro<V>> macroValueObserver;
@@ -63,7 +63,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		macroValueObserver = new ValueObserver<>(null);
 		setToMacro(currentMacro);
 		SplitMenuButton menuButton = new SplitMenuButton();
-		menuButton.setText(Lang.Macros.CHOOSE_MACRO);
+		menuButton.setText(Lang.ApplicationBundle.getString("Macros.choose_macro"));
 		setAlignment(Pos.CENTER_LEFT);
 		hboxMacroLbl.setAlignment(Pos.CENTER_LEFT);
 		getChildren().addAll(menuButton, stackPaneChosenMacroText);
@@ -110,7 +110,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		menuButton.getItems().addAll(miChooseMacro, miClearMacro, miSeparator);
 
 		if (recentMacros.size() == 0) {
-			MenuItem miNoRecentMacros = new MenuItem(Lang.Popups.ChooseMacro.NO_RECENT_MACROS);
+			MenuItem miNoRecentMacros = new MenuItem(Lang.ApplicationBundle.getString("Macros.no_recent_macros"));
 			miNoRecentMacros.setDisable(true);
 			menuButton.getItems().add(miNoRecentMacros);
 		} else {

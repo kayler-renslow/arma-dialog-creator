@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 
@@ -34,7 +34,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 	
 	/** Create */
 	private PreviewPopupWindow() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.PreviewWindow.POPUP_TITLE);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("PreviewWindow.popup_title"));
 	}
 	
 	/** Shows the popup with the given arma display */

@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.util;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.TextArea;
 
 import java.awt.*;
@@ -28,7 +28,10 @@ public class BrowserUtil {
 			Desktop.getDesktop().browse(new URI(url));
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			new StageDialog<>(ArmaDialogCreator.getPrimaryStage(), new TextArea(String.format(Lang.Misc.VISIT_LINK_IN_BROWSER_F, url)), Lang.Popups.GENERIC_POPUP_TITLE, false, true, false).show();
+			new StageDialog<>(ArmaDialogCreator.getPrimaryStage(), new TextArea(String.format(Lang.ApplicationBundle.getString("Misc.visit_link_in_browser_f"), url)), Lang.ApplicationBundle
+					.getString("Popups.generic_popup_title"),
+					false,
+					true, false).show();
 		}
 	}
 }

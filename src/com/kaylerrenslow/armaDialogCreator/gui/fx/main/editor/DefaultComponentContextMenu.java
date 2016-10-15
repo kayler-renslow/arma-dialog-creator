@@ -13,7 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Counter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.ControlPropertiesConfigPopup;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
@@ -31,14 +31,14 @@ public class DefaultComponentContextMenu extends ContextMenu {
 	private static ArrayList<ControlPropertiesConfigPopup> createdPopups = new ArrayList<>();
 
 	public DefaultComponentContextMenu(ArmaControl c) {
-		MenuItem configure = new MenuItem(Lang.ContextMenu.DefaultComponent.CONFIGURE);
+		MenuItem configure = new MenuItem(Lang.ApplicationBundle.getString("ContextMenu.DefaultComponent.configure"));
 
 		Counter counter = new Counter(0, 0, Integer.MAX_VALUE, 1.0, true);
 		counter.addUpdateButton(-10, "-10", 0);
 		counter.addUpdateButton(10, "+10", 100); //put on end
 		CustomMenuItem renderQueueItem = new CustomMenuItem(counter, false);
 
-		Menu renderQueueMenu = new Menu(Lang.ContextMenu.DefaultComponent.RENDER_QUEUE, null, renderQueueItem);
+		Menu renderQueueMenu = new Menu(Lang.ApplicationBundle.getString("ContextMenu.DefaultComponent.render_queue"), null, renderQueueItem);
 
 		getItems().addAll(renderQueueMenu, configure);
 		configure.setOnAction(new EventHandler<ActionEvent>() {

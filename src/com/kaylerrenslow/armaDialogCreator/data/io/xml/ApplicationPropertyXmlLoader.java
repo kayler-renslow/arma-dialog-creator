@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -65,7 +65,10 @@ public class ApplicationPropertyXmlLoader extends XmlLoader {
 							try {
 								propertiesDataContext.put(property, property.converter.convert(null, value));
 							} catch (Exception e) {
-								addError(new ParseError(String.format(Lang.XmlParse.ApplicationPropertyLoad.BAD_SAVED_VALUE_F, property.getName(), property.getDefaultValue().toString())));
+								addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ApplicationPropertyLoad.bad_saved_value_f"), property.getName
+										(), property
+										.getDefaultValue()
+										.toString())));
 								propertiesDataContext.put(property, property.getDefaultValue());
 							}
 						}

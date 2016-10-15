@@ -20,7 +20,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -33,6 +32,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
+import java.util.Locale;
 import java.util.Properties;
 
 /**
@@ -58,8 +58,8 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
+		Locale.setDefault(Locale.ENGLISH);
 		loadBuildInfo();
-
 		ExceptionHandler.init();
 		launch(args);
 	}

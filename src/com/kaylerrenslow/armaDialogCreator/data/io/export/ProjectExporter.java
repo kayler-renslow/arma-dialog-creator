@@ -19,7 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -83,7 +83,7 @@ public class ProjectExporter {
 		} else {
 			exportMacros(macrosOutputStream);
 			if (configuration.shouldPlaceAdcNotice()) {
-				writelnComment(displayOutputStream, Lang.Misc.ADC_EXPORT_NOTICE);
+				writelnComment(displayOutputStream, Lang.ApplicationBundle.getString("Misc.adc_export_notice"));
 				writeln(displayOutputStream, "");
 			}
 		}
@@ -98,7 +98,7 @@ public class ProjectExporter {
 
 	private void exportMacros(@NotNull OutputStream os) throws IOException {
 		if (configuration.shouldPlaceAdcNotice()) {
-			writelnComment(os, Lang.Misc.ADC_EXPORT_NOTICE);
+			writelnComment(os, Lang.ApplicationBundle.getString("Misc.adc_export_notice"));
 			writeln(os, "");
 		}
 

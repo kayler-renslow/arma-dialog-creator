@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +42,7 @@ public interface ControlPropertyLookupConstant {
 	default String getAboutText() {
 		String r = "";
 		if(getAbout() == null){
-			return Lang.Misc.NO_DOCUMENTATION;
+			return Lang.ApplicationBundle.getString("Misc.no_documentation");
 		}
 		for (String s : getAbout()) {
 			r += s + "\n";

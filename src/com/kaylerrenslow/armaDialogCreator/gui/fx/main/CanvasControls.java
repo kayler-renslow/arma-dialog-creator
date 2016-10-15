@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.SnapConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -52,9 +52,9 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	private void initializeUI() {
 		initializeStepChoiceboxes();
 		HBox hboxStep = new HBox(5);
-		hboxStep.getChildren().addAll(new Label(Lang.CanvasControls.STEP), cbStep, new Label(Lang.CanvasControls.ALT_STEP), cbAltStep);
-		
-		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.CanvasControls.SHOW);
+		hboxStep.getChildren().addAll(new Label(Lang.ApplicationBundle.getString("CanvasControls.step")), cbStep, new Label(Lang.ApplicationBundle.getString("CanvasControls.alt_step")), cbAltStep);
+
+		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.ApplicationBundle.getString("CanvasControls.show"));
 		cbShowBackgroundControls.setSelected(true);
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -64,7 +64,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 				}
 			}
 		});
-		final CheckBox cbShowControls = new CheckBox(Lang.CanvasControls.SHOW);
+		final CheckBox cbShowControls = new CheckBox(Lang.ApplicationBundle.getString("CanvasControls.show"));
 		cbShowControls.setSelected(true);
 		cbShowControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -76,9 +76,9 @@ class CanvasControls extends VBox implements SnapConfiguration {
 		});
 		
 		final double vertSpacing = 5;
-		final HBox bgControlsHbox = new HBox(10, new Label(Lang.CanvasControls.BACKGROUND_CONTROLS), cbShowBackgroundControls);
+		final HBox bgControlsHbox = new HBox(10, new Label(Lang.ApplicationBundle.getString("CanvasControls.background_controls")), cbShowBackgroundControls);
 		final VBox vbBgControls = new VBox(vertSpacing, bgControlsHbox, treeViewBg);
-		final HBox controlHbox = new HBox(10, new Label(Lang.CanvasControls.CONTROLS), cbShowControls);
+		final HBox controlHbox = new HBox(10, new Label(Lang.ApplicationBundle.getString("CanvasControls.controls")), cbShowControls);
 		final VBox vbControls = new VBox(vertSpacing, controlHbox, treeViewMain);
 		// padding
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);

@@ -16,7 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -45,7 +45,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 	private final ObservableSet<DisplayPropertyEditor> editorPanes = FXCollections.observableSet();
 	private final ObservableSet<DisplayPropertyEditor> editorPanesRO = FXCollections.unmodifiableObservableSet(editorPanes);
 	private final VBox root = new VBox(5);
-	private final MenuButton menuButtonAddDisplayProperty = new MenuButton(Lang.DisplayPropertiesEditorPane.ADD_DISPLAY_PROPERTY);
+	private final MenuButton menuButtonAddDisplayProperty = new MenuButton(Lang.ApplicationBundle.getString("DisplayPropertiesEditorPane.add_display_property"));
 
 	/**
 	 @param display display to edit
@@ -68,7 +68,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 	}
 
 	private void initAddDisplayPropertyMB() {
-		menuButtonAddDisplayProperty.setTooltip(new Tooltip(Lang.DisplayPropertiesEditorPane.ADD_DISPLAY_PROPERTY_TOOLTIP));
+		menuButtonAddDisplayProperty.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("DisplayPropertiesEditorPane.add_display_property_tooltip")));
 		for (DisplayPropertyLookup propertyLookup : DisplayPropertyLookup.values()) {
 			final MenuItem mi = new MenuItem(propertyLookup.getPropertyName());
 			mi.setUserData(propertyLookup);
@@ -175,7 +175,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			}
 			final Button btnRemoveProperty = new Button("-");
 			btnRemoveProperty.setDisable(property.getPropertyLookup() == DisplayPropertyLookup.IDD);
-			btnRemoveProperty.setTooltip(new Tooltip(Lang.DisplayPropertiesEditorPane.REMOVE_PROPERTY_TOOLTIP));
+			btnRemoveProperty.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("DisplayPropertiesEditorPane.remove_property_tooltip")));
 			btnRemoveProperty.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {

@@ -25,7 +25,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -162,7 +162,7 @@ public class ProjectSaveXmlWriter {
 
 		//write control properties
 		if (control.getMissingRequiredProperties().size() != 0) {
-			throw new XmlWriteException(String.format(Lang.XmlWrite.ProjectSave.CONTROL_PROPERTIES_MISSING_F, control.getClassName()));
+			throw new XmlWriteException(String.format(Lang.ApplicationBundle.getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
 			fos.write(String.format("<control-property lookup-id='%d' macro-key='%s'>",

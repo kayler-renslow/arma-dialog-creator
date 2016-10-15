@@ -1,5 +1,5 @@
 **Added:**
-* icon for controls in tree view
+* removed Lang classes and now using resource bundles
 
 **Changed:**
 * none

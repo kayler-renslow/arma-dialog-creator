@@ -16,7 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +60,7 @@ public class ProjectXmlLoader extends XmlLoader {
 			case "1":
 				return new ProjectLoaderVersion1(loader);
 			default:
-				throw new XmlParseException(Lang.XmlParse.ProjectLoad.NOT_A_PROJECT_SAVE);
+				throw new XmlParseException(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.not_a_project_save"));
 		}
 	}
 	

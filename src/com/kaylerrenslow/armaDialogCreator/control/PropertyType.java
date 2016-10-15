@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 
 import java.util.LinkedList;
@@ -21,35 +21,35 @@ import java.util.LinkedList;
  Created on 07/15/2016. */
 public enum PropertyType {
 	/** Is a integer value. Current implementation is a 32 bit integer (java int) */
-	INT(0, SVInteger.CONVERTER, LookupLang.PropertyType.INT),
+	INT(0, SVInteger.CONVERTER, getString("PropertyType.int")),
 	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
-	FLOAT(1, SVDouble.CONVERTER, LookupLang.PropertyType.FLOAT),
+	FLOAT(1, SVDouble.CONVERTER, getString("PropertyType.float")),
 	/** Unique property type to {@link ControlPropertyLookup#STYLE} */
-	CONTROL_STYLE(2, ControlStyleGroup.CONVERTER, LookupLang.PropertyType.CONTROL_STYLE),
+	CONTROL_STYLE(2, ControlStyleGroup.CONVERTER, getString("PropertyType.control_style")),
 	/** Is an expression */
-	EXP(3, Expression.CONVERTER, LookupLang.PropertyType.EXP),
+	EXP(3, Expression.CONVERTER, getString("PropertyType.exp")),
 	/** Is a boolean (0 for false, 1 for true) */
-	BOOLEAN(4, SVBoolean.CONVERTER, LookupLang.PropertyType.BOOLEAN),
+	BOOLEAN(4, SVBoolean.CONVERTER, getString("PropertyType.boolean")),
 	/** Is a String */
-	STRING(5, SVString.CONVERTER, LookupLang.PropertyType.STRING, true),
+	STRING(5, SVString.CONVERTER, getString("PropertyType.string"), true),
 	/** Generic array property type */
-	ARRAY(6, SVStringArray.CONVERTER, LookupLang.PropertyType.ARRAY, 2),
+	ARRAY(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2),
 	/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
-	COLOR(7, AColor.CONVERTER, LookupLang.PropertyType.COLOR, 4),
+	COLOR(7, AColor.CONVERTER, getString("PropertyType.color"), 4),
 	/** Is an array that is formatted to fit a sound and its params */
-	SOUND(8, ASound.CONVERTER, LookupLang.PropertyType.SOUND, 3),
+	SOUND(8, ASound.CONVERTER, getString("PropertyType.sound"), 3),
 	/** Is font name */
-	FONT(9, AFont.CONVERTER, LookupLang.PropertyType.FONT, true),
+	FONT(9, AFont.CONVERTER, getString("PropertyType.font"), true),
 	/** Denotes a file name inside a String */
-	FILE_NAME(10, SVString.CONVERTER, LookupLang.PropertyType.FILE_NAME, true),
+	FILE_NAME(10, SVString.CONVERTER, getString("PropertyType.file_name"), true),
 	/** Denotes an image path inside a String */
-	IMAGE(11, SVImage.CONVERTER, LookupLang.PropertyType.IMAGE, true),
+	IMAGE(11, SVImage.CONVERTER, getString("PropertyType.image"), true),
 	/** Color is set to a hex string like #ffffff or #ffffffff */
-	HEX_COLOR_STRING(12, AHexColor.CONVERTER, LookupLang.PropertyType.HEX_COLOR_STRING, true),
+	HEX_COLOR_STRING(12, AHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-	TEXTURE(13, SVString.CONVERTER, LookupLang.PropertyType.TEXTURE, true),
+	TEXTURE(13, SVString.CONVERTER, getString("PropertyType.texture"), true),
 	/** SQF code String */
-	SQF(14, SVString.CONVERTER, LookupLang.PropertyType.SQF, true);
+	SQF(14, SVString.CONVERTER, getString("PropertyType.sqf"), true);
 	
 	/** Number of values used to represent the data */
 	public final int propertyValuesSize;
@@ -105,7 +105,11 @@ public enum PropertyType {
 		}
 		throw new IllegalArgumentException("id " + id + " couldn't be matched");
 	}
-	
+
+	private static String getString(String s) {
+		return Lang.LookupBundle.getString(s);
+	}
+
 	private static class IdChecker {
 		static final LinkedList<Integer> usedIds = new LinkedList<>();
 	}

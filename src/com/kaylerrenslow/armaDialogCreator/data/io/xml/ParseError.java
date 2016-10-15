@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,6 +50,6 @@ public class ParseError {
 	}
 	
 	public static String genericRecover(String value) {
-		return String.format(Lang.XmlParse.GENERIC_RECOVER_MESSAGE_F, value);
+		return String.format(Lang.ApplicationBundle.getString("XmlParse.generic_recover_message_f"), value);
 	}
 }

@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import org.jetbrains.annotations.NotNull;
@@ -45,7 +45,7 @@ class XmlLoader {
 			document.getDocumentElement().normalize();
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			throw new XmlParseException(Lang.XmlParse.FAILED_TO_READ_XML);
+			throw new XmlParseException(Lang.ApplicationBundle.getString("XmlParse.failed_to_read_xml"));
 		}
 		
 		this.dataContext = context;

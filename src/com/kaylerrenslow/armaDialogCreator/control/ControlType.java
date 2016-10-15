@@ -10,65 +10,65 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.LookupLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 /**
  Created by Kayler on 05/20/2016.
  */
 public enum ControlType {
 	//@formatter:off
-	STATIC(0, LookupLang.ControlType.STATIC, TypeGroup.TEXT),
-	HTML(9, LookupLang.ControlType.HTML, TypeGroup.TEXT),
-	EDIT(2, LookupLang.ControlType.EDIT, TypeGroup.TEXT),
-	STRUCTURED_TEXT(13, LookupLang.ControlType.STRUCTURED_TEXT, TypeGroup.TEXT),
-	ACTIVETEXT(11, LookupLang.ControlType.ACTIVETEXT, TypeGroup.TEXT),
+	STATIC(0, getString("ControlType.static"), TypeGroup.TEXT),
+	HTML(9, getString("ControlType.html"), TypeGroup.TEXT),
+	EDIT(2, getString("ControlType.edit"), TypeGroup.TEXT),
+	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), TypeGroup.TEXT),
+	ACTIVETEXT(11, getString("ControlType.activetext"), TypeGroup.TEXT),
 	
-	BUTTON(1, LookupLang.ControlType.BUTTON, TypeGroup.BUTTON),
-	SHORTCUTBUTTON(16, LookupLang.ControlType.SHORTCUTBUTTON, TypeGroup.BUTTON),
-	XBUTTON(41, LookupLang.ControlType.XBUTTON, TypeGroup.BUTTON),
+	BUTTON(1, getString("ControlType.button"), TypeGroup.BUTTON),
+	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), TypeGroup.BUTTON),
+	XBUTTON(41, getString("ControlType.xbutton"), TypeGroup.BUTTON),
 	
-	PROGRESS(8, LookupLang.ControlType.PROGRESS, TypeGroup.MISC),
-	STATIC_SKEW(10, LookupLang.ControlType.STATIC_SKEW, TypeGroup.MISC),
-	LINEBREAK(98, LookupLang.ControlType.LINEBREAK, TypeGroup.MISC),
-	TREE(12, LookupLang.ControlType.TREE, TypeGroup.MISC),
-	CONTROLS_GROUP(15, LookupLang.ControlType.CONTROLS_GROUP, TypeGroup.MISC),
-	XKEYDESC(40, LookupLang.ControlType.XKEYDESC, TypeGroup.MISC),
-	ANIMATED_TEXTURE(45, LookupLang.ControlType.ANIMATED_TEXTURE, TypeGroup.MISC),
-	ANIMATED_USER(99, LookupLang.ControlType.ANIMATED_USER, TypeGroup.MISC),
-	ITEMSLOT(103, LookupLang.ControlType.ITEMSLOT, TypeGroup.MISC),
+	PROGRESS(8, getString("ControlType.progress"), TypeGroup.MISC),
+	STATIC_SKEW(10, getString("ControlType.static_skew"), TypeGroup.MISC),
+	LINEBREAK(98, getString("ControlType.linebreak"), TypeGroup.MISC),
+	TREE(12, getString("ControlType.tree"), TypeGroup.MISC),
+	CONTROLS_GROUP(15, getString("ControlType.controls_group"), TypeGroup.MISC),
+	XKEYDESC(40, getString("ControlType.xkeydesc"), TypeGroup.MISC),
+	ANIMATED_TEXTURE(45, getString("ControlType.animated_texture"), TypeGroup.MISC),
+	ANIMATED_USER(99, getString("ControlType.animated_user"), TypeGroup.MISC),
+	ITEMSLOT(103, getString("ControlType.itemslot"), TypeGroup.MISC),
 	
-	SLIDER(3, LookupLang.ControlType.SLIDER, TypeGroup.SLIDER, true),
-	XSLIDER(43, LookupLang.ControlType.XSLIDER, TypeGroup.SLIDER),
+	SLIDER(3, getString("ControlType.slider"), TypeGroup.SLIDER, true),
+	XSLIDER(43, getString("ControlType.xslider"), TypeGroup.SLIDER),
 	
-	COMBO(4, LookupLang.ControlType.COMBO, TypeGroup.COMBO),
-	XCOMBO(44, LookupLang.ControlType.XCOMBO, TypeGroup.COMBO),
+	COMBO(4, getString("ControlType.combo"), TypeGroup.COMBO),
+	XCOMBO(44, getString("ControlType.xcombo"), TypeGroup.COMBO),
 	
-	LISTBOX(5, LookupLang.ControlType.LISTBOX, TypeGroup.LIST_BOX),
-	XLISTBOX(42, LookupLang.ControlType.XLISTBOX, TypeGroup.LIST_BOX),
-	LISTNBOX(102, LookupLang.ControlType.LISTNBOX, TypeGroup.LIST_BOX),
+	LISTBOX(5, getString("ControlType.listbox"), TypeGroup.LIST_BOX),
+	XLISTBOX(42, getString("ControlType.xlistbox"), TypeGroup.LIST_BOX),
+	LISTNBOX(102, getString("ControlType.listnbox"), TypeGroup.LIST_BOX),
 	
-	TOOLBOX(6, LookupLang.ControlType.TOOLBOX, TypeGroup.CHECK_BOX),
-	CHECKBOXES(7, LookupLang.ControlType.CHECKBOXES, TypeGroup.CHECK_BOX),
-	CHECKBOX(77, LookupLang.ControlType.CHECKBOX, TypeGroup.CHECK_BOX),
+	TOOLBOX(6, getString("ControlType.toolbox"), TypeGroup.CHECK_BOX),
+	CHECKBOXES(7, getString("ControlType.checkboxes"), TypeGroup.CHECK_BOX),
+	CHECKBOX(77, getString("ControlType.checkbox"), TypeGroup.CHECK_BOX),
 	
-	CONTEXT_MENU(14, LookupLang.ControlType.CONTEXT_MENU, TypeGroup.MENU),
-	MENU(46, LookupLang.ControlType.MENU, TypeGroup.MENU),
-	MENU_STRIP(47, LookupLang.ControlType.MENU_STRIP, TypeGroup.MENU),
+	CONTEXT_MENU(14, getString("ControlType.context_menu"), TypeGroup.MENU),
+	MENU(46, getString("ControlType.menu"), TypeGroup.MENU),
+	MENU_STRIP(47, getString("ControlType.menu_strip"), TypeGroup.MENU),
 	
-	OBJECT(80, LookupLang.ControlType.OBJECT, TypeGroup.OBJECT),
-	OBJECT_ZOOM(81, LookupLang.ControlType.OBJECT_ZOOM, TypeGroup.OBJECT),
-	OBJECT_CONTAINER(82, LookupLang.ControlType.OBJECT_CONTAINER, TypeGroup.OBJECT),
-	OBJECT_CONT_ANIM(83, LookupLang.ControlType.OBJECT_CONT_ANIM, TypeGroup.OBJECT),
+	OBJECT(80, getString("ControlType.object"), TypeGroup.OBJECT),
+	OBJECT_ZOOM(81, getString("ControlType.object_zoom"), TypeGroup.OBJECT),
+	OBJECT_CONTAINER(82, getString("ControlType.object_container"), TypeGroup.OBJECT),
+	OBJECT_CONT_ANIM(83, getString("ControlType.object_cont_anim"), TypeGroup.OBJECT),
 	
-	MAP(100, LookupLang.ControlType.MAP, TypeGroup.MAP),
-	MAP_MAIN(101, LookupLang.ControlType.MAP_MAIN, TypeGroup.MAP);
+	MAP(100, getString("ControlType.map"), TypeGroup.MAP),
+	MAP_MAIN(101, getString("ControlType.map_main"), TypeGroup.MAP);
 	//@formatter:on
 	
 	public enum TypeGroup {
-		TEXT(LookupLang.ControlType.TypeGroup.TEXT), BUTTON(LookupLang.ControlType.TypeGroup.BUTTON), COMBO(LookupLang.ControlType.TypeGroup.COMBO), SLIDER(LookupLang.ControlType.TypeGroup.SLIDER),
-		LIST_BOX(LookupLang.ControlType.TypeGroup.LIST_BOX), CHECK_BOX(LookupLang.ControlType.TypeGroup.CHECK_BOX), MENU(LookupLang.ControlType.TypeGroup.MENU), OBJECT(LookupLang.ControlType.TypeGroup.OBJECT),
-		MAP(LookupLang.ControlType.TypeGroup.MAP), MISC(LookupLang.ControlType.TypeGroup.MISC);
-		
+		TEXT(getString("ControlType.TypeGroup.text")), BUTTON(getString("ControlType.TypeGroup.button")), COMBO(getString("ControlType.TypeGroup.combo")), SLIDER(getString("ControlType.TypeGroup.slider")),
+		LIST_BOX(getString("ControlType.TypeGroup.list_box")), CHECK_BOX(getString("ControlType.TypeGroup.check_box")), MENU(getString("ControlType.TypeGroup.menu")), OBJECT(getString("ControlType.TypeGroup.object")),
+		MAP(getString("ControlType.TypeGroup.map")), MISC(getString("ControlType.TypeGroup.misc"));
+
 		public final String displayName;
 		
 		TypeGroup(String displayName) {
@@ -121,6 +121,10 @@ public enum ControlType {
 			}
 		}
 		throw new IllegalArgumentException("typeId " + typeId + " couldn't be matched.");
+	}
+
+	private static String getString(String s) {
+		return Lang.LookupBundle.getString(s);
 	}
 	
 	private static final ControlType[] supported = {STATIC, CONTROLS_GROUP};

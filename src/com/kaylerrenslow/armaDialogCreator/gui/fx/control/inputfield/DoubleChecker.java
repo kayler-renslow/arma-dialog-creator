@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.main.lang.FXControlLang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,7 +24,7 @@ public class DoubleChecker implements InputFieldDataChecker<Double> {
 			Double.parseDouble(data);
 			return null;
 		} catch (NumberFormatException e) {
-			return FXControlLang.InputField.DataCheckers.Double.NOT_A_NUMBER;
+			return Lang.FxControlBundle.getString("InputField.DataCheckers.Double.not_a_number");
 		}
 	}
 
@@ -35,7 +35,7 @@ public class DoubleChecker implements InputFieldDataChecker<Double> {
 
 	@Override
 	public String getTypeName() {
-		return FXControlLang.InputField.DataCheckers.Double.TYPE_NAME;
+		return Lang.FxControlBundle.getString("InputField.DataCheckers.Double.type_name");
 	}
 
 	@Override

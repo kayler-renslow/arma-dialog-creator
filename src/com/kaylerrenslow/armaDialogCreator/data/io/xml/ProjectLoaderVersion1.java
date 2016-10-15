@@ -29,7 +29,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemE
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.w3c.dom.Element;
 
@@ -147,14 +147,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				String propertyTypeAttr = macroElement.getAttribute("property-type-id");
 				String comment = macroElement.getAttribute("comment");
 				if (key.length() == 0 || propertyTypeAttr.length() == 0) {
-					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_KEY_OR_TYPE_F, key, propertyTypeAttr)));
+					addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_macro_key_or_type_f"), key, propertyTypeAttr)));
 					continue;
 				}
 				PropertyType propertyType;
 				try {
 					propertyType = PropertyType.findById(Integer.parseInt(propertyTypeAttr));
 				} catch (IllegalArgumentException e) { //will catch number format exception
-					addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_MACRO_PROPERTY_TYPE_F, propertyTypeAttr)));
+					addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_macro_property_type_f"), propertyTypeAttr)));
 					continue;
 				}
 				SerializableValue value = getValue(propertyType, macroElement);
@@ -197,7 +197,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 
 			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_DISPLAY_PROPERTY_LOOKUP_ID_F, lookupId), ParseError.genericRecover("-1")));
+				addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_display_property_lookup_id_f"), lookupId), ParseError.genericRecover("-1")));
 			}
 		}
 
@@ -275,7 +275,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private ArmaControl getControl(Element controlElement, boolean isControlGroup, List<Macro> macros) {
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_NAME, controlElement.getTextContent())));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.missing_control_name"), controlElement.getTextContent())));
 			return null;
 		}
 		int idc;
@@ -283,7 +283,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		try {
 			idc = Integer.parseInt(idcStr);
 		} catch (NumberFormatException e) {
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_IDC_F, idcStr, controlClassName), ParseError.genericRecover("-1")));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_control_idc_f"), idcStr, controlClassName), ParseError.genericRecover("-1")));
 			idc = -1;
 		}
 		ControlType controlType;
@@ -292,7 +292,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.getById(controlTypeId);
 		} catch (IllegalArgumentException e) { //will catch number format exception as well
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_TYPE_F, controlTypeStr, controlClassName)));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_control_type_f"), controlTypeStr, controlClassName)));
 			return null;
 		}
 
@@ -302,7 +302,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		try {
 			rendererLookup = RendererLookup.getById(Integer.parseInt(rendererStr));
 		} catch (IllegalArgumentException e) {
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_RENDERER_F, rendererStr, controlClassName)));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_renderer_f"), rendererStr, controlClassName)));
 			return null;
 		}
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
@@ -316,7 +316,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				int id = Integer.parseInt(lookupIdStr);
 				lookup = ControlPropertyLookup.findById(id);
 			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_CONTROL_PROPERTY_LOOKUP_ID_F, lookupIdStr, controlClassName)));
+				addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"), lookupIdStr, controlClassName)));
 				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 			}
 			SerializableValue value = getValue(lookup.getPropertyType(), controlPropertyElement);
@@ -416,7 +416,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 			}
 			if (!matched) {
-				addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.MISSING_CONTROL_PROPERTY_F, toMatchLookup.getPropertyName(), controlClassName)));
+				addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.missing_control_property_f"), toMatchLookup.getPropertyName(), controlClassName)));
 				return false;
 			}
 		}
@@ -440,7 +440,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private SerializableValue getValue(PropertyType propertyType, Element parentElement) {
 		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "value");
 		if (valueElements.size() < propertyType.propertyValuesSize) {
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUE_CREATION_COUNT_F, parentElement.getTagName(), valueElements.size())));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
 			return null;
 		}
 		String[] values = new String[propertyType.propertyValuesSize];
@@ -453,7 +453,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			value = propertyType.converter.convert(dataContext, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			addError(new ParseError(String.format(Lang.XmlParse.ProjectLoad.BAD_VALUES_F, Arrays.toString(values))));
+			addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.bad_values_f"), Arrays.toString(values))));
 			return null;
 		}
 		return value;

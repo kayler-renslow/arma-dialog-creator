@@ -23,7 +23,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.C
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
-import com.kaylerrenslow.armaDialogCreator.main.lang.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -55,7 +55,8 @@ public class NewControlPopup extends StagePopup<VBox> {
 	};
 
 	public NewControlPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.Popups.NewControl.POPUP_TITLE);
+		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.ApplicationBundle.getString("Popups" +
+				"Popups.NewControl.popup_title"));
 		if(getMyLoader() == null){
 			throw new IllegalStateException("getMyLoader() should not return null");
 		}

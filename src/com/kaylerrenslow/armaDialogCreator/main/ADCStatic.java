@@ -8,26 +8,15 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.main.lang;
+package com.kaylerrenslow.armaDialogCreator.main;
+
+import javafx.stage.FileChooser;
 
 /**
- Created by Kayler on 08/10/2016.
+ Created by Kayler on 10/15/2016.
  */
-public interface ChangeLang {
-	interface DisplayChange {
+public interface ADCStatic {
+	FileChooser.ExtensionFilter IMAGE_FILE_EXTENSIONS = new FileChooser.ExtensionFilter(Lang.ApplicationBundle.getString("ValueEditors.ImageValueEditor.image_files"), "*.jpg", "*.png", "*.paa");
+	FileChooser.ExtensionFilter PROJECT_XML_FC_FILTER = new FileChooser.ExtensionFilter("project.xml", "*.xml");
 
-		interface ShortName{
-			String ADD = "Control Addition";
-			String SET = "Control Update";
-			String REMOVE = "Control Remove";
-			String MOVE = "Control Move";
-		}
-		interface Description{
-			String ADD = "Control '%s' was added to the display.";
-			String SET = "Control '%s' was removed and control '%s' took it's place.";
-			String REMOVE = "Control '%s' was removed in the display.";
-			String MOVE = "Control '%s' was moved in the display.";
-		}
-
-	}
 }
