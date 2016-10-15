@@ -43,7 +43,7 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 	private static Properties versionInfoProperties;
-	private static Locale locale;
+	private static Locale locale = Locale.ENGLISH;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
