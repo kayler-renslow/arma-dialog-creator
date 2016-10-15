@@ -1,5 +1,5 @@
 **Added:**
-* removed Lang classes and now using resource bundles
+* none
 
 **Changed:**
 * none
