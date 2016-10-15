@@ -6,6 +6,11 @@
         <option name="appClass" value="com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator" />
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
+        <option name="icons">
+          <JavaFxApplicationIcons>
+            <option name="windowsIcon" value="$PROJECT_DIR$/icons/adc.ico" />
+          </JavaFxApplicationIcons>
+        </option>
         <option name="title" value="" />
         <option name="vendor" value="" />
         <option name="version" value="" />

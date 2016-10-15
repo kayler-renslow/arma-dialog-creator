@@ -62,7 +62,7 @@ public class DefaultControlTreeItemGraphic extends HBox{
 			}
 		});
 
-		final ImageView imageViewTypeImage = new ImageView(ArmaControlLookup.findByControlType(entry.getMyArmaControl().getType()).iconPath);
+		final ImageView imageViewTypeImage = new ImageView(ArmaControlLookup.findByControlType(entry.getMyArmaControl().getType()).controlIcon);
 		final StackPane stackPaneImageView = new StackPane(imageViewTypeImage);
 		Tooltip.install(imageViewTypeImage, new Tooltip(entry.getMyArmaControl().getType().displayName));
 		stackPaneImageView.setStyle("-fx-border-color:#b3b3b3;-fx-border-width:1px");

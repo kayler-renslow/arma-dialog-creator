@@ -12,41 +12,42 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/07/2016.
  */
 public enum ArmaControlLookup {
-	STATIC(ControlType.STATIC, StaticControl.SPEC_PROVIDER, "control_static.png"),
-	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER),
-	EDIT(ControlType.EDIT, StaticControl.SPEC_PROVIDER),
+	STATIC(ControlType.STATIC, StaticControl.SPEC_PROVIDER, new Image(getPath("control_static.png"))),
+	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER, new Image(getPath("control_html.png"))),
+	EDIT(ControlType.EDIT, StaticControl.SPEC_PROVIDER, new Image(getPath("control_edit.png"))),
 	STRUCTURED_TEXT(ControlType.STRUCTURED_TEXT, StaticControl.SPEC_PROVIDER),
 	ACTIVETEXT(ControlType.ACTIVETEXT, StaticControl.SPEC_PROVIDER),
 
-	BUTTON(ControlType.BUTTON, StaticControl.SPEC_PROVIDER),
+	BUTTON(ControlType.BUTTON, StaticControl.SPEC_PROVIDER, new Image(getPath("control_button.png"))),
 	SHORTCUTBUTTON(ControlType.SHORTCUTBUTTON, StaticControl.SPEC_PROVIDER),
 	XBUTTON(ControlType.XBUTTON, StaticControl.SPEC_PROVIDER),
 
-	PROGRESS(ControlType.PROGRESS, StaticControl.SPEC_PROVIDER),
+	PROGRESS(ControlType.PROGRESS, StaticControl.SPEC_PROVIDER, new Image(getPath("control_progress.png"))),
 	STATIC_SKEW(ControlType.STATIC_SKEW, StaticControl.SPEC_PROVIDER),
 	LINEBREAK(ControlType.LINEBREAK, StaticControl.SPEC_PROVIDER),
-	TREE(ControlType.TREE, StaticControl.SPEC_PROVIDER),
-	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupControl.SPEC_PROVIDER, "control_group.png"),
+	TREE(ControlType.TREE, StaticControl.SPEC_PROVIDER, new Image(getPath("control_tree.png"))),
+	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupControl.SPEC_PROVIDER, new Image(getPath("control_group.png"))),
 	XKEYDESC(ControlType.XKEYDESC, StaticControl.SPEC_PROVIDER),
 	ANIMATED_TEXTURE(ControlType.ANIMATED_TEXTURE, StaticControl.SPEC_PROVIDER),
 	ANIMATED_USER(ControlType.ANIMATED_USER, StaticControl.SPEC_PROVIDER),
 	ITEMSLOT(ControlType.ITEMSLOT, StaticControl.SPEC_PROVIDER),
 
-	SLIDER(ControlType.SLIDER, StaticControl.SPEC_PROVIDER),
+	SLIDER(ControlType.SLIDER, StaticControl.SPEC_PROVIDER, new Image(getPath("control_slider.png"))),
 	XSLIDER(ControlType.XSLIDER, StaticControl.SPEC_PROVIDER),
 
-	COMBO(ControlType.COMBO, StaticControl.SPEC_PROVIDER),
+	COMBO(ControlType.COMBO, StaticControl.SPEC_PROVIDER, new Image(getPath("control_combobox.png"))),
 	XCOMBO(ControlType.XCOMBO, StaticControl.SPEC_PROVIDER),
 
-	LISTBOX(ControlType.LISTBOX, StaticControl.SPEC_PROVIDER),
-	XLISTBOX(ControlType.XLISTBOX, StaticControl.SPEC_PROVIDER),
-	LISTNBOX(ControlType.LISTNBOX, StaticControl.SPEC_PROVIDER),
+	LISTBOX(ControlType.LISTBOX, StaticControl.SPEC_PROVIDER, new Image(getPath("control_listbox.png"))),
+	XLISTBOX(ControlType.XLISTBOX, StaticControl.SPEC_PROVIDER, new Image(getPath("control_xlistbox.png"))),
+	LISTNBOX(ControlType.LISTNBOX, StaticControl.SPEC_PROVIDER, new Image(getPath("control_nlistbox.png"))),
 
 	TOOLBOX(ControlType.TOOLBOX, StaticControl.SPEC_PROVIDER),
 	CHECKBOXES(ControlType.CHECKBOXES, StaticControl.SPEC_PROVIDER),
@@ -66,16 +67,16 @@ public enum ArmaControlLookup {
 
 	public final ControlType controlType;
 	public final ArmaControlSpecProvider specProvider;
-	public final String iconPath;
+	public final Image controlIcon;
 
 	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider) {
-		this(controlType, specProvider, "control_static.png");
+		this(controlType, specProvider, ArmaControlIcons.placeholder);
 	}
 
-	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider, String iconPath) {
+	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider, Image controlIcon) {
 		this.controlType = controlType;
 		this.specProvider = specProvider;
-		this.iconPath = "/com/kaylerrenslow/armaDialogCreator/gui/img/icons/arma/" + iconPath;
+		this.controlIcon = controlIcon;
 	}
 
 	@NotNull
@@ -87,5 +88,16 @@ public enum ArmaControlLookup {
 		}
 		throw new IllegalStateException("control type should have been matched");
 	}
-	
+
+
+	private static String getPath(String image){
+		return "/com/kaylerrenslow/armaDialogCreator/gui/img/icons/arma/"+image;
+	}
+
+	//remove interface and members when all controls have unique icons
+	private interface ArmaControlIcons{
+		Image placeholder = new Image(getPath("control_static.png"));
+	}
+
+
 }

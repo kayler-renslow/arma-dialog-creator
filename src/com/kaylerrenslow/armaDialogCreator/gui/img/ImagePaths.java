@@ -13,19 +13,20 @@ package com.kaylerrenslow.armaDialogCreator.gui.img;
 /**
  Created by Kayler on 05/17/2016.
  */
-public class ImagePaths {
-	private static final String prefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
-	public static final String BG_1 = prefix + "backgroundImages/image1.jpg";
-	public static final String BG_2 = prefix + "backgroundImages/image2.jpg";
-	public static final String BG_3 = prefix + "backgroundImages/image3.jpg";
+public abstract class ImagePaths {
+	private static final String pathPrefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
 
-	public static final String ICON_FOLDER = prefix + "icons/folder.png";
-	public static final String ICON_APP = prefix + "icons/app.png";
-	public static final String ICON_COMPOSITE = prefix + "icons/composite.png";
-	public static final String ICON_UNDO = prefix + "icons/undo.png";
-	public static final String ICON_REDO = prefix + "icons/redo.png";
-	public static final String ICON_HEART = prefix + "icons/heart.png";
+	public static final String BG_1 = pathPrefix + "backgroundImages/image1.jpg";
+	public static final String BG_2 = pathPrefix + "backgroundImages/image2.jpg";
+	public static final String BG_3 = pathPrefix + "backgroundImages/image3.jpg";
 
-	public static final String PRELOAD_SCREEN = prefix + "preload_screen.png";
-	public static final String ABOUT_HEADER = prefix + "about.png";
+	public static final String ICON_FOLDER = pathPrefix + "icons/folder.png";
+	public static final String ICON_APP = pathPrefix + "icons/app.png";
+	public static final String ICON_UNDO = pathPrefix + "icons/undo.png";
+	public static final String ICON_REDO = pathPrefix + "icons/redo.png";
+	public static final String ICON_HEART = pathPrefix + "icons/heart.png";
+
+	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
+	public static final String ABOUT_HEADER = pathPrefix + "about.png";
+
 }

@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
@@ -18,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
@@ -26,7 +28,7 @@ import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorCom
  ContextMenu for inserting a new control into the EditorComponentTreeView
  Created on 06/20/2016. */
 public class ControlCreationContextMenu extends ContextMenu {
-	
+
 	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {
 		if (showNewFolderOption) {
 			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
@@ -51,7 +53,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				if (!controlType.betaSupported()) {
 					continue;
 				}
-				menuItemType = new MenuItem(controlType.fullDisplayText());
+				menuItemType = new MenuItem(controlType.fullDisplayText(), new ImageView(ArmaControlLookup.findByControlType(controlType).controlIcon));
 				if (controlType.deprecated) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}
@@ -60,10 +62,10 @@ public class ControlCreationContextMenu extends ContextMenu {
 				} else {
 					TreeViewMenuItemBuilder.setNewItemAction(treeView, creator.creator, menuItemType);
 				}
-				
+
 				groupMenu.getItems().add(menuItemType);
 			}
-			if(groupMenu.getItems().size() == 0){
+			if (groupMenu.getItems().size() == 0) {
 				MenuItem miNone = new MenuItem(Lang.ApplicationBundle().getString("Misc.no_items_available"));
 				miNone.setDisable(true);
 				groupMenu.getItems().add(miNone);

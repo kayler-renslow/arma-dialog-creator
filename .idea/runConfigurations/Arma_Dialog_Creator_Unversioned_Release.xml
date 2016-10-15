@@ -12,7 +12,6 @@
       <option name="BuildArtifacts" enabled="true">
         <artifact name="Arma Dialog Creator" />
       </option>
-      <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Build Arma Dialog Creator" />
     </method>
   </configuration>
 </component>

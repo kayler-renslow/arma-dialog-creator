@@ -1,5 +1,5 @@
 **Added:**
-* none
+* more control icons
 
 **Changed:**
 * none
