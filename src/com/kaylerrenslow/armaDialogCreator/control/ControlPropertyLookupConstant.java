@@ -42,7 +42,7 @@ public interface ControlPropertyLookupConstant {
 	default String getAboutText() {
 		String r = "";
 		if(getAbout() == null){
-			return Lang.ApplicationBundle.getString("Misc.no_documentation");
+			return Lang.ApplicationBundle().getString("Misc.no_documentation");
 		}
 		for (String s : getAbout()) {
 			r += s + "\n";

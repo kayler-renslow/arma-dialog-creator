@@ -95,7 +95,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 				submitValue();
 			}
 		});
-		btnSubmit.setTooltip(new Tooltip(Lang.FxControlBundle.getString("InputField.submit_btn_tooltip")));
+		btnSubmit.setTooltip(new Tooltip(Lang.FxControlBundle().getString("InputField.submit_btn_tooltip")));
 		this.hboxTextField.getChildren().add(btnSubmit);
 		textField.setStyle("-fx-background-radius:0px");
 

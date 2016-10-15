@@ -162,7 +162,7 @@ public class ProjectSaveXmlWriter {
 
 		//write control properties
 		if (control.getMissingRequiredProperties().size() != 0) {
-			throw new XmlWriteException(String.format(Lang.ApplicationBundle.getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
+			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
 			fos.write(String.format("<control-property lookup-id='%d' macro-key='%s'>",

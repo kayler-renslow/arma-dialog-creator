@@ -124,7 +124,7 @@ public enum ControlType {
 	}
 
 	private static String getString(String s) {
-		return Lang.LookupBundle.getString(s);
+		return Lang.LookupBundle().getString(s);
 	}
 	
 	private static final ControlType[] supported = {STATIC, CONTROLS_GROUP};

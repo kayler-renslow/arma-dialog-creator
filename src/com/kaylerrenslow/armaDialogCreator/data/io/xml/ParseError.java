@@ -50,6 +50,6 @@ public class ParseError {
 	}
 	
 	public static String genericRecover(String value) {
-		return String.format(Lang.ApplicationBundle.getString("XmlParse.generic_recover_message_f"), value);
+		return String.format(Lang.ApplicationBundle().getString("XmlParse.generic_recover_message_f"), value);
 	}
 }

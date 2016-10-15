@@ -54,7 +54,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	private final InputField<IdentifierChecker, String> inMacroKey = new InputField<>(new IdentifierChecker());
 	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
 
-	private final Label lblNoTypeChosen = new Label(Lang.ApplicationBundle.getString("Popups.MacroEdit.no_type_chosen"));
+	private final Label lblNoTypeChosen = new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.no_type_chosen"));
 
 	/**
 	 Creates a Macro editor.
@@ -62,7 +62,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
 	public MacroEditBasePopup(Env env) {
-		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.MacroEdit.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.MacroEdit.popup_title"));
 		this.env = env;
 		myRootElement.setPadding(new Insets(10));
 		stackPaneEditor.minWidth(0d);
@@ -107,13 +107,13 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 
 		VBox vbTop = new VBox(5);
 		vbTop.setFillWidth(true);
-		HBox hboxValueEditor = new HBox(new Label(Lang.ApplicationBundle.getString("Popups.MacroEdit.macro_value")), stackPaneEditor);
+		HBox hboxValueEditor = new HBox(new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_value")), stackPaneEditor);
 
 		vbTop.getChildren().addAll(
-				hbox(Lang.ApplicationBundle.getString("Popups.MacroEdit.macro_key"), inMacroKey),
-				hbox(Lang.ApplicationBundle.getString("Popups.MacroEdit.macro_type"), cbMacroType),
+				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_key"), inMacroKey),
+				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_type"), cbMacroType),
 				hboxValueEditor,
-				hbox(Lang.ApplicationBundle.getString("Popups.MacroEdit.macro_comment"), tfMacroDescription)
+				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_comment"), tfMacroDescription)
 		);
 		myRootElement.getChildren().add(vbTop);
 		VBox.setVgrow(vbTop, Priority.ALWAYS);

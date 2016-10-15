@@ -28,7 +28,7 @@ public class BrowserUtil {
 			Desktop.getDesktop().browse(new URI(url));
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			new StageDialog<>(ArmaDialogCreator.getPrimaryStage(), new TextArea(String.format(Lang.ApplicationBundle.getString("Misc.visit_link_in_browser_f"), url)), Lang.ApplicationBundle
+			new StageDialog<>(ArmaDialogCreator.getPrimaryStage(), new TextArea(String.format(Lang.ApplicationBundle().getString("Misc.visit_link_in_browser_f"), url)), Lang.ApplicationBundle()
 					.getString("Popups.generic_popup_title"),
 					false,
 					true, false).show();

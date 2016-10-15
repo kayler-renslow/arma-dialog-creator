@@ -34,7 +34,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 	
 	/** Create */
 	private PreviewPopupWindow() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("PreviewWindow.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("PreviewWindow.popup_title"));
 	}
 	
 	/** Shows the popup with the given arma display */

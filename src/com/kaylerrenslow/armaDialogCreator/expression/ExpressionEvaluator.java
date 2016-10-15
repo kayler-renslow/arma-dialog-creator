@@ -78,7 +78,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	public Value visit(AST.IdentifierExpr expr, Env env) throws ExpressionEvaluationException {
 		Value v = env.getValue(expr.getIdentifier());
 		if (v == null) {
-			throw new ExpressionEvaluationException(String.format(Lang.ApplicationBundle.getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
+			throw new ExpressionEvaluationException(String.format(Lang.ApplicationBundle().getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
 		}
 		return v;
 	}

@@ -48,17 +48,17 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 	};
 
 	public CanvasViewColorsPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle.getString("Popups.Colors.popup_title"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.Colors.popup_title"), false, true, false);
 		myStage.initStyle(StageStyle.UTILITY);
 		setupColorPickers();
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
 		myRootElement.getChildren().addAll(
-				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.selection"), cpSelection),
-				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.abs_region"), cpAbsRegion),
-				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.grid"), cpGrid),
-				colorOption(Lang.ApplicationBundle.getString("Popups.Colors.background"), cpEditorBg)
+				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.selection"), cpSelection),
+				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.abs_region"), cpAbsRegion),
+				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.grid"), cpGrid),
+				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.background"), cpEditorBg)
 		);
 	}
 

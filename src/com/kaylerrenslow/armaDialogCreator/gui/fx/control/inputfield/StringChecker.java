@@ -30,7 +30,7 @@ public class StringChecker implements InputFieldDataChecker<String> {
 	
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle.getString("InputField.DataCheckers.StringChecker.type_name");
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.StringChecker.type_name");
 	}
 	
 	@Override

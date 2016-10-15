@@ -57,7 +57,7 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Images", "*.png", "*.gif", "*.jpg", "*.mpo");
 			c.getExtensionFilters().add(filter);
 			c.setSelectedExtensionFilter(filter);
-			c.setTitle(Lang.ApplicationBundle.getString("Misc.file_chooser_background_img_title"));
+			c.setTitle(Lang.ApplicationBundle().getString("Misc.file_chooser_background_img_title"));
 			File chosen = c.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
 			if (chosen != null) {
 				ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(chosen.toURI().toString());

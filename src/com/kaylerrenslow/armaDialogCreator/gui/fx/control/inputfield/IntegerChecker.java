@@ -24,7 +24,7 @@ public class IntegerChecker implements InputFieldDataChecker<Integer> {
 			Integer.parseInt(data);
 			return null;
 		} catch (NumberFormatException e) {
-			return Lang.FxControlBundle.getString("InputField.DataCheckers.Integer.not_integer");
+			return Lang.FxControlBundle().getString("InputField.DataCheckers.Integer.not_integer");
 		}
 	}
 
@@ -35,7 +35,7 @@ public class IntegerChecker implements InputFieldDataChecker<Integer> {
 
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle.getString("InputField.DataCheckers.Integer.type_name");
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.Integer.type_name");
 	}
 
 	@Override

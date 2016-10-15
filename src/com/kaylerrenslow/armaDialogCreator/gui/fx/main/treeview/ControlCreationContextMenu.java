@@ -29,7 +29,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 	
 	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {
 		if (showNewFolderOption) {
-			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle.getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
+			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
 			getItems().add(newFolder);
 			TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<TreeItemEntry>() {
 				@Override
@@ -64,7 +64,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				groupMenu.getItems().add(menuItemType);
 			}
 			if(groupMenu.getItems().size() == 0){
-				MenuItem miNone = new MenuItem(Lang.ApplicationBundle.getString("Misc.no_items_available"));
+				MenuItem miNone = new MenuItem(Lang.ApplicationBundle().getString("Misc.no_items_available"));
 				miNone.setDisable(true);
 				groupMenu.getItems().add(miNone);
 			}

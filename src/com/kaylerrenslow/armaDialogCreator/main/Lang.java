@@ -10,16 +10,31 @@
 
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
 
 public interface Lang {
 
-	ResourceBundle ApplicationBundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle");
-	ResourceBundle EditChangeBundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle");
-	ResourceBundle FxControlBundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle");
-	ResourceBundle LookupBundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle");
+
+	Locale[] SUPPORTED_LOCALES = {Locale.ENGLISH};
+
+	static ResourceBundle ApplicationBundle(){
+		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle", ArmaDialogCreator.getCurrentLocale());
+	}
+
+	static ResourceBundle EditChangeBundle(){
+		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle", ArmaDialogCreator.getCurrentLocale());
+	}
+
+	static ResourceBundle FxControlBundle(){
+		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle", ArmaDialogCreator.getCurrentLocale());
+	}
+
+	static ResourceBundle LookupBundle(){
+		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle", ArmaDialogCreator.getCurrentLocale());
+	}
 
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";

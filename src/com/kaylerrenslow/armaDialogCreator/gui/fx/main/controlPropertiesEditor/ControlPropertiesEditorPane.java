@@ -179,9 +179,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	private void setupAccordion(ReadOnlyList<ControlProperty> requiredProperties, ReadOnlyList<ControlProperty> optionalProperties, ReadOnlyList<ControlProperty> eventProperties) {
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.required"), requiredProperties, false));
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.optional"), optionalProperties, true));
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.events"), eventProperties, true));
+		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.required"), requiredProperties, false));
+		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.optional"), optionalProperties, true));
+		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.events"), eventProperties, true));
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
 		propertyEditors = new ControlPropertyEditor[propertyDescriptors.size()];
@@ -196,7 +196,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		TitledPane tp = new TitledPane(title, vb);
 		tp.setAnimated(false);
 		if (properties.size() == 0) {
-			vb.getChildren().add(new Label(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.no_properties_available")));
+			vb.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_properties_available")));
 		} else {
 			for (ControlProperty controlProperty : properties) {
 				vb.getChildren().add(getControlPropertyEntry(controlProperty, optional));
@@ -223,10 +223,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
 
-		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.use_default_editor"));
-		final MenuItem miResetToDefault = new MenuItem(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.reset_to_default"));
-		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.set_to_macro"));
-		final MenuItem miOverride = new MenuItem(Lang.ApplicationBundle.getString("ControlPropertiesEditorPane.value_override"));//broken. Maybe fix it later. Don't delete this in case you change your mind
+		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.use_default_editor"));
+		final MenuItem miResetToDefault = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_default"));
+		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
+		final MenuItem miOverride = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_override"));//broken. Maybe fix it later. Don't delete this in case you change your mind
 		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
 		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
 
@@ -696,19 +696,19 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	private static class ControlPropertyInputFieldString extends ControlPropertyInputField<SVString> {
 		ControlPropertyInputFieldString(ControlClass control, ControlProperty controlProperty) {
-			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.LookupBundle.getString("PropertyType.string"));
+			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.LookupBundle().getString("PropertyType.string"));
 		}
 	}
 
 	private static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<SVDouble> {
 		ControlPropertyInputFieldDouble(ControlClass control, ControlProperty controlProperty) {
-			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.LookupBundle.getString("PropertyType.float"));
+			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.LookupBundle().getString("PropertyType.float"));
 		}
 	}
 
 	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<SVInteger> {
 		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
-			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.LookupBundle.getString("PropertyType.int"));
+			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.LookupBundle().getString("PropertyType.int"));
 		}
 	}
 
@@ -716,7 +716,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()),
-					Lang.LookupBundle.getString("PropertyType.exp"));
+					Lang.LookupBundle().getString("PropertyType.exp"));
 		}
 	}
 

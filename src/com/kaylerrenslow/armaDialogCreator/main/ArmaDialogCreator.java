@@ -43,12 +43,7 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 	private static Properties versionInfoProperties;
-
-	/** Closes the application after asking if user wants to save. */
-	public static void closeApplication() {
-		//do not execute window closing event
-		Platform.exit();
-	}
+	private static Locale locale;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -58,26 +53,11 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
-		Locale.setDefault(Locale.ENGLISH);
+		setLocale();
+
 		loadBuildInfo();
 		ExceptionHandler.init();
 		launch(args);
-	}
-
-	private static void loadBuildInfo() {
-		Properties versionInfo = new Properties();
-		InputStream is = ArmaDialogCreator.class.getResourceAsStream("/com/kaylerrenslow/armaDialogCreator/.build");
-		try {
-			versionInfo.load(is);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		versionInfoProperties = versionInfo;
-	}
-
-	@NotNull
-	public static String getBuildProperty(@NotNull BuildProperty property, @Nullable String defaultVal) {
-		return versionInfoProperties.getProperty(property.getKey(), defaultVal);
 	}
 
 	public ArmaDialogCreator() {
@@ -141,6 +121,16 @@ public final class ArmaDialogCreator extends Application {
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
 
 		loadNewProject(false);
+	}
+
+	public static Locale getCurrentLocale() {
+		return locale;
+	}
+
+	/** Closes the application after asking if user wants to save. */
+	public static void closeApplication() {
+		//do not execute window closing event
+		Platform.exit();
 	}
 
 	public static void loadNewProject() {
@@ -217,6 +207,29 @@ public final class ArmaDialogCreator extends Application {
 	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
 		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
 	}
+
+	private static void loadBuildInfo() {
+		Properties versionInfo = new Properties();
+		InputStream is = ArmaDialogCreator.class.getResourceAsStream("/com/kaylerrenslow/armaDialogCreator/.build");
+		try {
+			versionInfo.load(is);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		versionInfoProperties = versionInfo;
+	}
+
+	@NotNull
+	public static String getBuildProperty(@NotNull BuildProperty property, @Nullable String defaultVal) {
+		return versionInfoProperties.getProperty(property.getKey(), defaultVal);
+	}
+
+	private static void setLocale() {
+		Locale.setDefault(Locale.ENGLISH);
+		//todo have option to change languages
+		locale = Locale.ENGLISH;
+	}
+
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
 

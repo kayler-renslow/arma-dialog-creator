@@ -119,10 +119,10 @@ public enum ControlStyle {
 
 	private static String getString(String s) {
 		try {
-			return Lang.LookupBundle.getString(s);
+			return Lang.LookupBundle().getString(s);
 		} catch (MissingResourceException e) {
 		}
-		return Lang.LookupBundle.getString("ControlStyle.Doc.no_doc");
+		return Lang.LookupBundle().getString("ControlStyle.Doc.no_doc");
 	}
 
 	private static class StyleIdVerifier {

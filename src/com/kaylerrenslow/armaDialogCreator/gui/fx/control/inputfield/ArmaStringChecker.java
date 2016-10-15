@@ -28,7 +28,7 @@ public class ArmaStringChecker implements InputFieldDataChecker<String> {
 		//check to see if there are quotes. If there are, only quote followed by another is allowed (""). Placing the quotes next to each other cancel them out. Basically, \" for Java is "" for Arma
 		for (int i = 0; i < s.length; i++) {
 			if (quote && s[i] != '"') {
-				return Lang.FxControlBundle.getString("InputField.DataCheckers.ArmaString.missing_quote");
+				return Lang.FxControlBundle().getString("InputField.DataCheckers.ArmaString.missing_quote");
 			}
 			if (!quote && s[i] == '"') {
 				quote = true;
@@ -37,7 +37,7 @@ public class ArmaStringChecker implements InputFieldDataChecker<String> {
 			}
 		}
 		if(quote){
-			return Lang.FxControlBundle.getString("InputField.DataCheckers.ArmaString.missing_quote");
+			return Lang.FxControlBundle().getString("InputField.DataCheckers.ArmaString.missing_quote");
 		}
 		return null;
 	}
@@ -49,7 +49,7 @@ public class ArmaStringChecker implements InputFieldDataChecker<String> {
 
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle.getString("InputField.DataCheckers.ArmaString.type_name");
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.ArmaString.type_name");
 	}
 
 	@Override

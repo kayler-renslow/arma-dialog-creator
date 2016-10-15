@@ -83,7 +83,7 @@ public class ProjectExporter {
 		} else {
 			exportMacros(macrosOutputStream);
 			if (configuration.shouldPlaceAdcNotice()) {
-				writelnComment(displayOutputStream, Lang.ApplicationBundle.getString("Misc.adc_export_notice"));
+				writelnComment(displayOutputStream, Lang.ApplicationBundle().getString("Misc.adc_export_notice"));
 				writeln(displayOutputStream, "");
 			}
 		}
@@ -98,7 +98,7 @@ public class ProjectExporter {
 
 	private void exportMacros(@NotNull OutputStream os) throws IOException {
 		if (configuration.shouldPlaceAdcNotice()) {
-			writelnComment(os, Lang.ApplicationBundle.getString("Misc.adc_export_notice"));
+			writelnComment(os, Lang.ApplicationBundle().getString("Misc.adc_export_notice"));
 			writeln(os, "");
 		}
 

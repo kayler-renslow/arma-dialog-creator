@@ -55,13 +55,13 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 	private final File appSaveDirectory;
 
 	public ADCProjectInitWindow(DataContext projectLoadContext, File appSaveDirectory) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("ProjectInitWindow.window_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.window_title"));
 		this.projectLoadContext = projectLoadContext;
 		this.appSaveDirectory = appSaveDirectory;
 		myRootElement.setPadding(new Insets(10));
 
 		//header
-		final Label lblProjectSetup = new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.project_setup"));
+		final Label lblProjectSetup = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.project_setup"));
 		lblProjectSetup.setFont(Font.font(18d));
 
 		initTabPane();
@@ -69,7 +69,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 
-		btnCancel.setText(Lang.ApplicationBundle.getString("Popups.btn_exit"));
+		btnCancel.setText(Lang.ApplicationBundle().getString("Popups.btn_exit"));
 
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.setWidth(720d);
@@ -183,7 +183,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 	public class NewProjectTab extends ProjectInitTab {
 
-		private final Tab tabNew = new Tab(Lang.ApplicationBundle.getString("ProjectInitWindow.tab_new"));
+		private final Tab tabNew = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_new"));
 
 		/** TextField used for getting project name in new tab */
 		private final TextField tfProjectName = new TextField();
@@ -191,16 +191,16 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		public NewProjectTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tfProjectName.setPrefWidth(200d);
-			tfProjectName.setPromptText(Lang.ApplicationBundle.getString("ProjectInitWindow.untitled"));
+			tfProjectName.setPromptText(Lang.ApplicationBundle().getString("ProjectInitWindow.untitled"));
 			tfProjectDescription.setPrefRowCount(6);
 
 			final VBox root = getTabVbox(10);
 
-			final Label lblCreateNewProject = new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.new_project_title"));
+			final Label lblCreateNewProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.new_project_title"));
 			VBox.setMargin(lblCreateNewProject, new Insets(0, 0, 10, 0));
-			final Label lblProjectName = new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.project_name"), tfProjectName);
+			final Label lblProjectName = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.project_name"), tfProjectName);
 			lblProjectName.setContentDisplay(ContentDisplay.RIGHT);
-			final HBox hboxProjectDescription = new HBox(5, new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.new_project_description")), tfProjectDescription);
+			final HBox hboxProjectDescription = new HBox(5, new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.new_project_description")), tfProjectDescription);
 
 			root.getChildren().addAll(lblCreateNewProject, lblProjectName, hboxProjectDescription);
 
@@ -214,7 +214,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		@Override
 		public String getOkBtnLabel() {
-			return Lang.ApplicationBundle.getString("ProjectInitWindow.new_project_ok");
+			return Lang.ApplicationBundle().getString("ProjectInitWindow.new_project_ok");
 		}
 
 		@Override
@@ -225,7 +225,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 	public class TabOpen extends ProjectInitTab {
 
-		private final Tab tabOpen = new Tab(Lang.ApplicationBundle.getString("ProjectInitWindow.tab_open"));
+		private final Tab tabOpen = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_open"));
 		private final ListView<Project> lvKnownProjects = new ListView<>();
 		private final ADCProjectInitWindow projectInitWindow;
 		private LinkedList<ProjectXmlLoader.ProjectParseResult> parsedKnownProjects = new LinkedList<>();
@@ -236,16 +236,16 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			btnOkEnabledObserver.updateValue(false);
 			final VBox root = getTabVbox(10d);
 			tabOpen.setContent(root);
-			final Label lblOpenProject = new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.open_project_title"));
+			final Label lblOpenProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.open_project_title"));
 			VBox.setMargin(lblOpenProject, new Insets(0d, 0d, 10d, 0d));
 
-			final Button btnLocateProject = new Button(Lang.ApplicationBundle.getString("ProjectInitWindow.open_from_file"));
+			final Button btnLocateProject = new Button(Lang.ApplicationBundle().getString("ProjectInitWindow.open_from_file"));
 			btnLocateProject.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
 					FileChooser fc = new FileChooser();
 					fc.setInitialDirectory(projectInitWindow.appSaveDirectory);
-					fc.setTitle(Lang.ApplicationBundle.getString("ProjectInitWindow.fc_locate_project_title"));
+					fc.setTitle(Lang.ApplicationBundle().getString("ProjectInitWindow.fc_locate_project_title"));
 					fc.getExtensionFilters().add(ADCStatic.PROJECT_XML_FC_FILTER);
 
 					File chosen = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
@@ -256,7 +256,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					try {
 						result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, chosen);
 					} catch (XmlParseException e) {
-						new StagePopup<VBox>(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("ProjectInitWindow.could_not_load_project")) {
+						new StagePopup<VBox>(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")) {
 							@Override
 							public void show() {
 								myRootElement.setPadding(new Insets(10));
@@ -264,8 +264,8 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 								taError.setEditable(false);
 								myStage.setResizable(false);
 								myRootElement.getChildren().addAll(
-										new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.could_not_load_project")),
-										new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.reason")),
+										new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")),
+										new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.reason")),
 										taError,
 										new Separator(Orientation.HORIZONTAL),
 										getBoundResponseFooter(false, true, false)
@@ -285,7 +285,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				}
 			});
 
-			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.open_from_file_title")), btnLocateProject);
+			root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.open_from_file_title")), btnLocateProject);
 
 			lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Project>() {
 				@Override
@@ -311,7 +311,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			for (ProjectXmlLoader.ProjectParseResult result : parsedKnownProjects) {
 				lvKnownProjects.getItems().add(result.getProject());
 			}
-			return new VBox(0, new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.detected_projects")), lvKnownProjects);
+			return new VBox(0, new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.detected_projects")), lvKnownProjects);
 		}
 
 		private void fetchProjects() {
@@ -364,7 +364,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		@Override
 		public String getOkBtnLabel() {
-			return Lang.ApplicationBundle.getString("ProjectInitWindow.open_project_ok");
+			return Lang.ApplicationBundle().getString("ProjectInitWindow.open_project_ok");
 		}
 
 		@Override
@@ -375,20 +375,20 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		private class ProjectImproperResultPopup extends StageDialog<ScrollPane> {
 
 			public ProjectImproperResultPopup(ProjectXmlLoader.ProjectParseResult result) {
-				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.popup_title"), false, true, false);
+				super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.popup_title"), false, true, false);
 				myRootElement.setFitToWidth(true);
 				myRootElement.setFitToHeight(true);
 				VBox root = (VBox) myRootElement.getContent();
-				root.getChildren().add(new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.errors_title")));
+				root.getChildren().add(new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.errors_title")));
 				root.getChildren().add(new Separator(Orientation.HORIZONTAL));
 				for (ParseError error : result.getErrors()) {
 					VBox vbErrorMsg = new VBox(5);
 					vbErrorMsg.getChildren().addAll(
-							getLabel(Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.error_message") + " " + error.getMessage(), null),
-							getLabel(Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.recovered"), getLabel(error.recovered() ? Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.yes") : Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.no"), null))
+							getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.error_message") + " " + error.getMessage(), null),
+							getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.recovered"), getLabel(error.recovered() ? Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.yes") : Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.no"), null))
 					);
 					if (error.recovered()) {
-						vbErrorMsg.getChildren().add(getLabel(Lang.ApplicationBundle.getString("ProjectInitWindow.ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage(), null));
+						vbErrorMsg.getChildren().add(getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage(), null));
 					}
 
 					root.getChildren().add(vbErrorMsg);
@@ -408,12 +408,12 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 	public class ImportTab extends ProjectInitTab {
 
-		private final Tab tabImport = new Tab(Lang.ApplicationBundle.getString("ProjectInitWindow.tab_import"));
+		private final Tab tabImport = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_import"));
 
 		public ImportTab(ADCProjectInitWindow adcProjectInitWindow) {
-			tabImport.setUserData(Lang.ApplicationBundle.getString("ProjectInitWindow.import_project_ok"));
+			tabImport.setUserData(Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_ok"));
 			final VBox root = getTabVbox(20);
-			final Label lblOpenProject = new Label(Lang.ApplicationBundle.getString("ProjectInitWindow.import_project_title"));
+			final Label lblOpenProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_title"));
 
 			root.getChildren().addAll(lblOpenProject);
 
@@ -427,7 +427,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		@Override
 		public String getOkBtnLabel() {
-			return Lang.ApplicationBundle.getString("ProjectInitWindow.import_project_ok");
+			return Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_ok");
 		}
 
 		@Override

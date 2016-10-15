@@ -43,7 +43,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 	private final ListView<Macro<V>> listViewMacros = new ListView<>();
 
 	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
-		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.ChooseMacro.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
 
@@ -53,12 +53,12 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 
 	private void initRootElement(Class<V> macroClassType) {
 		myRootElement.setPadding(new Insets(10));
-		final Label lblChooseMacro = new Label(Lang.ApplicationBundle.getString("Popups.ChooseMacro.choose_macro_title"));
+		final Label lblChooseMacro = new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.choose_macro_title"));
 		lblChooseMacro.setFont(TITLE_FONT);
 		myRootElement.getChildren().add(lblChooseMacro);
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-		listViewMacros.setPlaceholder(new Label(Lang.ApplicationBundle.getString("Popups.ChooseMacro.no_available_macros")));
+		listViewMacros.setPlaceholder(new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.no_available_macros")));
 		listViewMacros.setMinWidth(250d);
 		List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
 		for (Macro macro : macroList) {
@@ -68,7 +68,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 		}
 
 		HBox hbSplit = new HBox(5);
-		Label lblListViewMacros = new Label(Lang.ApplicationBundle.getString("Popups.ChooseMacro.available_macros"), listViewMacros);
+		Label lblListViewMacros = new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.available_macros"), listViewMacros);
 		lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
 
 		final double height = 100;
@@ -76,12 +76,12 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 		TextArea taComment = new TextArea();
 		taComment.setPrefHeight(height);
 		taComment.setEditable(false);
-		Label lblComment = new Label(Lang.ApplicationBundle.getString("Macros.comment"), taComment);
+		Label lblComment = new Label(Lang.ApplicationBundle().getString("Macros.comment"), taComment);
 		lblComment.setContentDisplay(ContentDisplay.BOTTOM);
 		TextArea taValue = new TextArea();
 		taValue.setEditable(false);
 		taValue.setPrefHeight(height);
-		Label lblValue = new Label(Lang.ApplicationBundle.getString("Macros.value"), taValue);
+		Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
 		lblValue.setContentDisplay(ContentDisplay.BOTTOM);
 
 		vbRight.getChildren().addAll(lblValue, lblComment);

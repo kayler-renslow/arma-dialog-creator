@@ -23,7 +23,7 @@ public class NewMacroPopup extends MacroEditBasePopup {
 	
 	public NewMacroPopup() {
 		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
-		myStage.setTitle(Lang.ApplicationBundle.getString("Popups.MacroNew.popup_title"));
+		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.MacroNew.popup_title"));
 	}
 	
 	@Override

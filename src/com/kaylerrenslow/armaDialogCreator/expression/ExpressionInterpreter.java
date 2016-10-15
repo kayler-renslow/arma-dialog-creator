@@ -45,7 +45,7 @@ public class ExpressionInterpreter {
 	@NotNull
 	public Value evaluate(String exp, Env env) throws ExpressionEvaluationException {
 		if(exp == null || exp.trim().length() == 0){
-			throw new ExpressionEvaluationException(Lang.ApplicationBundle.getString("Expression.error_no_input"));
+			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
 		ExpressionLexer l = getLexer(exp);
 		ExpressionParser p = getParser(new CommonTokenStream(l));

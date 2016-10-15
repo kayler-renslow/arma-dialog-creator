@@ -24,7 +24,7 @@ public class DoubleChecker implements InputFieldDataChecker<Double> {
 			Double.parseDouble(data);
 			return null;
 		} catch (NumberFormatException e) {
-			return Lang.FxControlBundle.getString("InputField.DataCheckers.Double.not_a_number");
+			return Lang.FxControlBundle().getString("InputField.DataCheckers.Double.not_a_number");
 		}
 	}
 
@@ -35,7 +35,7 @@ public class DoubleChecker implements InputFieldDataChecker<Double> {
 
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle.getString("InputField.DataCheckers.Double.type_name");
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.Double.type_name");
 	}
 
 	@Override

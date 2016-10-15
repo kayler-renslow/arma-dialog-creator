@@ -60,7 +60,7 @@ public class ProjectXmlLoader extends XmlLoader {
 			case "1":
 				return new ProjectLoaderVersion1(loader);
 			default:
-				throw new XmlParseException(Lang.ApplicationBundle.getString("XmlParse.ProjectLoad.not_a_project_save"));
+				throw new XmlParseException(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.not_a_project_save"));
 		}
 	}
 	

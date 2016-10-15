@@ -36,15 +36,15 @@ public class EditUndoAction implements EventHandler<ActionEvent> {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						undoMenuItem.setDisable(false);
-						undoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo_f"), newChange.getChange().getShortName()));
+						undoMenuItem.setText(String.format(Lang.ApplicationBundle().getString("MainMenuBar.edit_undo_f"), newChange.getChange().getShortName()));
 						break;
 					}
 					case REDO: //intentional fall through
 					case UNDO: {
 						if (changelog.getToUndo() == null) {
-							undoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo"));
+							undoMenuItem.setText(Lang.ApplicationBundle().getString("MainMenuBar.edit_undo"));
 						} else {
-							undoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_undo_f"), changelog.getToUndo().getShortName()));
+							undoMenuItem.setText(String.format(Lang.ApplicationBundle().getString("MainMenuBar.edit_undo_f"), changelog.getToUndo().getShortName()));
 						}
 						undoMenuItem.setDisable(changelog.getToUndo() == null);
 						break;

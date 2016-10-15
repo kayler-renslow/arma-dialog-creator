@@ -37,7 +37,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 	/**
 	 */
 	MissingControlPropertiesConfigPopup(@Nullable Stage primaryStage, @NotNull List<ControlProperty> missing) {
-		super(primaryStage, new VBox(5), Lang.ApplicationBundle.getString("Popups.MissingControlPropertiesConfig.popup_title"));
+		super(primaryStage, new VBox(5), Lang.ApplicationBundle().getString("Popups.MissingControlPropertiesConfig.popup_title"));
 		myRootElement.setPadding(new Insets(5));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
@@ -46,7 +46,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 		for (ControlProperty controlProperty : missing) {
 			listView.getItems().add(controlProperty.getName());
 		}
-		Button btnOk = new Button(Lang.ApplicationBundle.getString("Popups.btn_ok"));
+		Button btnOk = new Button(Lang.ApplicationBundle().getString("Popups.btn_ok"));
 		btnOk.setPrefWidth(100d);
 		btnOk.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -56,7 +56,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 		});
 		HBox hbox = new HBox(btnOk);
 		hbox.setAlignment(Pos.BOTTOM_RIGHT);
-		myRootElement.getChildren().addAll(new Label(Lang.ApplicationBundle.getString("Popups.MissingControlPropertiesConfig.missing_properties_message")), listView, hbox);
+		myRootElement.getChildren().addAll(new Label(Lang.ApplicationBundle().getString("Popups.MissingControlPropertiesConfig.missing_properties_message")), listView, hbox);
 		myRootElement.setFillWidth(true);
 		setStageSize(500, 300);
 	}

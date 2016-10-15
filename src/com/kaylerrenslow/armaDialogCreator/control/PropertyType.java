@@ -107,7 +107,7 @@ public enum PropertyType {
 	}
 
 	private static String getString(String s) {
-		return Lang.LookupBundle.getString(s);
+		return Lang.LookupBundle().getString(s);
 	}
 
 	private static class IdChecker {

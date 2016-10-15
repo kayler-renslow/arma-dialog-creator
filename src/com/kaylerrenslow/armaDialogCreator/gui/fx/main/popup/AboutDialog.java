@@ -29,7 +29,7 @@ import javafx.scene.layout.VBox;
  */
 public class AboutDialog extends StageDialog<VBox> {
 	public AboutDialog() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle.getString("Popups.About.dialog_title"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.About.dialog_title"), false, true, false);
 		final Hyperlink hypRepo = new Hyperlink(Lang.Misc.REPO_URL);
 		hypRepo.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -37,14 +37,14 @@ public class AboutDialog extends StageDialog<VBox> {
 				BrowserUtil.browse(hypRepo.getText());
 			}
 		});
-		final Label lblRepoUrl = new Label(Lang.ApplicationBundle.getString("Popups.About.repository") + ":", hypRepo);
+		final Label lblRepoUrl = new Label(Lang.ApplicationBundle().getString("Popups.About.repository") + ":", hypRepo);
 		myStage.setResizable(false);
 		lblRepoUrl.setContentDisplay(ContentDisplay.RIGHT);
 		myRootElement.getChildren().addAll(
 				new ImageView(ImagePaths.ABOUT_HEADER),
-				new Label(Lang.ApplicationBundle.getString("Popups.About.author") + ": " + "Kayler \"K-Town\" Renslow"),
-				new Label(Lang.ApplicationBundle.getString("Popups.About.version") + ": " + Lang.Application.VERSION),
-				new Label(Lang.ApplicationBundle.getString("Popups.About.build") + ": " + ArmaDialogCreator.getBuildProperty(BuildProperty.BUILD_NUMBER, "unknown")),
+				new Label(Lang.ApplicationBundle().getString("Popups.About.author") + ": " + "Kayler \"K-Town\" Renslow"),
+				new Label(Lang.ApplicationBundle().getString("Popups.About.version") + ": " + Lang.Application.VERSION),
+				new Label(Lang.ApplicationBundle().getString("Popups.About.build") + ": " + ArmaDialogCreator.getBuildProperty(BuildProperty.BUILD_NUMBER, "unknown")),
 				lblRepoUrl
 		);
 		btnOk.requestFocus();

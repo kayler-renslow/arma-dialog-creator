@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/13/2016.
  */
 public class FontValueEditor implements ValueEditor<AFont> {
-	private final Button btnChooseDefault = new Button(Lang.ApplicationBundle.getString("ValueEditors.FontValueEditor.default_font"));
+	private final Button btnChooseDefault = new Button(Lang.ApplicationBundle().getString("ValueEditors.FontValueEditor.default_font"));
 	protected final ComboBox<AFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(AFont.values()));
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());

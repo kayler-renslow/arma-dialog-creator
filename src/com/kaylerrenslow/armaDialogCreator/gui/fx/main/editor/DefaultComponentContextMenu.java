@@ -31,14 +31,14 @@ public class DefaultComponentContextMenu extends ContextMenu {
 	private static ArrayList<ControlPropertiesConfigPopup> createdPopups = new ArrayList<>();
 
 	public DefaultComponentContextMenu(ArmaControl c) {
-		MenuItem configure = new MenuItem(Lang.ApplicationBundle.getString("ContextMenu.DefaultComponent.configure"));
+		MenuItem configure = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.configure"));
 
 		Counter counter = new Counter(0, 0, Integer.MAX_VALUE, 1.0, true);
 		counter.addUpdateButton(-10, "-10", 0);
 		counter.addUpdateButton(10, "+10", 100); //put on end
 		CustomMenuItem renderQueueItem = new CustomMenuItem(counter, false);
 
-		Menu renderQueueMenu = new Menu(Lang.ApplicationBundle.getString("ContextMenu.DefaultComponent.render_queue"), null, renderQueueItem);
+		Menu renderQueueMenu = new Menu(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.render_queue"), null, renderQueueItem);
 
 		getItems().addAll(renderQueueMenu, configure);
 		configure.setOnAction(new EventHandler<ActionEvent>() {

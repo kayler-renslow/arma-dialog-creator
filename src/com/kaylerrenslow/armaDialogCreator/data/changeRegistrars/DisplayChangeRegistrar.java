@@ -64,26 +64,26 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 			final ChangeType changeType = controlControlListChange.getChangeType();
 			switch (changeType) {
 				case ADD: {
-					shortName = Lang.EditChangeBundle.getString("DisplayChange.ShortName.add");
-					description = String.format(Lang.EditChangeBundle.getString("DisplayChange.Description.add"), controlControlListChange.getAdded().getControl().getClassName());
+					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.add");
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.add"), controlControlListChange.getAdded().getControl().getClassName());
 					break;
 				}
 				case SET: {
-					shortName = Lang.EditChangeBundle.getString("DisplayChange.ShortName.set");
-					description = String.format(Lang.EditChangeBundle.getString("DisplayChange.Description.set"),
+					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.set");
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.set"),
 							controlControlListChange.getSet().getOldControl().getClassName(),
 							controlControlListChange.getSet().getNewControl().getClassName()
 					);
 					break;
 				}
 				case REMOVE: {
-					shortName = Lang.EditChangeBundle.getString("DisplayChange.ShortName.remove");
-					description = String.format(Lang.EditChangeBundle.getString("DisplayChange.Description.remove"), controlControlListChange.getRemoved().getControl().getClassName());
+					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.remove");
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.remove"), controlControlListChange.getRemoved().getControl().getClassName());
 					break;
 				}
 				case MOVE: {
-					shortName = Lang.EditChangeBundle.getString("DisplayChange.ShortName.move");
-					description = String.format(Lang.EditChangeBundle.getString("DisplayChange.Description.move"), controlControlListChange.getMoved().getMovedControl().getClassName());
+					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.move");
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.move"), controlControlListChange.getMoved().getMovedControl().getClassName());
 					break;
 				}
 				default: {

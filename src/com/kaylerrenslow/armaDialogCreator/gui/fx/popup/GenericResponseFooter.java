@@ -35,8 +35,8 @@ public class GenericResponseFooter extends BorderPane {
 	) {
 		rightContainer = new HBox(5);
 		if (addHelpButton) {
-			btnHelp = new Button(Lang.ApplicationBundle.getString("Popups.btn_help"));
-			btnHelp.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("Popups.btn_help_tooltip")));
+			btnHelp = new Button(Lang.ApplicationBundle().getString("Popups.btn_help"));
+			btnHelp.setTooltip(new Tooltip(Lang.ApplicationBundle().getString("Popups.btn_help_tooltip")));
 			btnHelp.setOnAction(helpEvent);
 			btnHelp.setPrefWidth(50d);
 			setLeft(btnHelp);
@@ -44,7 +44,7 @@ public class GenericResponseFooter extends BorderPane {
 			btnHelp = null;
 		}
 		if (addCancel) {
-			btnCancel = new Button(Lang.ApplicationBundle.getString("Popups.btn_cancel"));
+			btnCancel = new Button(Lang.ApplicationBundle().getString("Popups.btn_cancel"));
 			btnCancel.setOnAction(cancelEvent);
 			btnCancel.setPrefWidth(75d);
 			rightContainer.getChildren().add(btnCancel);
@@ -52,7 +52,7 @@ public class GenericResponseFooter extends BorderPane {
 			btnCancel = null;
 		}
 		if (addOk) {
-			btnOk = new Button(Lang.ApplicationBundle.getString("Popups.btn_ok"));
+			btnOk = new Button(Lang.ApplicationBundle().getString("Popups.btn_ok"));
 			btnOk.setOnAction(okEvent);
 			btnOk.setPrefWidth(100d);
 			rightContainer.getChildren().add(btnOk);

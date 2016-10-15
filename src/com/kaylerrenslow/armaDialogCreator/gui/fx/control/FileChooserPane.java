@@ -33,7 +33,7 @@ import java.io.File;
  Created on 09/16/2016.
  */
 public class FileChooserPane extends HBox {
-	protected final Button btnLocate = new Button(Lang.FxControlBundle.getString("FileChooserPane.locate"));
+	protected final Button btnLocate = new Button(Lang.FxControlBundle().getString("FileChooserPane.locate"));
 	protected final TextField tfFile = new TextField();
 
 	private ValueObserver<File> chosenFileObserver = new ValueObserver<>(null);

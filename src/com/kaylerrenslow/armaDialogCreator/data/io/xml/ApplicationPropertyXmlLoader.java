@@ -65,7 +65,7 @@ public class ApplicationPropertyXmlLoader extends XmlLoader {
 							try {
 								propertiesDataContext.put(property, property.converter.convert(null, value));
 							} catch (Exception e) {
-								addError(new ParseError(String.format(Lang.ApplicationBundle.getString("XmlParse.ApplicationPropertyLoad.bad_saved_value_f"), property.getName
+								addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ApplicationPropertyLoad.bad_saved_value_f"), property.getName
 										(), property
 										.getDefaultValue()
 										.toString())));

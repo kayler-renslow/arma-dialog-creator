@@ -55,7 +55,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 	};
 
 	public NewControlPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.ApplicationBundle.getString("Popups" +
+		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.ApplicationBundle().getString("Popups" +
 				"Popups.NewControl.popup_title"));
 		if(getMyLoader() == null){
 			throw new IllegalStateException("getMyLoader() should not return null");

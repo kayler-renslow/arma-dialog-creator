@@ -35,7 +35,7 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 			ExpressionInterpreter.getInstance().evaluate(data, env);
 			return null;
 		} catch (ExpressionEvaluationException ex) {
-			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? Lang.FxControlBundle.getString("InputField.DataCheckers.Expression.unknown_error") : ex.getMessage();
+			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.unknown_error") : ex.getMessage();
 		}
 	}
 
@@ -47,7 +47,7 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle.getString("InputField.DataCheckers.Expression.type_name");
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.type_name");
 	}
 
 	@Override

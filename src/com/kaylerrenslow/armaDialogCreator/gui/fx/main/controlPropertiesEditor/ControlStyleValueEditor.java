@@ -34,7 +34,7 @@ import java.util.List;
  A value editor for {@link ControlStyle}. By default, all {@link ControlStyle}'s are added in the MenuButton.
  Created on 08/05/2016. */
 public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
-	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle.getString("ValueEditors.ControlStyleGroupEditor.select_styles"),
+	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"),
 			null);
 	private final TextField textField = new TextField();
 	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
@@ -45,7 +45,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		getChildren().add(menuButton);
 		getChildren().add(textField);
 		menuButton.getItems().addAll(ControlStyle.values());
-		menuButton.setTooltip(new Tooltip(Lang.ApplicationBundle.getString("ValueEditors.ControlStyleGroupEditor.tooltip_select_styles")));
+		menuButton.setTooltip(new Tooltip(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.tooltip_select_styles")));
 		for (ControlStyle style : menuButton.getItems()) {
 			menuButton.bindTooltip(style, style.documentation);
 		}

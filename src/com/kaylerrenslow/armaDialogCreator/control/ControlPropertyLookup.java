@@ -288,7 +288,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 	}
 	
 	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable String about, @Nullable ControlPropertyOption... options) {
-		this(propertyId, propertyName, propertyType, about == null ? strArr(Lang.ApplicationBundle.getString("Misc.no_documentation")) : strArr(about), options);
+		this(propertyId, propertyName, propertyType, about == null ? strArr(Lang.ApplicationBundle().getString("Misc.no_documentation")) : strArr(about), options);
 	}
 	
 	@Override

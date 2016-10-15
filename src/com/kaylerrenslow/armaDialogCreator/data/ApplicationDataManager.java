@@ -151,10 +151,10 @@ public class ApplicationDataManager {
 		private boolean saveProgress = false;
 
 		public SaveProjectDialog() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.SaveProject.popup_title"), true, true, false);
-			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle.getString("Popups.SaveProject.message")));
-			btnOk.setText(Lang.ApplicationBundle.getString("Confirmation.yes"));
-			btnCancel.setText(Lang.ApplicationBundle.getString("Confirmation.no"));
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.SaveProject.popup_title"), true, true, false);
+			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.SaveProject.message")));
+			btnOk.setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
+			btnCancel.setText(Lang.ApplicationBundle().getString("Confirmation.no"));
 		}
 
 		@Override

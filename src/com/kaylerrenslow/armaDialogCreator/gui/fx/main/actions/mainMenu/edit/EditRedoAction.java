@@ -36,15 +36,15 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						editRedoMenuItem.setDisable(true);
-						editRedoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo"));
+						editRedoMenuItem.setText(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo"));
 						break;
 					}
 					case REDO: //intentional fall through
 					case UNDO: {
 						if (changelog.getToRedo() == null) {
-							editRedoMenuItem.setText(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo"));
+							editRedoMenuItem.setText(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo"));
 						} else {
-							editRedoMenuItem.setText(String.format(Lang.ApplicationBundle.getString("MainMenuBar.edit_redo_f"), changelog.getToRedo().getShortName()));
+							editRedoMenuItem.setText(String.format(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo_f"), changelog.getToRedo().getShortName()));
 						}
 						editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 						break;

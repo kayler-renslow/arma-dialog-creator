@@ -45,7 +45,7 @@ class XmlLoader {
 			document.getDocumentElement().normalize();
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			throw new XmlParseException(Lang.ApplicationBundle.getString("XmlParse.failed_to_read_xml"));
+			throw new XmlParseException(Lang.ApplicationBundle().getString("XmlParse.failed_to_read_xml"));
 		}
 		
 		this.dataContext = context;

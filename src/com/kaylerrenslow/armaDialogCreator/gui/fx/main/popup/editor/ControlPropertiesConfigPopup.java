@@ -92,7 +92,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		addCloseButton();
 		myRootElement.getChildren().add(editorPane);
 
-		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.is_background_control"));
+		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
 		cbIsBackgroundControl.setSelected(c.isBackgroundControl());
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -150,7 +150,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		
 		ComboBox<String> cbExtendClass = new ComboBox<>(FXCollections.observableArrayList("-", "RscStatic", "RscPicture"));
 		cbExtendClass.getSelectionModel().select(0);
-		Label lblExtendClass = new Label(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.extend_class"), cbExtendClass);
+		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"), cbExtendClass);
 		
 		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
@@ -173,9 +173,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		private boolean moveOut = false;
 		
 		public MoveOutOfControlGroupDialog(ArmaControl c) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
 			myRootElement.getChildren().addAll(
-					new Label(String.format(Lang.ApplicationBundle.getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.message_f"), c.getClassName()))
+					new Label(String.format(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.message_f"), c.getClassName()))
 			);
 			myStage.initStyle(StageStyle.UTILITY);
 			sizeToScene();

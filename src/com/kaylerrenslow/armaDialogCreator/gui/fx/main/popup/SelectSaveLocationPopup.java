@@ -50,7 +50,7 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 	 Creates the "change directories" popup
 	 */
 	public SelectSaveLocationPopup(@Nullable File initialDirectoryAppDataSave, @Nullable File a3ToolsDir) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.popup_title"), true, true, true);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.popup_title"), true, true, true);
 		initialize(initialDirectoryAppDataSave, a3ToolsDir);
 		myStage.setMinWidth(600d);
 		myStage.initModality(Modality.APPLICATION_MODAL);
@@ -68,13 +68,13 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 			tfAppDataSaveDir.setText(initialAppSaveDirectory.getPath());
 		}
 
-		Label lblAppDataSaveDir = new Label(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.lbl_app_data_save_dir"));
-		Label lblA3ToolsDir = new Label(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
+		Label lblAppDataSaveDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_app_data_save_dir"));
+		Label lblA3ToolsDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
 
 
-		final Button btnChangeAppData = new Button(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.btn_change"));
-		final Button btnChangeA3Tools = new Button(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.btn_change"));
-		final Button btnClearA3ToolsDir = new Button(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.btn_clear"));
+		final Button btnChangeAppData = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_change"));
+		final Button btnChangeA3Tools = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_change"));
+		final Button btnClearA3ToolsDir = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_clear"));
 		
 		/*set events*/
 		btnChangeAppData.setOnAction(new EventHandler<ActionEvent>() {
@@ -210,7 +210,7 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 	private static class BadArma3ToolsDirectoryPopup extends StageDialog<VBox> {
 
 		public BadArma3ToolsDirectoryPopup() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new Label(Lang.ApplicationBundle.getString("Popups.SelectSaveLocation.bad_a3_tools_dir"))), Lang.ApplicationBundle.getString
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.bad_a3_tools_dir"))), Lang.ApplicationBundle().getString
 					("Popups.generic_popup_title"), false, true, false);
 			myStage.setWidth(300d);
 		}
