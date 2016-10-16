@@ -26,13 +26,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
- Holds data that aren't specific to the current Project, but rather the entire application itself
+ Holds data that aren't specific to the current Project, but rather the entire application itself. Resets after
+ {@link com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator#loadNewProject(boolean)} is invoked.
  Created on 06/07/2016. */
 public class ApplicationData extends DataContext {
 	
 	private Project currentProject;
 	private final Changelog changelog = new Changelog(20);
-	private ApplicationData self = this;
 	
 	public ApplicationData(@NotNull ApplicationLoader.ApplicationLoadRequest request) {
 		request.addOnComplete(new ApplicationLoadListener() {
@@ -48,7 +48,7 @@ public class ApplicationData extends DataContext {
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
 		public @Nullable Value getValue(String identifier) {
-			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(self);
+			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ApplicationData.this);
 			if (resolution == null) {
 				throw new IllegalStateException("resolution shouldn't be null");
 			}

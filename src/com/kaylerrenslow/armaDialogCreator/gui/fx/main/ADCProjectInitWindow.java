@@ -191,7 +191,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		public NewProjectTab(ADCProjectInitWindow adcProjectInitWindow) {
 			tfProjectName.setPrefWidth(200d);
-			tfProjectName.setPromptText(Lang.ApplicationBundle().getString("ProjectInitWindow.untitled"));
+			tfProjectName.setPromptText("untitled");
 			tfProjectDescription.setPrefRowCount(6);
 
 			final VBox root = getTabVbox(10);

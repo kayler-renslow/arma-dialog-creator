@@ -77,8 +77,8 @@ public class ApplicationDataManager {
 	public File getArma3ToolsDirectory() {
 		return propertyManager.getArma3ToolsDirectory();
 	}
-	
-	/** Get application properties */
+
+	/** Get application properties, which stores all {@link ApplicationProperty} instances */
 	public @NotNull DataContext getApplicationProperties() {
 		return propertyManager.getApplicationProperties();
 	}
@@ -145,6 +145,11 @@ public class ApplicationDataManager {
 			}
 		}
 		saveGlobalResources();
+	}
+
+	/** Get an {@link ApplicationProperty} from {@link #getApplicationProperties()} */
+	public Object getApplicationProperty(@NotNull ApplicationProperty property) {
+		return property.get(propertyManager.getApplicationProperties());
 	}
 
 	private static class SaveProjectDialog extends StageDialog<VBox>{

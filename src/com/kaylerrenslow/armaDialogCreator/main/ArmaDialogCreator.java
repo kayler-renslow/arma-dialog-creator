@@ -45,7 +45,7 @@ public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
 	private static Properties versionInfoProperties;
-	private static Locale locale = Locale.ENGLISH;
+	private static Locale locale = ApplicationProperty.LOCALE.getDefaultValue();
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -55,8 +55,6 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
-		setLocale();
-
 		loadBuildInfo();
 		ExceptionHandler.init();
 		launch(args);
@@ -80,6 +78,7 @@ public final class ArmaDialogCreator extends Application {
 		int progress = 0;
 
 		applicationDataManager = new ApplicationDataManager();
+		setLocale();
 
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
@@ -248,8 +247,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	private static void setLocale() {
-		//todo have option to change languages
-		locale = Locale.ENGLISH;
+		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getInstance().getApplicationProperties());
 	}
 
 

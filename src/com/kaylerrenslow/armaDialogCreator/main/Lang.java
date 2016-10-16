@@ -10,6 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import com.kaylerrenslow.armaDialogCreator.util.CustomToString;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -17,22 +22,37 @@ import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICAT
 
 public interface Lang {
 
+	Locale[] SUPPORTED_LOCALES = {Locale.US};
 
-	Locale[] SUPPORTED_LOCALES = {Locale.ENGLISH};
+	class LocaleConverter implements ValueConverter<Locale>, CustomToString<Locale> {
 
-	static ResourceBundle ApplicationBundle(){
+		@Override
+		public String toString(Locale value) {
+			return value.toLanguageTag();
+		}
+
+		@Override
+		public Locale convert(DataContext context, @NotNull String... values) throws Exception {
+			return Locale.forLanguageTag(values[0]);
+		}
+
+	}
+
+	LocaleConverter LOCALE_CONVERTER = new LocaleConverter();
+
+	static ResourceBundle ApplicationBundle() {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle", ArmaDialogCreator.getCurrentLocale());
 	}
 
-	static ResourceBundle EditChangeBundle(){
+	static ResourceBundle EditChangeBundle() {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle", ArmaDialogCreator.getCurrentLocale());
 	}
 
-	static ResourceBundle FxControlBundle(){
+	static ResourceBundle FxControlBundle() {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle", ArmaDialogCreator.getCurrentLocale());
 	}
 
-	static ResourceBundle LookupBundle(){
+	static ResourceBundle LookupBundle() {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle", ArmaDialogCreator.getCurrentLocale());
 	}
 

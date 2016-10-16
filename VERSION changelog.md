@@ -1,5 +1,3 @@
-**Version:** tbd
-
 **Release date:** tbd
 
 **Added:**

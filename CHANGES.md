@@ -1,5 +1,5 @@
 **Added:**
-* removed redundant resource bundle files
+* locale is now loaded from application properties
 
 **Changed:**
 * none
