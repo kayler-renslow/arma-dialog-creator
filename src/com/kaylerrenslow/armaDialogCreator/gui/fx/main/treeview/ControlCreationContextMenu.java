@@ -20,6 +20,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
@@ -51,9 +52,11 @@ public class ControlCreationContextMenu extends ContextMenu {
 					continue;
 				}
 				if (!controlType.betaSupported()) {
-					continue;
+					//					continue;
 				}
-				menuItemType = new MenuItem(controlType.fullDisplayText(), new ImageView(ArmaControlLookup.findByControlType(controlType).controlIcon));
+				final StackPane stackPaneControlIcon = new StackPane(new ImageView(ArmaControlLookup.findByControlType(controlType).controlIcon));
+				stackPaneControlIcon.setStyle("-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:3px;");
+				menuItemType = new MenuItem(controlType.fullDisplayText(), stackPaneControlIcon);
 				if (controlType.deprecated) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}

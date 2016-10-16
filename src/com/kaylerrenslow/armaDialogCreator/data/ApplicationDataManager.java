@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.control.Label;
@@ -131,7 +132,8 @@ public class ApplicationDataManager {
 		}
 	}
 
-	public void saveAll() {
+	/** Will save everything only if user agrees to save (however, global resources will always be saved no matter the response) */
+	public void askSaveAll() {
 		SaveProjectDialog popup = new SaveProjectDialog();
 		popup.show();
 		boolean saveProgress = popup.isSaveProgress();
@@ -139,11 +141,10 @@ public class ApplicationDataManager {
 			try {
 				saveProject();
 			} catch (IOException e) {
-				e.printStackTrace(System.out);
+				ExceptionHandler.error(e);
 			}
 		}
 		saveGlobalResources();
-
 	}
 
 	private static class SaveProjectDialog extends StageDialog<VBox>{
@@ -163,6 +164,7 @@ public class ApplicationDataManager {
 			super.ok();
 		}
 
+		/**Returns true if the user responded yes for saving, false if no progress should be saved*/
 		public boolean isSaveProgress() {
 			return saveProgress;
 		}

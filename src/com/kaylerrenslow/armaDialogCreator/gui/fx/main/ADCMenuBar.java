@@ -47,6 +47,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem file_export = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_export")), new FileExportAction());
 	private final MenuItem file_closeProject = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_close_project")), new FileCloseProjectAction());
 	private final MenuItem file_exit = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_exit")), new FileExitAction());
+	private final MenuItem file_restart = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_restart")), new FileRestartAction());
 
 	
 	/*Edit*/
@@ -120,7 +121,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem help_wiki = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.help_wiki")), new WikiUrlAction());
 	private final MenuItem help_about = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.help_about")), event -> new AboutDialog().show());
 
-	private final Menu menuFile = new Menu(ApplicationBundle().getString("MainMenuBar.file"), null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject, file_exit);
+	private final Menu menuFile = new Menu(ApplicationBundle().getString("MainMenuBar.file"), null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject, file_exit, file_restart);
 	private final Menu menuEdit = new Menu(ApplicationBundle().getString("MainMenuBar.edit"), null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_exportConfig);
 	private final Menu menuView = new Menu(ApplicationBundle().getString("MainMenuBar.view"), null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(ApplicationBundle().getString("MainMenuBar.settings"), null, settings_configureDirs);

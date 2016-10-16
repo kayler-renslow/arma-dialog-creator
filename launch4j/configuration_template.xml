@@ -14,10 +14,6 @@
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\icons\adc.ico</icon>
-  <singleInstance>
-    <mutexName>ArmaDialogCreator-a627e56e-4bf1-41b8-a38f-b5a54249b811</mutexName>
-    <windowTitle>Arma Dialog Creator</windowTitle>
-  </singleInstance>
   <jre>
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>

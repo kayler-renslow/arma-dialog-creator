@@ -29,8 +29,10 @@ import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Properties;
@@ -103,7 +105,7 @@ public final class ArmaDialogCreator extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		ApplicationDataManager.getInstance().saveAll();
+		ApplicationDataManager.getInstance().askSaveAll();
 	}
 
 	@Override
@@ -133,13 +135,34 @@ public final class ArmaDialogCreator extends Application {
 		Platform.exit();
 	}
 
+	public static void restartApplication() throws Exception {
+		final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+		final File currentJar = new File(ArmaDialogCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+
+  		/* is it a jar file? */
+		if (!currentJar.getName().endsWith(".jar")) {
+			return;
+		}
+
+  		/* Build command: java -jar application.jar */
+		final ArrayList<String> command = new ArrayList<>();
+		command.add(javaBin);
+		command.add("-jar");
+		command.add(currentJar.getPath());
+
+		final ProcessBuilder builder = new ProcessBuilder(command);
+		ApplicationDataManager.getInstance().askSaveAll();
+		builder.start();
+		System.exit(0);
+	}
+
 	public static void loadNewProject() {
 		loadNewProject(true);
 	}
 
-	private static void loadNewProject(boolean save) {
-		if (save) {
-			ApplicationDataManager.getInstance().saveAll();
+	private static void loadNewProject(boolean askToSave) {
+		if (askToSave) {
+			ApplicationDataManager.getInstance().askSaveAll();
 		}
 
 		getPrimaryStage().close();
