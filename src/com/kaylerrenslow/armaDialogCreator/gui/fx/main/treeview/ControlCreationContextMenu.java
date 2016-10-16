@@ -52,7 +52,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 					continue;
 				}
 				if (!controlType.betaSupported()) {
-					//					continue;
+					continue;
 				}
 				final StackPane stackPaneControlIcon = new StackPane(new ImageView(ArmaControlLookup.findByControlType(controlType).controlIcon));
 				stackPaneControlIcon.setStyle("-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:3px;");

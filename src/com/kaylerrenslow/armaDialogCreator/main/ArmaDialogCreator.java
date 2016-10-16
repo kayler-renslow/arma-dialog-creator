@@ -248,7 +248,6 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	private static void setLocale() {
-		Locale.setDefault(Locale.ENGLISH);
 		//todo have option to change languages
 		locale = Locale.ENGLISH;
 	}

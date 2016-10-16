@@ -1,6 +1,5 @@
 **Added:**
-* ability to restart application
-* more control icons
+* removed redundant resource bundle files
 
 **Changed:**
 * none
