@@ -78,7 +78,7 @@ public final class ArmaDialogCreator extends Application {
 		int progress = 0;
 
 		applicationDataManager = new ApplicationDataManager();
-		setLocale();
+		initializeCurrentLocale();
 
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
@@ -134,25 +134,31 @@ public final class ArmaDialogCreator extends Application {
 		Platform.exit();
 	}
 
-	public static void restartApplication() throws Exception {
-		final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-		final File currentJar = new File(ArmaDialogCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+	public static void restartApplication(boolean askToSave) {
+		try {
+			final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+			final File currentJar = new File(ArmaDialogCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 
   		/* is it a jar file? */
-		if (!currentJar.getName().endsWith(".jar")) {
-			return;
-		}
+			if (!currentJar.getName().endsWith(".jar")) {
+				return;
+			}
 
   		/* Build command: java -jar application.jar */
-		final ArrayList<String> command = new ArrayList<>();
-		command.add(javaBin);
-		command.add("-jar");
-		command.add(currentJar.getPath());
+			final ArrayList<String> command = new ArrayList<>();
+			command.add(javaBin);
+			command.add("-jar");
+			command.add(currentJar.getPath());
 
-		final ProcessBuilder builder = new ProcessBuilder(command);
-		ApplicationDataManager.getInstance().askSaveAll();
-		builder.start();
-		System.exit(0);
+			final ProcessBuilder builder = new ProcessBuilder(command);
+			if (askToSave) {
+				ApplicationDataManager.getInstance().askSaveAll();
+			}
+			builder.start();
+			System.exit(0);
+		} catch (Exception e) {
+			ExceptionHandler.error(e);
+		}
 	}
 
 	public static void loadNewProject() {
@@ -246,8 +252,15 @@ public final class ArmaDialogCreator extends Application {
 		return versionInfoProperties.getProperty(property.getKey(), defaultVal);
 	}
 
-	private static void setLocale() {
-		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getInstance().getApplicationProperties());
+	private static void initializeCurrentLocale() {
+		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getApplicationProperties());
+	}
+
+	/** Set the Locale of Arma Dialog Creator to a new locale. This will require a restart to fully take into affect. */
+	public static void setLocale(@NotNull Locale locale) {
+		ArmaDialogCreator.locale = locale;
+		ApplicationProperty.LOCALE.put(ApplicationDataManager.getApplicationProperties(), locale);
+		ApplicationDataManager.getInstance().saveApplicationProperties();
 	}
 
 

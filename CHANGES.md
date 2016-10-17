@@ -1,5 +1,5 @@
 **Added:**
-* locale is now loaded from application properties
+* change locale option in project init window
 
 **Changed:**
 * none

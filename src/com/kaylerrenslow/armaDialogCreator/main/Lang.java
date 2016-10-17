@@ -24,6 +24,8 @@ public interface Lang {
 
 	Locale[] SUPPORTED_LOCALES = {Locale.US};
 
+	LocaleConverter LOCALE_CONVERTER = new LocaleConverter();
+
 	class LocaleConverter implements ValueConverter<Locale>, CustomToString<Locale> {
 
 		@Override
@@ -37,8 +39,6 @@ public interface Lang {
 		}
 
 	}
-
-	LocaleConverter LOCALE_CONVERTER = new LocaleConverter();
 
 	static ResourceBundle ApplicationBundle() {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle", ArmaDialogCreator.getCurrentLocale());

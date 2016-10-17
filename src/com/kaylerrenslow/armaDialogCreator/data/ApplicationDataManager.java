@@ -37,6 +37,11 @@ public class ApplicationDataManager {
 		return ArmaDialogCreator.getApplicationDataManager();
 	}
 
+	/** Get application properties, which stores all {@link ApplicationProperty} instances */
+	public static @NotNull DataContext getApplicationProperties() {
+		return getInstance().propertyManager.getApplicationProperties();
+	}
+
 	public void setApplicationData(@NotNull ApplicationData applicationData) {
 		this.applicationData = applicationData;
 		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);
@@ -78,11 +83,6 @@ public class ApplicationDataManager {
 		return propertyManager.getArma3ToolsDirectory();
 	}
 
-	/** Get application properties, which stores all {@link ApplicationProperty} instances */
-	public @NotNull DataContext getApplicationProperties() {
-		return propertyManager.getApplicationProperties();
-	}
-	
 	/** Saves the application properties. Returns true if the application properties were saved successfully, false if they weren't */
 	public boolean saveApplicationProperties() {
 		try {

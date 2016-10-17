@@ -8,18 +8,49 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
+package com.kaylerrenslow.armaDialogCreator.main;
 
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
 
 /**
  Created by Kayler on 10/16/2016.
  */
-public class FileRestartAction implements EventHandler<ActionEvent> {
+public class LocaleDescriptor {
+	private Locale locale;
+	private Locale currentLocale;
+
+	public LocaleDescriptor(Locale locale, Locale currentLocale) {
+		this.locale = locale;
+		this.currentLocale = currentLocale;
+	}
+
+	@NotNull
+	public Locale getCurrentLocale() {
+		return currentLocale;
+	}
+
+	@NotNull
+	public Locale getLocale() {
+		return locale;
+	}
+
 	@Override
-	public void handle(ActionEvent event) {
-		ArmaDialogCreator.restartApplication(true);
+	public String toString() {
+		String displayCountry = locale.getDisplayCountry(currentLocale);
+		return locale.getDisplayLanguage(currentLocale) + (displayCountry.length() == 0 ? "" : " (" + displayCountry + ")");
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof LocaleDescriptor) {
+			LocaleDescriptor that = (LocaleDescriptor) o;
+			return this.locale.equals(that.locale);
+		}
+		return false;
 	}
 }

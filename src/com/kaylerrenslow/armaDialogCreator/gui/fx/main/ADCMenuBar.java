@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
@@ -68,9 +69,9 @@ class ADCMenuBar extends MenuBar {
 	private final PresetCheckMenuItem view_showGrid = (PresetCheckMenuItem) addOnAction(new PresetCheckMenuItem(ApplicationBundle().getString("MainMenuBar.view_show_grid"),
 			true), new ViewShowGridAction());
 	private final CheckMenuItem view_darkTheme = (CheckMenuItem) addOnAction(new CheckMenuItem(ApplicationBundle().getString("MainMenuBar.view_dark_theme")), new
-			ViewDarkThemeAction(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties())));
+			ViewDarkThemeAction(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties())));
 	{
-		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
+		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties()));
 	}
 
 	private final MenuItem view_colors = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.view_change_colors")), new ViewColorsAction());

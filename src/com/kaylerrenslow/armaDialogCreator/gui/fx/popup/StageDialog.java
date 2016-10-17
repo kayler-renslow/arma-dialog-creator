@@ -29,6 +29,8 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox>{
 	/** Root element of the dialog body. This is the element where all content should be placed. */
 	protected final T myRootElement;
 
+	private boolean cancel = false;
+
 	public StageDialog(Stage primaryStage, T myRootDialogElement, String title, boolean canCancel, boolean canOk, boolean hasHelp) {
 		super(primaryStage, new VBox(5), title);
 		this.myRootElement = myRootDialogElement;
@@ -41,6 +43,17 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox>{
 	@Override
 	protected final GenericResponseFooter getBoundResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton) {
 		return super.getBoundResponseFooter(addCancel, addOk, addHelpButton);
+	}
+
+	@Override
+	protected void cancel() {
+		super.cancel();
+		this.cancel = true;
+	}
+
+	/** Return true if the dialog was cancelled (cancel button was pressed), false otherwise */
+	public boolean wasCancelled() {
+		return this.cancel;
 	}
 
 	/** Implementation is: {@link Stage#showAndWait()} */

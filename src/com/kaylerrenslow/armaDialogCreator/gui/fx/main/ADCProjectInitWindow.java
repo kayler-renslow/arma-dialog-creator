@@ -14,12 +14,11 @@ import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ParseError;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ADCMustRestartDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
-import com.kaylerrenslow.armaDialogCreator.main.ADCStatic;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.main.*;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -32,17 +31,20 @@ import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.LinkedList;
+import java.util.Locale;
 
 /**
  @author Kayler
@@ -68,6 +70,46 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
 		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
+
+		final ComboBox<LocaleDescriptor> comboBoxLanguage = new ComboBox<>();
+		comboBoxLanguage.setCellFactory(new Callback<ListView<LocaleDescriptor>, ListCell<LocaleDescriptor>>() {
+			@Override
+			public ListCell<LocaleDescriptor> call(ListView<LocaleDescriptor> param) {
+				return new ListCell<LocaleDescriptor>() {
+					@Override
+					protected void updateItem(LocaleDescriptor item, boolean empty) {
+						super.updateItem(item, empty);
+
+						if (item == null || empty) {
+							setText("");
+							setGraphic(null);
+						} else {
+							setText(item.toString());
+							setGraphic(new ImageView(ImagePaths.COUNTRY_ICONS_MAP.get(item.getLocale())));
+						}
+					}
+				};
+			}
+		});
+		for (Locale locale : Lang.SUPPORTED_LOCALES) {
+			comboBoxLanguage.getItems().add(new LocaleDescriptor(locale, ArmaDialogCreator.getCurrentLocale()));
+		}
+		comboBoxLanguage.getSelectionModel().select(new LocaleDescriptor(ArmaDialogCreator.getCurrentLocale(), ArmaDialogCreator.getCurrentLocale()));
+		comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<LocaleDescriptor>() {
+			@Override
+			public void changed(ObservableValue<? extends LocaleDescriptor> observable, LocaleDescriptor oldValue, LocaleDescriptor newValue) {
+				boolean restart = ADCMustRestartDialog.getResponse();
+				if (restart) {
+					ArmaDialogCreator.setLocale(newValue.getLocale());
+					ArmaDialogCreator.restartApplication(false);
+				} else {
+					comboBoxLanguage.getSelectionModel().selectedItemProperty().removeListener(this);
+					comboBoxLanguage.getSelectionModel().select(oldValue);
+					comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(this);
+				}
+			}
+		});
+		footer.getRightContainer().getChildren().add(0, comboBoxLanguage);
 
 		btnCancel.setText(Lang.ApplicationBundle().getString("Popups.btn_exit"));
 
