@@ -1,8 +1,8 @@
 **Added:**
-* change locale option in project init window
+* none
 
 **Changed:**
-* none
+* removed country flags and using better way to show languages
 
 **Fixed:**
 * none

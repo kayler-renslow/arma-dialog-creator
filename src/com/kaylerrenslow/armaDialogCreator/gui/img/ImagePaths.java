@@ -10,11 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.img;
 
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
-
-import java.util.HashMap;
-import java.util.Locale;
-
 /**
  Created by Kayler on 05/17/2016.
  */
@@ -33,13 +28,4 @@ public abstract class ImagePaths {
 
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
 	public static final String ABOUT_HEADER = pathPrefix + "about.png";
-
-	public static final HashMap<Locale, String> COUNTRY_ICONS_MAP = new HashMap<>();
-
-	static {
-		for (Locale locale : Lang.SUPPORTED_LOCALES) {
-			COUNTRY_ICONS_MAP.put(locale, pathPrefix + "icons/country/" + locale.toLanguageTag() + ".png");
-		}
-	}
-
 }

@@ -19,16 +19,9 @@ import java.util.Locale;
  */
 public class LocaleDescriptor {
 	private Locale locale;
-	private Locale currentLocale;
 
-	public LocaleDescriptor(Locale locale, Locale currentLocale) {
+	public LocaleDescriptor(Locale locale) {
 		this.locale = locale;
-		this.currentLocale = currentLocale;
-	}
-
-	@NotNull
-	public Locale getCurrentLocale() {
-		return currentLocale;
 	}
 
 	@NotNull
@@ -38,8 +31,8 @@ public class LocaleDescriptor {
 
 	@Override
 	public String toString() {
-		String displayCountry = locale.getDisplayCountry(currentLocale);
-		return locale.getDisplayLanguage(currentLocale) + (displayCountry.length() == 0 ? "" : " (" + displayCountry + ")");
+		String displayCountry = locale.getDisplayCountry(locale);
+		return locale.getDisplayLanguage(locale) + (displayCountry.length() == 0 ? "" : " (" + displayCountry + ")");
 	}
 
 	@Override

@@ -42,7 +42,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private Expression x, y, width, height;
 	private final Env env;
-	private boolean waitToRender = false;
+	private boolean recalcingPosition = false;
 
 	public ArmaControlRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(0, 0, 0, 0);
@@ -69,6 +69,9 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		final ValueListener<SerializableValue> positionValueListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				if (recalcingPosition) {
+					return;
+				}
 				if (xProperty.getValue() == null) {
 					return;
 				}
@@ -90,9 +93,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				} else if (!hProperty.getValue().equals(height)) {
 					setHSilent((Expression) hProperty.getValue());
 				}
-				if(!waitToRender){
-					rerender();
-				}
+				rerender();
 			}
 		};
 		xProperty.getValueObserver().addValueListener(positionValueListener);
@@ -201,14 +202,14 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		final Expression y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
 		final Expression w = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
 		final Expression h = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
-		this.waitToRender = true;
+		this.recalcingPosition = true;
 		xProperty.setValue(x);
 		yProperty.setValue(y);
 
 		wProperty.setValue(w);
-		this.waitToRender = false;
 		hProperty.setValue(h);
-
+		this.recalcingPosition = false;
+		rerender();
 	}
 
 	@Override
