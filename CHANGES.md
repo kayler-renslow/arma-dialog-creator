@@ -1,8 +1,9 @@
 **Added:**
-* extend control class control in control config popup 
+* none 
 
 **Changed:**
-* none
+* switched New Control popup away from fxml
+
 
 **Fixed:**
 * none

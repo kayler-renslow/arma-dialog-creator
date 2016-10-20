@@ -54,7 +54,7 @@ import java.util.List;
 public class ControlPropertiesEditorPane extends StackPane {
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private final Accordion accordion = new Accordion();
-	private @Nullable ControlClass control;
+	private ControlClass controlClass;
 
 	private ArrayList<ControlPropertyInputDescriptor> propertyDescriptors = new ArrayList<>();
 	private ControlPropertyEditor[] propertyEditors;
@@ -100,51 +100,15 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 
 	/**
-	 Creates the accordion with the given specification provider. In this case, <b>all</b> of the control properties are set to a null/empty value.
-
-	 @param specProvider the specification provider
-	 @param controlType control type
-	 */
-	public ControlPropertiesEditorPane(@NotNull ControlClassSpecificationProvider specProvider, @NotNull ControlType controlType) {
-		this();
-		ControlPropertyLookup[] requiredLookup = specProvider.getRequiredProperties();
-		ControlPropertyLookup[] optionalLookup = specProvider.getOptionalProperties();
-		ArrayList<ControlPropertyLookup> eventLookup = new ArrayList<>();
-		for (ControlPropertyLookup lookup : requiredLookup) {
-			if (ControlPropertyEventLookup.getEventProperty(lookup) != null) {
-				eventLookup.add(lookup);
-			}
-		}
-		ControlProperty[] requiredProperties = new ControlProperty[requiredLookup.length];
-		ControlProperty[] optionalProperties = new ControlProperty[optionalLookup.length];
-		ControlProperty[] eventProperties = new ControlProperty[eventLookup.size()];
-		for (int i = 0; i < requiredProperties.length; i++) {
-			if (requiredLookup[i] == ControlPropertyLookup.TYPE) {
-				requiredProperties[i] = requiredLookup[i].getIntProperty(controlType.typeId);
-			} else {
-				requiredProperties[i] = requiredLookup[i].getPropertyWithNoData();
-			}
-		}
-		for (int i = 0; i < optionalProperties.length; i++) {
-			optionalProperties[i] = optionalLookup[i].getPropertyWithNoData();
-		}
-		for (int i = 0; i < eventProperties.length; i++) {
-			eventProperties[i] = eventLookup.get(i).getPropertyWithNoData();
-		}
-
-		setupAccordion(new ReadOnlyList<>(requiredProperties), new ReadOnlyList<>(optionalProperties), new ReadOnlyList<>(eventProperties));
-	}
-
-	/**
 	 Creates the accordion according to the control class's specification. For the inputted values in the accordion, they are fetched from {@link ControlClass#getRequiredProperties()}, {@link ControlClass#getOptionalProperties()}, and {@link ControlClass#getEventProperties()}<br>
 	 It is important to note that when the control properties inside the control are edited, they will be updated in the control class as well. There is no copying of the controlClass's control properties and everything is passed by reference.
 
-	 @param control control class that has the properties to edit
+	 @param controlClass control class that has the properties to edit
 	 */
-	public ControlPropertiesEditorPane(@NotNull ControlClass control) {
+	public ControlPropertiesEditorPane(@NotNull ControlClass controlClass) {
 		this();
-		this.control = control;
-		setupAccordion(control.getRequiredProperties(), control.getOptionalProperties(), control.getEventProperties());
+		this.controlClass = controlClass;
+		setupAccordion(controlClass.getRequiredProperties(), controlClass.getOptionalProperties(), controlClass.getEventProperties());
 	}
 
 	/** Return true if all values entered for all properties are good/valid, false if at least one is bad. */
@@ -164,6 +128,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	public ControlPropertyEditor[] getEditors() {
 		return propertyEditors;
+	}
+
+	/** Get the {@link ControlClass} being edited */
+	@NotNull
+	public ControlClass getControlClass() {
+		return controlClass;
 	}
 
 	/** Get all missing properties (control properties that are required by have no valid data entered). */
@@ -311,40 +281,40 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private ControlPropertyInput getPropertyInputNode(ControlProperty controlProperty) {
 		ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
 		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
-			return new ControlPropertyInputOption(control, controlProperty);
+			return new ControlPropertyInputOption(controlClass, controlProperty);
 		}
 		PropertyType propertyType = lookup.getPropertyType();
 		switch (propertyType) {
 			case INT:
-				return new ControlPropertyInputFieldInteger(control, controlProperty);
+				return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
 			case FLOAT:
-				return new ControlPropertyInputFieldDouble(control, controlProperty);
+				return new ControlPropertyInputFieldDouble(controlClass, controlProperty);
 			case EXP:
-				return new ControlPropertyExprInput(control, controlProperty);
+				return new ControlPropertyExprInput(controlClass, controlProperty);
 			case CONTROL_STYLE:
-				return new ControlStylePropertyInput(control, controlProperty);
+				return new ControlStylePropertyInput(controlClass, controlProperty);
 			case BOOLEAN:
-				return new ControlPropertyBooleanChoiceBox(control, controlProperty);
+				return new ControlPropertyBooleanChoiceBox(controlClass, controlProperty);
 			case STRING:
-				return new ControlPropertyInputFieldString(control, controlProperty);
+				return new ControlPropertyInputFieldString(controlClass, controlProperty);
 			case ARRAY:
-				return new ControlPropertyArrayInput(control, controlProperty, 2);
+				return new ControlPropertyArrayInput(controlClass, controlProperty, 2);
 			case COLOR:
-				return new ControlPropertyColorPicker(control, controlProperty);
+				return new ControlPropertyColorPicker(controlClass, controlProperty);
 			case SOUND:
-				return new ControlPropertySoundInput(control, controlProperty);
+				return new ControlPropertySoundInput(controlClass, controlProperty);
 			case FONT:
-				return new ControlPropertyFontChoiceBox(control, controlProperty);
+				return new ControlPropertyFontChoiceBox(controlClass, controlProperty);
 			case FILE_NAME:
-				return new ControlPropertyInputFieldString(control, controlProperty);
+				return new ControlPropertyInputFieldString(controlClass, controlProperty);
 			case IMAGE:
-				return new ControlPropertyInputFieldString(control, controlProperty); //todo use proper value editor
+				return new ControlPropertyInputFieldString(controlClass, controlProperty); //todo use proper value editor
 			case HEX_COLOR_STRING:
-				return new ControlPropertyColorPicker(control, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
+				return new ControlPropertyColorPicker(controlClass, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
 			case TEXTURE:
-				return new ControlPropertyInputFieldString(control, controlProperty);
+				return new ControlPropertyInputFieldString(controlClass, controlProperty);
 			case SQF:
-				return new ControlPropertyInputFieldString(control, controlProperty);
+				return new ControlPropertyInputFieldString(controlClass, controlProperty);
 		}
 		throw new IllegalStateException("Should have made a match");
 	}

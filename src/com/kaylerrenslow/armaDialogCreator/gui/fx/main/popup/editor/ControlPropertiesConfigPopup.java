@@ -16,7 +16,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
@@ -154,9 +153,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"),
 				new ControlClassMenuButton(
 						Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null,
-						new ComboBoxMenuButton.CBMBMenuItem[]{
+						new ControlClassMenuButton.ControlClassGroupMenu("test group",
 								ControlClassMenuButton.newItem(c, new ImageView(ArmaControlLookup.findByControlType(c.getType()).controlIcon))
-						}
+						)
 				)
 		);
 		lblExtendClass.setContentDisplay(ContentDisplay.RIGHT);

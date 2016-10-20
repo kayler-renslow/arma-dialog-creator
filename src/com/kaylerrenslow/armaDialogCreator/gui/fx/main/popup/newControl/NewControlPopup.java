@@ -11,30 +11,33 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import com.kaylerrenslow.armaDialogCreator.util.*;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -42,10 +45,12 @@ import org.jetbrains.annotations.NotNull;
  Popup window that allows for creating a new control. It has a control properties editor on the left and a preview window on the right to preview the outputted .h file text
  Created on 07/06/2016. */
 public class NewControlPopup extends StagePopup<VBox> {
-	private final StackPane stackPaneProperties;
-	private final TextArea taPreviewSample;
+	private final StackPane stackPaneProperties = new StackPane();
+	private final TextArea taPreviewSample = new TextArea();
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
+
 	private ControlPropertiesEditorPane editorPane;
+
 
 	private final ValueListener<SerializableValue> controlPropertyObserverListener = new ValueListener<SerializableValue>() {
 		@Override
@@ -55,34 +60,17 @@ public class NewControlPopup extends StagePopup<VBox> {
 	};
 
 	public NewControlPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), FXUtil.loadFxml("/com/kaylerrenslow/armaDialogCreator/gui/fx/main/popup/newControl/newControl.fxml"), Lang.ApplicationBundle().getString("Popups" +
-				"Popups.NewControl.popup_title"));
-		if(getMyLoader() == null){
-			throw new IllegalStateException("getMyLoader() should not return null");
-		}
-		NewControlPopupController controller = getMyLoader().getController();
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.NewControl.popup_title"));
+		myRootElement.setPadding(new Insets(10));
 
-		initClassNameInputField(controller);
+		/*HEADER*/
+		final HBox hboxHeader = new HBox(10);
+		hboxHeader.setFillHeight(true);
 
-		taPreviewSample = controller.taPreviewSample;
-		stackPaneProperties = controller.stackPaneProperties;
-		controller.cobBaseControl.getItems().addAll(ControlType.values());
-		controller.cobBaseControl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlType>() {
-			@Override
-			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType selected) {
-				setToControlType(selected);
-			}
-		});
-		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
-		myStage.sizeToScene();
-	}
-
-	private void initClassNameInputField(NewControlPopupController controller) {
-		HBox hbHeader = controller.hbHeader;
-		int indexTf = hbHeader.getChildren().indexOf(controller.tfClassName);
-		hbHeader.getChildren().add(indexTf, inClassName);
-		hbHeader.getChildren().remove(controller.tfClassName);
+		Label lblControlClassName = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.control_class_name"));
+		lblControlClassName.setFont(Font.font(18d));
+		hboxHeader.getChildren().add(lblControlClassName);
+		hboxHeader.getChildren().add(inClassName);
 
 		inClassName.setValue("New_ADC_Control");
 		inClassName.getValueObserver().addValueListener(new ValueListener<String>() {
@@ -91,11 +79,64 @@ public class NewControlPopup extends StagePopup<VBox> {
 				updatePreview();
 			}
 		});
+
+
+		ControlClassMenuButton.ControlClassMenuItem[] contolTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.values().length];
+		ControlClassMenuButton.ControlClassMenuItem toSelect = null;
+		for (int i = 0; i < contolTypeControlClasses.length; i++) {
+			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.values()[i]);
+			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
+			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
+			contolTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass);
+			if (lookup.controlType == ControlType.STATIC) {
+				toSelect = contolTypeControlClasses[i];
+			}
+		}
+		final ControlClassMenuButton controlClassMenuButton = new ControlClassMenuButton(false, "", null, new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString
+				("Popups.NewControl.base_types"), contolTypeControlClasses));
+		controlClassMenuButton.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+				setToControlClass(newValue);
+			}
+		});
+
+		controlClassMenuButton.chooseItem(toSelect);
+
+		Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), controlClassMenuButton);
+		lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
+		hboxHeader.getChildren().add(lblBaseControl);
+
+
+		/*BODY*/
+		final HBox hboxBody = new HBox(10);
+		VBox.setVgrow(hboxBody, Priority.ALWAYS);
+
+		final VBox vboxProperties = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.properties")), stackPaneProperties);
+		VBox.setVgrow(vboxProperties, Priority.ALWAYS);
+		hboxBody.getChildren().add(vboxProperties);
+
+		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.preview_sample")), taPreviewSample);
+		taPreviewSample.setEditable(false);
+		VBox.setVgrow(taPreviewSample, Priority.ALWAYS);
+		VBox.setVgrow(vboxPreview, Priority.ALWAYS);
+		hboxBody.getChildren().add(vboxPreview);
+
+		//todo have control class instances for all control types
+		//		controller.cobBaseControl.getItems().addAll(ControlType.values());
+		//		controller.cobBaseControl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlType>() {
+		//			@Override
+		//			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType selected) {
+		//				setToControlClass(selected);
+		//			}
+		//		});
+		//		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
+		myRootElement.getChildren().addAll(hboxHeader, new Separator(Orientation.HORIZONTAL), hboxBody, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
+		myStage.sizeToScene();
 	}
 
-	private void setToControlType(ControlType type) {
-		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(type);
-		editorPane = new ControlPropertiesEditorPane(lookup.specProvider, type);
+	private void setToControlClass(@NotNull ControlClass controlClass) {
+		editorPane = new ControlPropertiesEditorPane(controlClass);
 		stackPaneProperties.getChildren().clear();
 		stackPaneProperties.getChildren().add(editorPane);
 

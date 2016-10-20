@@ -21,17 +21,29 @@ import org.jetbrains.annotations.Nullable;
  Created by Kayler on 10/19/2016.
  */
 public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClass> {
-	@SafeVarargs
-	public ControlClassMenuButton(String placeholderText, Node placeholderGraphic, CBMBMenuItem<ControlClass>[]... classGroups) {
+
+	public ControlClassMenuButton(String placeholderText, Node placeholderGraphic, ControlClassGroupMenu... classGroups) {
 		super(placeholderText, placeholderGraphic, classGroups);
 	}
 
-	public static CBMBMenuItem<ControlClass> newItem(@NotNull ControlClass value, @Nullable ImageView graphic) {
+	public ControlClassMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic, ControlClassGroupMenu... classGroups) {
+		super(allowClear, placeholderText, placeholderGraphic, classGroups);
+	}
+
+	public static ControlClassMenuItem newItem(@NotNull ControlClass value, @Nullable ImageView graphic) {
 		return new ControlClassMenuItem(value, graphic);
 	}
 
-	public static CBMBMenuItem<ControlClass> newItem(@NotNull ControlClass value) {
+	public static ControlClassMenuItem newItem(@NotNull ControlClass value) {
 		return newItem(value, null);
+	}
+
+	public static class ControlClassGroupMenu extends CBMBGroupMenu<ControlClass> {
+
+		@SafeVarargs
+		public ControlClassGroupMenu(String groupName, CBMBMenuItem<ControlClass>... cbmbMenuItems) {
+			super(groupName, cbmbMenuItems);
+		}
 	}
 
 	public static class ControlClassMenuItem extends CBMBMenuItem<ControlClass> {

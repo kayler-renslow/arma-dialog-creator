@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
@@ -23,6 +24,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 
 /**
  Created by Kayler on 10/19/2016.
@@ -35,17 +38,16 @@ public class ComboBoxMenuButton<V> extends StackPane {
 	private final Node placeholderGraphic;
 
 	@SafeVarargs
-	public ComboBoxMenuButton(String placeholderText, Node placeholderGraphic, CBMBMenuItem<V>[]... classGroups) {
+	public ComboBoxMenuButton(String placeholderText, Node placeholderGraphic, CBMBGroupMenu<V>... classGroups) {
 		this(true, placeholderText, placeholderGraphic, classGroups);
 	}
 
 	@SafeVarargs
-	public ComboBoxMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic, CBMBMenuItem<V>[]... classGroups) {
+	public ComboBoxMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic, CBMBGroupMenu<V>... classGroups) {
 		this.placeholderText = placeholderText;
 		this.placeholderGraphic = placeholderGraphic;
 		getChildren().add(menuButton);
 
-		int groupInd = 0;
 		if (allowClear) {
 			initializeClearMenuItem();
 			if (classGroups.length > 0) {
@@ -53,27 +55,23 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			}
 		}
 		clearSelectedValue();
-		for (CBMBMenuItem<V>[] group : classGroups) {
-			for (CBMBMenuItem<V> item : group) {
-				menuButton.getItems().add(item);
+		for (CBMBGroupMenu<V> group : classGroups) {
+			menuButton.getItems().add(group);
+			for (CBMBMenuItem<V> item : group.getCbmbMenuItems()) {
 				item.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
-						handleMenuItemAction(item);
+						chooseItem(item);
 						item.actionEvent(event);
 					}
 				});
 			}
-			if (classGroups.length > 1 && groupInd < classGroups.length) {
-				menuButton.getItems().add(new SeparatorMenuItem());
-			}
-			groupInd++;
 		}
 
 	}
 
 	private void initializeClearMenuItem() {
-		final MenuItem clearMenuItem = new MenuItem(Lang.ApplicationBundle().getString("ComboBoxMenuButton.select_none"));
+		final MenuItem clearMenuItem = new MenuItem(Lang.FxControlBundle().getString("ComboBoxMenuButton.select_none"));
 		clearMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -89,7 +87,11 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		menuButton.setGraphic(placeholderGraphic);
 	}
 
-	private void handleMenuItemAction(CBMBMenuItem<V> menuItem) {
+	public void chooseItem(@Nullable CBMBMenuItem<V> menuItem) {
+		if (menuItem == null) {
+			clearSelectedValue();
+			return;
+		}
 		ImageView graphic = (ImageView) menuItem.getGraphic();
 		if (graphic != null) {
 			menuButton.setGraphic(new ImageView(graphic.getImage()));
@@ -105,6 +107,22 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		return selectedItemObserver.getReadOnlyValueObserver();
 	}
 
+	public static class CBMBGroupMenu<V> extends Menu {
+
+		protected final CBMBMenuItem<V>[] cbmbMenuItems;
+
+		@SafeVarargs
+		public CBMBGroupMenu(@NotNull String groupName, CBMBMenuItem<V>... cbmbMenuItems) {
+			super(groupName);
+			this.cbmbMenuItems = cbmbMenuItems;
+			Collections.addAll(getItems(), cbmbMenuItems);
+		}
+
+		public CBMBMenuItem<V>[] getCbmbMenuItems() {
+			return cbmbMenuItems;
+		}
+	}
+
 	public static class CBMBMenuItem<V> extends MenuItem {
 		protected final V value;
 
@@ -118,6 +136,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			this(value, null);
 		}
 
+		@NotNull
 		public V getValue() {
 			return value;
 		}
@@ -125,5 +144,6 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		protected void actionEvent(ActionEvent event) {
 
 		}
+
 	}
 }
