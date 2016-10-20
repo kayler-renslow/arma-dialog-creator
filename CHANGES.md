@@ -1,8 +1,8 @@
 **Added:**
-* none
+* extend control class control in control config popup 
 
 **Changed:**
-* removed country flags and using better way to show languages
+* none
 
 **Fixed:**
 * none

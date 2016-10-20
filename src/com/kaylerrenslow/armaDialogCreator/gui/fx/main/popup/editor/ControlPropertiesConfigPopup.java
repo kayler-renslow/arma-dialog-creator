@@ -13,8 +13,11 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -25,14 +28,14 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -49,26 +52,26 @@ import java.util.List;
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
-	
+
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
 		initializePopup();
 		editorPane = new ControlPropertiesEditorPane(control);
 		initializeToControl(control);
 	}
-	
+
 	private void initializePopup() {
 		myRootElement.getStyleClass().add("rounded-node");
 		myStage.initStyle(StageStyle.TRANSPARENT);
-		
+
 		myScene.setFill(Color.TRANSPARENT);
 		final double padding = 20.0;
 		myRootElement.setPadding(new Insets(padding, padding, padding, padding));
 	}
-	
+
 	/**
 	 Configures the popup to edit the given control.
-	 
+
 	 @return true if the initialization was successful, or false if the initialization was canceled
 	 */
 	public boolean initializeToControl(ArmaControl c) {
@@ -89,7 +92,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 		setBorderColor(bg);
 		myRootElement.getChildren().clear();
-		addCloseButton();
+		addCloseButton(c);
 		myRootElement.getChildren().add(editorPane);
 
 		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
@@ -120,14 +123,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				}
 			}
 		});
-		
+
 		myRootElement.getChildren().add(cbIsBackgroundControl);
-		
+
 		return true;
 	}
-	
-	
-	private void addCloseButton() {
+
+
+	private void addCloseButton(ArmaControl c) {
 		Button btnClose = new Button("x");
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -147,31 +150,37 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		});
 		btnClose.getStyleClass().add("close-button");
-		
-		ComboBox<String> cbExtendClass = new ComboBox<>(FXCollections.observableArrayList("-", "RscStatic", "RscPicture"));
-		cbExtendClass.getSelectionModel().select(0);
-		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"), cbExtendClass);
-		
+
+		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"),
+				new ControlClassMenuButton(
+						Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null,
+						new ComboBoxMenuButton.CBMBMenuItem[]{
+								ControlClassMenuButton.newItem(c, new ImageView(ArmaControlLookup.findByControlType(c.getType()).controlIcon))
+						}
+				)
+		);
+		lblExtendClass.setContentDisplay(ContentDisplay.RIGHT);
+
 		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
-	
+
 	private void setBorderColor(Color bg) {
 		myRootElement.setStyle(String.format("-fx-border-color: rgba(%f%%,%f%%,%f%%,%f);", bg.getRed() * 100.0, bg.getGreen() * 100.0, bg.getBlue() * 100.0, bg.getOpacity()));
 	}
-	
+
 	@Override
 	protected void onCloseRequest(WindowEvent event) {
 		super.onCloseRequest(event);
 	}
-	
+
 	public ArmaControl getControl() {
 		return control;
 	}
-	
+
 	private static class MoveOutOfControlGroupDialog extends StageDialog<VBox> {
-		
+
 		private boolean moveOut = false;
-		
+
 		public MoveOutOfControlGroupDialog(ArmaControl c) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
 			myRootElement.getChildren().addAll(
@@ -186,10 +195,10 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			moveOut = true;
 			super.ok();
 		}
-		
+
 		public boolean isMoveOut() {
 			return moveOut;
 		}
 	}
-	
+
 }

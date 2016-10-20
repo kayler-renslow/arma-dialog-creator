@@ -327,4 +327,8 @@ public class ControlClass {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return getClassName();
+	}
 }
