@@ -2,8 +2,7 @@
 * none 
 
 **Changed:**
-* switched New Control popup away from fxml
-
+* none
 
 **Fixed:**
 * none

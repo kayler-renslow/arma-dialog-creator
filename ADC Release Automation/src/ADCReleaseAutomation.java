@@ -18,15 +18,28 @@ import java.nio.file.Files;
  Created by Kayler on 10/10/2016.
  */
 public class ADCReleaseAutomation {
-	private static final String workingDirectoryPath = new File("").getAbsolutePath();
+	private final String workingDirectoryPath = new File("").getAbsolutePath();
 
-	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) {
+		try {
+			new ADCReleaseAutomation().run();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void run() throws Exception {
+		createManifest();
 		createLaunch4jConfig();
 		createBuildInfo();
 		removeOldExe();
 	}
 
-	private static void removeOldExe() {
+	private void createManifest() {
+		exportNew(new File("src/META-INF/MANIFEST.MF.template"), new File("src/META-INF/MANIFEST.MF"));
+	}
+
+	private void removeOldExe() {
 		File oldExe = new File("out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe");
 		if (oldExe.exists()) {
 			try {
@@ -37,7 +50,7 @@ public class ADCReleaseAutomation {
 		}
 	}
 
-	private static void createBuildInfo() throws Exception {
+	private void createBuildInfo() throws Exception {
 		File buildInfoFile = new File("resources/.build");
 		buildInfoFile.createNewFile();
 		PrintWriter pw = new PrintWriter(buildInfoFile);
@@ -48,66 +61,87 @@ public class ADCReleaseAutomation {
 		pw.close();
 	}
 
-	private static String getPropertiesString(BuildProperty key, Object value) {
+	private String getPropertiesString(BuildProperty key, Object value) {
 		return key.getKey() + "=" + (value == null ? "null" : value.toString());
 	}
 
 	/** create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j */
-	private static void createLaunch4jConfig() throws IOException {
-		File templateFile = new File("launch4j/configuration_template.xml");
-		if (!templateFile.exists()) {
-			throw new IllegalStateException("templateFile should exist. Current path:" + templateFile.getPath());
-		}
-		FileInputStream fis = new FileInputStream(templateFile);
-		FileOutputStream fos = new FileOutputStream(new File("launch4j/configuration.xml"));
-		int in;
-		boolean startVariable = false;
-		String variable = "";
-		while ((in = fis.read()) >= 0) {
-			if (startVariable) {
-				if (in == '$') {
-					startVariable = false;
-				} else {
-					variable += (char) in;
-					continue;
-				}
+	private void createLaunch4jConfig() throws IOException {
+		exportNew(new File("launch4j/configuration_template.xml"), new File("launch4j/configuration.xml"));
+	}
 
-				switch (variable) {
-					case "FILE_VERSION": {
-						fos.write(Lang.Application.Executable.FILE_VERSION.getBytes());
-						break;
-					}
-					case "TXT_FILE_VERSION": {
-						fos.write(Lang.Application.Executable.TXT_FILE_VERSION.getBytes());
-						break;
-					}
-					case "PRODUCT_VERSION": {
-						fos.write(Lang.Application.Executable.PRODUCT_VERSION.getBytes());
-						break;
-					}
-					case "TXT_PRODUCT_VERSION": {
-						fos.write(Lang.Application.Executable.TXT_PRODUCT_VERSION.getBytes());
-						break;
-					}
-					case "PROJECT_OUT_PATH": {
-						fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
-						break;
-					}
-					default: {
-						throw new IllegalStateException("unknown variable:" + variable);
-					}
-				}
-			} else {
-				if (in == '$') {
-					startVariable = true;
-					variable = "";
-					continue;
-				}
-				fos.write(in);
-			}
+	private void exportNew(File template, File out) {
+		if (!template.exists()) {
+			throw new IllegalStateException("template should exist. Current path:" + template.getPath());
 		}
-		fos.flush();
-		fos.close();
-		fis.close();
+		try {
+			FileInputStream fis = new FileInputStream(template);
+			FileOutputStream fos = new FileOutputStream(out);
+			int in;
+			boolean startVariable = false;
+			String variable = "";
+			while ((in = fis.read()) >= 0) {
+				if (startVariable) {
+					if (in == '$') {
+						startVariable = false;
+					} else {
+						variable += (char) in;
+						continue;
+					}
+
+					switch (variable) {
+						case "FILE_VERSION": {
+							fos.write(Lang.Application.Executable.FILE_VERSION.getBytes());
+							break;
+						}
+						case "TXT_FILE_VERSION": {
+							fos.write(Lang.Application.Executable.TXT_FILE_VERSION.getBytes());
+							break;
+						}
+						case "PRODUCT_VERSION": {
+							fos.write(Lang.Application.Executable.PRODUCT_VERSION.getBytes());
+							break;
+						}
+						case "TXT_PRODUCT_VERSION": {
+							fos.write(Lang.Application.Executable.TXT_PRODUCT_VERSION.getBytes());
+							break;
+						}
+						case "PROJECT_OUT_PATH": {
+							fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
+							break;
+						}
+						case "VERSION": {
+							fos.write(Lang.Application.VERSION.getBytes());
+							break;
+						}
+						case "BUILD_NUMBER": {
+							String buildNumber = System.getenv("BUILD_NUMBER");
+							if (buildNumber == null) {
+								fos.write("unversioned".getBytes());
+							} else {
+								fos.write(buildNumber.getBytes());
+							}
+							break;
+						}
+						default: {
+							throw new IllegalStateException("unknown variable:" + variable);
+						}
+					}
+				} else {
+					if (in == '$') {
+						startVariable = true;
+						variable = "";
+						continue;
+					}
+					fos.write(in);
+				}
+			}
+			fos.flush();
+			fos.close();
+			fis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 	}
 }

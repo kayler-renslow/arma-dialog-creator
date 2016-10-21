@@ -28,7 +28,9 @@ import java.util.Locale;
  Created on 07/12/2016. */
 public class ApplicationProperty<T> extends Key<T> {
 	/** Location path to folder where application save data should be stored. */
-	public static final ApplicationProperty<File> APP_SAVE_DATA_DIR = new ApplicationProperty<>("app_save_data_dir", new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/" + ApplicationPropertyManager.SAVE_LOCATION_FILE_NAME), FileConverter.INSTANCE);
+	public static final ApplicationProperty<File> APP_SAVE_DATA_DIR = new ApplicationProperty<>(
+			"app_save_data_dir", new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/Arma Dialog Creator"), FileConverter.INSTANCE
+	);
 	/** Directory for where Arma 3 tools is. Can be empty (not set) */
 	public static final ApplicationProperty<File> A3_TOOLS_DIR = new ApplicationProperty<>("a3_tools_dir", (File) null, FileConverter.INSTANCE);
 	public static final ApplicationProperty<Boolean> DARK_THEME = new ApplicationProperty<>("dark_theme", false, BooleanConverter.INSTANCE);

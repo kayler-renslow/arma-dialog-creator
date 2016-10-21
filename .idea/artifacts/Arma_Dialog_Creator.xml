@@ -4,6 +4,18 @@
     <properties id="javafx-properties">
       <options>
         <option name="appClass" value="com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator" />
+        <option name="customManifestAttributes">
+          <list>
+            <JavaFxManifestAttribute>
+              <option name="name" value="Specification-Version" />
+              <option name="value" value="$VERSION$" />
+            </JavaFxManifestAttribute>
+            <JavaFxManifestAttribute>
+              <option name="name" value="Implementation-Version" />
+              <option name="value" value="$BUILD_NUMBER$" />
+            </JavaFxManifestAttribute>
+          </list>
+        </option>
         <option name="description" value="" />
         <option name="htmlPlaceholderId" value="" />
         <option name="icons">

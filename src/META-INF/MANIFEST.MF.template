@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Main-Class: com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator
 
-Implementation-Version: "$BUILD_NUMBER$"
+Implementation-Version: "build$BUILD_NUMBER$"
 Implementation-URL: "https://github.com/kayler-renslow/arma-dialog-creator/releases"
 Specification-Title: "Arma Dialog Creator"
 Specification-Version: "$VERSION$"

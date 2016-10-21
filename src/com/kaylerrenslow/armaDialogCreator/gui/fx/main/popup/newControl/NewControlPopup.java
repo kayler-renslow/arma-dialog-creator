@@ -118,19 +118,11 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.preview_sample")), taPreviewSample);
 		taPreviewSample.setEditable(false);
+		taPreviewSample.setPrefWidth(300d);
 		VBox.setVgrow(taPreviewSample, Priority.ALWAYS);
 		VBox.setVgrow(vboxPreview, Priority.ALWAYS);
 		hboxBody.getChildren().add(vboxPreview);
 
-		//todo have control class instances for all control types
-		//		controller.cobBaseControl.getItems().addAll(ControlType.values());
-		//		controller.cobBaseControl.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ControlType>() {
-		//			@Override
-		//			public void changed(ObservableValue<? extends ControlType> observable, ControlType oldValue, ControlType selected) {
-		//				setToControlClass(selected);
-		//			}
-		//		});
-		//		controller.cobBaseControl.getSelectionModel().select(ControlType.STATIC);
 		myRootElement.getChildren().addAll(hboxHeader, new Separator(Orientation.HORIZONTAL), hboxBody, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 		myStage.sizeToScene();
 	}

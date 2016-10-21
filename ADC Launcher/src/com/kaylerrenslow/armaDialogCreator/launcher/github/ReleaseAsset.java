@@ -8,24 +8,26 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.img;
+package com.kaylerrenslow.armaDialogCreator.launcher.github;
+
+import org.json.simple.JSONObject;
 
 /**
- Created by Kayler on 05/17/2016.
+ Created by Kayler on 10/20/2016.
  */
-public abstract class ImagePaths {
-	private static final String pathPrefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
+public class ReleaseAsset {
+	private String name, downloadUrl;
 
-	public static final String BG_1 = pathPrefix + "backgroundImages/image1.jpg";
-	public static final String BG_2 = pathPrefix + "backgroundImages/image2.jpg";
-	public static final String BG_3 = pathPrefix + "backgroundImages/image3.jpg";
+	ReleaseAsset(JSONObject object) {
+		name = object.get("name").toString();
+		downloadUrl = object.get("browser_download_url").toString();
+	}
 
-	public static final String ICON_FOLDER = pathPrefix + "icons/folder.png";
-	public static final String ICON_APP = pathPrefix + "icons/app.png";
-	public static final String ICON_UNDO = pathPrefix + "icons/undo.png";
-	public static final String ICON_REDO = pathPrefix + "icons/redo.png";
-	public static final String ICON_HEART = pathPrefix + "icons/heart.png";
+	public String getName() {
+		return name;
+	}
 
-	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
-	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
 }

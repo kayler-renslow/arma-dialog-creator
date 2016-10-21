@@ -29,9 +29,8 @@ import java.io.IOException;
  The only instance is inside {@link ApplicationPropertyManager}
  Created on 07/12/2016. */
 class ApplicationPropertyManager {
-	static final String SAVE_LOCATION_FILE_NAME = "Arma Dialog Creator";
 	/** Appdata folder */
-	private final File appdataFolder = new File(System.getenv("APPDATA") + "/" + SAVE_LOCATION_FILE_NAME);
+	private final File appdataFolder = new File(System.getenv("APPDATA") + "/Arma Dialog Creator");
 	/** DataContext holds all application properties */
 	private DataContext applicationProperties = new DataContext();
 
