@@ -2,8 +2,11 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>$PROJECT_OUT_PATH$\Arma Dialog Creator.jar</jar>
-  <outfile>$PROJECT_OUT_PATH$\Arma Dialog Creator.exe</outfile>
+	<jar>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator\adc_launcher.jar
+	</jar>
+	<outfile>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator\Arma Dialog
+		Creator.exe
+	</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -24,12 +27,12 @@
     <runtimeBits>64/32</runtimeBits>
   </jre>
   <versionInfo>
-    <fileVersion>$FILE_VERSION$</fileVersion>
-    <txtFileVersion>$TXT_FILE_VERSION$</txtFileVersion>
+    <fileVersion>1.0.0.0</fileVersion>
+    <txtFileVersion>1.0</txtFileVersion>
     <fileDescription>Arma Dialog Creator</fileDescription>
     <copyright>Arma Dialog Creator is by Kayler Renslow. Arma is a registered trademark of Bohemia Interactive. All rights reserved.</copyright>
-    <productVersion>$PRODUCT_VERSION$</productVersion>
-    <txtProductVersion>$TXT_PRODUCT_VERSION$</txtProductVersion>
+    <productVersion>1.0.0.0</productVersion>
+    <txtProductVersion>1.0.0</txtProductVersion>
     <productName>Arma Dialog Creator</productName>
     <companyName></companyName>
     <internalName>ArmaDialogCreator</internalName>

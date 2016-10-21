@@ -27,15 +27,15 @@ import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.Locale;
-import java.util.Properties;
+import java.util.jar.Manifest;
 
 /**
  @author Kayler
@@ -44,8 +44,8 @@ import java.util.Properties;
 public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
-	private static Properties versionInfoProperties;
 	private static Locale locale = ApplicationProperty.LOCALE.getDefaultValue();
+	private static Manifest adcManifest;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -55,16 +55,9 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
-		loadBuildInfo();
 		ExceptionHandler.init();
+		loadManifest();
 		launch(args);
-	}
-
-	public ArmaDialogCreator() {
-		if (INSTANCE != null) {
-			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
-		}
-		INSTANCE = this;
 	}
 
 	private Stage primaryStage;
@@ -72,6 +65,13 @@ public final class ArmaDialogCreator extends Application {
 	private ApplicationDataManager applicationDataManager;
 
 	private final LinkedList<StagePopup> showLater = new LinkedList<>();
+
+	public ArmaDialogCreator() {
+		if (INSTANCE != null) {
+			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
+		}
+		INSTANCE = this;
+	}
 
 	@Override
 	public void init() throws Exception {
@@ -124,6 +124,12 @@ public final class ArmaDialogCreator extends Application {
 		loadNewProject(false);
 	}
 
+	@NotNull
+	public static Manifest getManifest() {
+		return adcManifest;
+	}
+
+	@NotNull
 	public static Locale getCurrentLocale() {
 		return locale;
 	}
@@ -236,20 +242,20 @@ public final class ArmaDialogCreator extends Application {
 		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
 	}
 
-	private static void loadBuildInfo() {
-		Properties versionInfo = new Properties();
-		InputStream is = ArmaDialogCreator.class.getResourceAsStream("/com/kaylerrenslow/armaDialogCreator/.build");
+	private static void loadManifest() {
 		try {
-			versionInfo.load(is);
+			Enumeration<URL> resources = ArmaDialogCreator.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				Manifest manifest = new Manifest(resources.nextElement().openStream());
+				String specTitle = manifest.getMainAttributes().getValue("Specification-Title");
+				if (specTitle != null && specTitle.equals("Arma Dialog Creator")) {
+					adcManifest = manifest;
+					break;
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		versionInfoProperties = versionInfo;
-	}
-
-	@NotNull
-	public static String getBuildProperty(@NotNull BuildProperty property, @Nullable String defaultVal) {
-		return versionInfoProperties.getProperty(property.getKey(), defaultVal);
 	}
 
 	private static void initializeCurrentLocale() {

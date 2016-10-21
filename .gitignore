@@ -1,6 +1,6 @@
 /.idea/dictionaries/
 .idea/codeStyleSettings.xml
-launch4j/launch4j.log
+release_automation/launch4j.log
 .idea/workspace.xml
-/launch4j/configuration.xml
+/release_automation/configuration.xml
 /resources/.build

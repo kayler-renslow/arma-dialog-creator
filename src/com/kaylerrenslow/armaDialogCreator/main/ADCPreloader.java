@@ -28,6 +28,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
+import java.util.Map;
+import java.util.jar.Attributes;
+
 /**
  Created by Kayler on 10/07/2016.
  */
@@ -83,13 +86,12 @@ public class ADCPreloader extends Preloader {
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
-		final String build = ArmaDialogCreator.getBuildProperty(BuildProperty.BUILD_NUMBER, "unknown");
-
 		VBox vBox = new VBox(5, progressIndicator, lblProgressText);
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
-		final Label lblBuild = new Label("Build: " + build);
+		Map<String, Attributes> entries = ArmaDialogCreator.getManifest().getEntries();
+		final Label lblBuild = new Label("Build: " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number"));
 		final BorderPane borderPane = new BorderPane(vBox, null, null, lblBuild, null);
 		borderPane.setPadding(new Insets(5));
 

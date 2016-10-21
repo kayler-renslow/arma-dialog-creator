@@ -1,0 +1,1 @@
+Main-Class: com.kaylerrenslow.armaDialogCreator.launcher.ADCLauncher

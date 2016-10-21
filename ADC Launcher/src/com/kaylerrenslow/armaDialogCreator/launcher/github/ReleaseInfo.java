@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.launcher.github;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -50,6 +52,16 @@ public class ReleaseInfo {
 		for (Object assetObj : assets) {
 			this.assets[i++] = new ReleaseAsset((JSONObject) assetObj);
 		}
+	}
+
+	@Nullable
+	public ReleaseAsset getAssestByName(@NotNull String name) {
+		for (ReleaseAsset asset : assets) {
+			if (asset.getName().equals(name)) {
+				return asset;
+			}
+		}
+		return null;
 	}
 
 	public String getTagName() {

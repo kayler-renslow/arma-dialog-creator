@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.launcher;
 
+import com.kaylerrenslow.armaDialogCreator.launcher.github.ReleaseAsset;
 import com.kaylerrenslow.armaDialogCreator.launcher.github.ReleaseInfo;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -23,6 +24,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -47,7 +49,12 @@ public class ADCLauncher extends Application {
 	//	private final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-dialog-creator/releases/latest";
 	private final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-intellij-plugin/releases/latest";
 
+	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.launcher.LauncherBundle");
+
+
 	private Stage primaryStage;
+
+	private ReleaseInfo latestRelease;
 
 	public static void main(String[] args) {
 		launch(args);
@@ -56,6 +63,8 @@ public class ADCLauncher extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
+		primaryStage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/launcher/app.png"));
+		primaryStage.setTitle(bundle.getString("Launcher.title"));
 		if (!adcUpToDate()) {
 			downloadAndRunAdc();
 		} else {
@@ -66,10 +75,9 @@ public class ADCLauncher extends Application {
 	private void downloadAndRunAdc() {
 		final VBox root = new VBox(5);
 		primaryStage.setScene(new Scene(new StackPane(root)));
+		primaryStage.setResizable(false);
 
 		//todo check if disk can fit ADC
-
-		final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.launcher.LauncherBundle");
 
 		root.setPrefSize(720, 360);
 		root.setAlignment(Pos.CENTER);
@@ -82,10 +90,15 @@ public class ADCLauncher extends Application {
 
 		root.getChildren().add(progressBar);
 
-		final Label lblDownloading = new Label(bundle.getString("Launcher.downloading_ADC"));
+		final Label lblDownloading = new Label(String.format(bundle.getString("Launcher.downloading_ADC"), latestRelease.getTagName()));
 		root.getChildren().add(lblDownloading);
 
-		final Task<Boolean> taskDownload = new DownloadADCTask(adcJarSaveLocation);
+		ReleaseAsset adcJarAsset = latestRelease.getAssestByName("adc.jar");
+		if (adcJarAsset == null) {
+			//todo
+			throw new RuntimeException("");
+		}
+		final Task<Boolean> taskDownload = new DownloadADCTask(adcJarSaveLocation, adcJarAsset.getDownloadUrl());
 		taskDownload.exceptionProperty().addListener(new ChangeListener<Throwable>() {
 			@Override
 			public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
@@ -96,11 +109,28 @@ public class ADCLauncher extends Application {
 			@Override
 			public void handle(WorkerStateEvent event) {
 				lblDownloading.setText(bundle.getString("Launcher.download_complete"));
-				try {
-					Thread.sleep(500);
-				} catch (InterruptedException e) {
-				}
-				launchADC();
+
+				Task<Object> launchingTask = new Task<Object>() {
+
+					@Override
+					protected Object call() throws Exception {
+						try {
+							Thread.sleep(1000);
+							updateMessage(bundle.getString("Launcher.launching"));
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+						}
+						launchADC();
+						return new Object();
+					}
+				};
+				launchingTask.messageProperty().addListener(new ChangeListener<String>() {
+					@Override
+					public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+						lblDownloading.setText(newValue);
+					}
+				});
+				new Thread(launchingTask).start();
 			}
 		});
 		progressBar.progressProperty().bind(taskDownload.progressProperty());
@@ -110,21 +140,23 @@ public class ADCLauncher extends Application {
 	}
 
 	private boolean adcUpToDate() {
-
+		boolean forceUpdate = false;
+		String specVersion = null;
 		if (!adcJarSaveLocation.exists()) {
-			return false;
-		}
-		Manifest m;
-		try {
-			m = new JarFile(adcJarSaveLocation).getManifest();
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-		Attributes manifestAttributes = m.getMainAttributes();
-		String specVersion = manifestAttributes.getValue("Specification-Version");
-		if (specVersion == null) {
-			return false;
+			forceUpdate = true;
+		} else {
+			Manifest m;
+			try {
+				m = new JarFile(adcJarSaveLocation).getManifest();
+				Attributes manifestAttributes = m.getMainAttributes();
+				specVersion = manifestAttributes.getValue("Specification-Version");
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			if (specVersion == null) {
+				forceUpdate = true;
+
+			}
 		}
 
 		ReleaseInfo info;
@@ -132,24 +164,31 @@ public class ADCLauncher extends Application {
 			info = new ReleaseInfo(JSON_RELEASE_INFO);
 		} catch (Exception e) {
 			e.printStackTrace();
+			//todo can't get update
 			return false;
 		}
-		
-		return info.getTagName().equals(specVersion);
+
+		latestRelease = info;
+
+		//todo ask user if wants update
+		return !forceUpdate && info.getTagName().equals(specVersion);
 	}
 
 	private void launchADC() {
 		if (!adcJarSaveLocation.exists()) {
-
+			//todo
 		}
+
 		Platform.exit();
 	}
 
 	private static class DownloadADCTask extends Task<Boolean> {
 		private File jarSaveLocation;
+		private String downloadUrl;
 
-		public DownloadADCTask(File jarSaveLocation) {
+		public DownloadADCTask(File jarSaveLocation, String downloadUrl) {
 			this.jarSaveLocation = jarSaveLocation;
+			this.downloadUrl = downloadUrl;
 		}
 
 		@Override
@@ -161,7 +200,7 @@ public class ADCLauncher extends Application {
 				}
 				return true;
 			}
-			URL url = new URL("https://github.com/kayler-renslow/arma-intellij-plugin/releases/download/1.0.5_2/Arma.Intellij.Plugin_v1.0.5_2.jar");
+			URL url = new URL(downloadUrl);
 
 			BufferedInputStream in = null;
 			FileOutputStream fout = null;

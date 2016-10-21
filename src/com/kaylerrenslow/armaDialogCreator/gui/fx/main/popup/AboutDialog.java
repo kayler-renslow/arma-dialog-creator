@@ -13,7 +13,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.BuildProperty;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.event.ActionEvent;
@@ -44,7 +43,7 @@ public class AboutDialog extends StageDialog<VBox> {
 				new ImageView(ImagePaths.ABOUT_HEADER),
 				new Label(Lang.ApplicationBundle().getString("Popups.About.author") + ": " + "Kayler \"K-Town\" Renslow"),
 				new Label(Lang.ApplicationBundle().getString("Popups.About.version") + ": " + Lang.Application.VERSION),
-				new Label(Lang.ApplicationBundle().getString("Popups.About.build") + ": " + ArmaDialogCreator.getBuildProperty(BuildProperty.BUILD_NUMBER, "unknown")),
+				new Label(Lang.ApplicationBundle().getString("Popups.About.build") + ": " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number")),
 				lblRepoUrl
 		);
 		btnOk.requestFocus();

@@ -8,10 +8,12 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-import com.kaylerrenslow.armaDialogCreator.main.BuildProperty;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 
 /**
@@ -31,12 +33,11 @@ public class ADCReleaseAutomation {
 	private void run() throws Exception {
 		createManifest();
 		createLaunch4jConfig();
-		createBuildInfo();
 		removeOldExe();
 	}
 
 	private void createManifest() {
-		exportNew(new File("src/META-INF/MANIFEST.MF.template"), new File("src/META-INF/MANIFEST.MF"));
+		exportNew(new File("release_automation/MANIFEST_template.mf"), new File("src/META-INF/MANIFEST.MF"));
 	}
 
 	private void removeOldExe() {
@@ -50,24 +51,9 @@ public class ADCReleaseAutomation {
 		}
 	}
 
-	private void createBuildInfo() throws Exception {
-		File buildInfoFile = new File("resources/.build");
-		buildInfoFile.createNewFile();
-		PrintWriter pw = new PrintWriter(buildInfoFile);
-		pw.println(getPropertiesString(BuildProperty.BUILD_NUMBER, System.getenv("BUILD_NUMBER")));
-		pw.println(getPropertiesString(BuildProperty.BUILD_VCS_NUMBER, System.getenv("BUILD_VCS_NUMBER_ADC_KAYLER_RENSLOW_GITHUB")));
-
-		pw.flush();
-		pw.close();
-	}
-
-	private String getPropertiesString(BuildProperty key, Object value) {
-		return key.getKey() + "=" + (value == null ? "null" : value.toString());
-	}
-
 	/** create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j */
 	private void createLaunch4jConfig() throws IOException {
-		exportNew(new File("launch4j/configuration_template.xml"), new File("launch4j/configuration.xml"));
+		exportNew(new File("release_automation/configuration_template.xml"), new File("release_automation/configuration.xml"));
 	}
 
 	private void exportNew(File template, File out) {
