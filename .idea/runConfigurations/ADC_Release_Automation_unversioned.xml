@@ -13,7 +13,6 @@
     <module name="ADC Release Automation" />
     <envs>
       <env name="BUILD_NUMBER" value="unversioned" />
-      <env name="BUILD_VCS_NUMBER_ADC_KAYLER_RENSLOW_GITHUB" value="0" />
     </envs>
     <method />
   </configuration>

@@ -1,9 +1,8 @@
 **Added:**
-* none 
+* none
 
 **Changed:**
-* moved some release automation things around
-* removed .build file and instead storing it in jar manifest
+* made the launcher code more sensible
 
 **Fixed:**
 * none

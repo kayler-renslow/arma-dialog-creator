@@ -14,13 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
 
 /**
  Created by Kayler on 10/20/2016.
@@ -29,20 +25,7 @@ public class ReleaseInfo {
 	private String tagName, releaseName;
 	private ReleaseAsset[] assets;
 
-	public ReleaseInfo(String url) throws IOException, ParseException {
-		JSONParser parser = new JSONParser();
-		URLConnection connection = new URL(url).openConnection();
-		InputStreamReader reader = new InputStreamReader(connection.getInputStream());
-
-		JSONObject object = (JSONObject) parser.parse(reader);
-
-		reader.close();
-		connection.getInputStream().close();
-
-		dissect(object);
-	}
-
-	private void dissect(JSONObject object) {
+	public ReleaseInfo(JSONObject object) throws IOException, ParseException {
 		tagName = object.get("tag_name").toString();
 		releaseName = object.get("name").toString();
 
@@ -72,6 +55,7 @@ public class ReleaseInfo {
 		return releaseName;
 	}
 
+	@NotNull
 	public ReleaseAsset[] getAssets() {
 		return assets;
 	}
