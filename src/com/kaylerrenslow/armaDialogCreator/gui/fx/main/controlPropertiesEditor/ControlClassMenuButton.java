@@ -12,8 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ImageContainer;
 import javafx.scene.Node;
-import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +30,7 @@ public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClass> {
 		super(allowClear, placeholderText, placeholderGraphic, classGroups);
 	}
 
-	public static ControlClassMenuItem newItem(@NotNull ControlClass value, @Nullable ImageView graphic) {
+	public static ControlClassMenuItem newItem(@NotNull ControlClass value, @Nullable ImageContainer graphic) {
 		return new ControlClassMenuItem(value, graphic);
 	}
 
@@ -48,7 +48,7 @@ public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClass> {
 
 	public static class ControlClassMenuItem extends CBMBMenuItem<ControlClass> {
 
-		public ControlClassMenuItem(ControlClass value, @Nullable ImageView graphic) {
+		public ControlClassMenuItem(ControlClass value, @Nullable ImageContainer graphic) {
 			super(value, graphic);
 		}
 

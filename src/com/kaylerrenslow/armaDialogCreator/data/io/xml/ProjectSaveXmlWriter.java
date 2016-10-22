@@ -150,13 +150,13 @@ public class ProjectSaveXmlWriter {
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
 
-		fos.write(String.format("<%s idc='%d' renderer-id='%d' control-type-id='%d' class-name='%s' extend-class='%s'>",
+		fos.write(String.format("<%s idc='%d' renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getIdc(),
 				control.getRendererLookup().id,
-				control.getType().typeId,
+				control.getControlType().typeId,
 				control.getClassName(),
-				control.getExtendClass() != null ? control.getExtendClass().getClassName() : ""
+				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass().getClassName()) : ""
 				).getBytes()
 		);
 
@@ -165,9 +165,9 @@ public class ProjectSaveXmlWriter {
 			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getAllDefinedProperties()) {
-			fos.write(String.format("<control-property lookup-id='%d' macro-key='%s'>",
+			fos.write(String.format("<control-property lookup-id='%d'%s>",
 					cprop.getPropertyLookup().getPropertyId(),
-					cprop.getMacro() == null ? "" : cprop.getMacro().getKey()
+					cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
 					).getBytes()
 			);
 			if (cprop.getValue() == null) {

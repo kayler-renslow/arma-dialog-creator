@@ -34,12 +34,10 @@ import java.util.jar.Manifest;
  */
 public class AdcVersionCheckTask extends Task<Boolean> {
 	private final File adcJarSave;
-	private final String adcJarName;
 	private final String versionCheckUrl;
 
-	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull String adcJarName, @NotNull String versionCheckUrl) {
+	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull String versionCheckUrl) {
 		this.adcJarSave = adcJarSave;
-		this.adcJarName = adcJarName;
 		this.versionCheckUrl = versionCheckUrl;
 	}
 
@@ -50,7 +48,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 		String currentJarVersion = getCurrentJarVersion();
 
 		ReleaseInfo latestRelease = getLatestRelease();
-		ReleaseAsset adcJarAsset = latestRelease.getAssestByName(adcJarName);
+		ReleaseAsset adcJarAsset = latestRelease.getAssestByName(adcJarSave.getName());
 		if (adcJarAsset == null) {
 			throw new Exception(ADCLauncher.bundle.getString("Launcher.Fail.asset_name_not_matched"));
 		}

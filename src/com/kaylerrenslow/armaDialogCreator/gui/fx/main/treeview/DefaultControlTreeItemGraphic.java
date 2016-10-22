@@ -10,8 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -21,7 +21,6 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
@@ -62,16 +61,14 @@ public class DefaultControlTreeItemGraphic extends HBox{
 			}
 		});
 
-		final ImageView imageViewTypeImage = new ImageView(ArmaControlLookup.findByControlType(entry.getMyArmaControl().getType()).controlIcon);
-		final StackPane stackPaneImageView = new StackPane(imageViewTypeImage);
-		Tooltip.install(imageViewTypeImage, new Tooltip(entry.getMyArmaControl().getType().displayName));
-		stackPaneImageView.setStyle("-fx-border-color:#b3b3b3;-fx-border-width:1px");
+		final BorderedImageView imageView = new BorderedImageView(entry.getMyArmaControl().getControlType().icon);
+		Tooltip.install(imageView, new Tooltip(entry.getMyArmaControl().getControlType().displayName));
 
 		fillBox(entry.getPrimaryColor());
 		StackPane boxBorder = new StackPane(box);
 		boxBorder.setStyle(BORDER_STYLE);
 		HBox.setMargin(boxBorder, margin);
-		getChildren().addAll(stackPaneImageView, boxBorder, rbSelected);
+		getChildren().addAll(imageView, boxBorder, rbSelected);
 	}
 
 	private void fillBox(Color color) {

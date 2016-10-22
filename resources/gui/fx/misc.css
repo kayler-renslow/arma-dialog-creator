@@ -31,3 +31,8 @@
 .hover-tree-cell{
     -fx-border-color:red;
 }
+
+.bordered-image{
+    -fx-border-color:#b3b3b3;
+    -fx-border-width:1px
+}

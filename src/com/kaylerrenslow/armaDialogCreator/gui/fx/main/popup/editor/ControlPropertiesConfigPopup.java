@@ -13,9 +13,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
@@ -34,7 +34,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -154,7 +153,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				new ControlClassMenuButton(
 						Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null,
 						new ControlClassMenuButton.ControlClassGroupMenu("test group",
-								ControlClassMenuButton.newItem(c, new ImageView(ArmaControlLookup.findByControlType(c.getType()).controlIcon))
+								ControlClassMenuButton.newItem(c, new BorderedImageView(c.getControlType().icon))
 						)
 				)
 		);

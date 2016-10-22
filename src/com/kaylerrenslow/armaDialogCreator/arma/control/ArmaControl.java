@@ -196,7 +196,7 @@ public class ArmaControl extends ControlClass implements Control {
 		return idc;
 	}
 
-	public final ControlType getType() {
+	public final ControlType getControlType() {
 		return type;
 	}
 

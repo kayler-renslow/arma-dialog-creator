@@ -28,18 +28,15 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 
-import java.util.Map;
-import java.util.jar.Attributes;
-
 /**
  Created by Kayler on 10/07/2016.
  */
 public class ADCPreloader extends Preloader {
 
 	private Stage preloaderStage;
-	private ProgressIndicator progressIndicator;
+	private ProgressIndicator progressIndicator = new ProgressIndicator(-1);
 	private final String[] progressText = {"Bamboozling", "Loading the Dinghy", "Doodling", "Counting to Infinity", "Finished Counting to Infinity", "Boondoggling"};
-	private Label lblProgressText = new Label(progressText[0]);
+	private final Label lblProgressText = new Label(progressText[0]);
 
 	public ADCPreloader() {
 	}
@@ -82,7 +79,6 @@ public class ADCPreloader extends Preloader {
 
 		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
 		preloaderStage.getIcons().add(Images.IMAGE_ADC_ICON);
-		progressIndicator = new ProgressIndicator(-1);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
@@ -90,7 +86,6 @@ public class ADCPreloader extends Preloader {
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
-		Map<String, Attributes> entries = ArmaDialogCreator.getManifest().getEntries();
 		final Label lblBuild = new Label("Build: " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number"));
 		final BorderPane borderPane = new BorderPane(vBox, null, null, lblBuild, null);
 		borderPane.setPadding(new Insets(5));

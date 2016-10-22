@@ -10,8 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeViewMenuItemBuilder;
@@ -19,8 +19,6 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
@@ -54,9 +52,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				if (!controlType.betaSupported()) {
 					continue;
 				}
-				final StackPane stackPaneControlIcon = new StackPane(new ImageView(ArmaControlLookup.findByControlType(controlType).controlIcon));
-				stackPaneControlIcon.setStyle("-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:3px;");
-				menuItemType = new MenuItem(controlType.fullDisplayText(), stackPaneControlIcon);
+				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.icon));
 				if (controlType.deprecated) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}

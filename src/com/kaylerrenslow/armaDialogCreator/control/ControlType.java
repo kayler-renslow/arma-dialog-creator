@@ -11,41 +11,42 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.scene.image.Image;
 
 /**
  Created by Kayler on 05/20/2016.
  */
 public enum ControlType {
 	//@formatter:off
-	STATIC(0, getString("ControlType.static"), TypeGroup.TEXT),
-	HTML(9, getString("ControlType.html"), TypeGroup.TEXT),
-	EDIT(2, getString("ControlType.edit"), TypeGroup.TEXT),
-	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), TypeGroup.TEXT),
-	ACTIVETEXT(11, getString("ControlType.activetext"), TypeGroup.TEXT),
+	STATIC(0, getString("ControlType.static"), TypeGroup.TEXT, getImage("control_static.png")),
+	HTML(9, getString("ControlType.html"), TypeGroup.TEXT, getImage("control_html.png")),
+	EDIT(2, getString("ControlType.edit"), TypeGroup.TEXT, getImage("control_edit.png")),
+	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), TypeGroup.TEXT, getImage("control_structuredtext.png")),
+	ACTIVETEXT(11, getString("ControlType.activetext"), TypeGroup.TEXT, getImage("control_activetext.png")),
 	
-	BUTTON(1, getString("ControlType.button"), TypeGroup.BUTTON),
-	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), TypeGroup.BUTTON),
+	BUTTON(1, getString("ControlType.button"), TypeGroup.BUTTON, getImage("control_button.png")),
+	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), TypeGroup.BUTTON, getImage("control_shortcutbutton.png")),
 	XBUTTON(41, getString("ControlType.xbutton"), TypeGroup.BUTTON),
 	
-	PROGRESS(8, getString("ControlType.progress"), TypeGroup.MISC),
+	PROGRESS(8, getString("ControlType.progress"), TypeGroup.MISC, getImage("control_progress.png")),
 	STATIC_SKEW(10, getString("ControlType.static_skew"), TypeGroup.MISC),
 	LINEBREAK(98, getString("ControlType.linebreak"), TypeGroup.MISC),
-	TREE(12, getString("ControlType.tree"), TypeGroup.MISC),
-	CONTROLS_GROUP(15, getString("ControlType.controls_group"), TypeGroup.MISC),
+	TREE(12, getString("ControlType.tree"), TypeGroup.MISC, getImage("control_tree.png")),
+	CONTROLS_GROUP(15, getString("ControlType.controls_group"), TypeGroup.MISC, getImage("control_group.png")),
 	XKEYDESC(40, getString("ControlType.xkeydesc"), TypeGroup.MISC),
 	ANIMATED_TEXTURE(45, getString("ControlType.animated_texture"), TypeGroup.MISC),
 	ANIMATED_USER(99, getString("ControlType.animated_user"), TypeGroup.MISC),
 	ITEMSLOT(103, getString("ControlType.itemslot"), TypeGroup.MISC),
 	
-	SLIDER(3, getString("ControlType.slider"), TypeGroup.SLIDER, true),
+	SLIDER(3, getString("ControlType.slider"), TypeGroup.SLIDER, getImage("control_slider.png"), true),
 	XSLIDER(43, getString("ControlType.xslider"), TypeGroup.SLIDER),
 	
-	COMBO(4, getString("ControlType.combo"), TypeGroup.COMBO),
+	COMBO(4, getString("ControlType.combo"), TypeGroup.COMBO, getImage("control_combobox.png")),
 	XCOMBO(44, getString("ControlType.xcombo"), TypeGroup.COMBO),
 	
-	LISTBOX(5, getString("ControlType.listbox"), TypeGroup.LIST_BOX),
-	XLISTBOX(42, getString("ControlType.xlistbox"), TypeGroup.LIST_BOX),
-	LISTNBOX(102, getString("ControlType.listnbox"), TypeGroup.LIST_BOX),
+	LISTBOX(5, getString("ControlType.listbox"), TypeGroup.LIST_BOX, getImage("control_listbox.png")),
+	XLISTBOX(42, getString("ControlType.xlistbox"), TypeGroup.LIST_BOX, getImage("control_xlistbox.png")),
+	LISTNBOX(102, getString("ControlType.listnbox"), TypeGroup.LIST_BOX, getImage("control_nlistbox.png")),
 	
 	TOOLBOX(6, getString("ControlType.toolbox"), TypeGroup.CHECK_BOX),
 	CHECKBOXES(7, getString("ControlType.checkboxes"), TypeGroup.CHECK_BOX),
@@ -75,22 +76,30 @@ public enum ControlType {
 			this.displayName = displayName;
 		}
 	}
-	
+
+	public static final ControlType[] BETA_SUPPORTED = {STATIC, CONTROLS_GROUP};
+
 	public final int typeId;
 	public final String displayName;
+	public final Image icon;
 	/** If true, the type should be avoided. */
 	public final boolean deprecated;
 	public final TypeGroup group;
-	
+
 	ControlType(int typeId, String displayName, TypeGroup group) {
-		this(typeId, displayName, group, false);
+		this(typeId, displayName, group, ControlIcons.placeholder, false);
 	}
-	
+
+	ControlType(int typeId, String displayName, TypeGroup group, Image icon) {
+		this(typeId, displayName, group, icon, false);
+	}
+
 	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type STATIC)
-	ControlType(int typeId, String displayName, TypeGroup group, boolean deprecated) {
+	ControlType(int typeId, String displayName, TypeGroup group, Image icon, boolean deprecated) {
 		this.typeId = typeId;
 		this.displayName = displayName;
 		this.group = group;
+		this.icon = icon;
 		this.deprecated = deprecated;
 	}
 	
@@ -127,16 +136,25 @@ public enum ControlType {
 		return Lang.LookupBundle().getString(s);
 	}
 	
-	private static final ControlType[] supported = {STATIC, CONTROLS_GROUP};
-	
 	/** Return true if ControlType's is supported in the beta */
 	public boolean betaSupported() {
-		for (ControlType type : supported) {
+		for (ControlType type : BETA_SUPPORTED) {
 			if (this == type) {
 				return true;
 			}
 		}
 		return false;
 	}
-	
+
+
+	private static Image getImage(String image) {
+		return new Image("/com/kaylerrenslow/armaDialogCreator/gui/img/icons/controls/" + image);
+	}
+
+	//remove interface and members when all controls have unique icons
+	private interface ControlIcons {
+		Image placeholder = getImage("placeholder.png");
+	}
+
+
 }

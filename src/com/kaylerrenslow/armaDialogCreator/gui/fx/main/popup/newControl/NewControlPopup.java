@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
@@ -67,7 +68,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 		final HBox hboxHeader = new HBox(10);
 		hboxHeader.setFillHeight(true);
 
-		Label lblControlClassName = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.control_class_name"));
+		final Label lblControlClassName = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.control_class_name"));
 		lblControlClassName.setFont(Font.font(18d));
 		hboxHeader.getChildren().add(lblControlClassName);
 		hboxHeader.getChildren().add(inClassName);
@@ -80,14 +81,13 @@ public class NewControlPopup extends StagePopup<VBox> {
 			}
 		});
 
-
-		ControlClassMenuButton.ControlClassMenuItem[] contolTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.values().length];
+		ControlClassMenuButton.ControlClassMenuItem[] contolTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.BETA_SUPPORTED.length];
 		ControlClassMenuButton.ControlClassMenuItem toSelect = null;
 		for (int i = 0; i < contolTypeControlClasses.length; i++) {
-			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.values()[i]);
+			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
 			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
-			contolTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass);
+			contolTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
 			if (lookup.controlType == ControlType.STATIC) {
 				toSelect = contolTypeControlClasses[i];
 			}
@@ -103,7 +103,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 		controlClassMenuButton.chooseItem(toSelect);
 
-		Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), controlClassMenuButton);
+		final Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), controlClassMenuButton);
 		lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
 		hboxHeader.getChildren().add(lblBaseControl);
 

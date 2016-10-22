@@ -34,6 +34,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -45,6 +46,7 @@ public class ADCLauncherWindow {
 
 	private final ProgressBar progressBar = new ProgressBar(-1);
 	private final Label lblStatus = new Label();
+	private final Label lblError = new Label();
 	private final VBox root;
 	private boolean exitButtonAdded = false;
 
@@ -67,6 +69,8 @@ public class ADCLauncherWindow {
 		progressBar.setMaxWidth(Double.MAX_VALUE);
 		root.getChildren().add(progressBar);
 		root.getChildren().add(lblStatus);
+		lblError.setTextFill(Color.RED);
+		root.getChildren().add(lblError);
 	}
 
 	@NotNull
@@ -77,6 +81,11 @@ public class ADCLauncherWindow {
 	@NotNull
 	public ProgressBar getProgressBar() {
 		return progressBar;
+	}
+
+	@NotNull
+	public Label getLblError() {
+		return lblError;
 	}
 
 	@NotNull

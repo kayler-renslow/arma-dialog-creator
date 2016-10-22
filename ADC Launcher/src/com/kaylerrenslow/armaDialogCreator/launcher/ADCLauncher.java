@@ -51,8 +51,9 @@ public class ADCLauncher extends Application {
 	private final ChangeListener<? super Throwable> taskExceptionPropertyListener = new ChangeListener<Throwable>() {
 		@Override
 		public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
-			window.getLblStatus().setText(newValue.getMessage());
+			window.getLblError().setText("Error (" + newValue.getClass().getSimpleName() + "): " + newValue.getMessage());
 			window.addExitButton();
+			newValue.printStackTrace();
 		}
 	};
 
@@ -66,7 +67,7 @@ public class ADCLauncher extends Application {
 	}
 
 	private void runVersionTask() {
-		loadTask(new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION, ADC_JAR, JSON_RELEASE_INFO), "", new EventHandler<WorkerStateEvent>() {
+		loadTask(new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION, JSON_RELEASE_INFO), "", new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent event) {
 				launchADC();
@@ -77,7 +78,7 @@ public class ADCLauncher extends Application {
 
 	private void launchADC() {
 		if (!ADC_JAR_SAVE_LOCATION.exists()) {
-			window.getLblStatus().setText(bundle.getString("Launcher.Fail.adc_didnt_save"));
+			window.getLblError().setText(bundle.getString("Launcher.Fail.adc_didnt_save"));
 			try {
 				Thread.sleep(3000);
 			} catch (InterruptedException e) {
@@ -88,7 +89,7 @@ public class ADCLauncher extends Application {
 			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			window.getLblStatus().setText("ERROR: " + e.getMessage());
+			window.getLblError().setText("ERROR: " + e.getMessage());
 		}
 		Platform.exit();
 	}

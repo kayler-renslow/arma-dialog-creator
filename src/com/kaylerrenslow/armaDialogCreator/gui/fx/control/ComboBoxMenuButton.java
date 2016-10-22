@@ -20,7 +20,6 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -92,11 +91,11 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			clearSelectedValue();
 			return;
 		}
-		ImageView graphic = (ImageView) menuItem.getGraphic();
-		if (graphic != null) {
-			menuButton.setGraphic(new ImageView(graphic.getImage()));
+		ImageContainer container = menuItem.imageContainer;
+		if (container != null) {
+			menuButton.setGraphic(container.copy().getNode());
 		} else {
-			menuItem.setGraphic(null);
+			menuButton.setGraphic(null);
 		}
 		menuButton.setText(menuItem.getValue().toString());
 		selectedItemObserver.updateValue(menuItem.getValue());
@@ -125,10 +124,12 @@ public class ComboBoxMenuButton<V> extends StackPane {
 
 	public static class CBMBMenuItem<V> extends MenuItem {
 		protected final V value;
+		protected final ImageContainer imageContainer;
 
-		public CBMBMenuItem(@NotNull V value, @Nullable ImageView graphic) {
-			super(value.toString(), graphic);
+		public CBMBMenuItem(@NotNull V value, @Nullable ImageContainer image) {
+			super(value.toString(), image == null ? null : image.getNode());
 			this.value = value;
+			this.imageContainer = image;
 			setMnemonicParsing(false);
 		}
 

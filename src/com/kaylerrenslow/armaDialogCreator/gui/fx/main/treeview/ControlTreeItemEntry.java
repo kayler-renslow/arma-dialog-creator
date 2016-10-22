@@ -79,7 +79,7 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	}
 
 	public String getControlTypeText() {
-		return myArmaControl.getType().displayName;
+		return myArmaControl.getControlType().displayName;
 	}
 
 	public Color getPrimaryColor() {
