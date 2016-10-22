@@ -80,6 +80,9 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 
 			long downloadSize = urlConnection.getContentLengthLong();
 			if (adcJarSave.getParentFile().getFreeSpace() < downloadSize) {
+				in.close();
+				fout.close();
+				urlConnection.getInputStream().close();
 				throw new NotEnoughFreeSpaceException(ADCLauncher.bundle.getString("Launcher.not_enough_free_space"));
 			}
 

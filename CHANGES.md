@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* made the launcher code more sensible
+* none
 
 **Fixed:**
 * none
