@@ -60,7 +60,12 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 		defineStyle(ControlStyle.NA.getStyleGroup());
 		afterConstructor();
 	}
-	
+
+	public ArmaControlGroup(@NotNull String name, @NotNull ControlType type, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		super(name, type, SPEC_PROVIDER, resolution, rendererLookup, env);
+		afterConstructor();
+	}
+
 	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
 		super(name, SPEC_PROVIDER, idc, type, ControlStyle.NA.getStyleGroup(), x, y, width, height, resolution, renderer, env);
 		afterConstructor();

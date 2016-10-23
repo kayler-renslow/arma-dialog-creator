@@ -1,8 +1,8 @@
 **Added:**
-* border around control icons
+* none
 
 **Changed:**
-* put icons on ControlType enum instead of Arma lookup
+* none
 
 **Fixed:**
 * none

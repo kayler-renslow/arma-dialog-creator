@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVIntegerUnmodifiable;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.image.Image;
 
@@ -64,7 +65,7 @@ public enum ControlType {
 	MAP(100, getString("ControlType.map"), TypeGroup.MAP),
 	MAP_MAIN(101, getString("ControlType.map_main"), TypeGroup.MAP);
 	//@formatter:on
-	
+
 	public enum TypeGroup {
 		TEXT(getString("ControlType.TypeGroup.text")), BUTTON(getString("ControlType.TypeGroup.button")), COMBO(getString("ControlType.TypeGroup.combo")), SLIDER(getString("ControlType.TypeGroup.slider")),
 		LIST_BOX(getString("ControlType.TypeGroup.list_box")), CHECK_BOX(getString("ControlType.TypeGroup.check_box")), MENU(getString("ControlType.TypeGroup.menu")), OBJECT(getString("ControlType.TypeGroup.object")),
@@ -85,6 +86,7 @@ public enum ControlType {
 	/** If true, the type should be avoided. */
 	public final boolean deprecated;
 	public final TypeGroup group;
+	private SVIntegerUnmodifiable sv;
 
 	ControlType(int typeId, String displayName, TypeGroup group) {
 		this(typeId, displayName, group, ControlIcons.placeholder, false);
@@ -107,7 +109,17 @@ public enum ControlType {
 	public String toString() {
 		return fullDisplayText();
 	}
-	
+
+
+	/** Returns the {@link #typeId} inside a {@link SVIntegerUnmodifiable} instance. Only one instance is returned */
+	public SVIntegerUnmodifiable toSerializableValue() {
+		if (sv == null) {
+			sv = new SVIntegerUnmodifiable(typeId);
+		}
+		return sv;
+	}
+
+
 	/** Return a string formatted as such: 'displayName (typeId)'. {@link #toString()} will return this value */
 	public String fullDisplayText() {
 		return displayName + " (" + typeId + ")";

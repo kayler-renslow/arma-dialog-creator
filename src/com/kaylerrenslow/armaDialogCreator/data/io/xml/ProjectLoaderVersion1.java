@@ -17,7 +17,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
@@ -89,7 +88,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				case "export-location": {
 					String exportLocation = XmlUtil.getImmediateTextContent(configAttributeElement);
 					File exportLocationFile = new File(exportLocation.trim());
-					if(!exportLocationFile.isDirectory()){
+					if (!exportLocationFile.isDirectory()) {
 						return;
 					}
 					exportConfiguration.setExportLocation(exportLocationFile);
@@ -107,8 +106,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 				case "export-file-type-ext": {
 					String fileTypeExt = XmlUtil.getImmediateTextContent(configAttributeElement).trim();
-					for(HeaderFileType type : HeaderFileType.values()){
-						if(type.getExtension().equalsIgnoreCase(fileTypeExt)){
+					for (HeaderFileType type : HeaderFileType.values()) {
+						if (type.getExtension().equalsIgnoreCase(fileTypeExt)) {
 							exportConfiguration.setFileType(type);
 							break;
 						}
@@ -278,14 +277,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.missing_control_name"), controlElement.getTextContent())));
 			return null;
 		}
-		int idc;
-		String idcStr = controlElement.getAttribute("idc");
-		try {
-			idc = Integer.parseInt(idcStr);
-		} catch (NumberFormatException e) {
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_idc_f"), idcStr, controlClassName), ParseError.genericRecover("-1")));
-			idc = -1;
-		}
+
 		ControlType controlType;
 		String controlTypeStr = controlElement.getAttribute("control-type-id");
 		try {
@@ -332,38 +324,15 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		if (!containsAll) {
 			return null;
 		}
-		Expression x, y, w, h;
-		x = y = w = h = null;
-		for (ProjectXmlLoader.ControlLoadConfig config : properties) {
-			switch (config.lookup) {
-				case X: {
-					x = (Expression) config.value;
-					break;
-				}
-				case Y: {
-					y = (Expression) config.value;
-					break;
-				}
-				case W: {
-					w = (Expression) config.value;
-					break;
-				}
-				case H: {
-					h = (Expression) config.value;
-					break;
-				}
-				default:
-					break;
-			}
-		}
-		if (x == null || y == null || w == null || h == null) {
-			throw new IllegalStateException("at least one position value (x,y,h,w) is undefined when it should be defined at this point.");
-		}
+
 		ArmaControl control;
 		if (isControlGroup) {
-			control = new ArmaControlGroup(controlClassName, idc, controlType, x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControlGroup(controlClassName, controlType, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 		} else {
-			control = new ArmaControl(controlClassName, specProvider, idc, controlType, ControlStyle.CENTER.getStyleGroup(), x, y, w, h, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+			control = new ArmaControl(
+					controlClassName, controlType, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup,
+					DataKeys.ENV.get(dataContext)
+			);
 		}
 
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {

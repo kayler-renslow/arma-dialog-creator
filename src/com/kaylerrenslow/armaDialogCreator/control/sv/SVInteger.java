@@ -15,7 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /** A generic wrapper implementation for an int. */
-public final class SVInteger extends SVNumber {
+public class SVInteger extends SVNumber {
 	
 	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
 		@Override
@@ -72,4 +72,5 @@ public final class SVInteger extends SVNumber {
 		}
 		return false;
 	}
+
 }

@@ -76,22 +76,6 @@ public class ADCReleaseAutomation {
 					}
 
 					switch (variable) {
-						case "FILE_VERSION": {
-							fos.write(Lang.Application.Executable.FILE_VERSION.getBytes());
-							break;
-						}
-						case "TXT_FILE_VERSION": {
-							fos.write(Lang.Application.Executable.TXT_FILE_VERSION.getBytes());
-							break;
-						}
-						case "PRODUCT_VERSION": {
-							fos.write(Lang.Application.Executable.PRODUCT_VERSION.getBytes());
-							break;
-						}
-						case "TXT_PRODUCT_VERSION": {
-							fos.write(Lang.Application.Executable.TXT_PRODUCT_VERSION.getBytes());
-							break;
-						}
 						case "PROJECT_OUT_PATH": {
 							fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
 							break;

@@ -73,6 +73,7 @@ public class ADCWindow {
 		
 	public void show() {
 		this.primaryStage.show();
+		autoResizeCanvasView();
 	}
 	
 	public CanvasView getCanvasView() {

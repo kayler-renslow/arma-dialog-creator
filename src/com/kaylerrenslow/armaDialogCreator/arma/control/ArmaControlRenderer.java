@@ -40,7 +40,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
 	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
-	private Expression x, y, width, height;
 	private final Env env;
 	private boolean recalcingPosition = false;
 
@@ -84,14 +83,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				if (hProperty.getValue() == null) {
 					return;
 				}
-				if (!xProperty.getValue().equals(x)) {
+
+				if (xProperty.getValueObserver() == observer) {
 					setXSilent((Expression) xProperty.getValue());
-				} else if (!yProperty.getValue().equals(y)) {
+				} else if (yProperty.getValueObserver() == observer) {
 					setYSilent((Expression) yProperty.getValue());
-				} else if (!wProperty.getValue().equals(width)) {
+				} else if (wProperty.getValueObserver() == observer) {
 					setWSilent((Expression) wProperty.getValue());
-				} else if (!hProperty.getValue().equals(height)) {
+				} else if (hProperty.getValueObserver() == observer) {
 					setHSilent((Expression) hProperty.getValue());
+				} else {
+					throw new IllegalStateException("unmatched observer");
 				}
 				rerender();
 			}
@@ -142,26 +144,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
 	protected void setXSilent(Expression x) {
-		this.x = x;
 		setX1Silent(calcScreenX(x.getNumVal()));
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
 	protected void setYSilent(Expression y) {
-		this.y = y;
 		setY1Silent(calcScreenY(y.getNumVal()));
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
 	protected void setWSilent(Expression width) {
-		this.width = width;
 		int w = calcScreenWidth(width.getNumVal());
 		setX2Silent(getX1() + w);
 	}
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setHSilent(Expression height) {
-		this.height = height;
 		int h = calcScreenHeight(height.getNumVal());
 		setY2Silent(getY1() + h);
 	}
@@ -189,10 +187,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		if (x == null || y == null || w == null || h == null) {
 			return;
 		}
-		this.x = x;
-		this.y = y;
-		this.width = w;
-		this.height = h;
 		setPositionWHSilent(calcScreenX(x.getNumVal()), calcScreenY(y.getNumVal()), calcScreenWidth(w.getNumVal()), calcScreenHeight(h.getNumVal()));
 	}
 
@@ -236,7 +230,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		setStyle(style);
 	}
 
-	/** Just set the style without telling the {@link ValueObserver} instance*/
+	/** Just set the style without telling the {@link ValueObserver} instance */
 	protected final void setStyle(ControlStyleGroup style) {
 		this.style = style;
 	}
@@ -300,18 +294,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		recalcPosition();
 	}
 
+	/** Set x1 without recalculating position */
 	public void setX1Silent(int x1) {
 		super.setX1(x1);
 	}
 
+	/** Set y1 without recalculating position */
 	public void setY1Silent(int y1) {
 		super.setY1(y1);
 	}
 
+	/** Set x2 without recalculating position */
 	public void setX2Silent(int x2) {
 		super.setX2(x2);
 	}
 
+	/** Set y2 without recalculating position */
 	public void setY2Silent(int y2) {
 		super.setY2(y2);
 	}
@@ -323,9 +321,9 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	}
 
 	public void resolutionUpdate(Resolution newResolution) {
-		setXSilent(this.x);
-		setYSilent(this.y);
-		setWSilent(this.width);
-		setHSilent(this.height);
+		setXSilent((Expression) xProperty.getValue());
+		setYSilent((Expression) yProperty.getValue());
+		setWSilent((Expression) wProperty.getValue());
+		setHSilent((Expression) hProperty.getValue());
 	}
 }

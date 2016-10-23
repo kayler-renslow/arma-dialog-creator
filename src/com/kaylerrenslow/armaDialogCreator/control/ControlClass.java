@@ -209,14 +209,9 @@ public class ControlClass {
 		return optionalPropertiesReadOnly;
 	}
 
-	/** Will return all properties that are defined (including inherited properties that are defined) */
+	/** Will return all properties that are defined (excluding inherited properties that are defined) */
 	public @NotNull List<ControlProperty> getAllDefinedProperties() {
-		List<ControlProperty> properties = new ArrayList<>();
-		for (ControlProperty property : getInheritedProperties()) {
-			if (property.getValue() != null) {
-				properties.add(property);
-			}
-		}
+		List<ControlProperty> properties = new ArrayList<>(getRequiredProperties().size() + getOptionalProperties().size());
 		for (ControlProperty property : getRequiredProperties()) {
 			if (property.getValue() != null) {
 				properties.add(property);
@@ -229,6 +224,27 @@ public class ControlClass {
 		}
 		return properties;
 	}
+	//
+	//	/** Will return all properties that are defined (including inherited properties that are defined) */
+	//	public @NotNull List<ControlProperty> getAllDefinedProperties() {
+	//		List<ControlProperty> properties = new ArrayList<>();
+	//		for (ControlProperty property : getInheritedProperties()) {
+	//			if (property.getValue() != null) {
+	//				properties.add(property);
+	//			}
+	//		}
+	//		for (ControlProperty property : getRequiredProperties()) {
+	//			if (property.getValue() != null) {
+	//				properties.add(property);
+	//			}
+	//		}
+	//		for (ControlProperty property : getOptionalProperties()) {
+	//			if (property.getValue() != null) {
+	//				properties.add(property);
+	//			}
+	//		}
+	//		return properties;
+	//	}
 
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {

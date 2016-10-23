@@ -23,6 +23,8 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 /**
  @author Kayler
  The base class for all controls.<br>
@@ -35,23 +37,23 @@ public class ArmaControl extends ControlClass implements Control {
 	private final ControlStyle[] allowedStyles;
 	/** Type of the control */
 	private ControlType type = ControlType.STATIC;
-	
+
 	/** Renderer of the control for the canvas */
 	protected final ArmaControlRenderer renderer;
-	
+
 	private ControlHolder<ArmaControl> holder;
 	private ArmaDisplay display;
-	
+
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
-	
-	private final ControlProperty idcProperty, typeProperty, accessProperty;
+
+	private final ControlProperty idcProperty, accessProperty;
 	private final DataContext userdata = new DataContext();
 	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
 
 	/**
 	 Create a control where the position is to be determined
-	 
+
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
 	 @param rendererLookup renderer of the control
@@ -68,16 +70,31 @@ public class ArmaControl extends ControlClass implements Control {
 		}
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setDefaultValue(true, -1);
-		typeProperty = findRequiredProperty(ControlPropertyLookup.TYPE);
-		typeProperty.setDefaultValue(true, type.typeId);
+		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		this.allowedStyles = provider.getAllowedStyles();
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
-	
+
+	/**
+	 Create a control where the position is to be determined
+
+	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
+	 @param type control type
+	 @param resolution resolution to use
+	 @param rendererLookup renderer of the control
+	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
+	 */
+	public ArmaControl(@NotNull String name, @NotNull ControlType type, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
+					   @NotNull Env
+							   env) {
+		this(name, provider, resolution, rendererLookup, env);
+		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
+	}
+
 	/**
 	 Create a control where the position is known
-	 
+
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param idc control id (-1 if doesn't matter)
 	 @param type type of the control
@@ -94,61 +111,85 @@ public class ArmaControl extends ControlClass implements Control {
 					   @NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
 					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
-		typeProperty.setDefaultValue(false, type.typeId);
 		renderer.styleProperty.setDefaultValue(false, style);
 		renderer.xProperty.setDefaultValue(false, x);
 		renderer.yProperty.setDefaultValue(false, y);
 		renderer.wProperty.setDefaultValue(false, width);
 		renderer.hProperty.setDefaultValue(false, height);
-		
-		defineType(type);
-		defineIdc(idc);
+
+		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
+		idcProperty.setDefaultValue(false, idc);
 		defineStyle(style);
 		defineX(x);
 		defineY(y);
 		defineW(width);
 		defineH(height);
 	}
-	
+
+	public ArmaControl(@NotNull ControlClass controlClass, @NotNull ArmaControlSpecProvider specProvider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		this(controlClass.getClassName(), specProvider, resolution, rendererLookup, env);
+		List<ControlProperty> propertyList = controlClass.getAllDefinedProperties();
+		for (ControlProperty property : propertyList) {
+			for (ControlPropertyLookup req : specProvider.getRequiredProperties()) {
+				if (req == property.getPropertyLookup()) {
+					findRequiredProperty(req).setValue(property.getValue());
+					break;
+				}
+			}
+			for (ControlPropertyLookup opt : specProvider.getOptionalProperties()) {
+				if (opt == property.getPropertyLookup()) {
+					findOptionalProperty(opt).setValue(property.getValue());
+					break;
+				}
+			}
+			System.err.println("ArmaControl.ArmaControl WARNING: required and optional sub-ControlClass's aren't saved in control yet");
+		}
+		//todo findRequiredSubClass and findOptionalSubClass, we need to duplicate (deep copy) them though!
+		//		List<ControlClass> subClasses = controlClass.getAllSubClasses();
+		//		for(ControlClass subclass : subClasses){
+		//			sub
+		//		}
+	}
+
 	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(Expression x) {
 		renderer.defineX(x);
 	}
-	
+
 	/** Set y and define the y control property. This will also update the renderer's position. */
 	public void defineY(Expression y) {
 		renderer.defineY(y);
 	}
-	
+
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
 	public void defineW(Expression width) {
 		renderer.defineW(width);
 	}
-	
+
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
 	public void defineH(Expression height) {
 		renderer.defineH(height);
 	}
-		
+
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
 		renderer.resolutionUpdate(newResolution);
 	}
-	
-	void setHolder(@NotNull ControlHolder<ArmaControl> holder){
+
+	void setHolder(@NotNull ControlHolder<ArmaControl> holder) {
 		this.holder = holder;
 	}
-	
-	void setDisplay(@NotNull ArmaDisplay display){
+
+	void setDisplay(@NotNull ArmaDisplay display) {
 		this.display = display;
 	}
-	
+
 	@Override
 	@NotNull
 	public ControlHolder<ArmaControl> getHolder() {
 		return holder;
 	}
-	
+
 	@Override
 	@NotNull
 	public ArmaDisplay getDisplay() {
@@ -160,25 +201,9 @@ public class ArmaControl extends ControlClass implements Control {
 		return userdata;
 	}
 
-	/** Set idc and define the idc control property */
-	public final void defineIdc(int idc) {
-		setIdc(idc);
-		idcProperty.setValue(idc);
-	}
-
-	/** Set idc without telling control property */
-	protected final void setIdc(int idc) {
-		this.idc = idc;
-	}
-
-	/** Set the control type and define the type control property */
-	protected final void defineType(ControlType type) {
-		setType(type);
-	}
-
-	/** Just set the control type without changing control property */
-	protected final void setType(ControlType type) {
-		this.type = type;
+	@NotNull
+	public ControlProperty getIdcProperty() {
+		return idcProperty;
 	}
 
 	/** Set and define the style control property */
@@ -189,11 +214,6 @@ public class ArmaControl extends ControlClass implements Control {
 	/** Set and define the access property */
 	public final void defineAccess(int access) {
 		this.accessProperty.setValue(access);
-	}
-
-	/** Get idc (control id for arma) */
-	public final int getIdc() {
-		return idc;
 	}
 
 	public final ControlType getControlType() {

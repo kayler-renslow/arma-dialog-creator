@@ -81,19 +81,19 @@ public class NewControlPopup extends StagePopup<VBox> {
 			}
 		});
 
-		ControlClassMenuButton.ControlClassMenuItem[] contolTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.BETA_SUPPORTED.length];
+		ControlClassMenuButton.ControlClassMenuItem[] controlTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.BETA_SUPPORTED.length];
 		ControlClassMenuButton.ControlClassMenuItem toSelect = null;
-		for (int i = 0; i < contolTypeControlClasses.length; i++) {
+		for (int i = 0; i < controlTypeControlClasses.length; i++) {
 			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
 			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
-			contolTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
+			controlTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
 			if (lookup.controlType == ControlType.STATIC) {
-				toSelect = contolTypeControlClasses[i];
+				toSelect = controlTypeControlClasses[i];
 			}
 		}
 		final ControlClassMenuButton controlClassMenuButton = new ControlClassMenuButton(false, "", null, new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString
-				("Popups.NewControl.base_types"), contolTypeControlClasses));
+				("Popups.NewControl.base_types"), controlTypeControlClasses));
 		controlClassMenuButton.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {

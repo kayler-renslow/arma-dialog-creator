@@ -150,9 +150,8 @@ public class ProjectSaveXmlWriter {
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
 
-		fos.write(String.format("<%s idc='%d' renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
+		fos.write(String.format("<%s renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
 				controlGroup ? controlGroupStr : controlStr,
-				control.getIdc(),
 				control.getRendererLookup().id,
 				control.getControlType().typeId,
 				control.getClassName(),
