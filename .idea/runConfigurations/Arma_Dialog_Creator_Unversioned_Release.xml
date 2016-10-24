@@ -16,6 +16,9 @@
         <artifact name="adc_launcher" />
       </option>
       <option name="ToolBeforeRunTask" enabled="true" actionId="Tool_External Tools_Build Arma Dialog Creator" />
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="adc_updater" />
+      </option>
     </method>
   </configuration>
 </component>

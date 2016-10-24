@@ -8,24 +8,17 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.launcher;
-
-import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
-
-import java.io.File;
+package com.kaylerrenslow.armaDialogCreator.updater;
 
 /**
- Created by Kayler on 10/23/2016.
+ Created by Kayler on 10/22/2016.
  */
-public class ADCLauncher {
-	private static final String ADC_JAR = "adc.jar";
-	private static final File ADC_JAR_SAVE_LOCATION = new File(System.getenv("APPDATA") + "/Arma Dialog Creator/" + ADC_JAR);
+public class NotEnoughFreeSpaceException extends Exception {
 
-	public static void main(String[] args) throws Exception {
-		if (false || ADC_JAR_SAVE_LOCATION.exists()) {
-			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
-		} else {
-			ADCUpdater.main(args);
-		}
+	public NotEnoughFreeSpaceException() {
+	}
+
+	public NotEnoughFreeSpaceException(String message) {
+		super(message);
 	}
 }

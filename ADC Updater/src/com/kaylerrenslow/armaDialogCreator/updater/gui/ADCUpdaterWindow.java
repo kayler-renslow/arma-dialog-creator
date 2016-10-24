@@ -8,19 +8,10 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-/*
- * Copyright (c) 2016 Kayler Renslow
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
- */
 
-package com.kaylerrenslow.armaDialogCreator.launcher.gui;
+package com.kaylerrenslow.armaDialogCreator.updater.gui;
 
-import com.kaylerrenslow.armaDialogCreator.launcher.ADCLauncher;
+import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -41,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 10/22/2016.
  */
-public class ADCLauncherWindow {
+public class ADCUpdaterWindow {
 	private final Stage primaryStage;
 
 	private final ProgressBar progressBar = new ProgressBar(-1);
@@ -50,11 +41,11 @@ public class ADCLauncherWindow {
 	private final VBox root;
 	private boolean exitButtonAdded = false;
 
-	public ADCLauncherWindow(Stage primaryStage) {
+	public ADCUpdaterWindow(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 
-		primaryStage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/launcher/app.png"));
-		primaryStage.setTitle(ADCLauncher.bundle.getString("Launcher.title"));
+		primaryStage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/updater/app.png"));
+		primaryStage.setTitle(ADCUpdater.bundle.getString("Updater.title"));
 
 		root = new VBox(5);
 		primaryStage.setScene(new Scene(new StackPane(root)));
@@ -64,7 +55,7 @@ public class ADCLauncherWindow {
 		root.setAlignment(Pos.CENTER);
 		root.setPadding(new Insets(10));
 
-		root.getChildren().add(new ImageView("/com/kaylerrenslow/armaDialogCreator/launcher/adc_title.png"));
+		root.getChildren().add(new ImageView("/com/kaylerrenslow/armaDialogCreator/updater/adc_title.png"));
 
 		progressBar.setMaxWidth(Double.MAX_VALUE);
 		root.getChildren().add(progressBar);
@@ -98,7 +89,7 @@ public class ADCLauncherWindow {
 			return;
 		}
 		exitButtonAdded = true;
-		final Button btnExit = new Button(ADCLauncher.bundle.getString("Launcher.exit"));
+		final Button btnExit = new Button(ADCUpdater.bundle.getString("Updater.exit"));
 		btnExit.setPrefWidth(120d);
 		btnExit.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

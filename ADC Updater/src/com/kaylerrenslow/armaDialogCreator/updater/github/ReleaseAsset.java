@@ -8,17 +8,26 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.launcher;
+package com.kaylerrenslow.armaDialogCreator.updater.github;
+
+import org.json.simple.JSONObject;
 
 /**
- Created by Kayler on 10/22/2016.
+ Created by Kayler on 10/20/2016.
  */
-public class NotEnoughFreeSpaceException extends Exception {
+public class ReleaseAsset {
+	private String name, downloadUrl;
 
-	public NotEnoughFreeSpaceException() {
+	ReleaseAsset(JSONObject object) {
+		name = object.get("name").toString();
+		downloadUrl = object.get("browser_download_url").toString();
 	}
 
-	public NotEnoughFreeSpaceException(String message) {
-		super(message);
+	public String getName() {
+		return name;
+	}
+
+	public String getDownloadUrl() {
+		return downloadUrl;
 	}
 }

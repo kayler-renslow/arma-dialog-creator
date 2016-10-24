@@ -8,12 +8,12 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.launcher.tasks;
+package com.kaylerrenslow.armaDialogCreator.updater.tasks;
 
-import com.kaylerrenslow.armaDialogCreator.launcher.ADCLauncher;
-import com.kaylerrenslow.armaDialogCreator.launcher.NotEnoughFreeSpaceException;
-import com.kaylerrenslow.armaDialogCreator.launcher.github.ReleaseAsset;
-import com.kaylerrenslow.armaDialogCreator.launcher.github.ReleaseInfo;
+import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
+import com.kaylerrenslow.armaDialogCreator.updater.NotEnoughFreeSpaceException;
+import com.kaylerrenslow.armaDialogCreator.updater.github.ReleaseAsset;
+import com.kaylerrenslow.armaDialogCreator.updater.github.ReleaseInfo;
 import javafx.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
@@ -50,7 +50,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 		ReleaseInfo latestRelease = getLatestRelease();
 		ReleaseAsset adcJarAsset = latestRelease.getAssestByName(adcJarSave.getName());
 		if (adcJarAsset == null) {
-			throw new Exception(ADCLauncher.bundle.getString("Launcher.Fail.asset_name_not_matched"));
+			throw new Exception(ADCUpdater.bundle.getString("Updater.Fail.asset_name_not_matched"));
 		}
 
 		if (!latestRelease.getTagName().equals(currentJarVersion)) {
@@ -62,7 +62,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 
 	private void downloadLatestRelease(String downloadUrl) throws Exception {
 		setIndeterminateProgress();
-		setStatusText("Launcher.downloading_newest_version");
+		setStatusText("Updater.downloading_newest_version");
 
 		URL url = new URL(downloadUrl);
 
@@ -81,7 +81,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 				in.close();
 				fout.close();
 				urlConnection.getInputStream().close();
-				throw new NotEnoughFreeSpaceException(ADCLauncher.bundle.getString("Launcher.not_enough_free_space"));
+				throw new NotEnoughFreeSpaceException(ADCUpdater.bundle.getString("Updater.not_enough_free_space"));
 			}
 
 			final byte data[] = new byte[1024];
@@ -102,15 +102,15 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 				fout.close();
 			}
 		}
-		setStatusText("Launcher.download_complete");
+		setStatusText("Updater.download_complete");
 		Thread.sleep(1000);
-		setStatusText("Launcher.launching");
+		setStatusText("Updater.launching");
 		Thread.sleep(1000);
 	}
 
 	@NotNull
 	private ReleaseInfo getLatestRelease() throws Exception {
-		setStatusText("Launcher.checking_for_updates");
+		setStatusText("Updater.checking_for_updates");
 
 		JSONParser parser = new JSONParser();
 		URLConnection connection = new URL(versionCheckUrl).openConnection();
@@ -125,7 +125,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 	}
 
 	private String getCurrentJarVersion() throws Exception {
-		setStatusText("Launcher.getting_current_version");
+		setStatusText("Updater.getting_current_version");
 		if (!adcJarSave.exists()) {
 			return "";
 		}
@@ -135,7 +135,7 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 	}
 
 	private void setStatusText(String bundleString) {
-		updateMessage(ADCLauncher.bundle.getString(bundleString));
+		updateMessage(ADCUpdater.bundle.getString(bundleString));
 	}
 
 	private void setIndeterminateProgress() {
