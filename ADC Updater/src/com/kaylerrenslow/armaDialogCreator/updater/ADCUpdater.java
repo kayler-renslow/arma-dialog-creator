@@ -34,7 +34,8 @@ public class ADCUpdater extends Application {
 	//	private static final String ADC_JAR = "Arma.Intellij.Plugin_v1.0.5_2.jar";
 	//	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-intellij-plugin/releases/latest";
 	private static final String ADC_JAR = "adc.jar";
-	private static final File ADC_JAR_SAVE_LOCATION = new File(System.getenv("APPDATA") + "/Arma Dialog Creator/" + ADC_JAR);
+	private static final File ADC_JAR_SAVE_LOCATION = new File("./" + ADC_JAR);
+	private static final File ADC_DOWNLOAD_JAR_SAVE_LOCATION = new File("./update/");
 	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-dialog-creator/releases/latest";
 
 	public static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.updater.UpdaterBundle");
@@ -75,7 +76,7 @@ public class ADCUpdater extends Application {
 	}
 
 	private void runVersionTask() {
-		loadTask(new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION, JSON_RELEASE_INFO), "", new EventHandler<WorkerStateEvent>() {
+		loadTask(new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION, ADC_DOWNLOAD_JAR_SAVE_LOCATION, JSON_RELEASE_INFO), "", new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent event) {
 				launchADC();

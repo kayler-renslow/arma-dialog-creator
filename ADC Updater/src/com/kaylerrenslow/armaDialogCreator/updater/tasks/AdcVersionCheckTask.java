@@ -34,10 +34,12 @@ import java.util.jar.Manifest;
  */
 public class AdcVersionCheckTask extends Task<Boolean> {
 	private final File adcJarSave;
+	private File downloadDirectory;
 	private final String versionCheckUrl;
 
-	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull String versionCheckUrl) {
+	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull File downloadDirectory, @NotNull String versionCheckUrl) {
 		this.adcJarSave = adcJarSave;
+		this.downloadDirectory = downloadDirectory;
 		this.versionCheckUrl = versionCheckUrl;
 	}
 
@@ -71,13 +73,14 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 		URLConnection urlConnection = null;
 		long workDone = 0;
 
+		downloadDirectory.mkdirs();
 		try {
 			urlConnection = url.openConnection();
 			in = new BufferedInputStream(urlConnection.getInputStream());
-			fout = new FileOutputStream(adcJarSave);
+			fout = new FileOutputStream(downloadDirectory.getAbsolutePath() + "/" + adcJarSave.getName());
 
 			long downloadSize = urlConnection.getContentLengthLong();
-			if (adcJarSave.getParentFile().getFreeSpace() < downloadSize) {
+			if (downloadDirectory.getFreeSpace() < downloadSize) {
 				in.close();
 				fout.close();
 				urlConnection.getInputStream().close();
