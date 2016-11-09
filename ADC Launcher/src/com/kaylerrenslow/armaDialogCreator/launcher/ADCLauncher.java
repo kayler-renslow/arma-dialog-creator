@@ -19,10 +19,10 @@ import java.io.File;
  */
 public class ADCLauncher {
 	private static final String ADC_JAR = "adc.jar";
-	private static final File ADC_JAR_SAVE_LOCATION = new File(System.getenv("APPDATA") + "/Arma Dialog Creator/" + ADC_JAR);
+	private static final File ADC_JAR_SAVE_LOCATION = new File("./" + ADC_JAR);
 
 	public static void main(String[] args) throws Exception {
-		if (false || ADC_JAR_SAVE_LOCATION.exists()) {
+		if (ADC_JAR_SAVE_LOCATION.exists()) {
 			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
 		} else {
 			ADCUpdater.main(args);

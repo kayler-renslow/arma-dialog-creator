@@ -56,7 +56,6 @@ public final class ArmaDialogCreator extends Application {
 			return;
 		}
 		ExceptionHandler.init();
-		loadManifest();
 		launch(args);
 	}
 
@@ -126,6 +125,22 @@ public final class ArmaDialogCreator extends Application {
 
 	@NotNull
 	public static Manifest getManifest() {
+		if (adcManifest == null) {
+			try {
+				Enumeration<URL> resources = ArmaDialogCreator.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+				while (resources.hasMoreElements()) {
+					Manifest manifest = new Manifest(resources.nextElement().openStream());
+					String specTitle = manifest.getMainAttributes().getValue("Specification-Title");
+					if (specTitle != null && specTitle.equals("Arma Dialog Creator")) {
+						adcManifest = manifest;
+						break;
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
 		return adcManifest;
 	}
 
@@ -240,22 +255,6 @@ public final class ArmaDialogCreator extends Application {
 
 	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
 		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
-	}
-
-	private static void loadManifest() {
-		try {
-			Enumeration<URL> resources = ArmaDialogCreator.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-			while (resources.hasMoreElements()) {
-				Manifest manifest = new Manifest(resources.nextElement().openStream());
-				String specTitle = manifest.getMainAttributes().getValue("Specification-Title");
-				if (specTitle != null && specTitle.equals("Arma Dialog Creator")) {
-					adcManifest = manifest;
-					break;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static void initializeCurrentLocale() {

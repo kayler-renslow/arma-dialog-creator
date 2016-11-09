@@ -31,11 +31,9 @@ import java.util.ResourceBundle;
  Created by Kayler on 10/20/2016.
  */
 public class ADCUpdater extends Application {
-	//	private static final String ADC_JAR = "Arma.Intellij.Plugin_v1.0.5_2.jar";
-	//	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-intellij-plugin/releases/latest";
 	private static final String ADC_JAR = "adc.jar";
 	private static final File ADC_JAR_SAVE_LOCATION = new File("./" + ADC_JAR);
-	private static final File ADC_DOWNLOAD_JAR_SAVE_LOCATION = new File("./update/");
+	private static final File ADC_DOWNLOAD_JAR_SAVE_LOCATION = new File(".");
 	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-dialog-creator/releases/latest";
 
 	public static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.updater.UpdaterBundle");
@@ -85,21 +83,33 @@ public class ADCUpdater extends Application {
 	}
 
 	private void launchADC() {
+		boolean error = false;
 		if (!ADC_JAR_SAVE_LOCATION.exists()) {
 			window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			error = true;
 		}
 		try {
 			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 			window.getLblError().setText("ERROR: " + e.getMessage());
+			error = true;
 		}
-		Platform.exit();
+		final boolean finalError = error;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (finalError) {
+					try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				Platform.exit();
+			}
+		}).start();
+
 	}
 
 	private void loadTask(Task<?> task, String initStatusText, EventHandler<WorkerStateEvent> succeedEvent) {
