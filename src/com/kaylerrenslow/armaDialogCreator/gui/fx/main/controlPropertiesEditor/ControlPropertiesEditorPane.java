@@ -248,7 +248,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			}
 		});
 
-		if (c.isDataOverride()) {
+		if (c.isCustomData()) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.OVERRIDE);
 		} else if (c.getMacro() != null) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
@@ -273,7 +273,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		} else {
 			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setDataOverride(mode == ControlPropertyInput.EditMode.OVERRIDE);
+			propertyInput.getControlProperty().setCustomData(mode == ControlPropertyInput.EditMode.OVERRIDE);
 		}
 	}
 

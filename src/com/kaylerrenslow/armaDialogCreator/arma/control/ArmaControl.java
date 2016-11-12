@@ -128,7 +128,7 @@ public class ArmaControl extends ControlClass implements Control {
 
 	public ArmaControl(@NotNull ControlClass controlClass, @NotNull ArmaControlSpecProvider specProvider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(controlClass.getClassName(), specProvider, resolution, rendererLookup, env);
-		List<ControlProperty> propertyList = controlClass.getAllDefinedProperties();
+		List<ControlProperty> propertyList = controlClass.getDefinedProperties();
 		for (ControlProperty property : propertyList) {
 			for (ControlPropertyLookup req : specProvider.getRequiredProperties()) {
 				if (req == property.getPropertyLookup()) {

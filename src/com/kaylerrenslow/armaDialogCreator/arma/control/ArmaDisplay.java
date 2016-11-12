@@ -141,7 +141,27 @@ public class ArmaDisplay implements Display<ArmaControl> {
 			control.resolutionUpdate(newResolution);
 		}
 	}
-	
+
+	/** Search all controls inside the display (including controls inside {@link ArmaControlGroup} instances) */
+	@Nullable
+	public ArmaControl findControlByClassName(@NotNull String className) {
+		Iterator<ArmaControl> iterator = iteratorForAllControls(false);
+		while (iterator.hasNext()) {
+			ArmaControl control = iterator.next();
+			if (className.equals(control.getClassName())) {
+				return control;
+			}
+			if (control instanceof ArmaControlGroup) {
+				ArmaControlGroup group = (ArmaControlGroup) control;
+				ArmaControl found = group.findControlByClassName(className);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
+	}
+
 	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;

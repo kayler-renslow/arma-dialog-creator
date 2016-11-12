@@ -43,7 +43,13 @@ public class ControlProperty {
 	private final ControlPropertyLookupConstant propertyLookup;
 	private final ValueObserver<SerializableValue> valueObserver;
 	private SerializableValue defaultValue;
-	private boolean dataOverride = false;
+
+	/** The custom data instance for when {@link #setCustomData(boolean, Object)} is invoked */
+	private Object customData;
+	/** True when {@link #setCustomData(boolean, Object)} with true passed in parameter, false otherwise. */
+	private boolean customDataSet = false;
+	private ValueObserver<Object> customDataValueObserver;
+
 	/** Value to switch to when the set macro becomes null. */
 	private SerializableValue beforeMacroValue;
 	private @Nullable Macro myMacro;
@@ -108,14 +114,33 @@ public class ControlProperty {
 		return propertyLookup;
 	}
 
-	/** Return true if the data may not match the type of the control property. This is set by invoking {@link #setDataOverride(boolean)} */
-	public boolean isDataOverride() {
-		return dataOverride;
+	/**
+	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
+	 invoking {@link #setCustomData(boolean, Object)}. This will not affect {@link #getValue()}.
+	 */
+	public boolean isCustomData() {
+		return customDataSet;
 	}
 
-	/** @see #isDataOverride() */
-	public void setDataOverride(boolean dataOverride) {
-		this.dataOverride = dataOverride;
+	/** @see #isCustomData() */
+	public void setCustomData(boolean custom, @Nullable Object customData) {
+		this.customDataSet = custom;
+		this.customData = customData;
+		if (custom && this.customDataValueObserver == null) {
+			customDataValueObserver = new ValueObserver<>(customData);
+		}
+	}
+
+	/** Get the custom data set from {@link #setCustomData(boolean, Object)} */
+	@Nullable
+	public Object getCustomData() {
+		return customData;
+	}
+
+	/** Get the {@link ValueObserver} instance for the {@link #getCustomData()} value. Will be null when the custom data is never set. */
+	@Nullable
+	public ValueObserver<Object> getCustomDataValueObserver() {
+		return customDataValueObserver;
 	}
 
 	@NotNull

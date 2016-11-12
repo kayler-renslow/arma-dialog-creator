@@ -21,7 +21,6 @@ General
     * it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     * [https://resources.bisimulations.com/wiki/Dialogs_Static#Images](https://resources.bisimulations.com/wiki/Dialogs_Static#Images)
 * preview's resolution should be independent from the editor.
-* for extending control, make sure that you implement the xml loading feature to set extended control as well
 
 
 * for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
@@ -30,6 +29,7 @@ General
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
 
+* ControlProperty custom data isn't saved
 
 Bugs
 -----------------------------------

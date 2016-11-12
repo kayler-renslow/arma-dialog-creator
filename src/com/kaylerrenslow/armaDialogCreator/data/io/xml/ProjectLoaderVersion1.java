@@ -30,6 +30,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
+import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -43,12 +44,22 @@ import java.util.List;
  Created on 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
+	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+
 	protected ProjectLoaderVersion1(ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
 	}
 
 	@Override
 	public void parseDocument() throws XmlParseException {
+		loadProject();
+
+		for (AfterLoadJob job : jobs) {
+			job.doWork(project, this);
+		}
+	}
+
+	private void loadProject() throws XmlParseException {
 		try {
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
@@ -288,7 +299,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 
-		String extendClassName = controlElement.getAttribute("extend-class");
 		RendererLookup rendererLookup;
 		String rendererStr = controlElement.getAttribute("renderer-id");
 		try {
@@ -353,13 +363,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 		}
 
-		//		for (ControlPropertyLookup lookup : specProvider.getEventProperties()) {
-		//			for (Pair<ControlPropertyLookup, SerializableValue> saved : properties) {
-		//				if (saved.getKey() == lookup) {
-		//					control.findEventProperty(lookup).setValue(saved.getValue());
-		//				}
-		//			}
-		//		}
+		String extendClassName = controlElement.getAttribute("extend-class");
+		if (extendClassName.length() > 0) {
+			jobs.add(new ControlExtendJob(extendClassName, control));
+		}
 
 		return control;
 	}
@@ -426,6 +433,32 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 		return value;
+	}
+
+	private interface AfterLoadJob {
+		void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader);
+	}
+
+	private static class ControlExtendJob implements AfterLoadJob {
+		private final String controlClassName;
+		private final ArmaControl setMyExtend;
+
+		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend) {
+			this.controlClassName = controlClassName;
+			this.setMyExtend = setMyExtend;
+		}
+
+
+		@Override
+		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
+			ArmaDisplay display = project.getEditingDisplay();
+			ArmaControl match = display.findControlByClassName(controlClassName);
+			if (match != null) {
+				setMyExtend.extendControlClass(match);
+			} else {
+				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class"), controlClassName, setMyExtend.getClassName())));
+			}
+		}
 	}
 
 }

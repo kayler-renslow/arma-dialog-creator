@@ -81,6 +81,8 @@ public final class ArmaDialogCreator extends Application {
 
 		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
 
+		//todo have actual progress be displayed (sum of file sizes and when file is loaded, subtract file size)
+
 		for (; progress < 100; progress++) {
 			Thread.sleep(40);
 			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));

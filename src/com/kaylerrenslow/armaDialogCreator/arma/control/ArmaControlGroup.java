@@ -20,6 +20,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
@@ -105,7 +106,25 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;
 	}
-	
+
+	/** Search all controls inside {@link #getControls()} (including controls inside {@link ArmaControlGroup} instances) */
+	@Nullable
+	public ArmaControl findControlByClassName(@NotNull String className) {
+		for (ArmaControl control : getControls()) {
+			if (className.equals(control.getClassName())) {
+				return control;
+			}
+			if (control instanceof ArmaControlGroup) {
+				ArmaControlGroup group = (ArmaControlGroup) control;
+				ArmaControl found = group.findControlByClassName(className);
+				if (found != null) {
+					return found;
+				}
+			}
+		}
+		return null;
+	}
+
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
 		super.resolutionUpdate(newResolution);

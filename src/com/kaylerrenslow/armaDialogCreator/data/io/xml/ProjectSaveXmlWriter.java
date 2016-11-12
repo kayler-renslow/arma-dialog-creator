@@ -163,14 +163,14 @@ public class ProjectSaveXmlWriter {
 		if (control.getMissingRequiredProperties().size() != 0) {
 			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
-		for (ControlProperty cprop : control.getAllDefinedProperties()) {
+		for (ControlProperty cprop : control.getDefinedProperties()) {
 			fos.write(String.format("<control-property lookup-id='%d'%s>",
 					cprop.getPropertyLookup().getPropertyId(),
 					cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
 					).getBytes()
 			);
 			if (cprop.getValue() == null) {
-				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getAllDefinedProperties())");
+				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
 			}
 			writeValue(fos, cprop.getValue());
 			fos.write("</control-property>".getBytes());

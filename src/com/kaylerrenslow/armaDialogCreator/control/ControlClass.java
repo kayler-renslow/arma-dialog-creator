@@ -34,14 +34,17 @@ public class ControlClass {
 	private ControlClass extend;
 
 
-	private final LinkedList<ControlProperty> requiredProperties = new LinkedList<>();
-	private final LinkedList<ControlProperty> optionalProperties = new LinkedList<>();
+	private final List<ControlProperty> requiredProperties = new LinkedList<>();
+	private final List<ControlProperty> optionalProperties = new LinkedList<>();
+	private final List<ControlProperty> overrideProperties = new LinkedList<>();
 
-	private final LinkedList<ControlClass> requiredSubClasses = new LinkedList<>();
-	private final LinkedList<ControlClass> optionalSubClasses = new LinkedList<>();
+	private final List<ControlClass> requiredSubClasses = new LinkedList<>();
+	private final List<ControlClass> optionalSubClasses = new LinkedList<>();
+
 
 	private final ReadOnlyList<ControlProperty> requiredPropertiesReadOnly = new ReadOnlyList<>(requiredProperties);
 	private final ReadOnlyList<ControlProperty> optionalPropertiesReadOnly = new ReadOnlyList<>(optionalProperties);
+	private final ReadOnlyList<ControlProperty> overridePropertiesReadOnly = new ReadOnlyList<>(overrideProperties);
 
 	private final ReadOnlyList<ControlClass> requiredSubClassesReadOnly = new ReadOnlyList<>(requiredSubClasses);
 	private final ReadOnlyList<ControlClass> optionalSubClassesReadOnly = new ReadOnlyList<>(optionalSubClasses);
@@ -134,6 +137,7 @@ public class ControlClass {
 		return optionalSubClassesReadOnly;
 	}
 
+	@NotNull
 	public final List<ControlClass> getAllSubClasses() {
 		List<ControlClass> all = new ArrayList<>();
 		all.addAll(requiredSubClasses);
@@ -143,7 +147,7 @@ public class ControlClass {
 
 	@NotNull
 	public final List<ControlProperty> getMissingRequiredProperties() {
-		List<ControlProperty> defined = getAllDefinedProperties();
+		List<ControlProperty> defined = getDefinedProperties();
 
 		boolean found;
 		for (ControlProperty req : requiredProperties) {
@@ -174,7 +178,7 @@ public class ControlClass {
 	 @throws IllegalArgumentException when the lookup wasn't in required properties
 	 */
 	@NotNull
-	public ControlProperty findRequiredProperty(ControlPropertyLookup lookup) {
+	public ControlProperty findRequiredProperty(@NotNull ControlPropertyLookup lookup) {
 		for (ControlProperty controlProperty : getRequiredProperties()) {
 			if (controlProperty.getPropertyLookup() == lookup) {
 				return controlProperty;
@@ -190,13 +194,62 @@ public class ControlClass {
 	 @throws IllegalArgumentException when the lookup wasn't in optional properties
 	 */
 	@NotNull
-	public ControlProperty findOptionalProperty(ControlPropertyLookup lookup) {
+	public ControlProperty findOptionalProperty(@NotNull ControlPropertyLookup lookup) {
 		for (ControlProperty controlProperty : getOptionalProperties()) {
 			if (controlProperty.getPropertyLookup() == lookup) {
 				return controlProperty;
 			}
 		}
 		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in optional properties.");
+	}
+
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
+
+	 @return the ControlProperty instance
+	 @throws IllegalArgumentException when the lookup doesn't exist in the {@link ControlClass}
+	 */
+	@NotNull
+	public ControlProperty findProperty(@NotNull ControlPropertyLookup lookup) {
+		try {
+			return findRequiredProperty(lookup);
+		} catch (IllegalArgumentException ignored) {
+		}
+		try {
+			return findOptionalProperty(lookup);
+		} catch (IllegalArgumentException ignored) {
+		}
+		throw new IllegalArgumentException("Lookup element '" + lookup.name() + "' wasn't in the control class");
+	}
+
+	/**
+	 Override's a property that exists inside {@link #getExtendClass()}. When the property is found, a deep copy will be created and inserted into the list {@link #getOverriddenProperties()}
+
+	 @throws IllegalArgumentException when the property doesn't exist in the extended class
+	 @throws IllegalStateException    when {@link #getExtendClass()} is null
+	 */
+	public void overrideProperty(@NotNull ControlPropertyLookup property) throws IllegalArgumentException, IllegalStateException {
+		if (getExtendClass() == null) {
+			throw new IllegalStateException("no class has been extended");
+		}
+		ControlProperty toOverride = getExtendClass().findProperty(property);
+		SerializableValue value = toOverride.getValue();
+		if (value != null) {
+			value = value.deepCopy();
+		}
+		ControlProperty newProp = new ControlProperty(toOverride.getPropertyLookup(), value);
+		overrideProperties.add(newProp);
+	}
+
+	/** Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen */
+	public void removeOverrideProperty(@NotNull ControlPropertyLookup property) {
+		int i = 0;
+		while (i < overrideProperties.size()) {
+			if (overrideProperties.get(i).getPropertyLookup() == property) {
+				overrideProperties.remove(i);
+				break;
+			}
+		}
 	}
 
 	@NotNull
@@ -209,8 +262,15 @@ public class ControlClass {
 		return optionalPropertiesReadOnly;
 	}
 
+	@NotNull
+	public final ReadOnlyList<ControlProperty> getOverriddenProperties() {
+		return overridePropertiesReadOnly;
+	}
+
+
 	/** Will return all properties that are defined (excluding inherited properties that are defined) */
-	public @NotNull List<ControlProperty> getAllDefinedProperties() {
+	@NotNull
+	public List<ControlProperty> getDefinedProperties() {
 		List<ControlProperty> properties = new ArrayList<>(getRequiredProperties().size() + getOptionalProperties().size());
 		for (ControlProperty property : getRequiredProperties()) {
 			if (property.getValue() != null) {
@@ -224,27 +284,52 @@ public class ControlClass {
 		}
 		return properties;
 	}
-	//
-	//	/** Will return all properties that are defined (including inherited properties that are defined) */
-	//	public @NotNull List<ControlProperty> getAllDefinedProperties() {
-	//		List<ControlProperty> properties = new ArrayList<>();
-	//		for (ControlProperty property : getInheritedProperties()) {
-	//			if (property.getValue() != null) {
-	//				properties.add(property);
-	//			}
-	//		}
-	//		for (ControlProperty property : getRequiredProperties()) {
-	//			if (property.getValue() != null) {
-	//				properties.add(property);
-	//			}
-	//		}
-	//		for (ControlProperty property : getOptionalProperties()) {
-	//			if (property.getValue() != null) {
-	//				properties.add(property);
-	//			}
-	//		}
-	//		return properties;
-	//	}
+
+	/**
+	 Will return all properties that are defined (including inherited properties that are defined and overridden). This will return a concatenation of {@link #getDefinedProperties()} and
+	 {@link #getOverriddenDefinedProperties()}
+	 */
+	@NotNull
+	public List<ControlProperty> getAllDefinedProperties() {
+		List<ControlProperty> defined = getDefinedProperties();
+		List<ControlProperty> override = getOverriddenDefinedProperties();
+		List<ControlProperty> properties = new ArrayList<>(defined.size() + override.size());
+		properties.addAll(defined);
+		properties.addAll(override);
+
+		return properties;
+	}
+
+	/** Will return all properties from {@link #getInheritedProperties()} that have defined properties ({@link ControlProperty#getValue()} != null) */
+	@NotNull
+	public List<ControlProperty> getDefinedInheritedProperties() {
+		List<ControlProperty> inheritedProperties = getInheritedProperties();
+		ArrayList<ControlProperty> definedProperties = new ArrayList<>(inheritedProperties.size());
+		for (ControlProperty c : inheritedProperties) {
+			if (c.getValue() == null) {
+				continue;
+			}
+			definedProperties.add(c);
+		}
+
+		return definedProperties;
+	}
+
+
+	/**
+	 Returns a list of all inherited properties (retrieved from list {@link #getOverriddenProperties()}) that have an override value (the extended's control property is unedited and a new one is
+	 defined in this {@link ControlClass})
+	 */
+	@NotNull
+	public List<ControlProperty> getOverriddenDefinedProperties() {
+		List<ControlProperty> defined = new ArrayList<>(overrideProperties.size());
+		for (ControlProperty property : overrideProperties) {
+			if (property.getValue() != null) {
+				defined.add(property);
+			}
+		}
+		return defined;
+	}
 
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {
@@ -257,7 +342,7 @@ public class ControlClass {
 	}
 
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
-		for (ControlProperty c : extend.getAllDefinedProperties()) {
+		for (ControlProperty c : extend.getDefinedProperties()) {
 			if (!list.contains(c)) {
 				list.add(c);
 			}
@@ -273,7 +358,7 @@ public class ControlClass {
 	}
 
 	public final ReadOnlyList<ControlProperty> getEventProperties() {
-		final LinkedList<ControlProperty> eventProperties = new LinkedList<>();
+		final List<ControlProperty> eventProperties = new ArrayList<>();
 		for (ControlProperty controlProperty : requiredProperties) {
 			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
 				eventProperties.add(controlProperty);

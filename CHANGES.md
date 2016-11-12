@@ -1,5 +1,6 @@
 **Added:**
-* none
+* finished extend class functionality
+* for extending control, xml loading feature to set extended control
 
 **Changed:**
 * none
