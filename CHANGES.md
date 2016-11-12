@@ -1,6 +1,5 @@
 **Added:**
-* finished extend class functionality
-* for extending control, xml loading feature to set extended control
+* control class specification-this will be for saving and loading custom control classes
 
 **Changed:**
 * none

@@ -17,22 +17,22 @@ import org.jetbrains.annotations.NotNull;
  Provides the specification for a control class that says what sub-classes are required/optional and what properties are required/optional.
  Since the specification shouldn't change, it is best to store the returned values for later use
  Created on 07/07/2016. */
-public interface ControlClassSpecificationProvider {
+public interface ControlClassRequirementSpecification {
 
 	/** Trivial implementation of the interface */
-	ControlClassSpecificationProvider TRIVIAL_IMPL = new ControlClassSpecificationProvider() {
+	ControlClassRequirementSpecification TRIVIAL_IMPL = new ControlClassRequirementSpecification() {
 	};
 
 	/** Get all required sub-classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
 	@NotNull
-	default ControlClass[] getRequiredSubClasses() {
-		return ControlClass.EMPTY;
+	default ControlClassSpecification[] getRequiredSubClasses() {
+		return ControlClassSpecification.EMPTY;
 	}
 
 	/** Get all <b>optional</b> sub-classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
 	@NotNull
-	default ControlClass[] getOptionalSubClasses() {
-		return ControlClass.EMPTY;
+	default ControlClassSpecification[] getOptionalSubClasses() {
+		return ControlClassSpecification.EMPTY;
 	}
 
 	/** Get all required properties for the control class. Default implementation returns {@link ControlProperty#EMPTY} */

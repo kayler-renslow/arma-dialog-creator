@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
@@ -29,8 +29,8 @@ import org.jetbrains.annotations.NotNull;
  Used for a controls with type=0 (Static)
  Created on 05/25/2016. */
 public class StaticControl extends ArmaControl {
-	
-	public final static ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
+
+	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
 		
 		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.COLOR_BACKGROUND,

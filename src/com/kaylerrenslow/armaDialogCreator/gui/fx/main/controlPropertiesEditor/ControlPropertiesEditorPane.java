@@ -82,7 +82,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return optional;
 		}
 
-		/** Return true if the {@link ControlProperty} returned from {@link #getControlProperty()} is optional (not in required list returned from {@link ControlClassSpecificationProvider#getRequiredProperties()}) */
+		/** Return true if the {@link ControlProperty} returned from {@link #getControlProperty()} is optional (not in required list returned from {@link ControlClassRequirementSpecification#getRequiredProperties()}) */
 		public void setIsOptional(boolean optional) {
 			this.optional = optional;
 		}
@@ -273,7 +273,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		} else {
 			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setCustomData(mode == ControlPropertyInput.EditMode.OVERRIDE);
+			propertyInput.getControlProperty().setHasCustomData(mode == ControlPropertyInput.EditMode.OVERRIDE);
 		}
 	}
 

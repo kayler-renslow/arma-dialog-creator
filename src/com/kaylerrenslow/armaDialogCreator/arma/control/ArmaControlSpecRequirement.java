@@ -10,8 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecificationProvider;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassRequirementSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/07/2016.
  */
-public class ArmaControlSpecProvider implements ControlClassSpecificationProvider {
+public class ArmaControlSpecRequirement implements ControlClassRequirementSpecification {
 	/** Returns a new array of the properties that are required for all controls */
 	public final static ControlPropertyLookup[] DEFAULT_REQUIRED_PROPERTIES = {
 			ControlPropertyLookup.TYPE,
@@ -39,14 +39,14 @@ public class ArmaControlSpecProvider implements ControlClassSpecificationProvide
 
 	@NotNull
 	@Override
-	public ControlClass[] getRequiredSubClasses() {
-		return ControlClass.EMPTY;
+	public ControlClassSpecification[] getRequiredSubClasses() {
+		return ControlClassSpecification.EMPTY;
 	}
 
 	@NotNull
 	@Override
-	public ControlClass[] getOptionalSubClasses() {
-		return ControlClass.EMPTY;
+	public ControlClassSpecification[] getOptionalSubClasses() {
+		return ControlClassSpecification.EMPTY;
 	}
 
 	@NotNull

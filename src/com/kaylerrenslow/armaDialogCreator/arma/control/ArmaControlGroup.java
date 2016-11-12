@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 
-	public static final ArmaControlSpecProvider SPEC_PROVIDER = new ArmaControlSpecProvider() {
+	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
 		
 		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 		});

@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecProvider;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import org.jetbrains.annotations.NotNull;
 
@@ -65,9 +65,9 @@ public enum ArmaControlLookup {
 	MAP_MAIN(ControlType.MAP_MAIN, StaticControl.SPEC_PROVIDER);
 
 	public final ControlType controlType;
-	public final ArmaControlSpecProvider specProvider;
+	public final ArmaControlSpecRequirement specProvider;
 
-	ArmaControlLookup(ControlType controlType, ArmaControlSpecProvider specProvider) {
+	ArmaControlLookup(ControlType controlType, ArmaControlSpecRequirement specProvider) {
 		this.controlType = controlType;
 		this.specProvider = specProvider;
 	}

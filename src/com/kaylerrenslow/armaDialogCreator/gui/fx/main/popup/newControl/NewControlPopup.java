@@ -30,6 +30,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -122,6 +123,10 @@ public class NewControlPopup extends StagePopup<VBox> {
 		VBox.setVgrow(taPreviewSample, Priority.ALWAYS);
 		VBox.setVgrow(vboxPreview, Priority.ALWAYS);
 		hboxBody.getChildren().add(vboxPreview);
+
+		for (Node n : hboxBody.getChildren()) {
+			HBox.setHgrow(n, Priority.ALWAYS);
+		}
 
 		myRootElement.getChildren().addAll(hboxHeader, new Separator(Orientation.HORIZONTAL), hboxBody, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 		myStage.sizeToScene();

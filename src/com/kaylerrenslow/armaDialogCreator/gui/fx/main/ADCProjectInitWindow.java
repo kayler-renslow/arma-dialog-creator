@@ -277,19 +277,16 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 					try {
 						result = ProjectXmlLoader.parse(projectInitWindow.projectLoadContext, chosen);
 					} catch (XmlParseException e) {
-						new StagePopup<VBox>(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")) {
+						new StageDialog<VBox>(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project"), false, true, false) {
 							@Override
 							public void show() {
-								myRootElement.setPadding(new Insets(10));
 								final TextArea taError = new TextArea(e.getMessage());
 								taError.setEditable(false);
 								myStage.setResizable(false);
 								myRootElement.getChildren().addAll(
 										new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")),
 										new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.reason")),
-										taError,
-										new Separator(Orientation.HORIZONTAL),
-										getBoundResponseFooter(false, true, false)
+										taError
 								);
 
 								super.show();
@@ -400,6 +397,11 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 				myRootElement.setFitToWidth(true);
 				myRootElement.setFitToHeight(true);
 				VBox root = (VBox) myRootElement.getContent();
+
+				//swap out the dialog's root element padding for the vbox that is the root element of scrollpane
+				root.setPadding(super.myRootElement.getPadding());
+				super.myRootElement.setPadding(new Insets(0));
+
 				root.getChildren().add(new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.errors_title")));
 				root.getChildren().add(new Separator(Orientation.HORIZONTAL));
 				for (ParseError error : result.getErrors()) {

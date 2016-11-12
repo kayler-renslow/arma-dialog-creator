@@ -59,7 +59,7 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
 		try {
 			this.rendererLookup = rendererLookup;
@@ -85,7 +85,7 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ControlType type, @NotNull ArmaControlSpecProvider provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
+	public ArmaControl(@NotNull String name, @NotNull ControlType type, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
 					   @NotNull Env
 							   env) {
 		this(name, provider, resolution, rendererLookup, env);
@@ -107,7 +107,7 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer for the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecProvider provider, int idc, @NotNull ControlType type, @NotNull ControlStyleGroup style,
+	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlType type, @NotNull ControlStyleGroup style,
 					   @NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
 					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
@@ -126,7 +126,7 @@ public class ArmaControl extends ControlClass implements Control {
 		defineH(height);
 	}
 
-	public ArmaControl(@NotNull ControlClass controlClass, @NotNull ArmaControlSpecProvider specProvider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+	public ArmaControl(@NotNull ControlClass controlClass, @NotNull ArmaControlSpecRequirement specProvider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(controlClass.getClassName(), specProvider, resolution, rendererLookup, env);
 		List<ControlProperty> propertyList = controlClass.getDefinedProperties();
 		for (ControlProperty property : propertyList) {

@@ -29,7 +29,7 @@ General
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
 
-* ControlProperty custom data isn't saved
+* ControlProperty custom data isn't saved to file
 
 Bugs
 -----------------------------------

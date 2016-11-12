@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -44,15 +45,24 @@ public class ControlProperty {
 	private final ValueObserver<SerializableValue> valueObserver;
 	private SerializableValue defaultValue;
 
-	/** The custom data instance for when {@link #setCustomData(boolean, Object)} is invoked */
+	/** The custom data instance for when {@link #setHasCustomData(boolean, Object)} is invoked */
 	private Object customData;
-	/** True when {@link #setCustomData(boolean, Object)} with true passed in parameter, false otherwise. */
+	/** True when {@link #setHasCustomData(boolean, Object)} with true passed in parameter, false otherwise. */
 	private boolean customDataSet = false;
 	private ValueObserver<Object> customDataValueObserver;
 
 	/** Value to switch to when the set macro becomes null. */
 	private SerializableValue beforeMacroValue;
 	private @Nullable Macro myMacro;
+
+	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
+	public ControlProperty(@NotNull ControlProperty toDeepCopy) {
+		this(toDeepCopy.getPropertyLookup(), toDeepCopy.getValue() != null ? toDeepCopy.getValue().deepCopy() : null);
+		setHasCustomData(toDeepCopy.isCustomData(), toDeepCopy.getCustomData());
+		if (toDeepCopy.getMacro() != null) {
+			setValueToMacro(toDeepCopy.getMacro());
+		}
+	}
 
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
@@ -116,22 +126,41 @@ public class ControlProperty {
 
 	/**
 	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
-	 invoking {@link #setCustomData(boolean, Object)}. This will not affect {@link #getValue()}.
+	 invoking {@link #setHasCustomData(boolean, Object)}. This will not affect {@link #getValue()}.
 	 */
 	public boolean isCustomData() {
 		return customDataSet;
 	}
 
-	/** @see #isCustomData() */
-	public void setCustomData(boolean custom, @Nullable Object customData) {
-		this.customDataSet = custom;
+	/**
+	 Set whether custom data is set and the custom data value.
+
+	 @see #isCustomData()
+	 */
+	public void setHasCustomData(boolean custom, @Nullable Object customData) {
+		setCustomDataValue(customData);
+		setHasCustomData(custom);//should come after value set
+	}
+
+	/**
+	 Set the custom data value and set {@link #isCustomData()} to true.
+
+	 @see #isCustomData()
+	 */
+	public void setCustomDataValue(@Nullable Object customData) {
+		setHasCustomData(true);
 		this.customData = customData;
-		if (custom && this.customDataValueObserver == null) {
+		if (this.customDataValueObserver == null) {
 			customDataValueObserver = new ValueObserver<>(customData);
 		}
 	}
 
-	/** Get the custom data set from {@link #setCustomData(boolean, Object)} */
+	/** Does nothing except mark that the {@link ControlProperty} is/ins't using custom data. @see #isCustomData() */
+	public void setHasCustomData(boolean custom) {
+		this.customDataSet = custom;
+	}
+
+	/** Get the custom data set from {@link #setHasCustomData(boolean, Object)} */
 	@Nullable
 	public Object getCustomData() {
 		return customData;
@@ -139,8 +168,8 @@ public class ControlProperty {
 
 	/** Get the {@link ValueObserver} instance for the {@link #getCustomData()} value. Will be null when the custom data is never set. */
 	@Nullable
-	public ValueObserver<Object> getCustomDataValueObserver() {
-		return customDataValueObserver;
+	public ReadOnlyValueObserver<Object> getCustomDataValueObserver() {
+		return customDataValueObserver.getReadOnlyValueObserver();
 	}
 
 	@NotNull

@@ -30,7 +30,7 @@ import java.util.List;
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
 
-	private final ControlClassSpecificationProvider specProvider;
+	private final ControlClassRequirementSpecification specProvider;
 	private ControlClass extend;
 
 
@@ -54,20 +54,39 @@ public class ControlClass {
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
 
-	public ControlClass(@NotNull String name, @NotNull ControlClassSpecificationProvider provider) {
+	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification provider) {
 		this.className = name;
 		this.specProvider = provider;
 
 		addProperties(requiredProperties, specProvider.getRequiredProperties());
 		addProperties(optionalProperties, specProvider.getOptionalProperties());
-		addRequiredSubClasses(specProvider.getRequiredSubClasses());
-		addOptionalSubClasses(specProvider.getOptionalSubClasses());
+		addSubClasses(requiredSubClasses, specProvider.getRequiredSubClasses());
+		addSubClasses(optionalSubClasses, specProvider.getOptionalSubClasses());
 
 		for (ControlProperty controlProperty : requiredProperties) {
 			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
 		}
 		for (ControlProperty controlProperty : optionalProperties) {
 			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+		}
+	}
+
+	/** Construct a {@link ControlClass} with the given specification */
+	public ControlClass(@NotNull ControlClassSpecification specification) {
+		this.className = specification.getControlClassName();
+		this.specProvider = specification;
+		extendControlClass(specification.getExtendClass());
+		for (ControlProperty property : specification.getRequiredControlProperties()) {
+			requiredProperties.add(new ControlProperty(property));
+		}
+		for (ControlProperty property : specification.getOptionalControlProperties()) {
+			optionalProperties.add(new ControlProperty(property));
+		}
+		for (ControlClassSpecification s : specification.getRequiredSubClasses()) {
+			requiredSubClasses.add(new ControlClass(s));
+		}
+		for (ControlClassSpecification s : specification.getOptionalSubClasses()) {
+			optionalSubClasses.add(new ControlClass(s));
 		}
 	}
 
@@ -105,25 +124,13 @@ public class ControlClass {
 	}
 
 	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
-	public final ControlClassSpecificationProvider getSpecProvider() {
+	public final ControlClassRequirementSpecification getSpecProvider() {
 		return specProvider;
 	}
 
-	private void addRequiredSubClasses(@NotNull ControlClass... subClasses) {
-		for (ControlClass subClass : subClasses) {
-			if (subClass == this) {
-				throw new IllegalArgumentException("Can't require a class as a subclass of itself");
-			}
-			requiredSubClasses.add(subClass);
-		}
-	}
-
-	private void addOptionalSubClasses(@NotNull ControlClass... subClasses) {
-		for (ControlClass subClass : subClasses) {
-			if (subClass == this) {
-				throw new IllegalArgumentException("Can't make a class as a subclass of itself");
-			}
-			optionalSubClasses.add(subClass);
+	private void addSubClasses(@NotNull List<ControlClass> subClasses, @NotNull ControlClassSpecification... subClassesSpecs) {
+		for (ControlClassSpecification subClass : subClassesSpecs) {
+			subClasses.add(new ControlClass(subClass));
 		}
 	}
 
