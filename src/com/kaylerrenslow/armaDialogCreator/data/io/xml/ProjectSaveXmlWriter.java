@@ -29,7 +29,6 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -56,82 +55,82 @@ public class ProjectSaveXmlWriter {
 	}
 
 	public void write() throws IOException {
-		FileOutputStream fos = new FileOutputStream(projectSaveXml);
+		XmlWriterOutputStream stm = new XmlWriterOutputStream(projectSaveXml);
 
-		fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
-		fos.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION).getBytes());
+		stm.writeDefaultProlog();
+		stm.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION));
 
-		fos.write("<project-description>".getBytes());
-		fos.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : "").getBytes());
-		fos.write("</project-description>".getBytes());
+		stm.write("<project-description>");
+		stm.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : ""));
+		stm.write("</project-description>");
 
-		writeResources(fos, project.getResourceRegistry());
-		writeMacros(fos);
-		writeDisplay(fos, project.getEditingDisplay());
+		writeResources(stm, project.getResourceRegistry());
+		writeMacros(stm);
+		writeDisplay(stm, project.getEditingDisplay());
 
-		writeProjectExportConfiguration(fos, project.getExportConfiguration());
+		writeProjectExportConfiguration(stm, project.getExportConfiguration());
 
-		fos.write("</project>".getBytes());
+		stm.write("</project>");
 
-		fos.flush();
-		fos.close();
+		stm.flush();
+		stm.close();
 	}
 
-	private void writeProjectExportConfiguration(FileOutputStream fos, @NotNull ProjectExportConfiguration configuration) throws IOException {
-		fos.write("<export-config>".getBytes());
-		writeProjectExportConfigurationAttribute(fos, "export-class-name", configuration.getExportClassName());
-		writeProjectExportConfigurationAttribute(fos, "export-location", configuration.getExportLocation().getPath());
-		writeProjectExportConfigurationAttribute(fos, "place-adc-notice", configuration.shouldPlaceAdcNotice() + "");
-		writeProjectExportConfigurationAttribute(fos, "export-macros-to-file", configuration.shouldExportMacrosToFile() + "");
-		writeProjectExportConfigurationAttribute(fos, "export-file-type-ext", configuration.getHeaderFileType().getExtension());
-		fos.write("</export-config>".getBytes());
+	private void writeProjectExportConfiguration(XmlWriterOutputStream stm, @NotNull ProjectExportConfiguration configuration) throws IOException {
+		stm.write("<export-config>");
+		writeProjectExportConfigurationAttribute(stm, "export-class-name", configuration.getExportClassName());
+		writeProjectExportConfigurationAttribute(stm, "export-location", configuration.getExportLocation().getPath());
+		writeProjectExportConfigurationAttribute(stm, "place-adc-notice", configuration.shouldPlaceAdcNotice() + "");
+		writeProjectExportConfigurationAttribute(stm, "export-macros-to-file", configuration.shouldExportMacrosToFile() + "");
+		writeProjectExportConfigurationAttribute(stm, "export-file-type-ext", configuration.getHeaderFileType().getExtension());
+		stm.write("</export-config>");
 	}
 
-	private void writeProjectExportConfigurationAttribute(FileOutputStream fos, @NotNull String attributeName, @NotNull String value) throws IOException {
-		fos.write(String.format("<config-attribute name='%s'>", attributeName).getBytes());
-		fos.write(value.getBytes());
-		fos.write("</config-attribute>".getBytes());
+	private void writeProjectExportConfigurationAttribute(XmlWriterOutputStream stm, @NotNull String attributeName, @NotNull String value) throws IOException {
+		stm.write(String.format("<config-attribute name='%s'>", attributeName));
+		stm.write(value);
+		stm.write("</config-attribute>");
 	}
 
-	private void writeResources(FileOutputStream fos, @NotNull ResourceRegistry resourceRegistry) throws IOException {
-		new ResourceRegistryXmlWriter(resourceRegistry).write(fos);
+	private void writeResources(XmlWriterOutputStream stm, @NotNull ResourceRegistry resourceRegistry) throws IOException {
+		new ResourceRegistryXmlWriter(resourceRegistry).write(stm);
 	}
 
-	private void writeDisplay(@NotNull FileOutputStream fos, @NotNull ArmaDisplay editingDisplay) throws IOException {
-		fos.write("<display>".getBytes());
+	private void writeDisplay(@NotNull XmlWriterOutputStream stm, @NotNull ArmaDisplay editingDisplay) throws IOException {
+		stm.write("<display>");
 
-		writeDisplayProperties(fos, editingDisplay);
+		writeDisplayProperties(stm, editingDisplay);
 
-		fos.write("<display-controls type='background'>".getBytes());
-		writeControls(fos, treeStructureBg.getRoot());
-		fos.write("</display-controls>".getBytes());
+		stm.write("<display-controls type='background'>");
+		writeControls(stm, treeStructureBg.getRoot());
+		stm.write("</display-controls>");
 
-		fos.write("<display-controls type='main'>".getBytes());
-		writeControls(fos, treeStructureMain.getRoot());
-		fos.write("</display-controls>".getBytes());
+		stm.write("<display-controls type='main'>");
+		writeControls(stm, treeStructureMain.getRoot());
+		stm.write("</display-controls>");
 
-		fos.write("</display>".getBytes());
+		stm.write("</display>");
 	}
 
-	private void writeDisplayProperties(@NotNull FileOutputStream fos, @NotNull ArmaDisplay display) throws IOException {
+	private void writeDisplayProperties(@NotNull XmlWriterOutputStream stm, @NotNull ArmaDisplay display) throws IOException {
 		for (DisplayProperty property : display.getDisplayProperties()) {
 			if (property.getValue() == null) {
 				continue;
 			}
-			fos.write(String.format("<display-property lookup-id='%s'>", property.getPropertyLookup().getPropertyId()).getBytes());
-			writeValue(fos, property.getValue());
-			fos.write("</display-property>".getBytes());
+			stm.write(String.format("<display-property lookup-id='%s'>", property.getPropertyLookup().getPropertyId()));
+			writeValue(stm, property.getValue());
+			stm.write("</display-property>");
 		}
 	}
 
-	private void writeControls(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
+	private void writeControls(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
 		for (TreeStructure.TreeNode<? extends TreeItemEntry> treeNode : parent.getChildren()) {
 			if (treeNode.getData() instanceof FolderTreeItemEntry) {
 				FolderTreeItemEntry folderTreeItemEntry = (FolderTreeItemEntry) treeNode.getData();
-				writeFolder(fos, treeNode, folderTreeItemEntry);
+				writeFolder(stm, treeNode, folderTreeItemEntry);
 			} else if (treeNode.getData() instanceof ControlTreeItemEntry) { //control group tree item entry should extend this class
 				ControlTreeItemEntry controlTreeItemEntry = (ControlTreeItemEntry) treeNode.getData();
-				writeControl(fos, treeNode, controlTreeItemEntry.getMyArmaControl());
+				writeControl(stm, treeNode, controlTreeItemEntry.getMyArmaControl());
 			} else {
 				throw new IllegalStateException("unknown tree node data class");
 			}
@@ -139,24 +138,24 @@ public class ProjectSaveXmlWriter {
 
 	}
 
-	private void writeFolder(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
-		fos.write(String.format("<folder name='%s'>", esc(folder.getText())).getBytes());
-		writeControls(fos, treeNode);
-		fos.write("</folder>".getBytes());
+	private void writeFolder(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
+		stm.write(String.format("<folder name='%s'>", esc(folder.getText())));
+		writeControls(stm, treeNode);
+		stm.write("</folder>");
 	}
 
-	private void writeControl(@NotNull FileOutputStream fos, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull ArmaControl control) throws IOException {
+	private void writeControl(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull ArmaControl control) throws IOException {
 		final String controlGroupStr = "control-group";
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
 
-		fos.write(String.format("<%s renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
+		stm.write(String.format("<%s renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getRendererLookup().id,
 				control.getControlType().typeId,
 				control.getClassName(),
 				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass().getClassName()) : ""
-				).getBytes()
+				)
 		);
 
 		//write control properties
@@ -164,44 +163,40 @@ public class ProjectSaveXmlWriter {
 			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getDefinedProperties()) {
-			fos.write(String.format("<control-property lookup-id='%d'%s>",
+			stm.write(String.format("<control-property lookup-id='%d'%s>",
 					cprop.getPropertyLookup().getPropertyId(),
 					cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
-					).getBytes()
+					)
 			);
 			if (cprop.getValue() == null) {
 				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
 			}
-			writeValue(fos, cprop.getValue());
-			fos.write("</control-property>".getBytes());
+			writeValue(stm, cprop.getValue());
+			stm.write("</control-property>");
 		}
 
 		if (controlGroup) {
-			writeControls(fos, treeNode);
+			writeControls(stm, treeNode);
 		}
 
-		fos.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">").getBytes());
+		stm.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">"));
 	}
 
-	private void writeMacros(@NotNull FileOutputStream fos) throws IOException {
-		fos.write("<macros>".getBytes());
+	private void writeMacros(@NotNull XmlWriterOutputStream stm) throws IOException {
+		stm.write("<macros>");
 
 		MacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
-			fos.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())).getBytes());
-			writeValue(fos, macro.getValue());
-			fos.write("</macro>".getBytes());
+			stm.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())));
+			writeValue(stm, macro.getValue());
+			stm.write("</macro>");
 		}
 
-		fos.write("</macros>".getBytes());
+		stm.write("</macros>");
 	}
 
-	private void writeValue(@NotNull FileOutputStream fos, @NotNull SerializableValue svalue) throws IOException {
-		for (String value : svalue.getAsStringArray()) {
-			fos.write("<value>".getBytes());
-			fos.write(esc(value).getBytes());
-			fos.write("</value>".getBytes());
-		}
+	private void writeValue(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
+		ProjectXmlUtil.writeValueTags(stm, svalue);
 	}
 
 	private static String esc(String value) {

@@ -34,6 +34,7 @@ public class Project {
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 	private final MacroRegistry macroRegistry = new MacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
+	private final CustomControlClassRegistry controlRegistry = new CustomControlClassRegistry();
 	private ProjectExportConfiguration exportConfiguration;
 
 	public Project(@Nullable String projectName, @NotNull File appSaveDirectory) {
@@ -120,6 +121,11 @@ public class Project {
 		return resourceRegistry;
 	}
 
+	@NotNull
+	public CustomControlClassRegistry getCustomControlClassRegistry() {
+		return controlRegistry;
+	}
+
 	@Override
 	@NotNull
 	public String toString() {
@@ -134,4 +140,5 @@ public class Project {
 	public void setExportConfiguration(@NotNull ProjectExportConfiguration exportConfiguration) {
 		this.exportConfiguration = exportConfiguration;
 	}
+
 }

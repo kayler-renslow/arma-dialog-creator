@@ -77,10 +77,10 @@ public class ControlClass {
 		this.specProvider = specification;
 		extendControlClass(specification.getExtendClass());
 		for (ControlProperty property : specification.getRequiredControlProperties()) {
-			requiredProperties.add(new ControlProperty(property));
+			requiredProperties.add(property.deepCopy());
 		}
 		for (ControlProperty property : specification.getOptionalControlProperties()) {
-			optionalProperties.add(new ControlProperty(property));
+			optionalProperties.add(property.deepCopy());
 		}
 		for (ControlClassSpecification s : specification.getRequiredSubClasses()) {
 			requiredSubClasses.add(new ControlClass(s));

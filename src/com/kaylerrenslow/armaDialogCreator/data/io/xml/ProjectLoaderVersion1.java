@@ -34,7 +34,6 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -133,7 +132,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private void loadResourceRegistry() {
-		List<Element> externalResourcesElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME);
+		List<Element> externalResourcesElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "external-resources");
 		for (Element externalResourcesElement : externalResourcesElementList) {
 			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElement);
 		}
@@ -309,25 +308,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
 
-		LinkedList<ProjectXmlLoader.ControlLoadConfig> properties = new LinkedList<>();
+		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
-			ControlPropertyLookup lookup;
-			String lookupIdStr = controlPropertyElement.getAttribute("lookup-id");
-			String macroKey = controlPropertyElement.getAttribute("macro-key");
-			try {
-				int id = Integer.parseInt(lookupIdStr);
-				lookup = ControlPropertyLookup.findById(id);
-			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"), lookupIdStr, controlClassName)));
-				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
-			}
-			SerializableValue value = getValue(lookup.getPropertyType(), controlPropertyElement);
-			if (value == null) {
-				return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
-			}
-			properties.add(new ProjectXmlLoader.ControlLoadConfig(lookup, value, macroKey));
+			properties.add(ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader));
 		}
-
 
 		ArmaControlSpecRequirement specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
@@ -346,7 +330,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
-			for (ProjectXmlLoader.ControlLoadConfig config : properties) {
+			for (ControlPropertySpecification config : properties) {
 				if (config.lookup == lookup) {
 					ControlProperty property = control.findRequiredProperty(lookup);
 					setControlPropertyValue(macros, config, property);
@@ -355,7 +339,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 
 		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
-			for (ProjectXmlLoader.ControlLoadConfig config : properties) {
+			for (ControlPropertySpecification config : properties) {
 				if (config.lookup == lookup) {
 					ControlProperty property = control.findOptionalProperty(lookup);
 					setControlPropertyValue(macros, config, property);
@@ -371,7 +355,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return control;
 	}
 
-	private void setControlPropertyValue(List<Macro> macros, ProjectXmlLoader.ControlLoadConfig config, ControlProperty property) {
+	private SerializableValue getValue(@NotNull PropertyType propertyType, @NotNull Element controlPropertyElement) {
+		return ProjectXmlUtil.getValue(dataContext, propertyType, controlPropertyElement, this.loader);
+	}
+
+	private void setControlPropertyValue(List<Macro> macros, ControlPropertySpecification config, ControlProperty property) {
 		property.setValue(config.value);
 		if (config.macroKey != null) {
 			for (Macro macro : macros) {
@@ -382,10 +370,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 	}
 
-	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ProjectXmlLoader.ControlLoadConfig> master) {
+	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ControlPropertySpecification> master) {
 		for (ControlPropertyLookup toMatchLookup : toMatch) {
 			boolean matched = false;
-			for (ProjectXmlLoader.ControlLoadConfig masterLookup : master) {
+			for (ControlPropertySpecification masterLookup : master) {
 				if (masterLookup.lookup == toMatchLookup) {
 					matched = true;
 					break;
@@ -399,41 +387,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return true;
 	}
 
-	/**
-	 Converts an xml element where it's children are value tags.<br>
-	 Sample:<br>
-	 <code>
-	 &lt;parentElement&gt;<br>
-	 &nbsp;&nbsp;&lt;value&gt;value text&lt;/value&gt;<br>
-	 &nbsp;&nbsp;&lt;value&gt;value text&lt;/value&gt;<br>
-	 &lt;/parentElement&gt;
-	 </code>
 
-	 @param propertyType type that will be used to determine the type of {@link com.kaylerrenslow.armaDialogCreator.util.ValueConverter}
-	 @param parentElement element that is the parent of the value tags
-	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in errors).
-	 */
-	private SerializableValue getValue(PropertyType propertyType, Element parentElement) {
-		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "value");
-		if (valueElements.size() < propertyType.propertyValuesSize) {
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
-			return null;
-		}
-		String[] values = new String[propertyType.propertyValuesSize];
-		int valueInd = 0;
-		for (Element valueElement : valueElements) {
-			values[valueInd++] = XmlUtil.getImmediateTextContent(valueElement);
-		}
-		SerializableValue value;
-		try {
-			value = propertyType.converter.convert(dataContext, values);
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_values_f"), Arrays.toString(values))));
-			return null;
-		}
-		return value;
-	}
 
 	private interface AfterLoadJob {
 		void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader);

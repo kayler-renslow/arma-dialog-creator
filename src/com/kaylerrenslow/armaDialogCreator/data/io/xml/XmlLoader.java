@@ -27,7 +27,7 @@ import java.util.Arrays;
 /**
  Created by Kayler on 07/31/2016.
  */
-class XmlLoader {
+class XmlLoader implements XmlErrorRecorder {
 	protected final Document document;
 	protected final @Nullable DataContext dataContext;
 	private final ArrayList<ParseError> errors = new ArrayList<>();
@@ -53,22 +53,19 @@ class XmlLoader {
 	
 	static class ParseResult {
 		private final ArrayList<ParseError> errors;
-		
+
 		protected ParseResult(ArrayList<ParseError> errors) {
 			this.errors = errors;
 		}
-		
+
 		@NotNull
 		public ArrayList<ParseError> getErrors() {
 			return errors;
 		}
 	}
-	
-	protected void addError(@NotNull ParseError error) {
-		errors.add(error);
-	}
-	
-	protected final ArrayList<ParseError> getErrors() {
+
+	@Override
+	public final ArrayList<ParseError> getErrors() {
 		return errors;
 	}
 	

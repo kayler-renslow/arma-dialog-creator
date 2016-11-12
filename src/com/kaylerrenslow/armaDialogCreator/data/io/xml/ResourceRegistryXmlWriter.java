@@ -16,7 +16,6 @@ import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -25,34 +24,25 @@ import java.io.IOException;
 public class ResourceRegistryXmlWriter {
 	private final ResourceRegistry resourceRegistry;
 
-	/** xml tag used for holding all {@link #EXTERNAL_INDIV_RESOURCE_TAG_NAME} tags */
-	public static final String EXTERNAL_RESOURCES_TAG_NAME = "external-resources";
-	/** xml tag used for holding all {@link #RESOURCE_PROPERTY_TAG_NAME} tags */
-	public static final String EXTERNAL_INDIV_RESOURCE_TAG_NAME = "external-resource";
-	/** xml tag used for holding a resource property */
-	public static final String RESOURCE_PROPERTY_TAG_NAME = "resource-property";
-	/** attribute name used for tag {@link #RESOURCE_PROPERTY_TAG_NAME} */
-	public static final String RESOURCE_PROPERTY_KEY = "key";
-
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
 			super(ResourceRegistry.getGlobalRegistry());
 		}
 
 		@NotNull
-		public FileOutputStream getFileOutputStream() throws FileNotFoundException {
-			return new FileOutputStream(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile());
+		public XmlWriterOutputStream getXmlWriterOutputStream() throws FileNotFoundException {
+			return new XmlWriterOutputStream(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile());
 		}
 
 
 		@Override
-		public void write(@NotNull FileOutputStream fos) throws IOException {
-			fos.write("<?xml version='1.0' encoding='UTF-8' ?>".getBytes());
+		public void write(@NotNull XmlWriterOutputStream fos) throws IOException {
+			fos.writeDefaultProlog();
 			super.write(fos);
 		}
 
 		public void writeAndClose() throws IOException {
-			FileOutputStream fos = getFileOutputStream();
+			XmlWriterOutputStream fos = getXmlWriterOutputStream();
 			write(fos);
 			fos.flush();
 			fos.close();
@@ -63,22 +53,22 @@ public class ResourceRegistryXmlWriter {
 		this.resourceRegistry = resourceRegistry;
 	}
 
-	public void write(@NotNull FileOutputStream fos) throws IOException {
-		fos.write(("<" + EXTERNAL_RESOURCES_TAG_NAME + ">").getBytes());
+	public void write(@NotNull XmlWriterOutputStream stm) throws IOException {
+		stm.write("<external-resources>");
 		for (ExternalResource resource : resourceRegistry.getExternalResourceList()) {
-			writeResource(fos, resource);
+			writeResource(stm, resource);
 		}
-		fos.write(("</" + EXTERNAL_RESOURCES_TAG_NAME + ">").getBytes());
+		stm.write("</external-resources>");
 	}
 
-	private void writeResource(@NotNull FileOutputStream fos, ExternalResource resource) throws IOException {
+	private void writeResource(@NotNull XmlWriterOutputStream fos, ExternalResource resource) throws IOException {
 		String attrs = "";
 		for (KeyValueString keyValue : resource.getProperties()) {
-			attrs += String.format("<%s %s='%s'>%s</%1$s>", RESOURCE_PROPERTY_TAG_NAME, RESOURCE_PROPERTY_KEY, keyValue.getKey(), keyValue.getValue());
+			attrs += String.format("<resource-property key='%s'>%s</resource-property>", keyValue.getKey(), keyValue.getValue());
 		}
-		fos.write(("<" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
-		fos.write(resource.getExternalFile().getPath().getBytes());
-		fos.write(attrs.getBytes());
-		fos.write(("</" + EXTERNAL_INDIV_RESOURCE_TAG_NAME + ">").getBytes());
+		fos.write("<external-resource>");
+		fos.write(resource.getExternalFile().getPath());
+		fos.write(attrs);
+		fos.write("</external-resource>");
 	}
 }

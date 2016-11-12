@@ -10,8 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
@@ -90,21 +88,6 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 		
 	}
-	
-	
-	static class ControlLoadConfig {
-		public final ControlPropertyLookup lookup;
-		public final SerializableValue value;
-		public final String macroKey;
-		
-		public ControlLoadConfig(ControlPropertyLookup lookup, SerializableValue value, String macroKey) {
-			this.lookup = lookup;
-			this.value = value;
-			if (macroKey.trim().length() == 0) {
-				this.macroKey = null;
-			} else {
-				this.macroKey = macroKey.trim();
-			}
-		}
-	}
+
+
 }

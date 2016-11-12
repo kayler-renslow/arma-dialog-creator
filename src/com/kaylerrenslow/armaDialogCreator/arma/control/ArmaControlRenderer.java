@@ -144,22 +144,34 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
 	protected void setXSilent(Expression x) {
+		if (x == null) {
+			return;
+		}
 		setX1Silent(calcScreenX(x.getNumVal()));
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
 	protected void setYSilent(Expression y) {
+		if (y == null) {
+			return;
+		}
 		setY1Silent(calcScreenY(y.getNumVal()));
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
 	protected void setWSilent(Expression width) {
+		if (width == null) {
+			return;
+		}
 		int w = calcScreenWidth(width.getNumVal());
 		setX2Silent(getX1() + w);
 	}
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
 	protected void setHSilent(Expression height) {
+		if (height == null) {
+			return;
+		}
 		int h = calcScreenHeight(height.getNumVal());
 		setY2Silent(getY1() + h);
 	}

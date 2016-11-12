@@ -8,28 +8,43 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.ArrayList;
-import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 10/23/2016.
+ Created by Kayler on 11/12/2016.
  */
-public class CustomControlClassRegistry {
-	private final List<ControlClassSpecification> controlClassList = new ArrayList<>();
+public class ControlPropertySpecification {
+	public final ControlPropertyLookup lookup;
+	public final SerializableValue value;
+	public final String macroKey;
 
-	CustomControlClassRegistry() {
+	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup, @NotNull SerializableValue value, @Nullable String macroKey) {
+		this.lookup = lookup;
+		this.value = value;
+		if (macroKey == null || macroKey.trim().length() == 0) {
+			this.macroKey = null;
+		} else {
+			this.macroKey = macroKey.trim();
+		}
 	}
 
-	public List<ControlClassSpecification> getControlClassList() {
-		return controlClassList;
+	@NotNull
+	public ControlPropertyLookup getLookup() {
+		return lookup;
 	}
 
-	public void addControlClass(@NotNull ControlClassSpecification specification) {
-		controlClassList.add(specification);
+	@NotNull
+	public SerializableValue getValue() {
+		return value;
+	}
+
+	/** Get the name of the {@link Macro} to be used. */
+	@Nullable
+	public String getMacroKey() {
+		return macroKey;
 	}
 }

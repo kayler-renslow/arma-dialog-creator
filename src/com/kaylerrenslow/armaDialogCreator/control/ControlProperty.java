@@ -56,12 +56,14 @@ public class ControlProperty {
 	private @Nullable Macro myMacro;
 
 	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
-	public ControlProperty(@NotNull ControlProperty toDeepCopy) {
-		this(toDeepCopy.getPropertyLookup(), toDeepCopy.getValue() != null ? toDeepCopy.getValue().deepCopy() : null);
-		setHasCustomData(toDeepCopy.isCustomData(), toDeepCopy.getCustomData());
-		if (toDeepCopy.getMacro() != null) {
-			setValueToMacro(toDeepCopy.getMacro());
+	@NotNull
+	public ControlProperty deepCopy() {
+		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
+		copy.setHasCustomData(isCustomData(), getCustomData());
+		if (getMacro() != null) {
+			copy.setValueToMacro(getMacro());
 		}
+		return copy;
 	}
 
 	/**

@@ -8,28 +8,19 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.data;
+package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
- Created by Kayler on 10/23/2016.
+ Created by Kayler on 11/12/2016.
  */
-public class CustomControlClassRegistry {
-	private final List<ControlClassSpecification> controlClassList = new ArrayList<>();
-
-	CustomControlClassRegistry() {
+public interface XmlErrorRecorder {
+	default void addError(@NotNull ParseError error) {
+		getErrors().add(error);
 	}
 
-	public List<ControlClassSpecification> getControlClassList() {
-		return controlClassList;
-	}
-
-	public void addControlClass(@NotNull ControlClassSpecification specification) {
-		controlClassList.add(specification);
-	}
+	ArrayList<ParseError> getErrors();
 }

@@ -43,16 +43,16 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 	}
 
 	public static void loadRegistryFromElement(@NotNull ResourceRegistry resourceRegistry, @NotNull Element externalResourcesTag) {
-		if (!externalResourcesTag.getTagName().equals(ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME)) {
-			throw new IllegalArgumentException("externalResourcesTag does not have the tag name '" + ResourceRegistryXmlWriter.EXTERNAL_RESOURCES_TAG_NAME + "'");
+		if (!externalResourcesTag.getTagName().equals("external-resources")) {
+			throw new IllegalArgumentException("externalResourcesTag does not have the tag name '" + "external-resources" + "'");
 		}
-		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, ResourceRegistryXmlWriter.EXTERNAL_INDIV_RESOURCE_TAG_NAME);
+		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, "external-resource");
 		for (Element externalResourceElement : externalResourceList) {
-			List<Element> externalResourcePropertyElements = XmlUtil.getChildElementsWithTagName(externalResourceElement, ResourceRegistryXmlWriter.RESOURCE_PROPERTY_TAG_NAME);
+			List<Element> externalResourcePropertyElements = XmlUtil.getChildElementsWithTagName(externalResourceElement, "resource-property");
 			KeyValueString[] keyValues = new KeyValueString[externalResourcePropertyElements.size()];
 			for (int i = 0; i < externalResourcePropertyElements.size(); i++) {
 				Element resourcePropertyElement = externalResourcePropertyElements.get(i);
-				String key = resourcePropertyElement.getAttribute(ResourceRegistryXmlWriter.RESOURCE_PROPERTY_KEY);
+				String key = resourcePropertyElement.getAttribute("key");
 				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement).trim());
 			}
 			ExternalResource externalResource = new ExternalResource(new File(XmlUtil.getImmediateTextContent(externalResourceElement).trim()), keyValues);

@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
 	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
+
 	private final String controlClassName;
 	private final ControlProperty[] requiredProperties;
 	private final ControlProperty[] optionalProperties;
@@ -58,10 +59,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 				controlClass.getSpecProvider().getOptionalSubClasses()
 		);
 		for (int i = 0; i < requiredProperties.length; i++) {
-			requiredProperties[i] = new ControlProperty(controlClass.getRequiredProperties().get(i));
+			requiredProperties[i] = controlClass.getRequiredProperties().get(i).deepCopy();
 		}
 		for (int i = 0; i < optionalProperties.length; i++) {
-			optionalProperties[i] = new ControlProperty(controlClass.getOptionalProperties().get(i));
+			optionalProperties[i] = controlClass.getOptionalProperties().get(i).deepCopy();
 		}
 		if (controlClass.getExtendClass() != null) {
 			setExtendClass(controlClass.getExtendClass());
