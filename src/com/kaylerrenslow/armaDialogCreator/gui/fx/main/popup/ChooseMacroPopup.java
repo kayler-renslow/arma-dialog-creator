@@ -61,14 +61,6 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 	}
 
 	@Override
-	protected void newItemSelected(Macro<V> selected) {
-		if (getSelectedTab().getCategory() instanceof MacroItemCategory) {
-			MacroItemCategory<V> category = (MacroItemCategory<V>) getSelectedTab().getCategory();
-			category.newItemSelected(selected);
-		}
-	}
-
-	@Override
 	protected void help() {
 		BrowserUtil.browse(HelpUrls.MACROS);
 	}
@@ -154,6 +146,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 			return categoryNode;
 		}
 
+		@Override
 		public void newItemSelected(Macro<V> selected) {
 			if (selected != null) {
 				taComment.setText(selected.getComment());

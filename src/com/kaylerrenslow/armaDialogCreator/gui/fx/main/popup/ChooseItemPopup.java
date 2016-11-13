@@ -17,8 +17,10 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -29,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,6 +45,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 	private final List<ItemCategoryTab<V>> itemCategoryTabs;
 	private final TabPane tabPane = new TabPane();
 	private V selectedItem;
+	private String searchText;
 
 	public ChooseItemPopup(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
@@ -51,7 +55,6 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		for (ItemCategory<V> category : categories) {
 			itemCategoryTabs.add(new ItemCategoryTab<>(category, allItems));
 		}
-		itemCategoryTabs.add(new SearchItemCategoryTab<>(allItems));
 
 		initRootElement(headerTitle);
 		myStage.setResizable(false);
@@ -61,7 +64,12 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		myRootElement.setPadding(new Insets(10));
 		final Label lblChooseMacro = new Label(headerTitle);
 		lblChooseMacro.setFont(TITLE_FONT);
-		myRootElement.getChildren().add(lblChooseMacro);
+
+		//search box
+		HBox hbSearch = initializeSearchBox();
+
+		myRootElement.getChildren().add(new BorderPane(null, null, hbSearch, null, lblChooseMacro));
+
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
 		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {
@@ -69,7 +77,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 			public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
 				ChooseItemPopup.this.btnOk.setDisable(newValue == null);
 				ChooseItemPopup.this.selectedItem = newValue;
-				newItemSelected(selectedItem);
+				getSelectedTab().getCategory().newItemSelected(selectedItem);
 			}
 		};
 		for (ItemCategoryTab<V> tab : itemCategoryTabs) {
@@ -95,14 +103,30 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		btnOk.setDisable(true);
 	}
 
-	/** A new item was selected. Default implementation is nothing. */
-	protected void newItemSelected(@Nullable V selected) {
+	@NotNull
+	private HBox initializeSearchBox() {
+		TextField tfSearch = new TextField("");
+		HBox.setHgrow(tfSearch, Priority.ALWAYS);
+		HBox hbSearch = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.search_text_box")), tfSearch);
+		hbSearch.setAlignment(Pos.CENTER_LEFT);
+		tfSearch.setPrefColumnCount(20);
+		hbSearch.setMaxWidth(Double.MAX_VALUE);
+		hbSearch.setFillHeight(true);
 
+		tfSearch.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				getSelectedTab().limitToSearch(newValue);
+				searchText = newValue;
+			}
+		});
+
+		return hbSearch;
 	}
 
 	/** A new category tab was selected. Default implementation is nothing. */
 	protected void newCategorySelected(@NotNull ItemCategoryTab<V> selected) {
-
+		selected.limitToSearch(searchText);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -128,95 +152,15 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		return selectedItem;
 	}
 
-	private static class SearchItemCategoryTab<V> extends ItemCategoryTab<V> {
-
-		public SearchItemCategoryTab(List<V> allItemsFromMasterCategory) {
-			super(new SearchCategory<>(), allItemsFromMasterCategory);
-			SearchCategory category = (SearchCategory) getCategory();
-			final LinkedList<V> removed = new LinkedList<>();
-			category.getTfSearch().textProperty().addListener(new ChangeListener<String>() {
-				@Override
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					newValue = newValue != null ? newValue.toUpperCase() : "";
-					if (newValue.length() == 0) {
-						while (removed.size() > 0) {
-							getListView().getItems().add(removed.removeFirst());
-						}
-						return;
-					}
-
-					for (int i = 0; i < getListView().getItems().size(); ) {
-						V v = getListView().getItems().get(i);
-						if (!v.toString().contains(newValue)) {
-							removed.add(v);
-							getListView().getItems().remove(i);
-							continue;
-						}
-						i++;
-					}
-				}
-			});
-		}
-	}
-
-	private static class SearchCategory<V> implements ItemCategory<V> {
-
-		private final TextField tfSearch;
-		private Node categoryNode;
-
-		public SearchCategory() {
-			tfSearch = new TextField("");
-			HBox.setHgrow(tfSearch, Priority.ALWAYS);
-			HBox hBox = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.search_text_box")), tfSearch);
-			hBox.setMaxWidth(Double.MAX_VALUE);
-			hBox.setFillHeight(true);
-			categoryNode = hBox;
-		}
-
-		@NotNull
-		public TextField getTfSearch() {
-			return tfSearch;
-		}
-
-		@NotNull
-		@Override
-		public String categoryDisplayName() {
-			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.display_name");
-		}
-
-		@NotNull
-		@Override
-		public String noItemsPlaceholderText() {
-			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.no_items_placeholder");
-		}
-
-		@NotNull
-		@Override
-		public String availableItemsDisplayText() {
-			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.search_results");
-		}
-
-		@Override
-		public boolean itemInCategory(@NotNull V item) {
-			return true;
-		}
-
-		@Nullable
-		@Override
-		public Node getMiscCategoryNode() {
-			return categoryNode;
-		}
-	}
-
 	protected static class ItemCategoryTab<V> extends Tab {
 		private final ItemCategory<V> category;
-		private final List<V> allItemsInCategory;
 		private final ListView<V> listView;
+		private final LinkedList<V> removed = new LinkedList<>();
 
 		public ItemCategoryTab(@NotNull ItemCategory<V> category, @NotNull List<V> allItemsFromMasterCategory) {
 			super(category.categoryDisplayName());
 			this.category = category;
-			allItemsInCategory = new LinkedList<>();
+			List<V> allItemsInCategory = new LinkedList<>();
 			for (V v : allItemsFromMasterCategory) {
 				if (category.itemInCategory(v)) {
 					allItemsInCategory.add(v);
@@ -258,7 +202,28 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 
 		@NotNull
 		public List<V> getAllItemsInCategory() {
-			return allItemsInCategory;
+			return listView.getItems();
+		}
+
+		public void limitToSearch(@Nullable String searchWord) {
+			searchWord = searchWord != null ? searchWord.toUpperCase() : "";
+			if (searchWord.length() == 0) {
+				while (removed.size() > 0) {
+					getListView().getItems().add(removed.removeFirst());
+				}
+				return;
+			}
+
+			for (int i = 0; i < getListView().getItems().size(); ) {
+				V v = getListView().getItems().get(i);
+				if (!v.toString().contains(searchWord)) {
+					removed.add(v);
+					getListView().getItems().remove(i);
+					continue;
+				}
+				i++;
+			}
+			getListView().getItems().sort(new ListViewComparator<>());
 		}
 
 	}
@@ -282,5 +247,22 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		/** Get a {@link Node} instance to be placed inside a {@link Tab}'s content node alongside the {@link ListView} */
 		@Nullable
 		Node getMiscCategoryNode();
+
+		/** Invoked when an item is selected. This may be used to update the {@link #getMiscCategoryNode()} */
+		void newItemSelected(@Nullable V item);
+	}
+
+	private static class ListViewComparator<V> implements Comparator<V> {
+
+		@Override
+		public int compare(V o1, V o2) {
+			if (o1 == null) {
+				return 1;
+			}
+			if (o2 == null) {
+				return -1;
+			}
+			return o1.toString().compareTo(o2.toString());
+		}
 	}
 }

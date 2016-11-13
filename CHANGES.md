@@ -1,8 +1,8 @@
 **Added:**
-* search functionality for when choosing a macro
+* none
 
 **Changed:**
-* moved out functionality from ChooseMacroPopup into a more generic class for use with editing a custom control class
+* moved the search text field in choose item popup
 
 **Fixed:**
 * none
