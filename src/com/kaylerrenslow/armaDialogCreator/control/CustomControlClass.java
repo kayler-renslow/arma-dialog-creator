@@ -8,28 +8,46 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
+package com.kaylerrenslow.armaDialogCreator.control;
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
-
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseCustomControlDialog;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 11/13/2016.
  */
-public class EditCustomControlAction implements EventHandler<ActionEvent> {
+public class CustomControlClass {
+	private final ControlClassSpecification specification;
+	private ControlClass controlClass;
+
+	public CustomControlClass(@NotNull ControlClass controlClass) {
+		this.specification = new ControlClassSpecification(controlClass);
+		this.controlClass = controlClass;
+	}
+
+	public CustomControlClass(@NotNull ControlClassSpecification specification) {
+		this.specification = specification;
+	}
+
+	@NotNull
+	public ControlClass getControlClass() {
+		if (controlClass == null) {
+			controlClass = specification.constructNewControlClass();
+		}
+		return controlClass;
+	}
+
+	@NotNull
+	public ControlClassSpecification getSpecification() {
+		return specification;
+	}
+
 	@Override
-	public void handle(ActionEvent event) {
-		ChooseCustomControlDialog dialog = new ChooseCustomControlDialog();
-		dialog.show();
-		System.err.println("EditCustomControlAction.handle todo: edit the control class");
-		//		ChooseMacroPopup<SerializableValue> chooseMacroPopup = new ChooseMacroPopup<>(SerializableValue.class);
-		//		chooseMacroPopup.showAndWait();
-		//		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenItem();
-		//		if (chosenMacro == null) {
-		//			return;
-		//		}
-		//		new EditMacroPopup(chosenMacro).showAndWait();
+	public int hashCode() {
+		return specification.getClassName().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		return specification.getClassName();
 	}
 }

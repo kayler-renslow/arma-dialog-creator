@@ -50,6 +50,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 	public ChooseItemPopup(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
 		myStage.initStyle(StageStyle.UTILITY);
+		myRootElement.setMinWidth(720d);
 
 		itemCategoryTabs = new ArrayList<>(categories.length);
 		for (ItemCategory<V> category : categories) {
@@ -65,11 +66,8 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		final Label lblChooseMacro = new Label(headerTitle);
 		lblChooseMacro.setFont(TITLE_FONT);
 
-		//search box
 		HBox hbSearch = initializeSearchBox();
-
 		myRootElement.getChildren().add(new BorderPane(null, null, hbSearch, null, lblChooseMacro));
-
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
 		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {
@@ -107,7 +105,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 	private HBox initializeSearchBox() {
 		TextField tfSearch = new TextField("");
 		HBox.setHgrow(tfSearch, Priority.ALWAYS);
-		HBox hbSearch = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.search_text_box")), tfSearch);
+		HBox hbSearch = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItem.search_text_box")), tfSearch);
 		hbSearch.setAlignment(Pos.CENTER_LEFT);
 		tfSearch.setPrefColumnCount(20);
 		hbSearch.setMaxWidth(Double.MAX_VALUE);
@@ -156,6 +154,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		private final ItemCategory<V> category;
 		private final ListView<V> listView;
 		private final LinkedList<V> removed = new LinkedList<>();
+		private final Comparator<V> comparator = new ListViewComparator<>();
 
 		public ItemCategoryTab(@NotNull ItemCategory<V> category, @NotNull List<V> allItemsFromMasterCategory) {
 			super(category.categoryDisplayName());
@@ -223,7 +222,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 				}
 				i++;
 			}
-			getListView().getItems().sort(new ListViewComparator<>());
+			getListView().getItems().sort(comparator);
 		}
 
 	}

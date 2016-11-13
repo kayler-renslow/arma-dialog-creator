@@ -119,6 +119,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 		final VBox vboxProperties = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.properties")), stackPaneProperties);
 		VBox.setVgrow(vboxProperties, Priority.ALWAYS);
+		VBox.setVgrow(stackPaneProperties, Priority.ALWAYS);
 		hboxBody.getChildren().add(vboxProperties);
 
 		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.preview_sample")), taPreviewSample);

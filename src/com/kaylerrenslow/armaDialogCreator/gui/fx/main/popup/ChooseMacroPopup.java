@@ -56,7 +56,10 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 
 	@SuppressWarnings("unchecked")
 	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
-		super(categories, getMacrosOfType(macroClassType), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"));
+		super(categories, getMacrosOfType(macroClassType),
+				Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"),
+				Lang.ApplicationBundle().getString("Popups.ChooseMacro.choose_macro_title")
+		);
 		myStage.sizeToScene();
 	}
 

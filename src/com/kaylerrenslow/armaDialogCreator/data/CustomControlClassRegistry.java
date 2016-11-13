@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,38 +54,6 @@ public class CustomControlClassRegistry {
 
 	public void addControlClass(@NotNull ControlClass controlClass) {
 		controlClassList.add(new CustomControlClass(controlClass));
-	}
-
-	public static class CustomControlClass {
-		private final ControlClassSpecification specification;
-		private ControlClass controlClass;
-
-		public CustomControlClass(@NotNull ControlClass controlClass) {
-			this.specification = new ControlClassSpecification(controlClass);
-			this.controlClass = controlClass;
-		}
-
-		public CustomControlClass(@NotNull ControlClassSpecification specification) {
-			this.specification = specification;
-		}
-
-		@NotNull
-		public ControlClass getControlClass() {
-			if (controlClass == null) {
-				controlClass = specification.constructNewControlClass();
-			}
-			return controlClass;
-		}
-
-		@NotNull
-		public ControlClassSpecification getSpecification() {
-			return specification;
-		}
-
-		@Override
-		public int hashCode() {
-			return specification.getClassName().hashCode();
-		}
 	}
 
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {

@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -82,7 +83,7 @@ public class ProjectSaveXmlWriter {
 	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull CustomControlClassRegistry registry) throws IOException {
 		String customControlClasses = "custom-control-classes";
 		stm.writeBeginTag(customControlClasses);
-		for (CustomControlClassRegistry.CustomControlClass customClass : registry.getControlClassList()) {
+		for (CustomControlClass customClass : registry.getControlClassList()) {
 			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.getSpecification());
 		}
 		stm.writeCloseTag(customControlClasses);
