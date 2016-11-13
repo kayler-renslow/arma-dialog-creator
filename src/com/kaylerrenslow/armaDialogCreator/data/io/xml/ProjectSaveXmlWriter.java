@@ -13,10 +13,12 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
@@ -68,12 +70,23 @@ public class ProjectSaveXmlWriter {
 		writeMacros(stm);
 		writeDisplay(stm, project.getEditingDisplay());
 
+		writeCustomControls(stm, project.getCustomControlClassRegistry());
+
 		writeProjectExportConfiguration(stm, project.getExportConfiguration());
 
 		stm.write("</project>");
 
 		stm.flush();
 		stm.close();
+	}
+
+	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull CustomControlClassRegistry registry) throws IOException {
+		String customControlClasses = "custom-control-classes";
+		stm.writeBeginTag(customControlClasses);
+		for (ControlClass specification : registry.getControlClassList()) {
+			ProjectXmlUtil.writeControlClassSpecification(stm, specification);
+		}
+		stm.writeCloseTag(customControlClasses);
 	}
 
 	private void writeProjectExportConfiguration(XmlWriterOutputStream stm, @NotNull ProjectExportConfiguration configuration) throws IOException {

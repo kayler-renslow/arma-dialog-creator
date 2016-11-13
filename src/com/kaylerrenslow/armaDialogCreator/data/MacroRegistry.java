@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumber;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -23,12 +24,12 @@ import java.util.List;
  Holds all macros for the project.
  Created on 07/05/2016. */
 public class MacroRegistry {
-	
+
 	private final List<Macro> macros = new ArrayList<>();
 
 	MacroRegistry() {
 	}
-		
+
 	public List<Macro> getMacros() {
 		return macros;
 	}
@@ -44,6 +45,17 @@ public class MacroRegistry {
 				if (m.getValue() instanceof SVNumber) {
 					return new Value.NumVal(((SVNumber) m.getValue()).getNumber());
 				}
+			}
+		}
+		return null;
+	}
+
+	/** Get a {@link Macro} instance from the given name. Will return null if key couldn't be matched */
+	@Nullable
+	public Macro getMacroByKey(@NotNull String macroKey) {
+		for (Macro macro : getMacros()) {
+			if (macro.getKey().equals(macroKey)) {
+				return macro;
 			}
 		}
 		return null;

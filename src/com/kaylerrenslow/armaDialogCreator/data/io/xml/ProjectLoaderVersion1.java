@@ -34,6 +34,7 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -62,14 +63,18 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		try {
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
-			fetchMacros(project.getMacroRegistry().getMacros());
+			loadMacroRegistry();
+			loadCustomControlClassRegistry();
+
 			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros());
 			if (editingDisplay != null) {
 				project.setEditingDisplay(editingDisplay);
 			}
 			project.setProjectDescription(getProjectDescription());
+
 			fetchExportConfiguration();
 			loadResourceRegistry();
+
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new XmlParseException(e.getMessage());
@@ -132,21 +137,23 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private void loadResourceRegistry() {
-		List<Element> externalResourcesElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "external-resources");
-		for (Element externalResourcesElement : externalResourcesElementList) {
-			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElement);
+		List<Element> externalResourcesElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "external-resources");
+		for (Element externalResourcesElementGroup : externalResourcesElementGroups) {
+			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElementGroup);
 		}
 	}
 
-	private String getProjectDescription() {
-		List<Element> descriptionElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
-		if (descriptionElements.size() > 0) {
-			return XmlUtil.getImmediateTextContent(descriptionElements.get(0));
+	private void loadCustomControlClassRegistry() throws IOException {
+		List<Element> customControlClassElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "custom-control-classes");
+		for (Element customControlClassesGroup : customControlClassElementGroups) {
+			List<ControlClassSpecification> specs = ProjectXmlUtil.loadControlClassSpecifications(customControlClassesGroup, dataContext, this.loader);
+			for (ControlClassSpecification spec : specs) {
+				project.getCustomControlClassRegistry().addControlClass(spec.constructNewControlClass());
+			}
 		}
-		return null;
 	}
 
-	private List<Macro> fetchMacros(List<Macro> macros) {
+	private void loadMacroRegistry() {
 		List<Element> macrosGroupElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macros");
 		List<Element> macroElements;
 		for (Element macrosGroupElement : macrosGroupElements) {
@@ -171,12 +178,19 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					continue;
 				}
 				Macro<?> macro = new Macro<>(key, value, propertyType);
-				macros.add(macro);
+				project.getMacroRegistry().getMacros().add(macro);
 				macro.setComment(comment);
 			}
 		}
 
-		return macros;
+	}
+
+	private String getProjectDescription() {
+		List<Element> descriptionElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "project-description");
+		if (descriptionElements.size() > 0) {
+			return XmlUtil.getImmediateTextContent(descriptionElements.get(0));
+		}
+		return null;
 	}
 
 	private ArmaDisplay fetchEditingDisplay(List<Macro> macros) {
@@ -331,7 +345,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
 			for (ControlPropertySpecification config : properties) {
-				if (config.lookup == lookup) {
+				if (config.getLookup() == lookup) {
 					ControlProperty property = control.findRequiredProperty(lookup);
 					setControlPropertyValue(macros, config, property);
 				}
@@ -340,7 +354,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
 			for (ControlPropertySpecification config : properties) {
-				if (config.lookup == lookup) {
+				if (config.getLookup() == lookup) {
 					ControlProperty property = control.findOptionalProperty(lookup);
 					setControlPropertyValue(macros, config, property);
 				}
@@ -360,10 +374,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private void setControlPropertyValue(List<Macro> macros, ControlPropertySpecification config, ControlProperty property) {
-		property.setValue(config.value);
-		if (config.macroKey != null) {
+		property.setValue(config.getValue());
+		if (config.getMacroKey() != null) {
 			for (Macro macro : macros) {
-				if (macro.getKey().equals(config.macroKey)) {
+				if (macro.getKey().equals(config.getMacroKey())) {
 					property.setValueToMacro(macro);
 				}
 			}
@@ -374,7 +388,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		for (ControlPropertyLookup toMatchLookup : toMatch) {
 			boolean matched = false;
 			for (ControlPropertySpecification masterLookup : master) {
-				if (masterLookup.lookup == toMatchLookup) {
+				if (masterLookup.getLookup() == toMatchLookup) {
 					matched = true;
 					break;
 				}
@@ -386,7 +400,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 		return true;
 	}
-
 
 
 	private interface AfterLoadJob {

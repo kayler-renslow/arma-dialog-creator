@@ -11,7 +11,10 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
@@ -145,7 +148,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 	@Override
 	protected void ok() {
-		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(new ControlClassSpecification(editorPane.getControlClass()));
+		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(editorPane.getControlClass());
 
 		super.ok();
 	}

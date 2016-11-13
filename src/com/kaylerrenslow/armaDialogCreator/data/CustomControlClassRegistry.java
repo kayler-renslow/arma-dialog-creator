@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -20,16 +20,26 @@ import java.util.List;
  Created by Kayler on 10/23/2016.
  */
 public class CustomControlClassRegistry {
-	private final List<ControlClassSpecification> controlClassList = new ArrayList<>();
+	private final List<ControlClass> controlClassList = new ArrayList<>();
 
 	CustomControlClassRegistry() {
 	}
 
-	public List<ControlClassSpecification> getControlClassList() {
+	public List<ControlClass> getControlClassList() {
 		return controlClassList;
 	}
 
-	public void addControlClass(@NotNull ControlClassSpecification specification) {
-		controlClassList.add(specification);
+	public void addControlClass(@NotNull ControlClass controlClass) {
+		controlClassList.add(controlClass);
+	}
+
+	/** Will get the custom control class by the given name, or null if nothing could be matched */
+	public ControlClass findControlClassByName(@NotNull String className) {
+		for (ControlClass controlClass : controlClassList) {
+			if (controlClass.getClassName().equals(className)) {
+				return controlClass;
+			}
+		}
+		return null;
 	}
 }

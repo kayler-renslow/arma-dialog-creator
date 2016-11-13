@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -75,18 +76,20 @@ public class ControlClass {
 	public ControlClass(@NotNull ControlClassSpecification specification) {
 		this.className = specification.getControlClassName();
 		this.specProvider = specification;
-		extendControlClass(specification.getExtendClass());
-		for (ControlProperty property : specification.getRequiredControlProperties()) {
-			requiredProperties.add(property.deepCopy());
+		if (specification.getExtendClassName() != null) {
+			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
 		}
-		for (ControlProperty property : specification.getOptionalControlProperties()) {
-			optionalProperties.add(property.deepCopy());
+		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
+			requiredProperties.add(property.constructNewControlProperty());
+		}
+		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
+			optionalProperties.add(property.constructNewControlProperty());
 		}
 		for (ControlClassSpecification s : specification.getRequiredSubClasses()) {
-			requiredSubClasses.add(new ControlClass(s));
+			requiredSubClasses.add(s.constructNewControlClass());
 		}
 		for (ControlClassSpecification s : specification.getOptionalSubClasses()) {
-			optionalSubClasses.add(new ControlClass(s));
+			optionalSubClasses.add(s.constructNewControlClass());
 		}
 	}
 

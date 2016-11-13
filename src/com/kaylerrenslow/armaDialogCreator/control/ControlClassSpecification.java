@@ -20,14 +20,14 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
 
 	private final String controlClassName;
-	private final ControlProperty[] requiredProperties;
-	private final ControlProperty[] optionalProperties;
+	private final ControlPropertySpecification[] requiredProperties;
+	private final ControlPropertySpecification[] optionalProperties;
 	private final ControlClassSpecification[] requiredSubClasses;
 	private final ControlClassSpecification[] optionalSubClasses;
 	private final ControlPropertyLookup[] requiredPropertiesLookup, optionalPropertiesLookup;
-	private @Nullable ControlClass extendClass;
+	private @Nullable String extendClass;
 
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlProperty[] requiredProperties, @NotNull ControlProperty[] optionalProperties,
+	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties,
 									 @NotNull ControlClassSpecification[] requiredSubClasses, @NotNull ControlClassSpecification[] optionalSubClasses) {
 		this.controlClassName = controlClassName;
 		this.requiredProperties = requiredProperties;
@@ -38,14 +38,14 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		requiredPropertiesLookup = new ControlPropertyLookup[requiredProperties.length];
 		optionalPropertiesLookup = new ControlPropertyLookup[optionalProperties.length];
 		for (int i = 0; i < requiredPropertiesLookup.length; i++) {
-			requiredPropertiesLookup[i] = (ControlPropertyLookup) requiredProperties[i].getPropertyLookup();
+			requiredPropertiesLookup[i] = requiredProperties[i].getLookup();
 		}
 		for (int i = 0; i < optionalPropertiesLookup.length; i++) {
-			optionalPropertiesLookup[i] = (ControlPropertyLookup) optionalProperties[i].getPropertyLookup();
+			optionalPropertiesLookup[i] = optionalProperties[i].getLookup();
 		}
 	}
 
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlProperty[] requiredProperties, @NotNull ControlProperty[] optionalProperties) {
+	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties) {
 		this(controlClassName, requiredProperties, optionalProperties, ControlClassSpecification.EMPTY, ControlClassSpecification.EMPTY);
 	}
 
@@ -53,28 +53,28 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	public ControlClassSpecification(@NotNull ControlClass controlClass) {
 		this(
 				controlClass.getClassName(),
-				new ControlProperty[controlClass.getRequiredProperties().size()],
-				new ControlProperty[controlClass.getOptionalProperties().size()],
+				new ControlPropertySpecification[controlClass.getRequiredProperties().size()],
+				new ControlPropertySpecification[controlClass.getOptionalProperties().size()],
 				controlClass.getSpecProvider().getRequiredSubClasses(),
 				controlClass.getSpecProvider().getOptionalSubClasses()
 		);
 		for (int i = 0; i < requiredProperties.length; i++) {
-			requiredProperties[i] = controlClass.getRequiredProperties().get(i).deepCopy();
+			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i));
 		}
 		for (int i = 0; i < optionalProperties.length; i++) {
-			optionalProperties[i] = controlClass.getOptionalProperties().get(i).deepCopy();
+			optionalProperties[i] = new ControlPropertySpecification(controlClass.getOptionalProperties().get(i));
 		}
 		if (controlClass.getExtendClass() != null) {
-			setExtendClass(controlClass.getExtendClass());
+			setExtendClass(controlClass.getExtendClass().getClassName());
 		}
 	}
 
-	public void setExtendClass(@Nullable ControlClass extendClass) {
+	public void setExtendClass(@Nullable String extendClass) {
 		this.extendClass = extendClass;
 	}
 
 	@Nullable
-	public ControlClass getExtendClass() {
+	public String getExtendClassName() {
 		return extendClass;
 	}
 
@@ -96,12 +96,12 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	@NotNull
-	public ControlProperty[] getRequiredControlProperties() {
+	public ControlPropertySpecification[] getRequiredControlProperties() {
 		return requiredProperties;
 	}
 
 	@NotNull
-	public ControlProperty[] getOptionalControlProperties() {
+	public ControlPropertySpecification[] getOptionalControlProperties() {
 		return optionalProperties;
 	}
 

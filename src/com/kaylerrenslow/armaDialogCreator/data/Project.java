@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -141,4 +142,13 @@ public class Project {
 		this.exportConfiguration = exportConfiguration;
 	}
 
+	@Nullable
+	public ControlClass findControlClassByName(@NotNull String className) {
+		ControlClass controlClass = getEditingDisplay().findControlByClassName(className);
+		if (controlClass != null) {
+			return controlClass;
+		}
+
+		return controlRegistry.findControlClassByName(className);
+	}
 }

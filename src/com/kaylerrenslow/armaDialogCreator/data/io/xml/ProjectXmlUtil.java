@@ -10,10 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertySpecification;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -24,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -33,8 +31,140 @@ import java.util.List;
  Created on 11/12/2016. */
 public class ProjectXmlUtil {
 
+	/**
+	 Loads a {@link ControlClassSpecification} from xml file.
+
+	 @param containerElement element that contains the xml tags written by {@link #writeControlClassSpecification(XmlWriterOutputStream, ControlClassSpecification)}
+	 @param context used for loading {@link ControlPropertySpecification} via {@link #loadControlProperty(Element, DataContext, XmlErrorRecorder)}
+	 */
+	public static List<ControlClassSpecification> loadControlClassSpecifications(@NotNull Element containerElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) throws IOException {
+		List<Element> classSpecElements = XmlUtil.getChildElementsWithTagName(containerElement, "class-spec");
+		List<ControlClassSpecification> specs = new ArrayList<>(classSpecElements.size());
+
+		for (Element classSpecElement : classSpecElements) {
+			ControlClassSpecification specification = loadControlClassSpecification(classSpecElement, context, recorder);
+			if (specification != null) {
+				specs.add(specification);
+			}
+		}
+		return specs;
+	}
+
+	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) throws IOException {
+		String className = classSpecElement.getAttribute("name");
+		String extend = classSpecElement.getAttribute("extend");
+		ControlPropertySpecification[] requiredProperties = ControlPropertySpecification.EMPTY;
+		ControlPropertySpecification[] optionalProperties = ControlPropertySpecification.EMPTY;
+		ControlClassSpecification[] requiredClasses = ControlClassSpecification.EMPTY;
+		ControlClassSpecification[] optionalClasses = ControlClassSpecification.EMPTY;
+
+		final String controlProperty = "control-property";
+
+		//required control properties
+		List<Element> requiredPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-properties");
+		if (requiredPropertyElementGroups.size() > 0) {
+			requiredProperties = loadPropertyArray(context, recorder, controlProperty, requiredPropertyElementGroups.get(0));
+		}
+
+		//optional control properties
+		List<Element> optionalPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-properties");
+		if (optionalPropertyElementGroups.size() > 0) {
+			optionalProperties = loadPropertyArray(context, recorder, controlProperty, optionalPropertyElementGroups.get(0));
+		}
+
+		//required sub classes
+		List<Element> requiredClassElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-classes");
+		if (requiredClassElementGroups.size() > 0) {
+			Element requiredClassElementGroup = requiredClassElementGroups.get(0);
+			requiredClasses = loadControlClassSpecifications(requiredClassElementGroup, context, recorder).toArray(new ControlClassSpecification[0]);
+		}
+
+		//optional sub classes
+		List<Element> optionalClassElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-classes");
+		if (optionalClassElementGroups.size() > 0) {
+			Element optionalClassElementGroup = optionalClassElementGroups.get(0);
+			requiredClasses = loadControlClassSpecifications(optionalClassElementGroup, context, recorder).toArray(new ControlClassSpecification[0]);
+		}
+
+		ControlClassSpecification specification = new ControlClassSpecification(className, requiredProperties, optionalProperties, requiredClasses, optionalClasses);
+		specification.setExtendClass(extend);
+
+		return specification;
+	}
+
+	private static ControlPropertySpecification[] loadPropertyArray(@Nullable DataContext context, @NotNull XmlErrorRecorder recorder, String controlProperty, Element propertyElementGroup) {
+		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlProperty);
+		ControlPropertySpecification[] propertiesArray = new ControlPropertySpecification[propertyElements.size()];
+		int i = 0;
+		for (Element propertyElement : propertyElements) {
+			propertiesArray[i++] = loadControlProperty(propertyElement, context, recorder);
+		}
+		return propertiesArray;
+	}
+
+	/**
+	 Writes a {@link ControlClassSpecification} to xml file.
+
+	 @param stm xml writer stream
+	 @param specification specification to write
+	 */
+	public static void writeControlClassSpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlClassSpecification specification) throws IOException {
+		stm.writeBeginTag(String.format(
+				"class-spec name='%s'%s", specification.getControlClassName(),
+				specification.getExtendClassName() != null ? String.format(" extend='%s'", specification.getExtendClassName()) : "")
+		);
+
+		//required control properties
+		final String requiredProperties = "required-properties";
+		stm.writeBeginTag(requiredProperties);
+		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
+			writeControlProperty(stm, property.constructNewControlProperty());
+		}
+		stm.writeCloseTag(requiredProperties);
+
+		//optional control properties
+		final String optionalProperties = "optional-properties";
+		stm.writeBeginTag(optionalProperties);
+		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
+			writeControlProperty(stm, property.constructNewControlProperty());
+		}
+		stm.writeCloseTag(optionalProperties);
+
+		//required sub classes
+		if (specification.getRequiredSubClasses().length > 0) {
+			final String requiredClasses = "required-classes";
+			stm.writeBeginTag(requiredClasses);
+			for (ControlClassSpecification s : specification.getRequiredSubClasses()) {
+				writeControlClassSpecification(stm, s);
+			}
+			stm.writeCloseTag(requiredClasses);
+		}
+
+		//optional sub classes
+		if (specification.getOptionalSubClasses().length > 0) {
+			final String optionalClasses = "optional-classes";
+			stm.writeBeginTag(optionalClasses);
+			for (ControlClassSpecification s : specification.getOptionalSubClasses()) {
+				writeControlClassSpecification(stm, s);
+			}
+			stm.writeCloseTag(optionalClasses);
+		}
+
+		stm.writeCloseTag("class-spec");
+	}
+
+	/**
+	 Writes a {@link ControlClass} to xml file as a {@link ControlClassSpecification}.
+
+	 @param stm xml writer stream
+	 @param specification specification to write
+	 */
+	public static void writeControlClassSpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlClass specification) throws IOException {
+		writeControlClassSpecification(stm, new ControlClassSpecification(specification));
+	}
+
 	public static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlProperty cprop) throws IOException {
-		stm.write(String.format("<control-property lookup-id='%d'%s>",
+		stm.writeBeginTag(String.format("control-property lookup-id='%d'%s",
 				cprop.getPropertyLookup().getPropertyId(),
 				cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
 				)
@@ -43,7 +173,7 @@ public class ProjectXmlUtil {
 			throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
 		}
 		writeValueTags(stm, cprop.getValue());
-		stm.write("</control-property>");
+		stm.writeCloseTag("control-property");
 	}
 
 	/**

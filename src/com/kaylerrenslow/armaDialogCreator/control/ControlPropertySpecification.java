@@ -18,9 +18,13 @@ import org.jetbrains.annotations.Nullable;
  Created by Kayler on 11/12/2016.
  */
 public class ControlPropertySpecification {
-	public final ControlPropertyLookup lookup;
-	public final SerializableValue value;
-	public final String macroKey;
+	public static final ControlPropertySpecification[] EMPTY = new ControlPropertySpecification[0];
+
+	private final ControlPropertyLookup lookup;
+	private final SerializableValue value;
+	private final String macroKey;
+	private Object customData;
+	private boolean usingCustomData;
 
 	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup, @NotNull SerializableValue value, @Nullable String macroKey) {
 		this.lookup = lookup;
@@ -30,6 +34,39 @@ public class ControlPropertySpecification {
 		} else {
 			this.macroKey = macroKey.trim();
 		}
+	}
+
+	public ControlPropertySpecification(@NotNull ControlProperty property) {
+		this.lookup = (ControlPropertyLookup) property.getPropertyLookup();
+		if (property.getValue() != null) {
+			this.value = property.getValue().deepCopy();
+		} else {
+			this.value = null;
+		}
+		if (property.getMacro() != null) {
+			this.macroKey = property.getMacro().getKey();
+		} else {
+			this.macroKey = null;
+		}
+		this.customData = property.getCustomData();
+		this.usingCustomData = property.isCustomData();
+	}
+
+	public void setCustomData(@Nullable Object customData) {
+		this.customData = customData;
+	}
+
+	public void setUsingCustomData(boolean usingCustomData) {
+		this.usingCustomData = usingCustomData;
+	}
+
+	@Nullable
+	public Object getCustomData() {
+		return customData;
+	}
+
+	public boolean isUsingCustomData() {
+		return usingCustomData;
 	}
 
 	@NotNull
@@ -46,5 +83,10 @@ public class ControlPropertySpecification {
 	@Nullable
 	public String getMacroKey() {
 		return macroKey;
+	}
+
+	/** Returns a new {@link ControlProperty} instance. Equivalent to invoking {@link ControlProperty(ControlPropertySpecification} */
+	public ControlProperty constructNewControlProperty() {
+		return new ControlProperty(this);
 	}
 }

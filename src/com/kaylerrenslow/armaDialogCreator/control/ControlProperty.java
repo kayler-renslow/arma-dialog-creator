@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -64,6 +65,15 @@ public class ControlProperty {
 			copy.setValueToMacro(getMacro());
 		}
 		return copy;
+	}
+
+
+	public ControlProperty(@NotNull ControlPropertySpecification specification) {
+		this(specification.getLookup(), specification.getValue());
+		setHasCustomData(specification.isUsingCustomData(), specification.getCustomData());
+		if (specification.getMacroKey() != null) {
+			setValueToMacro(ApplicationDataManager.getInstance().getCurrentProject().getMacroRegistry().getMacroByKey(specification.getMacroKey()));
+		}
 	}
 
 	/**

@@ -1,5 +1,5 @@
 **Added:**
-* xml loading and writing changes
+* custom control registry saving and loading (untested)
 
 **Changed:**
 * none
