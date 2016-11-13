@@ -74,7 +74,7 @@ public class ControlClass {
 
 	/** Construct a {@link ControlClass} with the given specification */
 	public ControlClass(@NotNull ControlClassSpecification specification) {
-		this.className = specification.getControlClassName();
+		this.className = specification.getClassName();
 		this.specProvider = specification;
 		if (specification.getExtendClassName() != null) {
 			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));

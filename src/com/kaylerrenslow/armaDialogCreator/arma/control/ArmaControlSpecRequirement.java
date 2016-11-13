@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassRequirementSpecification;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +18,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/07/2016.
  */
-public class ArmaControlSpecRequirement implements ControlClassRequirementSpecification {
+public interface ArmaControlSpecRequirement extends ControlClassRequirementSpecification {
+	ArmaControlSpecRequirement TRIVIAL = new ArmaControlSpecRequirement() {
+	};
+
 	/** Returns a new array of the properties that are required for all controls */
-	public final static ControlPropertyLookup[] DEFAULT_REQUIRED_PROPERTIES = {
+	ControlPropertyLookup[] DEFAULT_REQUIRED_PROPERTIES = {
 			ControlPropertyLookup.TYPE,
 			ControlPropertyLookup.IDC,
 			ControlPropertyLookup.STYLE,
@@ -33,35 +35,24 @@ public class ArmaControlSpecRequirement implements ControlClassRequirementSpecif
 
 
 	/** Returns a new array of properties that are optional for all controls */
-	public static final ControlPropertyLookup[] DEFAULT_OPTIONAL_PROPERTIES = {
+	ControlPropertyLookup[] DEFAULT_OPTIONAL_PROPERTIES = {
 			ControlPropertyLookup.ACCESS
 	};
 
-	@NotNull
-	@Override
-	public ControlClassSpecification[] getRequiredSubClasses() {
-		return ControlClassSpecification.EMPTY;
-	}
 
 	@NotNull
 	@Override
-	public ControlClassSpecification[] getOptionalSubClasses() {
-		return ControlClassSpecification.EMPTY;
-	}
-
-	@NotNull
-	@Override
-	public ControlPropertyLookup[] getRequiredProperties() {
+	default ControlPropertyLookup[] getRequiredProperties() {
 		return DEFAULT_REQUIRED_PROPERTIES;
 	}
 
 	@NotNull
 	@Override
-	public ControlPropertyLookup[] getOptionalProperties() {
+	default ControlPropertyLookup[] getOptionalProperties() {
 		return DEFAULT_OPTIONAL_PROPERTIES;
 	}
-	
-	public ControlStyle[] getAllowedStyles(){
+
+	default ControlStyle[] getAllowedStyles() {
 		return ControlStyle.EMPTY;
 	}
 }

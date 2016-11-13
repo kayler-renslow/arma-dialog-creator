@@ -148,7 +148,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		for (Element customControlClassesGroup : customControlClassElementGroups) {
 			List<ControlClassSpecification> specs = ProjectXmlUtil.loadControlClassSpecifications(customControlClassesGroup, dataContext, this.loader);
 			for (ControlClassSpecification spec : specs) {
-				project.getCustomControlClassRegistry().addControlClass(spec.constructNewControlClass());
+				project.getCustomControlClassRegistry().addControlClass(spec);
 			}
 		}
 	}
@@ -324,7 +324,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
-			properties.add(ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader));
+			ControlPropertySpecification property = ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader);
+			if (property != null) {
+				properties.add(property);
+			}
 		}
 
 		ArmaControlSpecRequirement specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;

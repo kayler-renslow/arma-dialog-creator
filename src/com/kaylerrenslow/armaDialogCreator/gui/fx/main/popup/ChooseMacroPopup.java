@@ -12,96 +12,60 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
-import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.Node;
+import javafx.scene.control.ContentDisplay;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  @author Kayler
  Used for displaying known macros of a given type and allowing the user to choose which macro they want.
  Created on 08/09/2016. */
-public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VBox> {
+public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPopup<Macro<V>> {
 
-	private static final Font TITLE_FONT = Font.font(15d);
-	private final ListView<Macro<V>> listViewMacros = new ListView<>();
+	private static final MacroItemCategory[] categories = new MacroItemCategory[Macro.MacroType.values().length + 1];
 
-	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
-		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"));
-		myStage.initModality(Modality.APPLICATION_MODAL);
-		myStage.initStyle(StageStyle.UTILITY);
-
-		initRootElement(macroClassType);
-		myStage.setResizable(false);
+	static {
+		categories[0] = new AllMacrosCategory();
+		int i = 1;
+		for (Macro.MacroType type : Macro.MacroType.values()) {
+			categories[i++] = new ImplicitMacroTypeCategory(type);
+		}
 	}
 
-	private void initRootElement(Class<V> macroClassType) {
-		myRootElement.setPadding(new Insets(10));
-		final Label lblChooseMacro = new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.choose_macro_title"));
-		lblChooseMacro.setFont(TITLE_FONT);
-		myRootElement.getChildren().add(lblChooseMacro);
-		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
-
-		listViewMacros.setPlaceholder(new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.no_available_macros")));
-		listViewMacros.setMinWidth(250d);
-		List<Macro> macroList = ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros();
-		for (Macro macro : macroList) {
+	@SuppressWarnings("unchecked")
+	private static <V extends SerializableValue> List<Macro<V>> getMacrosOfType(@NotNull Class<V> macroClassType) {
+		List<Macro<V>> macros = new ArrayList<>();
+		for (Macro macro : ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros()) {
 			if (macroClassType.isInstance(macro.getValue())) {
-				listViewMacros.getItems().add(macro);
+				macros.add(macro);
 			}
 		}
+		return macros;
+	}
 
-		HBox hbSplit = new HBox(5);
-		Label lblListViewMacros = new Label(Lang.ApplicationBundle().getString("Popups.ChooseMacro.available_macros"), listViewMacros);
-		lblListViewMacros.setContentDisplay(ContentDisplay.BOTTOM);
-
-		final double height = 100;
-		VBox vbRight = new VBox(10);
-		TextArea taComment = new TextArea();
-		taComment.setPrefHeight(height);
-		taComment.setEditable(false);
-		Label lblComment = new Label(Lang.ApplicationBundle().getString("Macros.comment"), taComment);
-		lblComment.setContentDisplay(ContentDisplay.BOTTOM);
-		TextArea taValue = new TextArea();
-		taValue.setEditable(false);
-		taValue.setPrefHeight(height);
-		Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
-		lblValue.setContentDisplay(ContentDisplay.BOTTOM);
-
-		vbRight.getChildren().addAll(lblValue, lblComment);
-
-		hbSplit.getChildren().addAll(lblListViewMacros, vbRight);
-		listViewMacros.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Macro>() {
-			@Override
-			public void changed(ObservableValue<? extends Macro> observable, Macro oldValue, Macro selected) {
-				if (selected != null) {
-					taComment.setText(selected.getComment());
-					taValue.setText(selected.getValue().toString());
-				}
-			}
-		});
-		myRootElement.getChildren().addAll(hbSplit);
-
-		final boolean noMacros = listViewMacros.getItems().size() == 0;
+	@SuppressWarnings("unchecked")
+	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
+		super(categories, getMacrosOfType(macroClassType), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"), Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"));
 		myStage.sizeToScene();
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
-		btnOk.setDisable(noMacros);
+	}
+
+	@Override
+	protected void newItemSelected(Macro<V> selected) {
+		if (getSelectedTab().getCategory() instanceof MacroItemCategory) {
+			MacroItemCategory<V> category = (MacroItemCategory<V>) getSelectedTab().getCategory();
+			category.newItemSelected(selected);
+		}
 	}
 
 	@Override
@@ -109,20 +73,92 @@ public class ChooseMacroPopup<V extends SerializableValue> extends StagePopup<VB
 		BrowserUtil.browse(HelpUrls.MACROS);
 	}
 
-	@Override
-	protected void cancel() {
-		listViewMacros.getSelectionModel().clearSelection();
-		close();
-	}
-
-	/** Return the macro chosen. If null, no macro was chosen. */
-	@Nullable
-	public Macro<V> getChosenMacro() {
-		return listViewMacros.getSelectionModel().getSelectedItem();
-	}
 
 	@Override
 	public void show() {
 		showAndWait();
+	}
+
+	private static class ImplicitMacroTypeCategory<V extends SerializableValue> extends MacroItemCategory<V> {
+
+		private final Macro.MacroType type;
+
+		public ImplicitMacroTypeCategory(@NotNull Macro.MacroType type) {
+			this.type = type;
+		}
+
+		@NotNull
+		@Override
+		public String categoryDisplayName() {
+			return type.getDisplayText();
+		}
+
+		@Override
+		public boolean itemInCategory(@NotNull Macro item) {
+			return item.getMacroType() == type;
+		}
+	}
+
+	private static class AllMacrosCategory<V extends SerializableValue> extends MacroItemCategory<V> {
+
+		@NotNull
+		@Override
+		public String categoryDisplayName() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseMacro.category_all_macros");
+		}
+
+		@Override
+		public boolean itemInCategory(@NotNull Macro item) {
+			return true;
+		}
+	}
+
+	private static abstract class MacroItemCategory<V extends SerializableValue> implements ItemCategory<Macro<V>> {
+
+		private final Node categoryNode;
+
+		private final TextArea taComment = new TextArea();
+		private final TextArea taValue = new TextArea();
+
+		public MacroItemCategory() {
+			final double height = 100;
+			VBox vbRight = new VBox(10);
+			taComment.setPrefHeight(height);
+			taComment.setEditable(false);
+			Label lblComment = new Label(Lang.ApplicationBundle().getString("Macros.comment"), taComment);
+			lblComment.setContentDisplay(ContentDisplay.BOTTOM);
+			taValue.setEditable(false);
+			taValue.setPrefHeight(height);
+			Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
+			lblValue.setContentDisplay(ContentDisplay.BOTTOM);
+
+			vbRight.getChildren().addAll(lblValue, lblComment);
+			categoryNode = vbRight;
+		}
+
+		@NotNull
+		@Override
+		public String noItemsPlaceholderText() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseMacro.no_available_macros");
+		}
+
+		@NotNull
+		@Override
+		public String availableItemsDisplayText() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseMacro.available_macros");
+		}
+
+		@Nullable
+		@Override
+		public Node getMiscCategoryNode() {
+			return categoryNode;
+		}
+
+		public void newItemSelected(Macro<V> selected) {
+			if (selected != null) {
+				taComment.setText(selected.getComment());
+				taValue.setText(selected.getValue().toString());
+			}
+		}
 	}
 }

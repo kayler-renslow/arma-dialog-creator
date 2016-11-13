@@ -11,35 +11,97 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
  Created by Kayler on 10/23/2016.
  */
 public class CustomControlClassRegistry {
-	private final List<ControlClass> controlClassList = new ArrayList<>();
+	private final List<CustomControlClass> controlClassList = new LinkedList<>();
+	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
 
 	CustomControlClassRegistry() {
 	}
 
-	public List<ControlClass> getControlClassList() {
-		return controlClassList;
+	public ReadOnlyList<CustomControlClass> getControlClassList() {
+		return controlClassReadOnlyList;
 	}
 
-	public void addControlClass(@NotNull ControlClass controlClass) {
-		controlClassList.add(controlClass);
+	public Iterator<ControlClass> customControlsIterator() {
+		return new CustomControlClassIterator(this);
+	}
+
+	public void addControlClass(@NotNull ControlClassSpecification controlClass) {
+		controlClassList.add(new CustomControlClass(controlClass));
 	}
 
 	/** Will get the custom control class by the given name, or null if nothing could be matched */
 	public ControlClass findControlClassByName(@NotNull String className) {
-		for (ControlClass controlClass : controlClassList) {
-			if (controlClass.getClassName().equals(className)) {
-				return controlClass;
+		for (CustomControlClass controlClass : controlClassList) {
+			if (controlClass.getSpecification().getClassName().equals(className)) {
+				return controlClass.getControlClass();
 			}
 		}
 		return null;
+	}
+
+	public void addControlClass(@NotNull ControlClass controlClass) {
+		controlClassList.add(new CustomControlClass(controlClass));
+	}
+
+	public static class CustomControlClass {
+		private final ControlClassSpecification specification;
+		private ControlClass controlClass;
+
+		public CustomControlClass(@NotNull ControlClass controlClass) {
+			this.specification = new ControlClassSpecification(controlClass);
+			this.controlClass = controlClass;
+		}
+
+		public CustomControlClass(@NotNull ControlClassSpecification specification) {
+			this.specification = specification;
+		}
+
+		@NotNull
+		public ControlClass getControlClass() {
+			if (controlClass == null) {
+				controlClass = specification.constructNewControlClass();
+			}
+			return controlClass;
+		}
+
+		@NotNull
+		public ControlClassSpecification getSpecification() {
+			return specification;
+		}
+
+		@Override
+		public int hashCode() {
+			return specification.getClassName().hashCode();
+		}
+	}
+
+	private static class CustomControlClassIterator implements Iterator<ControlClass> {
+		private final Iterator<CustomControlClass> iterator;
+
+		public CustomControlClassIterator(CustomControlClassRegistry registry) {
+			iterator = registry.getControlClassList().iterator();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return iterator.hasNext();
+		}
+
+		@Override
+		public ControlClass next() {
+			return iterator.next().getControlClass();
+		}
 	}
 }

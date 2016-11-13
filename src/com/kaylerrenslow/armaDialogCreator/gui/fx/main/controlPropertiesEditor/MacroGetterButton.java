@@ -73,7 +73,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 			public void handle(ActionEvent event) {
 				ChooseMacroPopup<V> popup = new ChooseMacroPopup<>(clazz);
 				popup.showAndWait();
-				Macro<V> chosenMacro = popup.getChosenMacro();
+				Macro<V> chosenMacro = popup.getChosenItem();
 				if (chosenMacro == null) {
 					return;
 				}

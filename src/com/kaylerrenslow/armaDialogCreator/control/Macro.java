@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,10 +22,28 @@ import org.jetbrains.annotations.Nullable;
  Created on 07/05/2016. */
 public class Macro<T extends SerializableValue> {
 
+	public enum MacroType {
+		USER_DEFINED(Lang.ApplicationBundle().getString("Macros.Type.user_defined")),
+		SYSTEM(Lang.ApplicationBundle().getString("Macros.Type.system")),
+		GLOBAL(Lang.ApplicationBundle().getString("Macros.Type.global"));
+
+		private final String displayText;
+
+		MacroType(String displayText) {
+			this.displayText = displayText;
+		}
+
+		@NotNull
+		public String getDisplayText() {
+			return displayText;
+		}
+	}
+
 	private String key;
 	private final PropertyType propertyType;
 	protected ValueObserver<T> valueObserver;
 	protected String comment;
+	protected MacroType myType = MacroType.USER_DEFINED;
 
 	/**
 	 A macro is referenced by a key and the result is text that is appended into the ending .h file.
@@ -80,5 +99,14 @@ public class Macro<T extends SerializableValue> {
 	
 	public void setKey(@NotNull String key) {
 		this.key = key;
+	}
+
+	@NotNull
+	public MacroType getMacroType() {
+		return myType;
+	}
+
+	public void setMacroType(@NotNull MacroType myType) {
+		this.myType = myType;
 	}
 }

@@ -18,6 +18,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  @author Kayler
@@ -60,5 +61,11 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox>{
 	@Override
 	public void show() {
 		showAndWait();
+	}
+
+	@Override
+	protected void onCloseRequest(WindowEvent event) {
+		this.cancel = true;
+		super.onCloseRequest(event);
 	}
 }

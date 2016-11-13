@@ -1,0 +1,286 @@
+/*
+ * Copyright (c) 2016 Kayler Renslow
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
+ */
+
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
+
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ @author Kayler
+ Used for displaying items separated by categories and allowing the user to choose which item they want.
+ Created on 11/13/2016. */
+public class ChooseItemPopup<V> extends StageDialog<VBox> {
+
+	private static final Font TITLE_FONT = Font.font(15d);
+	private final List<ItemCategoryTab<V>> itemCategoryTabs;
+	private final TabPane tabPane = new TabPane();
+	private V selectedItem;
+
+	public ChooseItemPopup(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
+		myStage.initStyle(StageStyle.UTILITY);
+
+		itemCategoryTabs = new ArrayList<>(categories.length);
+		for (ItemCategory<V> category : categories) {
+			itemCategoryTabs.add(new ItemCategoryTab<>(category, allItems));
+		}
+		itemCategoryTabs.add(new SearchItemCategoryTab<>(allItems));
+
+		initRootElement(headerTitle);
+		myStage.setResizable(false);
+	}
+
+	private void initRootElement(@NotNull String headerTitle) {
+		myRootElement.setPadding(new Insets(10));
+		final Label lblChooseMacro = new Label(headerTitle);
+		lblChooseMacro.setFont(TITLE_FONT);
+		myRootElement.getChildren().add(lblChooseMacro);
+		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
+
+		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {
+			@Override
+			public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
+				ChooseItemPopup.this.btnOk.setDisable(newValue == null);
+				ChooseItemPopup.this.selectedItem = newValue;
+				newItemSelected(selectedItem);
+			}
+		};
+		for (ItemCategoryTab<V> tab : itemCategoryTabs) {
+			tabPane.getTabs().add(tab);
+			tab.getListView().getSelectionModel().selectedItemProperty().addListener(selectedItemListener);
+		}
+
+		tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+			@Override
+			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab selected) {
+				newCategorySelected(getSelectedTab());
+			}
+		});
+
+
+		//force update selected tab
+		tabPane.getSelectionModel().selectLast();
+		tabPane.getSelectionModel().selectFirst();
+
+		myRootElement.getChildren().add(tabPane);
+
+		myStage.sizeToScene();
+		btnOk.setDisable(true);
+	}
+
+	/** A new item was selected. Default implementation is nothing. */
+	protected void newItemSelected(@Nullable V selected) {
+
+	}
+
+	/** A new category tab was selected. Default implementation is nothing. */
+	protected void newCategorySelected(@NotNull ItemCategoryTab<V> selected) {
+
+	}
+
+	@SuppressWarnings("unchecked")
+	protected ItemCategoryTab<V> getSelectedTab() {
+		return (ItemCategoryTab<V>) tabPane.getSelectionModel().getSelectedItem();
+	}
+
+	@Override
+	protected void cancel() {
+		selectedItem = null;
+		super.cancel();
+	}
+
+	@Override
+	protected void onCloseRequest(WindowEvent event) {
+		selectedItem = null;
+		super.onCloseRequest(event);
+	}
+
+	/** Return the item chosen. If null, no macro was chosen. */
+	@Nullable
+	public V getChosenItem() {
+		return selectedItem;
+	}
+
+	private static class SearchItemCategoryTab<V> extends ItemCategoryTab<V> {
+
+		public SearchItemCategoryTab(List<V> allItemsFromMasterCategory) {
+			super(new SearchCategory<>(), allItemsFromMasterCategory);
+			SearchCategory category = (SearchCategory) getCategory();
+			final LinkedList<V> removed = new LinkedList<>();
+			category.getTfSearch().textProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					newValue = newValue != null ? newValue.toUpperCase() : "";
+					if (newValue.length() == 0) {
+						while (removed.size() > 0) {
+							getListView().getItems().add(removed.removeFirst());
+						}
+						return;
+					}
+
+					for (int i = 0; i < getListView().getItems().size(); ) {
+						V v = getListView().getItems().get(i);
+						if (!v.toString().contains(newValue)) {
+							removed.add(v);
+							getListView().getItems().remove(i);
+							continue;
+						}
+						i++;
+					}
+				}
+			});
+		}
+	}
+
+	private static class SearchCategory<V> implements ItemCategory<V> {
+
+		private final TextField tfSearch;
+		private Node categoryNode;
+
+		public SearchCategory() {
+			tfSearch = new TextField("");
+			HBox.setHgrow(tfSearch, Priority.ALWAYS);
+			HBox hBox = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.search_text_box")), tfSearch);
+			hBox.setMaxWidth(Double.MAX_VALUE);
+			hBox.setFillHeight(true);
+			categoryNode = hBox;
+		}
+
+		@NotNull
+		public TextField getTfSearch() {
+			return tfSearch;
+		}
+
+		@NotNull
+		@Override
+		public String categoryDisplayName() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.display_name");
+		}
+
+		@NotNull
+		@Override
+		public String noItemsPlaceholderText() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.no_items_placeholder");
+		}
+
+		@NotNull
+		@Override
+		public String availableItemsDisplayText() {
+			return Lang.ApplicationBundle().getString("Popups.ChooseItemPopup.SearchCategory.search_results");
+		}
+
+		@Override
+		public boolean itemInCategory(@NotNull V item) {
+			return true;
+		}
+
+		@Nullable
+		@Override
+		public Node getMiscCategoryNode() {
+			return categoryNode;
+		}
+	}
+
+	protected static class ItemCategoryTab<V> extends Tab {
+		private final ItemCategory<V> category;
+		private final List<V> allItemsInCategory;
+		private final ListView<V> listView;
+
+		public ItemCategoryTab(@NotNull ItemCategory<V> category, @NotNull List<V> allItemsFromMasterCategory) {
+			super(category.categoryDisplayName());
+			this.category = category;
+			allItemsInCategory = new LinkedList<>();
+			for (V v : allItemsFromMasterCategory) {
+				if (category.itemInCategory(v)) {
+					allItemsInCategory.add(v);
+				}
+			}
+
+			listView = new ListView<>();
+
+			final Label lblListView = new Label(category.availableItemsDisplayText(), listView);
+			lblListView.setContentDisplay(ContentDisplay.BOTTOM);
+
+			final HBox root = new HBox(10, lblListView);
+			root.setPadding(new Insets(5));
+			final Node categoryNode = category.getMiscCategoryNode();
+			if (categoryNode != null) {
+				root.getChildren().add(categoryNode);
+				HBox.setHgrow(categoryNode, Priority.ALWAYS);
+			}
+			setContent(root);
+			setClosable(false);
+
+			listView.setPlaceholder(new Label(category.noItemsPlaceholderText()));
+			listView.setMinWidth(250d);
+			for (V v : allItemsInCategory) {
+				listView.getItems().add(v);
+			}
+
+		}
+
+		@NotNull
+		public ListView<V> getListView() {
+			return listView;
+		}
+
+		@NotNull
+		public ItemCategory<V> getCategory() {
+			return category;
+		}
+
+		@NotNull
+		public List<V> getAllItemsInCategory() {
+			return allItemsInCategory;
+		}
+
+	}
+
+	public interface ItemCategory<V> {
+		/** Returns a String that is presentable to the user that is the name of the category */
+		@NotNull
+		String categoryDisplayName();
+
+		/** Returns a String that is presentable to the user that is used when no items are in the given category */
+		@NotNull
+		String noItemsPlaceholderText();
+
+		/** Returns a String that is presentable to the user that is placed above the {@link ListView} that holds all items for this category */
+		@NotNull
+		String availableItemsDisplayText();
+
+		/** Return true if the given item is inside this category, false otherwise */
+		boolean itemInCategory(@NotNull V item);
+
+		/** Get a {@link Node} instance to be placed inside a {@link Tab}'s content node alongside the {@link ListView} */
+		@Nullable
+		Node getMiscCategoryNode();
+	}
+}

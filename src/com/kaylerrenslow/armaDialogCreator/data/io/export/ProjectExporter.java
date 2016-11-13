@@ -96,6 +96,13 @@ public class ProjectExporter {
 		}
 	}
 
+	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull OutputStream stream) throws IOException {
+		ProjectExporter exporter = new ProjectExporter(configuration);
+		stream.write(exporter.getExportClassString(controlClass, 0, null).getBytes());
+		stream.flush();
+	}
+
+
 	private void exportMacros(@NotNull OutputStream os) throws IOException {
 		if (configuration.shouldPlaceAdcNotice()) {
 			writelnComment(os, Lang.ApplicationBundle().getString("Misc.adc_export_notice"));

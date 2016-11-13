@@ -74,7 +74,7 @@ public class ControlPropertySpecification {
 		return lookup;
 	}
 
-	@NotNull
+	@Nullable
 	public SerializableValue getValue() {
 		return value;
 	}

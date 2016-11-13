@@ -13,7 +13,6 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
@@ -83,8 +82,8 @@ public class ProjectSaveXmlWriter {
 	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull CustomControlClassRegistry registry) throws IOException {
 		String customControlClasses = "custom-control-classes";
 		stm.writeBeginTag(customControlClasses);
-		for (ControlClass specification : registry.getControlClassList()) {
-			ProjectXmlUtil.writeControlClassSpecification(stm, specification);
+		for (CustomControlClassRegistry.CustomControlClass customClass : registry.getControlClassList()) {
+			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.getSpecification());
 		}
 		stm.writeCloseTag(customControlClasses);
 	}
@@ -176,16 +175,10 @@ public class ProjectSaveXmlWriter {
 			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getDefinedProperties()) {
-			stm.write(String.format("<control-property lookup-id='%d'%s>",
-					cprop.getPropertyLookup().getPropertyId(),
-					cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
-					)
-			);
 			if (cprop.getValue() == null) {
 				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
 			}
-			writeValue(stm, cprop.getValue());
-			stm.write("</control-property>");
+			ProjectXmlUtil.writeControlProperty(stm, cprop);
 		}
 
 		if (controlGroup) {

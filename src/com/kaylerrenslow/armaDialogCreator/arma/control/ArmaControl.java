@@ -23,8 +23,6 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
  @author Kayler
  The base class for all controls.<br>
@@ -33,13 +31,13 @@ import java.util.List;
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
  Created on 05/20/2016. */
 public class ArmaControl extends ControlClass implements Control {
-	private final RendererLookup rendererLookup;
-	private final ControlStyle[] allowedStyles;
+	private RendererLookup rendererLookup;
+	private ControlStyle[] allowedStyles;
 	/** Type of the control */
 	private ControlType type = ControlType.STATIC;
 
 	/** Renderer of the control for the canvas */
-	protected final ArmaControlRenderer renderer;
+	protected ArmaControlRenderer renderer;
 
 	private ControlHolder<ArmaControl> holder;
 	private ArmaDisplay display;
@@ -47,7 +45,7 @@ public class ArmaControl extends ControlClass implements Control {
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
 
-	private final ControlProperty idcProperty, accessProperty;
+	private ControlProperty idcProperty, accessProperty;
 	private final DataContext userdata = new DataContext();
 	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
 
@@ -61,6 +59,10 @@ public class ArmaControl extends ControlClass implements Control {
 	 */
 	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
+		construct(provider, resolution, rendererLookup, env);
+	}
+
+	private void construct(@NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		try {
 			this.rendererLookup = rendererLookup;
 			this.renderer = rendererLookup.rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);
@@ -126,29 +128,9 @@ public class ArmaControl extends ControlClass implements Control {
 		defineH(height);
 	}
 
-	public ArmaControl(@NotNull ControlClass controlClass, @NotNull ArmaControlSpecRequirement specProvider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
-		this(controlClass.getClassName(), specProvider, resolution, rendererLookup, env);
-		List<ControlProperty> propertyList = controlClass.getDefinedProperties();
-		for (ControlProperty property : propertyList) {
-			for (ControlPropertyLookup req : specProvider.getRequiredProperties()) {
-				if (req == property.getPropertyLookup()) {
-					findRequiredProperty(req).setValue(property.getValue());
-					break;
-				}
-			}
-			for (ControlPropertyLookup opt : specProvider.getOptionalProperties()) {
-				if (opt == property.getPropertyLookup()) {
-					findOptionalProperty(opt).setValue(property.getValue());
-					break;
-				}
-			}
-			System.err.println("ArmaControl.ArmaControl WARNING: required and optional sub-ControlClass's aren't saved in control yet");
-		}
-		//todo findRequiredSubClass and findOptionalSubClass, we need to duplicate (deep copy) them though!
-		//		List<ControlClass> subClasses = controlClass.getAllSubClasses();
-		//		for(ControlClass subclass : subClasses){
-		//			sub
-		//		}
+	public ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		super(specification);
+		construct(provider, resolution, rendererLookup, env);
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */

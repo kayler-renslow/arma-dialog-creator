@@ -15,15 +15,11 @@ import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.PresetCheckMenuItem;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.EditMacrosAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateMacroAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create.CreateNewControlAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditExportConfigAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditRedoAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditUndoAction;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.EditViewChangesAction;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.help.WikiUrlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
@@ -61,6 +57,7 @@ class ADCMenuBar extends MenuBar {
 
 	private final MenuItem edit_viewChanges = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_changes")), new EditViewChangesAction());
 	private final MenuItem edit_macros = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_macros")), new EditMacrosAction());
+	private final MenuItem edit_custom_control = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_custom_control")), new EditCustomControlAction());
 	private final MenuItem edit_exportConfig = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_export_config")), new EditExportConfigAction());
 
 
@@ -123,7 +120,7 @@ class ADCMenuBar extends MenuBar {
 	private final MenuItem help_about = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.help_about")), event -> new AboutDialog().show());
 
 	private final Menu menuFile = new Menu(ApplicationBundle().getString("MainMenuBar.file"), null, file_open, file_save, file_export, new SeparatorMenuItem(), file_closeProject, file_restart, file_exit);
-	private final Menu menuEdit = new Menu(ApplicationBundle().getString("MainMenuBar.edit"), null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_exportConfig);
+	private final Menu menuEdit = new Menu(ApplicationBundle().getString("MainMenuBar.edit"), null, edit_undo, edit_redo, edit_viewChanges, new SeparatorMenuItem(), edit_macros, edit_custom_control, edit_exportConfig);
 	private final Menu menuView = new Menu(ApplicationBundle().getString("MainMenuBar.view"), null, view_preview, view_showGrid, view_colors, view_darkTheme, backgroundAll, view_absRegionAll, view_ui, view_fullScreen);
 	private final Menu menuSettings = new Menu(ApplicationBundle().getString("MainMenuBar.settings"), null, settings_configureDirs);
 	private final Menu menuCreate = new Menu(ApplicationBundle().getString("MainMenuBar.create"), null, create_macro, create_control_class);

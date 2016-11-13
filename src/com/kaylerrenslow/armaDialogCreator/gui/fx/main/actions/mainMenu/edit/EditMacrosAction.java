@@ -8,7 +8,8 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -25,7 +26,7 @@ public class EditMacrosAction implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		ChooseMacroPopup<SerializableValue> chooseMacroPopup = new ChooseMacroPopup<>(SerializableValue.class);
 		chooseMacroPopup.showAndWait();
-		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenMacro();
+		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenItem();
 		if (chosenMacro == null) {
 			return;
 		}

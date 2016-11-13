@@ -110,25 +110,29 @@ public class ProjectXmlUtil {
 	 */
 	public static void writeControlClassSpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlClassSpecification specification) throws IOException {
 		stm.writeBeginTag(String.format(
-				"class-spec name='%s'%s", specification.getControlClassName(),
+				"class-spec name='%s'%s", specification.getClassName(),
 				specification.getExtendClassName() != null ? String.format(" extend='%s'", specification.getExtendClassName()) : "")
 		);
 
 		//required control properties
-		final String requiredProperties = "required-properties";
-		stm.writeBeginTag(requiredProperties);
-		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
-			writeControlProperty(stm, property.constructNewControlProperty());
+		if (specification.getRequiredProperties().length > 0) {
+			final String requiredProperties = "required-properties";
+			stm.writeBeginTag(requiredProperties);
+			for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
+				writeControlProperty(stm, property.constructNewControlProperty());
+			}
+			stm.writeCloseTag(requiredProperties);
 		}
-		stm.writeCloseTag(requiredProperties);
 
-		//optional control properties
-		final String optionalProperties = "optional-properties";
-		stm.writeBeginTag(optionalProperties);
-		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
-			writeControlProperty(stm, property.constructNewControlProperty());
+		if (specification.getOptionalProperties().length > 0) {
+			//optional control properties
+			final String optionalProperties = "optional-properties";
+			stm.writeBeginTag(optionalProperties);
+			for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
+				writeControlProperty(stm, property.constructNewControlProperty());
+			}
+			stm.writeCloseTag(optionalProperties);
 		}
-		stm.writeCloseTag(optionalProperties);
 
 		//required sub classes
 		if (specification.getRequiredSubClasses().length > 0) {
@@ -164,14 +168,14 @@ public class ProjectXmlUtil {
 	}
 
 	public static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlProperty cprop) throws IOException {
+		if (cprop.getValue() == null) {
+			return;
+		}
 		stm.writeBeginTag(String.format("control-property lookup-id='%d'%s",
 				cprop.getPropertyLookup().getPropertyId(),
 				cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
 				)
 		);
-		if (cprop.getValue() == null) {
-			throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
-		}
 		writeValueTags(stm, cprop.getValue());
 		stm.writeCloseTag("control-property");
 	}
@@ -196,7 +200,7 @@ public class ProjectXmlUtil {
 							String.format(
 									Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"),
 									lookupIdStr,
-									controlPropertyElement.getParentNode().toString()
+									controlPropertyElement.getParentNode().getNodeName()
 							)
 					)
 			);

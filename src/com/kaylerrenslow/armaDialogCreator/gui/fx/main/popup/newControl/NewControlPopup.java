@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -26,6 +25,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.C
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.*;
@@ -42,6 +42,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 /**
  @author Kayler
@@ -163,23 +166,13 @@ public class NewControlPopup extends StagePopup<VBox> {
 	}
 
 	private String getPreviewText() {
-		String body = "";
-		ControlPropertyEditor[] editors = editorPane.getEditors();
-		ControlProperty property;
-		final String itemFormatString = "\t%s = %s;\n";
-		final String itemArrayFormatString = "\t%s[] = %s;\n";
-		final String classFormatString = "class %s \n{\n%s};";
-		for (ControlPropertyEditor editor : editors) {
-			property = editor.getControlProperty();
-			if (property.getValue() == null/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
-				continue;
-			}
-			if (property.getValue().getAsStringArray().length == 1) {
-				body += String.format(itemFormatString, property.getName(), ProjectExporter.getExportValueString(property.getValue(), property.getPropertyType()));
-			} else {
-				body += String.format(itemArrayFormatString, property.getName(), ProjectExporter.getExportValueString(property.getValue(), property.getPropertyType()));
-			}
+		ByteArrayOutputStream stream = new ByteArrayOutputStream(128);
+		try {
+			ProjectExporter.exportControlClass(ApplicationDataManager.getInstance().getCurrentProject().getExportConfiguration(), editorPane.getControlClass(), stream);
+			stream.close();
+		} catch (IOException e) {
+			ExceptionHandler.error(e);
 		}
-		return String.format(classFormatString, inClassName.getValue(), body);
+		return stream.toString();
 	}
 }

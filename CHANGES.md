@@ -1,8 +1,8 @@
 **Added:**
-* custom control registry saving and loading (untested)
+* search functionality for when choosing a macro
 
 **Changed:**
-* none
+* moved out functionality from ChooseMacroPopup into a more generic class for use with editing a custom control class
 
 **Fixed:**
 * none

@@ -35,14 +35,23 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this.requiredSubClasses = requiredSubClasses;
 		this.optionalSubClasses = optionalSubClasses;
 
-		requiredPropertiesLookup = new ControlPropertyLookup[requiredProperties.length];
-		optionalPropertiesLookup = new ControlPropertyLookup[optionalProperties.length];
-		for (int i = 0; i < requiredPropertiesLookup.length; i++) {
-			requiredPropertiesLookup[i] = requiredProperties[i].getLookup();
+		if (requiredProperties.length == 0) {
+			requiredPropertiesLookup = ControlPropertyLookup.EMPTY;
+		} else {
+			requiredPropertiesLookup = new ControlPropertyLookup[requiredProperties.length];
+			for (int i = 0; i < requiredPropertiesLookup.length; i++) {
+				requiredPropertiesLookup[i] = requiredProperties[i].getLookup();
+			}
 		}
-		for (int i = 0; i < optionalPropertiesLookup.length; i++) {
-			optionalPropertiesLookup[i] = optionalProperties[i].getLookup();
+		if (optionalProperties.length == 0) {
+			optionalPropertiesLookup = ControlPropertyLookup.EMPTY;
+		} else {
+			optionalPropertiesLookup = new ControlPropertyLookup[optionalProperties.length];
+			for (int i = 0; i < optionalPropertiesLookup.length; i++) {
+				optionalPropertiesLookup[i] = optionalProperties[i].getLookup();
+			}
 		}
+
 	}
 
 	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties) {
@@ -51,19 +60,22 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 	/** Create a specification from the given {@link ControlClass} */
 	public ControlClassSpecification(@NotNull ControlClass controlClass) {
-		this(
-				controlClass.getClassName(),
-				new ControlPropertySpecification[controlClass.getRequiredProperties().size()],
-				new ControlPropertySpecification[controlClass.getOptionalProperties().size()],
-				controlClass.getSpecProvider().getRequiredSubClasses(),
-				controlClass.getSpecProvider().getOptionalSubClasses()
-		);
+		this.controlClassName = controlClass.getClassName();
+		this.requiredProperties = new ControlPropertySpecification[controlClass.getRequiredProperties().size()];
+		this.optionalProperties = new ControlPropertySpecification[controlClass.getOptionalProperties().size()];
+		this.requiredSubClasses = controlClass.getSpecProvider().getRequiredSubClasses();
+		this.optionalSubClasses = controlClass.getSpecProvider().getOptionalSubClasses();
+
 		for (int i = 0; i < requiredProperties.length; i++) {
 			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i));
 		}
 		for (int i = 0; i < optionalProperties.length; i++) {
 			optionalProperties[i] = new ControlPropertySpecification(controlClass.getOptionalProperties().get(i));
 		}
+
+		this.optionalPropertiesLookup = controlClass.getSpecProvider().getOptionalProperties();
+		this.requiredPropertiesLookup = controlClass.getSpecProvider().getRequiredProperties();
+
 		if (controlClass.getExtendClass() != null) {
 			setExtendClass(controlClass.getExtendClass().getClassName());
 		}
@@ -79,7 +91,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	@NotNull
-	public String getControlClassName() {
+	public String getClassName() {
 		return controlClassName;
 	}
 
