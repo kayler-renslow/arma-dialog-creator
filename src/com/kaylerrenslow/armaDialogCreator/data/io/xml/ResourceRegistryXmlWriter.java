@@ -22,16 +22,20 @@ import java.io.IOException;
  Created by Kayler on 09/08/2016.
  */
 public class ResourceRegistryXmlWriter {
-	private final ResourceRegistry resourceRegistry;
+	protected ResourceRegistry resourceRegistry;
 
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
 			super(ResourceRegistry.getGlobalRegistry());
 		}
 
+		private GlobalResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
+			super(resourceRegistry);
+		}
+
 		@NotNull
-		public XmlWriterOutputStream getXmlWriterOutputStream() throws FileNotFoundException {
-			return new XmlWriterOutputStream(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile());
+		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws FileNotFoundException {
+			return new XmlWriterOutputStream(registry.getGlobalResourcesXmlFile());
 		}
 
 
@@ -41,15 +45,20 @@ public class ResourceRegistryXmlWriter {
 			super.write(fos);
 		}
 
-		public void writeAndClose() throws IOException {
-			XmlWriterOutputStream fos = getXmlWriterOutputStream();
+		public static void writeAndClose() throws IOException {
+			writeAndClose(ResourceRegistry.getGlobalRegistry());
+		}
+
+
+		public static void writeAndClose(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws IOException {
+			new GlobalResourceRegistryXmlWriter(registry).doWriteAndClose();
+		}
+
+		public void doWriteAndClose() throws IOException {
+			XmlWriterOutputStream fos = getXmlWriterOutputStream((ResourceRegistry.GlobalResourceRegistry) this.resourceRegistry);
 			write(fos);
 			fos.flush();
 			fos.close();
-		}
-
-		public static GlobalResourceRegistryXmlWriter getNewInstance(){
-			return new GlobalResourceRegistryXmlWriter();
 		}
 	}
 

@@ -70,10 +70,9 @@ public class ResourceRegistry {
 		private GlobalResourceRegistry() {
 			if(!globalResourcesXmlFile.exists()){
 				globalResourcesXmlFile.getParentFile().mkdirs();
-				System.out.println("GlobalResourceRegistry.GlobalResourceRegistry " + globalResourcesXmlFile.exists());
 				try {
 					globalResourcesXmlFile.createNewFile();
-					ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter.getNewInstance().writeAndClose();
+					ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter.writeAndClose(this);
 				} catch (IOException e) {
 					ExceptionHandler.error(e);
 				}
