@@ -63,7 +63,7 @@ public final class ArmaDialogCreator extends Application {
 	private ADCWindow mainWindow;
 	private ApplicationDataManager applicationDataManager;
 
-	private final LinkedList<StagePopup> showLater = new LinkedList<>();
+	private final LinkedList<Runnable> showLater = new LinkedList<>();
 
 	public ArmaDialogCreator() {
 		if (INSTANCE != null) {
@@ -201,8 +201,8 @@ public final class ArmaDialogCreator extends Application {
 		getMainWindow().getCanvasView().setTreeStructure(false, config.getNewTreeStructureMain());
 		getMainWindow().getCanvasView().setTreeStructure(true, config.getNewTreeStructureBg());
 
-		for (StagePopup aShowLater : INSTANCE.showLater) {
-			aShowLater.show();
+		for (Runnable run: INSTANCE.showLater) {
+			run.run();
 		}
 		INSTANCE.showLater.clear();
 	}
@@ -246,9 +246,9 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.applicationDataManager.getApplicationData();
 	}
 
-	/** Show the given popup after the application's main window has been initialized */
-	public static void showAfterMainWindowLoaded(StagePopup selectSaveLocationPopup) {
-		INSTANCE.showLater.add(selectSaveLocationPopup);
+	/** Run the given runnable on the JavaFX thread after the application's main window has been initialized */
+	public static void showAfterMainWindowLoaded(@NotNull Runnable runnable) {
+		INSTANCE.showLater.add(runnable);
 	}
 
 	public static Parameters getLaunchParameters() {

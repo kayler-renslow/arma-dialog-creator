@@ -33,7 +33,7 @@ public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
 	private ApplicationData applicationData;
 
-	public static ApplicationDataManager getInstance(){
+	public static ApplicationDataManager getInstance() {
 		return ArmaDialogCreator.getApplicationDataManager();
 	}
 
@@ -47,9 +47,9 @@ public class ApplicationDataManager {
 		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);
 	}
 
-	/**Calls {@code getApplicationData().getCurrentProject()}*/
+	/** Calls {@code getApplicationData().getCurrentProject()} */
 	@NotNull
-	public Project getCurrentProject(){
+	public Project getCurrentProject() {
 		return getApplicationData().getCurrentProject();
 	}
 
@@ -60,23 +60,23 @@ public class ApplicationDataManager {
 		}
 		return applicationData;
 	}
-	
+
 	/** Set the application save data directory to a new one. Automatically updates application properties. */
 	public void setAppSaveDataLocation(@NotNull File file) {
 		propertyManager.setAppSaveDataLocation(file);
 	}
-	
+
 	/** Set the arma 3 tools directory to a new one (can be null). Automatically updates application properties. */
 	public void setArma3ToolsLocation(@Nullable File file) {
 		propertyManager.setArma3ToolsLocation(file);
 	}
-	
+
 	/** Get where application save files should be saved to. */
 	@NotNull
 	public File getAppSaveDataDirectory() {
 		return propertyManager.getAppSaveDataDirectory();
 	}
-	
+
 	/** Get the directory for where Arma 3 tools is saved. If the directory hasn't been set or doesn't exist or the file that is set isn't a directory, will return null. */
 	@Nullable
 	public File getArma3ToolsDirectory() {
@@ -93,7 +93,7 @@ public class ApplicationDataManager {
 		}
 		return true;
 	}
-	
+
 	/** Saves the project. If exception is thrown, project wasn't successfully saved. */
 	public void saveProject() throws IOException {
 		if (applicationData == null) {
@@ -107,10 +107,10 @@ public class ApplicationDataManager {
 		new ProjectSaveXmlWriter(project, ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(), ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure(),
 				projectSaveXml).write();
 	}
-	
+
 	/**
 	 This should be called when the application is exiting unexpectedly and the data should be saved.
-	 
+
 	 @return true if the data could be successfully saved, false if it couldn't
 	 */
 	public boolean forceSave() {
@@ -124,7 +124,7 @@ public class ApplicationDataManager {
 		return true;
 	}
 
-	public void saveGlobalResources(){
+	public void saveGlobalResources() {
 		try {
 			new ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter().writeAndClose();
 		} catch (IOException e) {
@@ -152,7 +152,7 @@ public class ApplicationDataManager {
 		return property.get(propertyManager.getApplicationProperties());
 	}
 
-	private static class SaveProjectDialog extends StageDialog<VBox>{
+	private static class SaveProjectDialog extends StageDialog<VBox> {
 
 		private boolean saveProgress = false;
 
@@ -169,7 +169,7 @@ public class ApplicationDataManager {
 			super.ok();
 		}
 
-		/**Returns true if the user responded yes for saving, false if no progress should be saved*/
+		/** Returns true if the user responded yes for saving, false if no progress should be saved */
 		public boolean isSaveProgress() {
 			return saveProgress;
 		}

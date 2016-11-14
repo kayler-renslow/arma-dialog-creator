@@ -10,7 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +68,16 @@ public class ResourceRegistry {
 		private final File globalResourcesXmlFile = getResourcesFilePathForName("global-resources.xml");
 
 		private GlobalResourceRegistry() {
+			if(!globalResourcesXmlFile.exists()){
+				globalResourcesXmlFile.getParentFile().mkdirs();
+				System.out.println("GlobalResourceRegistry.GlobalResourceRegistry " + globalResourcesXmlFile.exists());
+				try {
+					globalResourcesXmlFile.createNewFile();
+					ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter.getNewInstance().writeAndClose();
+				} catch (IOException e) {
+					ExceptionHandler.error(e);
+				}
+			}
 		}
 
 		/** {@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/global-resources.xml*/

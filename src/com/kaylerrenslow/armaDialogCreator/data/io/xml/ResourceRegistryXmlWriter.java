@@ -47,6 +47,10 @@ public class ResourceRegistryXmlWriter {
 			fos.flush();
 			fos.close();
 		}
+
+		public static GlobalResourceRegistryXmlWriter getNewInstance(){
+			return new GlobalResourceRegistryXmlWriter();
+		}
 	}
 
 	public ResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
