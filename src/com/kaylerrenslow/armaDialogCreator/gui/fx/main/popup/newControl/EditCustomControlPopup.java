@@ -41,7 +41,7 @@ public class EditCustomControlPopup extends NewControlPopup {
 			}
 		});
 		setToControlClass(duplicate);
-		disableBaseControlMenuButton(true);
+		hideBaseControlMenuButton(true);
 	}
 
 	@Override

@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
@@ -42,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  @author Kayler
@@ -54,19 +52,10 @@ public class NewControlPopup extends StagePopup<VBox> {
 	private final StackPane stackPaneProperties = new StackPane();
 	private final TextArea taPreviewSample = new TextArea();
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
-	private final ControlClassMenuButton baseControlMenuButton;
-
-	private final ArrayList<KeyValue<ControlType, ControlClass>> controlClassTypeInstances = new ArrayList<>(ControlType.values().length);
+	private final Label lblBaseControl;
 
 	private ControlPropertiesEditorPane editorPane;
 
-
-	private final ValueListener<SerializableValue> controlPropertyObserverListener = new ValueListener<SerializableValue>() {
-		@Override
-		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-			updatePreview();
-		}
-	};
 	private UpdateListener<ControlPropertyUpdate> controlClassListener = new UpdateListener<ControlPropertyUpdate>() {
 		@Override
 		public void update(ControlPropertyUpdate data) {
@@ -109,7 +98,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 				toSelect = controlTypeControlClasses[i];
 			}
 		}
-		baseControlMenuButton = new ControlClassMenuButton(
+		final ControlClassMenuButton baseControlMenuButton = new ControlClassMenuButton(
 				false, "", null,
 				new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString("Popups.NewControl.base_types"), controlTypeControlClasses),
 				new ControlClassMenuButton.ControlClassGroupMenu(
@@ -126,7 +115,7 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 		baseControlMenuButton.chooseItem(toSelect);
 
-		final Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), baseControlMenuButton);
+		lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), baseControlMenuButton);
 		lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
 		hboxHeader.getChildren().add(lblBaseControl);
 
@@ -167,8 +156,8 @@ public class NewControlPopup extends StagePopup<VBox> {
 		return items;
 	}
 
-	protected void disableBaseControlMenuButton(boolean disable) {
-		baseControlMenuButton.setDisable(disable);
+	protected void hideBaseControlMenuButton(boolean hidden) {
+		lblBaseControl.setVisible(!hidden);
 	}
 
 	protected void setToControlClass(@NotNull ControlClass controlClass) {
