@@ -10,9 +10,14 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyUpdate;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.LinkedList;
 
 /**
  @author Kayler
@@ -20,15 +25,31 @@ import org.jetbrains.annotations.NotNull;
  Created on 11/14/2016. */
 public class EditCustomControlPopup extends NewControlPopup {
 
+	private final ControlClass duplicate;
+	private final CustomControlClass toEdit;
+	private final LinkedList<ControlPropertyUpdate> updates = new LinkedList<>();
+
 	public EditCustomControlPopup(@NotNull CustomControlClass toEdit) {
+		this.toEdit = toEdit;
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.EditCustomControl.popup_title"));
-		setToControlClass(toEdit.getControlClass());
+
+		duplicate = toEdit.getSpecification().constructNewControlClass();
+		duplicate.getUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
+			@Override
+			public void update(ControlPropertyUpdate data) {
+				updates.add(data);
+			}
+		});
+		setToControlClass(duplicate);
 		disableBaseControlMenuButton(true);
 	}
 
 	@Override
 	protected void ok() {
-
+		for (ControlPropertyUpdate update : updates) {
+			toEdit.getControlClass().getUpdateGroup().update(update);
+		}
+		System.err.println("EditCustomControlPopup.ok TODO: update class name");
 		close();
 	}
 

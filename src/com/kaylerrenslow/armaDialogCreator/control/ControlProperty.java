@@ -88,6 +88,12 @@ public class ControlProperty {
 		valueObserver = new ValueObserver<>(value);
 		defaultValue = null;
 		beforeMacroValue = value;
+		valueObserver.addValueListener(new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(ControlProperty.this, oldValue, newValue));
+			}
+		});
 	}
 
 	/**
@@ -136,7 +142,6 @@ public class ControlProperty {
 	public void setValue(@Nullable SerializableValue v) {
 		beforeMacroValue = v;
 		valueObserver.updateValue(v);
-		controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(this, beforeMacroValue, v));
 	}
 
 	/**

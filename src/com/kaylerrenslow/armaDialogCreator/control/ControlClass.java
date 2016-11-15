@@ -62,7 +62,10 @@ public class ControlClass {
 		addSubClasses(requiredSubClasses, specProvider.getRequiredSubClasses());
 		addSubClasses(optionalSubClasses, specProvider.getOptionalSubClasses());
 
+		initializeListeners();
+	}
 
+	private void initializeListeners() {
 		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
 			@Override
 			public void update(ControlPropertyUpdate data) {
@@ -96,6 +99,7 @@ public class ControlClass {
 		for (ControlClassSpecification s : specification.getOptionalSubClasses()) {
 			optionalSubClasses.add(s.constructNewControlClass());
 		}
+		initializeListeners();
 	}
 
 	public void setClassName(String className) {

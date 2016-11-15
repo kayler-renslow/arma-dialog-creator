@@ -182,8 +182,8 @@ public class NewControlPopup extends StagePopup<VBox> {
 		controlClass.getUpdateGroup().addListener(controlClassListener);
 
 		inClassName.setValue(controlClass.getClassName());
-		baseControlMenuButton.chooseItem(KEY_MENU_ITEM.get(controlClass.getUserData()));
 	}
+
 
 	@Override
 	protected void ok() {

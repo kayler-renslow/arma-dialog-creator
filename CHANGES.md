@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* custom controls can now be edited
+* none
 
 **Fixed:**
 * none
