@@ -56,6 +56,10 @@ public class CustomControlClassRegistry {
 		controlClassList.add(new CustomControlClass(controlClass));
 	}
 
+	public void removeControlClass(@NotNull CustomControlClass controlClass) {
+		controlClassList.remove(controlClass);
+	}
+
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {
 		private final Iterator<CustomControlClass> iterator;
 

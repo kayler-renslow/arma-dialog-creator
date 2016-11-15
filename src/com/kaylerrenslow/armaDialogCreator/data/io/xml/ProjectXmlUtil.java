@@ -94,10 +94,26 @@ public class ProjectXmlUtil {
 
 	private static ControlPropertySpecification[] loadPropertyArray(@Nullable DataContext context, @NotNull XmlErrorRecorder recorder, String controlProperty, Element propertyElementGroup) {
 		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlProperty);
-		ControlPropertySpecification[] propertiesArray = new ControlPropertySpecification[propertyElements.size()];
+		List<Element> missingPropertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, "undefined");
+
+		ControlPropertySpecification[] propertiesArray = new ControlPropertySpecification[propertyElements.size() + missingPropertyElements.size()];
 		int i = 0;
 		for (Element propertyElement : propertyElements) {
 			propertiesArray[i++] = loadControlProperty(propertyElement, context, recorder);
+		}
+		for (Element missingPropertyElement : missingPropertyElements) {
+			String idAttr = missingPropertyElement.getAttribute("lookup-id");
+			ControlPropertyLookup lookup;
+			try {
+				int id = Integer.parseInt(idAttr);
+				lookup = ControlPropertyLookup.findById(id);
+			} catch (IllegalArgumentException e) {
+				recorder.addError(new ParseError(
+						String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"), idAttr, missingPropertyElement)
+				));
+				return ControlPropertySpecification.EMPTY;
+			}
+			propertiesArray[i++] = new ControlPropertySpecification(lookup);
 		}
 		return propertiesArray;
 	}
@@ -119,7 +135,11 @@ public class ProjectXmlUtil {
 			final String requiredProperties = "required-properties";
 			stm.writeBeginTag(requiredProperties);
 			for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
-				writeControlProperty(stm, property.constructNewControlProperty());
+				if (property.getValue() == null) {
+					writeMissingControlPropertyValue(stm, property);
+				} else {
+					writeControlProperty(stm, property.constructNewControlProperty());
+				}
 			}
 			stm.writeCloseTag(requiredProperties);
 		}
@@ -129,7 +149,11 @@ public class ProjectXmlUtil {
 			final String optionalProperties = "optional-properties";
 			stm.writeBeginTag(optionalProperties);
 			for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
-				writeControlProperty(stm, property.constructNewControlProperty());
+				if (property.getValue() == null) {
+					writeMissingControlPropertyValue(stm, property);
+				} else {
+					writeControlProperty(stm, property.constructNewControlProperty());
+				}
 			}
 			stm.writeCloseTag(optionalProperties);
 		}
@@ -157,15 +181,10 @@ public class ProjectXmlUtil {
 		stm.writeCloseTag("class-spec");
 	}
 
-	/**
-	 Writes a {@link ControlClass} to xml file as a {@link ControlClassSpecification}.
-
-	 @param stm xml writer stream
-	 @param specification specification to write
-	 */
-	public static void writeControlClassSpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlClass specification) throws IOException {
-		writeControlClassSpecification(stm, new ControlClassSpecification(specification));
+	private static void writeMissingControlPropertyValue(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification property) throws IOException {
+		stm.write("<undefined lookup-id='" + property.getLookup().getPropertyId() + "'/>");
 	}
+
 
 	public static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlProperty cprop) throws IOException {
 		if (cprop.getValue() == null) {

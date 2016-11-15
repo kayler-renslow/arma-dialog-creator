@@ -35,6 +35,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
@@ -92,6 +93,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.getChildren().clear();
 		addCloseButton(c);
 		myRootElement.getChildren().add(editorPane);
+		VBox.setVgrow(editorPane, Priority.ALWAYS);
 
 		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
 		cbIsBackgroundControl.setSelected(c.isBackgroundControl());

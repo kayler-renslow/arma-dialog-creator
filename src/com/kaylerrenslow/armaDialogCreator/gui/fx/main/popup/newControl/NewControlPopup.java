@@ -11,9 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
@@ -22,7 +20,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertyEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -45,15 +42,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  @author Kayler
  Popup window that allows for creating a new control. It has a control properties editor on the left and a preview window on the right to preview the outputted .h file text
  Created on 07/06/2016. */
 public class NewControlPopup extends StagePopup<VBox> {
+	private static final Key<ControlClassMenuButton.ControlClassMenuItem> KEY_MENU_ITEM = new Key<>("NewControlPopup.controlClassMenuItem");
+
 	private final StackPane stackPaneProperties = new StackPane();
 	private final TextArea taPreviewSample = new TextArea();
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
+	private final ControlClassMenuButton baseControlMenuButton;
+
+	private final ArrayList<KeyValue<ControlType, ControlClass>> controlClassTypeInstances = new ArrayList<>(ControlType.values().length);
 
 	private ControlPropertiesEditorPane editorPane;
 
@@ -61,6 +64,12 @@ public class NewControlPopup extends StagePopup<VBox> {
 	private final ValueListener<SerializableValue> controlPropertyObserverListener = new ValueListener<SerializableValue>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+			updatePreview();
+		}
+	};
+	private UpdateListener<ControlPropertyUpdate> controlClassListener = new UpdateListener<ControlPropertyUpdate>() {
+		@Override
+		public void update(ControlPropertyUpdate data) {
 			updatePreview();
 		}
 	};
@@ -78,10 +87,11 @@ public class NewControlPopup extends StagePopup<VBox> {
 		hboxHeader.getChildren().add(lblControlClassName);
 		hboxHeader.getChildren().add(inClassName);
 
-		inClassName.setValue("New_ADC_Control");
 		inClassName.getValueObserver().addValueListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+				newValue = newValue != null ? newValue : "";
+				editorPane.getControlClass().setClassName(newValue);
 				updatePreview();
 			}
 		});
@@ -93,22 +103,30 @@ public class NewControlPopup extends StagePopup<VBox> {
 			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
 			controlTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
+			controlClass.setClassName("Custom_" + controlClass.getClassName());
+			controlClass.getUserData().put(KEY_MENU_ITEM, controlTypeControlClasses[i]);
 			if (lookup.controlType == ControlType.STATIC) {
 				toSelect = controlTypeControlClasses[i];
 			}
 		}
-		final ControlClassMenuButton controlClassMenuButton = new ControlClassMenuButton(false, "", null, new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString
-				("Popups.NewControl.base_types"), controlTypeControlClasses));
-		controlClassMenuButton.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
+		baseControlMenuButton = new ControlClassMenuButton(
+				false, "", null,
+				new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString("Popups.NewControl.base_types"), controlTypeControlClasses),
+				new ControlClassMenuButton.ControlClassGroupMenu(
+						Lang.ApplicationBundle().getString("Popups.NewControl.custom_controls"),
+						getCustomControlsItems()
+				)
+		);
+		baseControlMenuButton.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 				setToControlClass(newValue);
 			}
 		});
 
-		controlClassMenuButton.chooseItem(toSelect);
+		baseControlMenuButton.chooseItem(toSelect);
 
-		final Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), controlClassMenuButton);
+		final Label lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), baseControlMenuButton);
 		lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
 		hboxHeader.getChildren().add(lblBaseControl);
 
@@ -137,17 +155,34 @@ public class NewControlPopup extends StagePopup<VBox> {
 		myStage.sizeToScene();
 	}
 
-	private void setToControlClass(@NotNull ControlClass controlClass) {
+	private ControlClassMenuButton.ControlClassMenuItem[] getCustomControlsItems() {
+		ReadOnlyList<CustomControlClass> customControlClasses = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
+		ControlClassMenuButton.ControlClassMenuItem[] items = new ControlClassMenuButton.ControlClassMenuItem[customControlClasses.size()];
+		int i = 0;
+		for (CustomControlClass customControlClass : customControlClasses) {
+			items[i] = new ControlClassMenuButton.ControlClassMenuItem(customControlClass.getControlClass());
+			items[i].getValue().getUserData().put(KEY_MENU_ITEM, items[i]);
+			i++;
+		}
+		return items;
+	}
+
+	protected void disableBaseControlMenuButton(boolean disable) {
+		baseControlMenuButton.setDisable(disable);
+	}
+
+	protected void setToControlClass(@NotNull ControlClass controlClass) {
+		if (editorPane != null) {
+			editorPane.getControlClass().getUpdateGroup().removeListener(controlClassListener);
+		}
 		editorPane = new ControlPropertiesEditorPane(controlClass);
 		stackPaneProperties.getChildren().clear();
 		stackPaneProperties.getChildren().add(editorPane);
 
-		ControlPropertyEditor[] editors = editorPane.getEditors();
-		for (ControlPropertyEditor editor : editors) {
-			editor.getControlProperty().getValueObserver().addValueListener(controlPropertyObserverListener);
-		}
+		controlClass.getUpdateGroup().addListener(controlClassListener);
 
-		updatePreview();
+		inClassName.setValue(controlClass.getClassName());
+		baseControlMenuButton.chooseItem(KEY_MENU_ITEM.get(controlClass.getUserData()));
 	}
 
 	@Override

@@ -37,3 +37,4 @@ Bugs
 * select many things in tree view and drag into folder
 * moving control group in display throws exception
 * square scaling: doesn't scale up and back down with same snap amount
+* editing control: setting macro, then switching to default editor and editing value will result in macro being overridden/not used

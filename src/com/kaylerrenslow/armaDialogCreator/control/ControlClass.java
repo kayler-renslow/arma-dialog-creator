@@ -12,10 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,13 +47,14 @@ public class ControlClass {
 	private final ReadOnlyList<ControlClass> requiredSubClassesReadOnly = new ReadOnlyList<>(requiredSubClasses);
 	private final ReadOnlyList<ControlClass> optionalSubClassesReadOnly = new ReadOnlyList<>(optionalSubClasses);
 
+	private final DataContext userData = new DataContext();
 
-	protected String className;
+	private final ValueObserver<String> classNameObserver = new ValueObserver<>(null);
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
 
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification provider) {
-		this.className = name;
+		classNameObserver.updateValue(name);
 		this.specProvider = provider;
 
 		addProperties(requiredProperties, specProvider.getRequiredProperties());
@@ -64,17 +62,24 @@ public class ControlClass {
 		addSubClasses(requiredSubClasses, specProvider.getRequiredSubClasses());
 		addSubClasses(optionalSubClasses, specProvider.getOptionalSubClasses());
 
+
+		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
+			@Override
+			public void update(ControlPropertyUpdate data) {
+				updateGroup.update(data);
+			}
+		};
 		for (ControlProperty controlProperty : requiredProperties) {
-			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
 		for (ControlProperty controlProperty : optionalProperties) {
-			controlProperty.getValueObserver().addValueListener(getControlPropertyListener(controlProperty));
+			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
 	}
 
 	/** Construct a {@link ControlClass} with the given specification */
 	public ControlClass(@NotNull ControlClassSpecification specification) {
-		this.className = specification.getClassName();
+		classNameObserver.updateValue(specification.getClassName());
 		this.specProvider = specification;
 		if (specification.getExtendClassName() != null) {
 			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
@@ -93,26 +98,17 @@ public class ControlClass {
 		}
 	}
 
-	@NotNull
-	private ValueListener<SerializableValue> getControlPropertyListener(final ControlProperty controlProperty) {
-		return new ValueListener<SerializableValue>() {
-			private final ControlPropertyUpdate update = new ControlPropertyUpdate(controlProperty, null, null);
-
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				update.setOldValue(oldValue);
-				update.setNewValue(newValue);
-				updateGroup.update(update);
-			}
-		};
-	}
-
 	public void setClassName(String className) {
-		this.className = className;
+		classNameObserver.updateValue(className);
 	}
 
 	public String getClassName() {
-		return className;
+		return classNameObserver.getValue();
+	}
+
+	@NotNull
+	public ValueObserver<String> getClassNameObserver() {
+		return classNameObserver;
 	}
 
 	public final void extendControlClass(@Nullable ControlClass armaControl) {
@@ -442,4 +438,11 @@ public class ControlClass {
 	public String toString() {
 		return getClassName();
 	}
+
+	/** Get a {@link DataContext} instance that stores random things. */
+	@NotNull
+	public DataContext getUserData() {
+		return userData;
+	}
+
 }

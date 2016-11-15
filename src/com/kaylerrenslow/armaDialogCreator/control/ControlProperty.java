@@ -12,10 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
-import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,9 +43,9 @@ public class ControlProperty {
 	private final ValueObserver<SerializableValue> valueObserver;
 	private SerializableValue defaultValue;
 
-	/** The custom data instance for when {@link #setHasCustomData(boolean, Object)} is invoked */
+	/** The custom data instance for when {@link #setCustomDataValue(Object)} is invoked */
 	private Object customData;
-	/** True when {@link #setHasCustomData(boolean, Object)} with true passed in parameter, false otherwise. */
+	/** True when {@link #setHasCustomData(boolean)} with true passed in parameter, false otherwise. */
 	private boolean customDataSet = false;
 	private ValueObserver<Object> customDataValueObserver;
 
@@ -56,11 +53,14 @@ public class ControlProperty {
 	private SerializableValue beforeMacroValue;
 	private @Nullable Macro myMacro;
 
+	private final UpdateListenerGroup<ControlPropertyUpdate> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
+
 	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
 	@NotNull
 	public ControlProperty deepCopy() {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
-		copy.setHasCustomData(isCustomData(), getCustomData());
+		copy.setCustomDataValue(getCustomData());
+		copy.setHasCustomData(isCustomData());
 		if (getMacro() != null) {
 			copy.setValueToMacro(getMacro());
 		}
@@ -70,7 +70,8 @@ public class ControlProperty {
 
 	public ControlProperty(@NotNull ControlPropertySpecification specification) {
 		this(specification.getLookup(), specification.getValue());
-		setHasCustomData(specification.isUsingCustomData(), specification.getCustomData());
+		setCustomDataValue(specification.getCustomData());
+		setHasCustomData(specification.isUsingCustomData());
 		if (specification.getMacroKey() != null) {
 			setValueToMacro(ApplicationDataManager.getInstance().getCurrentProject().getMacroRegistry().getMacroByKey(specification.getMacroKey()));
 		}
@@ -131,27 +132,11 @@ public class ControlProperty {
 		this(propertyLookup, new SVString(value));
 	}
 
-	@NotNull
-	public ControlPropertyLookupConstant getPropertyLookup() {
-		return propertyLookup;
-	}
-
-	/**
-	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
-	 invoking {@link #setHasCustomData(boolean, Object)}. This will not affect {@link #getValue()}.
-	 */
-	public boolean isCustomData() {
-		return customDataSet;
-	}
-
-	/**
-	 Set whether custom data is set and the custom data value.
-
-	 @see #isCustomData()
-	 */
-	public void setHasCustomData(boolean custom, @Nullable Object customData) {
-		setCustomDataValue(customData);
-		setHasCustomData(custom);//should come after value set
+	/** Set ControlProperty's value. If a macro is set to the control property, the macro's value will be undisturbed, however, the control property's value will be set to this value. */
+	public void setValue(@Nullable SerializableValue v) {
+		beforeMacroValue = v;
+		valueObserver.updateValue(v);
+		controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(this, beforeMacroValue, v));
 	}
 
 	/**
@@ -160,54 +145,18 @@ public class ControlProperty {
 	 @see #isCustomData()
 	 */
 	public void setCustomDataValue(@Nullable Object customData) {
-		setHasCustomData(true);
+		this.customDataSet = true;
 		this.customData = customData;
 		if (this.customDataValueObserver == null) {
 			customDataValueObserver = new ValueObserver<>(customData);
 		}
+		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, true));
 	}
 
 	/** Does nothing except mark that the {@link ControlProperty} is/ins't using custom data. @see #isCustomData() */
 	public void setHasCustomData(boolean custom) {
 		this.customDataSet = custom;
-	}
-
-	/** Get the custom data set from {@link #setHasCustomData(boolean, Object)} */
-	@Nullable
-	public Object getCustomData() {
-		return customData;
-	}
-
-	/** Get the {@link ValueObserver} instance for the {@link #getCustomData()} value. Will be null when the custom data is never set. */
-	@Nullable
-	public ReadOnlyValueObserver<Object> getCustomDataValueObserver() {
-		return customDataValueObserver.getReadOnlyValueObserver();
-	}
-
-	@NotNull
-	public String getName() {
-		return propertyLookup.getPropertyName();
-	}
-
-	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
-	public boolean isPropertyType(PropertyType type) {
-		return getPropertyType() == type;
-	}
-
-	@NotNull
-	public PropertyType getPropertyType() {
-		return propertyLookup.getPropertyType();
-	}
-
-	@Nullable
-	public SerializableValue getValue() {
-		return valueObserver.getValue();
-	}
-
-	/** Get the default value for the property */
-	@Nullable
-	public SerializableValue getDefaultValue() {
-		return defaultValue;
+		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, custom));
 	}
 
 	/**
@@ -269,6 +218,58 @@ public class ControlProperty {
 			beforeMacroValue = valueObserver.getValue();
 			setValue(this.myMacro.getValue());
 		}
+		controlPropertyUpdateGroup.update(new ControlPropertyMacroUpdate(this, m, m != null));
+	}
+
+	/** Get the custom data set from {@link #setCustomDataValue(Object)} */
+	@Nullable
+	public Object getCustomData() {
+		return customData;
+	}
+
+	/** Get the {@link ValueObserver} instance for the {@link #getCustomData()} value. Will be null when the custom data is never set. */
+	@Nullable
+	public ReadOnlyValueObserver<Object> getCustomDataValueObserver() {
+		return customDataValueObserver.getReadOnlyValueObserver();
+	}
+
+	@NotNull
+	public String getName() {
+		return propertyLookup.getPropertyName();
+	}
+
+	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
+	public boolean isPropertyType(PropertyType type) {
+		return getPropertyType() == type;
+	}
+
+	@NotNull
+	public PropertyType getPropertyType() {
+		return propertyLookup.getPropertyType();
+	}
+
+	@Nullable
+	public SerializableValue getValue() {
+		return valueObserver.getValue();
+	}
+
+	@NotNull
+	public ControlPropertyLookupConstant getPropertyLookup() {
+		return propertyLookup;
+	}
+
+	/**
+	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
+	 invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
+	 */
+	public boolean isCustomData() {
+		return customDataSet;
+	}
+
+	/** Get the default value for the property */
+	@Nullable
+	public SerializableValue getDefaultValue() {
+		return defaultValue;
 	}
 
 	/** Get the macro that the control property is using, or null if not using a macro */
@@ -329,10 +330,17 @@ public class ControlProperty {
 		return valueObserver;
 	}
 
-	/** Set ControlProperty's value. If a macro is set to the control property, the macro's value will be undisturbed, however, the control property's value will be set to this value. */
-	public void setValue(@Nullable SerializableValue v) {
-		beforeMacroValue = v;
-		valueObserver.updateValue(v);
+	/**
+	 Get an {@link UpdateListenerGroup} instance that invokes {@link UpdateListenerGroup#update(Object)} whenever one of these operations have been done:<br>
+	 <ul>
+	 <li>Value update</li>
+	 <li>Custom data update</li>
+	 <li>Set to a {@link Macro}, or removed it</li>
+	 </ul>
+	 */
+	@NotNull
+	public UpdateListenerGroup<ControlPropertyUpdate> getControlPropertyUpdateGroup() {
+		return controlPropertyUpdateGroup;
 	}
 
 	/** Set the first value to int. This will just wrap the int in {@link SVInteger} */

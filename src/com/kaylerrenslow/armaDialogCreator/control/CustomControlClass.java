@@ -10,14 +10,19 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 11/13/2016.
  */
 public class CustomControlClass {
-	private final ControlClassSpecification specification;
+	private ControlClassSpecification specification;
 	private ControlClass controlClass;
+	private final DataContext programData = new DataContext();
 
 	public CustomControlClass(@NotNull ControlClass controlClass) {
 		this.specification = new ControlClassSpecification(controlClass);
@@ -32,8 +37,37 @@ public class CustomControlClass {
 	public ControlClass getControlClass() {
 		if (controlClass == null) {
 			controlClass = specification.constructNewControlClass();
+			loadControlClassListeners();
 		}
 		return controlClass;
+	}
+
+	private void loadControlClassListeners() {
+		controlClass.getClassNameObserver().addValueListener(new ValueListener<String>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+				specification.setClassName(newValue);
+			}
+		});
+		controlClass.getUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
+			@Override
+			public void update(ControlPropertyUpdate data) {
+				ControlPropertySpecification propertySpec = specification.findProperty(data.getControlProperty().getPropertyLookup());
+				if (data instanceof ControlPropertyValueUpdate) {
+					ControlPropertyValueUpdate update = (ControlPropertyValueUpdate) data;
+					propertySpec.setValue(update.getNewValue());
+				} else if (data instanceof ControlPropertyMacroUpdate) {
+					ControlPropertyMacroUpdate update = (ControlPropertyMacroUpdate) data;
+					propertySpec.setMacroKey(update.getMacro() != null ? update.getMacro().getKey() : null);
+				} else if (data instanceof ControlPropertyCustomDataUpdate) {
+					ControlPropertyCustomDataUpdate update = (ControlPropertyCustomDataUpdate) data;
+					propertySpec.setCustomData(update.getCustomData());
+					propertySpec.setUsingCustomData(update.isSetTo());
+				} else {
+					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control property update:" + data);
+				}
+			}
+		});
 	}
 
 	@NotNull
@@ -49,5 +83,11 @@ public class CustomControlClass {
 	@Override
 	public String toString() {
 		return specification.getClassName();
+	}
+
+	/** Get a {@link DataContext} instance that stores random things. */
+	@NotNull
+	public DataContext getUserData() {
+		return programData;
 	}
 }

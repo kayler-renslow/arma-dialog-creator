@@ -8,27 +8,39 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
+package com.kaylerrenslow.armaDialogCreator.control;
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
-
-import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseCustomControlDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.EditCustomControlPopup;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 11/13/2016.
+ Created by Kayler on 11/14/2016.
  */
-public class EditCustomControlAction implements EventHandler<ActionEvent> {
+public class ControlPropertyCustomDataUpdate implements ControlPropertyUpdate {
+	private final ControlProperty controlProperty;
+	private final Object customData;
+	private final boolean setTo;
+
+	public ControlPropertyCustomDataUpdate(@NotNull ControlProperty controlProperty, @Nullable Object customData, boolean setTo) {
+		this.controlProperty = controlProperty;
+		this.customData = customData;
+		this.setTo = setTo;
+	}
+
 	@Override
-	public void handle(ActionEvent event) {
-		ChooseCustomControlDialog dialog = new ChooseCustomControlDialog();
-		dialog.show();
-		CustomControlClass controlClass = dialog.getChosenItem();
-		if (dialog.wasCancelled() || controlClass == null) {
-			return;
-		}
-		new EditCustomControlPopup(controlClass).show();
+	public @NotNull ControlProperty getControlProperty() {
+		return controlProperty;
+	}
+
+	@Nullable
+	public Object getCustomData() {
+		return customData;
+	}
+
+	/**
+	 Return true if the {@link #getControlProperty()} was set to custom data via {@link ControlProperty#setCustomDataValue(Object)} or {@link ControlProperty#setHasCustomData(boolean)}, false otherwise
+	 */
+	public boolean isSetTo() {
+		return setTo;
 	}
 }

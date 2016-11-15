@@ -19,7 +19,6 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,7 +45,6 @@ public class ArmaControl extends ControlClass implements Control {
 	private int idc = -1;
 
 	private ControlProperty idcProperty, accessProperty;
-	private final DataContext userdata = new DataContext();
 	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
 
 	/**
@@ -176,11 +174,6 @@ public class ArmaControl extends ControlClass implements Control {
 	@NotNull
 	public ArmaDisplay getDisplay() {
 		return display;
-	}
-
-	@Override
-	public DataContext getUserData() {
-		return userdata;
 	}
 
 	@NotNull

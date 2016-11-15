@@ -66,6 +66,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 				});
 			}
 		}
+		menuButton.setMnemonicParsing(false);
 
 	}
 
@@ -97,7 +98,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		} else {
 			menuButton.setGraphic(null);
 		}
-		menuButton.setText(menuItem.getValue().toString());
+		menuButton.setText(menuItem.getText());
 		selectedItemObserver.updateValue(menuItem.getValue());
 	}
 

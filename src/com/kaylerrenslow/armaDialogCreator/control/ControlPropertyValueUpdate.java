@@ -8,27 +8,40 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
+package com.kaylerrenslow.armaDialogCreator.control;
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
-
-import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ChooseCustomControlDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.EditCustomControlPopup;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 11/13/2016.
- */
-public class EditCustomControlAction implements EventHandler<ActionEvent> {
-	@Override
-	public void handle(ActionEvent event) {
-		ChooseCustomControlDialog dialog = new ChooseCustomControlDialog();
-		dialog.show();
-		CustomControlClass controlClass = dialog.getChosenItem();
-		if (dialog.wasCancelled() || controlClass == null) {
-			return;
-		}
-		new EditCustomControlPopup(controlClass).show();
+ @author Kayler
+ Used with {@link ControlClass#getUpdateGroup()}
+ Created on 08/11/2016. */
+public class ControlPropertyValueUpdate implements ControlPropertyUpdate {
+	private final ControlProperty controlProperty;
+	private final SerializableValue oldValue;
+	private final SerializableValue newValue;
+
+	public ControlPropertyValueUpdate(@NotNull ControlProperty controlProperty, SerializableValue oldValue, SerializableValue newValue) {
+		this.controlProperty = controlProperty;
+		this.oldValue = oldValue;
+		this.newValue = newValue;
 	}
+
+	/** Get the ControlProperty that recieved an update */
+	@NotNull
+	public ControlProperty getControlProperty() {
+		return controlProperty;
+	}
+
+	/** Get the ControlProperty's old value */
+	public SerializableValue getOldValue() {
+		return oldValue;
+	}
+
+	/** Get the ControlProperty's new value */
+	public SerializableValue getNewValue() {
+		return newValue;
+	}
+
 }

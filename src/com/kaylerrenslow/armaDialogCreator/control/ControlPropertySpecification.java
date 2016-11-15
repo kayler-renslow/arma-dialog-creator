@@ -20,13 +20,13 @@ import org.jetbrains.annotations.Nullable;
 public class ControlPropertySpecification {
 	public static final ControlPropertySpecification[] EMPTY = new ControlPropertySpecification[0];
 
-	private final ControlPropertyLookup lookup;
-	private final SerializableValue value;
-	private final String macroKey;
+	private ControlPropertyLookup lookup;
+	private SerializableValue value;
+	private String macroKey;
 	private Object customData;
 	private boolean usingCustomData;
 
-	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup, @NotNull SerializableValue value, @Nullable String macroKey) {
+	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup, @Nullable SerializableValue value, @Nullable String macroKey) {
 		this.lookup = lookup;
 		this.value = value;
 		if (macroKey == null || macroKey.trim().length() == 0) {
@@ -34,6 +34,10 @@ public class ControlPropertySpecification {
 		} else {
 			this.macroKey = macroKey.trim();
 		}
+	}
+
+	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup) {
+		this(lookup, null, null);
 	}
 
 	public ControlPropertySpecification(@NotNull ControlProperty property) {
@@ -52,12 +56,20 @@ public class ControlPropertySpecification {
 		this.usingCustomData = property.isCustomData();
 	}
 
-	public void setCustomData(@Nullable Object customData) {
+	protected void setCustomData(@Nullable Object customData) {
 		this.customData = customData;
 	}
 
-	public void setUsingCustomData(boolean usingCustomData) {
+	protected void setUsingCustomData(boolean usingCustomData) {
 		this.usingCustomData = usingCustomData;
+	}
+
+	protected void setValue(@Nullable SerializableValue value) {
+		this.value = value;
+	}
+
+	protected void setMacroKey(@Nullable String macroKey) {
+		this.macroKey = macroKey;
 	}
 
 	@Nullable

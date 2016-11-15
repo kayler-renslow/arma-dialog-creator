@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
 	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
 
-	private final String controlClassName;
+	private String controlClassName;
 	private final ControlPropertySpecification[] requiredProperties;
 	private final ControlPropertySpecification[] optionalProperties;
 	private final ControlClassSpecification[] requiredSubClasses;
@@ -81,6 +81,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		}
 	}
 
+	public void setClassName(@NotNull String className) {
+		this.controlClassName = className;
+	}
+
 	public void setExtendClass(@Nullable String extendClass) {
 		this.extendClass = extendClass;
 	}
@@ -133,5 +137,19 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	@NotNull
 	public ControlClass constructNewControlClass() {
 		return new ControlClass(this);
+	}
+
+	public ControlPropertySpecification findProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		for (ControlPropertySpecification property : getRequiredControlProperties()) {
+			if (property.getLookup() == lookup) {
+				return property;
+			}
+		}
+		for (ControlPropertySpecification property : getOptionalControlProperties()) {
+			if (property.getLookup() == lookup) {
+				return property;
+			}
+		}
+		return null;
 	}
 }

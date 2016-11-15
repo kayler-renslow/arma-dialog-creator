@@ -10,46 +10,15 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
- Used with {@link ControlClass#getUpdateGroup()}
- Created on 08/11/2016.
+ Created by Kayler on 11/14/2016.
  */
-public class ControlPropertyUpdate {
-	private ControlProperty controlProperty;
-	private SerializableValue oldValue;
-	private SerializableValue newValue;
-	
-	public ControlPropertyUpdate(ControlProperty controlProperty, SerializableValue oldValue, SerializableValue newValue) {
-		this.controlProperty = controlProperty;
-		this.oldValue = oldValue;
-		this.newValue = newValue;
-	}
-	
-	/** Get the ControlProperty that recieved an update */
-	public ControlProperty getControlProperty() {
-		return controlProperty;
-	}
-	
-	/** Get the ControlProperty's old value */
-	public SerializableValue getOldValue() {
-		return oldValue;
-	}
-	
-	/** Get the ControlProperty's new value */
-	public SerializableValue getNewValue() {
-		return newValue;
-	}
-	
-	/** Set the old value. This method is used so that the class doesn't need to be re-instantiated. Keep package private.*/
-	void setOldValue(SerializableValue oldValue) {
-		this.oldValue = oldValue;
-	}
-	
-	/** Set the new value. This method is used so that the class doesn't need to be re-instantiated. Keep package private. */
-	void setNewValue(SerializableValue newValue) {
-		this.newValue = newValue;
-	}
+public interface ControlPropertyUpdate {
+
+	/** Get the ControlProperty that received an update */
+	@NotNull
+	ControlProperty getControlProperty();
+
 }
