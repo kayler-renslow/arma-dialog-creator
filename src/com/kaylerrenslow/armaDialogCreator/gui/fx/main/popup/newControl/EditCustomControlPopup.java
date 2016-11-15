@@ -49,7 +49,7 @@ public class EditCustomControlPopup extends NewControlPopup {
 		for (ControlPropertyUpdate update : updates) {
 			toEdit.getControlClass().getUpdateGroup().update(update);
 		}
-		System.err.println("EditCustomControlPopup.ok TODO: update class name");
+		toEdit.getSpecification().setClassName(duplicate.getClassName());
 		close();
 	}
 
