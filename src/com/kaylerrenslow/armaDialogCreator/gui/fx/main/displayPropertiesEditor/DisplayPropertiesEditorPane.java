@@ -37,9 +37,10 @@ import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Editor pane that edits {@link ArmaDisplay#getDisplayProperties()}
- Created on 09/17/2016. */
+
+ @author Kayler
+ @since 09/17/2016. */
 public class DisplayPropertiesEditorPane extends StackPane {
 	private final ArmaDisplay display;
 	private final ObservableSet<DisplayPropertyEditor> editorPanes = FXCollections.observableSet();

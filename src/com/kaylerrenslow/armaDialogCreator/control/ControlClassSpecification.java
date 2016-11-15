@@ -14,7 +14,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 11/12/2016.
+ @author Kayler
+ @since 11/12/2016.
+ @see CustomControlClass
  */
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
 	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
@@ -139,6 +141,12 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		return new ControlClass(this);
 	}
 
+	/**
+	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and {@link #getOptionalControlProperties()}
+
+	 @param lookup the lookup to fetch instance for
+	 @return the instance, or null if nothing could be matched
+	 */
 	public ControlPropertySpecification findProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		for (ControlPropertySpecification property : getRequiredControlProperties()) {
 			if (property.getLookup() == lookup) {

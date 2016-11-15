@@ -44,37 +44,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- @author Kayler
  Used to hold the canvas editor itself and canvas controls (tree view, step, etc). This class is also used to update the editor when need be.
- Created on 05/15/2016. */
+
+ @author Kayler
+ @since 05/15/2016. */
 class ADCCanvasView extends HBox implements CanvasView {
 	private final UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls;
-	
+
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
 	private boolean selectFromTreeView = false;
 	private ArmaDisplay display;
-	
+
 	ADCCanvasView() {
 		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		canvasControls = new CanvasControls(this);
-		
+
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
 		initializeUICanvasEditor(display);
-		
+
 		this.getChildren().addAll(uiCanvasEditor, canvasControls);
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
-		
+
 		setOnMouseMoved(new CanvasViewMouseEvent(this));
 		focusToCanvas(true);
 	}
-	
+
 	private void initializeUICanvasEditor(ArmaDisplay display) {
 		canvasControls.getTreeViewMain().setToDisplay(display);
 		canvasControls.getTreeViewBackground().setToDisplay(display);
-		
+
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
@@ -92,12 +93,12 @@ class ADCCanvasView extends HBox implements CanvasView {
 		uiCanvasEditor.setCanvasContextMenu(new ControlCreationContextMenu(canvasControls.getTreeViewMain(), false));
 		setupEditorSelectionSync();
 	}
-	
+
 	private void setupEditorSelectionSync() {
 		syncTreeView(canvasControls.getTreeViewMain());
 		syncTreeView(canvasControls.getTreeViewBackground());
 	}
-	
+
 	private void syncTreeView(EditorComponentTreeView<? extends TreeItemEntry> treeView) {
 		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<Control>() {
 			@Override
@@ -137,7 +138,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 			}
 		});
 	}
-	
+
 	private void focusToCanvas(boolean focusToCanvas) {
 		canvasControls.setFocusTraversable(!focusToCanvas);
 		uiCanvasEditor.setFocusTraversable(focusToCanvas);
@@ -145,12 +146,12 @@ class ADCCanvasView extends HBox implements CanvasView {
 			uiCanvasEditor.requestFocus();
 		}
 	}
-	
+
 	@Override
 	public void showGrid(boolean showGrid) {
 		uiCanvasEditor.showGrid(showGrid);
 	}
-	
+
 	@Override
 	public void setCanvasBackgroundToImage(@Nullable String imgPath) {
 		if (imgPath == null) {
@@ -159,18 +160,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 		uiCanvasEditor.setCanvasBackgroundImage(new ImagePattern(new Image(imgPath)));
 	}
-	
-	
+
+
 	@Override
 	public void updateCanvas() {
 		uiCanvasEditor.updateColors();
 	}
-	
+
 	@Override
 	public void updateAbsRegion(int alwaysFront, int showing) {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
 	}
-	
+
 	@Override
 	public void setTreeStructure(boolean background, TreeStructure<TreeItemEntry> treeStructure) {
 		if (background) {
@@ -179,22 +180,22 @@ class ADCCanvasView extends HBox implements CanvasView {
 			canvasControls.getTreeViewMain().loadStructure(treeStructure);
 		}
 	}
-	
+
 	@Override
 	public TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure() {
 		return canvasControls.getTreeViewMain().exportStructure();
 	}
-	
+
 	@Override
 	public TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure() {
 		return canvasControls.getTreeViewBackground().exportStructure();
 	}
-	
+
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {
 		uiCanvasEditor.keyEvent(text, keyDown, shiftDown, controlDown, altDown);
 	}
-	
-	
+
+
 	void hideCanvasControls(boolean hide) {
 		getChildren().remove(canvasControls);
 		if (hide) {
@@ -202,20 +203,20 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 		getChildren().add(canvasControls);
 	}
-	
+
 	public ArmaDisplay getEditingDisplay() {
 		return this.display;
 	}
-	
-	
+
+
 	private static class CanvasViewMouseEvent implements EventHandler<MouseEvent> {
-		
+
 		private final ADCCanvasView canvasView;
-		
+
 		CanvasViewMouseEvent(ADCCanvasView canvasView) {
 			this.canvasView = canvasView;
 		}
-		
+
 		@Override
 		public void handle(MouseEvent event) {
 			//use this so that when the mouse moves over the canvas and something in canvas controls has focus, the key presses

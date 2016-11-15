@@ -10,7 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.Border;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;

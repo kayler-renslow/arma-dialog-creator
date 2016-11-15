@@ -14,9 +14,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /**
- @author Kayler
  Converts screen positions and width/height to viewport positions and width/height, and vice versa.
- Created on 05/18/2016. */
+ @author Kayler
+ @since 05/18/2016. */
 public class PositionCalculator {
 	
 	/**

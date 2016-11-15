@@ -16,9 +16,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldD
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Checker for Doubles that returns a SerializableValue
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
 	private static final DoubleChecker checker = new DoubleChecker();
 
@@ -30,7 +31,7 @@ public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
 	@Override
 	public SVDouble parse(@NotNull String data) {
 		Double d = checker.parse(data);
-		if(d == null){
+		if (d == null) {
 			throw new IllegalStateException("returned value shouldn't be null");
 		}
 		return new SVDouble(d);

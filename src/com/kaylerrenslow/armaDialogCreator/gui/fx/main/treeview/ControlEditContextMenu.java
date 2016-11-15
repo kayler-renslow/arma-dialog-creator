@@ -17,9 +17,10 @@ import javafx.scene.control.ContextMenu;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  The context menu for when a tree item is selected in the tree view
- Created on 07/13/2016. */
+
+ @author Kayler
+ @since 07/13/2016. */
 public class ControlEditContextMenu extends ContextMenu {
 	public ControlEditContextMenu(@NotNull ControlTreeItemEntry entryClicked) {
 		CheckMenuItem checkMenuItemEnable = new CheckMenuItem("Enable");

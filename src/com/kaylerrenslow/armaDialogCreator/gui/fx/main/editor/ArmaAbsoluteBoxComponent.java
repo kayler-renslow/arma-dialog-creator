@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import javafx.scene.canvas.GraphicsContext;
 

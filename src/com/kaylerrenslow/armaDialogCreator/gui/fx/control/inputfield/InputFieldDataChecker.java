@@ -15,8 +15,9 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
+ @since 05/31/2016.
  @see InputField
- Created on 05/31/2016. */
+ */
 public interface InputFieldDataChecker<V> {
 	/** Return null if the text inputted can correctly be parsed into the generic type E. Return a String containing the message as to why the data inputted is incorrect */
 	String validData(@NotNull String data);

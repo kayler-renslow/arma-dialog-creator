@@ -23,12 +23,12 @@ import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  The base class for all controls.<br>
  <b>NOTE: any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instanceof some extended class because when the project is loaded from .xml
  via {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
- Created on 05/20/2016. */
+ @author Kayler
+ @since 05/20/2016. */
 public class ArmaControl extends ControlClass implements Control {
 	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;

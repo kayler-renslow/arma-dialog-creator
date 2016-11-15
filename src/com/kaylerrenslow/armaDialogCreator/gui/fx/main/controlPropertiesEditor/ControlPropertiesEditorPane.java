@@ -48,9 +48,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ Houses an accordion that allows manipulating multiple control properties. The data editor for each control property is specialized for the input (e.g. color property gets color picker).
+
  @author Kayler
- Houses an accordion that allows manuipulating multiple control properties. The data editor for each control property is specialized for the input (e.g. color property gets color picker).
- Created on 07/08/2016. */
+ @since 07/08/2016. */
 public class ControlPropertiesEditorPane extends StackPane {
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private final Accordion accordion = new Accordion();

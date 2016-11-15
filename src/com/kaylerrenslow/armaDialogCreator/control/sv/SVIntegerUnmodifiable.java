@@ -11,9 +11,9 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 /**
- @author Kayler
  An unmodifiable {@link SVInteger}
- Created on 10/23/2016. */
+ @author Kayler
+ @since 10/23/2016. */
 public class SVIntegerUnmodifiable extends SVInteger {
 
 	public SVIntegerUnmodifiable(int i) {

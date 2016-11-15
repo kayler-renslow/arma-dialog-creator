@@ -19,16 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- @author Kayler
  A ResourceRegistry is a per-project storage of all resources the project needs.
- Created on 07/19/2016. */
+
+ @author Kayler
+ @since 07/19/2016. */
 public class ResourceRegistry {
 	private final List<ExternalResource> externalResourceList = new ArrayList<>();
 
 	public static final String RESOURCES_FILE_NAME = ".resources";
 	private static final File resourcesFile = new File(ApplicationDataManager.getInstance().getAppSaveDataDirectory() + "/" + RESOURCES_FILE_NAME);
 
-	public static GlobalResourceRegistry getGlobalRegistry(){
+	public static GlobalResourceRegistry getGlobalRegistry() {
 		return GlobalResourceRegistry.getInstance();
 	}
 
@@ -58,7 +59,7 @@ public class ResourceRegistry {
 		return externalResourceList;
 	}
 
-	public static class GlobalResourceRegistry extends ResourceRegistry{
+	public static class GlobalResourceRegistry extends ResourceRegistry {
 		private static final GlobalResourceRegistry instance = new GlobalResourceRegistry();
 
 		public static GlobalResourceRegistry getInstance() {
@@ -68,7 +69,7 @@ public class ResourceRegistry {
 		private final File globalResourcesXmlFile = getResourcesFilePathForName("global-resources.xml");
 
 		private GlobalResourceRegistry() {
-			if(!globalResourcesXmlFile.exists()){
+			if (!globalResourcesXmlFile.exists()) {
 				globalResourcesXmlFile.getParentFile().mkdirs();
 				try {
 					globalResourcesXmlFile.createNewFile();
@@ -79,8 +80,8 @@ public class ResourceRegistry {
 			}
 		}
 
-		/** {@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/global-resources.xml*/
-		public File getGlobalResourcesXmlFile(){
+		/** {@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/global-resources.xml */
+		public File getGlobalResourcesXmlFile() {
 			return globalResourcesXmlFile;
 		}
 	}

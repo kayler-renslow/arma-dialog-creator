@@ -16,9 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
- @author Kayler
  Used for creating a link between a .paa image and the converted .png image stored inside the project
- Created on 07/19/2016. */
+
+ @author Kayler
+ @since 07/19/2016. */
 public class PaaImageExternalResource extends ExternalResource {
 	private static final String keyPaaImagePath = "paa-image-path";
 

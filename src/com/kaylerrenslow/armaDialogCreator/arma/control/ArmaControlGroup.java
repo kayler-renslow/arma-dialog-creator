@@ -23,9 +23,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
- Created on 06/08/2016. */
+ @author Kayler
+ @since 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 

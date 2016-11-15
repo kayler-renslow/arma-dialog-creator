@@ -17,25 +17,40 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  A custom control class has two things: a specification and a implementation. The specification, provided by a {@link ControlClassSpecification} instance, is a way to construct the implementation,
  which is a {@link ControlClass} instance. There will only be one {@link ControlClass} instance per {@link CustomControlClass} instance and the two will be synchronized (when an update happens via
  {@link ControlClass#getUpdateGroup()}, the {@link ControlClassSpecification} will update as well). This synchronization will only happen between this class instance and {@link #getControlClass()}.
- Created on 11/13/2016. */
+
+ @author Kayler
+ @since 11/13/2016 */
 public class CustomControlClass {
 	private ControlClassSpecification specification;
 	private ControlClass controlClass;
 	private final DataContext programData = new DataContext();
 
+
+	/**
+	 Construct a new custom control class with the given {@link ControlClass} instance. The given instance will be the underlying instance for {@link #getControlClass()} and a new
+	 {@link ControlClassSpecification} will be created with the instance via {@link ControlClassSpecification(ControlClass}.
+
+	@param controlClass instance to use
+	 */
 	public CustomControlClass(@NotNull ControlClass controlClass) {
 		this.specification = new ControlClassSpecification(controlClass);
 		this.controlClass = controlClass;
+		loadControlClassListeners();
 	}
 
+	/**
+	 Construct a new custom control class with the given specification
+
+	 @param specification specification to use
+	 */
 	public CustomControlClass(@NotNull ControlClassSpecification specification) {
 		this.specification = specification;
 	}
 
+	/** Get the {@link ControlClass} instance. This instance will remain constant. */
 	@NotNull
 	public ControlClass getControlClass() {
 		if (controlClass == null) {

@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  A {@link ControlPropertyLookupConstant} is a way to check if one {@link ControlProperty} equals another. Each instance that implements this interface must be instantiated only <b>once</b>.
- Created on 09/15/2016. */
+ @author Kayler
+ @since 09/15/2016. */
 public interface ControlPropertyLookupConstant {
 	/** All values that the property can be, or null if user defined. */
 	@Nullable

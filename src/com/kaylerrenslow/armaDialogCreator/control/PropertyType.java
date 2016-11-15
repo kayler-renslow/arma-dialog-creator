@@ -18,7 +18,7 @@ import java.util.LinkedList;
 
 /**
  @author Kayler
- Created on 07/15/2016. */
+ @since 07/15/2016. */
 public enum PropertyType {
 	/** Is a integer value. Current implementation is a 32 bit integer (java int) */
 	INT(0, SVInteger.CONVERTER, getString("PropertyType.int")),

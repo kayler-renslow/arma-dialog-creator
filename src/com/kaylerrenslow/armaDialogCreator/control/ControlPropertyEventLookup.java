@@ -13,9 +13,9 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  A place to store all event control properties
- Created on 08/21/2016. */
+ @author Kayler
+ @since 08/21/2016. */
 public enum ControlPropertyEventLookup {
 	EVENT_ON_LOAD(ControlPropertyLookup.EVENT_ON_LOAD, 1, "Display"),
 	EVENT_ON_UNLOAD(ControlPropertyLookup.EVENT_ON_UNLOAD, 1, "Display"),

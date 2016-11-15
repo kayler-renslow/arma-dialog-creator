@@ -18,7 +18,6 @@ import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlLoader
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -38,9 +37,10 @@ import java.util.Locale;
 import java.util.jar.Manifest;
 
 /**
- @author Kayler
  Contains main method for running Arma Dialog Creator
- Created on 05/11/2016. */
+
+ @author Kayler
+ @since 05/11/2016. */
 public final class ArmaDialogCreator extends Application {
 
 	private static ArmaDialogCreator INSTANCE;
@@ -201,7 +201,7 @@ public final class ArmaDialogCreator extends Application {
 		getMainWindow().getCanvasView().setTreeStructure(false, config.getNewTreeStructureMain());
 		getMainWindow().getCanvasView().setTreeStructure(true, config.getNewTreeStructureBg());
 
-		for (Runnable run: INSTANCE.showLater) {
+		for (Runnable run : INSTANCE.showLater) {
 			run.run();
 		}
 		INSTANCE.showLater.clear();

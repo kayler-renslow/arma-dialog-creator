@@ -18,11 +18,12 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- @author Kayler
  Used to create a link to a resource outside the Project path (APP_SAVE_DIRECTORY/projectname) in the .resources folder (APP_SAVE_DIRECTORY/.resources).
  <br>
  <b>Do not check if a class is instanceof a sub-class of this class. When a resource is loaded from file, {@link ExternalResource} is only used for instantiation.</b>
- Created on 07/19/2016. */
+
+ @author Kayler
+ @since 07/19/2016. */
 public class ExternalResource {
 	private KeyValueString[] properties;
 	private File externalFile;

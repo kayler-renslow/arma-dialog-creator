@@ -24,9 +24,9 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- @author Kayler
  Loads a project from a .xml save file. When the xml is loaded, a {@link ProjectVersionLoader} is designated to do the rest of the xml loading.
- Created on 07/28/2016. */
+ @author Kayler
+ @since 07/28/2016. */
 public class ProjectXmlLoader extends XmlLoader {
 	
 	private final String saveVersion;

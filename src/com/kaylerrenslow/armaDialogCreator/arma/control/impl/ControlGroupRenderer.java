@@ -18,9 +18,9 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 
 /**
- @author Kayler
  Renderer for a ControlGroup control. Use for controls whose classes that extends ArmaControlGroup
- Created on 07/04/2016. */
+ @author Kayler
+ @since 07/04/2016. */
 public class ControlGroupRenderer extends ArmaControlRenderer {
 	
 	public ControlGroupRenderer(ArmaControl control, ArmaResolution resolution, Env env) {

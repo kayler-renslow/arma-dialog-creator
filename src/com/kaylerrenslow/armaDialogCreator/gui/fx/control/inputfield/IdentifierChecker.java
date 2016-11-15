@@ -14,15 +14,15 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  A data checker for Identifiers (regex: letter letterOrDigit*). The input also can not be empty
- Created on 07/08/2016.
- */
+
+ @author Kayler
+ @since 07/08/2016. */
 public class IdentifierChecker implements InputFieldDataChecker<String> {
 	@Override
 	public String validData(@NotNull String data) {
 		boolean match = data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
-		if(match){
+		if (match) {
 			return null;
 		}
 		return Lang.FxControlBundle().getString("InputField.DataCheckers.Identifier.not_identifier");

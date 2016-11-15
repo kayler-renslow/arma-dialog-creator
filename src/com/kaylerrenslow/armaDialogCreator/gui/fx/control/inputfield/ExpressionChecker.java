@@ -19,9 +19,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  An {@link InputFieldDataChecker} implementation for expressions to be evaluated with {@link ExpressionInterpreter}
- Created on 07/15/2016. */
+
+ @author Kayler
+ @since 07/15/2016. */
 public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 	private final Env env;
 
@@ -54,5 +55,5 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 	public boolean allowEmptyData() {
 		return false;
 	}
-	
+
 }

@@ -36,9 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- @author Kayler
  Used for displaying items separated by categories and allowing the user to choose which item they want.
- Created on 11/13/2016. */
+
+ @author Kayler
+ @since 11/13/2016. */
 public class ChooseItemPopup<V> extends StageDialog<VBox> {
 
 	private static final Font TITLE_FONT = Font.font(15d);

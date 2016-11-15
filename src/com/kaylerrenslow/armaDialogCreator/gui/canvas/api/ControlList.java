@@ -17,11 +17,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- @author Kayler
  Used for storing controls. This is an alternative to {@link javafx.collections.ObservableList}. Advantages of this over the other is this supports moving. In the other one, in order to "move"
  something, you would have to remove it and then add it back. This would fire 2 events: remove and add. Although this implementation functionally does the same thing, only one event is fired for
  moving and thus makes it easier to detect and manage.
- Created on 08/12/2016. */
+
+ @author Kayler
+ @since 08/12/2016. */
 public class ControlList<C extends Control> implements List<C> {
 	private final ArrayList<C> controls = new ArrayList<>();
 	private final LinkedList<ControlListChangeListener<C>> listeners = new LinkedList<>();

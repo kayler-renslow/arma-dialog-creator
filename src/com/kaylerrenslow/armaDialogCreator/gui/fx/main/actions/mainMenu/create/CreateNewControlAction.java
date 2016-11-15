@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewCustomControlPopup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -20,6 +20,6 @@ import javafx.event.EventHandler;
 public class CreateNewControlAction  implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		new NewControlPopup().show();
+		new NewCustomControlPopup().show();
 	}
 }

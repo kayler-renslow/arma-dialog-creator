@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
- @author Kayler
  Simple implementation for a File {@link ValueConverter}
- Created on 07/31/2016. */
+ @author Kayler
+ @since 07/31/2016. */
 public class FileConverter implements ValueConverter<File> {
 	public static final FileConverter INSTANCE = new FileConverter();
 	

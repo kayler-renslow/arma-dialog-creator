@@ -16,9 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  Instead of passing around the classes and saving them in the project save, this is a more robust way of storing the class since the Renderer class can be moved, renamed, or replaced all together.
- Created on 08/03/2016. */
+ @author Kayler
+ @since 08/03/2016. */
 public enum RendererLookup {
 	/** Renderer for a basic static control */
 	STATIC(0, StaticRenderer.class),

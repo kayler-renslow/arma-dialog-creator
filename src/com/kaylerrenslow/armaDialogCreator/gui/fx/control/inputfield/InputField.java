@@ -34,9 +34,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Base class for a text field control that checks if the inputted data is correct and returns the data as an object with type V
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane {
 	private static final String BAD_FIELD = "bad-input-text-field";
 	private static final String DATA_NEEDS_SUBMITION = "-fx-background-color:green";
@@ -209,7 +210,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	}
 
 	/**
-	 Set the value from an object. The text in the control is set to whatever {@link V#toString()} returns. If value given is null, will set field to Button State.
+	 Set the value from an object. The text in the control is set to whatever {@link Object#toString()} returns. If value given is null, will set field to Button State.
 	 No matter what is passed, the internal {@link ValueObserver} instance will be notified of the value update.
 	 */
 	public void setValue(@Nullable V value) {

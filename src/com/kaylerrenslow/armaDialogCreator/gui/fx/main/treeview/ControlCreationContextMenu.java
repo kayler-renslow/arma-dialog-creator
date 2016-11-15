@@ -23,9 +23,10 @@ import javafx.scene.control.MenuItem;
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
 /**
- @author Kayler
  ContextMenu for inserting a new control into the EditorComponentTreeView
- Created on 06/20/2016. */
+
+ @author Kayler
+ @since 06/20/2016. */
 public class ControlCreationContextMenu extends ContextMenu {
 
 	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {

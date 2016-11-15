@@ -34,9 +34,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 
 /**
- @author Kayler
  Interface that specifies something that is displayable in preview and in Arma 3 (title, dialog, display)
- Created on 06/14/2016. */
+ @author Kayler
+ @since 06/14/2016. */
 public class ArmaDisplay implements Display<ArmaControl> {
 	
 	private int idd = -1;

@@ -19,9 +19,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- @author Kayler
  A wrapper class for a {@link FileOutputStream} that writes XML files.
- Created on 11/12/2016. */
+
+ @author Kayler
+ @since 11/12/2016. */
 public class XmlWriterOutputStream {
 	private final FileOutputStream fos;
 	private boolean hasProlog = false;

@@ -26,9 +26,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- @author Kayler
  Manages save data
- Created on 05/26/2016. */
+ @author Kayler
+ @since 05/26/2016. */
 public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
 	private ApplicationData applicationData;

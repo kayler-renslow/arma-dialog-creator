@@ -20,9 +20,9 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Expression value that is used for {@link com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter} and is storable in {@link com.kaylerrenslow.armaDialogCreator.control.ControlProperty}
- Created on 07/15/2016. */
+ @author Kayler
+ @since 07/15/2016. */
 public class Expression extends SerializableValue {
 	
 	/**

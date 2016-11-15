@@ -45,9 +45,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 
 /**
- @author Kayler
  Used for editing a control and it's control properties.
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;

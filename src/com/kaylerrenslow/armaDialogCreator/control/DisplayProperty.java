@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  A {@link DisplayProperty} is similar to a {@link ControlProperty}. However, {@link DisplayProperty} is used to separate {@link ControlPropertyLookupConstant}
  instances such that {@link DisplayProperty}'s lookups are not from {@link ControlPropertyLookup}
- Created on 09/15/2016.
+ @author Kayler
+ @since 09/15/2016.
  */
 public class DisplayProperty extends ControlProperty{
 	public DisplayProperty(DisplayPropertyLookup propertyLookup, @Nullable SerializableValue value) {

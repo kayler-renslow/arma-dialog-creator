@@ -14,9 +14,9 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Used with {@link ControlClass#getUpdateGroup()}
- Created on 08/11/2016. */
+ @author Kayler
+ @since 08/11/2016. */
 public class ControlPropertyValueUpdate implements ControlPropertyUpdate {
 	private final ControlProperty controlProperty;
 	private final SerializableValue oldValue;

@@ -28,9 +28,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- @author Kayler
  Used for displaying known macros of a given type and allowing the user to choose which macro they want.
- Created on 08/09/2016. */
+
+ @author Kayler
+ @since 08/09/2016. */
 public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPopup<Macro<V>> {
 
 	private static final MacroItemCategory[] categories = new MacroItemCategory[Macro.MacroType.values().length + 1];

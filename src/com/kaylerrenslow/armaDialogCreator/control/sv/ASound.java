@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 /**
- @author Kayler
  Specifies a sound
- Created on 05/22/2016. */
+ @author Kayler
+ @since 05/22/2016. */
 public class ASound extends SerializableValue {
 	public static final ValueConverter<ASound> CONVERTER = new ValueConverter<ASound>() {
 		@Override

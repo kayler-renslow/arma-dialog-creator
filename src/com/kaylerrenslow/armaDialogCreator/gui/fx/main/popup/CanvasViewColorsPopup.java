@@ -26,9 +26,10 @@ import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
 
 /**
- @author Kayler
  Creates a popup for changing the canvas colors
- Created on 05/20/2016. */
+
+ @author Kayler
+ @since 05/20/2016. */
 public class CanvasViewColorsPopup extends StageDialog<VBox> {
 
 	private final ColorPicker cpSelection = new ColorPicker(CanvasViewColors.SELECTION);

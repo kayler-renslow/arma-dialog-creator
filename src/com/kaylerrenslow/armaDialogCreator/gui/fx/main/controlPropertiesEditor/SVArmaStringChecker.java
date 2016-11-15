@@ -16,9 +16,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldD
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Checker for Arma Strings that returns a SerializableValue
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class SVArmaStringChecker implements InputFieldDataChecker<SVString> {
 
 	private static final ArmaStringChecker checker = new ArmaStringChecker();

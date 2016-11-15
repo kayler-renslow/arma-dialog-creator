@@ -29,9 +29,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  A menu button that will make a popup to choose a macro. There is also a drop down menu of recently used macros of the same type to save time.
- Created on 07/09/2016. */
+
+ @author Kayler
+ @since 07/09/2016. */
 public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
 	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();

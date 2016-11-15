@@ -15,9 +15,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Arrays;
 
 /**
- @author Kayler
  Base class that specifies that a value can be converted into a String[]. For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
- Created on 07/13/2016. */
+ @author Kayler
+ @since 07/13/2016. */
 public abstract class SerializableValue {
 	
 	protected final String[] valuesAsArray;

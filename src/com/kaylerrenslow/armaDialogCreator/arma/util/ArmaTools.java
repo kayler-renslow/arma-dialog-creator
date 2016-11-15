@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- @author Kayler
  The way of connecting to <a href="http://store.steampowered.com/app/233800/">Arma 3 tools</a> installation and using it's utilities
- Created on 07/16/2016. */
+ @author Kayler
+ @since 07/16/2016. */
 public class ArmaTools {
 
 	private static final String IMAGE_TO_PAA_EXE = "\\ImageToPAA\\ImageToPAA.exe";

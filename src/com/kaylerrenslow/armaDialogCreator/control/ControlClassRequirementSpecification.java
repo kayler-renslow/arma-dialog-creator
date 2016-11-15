@@ -13,10 +13,10 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Provides the specification for a control class that says what sub-classes are required/optional and what properties are required/optional.
  Since the specification shouldn't change, it is best to store the returned values for later use
- Created on 07/07/2016. */
+ @author Kayler
+ @since 07/07/2016. */
 public interface ControlClassRequirementSpecification {
 
 	/** Trivial implementation of the interface */

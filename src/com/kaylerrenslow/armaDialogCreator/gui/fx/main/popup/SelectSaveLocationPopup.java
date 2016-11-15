@@ -35,10 +35,11 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 /**
- @author Kayler
  Used for setting application save directory {@link ApplicationDataManager#getAppSaveDataDirectory()} and Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}<br>
  The application save directory is not allowed to be empty/not set, however, the Arma 3 Tools directory can be not set. All changes will be set inside the popup.
- Created on 05/26/2016. */
+
+ @author Kayler
+ @since 05/26/2016. */
 public class SelectSaveLocationPopup extends StageDialog<VBox> {
 
 	private final TextField tfAppDataSaveDir = new TextField();

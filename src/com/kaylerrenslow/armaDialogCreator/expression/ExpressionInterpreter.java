@@ -17,11 +17,11 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Evaluates simple mathematical expressions.
  Order of operations is supported as well as identifier lookup.
- <p>
- Created on 07/14/2016. */
+
+ @author Kayler
+ @since 07/14/2016. */
 public class ExpressionInterpreter {
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
@@ -44,7 +44,7 @@ public class ExpressionInterpreter {
 	 */
 	@NotNull
 	public Value evaluate(String exp, Env env) throws ExpressionEvaluationException {
-		if(exp == null || exp.trim().length() == 0){
+		if (exp == null || exp.trim().length() == 0) {
 			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
 		ExpressionLexer l = getLexer(exp);

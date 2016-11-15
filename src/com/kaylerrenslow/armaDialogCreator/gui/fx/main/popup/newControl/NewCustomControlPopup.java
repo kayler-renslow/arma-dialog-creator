@@ -43,10 +43,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
+ Popup window that allows for creating a new custom control ({@link CustomControlClass}). It has a control properties editor on the left and a preview window on the right to preview the outputted .h file text
+
  @author Kayler
- Popup window that allows for creating a new control. It has a control properties editor on the left and a preview window on the right to preview the outputted .h file text
- Created on 07/06/2016. */
-public class NewControlPopup extends StagePopup<VBox> {
+ @since 07/06/2016. */
+public class NewCustomControlPopup extends StagePopup<VBox> {
 	private static final Key<ControlClassMenuButton.ControlClassMenuItem> KEY_MENU_ITEM = new Key<>("NewControlPopup.controlClassMenuItem");
 
 	private final StackPane stackPaneProperties = new StackPane();
@@ -56,14 +57,14 @@ public class NewControlPopup extends StagePopup<VBox> {
 
 	private ControlPropertiesEditorPane editorPane;
 
-	private UpdateListener<ControlPropertyUpdate> controlClassListener = new UpdateListener<ControlPropertyUpdate>() {
+	private final UpdateListener<ControlPropertyUpdate> controlClassListener = new UpdateListener<ControlPropertyUpdate>() {
 		@Override
 		public void update(ControlPropertyUpdate data) {
 			updatePreview();
 		}
 	};
 
-	public NewControlPopup() {
+	public NewCustomControlPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.NewControl.popup_title"));
 		myRootElement.setPadding(new Insets(10));
 
@@ -160,6 +161,11 @@ public class NewControlPopup extends StagePopup<VBox> {
 		lblBaseControl.setVisible(!hidden);
 	}
 
+	/**
+	 Set the editor to the given {@link ControlClass} instance. <b>Beware: the given {@link ControlClass} will be edited regardless of whether the user presses ok or not.</b>
+
+	 @param controlClass instance to edit
+	 */
 	protected void setToControlClass(@NotNull ControlClass controlClass) {
 		if (editorPane != null) {
 			editorPane.getControlClass().getUpdateGroup().removeListener(controlClassListener);

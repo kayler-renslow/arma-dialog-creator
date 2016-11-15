@@ -17,10 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.w3c.dom.Document;
 
 /**
- @author Kayler
  A wrapper for a loader. Since the loader is the one that loads the xml document, this will wrap the XmlLoader. This class is meant to be extended so that each save version of projects has its own
  implementation.
- Created on 08/07/2016. */
+ @author Kayler
+ @since 08/07/2016. */
 public abstract class ProjectVersionLoader {
 	
 	protected final DataContext dataContext;

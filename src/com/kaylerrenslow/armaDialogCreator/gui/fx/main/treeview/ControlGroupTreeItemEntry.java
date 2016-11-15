@@ -15,9 +15,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Used to depict a control group in a TreeView
- Created on 06/07/2016. */
+
+ @author Kayler
+ @since 06/07/2016. */
 public class ControlGroupTreeItemEntry extends ControlTreeItemEntry {
 
 	private final ArmaControlGroup controlGroup;

@@ -14,13 +14,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Simple value listener interface.
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public interface ValueListener<V> {
 	/**
 	 The value was updated. However, the value is guaranteed to be different.
-	 
+
 	 @param observer observer
 	 @param oldValue old value
 	 @param newValue new value

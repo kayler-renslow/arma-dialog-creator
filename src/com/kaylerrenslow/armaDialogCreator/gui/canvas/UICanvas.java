@@ -34,7 +34,7 @@ import java.util.ArrayList;
 
 /**
  @author Kayler
- Created on 05/11/2016. */
+ @since 05/11/2016. */
 public abstract class UICanvas extends AnchorPane {
 
 	/** javafx Canvas */

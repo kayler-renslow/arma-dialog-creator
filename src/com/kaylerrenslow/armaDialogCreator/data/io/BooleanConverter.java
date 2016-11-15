@@ -15,9 +15,9 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Trivial implementation for a boolean {@link ValueConverter}
- Created on 07/31/2016. */
+ @author Kayler
+ @since 07/31/2016. */
 public class BooleanConverter implements ValueConverter<Boolean> {
 	public static final BooleanConverter INSTANCE = new BooleanConverter();
 	

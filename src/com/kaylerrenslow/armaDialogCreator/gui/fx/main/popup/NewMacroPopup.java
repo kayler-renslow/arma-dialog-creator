@@ -16,16 +16,17 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 
 /**
- @author Kayler
  Popup for creating a new macro.
- Created on 07/10/2016. */
+
+ @author Kayler
+ @since 07/10/2016. */
 public class NewMacroPopup extends MacroEditBasePopup {
-	
+
 	public NewMacroPopup() {
 		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.MacroNew.popup_title"));
 	}
-	
+
 	@Override
 	protected void ok() {
 		if (checkFields()) {

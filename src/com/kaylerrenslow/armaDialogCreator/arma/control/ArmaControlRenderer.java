@@ -22,15 +22,15 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Base class for JavaFX canvas rendering of arma controls
- Created on 05/20/2016. */
+ @author Kayler
+ @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */

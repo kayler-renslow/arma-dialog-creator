@@ -16,9 +16,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  Simple value observer implementation
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class ValueObserver<V> {
 	private V value;
 	private final LinkedList<ValueListener<V>> listeners = new LinkedList<>();
@@ -30,7 +31,7 @@ public class ValueObserver<V> {
 
 	@NotNull
 	public ReadOnlyValueObserver<V> getReadOnlyValueObserver() {
-		if(readOnlyValueObserver == null){
+		if (readOnlyValueObserver == null) {
 			readOnlyValueObserver = new ReadOnlyValueObserver<>(this); //only initialize it when needed
 		}
 		return readOnlyValueObserver;
@@ -38,7 +39,7 @@ public class ValueObserver<V> {
 
 	/**
 	 Update the value and notify the value listener. The listeners will only be notified if the value is not equal (via {@link #equals(Object)}).
-	 
+
 	 @param newValue new value to set to
 	 */
 	public void updateValue(@Nullable V newValue) {
@@ -51,22 +52,22 @@ public class ValueObserver<V> {
 			listener.valueUpdated(this, oldValue, this.value);
 		}
 	}
-	
+
 	/** Set the listener that listens to the state of the value */
 	public void addValueListener(@NotNull ValueListener<V> listener) {
-		if(listeners.contains(listener)){
+		if (listeners.contains(listener)) {
 			return;
 		}
 		this.listeners.add(listener);
 	}
-	
+
 	/** Remove the listener from the list. Returns true if the listener was inside the list */
 	public boolean removeListener(ValueListener<V> listener) {
 		return listeners.remove(listener);
 	}
-	
+
 	public V getValue() {
 		return value;
 	}
-	
+
 }

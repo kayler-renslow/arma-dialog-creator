@@ -25,9 +25,9 @@ import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Used for a controls with type=0 (Static)
- Created on 05/25/2016. */
+ @author Kayler
+ @since 05/25/2016. */
 public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {

@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Holds a simple macro. The macro is referenced by a key and the result is text that is appended into the ending .h file.
- Created on 07/05/2016. */
+ @author Kayler
+ @since 07/05/2016. */
 public class Macro<T extends SerializableValue> {
 
 	public enum MacroType {

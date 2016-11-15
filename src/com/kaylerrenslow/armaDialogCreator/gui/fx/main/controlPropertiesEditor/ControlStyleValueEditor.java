@@ -30,9 +30,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
- @author Kayler
  A value editor for {@link ControlStyle}. By default, all {@link ControlStyle}'s are added in the MenuButton.
- Created on 08/05/2016. */
+
+ @author Kayler
+ @since 08/05/2016. */
 public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
 	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"),
 			null);

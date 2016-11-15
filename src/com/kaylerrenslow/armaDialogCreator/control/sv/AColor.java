@@ -20,9 +20,9 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 
 /**
- @author Kayler
  Defines a color.
- Created on 05/22/2016. */
+ @author Kayler
+ @since 05/22/2016. */
 public class AColor extends SerializableValue {
 	private static DecimalFormat format = new DecimalFormat("#.####");
 	private static final double f = 255.0;

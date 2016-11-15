@@ -15,10 +15,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  A wrapper class for a {@link ValueObserver} instance that provides read-only functionality
- Created on 09/16/2016.
- */
+
+ @author Kayler
+ @since 09/16/2016. */
 public class ReadOnlyValueObserver<V> {
 	private final ValueObserver<V> observer;
 	private final LinkedList<ReadOnlyValueListener<V>> listeners = new LinkedList<>();
@@ -28,7 +28,7 @@ public class ReadOnlyValueObserver<V> {
 		observer.addValueListener(new ValueListener<V>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
-				for(ReadOnlyValueListener<V> listener : listeners){
+				for (ReadOnlyValueListener<V> listener : listeners) {
 					listener.valueUpdated(ReadOnlyValueObserver.this, oldValue, newValue);
 				}
 			}
@@ -37,7 +37,7 @@ public class ReadOnlyValueObserver<V> {
 
 	/** Set the listener that listens to the state of the value */
 	public void addValueListener(@NotNull ReadOnlyValueListener<V> listener) {
-		if(listeners.contains(listener)){
+		if (listeners.contains(listener)) {
 			return;
 		}
 		this.listeners.add(listener);

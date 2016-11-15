@@ -15,15 +15,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- @author Kayler
  An iterator used to iterate over all elements across several lists. In times where merging is expensive, this is a cheap way of iterating over each of the items
- Created on 08/07/2016. */
+
+ @author Kayler
+ @since 08/07/2016. */
 public class ListMergeIterator<E, L extends List<E>> implements Iterator<E> {
 	private final boolean backwards;
 	private int ind;
 	private final LinkedList<L> stack = new LinkedList<>();
 	private List<E> current;
-	
+
 	/**
 	 @param backwards if true, will iterate starting from list at lists.size-1 to 0. For each list being iterated, the list iteration itself will start at index list.size-1 and end at 0.<br>
 	 @param lists lists to iterate over
@@ -35,7 +36,7 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E> {
 			for (int i = lists.length - 1; i >= 0; i--) {
 				stack.push(lists[i]);
 			}
-			
+
 			ind = stack.peek().size() - 1;
 		} else {
 			for (int i = 0; i < lists.length; i++) {
@@ -45,7 +46,7 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E> {
 		}
 		current = stack.pop();
 	}
-	
+
 	@Override
 	public boolean hasNext() {
 		if (backwards) {
@@ -76,8 +77,8 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E> {
 		}
 		return hasAnotherInd;
 	}
-	
-	
+
+
 	@Override
 	public E next() {
 		if (!hasNext()) {

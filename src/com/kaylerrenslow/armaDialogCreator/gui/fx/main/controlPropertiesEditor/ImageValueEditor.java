@@ -54,10 +54,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 /**
- @author Kayler
  A ValueEditor implementation for selecting image files. This editor also has an implementation for discovering if the image file is a .paa or .tga file and will automatically
  convert it to a read-able format and store it.
- Created on 07/16/2016. */
+
+ @author Kayler
+ @since 07/16/2016. */
 public class ImageValueEditor implements ValueEditor<SVImage> {
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 

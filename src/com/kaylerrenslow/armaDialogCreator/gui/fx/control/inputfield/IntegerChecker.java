@@ -14,9 +14,10 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Checker for Integers
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class IntegerChecker implements InputFieldDataChecker<Integer> {
 	@Override
 	public String validData(@NotNull String data) {

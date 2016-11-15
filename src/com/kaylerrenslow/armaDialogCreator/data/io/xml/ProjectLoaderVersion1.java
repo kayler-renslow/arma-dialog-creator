@@ -39,9 +39,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- @author Kayler
  A project loader for save-verison='1'
- Created on 08/07/2016. */
+ @author Kayler
+ @since 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();

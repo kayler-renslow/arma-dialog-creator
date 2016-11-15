@@ -27,9 +27,10 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- @author Kayler
  Basis for a popup window that uses a JavaFX Stage as its host thingy majig
- Created on 05/20/2016. */
+
+ @author Kayler
+ @since 05/20/2016. */
 public class StagePopup<E extends Parent> {
 
 	protected final Scene myScene;

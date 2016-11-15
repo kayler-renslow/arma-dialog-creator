@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- @author Kayler
  A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
- Created on 05/22/2016. */
+ @author Kayler
+ @since 05/22/2016. */
 public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 	IDC(0, "idc", PropertyType.INT, "Control id, or -1 if doesn't matter."),
 	X(1, "x", PropertyType.EXP, "X position."),

@@ -16,9 +16,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- @author Kayler
  Creates a wrapper around a list such that it is read only
- Created on 06/07/2016. */
+
+ @author Kayler
+ @since 06/07/2016. */
 public class ReadOnlyList<E> implements List<E> {
 	private final List<E> dataList;
 
@@ -26,7 +27,7 @@ public class ReadOnlyList<E> implements List<E> {
 		this.dataList = dataList;
 	}
 
-	/** Constructs a list with an ArrayList as the underlying list. The given data will populate the list.*/
+	/** Constructs a list with an ArrayList as the underlying list. The given data will populate the list. */
 	public ReadOnlyList(E[] data) {
 		dataList = new ArrayList<>(data.length);
 		Collections.addAll(dataList, data);

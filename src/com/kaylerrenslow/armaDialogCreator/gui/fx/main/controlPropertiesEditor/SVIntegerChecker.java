@@ -16,10 +16,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IntegerChec
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Checker for Integers that returns a SerializableValue
- Created on 05/31/2016.
- */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class SVIntegerChecker implements InputFieldDataChecker<SVInteger> {
 	private static final IntegerChecker checker = new IntegerChecker();
 
@@ -31,7 +31,7 @@ public class SVIntegerChecker implements InputFieldDataChecker<SVInteger> {
 	@Override
 	public SVInteger parse(@NotNull String data) {
 		Integer i = checker.parse(data);
-		if(i == null){
+		if (i == null) {
 			throw new IllegalStateException("returned value shouldn't be null");
 		}
 		return new SVInteger(i);

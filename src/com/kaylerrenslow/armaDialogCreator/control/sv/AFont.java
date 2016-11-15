@@ -15,9 +15,9 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  All avaialable Arma 3 fonts
- Created on 05/22/2016. */
+ @author Kayler
+ @since 05/22/2016. */
 public class AFont extends SerializableValue {
 	public static final AFont PURISTA_LIGHT = new AFont("PuristaLight");
 	public static final AFont PURISTA_MEDIUM = new AFont("PuristaMedium");

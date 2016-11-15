@@ -20,10 +20,11 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  Popup window that allows for editing a {@link CustomControlClass}.
- Created on 11/14/2016. */
-public class EditCustomControlPopup extends NewControlPopup {
+
+ @author Kayler
+ @since 11/14/2016. */
+public class EditCustomControlPopup extends NewCustomControlPopup {
 
 	private final ControlClass duplicate;
 	private final CustomControlClass toEdit;

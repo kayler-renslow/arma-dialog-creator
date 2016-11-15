@@ -22,16 +22,17 @@ import java.io.IOException;
 import java.util.Calendar;
 
 /**
- @author Kayler
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor} is editing,
  the {@link MacroRegistry} instance, as well as all ExternalResources.
- Created on 07/19/2016. */
+
+ @author Kayler
+ @since 07/19/2016. */
 public class Project {
 	private String projectName;
 	private String projectDescription;
 	private final File appSaveDirectory;
 	private final File projectSaveDirectory;
-	
+
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 	private final MacroRegistry macroRegistry = new MacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
@@ -49,10 +50,10 @@ public class Project {
 			String date = String.format("%d-%d-%d %d-%d%s", year, month, day, hour, minute, am_pm == Calendar.AM ? "am" : "pm");
 			projectName = "untitled " + date;
 		}
-		
+
 		this.projectName = projectName;
 		this.appSaveDirectory = appSaveDirectory;
-		
+
 		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
 
 		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);

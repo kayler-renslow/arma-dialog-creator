@@ -28,10 +28,10 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 
 /**
- @author Kayler
  A pane that has a locate {@link Button} to choose a file and a {@link TextField} to show the path of the file that was chosen.
- Created on 09/16/2016.
- */
+
+ @author Kayler
+ @since 09/16/2016. */
 public class FileChooserPane extends HBox {
 	protected final Button btnLocate = new Button(Lang.FxControlBundle().getString("FileChooserPane.locate"));
 	protected final TextField tfFile = new TextField();
@@ -73,7 +73,7 @@ public class FileChooserPane extends HBox {
 						chooser.getExtensionFilters().addAll(filters);
 						chooser.setInitialDirectory(defaultChooserPopupLocation);
 						File f = chooser.showOpenDialog(chooserPopupWindowOwner);
-						if(f == null){
+						if (f == null) {
 							return;
 						}
 						setChosenFile(f);
@@ -103,7 +103,7 @@ public class FileChooserPane extends HBox {
 	}
 
 	@Nullable
-	public File getChosenFile(){
+	public File getChosenFile() {
 		return chosenFileObserver.getValue();
 	}
 }

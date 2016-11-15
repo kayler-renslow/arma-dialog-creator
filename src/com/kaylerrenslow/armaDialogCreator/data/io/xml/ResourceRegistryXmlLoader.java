@@ -23,9 +23,9 @@ import java.io.File;
 import java.util.List;
 
 /**
- @author Kayler
  Used to load external resources from an xml file
- Created on 09/10/2016. */
+ @author Kayler
+ @since 09/10/2016. */
 public class ResourceRegistryXmlLoader extends XmlLoader {
 
 	/**

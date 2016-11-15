@@ -20,9 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- @author Kayler
  Holds all macros for the project.
- Created on 07/05/2016. */
+
+ @author Kayler
+ @since 07/05/2016. */
 public class MacroRegistry {
 
 	private final List<Macro> macros = new ArrayList<>();

@@ -8,20 +8,19 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui;
+package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Default implementation of CanvasComponent
- Created on 05/12/2016. */
+
+ @author Kayler
+ @since 05/12/2016. */
 public class SimpleCanvasComponent implements CanvasComponent {
 
 	private static Color randomColor(Object o) {
@@ -42,7 +41,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	private boolean isVisible = true;
 
 	private int renderPriority = 0;
-	
+
 	public SimpleCanvasComponent(int x, int y, int width, int height) {
 		this.x1 = x;
 		this.y1 = y;
@@ -119,13 +118,13 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	public int getRenderPriority() {
 		return renderPriority;
 	}
-	
+
 	@Override
 	public void setRenderPriority(int priority) {
 		this.renderPriority = priority;
 	}
-	
-	
+
+
 	@Override
 	public int getLeftX() {
 		return Math.min(x1, x2);

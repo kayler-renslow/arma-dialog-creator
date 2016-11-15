@@ -15,9 +15,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 /**
- @author Kayler
  A simple implementation of {@link Env} that allows for adding identifers to the env and removing identifiers from the env.
- Created on 07/15/2016. */
+
+ @author Kayler
+ @since 07/15/2016. */
 public class SimpleEnv implements Env {
 	private HashMap<String, Value> map = new HashMap<>();
 

@@ -13,12 +13,13 @@ package com.kaylerrenslow.armaDialogCreator.data;
 import com.kaylerrenslow.armaDialogCreator.data.changeRegistrars.DisplayChangeRegistrar;
 
 /**
- @author Kayler
  A place to initiate all {@link ChangeRegistrar} instances.
- Created on 08/10/2016. */
+
+ @author Kayler
+ @since 08/10/2016. */
 public final class ChangeRegistrars {
 	ChangeRegistrars(ApplicationData data) {
 		DisplayChangeRegistrar displayChangeRegistrar = new DisplayChangeRegistrar(data);
 	}
-	
+
 }

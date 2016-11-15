@@ -24,10 +24,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- @author Kayler
  Manages application property values from APPDATA/config.xml<br>
  The only instance is inside {@link ApplicationPropertyManager}
- Created on 07/12/2016. */
+
+ @author Kayler
+ @since 07/12/2016. */
 class ApplicationPropertyManager {
 	private static String defaultDirectory() {
 		String OS = System.getProperty("os.name").toUpperCase();
@@ -52,12 +53,12 @@ class ApplicationPropertyManager {
 
 	private final File appPropertiesFile = new File(appdataFolder.getPath() + "/config.xml");
 
-	/**	 Location for application save data. This is where all projects and their data are saved to. */
+	/** Location for application save data. This is where all projects and their data are saved to. */
 	private File appSaveDataDir,
-	/**	 Location of Arma 3 tools. Arma 3 tools has some executables valuable to Arma Dialog Creator, such as .paa converter */
+	/** Location of Arma 3 tools. Arma 3 tools has some executables valuable to Arma Dialog Creator, such as .paa converter */
 	a3ToolsDir;
 
-	/**	 Loads the AppData properties file and stores properties in application properties.	 */
+	/** Loads the AppData properties file and stores properties in application properties. */
 	public ApplicationPropertyManager() {
 		if (!appdataFolder.exists()) {
 			setupAppdataFolder();
@@ -101,7 +102,7 @@ class ApplicationPropertyManager {
 		}
 	}
 
-	/**Creates the appdata folder and creates the properties file and with all properties set to their default values*/
+	/** Creates the appdata folder and creates the properties file and with all properties set to their default values */
 	private void setupAppdataFolder() {
 		try {
 			appdataFolder.mkdir();
@@ -152,7 +153,8 @@ class ApplicationPropertyManager {
 		fos.close();
 	}
 
-	/**Get where application save files should be saved to.
+	/**
+	 Get where application save files should be saved to.
 	 */
 	@NotNull
 	public File getAppSaveDataDirectory() {

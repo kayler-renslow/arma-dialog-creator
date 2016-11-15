@@ -16,9 +16,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 
 /**
- @author Kayler
  Stores screen resolution information and methods for retrieving viewport width and height as well as the viewport x and y positions
- Created on 05/18/2016. */
+ @author Kayler
+ @since 05/18/2016. */
 public class ArmaResolution implements Resolution {
 	private int screenWidth, screenHeight;
 	private UIScale uiScale;

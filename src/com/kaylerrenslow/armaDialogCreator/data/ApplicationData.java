@@ -25,15 +25,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Holds data that aren't specific to the current Project, but rather the entire application itself. Resets after
  {@link com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator#loadNewProject(boolean)} is invoked.
- Created on 06/07/2016. */
+
+ @author Kayler
+ @since 06/07/2016. */
 public class ApplicationData extends DataContext {
-	
+
 	private Project currentProject;
 	private final Changelog changelog = new Changelog(20);
-	
+
 	public ApplicationData(@NotNull ApplicationLoader.ApplicationLoadRequest request) {
 		request.addOnComplete(new ApplicationLoadListener() {
 			@Override
@@ -44,7 +45,7 @@ public class ApplicationData extends DataContext {
 		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT));
 		put(DataKeys.ENV, globalEnv);
 	}
-	
+
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
 		public @Nullable Value getValue(String identifier) {
@@ -52,7 +53,7 @@ public class ApplicationData extends DataContext {
 			if (resolution == null) {
 				throw new IllegalStateException("resolution shouldn't be null");
 			}
-			
+
 			//update the environment
 			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X) || identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X_ABS)) {
 				return new Value.NumVal(resolution.getSafeZoneX());
@@ -66,7 +67,7 @@ public class ApplicationData extends DataContext {
 			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_H)) {
 				return new Value.NumVal(resolution.getSafeZoneH());
 			}
-			
+
 			Value v = super.getValue(identifier);
 			if (v == null) {
 				v = getCurrentProject().getMacroRegistry().getMacroValue(identifier);
@@ -74,13 +75,13 @@ public class ApplicationData extends DataContext {
 			return v;
 		}
 	};
-	
+
 	@NotNull
 	public Project getCurrentProject() {
 		return currentProject;
 	}
-	
-	
+
+
 	/**
 	 Get the {@link Env} instance used for converting identifiers that match any Macro instances key retrieved from {@link Macro#getKey()}. The identifiers can also be
 	 {@link PositionCalculator#SAFE_ZONE_X},
@@ -94,12 +95,12 @@ public class ApplicationData extends DataContext {
 	public Env getGlobalExpressionEnvironment() {
 		return globalEnv;
 	}
-	
+
 	@NotNull
 	public Changelog getChangelog() {
 		return changelog;
 	}
-	
+
 	private void setCurrentProject(Project currentProject) {
 		this.currentProject = currentProject;
 	}

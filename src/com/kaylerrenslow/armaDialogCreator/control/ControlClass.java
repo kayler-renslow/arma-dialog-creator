@@ -21,10 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- @author Kayler
  Base class for ArmaControl that may or may not be a control (could be missing properties like style or type, which are required for all controls)<br>
  This class is useful for creating base control classes and not having to type a bunch of redundant information.
- Created on 05/23/2016. */
+ @author Kayler
+ @since 05/23/2016. */
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
 

@@ -14,9 +14,10 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Checker for Arma Strings
- Created on 05/31/2016. */
+
+ @author Kayler
+ @since 05/31/2016. */
 public class ArmaStringChecker implements InputFieldDataChecker<String> {
 	@Override
 	public String validData(@NotNull String data) {
@@ -36,7 +37,7 @@ public class ArmaStringChecker implements InputFieldDataChecker<String> {
 				quote = false;
 			}
 		}
-		if(quote){
+		if (quote) {
 			return Lang.FxControlBundle().getString("InputField.DataCheckers.ArmaString.missing_quote");
 		}
 		return null;

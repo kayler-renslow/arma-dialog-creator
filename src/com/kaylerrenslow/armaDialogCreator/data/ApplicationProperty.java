@@ -23,9 +23,10 @@ import java.io.File;
 import java.util.Locale;
 
 /**
- @author Kayler
  Keys for retrieving application properties from APPDATA/config.xml
- Created on 07/12/2016. */
+
+ @author Kayler
+ @since 07/12/2016. */
 public class ApplicationProperty<T> extends Key<T> {
 	/** Location path to folder where application save data should be stored. */
 	public static final ApplicationProperty<File> APP_SAVE_DATA_DIR = new ApplicationProperty<>(

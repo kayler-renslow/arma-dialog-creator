@@ -18,9 +18,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.LinkedList;
 
 /**
- @author Kayler
  Used for storing changes that happened inside the application
- Created on 08/02/2016. */
+
+ @author Kayler
+ @since 08/02/2016. */
 public class Changelog {
 
 	public static Changelog getInstance() {

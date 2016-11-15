@@ -22,9 +22,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- @author Kayler
  Handles all exceptions in the program
- Created on 07/06/2016. */
+
+ @author Kayler
+ @since 07/06/2016. */
 public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	private static final ExceptionHandler INSTANCE = new ExceptionHandler();
 
@@ -143,7 +144,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		}
 	}
 
-	/**Does same thing as {@link #uncaughtException(Thread, Throwable)} with {@link Thread#currentThread()} as the thread parameter*/
+	/** Does same thing as {@link #uncaughtException(Thread, Throwable)} with {@link Thread#currentThread()} as the thread parameter */
 	public void uncaughtException(Throwable e) {
 		uncaughtException(Thread.currentThread(), e);
 	}

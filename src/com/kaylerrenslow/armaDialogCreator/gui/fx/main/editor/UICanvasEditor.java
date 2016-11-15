@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ui.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
@@ -37,7 +36,7 @@ import java.util.Iterator;
 
 /**
  @author Kayler
- Created on 05/11/2016. */
+ @since 05/11/2016. */
 public class UICanvasEditor extends UICanvas {
 	
 	/*** How many pixels the cursor can be off on a component's edge when choosing an edge for scaling */

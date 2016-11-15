@@ -16,9 +16,9 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Class used to depict a hex color string.
- Created on 05/23/2016. */
+ @author Kayler
+ @since 05/23/2016. */
 public class AHexColor extends AColor {
 	
 	public static final ValueConverter<AHexColor> CONVERTER = new ValueConverter<AHexColor>() {

@@ -21,9 +21,10 @@ import javafx.scene.layout.HBox;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  A generic footer that provides "help" button, "cancel" button, and "ok" button implementations.
- Created on 10/07/2016. */
+
+ @author Kayler
+ @since 10/07/2016. */
 public class GenericResponseFooter extends BorderPane {
 
 	private final HBox rightContainer;

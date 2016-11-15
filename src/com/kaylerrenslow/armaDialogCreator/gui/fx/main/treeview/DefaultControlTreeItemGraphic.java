@@ -27,10 +27,11 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
- @author Kayler
  Graphic for tree items that represent a control
- Created on 06/08/2016. */
-public class DefaultControlTreeItemGraphic extends HBox{
+
+ @author Kayler
+ @since 06/08/2016. */
+public class DefaultControlTreeItemGraphic extends HBox {
 	private static final Insets margin = new Insets(0, 5, 0, 0);
 	private static final String BORDER_STYLE = "-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:1px;";
 	private final RadioButton rbSelected = new RadioButton();

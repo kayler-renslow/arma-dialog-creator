@@ -41,9 +41,10 @@ import javafx.stage.StageStyle;
 import org.jetbrains.annotations.Nullable;
 
 /**
- @author Kayler
  Base class for a popup that manipulates/creates macro data.
- Created on 07/15/2016. */
+
+ @author Kayler
+ @since 07/15/2016. */
 public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	private final Env env;
 	private ValueEditor editor;

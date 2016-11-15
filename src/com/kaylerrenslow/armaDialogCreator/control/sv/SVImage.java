@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
- @author Kayler
  A SerializableValue implementation for storing an image file
- Created on 07/16/2016. */
+ @author Kayler
+ @since 07/16/2016. */
 public class SVImage extends SerializableValue {
 	
 	public static final ValueConverter<SVImage> CONVERTER = new ValueConverter<SVImage>() {

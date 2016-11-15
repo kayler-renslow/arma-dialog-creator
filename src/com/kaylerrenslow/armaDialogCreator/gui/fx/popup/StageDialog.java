@@ -21,11 +21,12 @@ import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
 /**
- @author Kayler
- A wrapper class for {@link StagePopup} that is for dialogs. The difference between a {@link StagePopup} and a {@link StageDialog} is that the {@link StageDialog} will always hault the thread when
+ A wrapper class for {@link StagePopup} that is for dialogs. The difference between a {@link StagePopup} and a {@link StageDialog} is that the {@link StageDialog} will always halt the thread when
  shown and resume the thread when it is closed.
- Created on 08/20/2016. */
-public class StageDialog<T extends Parent> extends StagePopup<VBox>{
+
+ @author Kayler
+ @since 08/20/2016. */
+public class StageDialog<T extends Parent> extends StagePopup<VBox> {
 
 	/** Root element of the dialog body. This is the element where all content should be placed. */
 	protected final T myRootElement;

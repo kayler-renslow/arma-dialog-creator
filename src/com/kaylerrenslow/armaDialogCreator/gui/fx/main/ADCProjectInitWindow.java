@@ -44,9 +44,10 @@ import java.util.LinkedList;
 import java.util.Locale;
 
 /**
- @author Kayler
  Used for setting up the initial {@link Project}. This window is shown before {@link ADCWindow}.
- Created on 07/19/2016. */
+
+ @author Kayler
+ @since 07/19/2016. */
 public class ADCProjectInitWindow extends StagePopup<VBox> {
 	private final LinkedList<ProjectInitTab> initTabs = new LinkedList<>();
 	private final TabPane tabPane = new TabPane();
