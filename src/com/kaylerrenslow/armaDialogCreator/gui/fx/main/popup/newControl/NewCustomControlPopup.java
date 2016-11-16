@@ -170,13 +170,13 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	 */
 	protected void setToControlClass(@NotNull ControlClass controlClass) {
 		if (editorPane != null) {
-			editorPane.getControlClass().getUpdateGroup().removeListener(controlClassListener);
+			editorPane.getControlClass().getPropertyUpdateGroup().removeListener(controlClassListener);
 		}
 		editorPane = new ControlPropertiesEditorPane(controlClass);
 		stackPaneProperties.getChildren().clear();
 		stackPaneProperties.getChildren().add(editorPane);
 
-		controlClass.getUpdateGroup().addListener(controlClassListener);
+		controlClass.getPropertyUpdateGroup().addListener(controlClassListener);
 
 		inClassName.setValue(controlClass.getClassName());
 	}

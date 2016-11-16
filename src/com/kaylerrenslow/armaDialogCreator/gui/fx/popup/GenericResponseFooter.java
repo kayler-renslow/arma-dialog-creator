@@ -60,8 +60,11 @@ public class GenericResponseFooter extends BorderPane {
 		} else {
 			btnOk = null;
 		}
+
 		rightContainer.setAlignment(Pos.BOTTOM_RIGHT);
+		rightContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		setRight(rightContainer);
+		setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 	}
 
 	@NotNull

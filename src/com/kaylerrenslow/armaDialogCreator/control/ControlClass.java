@@ -29,7 +29,7 @@ public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
 
 	private final ControlClassRequirementSpecification specProvider;
-	private ControlClass extend;
+	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
 
 
 	private final List<ControlProperty> requiredProperties = new LinkedList<>();
@@ -51,7 +51,8 @@ public class ControlClass {
 
 	private final ValueObserver<String> classNameObserver = new ValueObserver<>(null);
 
-	private final UpdateListenerGroup<ControlPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
+	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
+	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
 
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification provider) {
 		classNameObserver.updateValue(name);
@@ -69,7 +70,8 @@ public class ControlClass {
 		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
 			@Override
 			public void update(ControlPropertyUpdate data) {
-				updateGroup.update(data);
+				propertyUpdateGroup.update(data);
+				controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
 			}
 		};
 		for (ControlProperty controlProperty : requiredProperties) {
@@ -78,6 +80,18 @@ public class ControlClass {
 		for (ControlProperty controlProperty : optionalProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
+		classNameObserver.addValueListener(new ValueListener<String>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+				controlClassUpdateGroup.update(new ControlClassRenameUpdate(ControlClass.this, oldValue, newValue));
+			}
+		});
+		extendClassObserver.addValueListener(new ValueListener<ControlClass>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+				controlClassUpdateGroup.update(new ControlClassExtendUpdate(ControlClass.this, oldValue, newValue));
+			}
+		});
 	}
 
 	/** Construct a {@link ControlClass} with the given specification */
@@ -115,15 +129,21 @@ public class ControlClass {
 		return classNameObserver;
 	}
 
-	public final void extendControlClass(@Nullable ControlClass armaControl) {
-		if (armaControl == this) {
+	public final void extendControlClass(@Nullable ControlClass controlClass) {
+		if (controlClass == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
-		this.extend = armaControl;
+		extendClassObserver.updateValue(controlClass);
 	}
 
-	public final @Nullable ControlClass getExtendClass() {
-		return extend;
+	@Nullable
+	public final ControlClass getExtendClass() {
+		return extendClassObserver.getValue();
+	}
+
+	@NotNull
+	public final ValueObserver<ControlClass> getExtendClassObserver(){
+		return extendClassObserver;
 	}
 
 	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
@@ -343,11 +363,11 @@ public class ControlClass {
 
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {
-		if (extend == null) {
+		if (getExtendClass() == null) {
 			return new ArrayList<>();
 		}
 		ArrayList<ControlProperty> list = new ArrayList<>();
-		appendInheritedProperties(extend, list);
+		appendInheritedProperties(getExtendClass(), list);
 		return list;
 	}
 
@@ -357,13 +377,13 @@ public class ControlClass {
 				list.add(c);
 			}
 		}
-		if (extend.extend != null) {
-			for (ControlProperty c : extend.extend.getInheritedProperties()) {
+		if (extend.getExtendClass() != null) {
+			for (ControlProperty c : extend.getExtendClass().getInheritedProperties()) {
 				if (!list.contains(c)) {
 					list.add(c);
 				}
 			}
-			appendInheritedProperties(extend.extend, list);
+			appendInheritedProperties(extend.getExtendClass(), list);
 		}
 	}
 
@@ -388,8 +408,22 @@ public class ControlClass {
 	 {@link ControlProperty} that was updated as well as the property's old value and the updated/new value. If this ControlClass extends some ControlClass via
 	 {@link #extendControlClass(ControlClass)}, the update groups will <b>not</b> be synced. You will have to listen to each ControlClass separately.
 	 */
-	public UpdateListenerGroup<ControlPropertyUpdate> getUpdateGroup() {
-		return updateGroup;
+	public final UpdateListenerGroup<ControlPropertyUpdate> getPropertyUpdateGroup() {
+		return propertyUpdateGroup;
+	}
+
+	/**
+	 Gets the update listener group that listens to when an update happens to this {@link ControlClass}. Things that may trigger the update:<br>
+	 <ul>
+	 <li>update in conjunction with {@link #getPropertyUpdateGroup()}</li>
+	 <li>{@link #setClassName(String)}</li>
+	 <li>{@link #extendControlClass(ControlClass)}</li>
+	 <li>{@link #overrideProperty(ControlPropertyLookup)}</li>
+	 <li>{@link #removeOverrideProperty(ControlPropertyLookup)}</li>
+	 </ul>
+	 */
+	public final UpdateListenerGroup<ControlClassUpdate> getControlClassUpdateGroup(){
+		return controlClassUpdateGroup;
 	}
 
 	/**

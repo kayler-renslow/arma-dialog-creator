@@ -48,17 +48,16 @@ import java.util.Locale;
 
  @author Kayler
  @since 07/19/2016. */
-public class ADCProjectInitWindow extends StagePopup<VBox> {
+public class ADCProjectInitWindow extends StageDialog<VBox> {
 	private final LinkedList<ProjectInitTab> initTabs = new LinkedList<>();
 	private final TabPane tabPane = new TabPane();
 	private final DataContext projectLoadContext;
 	private final File appSaveDirectory;
 
 	public ADCProjectInitWindow(DataContext projectLoadContext, File appSaveDirectory) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.window_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.window_title"), true, true, true);
 		this.projectLoadContext = projectLoadContext;
 		this.appSaveDirectory = appSaveDirectory;
-		myRootElement.setPadding(new Insets(10));
 
 		//header
 		final Label lblProjectSetup = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.project_setup"));
@@ -67,7 +66,6 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		initTabPane();
 
 		myRootElement.getChildren().addAll(lblProjectSetup, new Separator(Orientation.HORIZONTAL), tabPane);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
 
 		final ComboBox<LocaleDescriptor> comboBoxLanguage = new ComboBox<>();
 
@@ -90,6 +88,7 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 			}
 		});
 		footer.getRightContainer().getChildren().add(0, comboBoxLanguage);
+		footer.getBtnOk().setPrefWidth(-1);//keep at -1 to auto compute width to prevent btn size not being big enough for text (... may occure otherwise)
 
 		btnCancel.setText(Lang.ApplicationBundle().getString("Popups.btn_exit"));
 
@@ -97,9 +96,6 @@ public class ADCProjectInitWindow extends StagePopup<VBox> {
 		myStage.setWidth(720d);
 		myStage.setHeight(400d);
 		myStage.setResizable(false);
-
-		this.btnOk.setPrefWidth(130d);
-
 
 		//update ok button's text
 		tabPane.getSelectionModel().selectLast();

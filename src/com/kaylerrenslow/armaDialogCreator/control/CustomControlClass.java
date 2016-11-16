@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  A custom control class has two things: a specification and a implementation. The specification, provided by a {@link ControlClassSpecification} instance, is a way to construct the implementation,
  which is a {@link ControlClass} instance. There will only be one {@link ControlClass} instance per {@link CustomControlClass} instance and the two will be synchronized (when an update happens via
- {@link ControlClass#getUpdateGroup()}, the {@link ControlClassSpecification} will update as well). This synchronization will only happen between this class instance and {@link #getControlClass()}.
+ {@link ControlClass#getPropertyUpdateGroup()}, the {@link ControlClassSpecification} will update as well). This synchronization will only happen between this class instance and {@link #getControlClass()}.
 
  @author Kayler
  @since 11/13/2016 */
@@ -67,7 +67,7 @@ public class CustomControlClass {
 				specification.setClassName(newValue);
 			}
 		});
-		controlClass.getUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
+		controlClass.getPropertyUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
 			@Override
 			public void update(ControlPropertyUpdate data) {
 				ControlPropertySpecification propertySpec = specification.findProperty(data.getControlProperty().getPropertyLookup());

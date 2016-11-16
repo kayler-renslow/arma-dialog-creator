@@ -10,38 +10,40 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Used with {@link ControlClass#getPropertyUpdateGroup()}
+ Used when {@link ControlClass#setClassName(String)} is invoked, or when {@link ControlClass#getClassNameObserver()} is updated
+ via {@link com.kaylerrenslow.armaDialogCreator.util.ValueObserver#updateValue(Object)}
+
  @author Kayler
- @since 08/11/2016. */
-public class ControlPropertyValueUpdate implements ControlPropertyUpdate {
-	private final ControlProperty controlProperty;
-	private final SerializableValue oldValue;
-	private final SerializableValue newValue;
+ @since 11/16/16 */
+public class ControlClassRenameUpdate implements ControlClassUpdate {
+	private ControlClass updated;
+	private final String oldName;
+	private final String newName;
 
-	public ControlPropertyValueUpdate(@NotNull ControlProperty controlProperty, SerializableValue oldValue, SerializableValue newValue) {
-		this.controlProperty = controlProperty;
-		this.oldValue = oldValue;
-		this.newValue = newValue;
+	public ControlClassRenameUpdate(@NotNull ControlClass updated, @NotNull String oldName, @NotNull String newName) {
+		this.updated = updated;
+		this.oldName = oldName;
+		this.newName = newName;
 	}
 
-	/** Get the ControlProperty that recieved an update */
+	@Override
 	@NotNull
-	public ControlProperty getControlProperty() {
-		return controlProperty;
+	public ControlClass getControlClass() {
+		return updated;
 	}
 
-	/** Get the ControlProperty's old value */
-	public SerializableValue getOldValue() {
-		return oldValue;
+	/** Get the old class name */
+	@NotNull
+	public String getOldName() {
+		return oldName;
 	}
 
-	/** Get the ControlProperty's new value */
-	public SerializableValue getNewValue() {
-		return newValue;
+	/** Get the new class name */
+	@NotNull
+	public String getNewName() {
+		return newName;
 	}
-
 }

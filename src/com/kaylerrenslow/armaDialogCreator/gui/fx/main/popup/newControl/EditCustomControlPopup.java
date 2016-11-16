@@ -35,7 +35,7 @@ public class EditCustomControlPopup extends NewCustomControlPopup {
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.EditCustomControl.popup_title"));
 
 		duplicate = toEdit.getSpecification().constructNewControlClass();
-		duplicate.getUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
+		duplicate.getPropertyUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
 			@Override
 			public void update(ControlPropertyUpdate data) {
 				updates.add(data);
@@ -48,7 +48,7 @@ public class EditCustomControlPopup extends NewCustomControlPopup {
 	@Override
 	protected void ok() {
 		for (ControlPropertyUpdate update : updates) {
-			toEdit.getControlClass().getUpdateGroup().update(update);
+			toEdit.getControlClass().getPropertyUpdateGroup().update(update);
 		}
 		toEdit.getSpecification().setClassName(duplicate.getClassName());
 		close();

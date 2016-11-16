@@ -23,6 +23,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -52,8 +53,10 @@ class CanvasControls extends VBox implements SnapConfiguration {
 
 	private void initializeUI() {
 		initializeStepChoiceboxes();
-		HBox hboxStep = new HBox(5);
-		hboxStep.getChildren().addAll(new Label(Lang.ApplicationBundle().getString("CanvasControls.step")), cbStep, new Label(Lang.ApplicationBundle().getString("CanvasControls.alt_step")), cbAltStep);
+		FlowPane flowPaneStep = new FlowPane(5, 5,
+				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.step")), cbStep),
+				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.alt_step")), cbAltStep)
+		);
 
 		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.show"));
 		cbShowBackgroundControls.setSelected(true);
@@ -89,7 +92,7 @@ class CanvasControls extends VBox implements SnapConfiguration {
 
 		final SplitPane splitPane = new SplitPane(vbBgControls, vbControls);
 		splitPane.setOrientation(Orientation.VERTICAL);
-		getChildren().addAll(hboxStep, splitPane);
+		getChildren().addAll(flowPaneStep, splitPane);
 		VBox.setVgrow(splitPane, Priority.ALWAYS);
 		splitPane.setPrefHeight(getHeight());
 

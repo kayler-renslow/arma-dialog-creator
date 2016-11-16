@@ -10,38 +10,36 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- Used with {@link ControlClass#getPropertyUpdateGroup()}
+ Used when {@link ControlClass#extendControlClass(ControlClass)} is invoked
  @author Kayler
- @since 08/11/2016. */
-public class ControlPropertyValueUpdate implements ControlPropertyUpdate {
-	private final ControlProperty controlProperty;
-	private final SerializableValue oldValue;
-	private final SerializableValue newValue;
+ @since 11/16/16 */
+public class ControlClassExtendUpdate implements ControlClassUpdate {
+	private final ControlClass controlClass;
+	private final ControlClass oldValue;
+	private final ControlClass newValue;
 
-	public ControlPropertyValueUpdate(@NotNull ControlProperty controlProperty, SerializableValue oldValue, SerializableValue newValue) {
-		this.controlProperty = controlProperty;
+	public ControlClassExtendUpdate(@NotNull ControlClass controlClass, @Nullable ControlClass oldValue, @Nullable ControlClass newValue) {
+		this.controlClass = controlClass;
 		this.oldValue = oldValue;
 		this.newValue = newValue;
 	}
 
-	/** Get the ControlProperty that recieved an update */
-	@NotNull
-	public ControlProperty getControlProperty() {
-		return controlProperty;
+	@Override
+	public @NotNull ControlClass getControlClass() {
+		return controlClass;
 	}
 
-	/** Get the ControlProperty's old value */
-	public SerializableValue getOldValue() {
+	@NotNull
+	public ControlClass getOldValue() {
 		return oldValue;
 	}
 
-	/** Get the ControlProperty's new value */
-	public SerializableValue getNewValue() {
+	@NotNull
+	public ControlClass getNewValue() {
 		return newValue;
 	}
-
 }
