@@ -8,7 +8,7 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -42,7 +42,6 @@ import java.util.List;
  @since 11/13/2016. */
 public class ChooseItemPopup<V> extends StageDialog<VBox> {
 
-	private static final Font TITLE_FONT = Font.font(15d);
 	private final List<ItemCategoryTab<V>> itemCategoryTabs;
 	private final TabPane tabPane = new TabPane();
 	private V selectedItem;
@@ -65,7 +64,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 	private void initRootElement(@NotNull String headerTitle) {
 		myRootElement.setPadding(new Insets(10));
 		final Label lblChooseMacro = new Label(headerTitle);
-		lblChooseMacro.setFont(TITLE_FONT);
+		lblChooseMacro.setFont(Font.font(15d));
 
 		HBox hbSearch = initializeSearchBox();
 		myRootElement.getChildren().add(new BorderPane(null, null, hbSearch, null, lblChooseMacro));

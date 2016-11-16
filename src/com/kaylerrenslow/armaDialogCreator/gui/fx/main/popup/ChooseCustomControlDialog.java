@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ChooseItemPopup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.Node;
 import javafx.scene.layout.VBox;

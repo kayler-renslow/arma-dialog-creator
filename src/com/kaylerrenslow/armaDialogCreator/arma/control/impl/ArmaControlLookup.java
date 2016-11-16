@@ -68,6 +68,7 @@ public enum ArmaControlLookup {
 	public final ControlType controlType;
 	@NotNull
 	public final ArmaControlSpecRequirement specProvider;
+	/** The renderer to use for the control */
 	@NotNull
 	public final RendererLookup defaultRenderer;
 

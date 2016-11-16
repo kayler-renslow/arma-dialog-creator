@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ChooseItemPopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
