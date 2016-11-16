@@ -152,7 +152,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem[] items = new ControlClassMenuItem[customControlClasses.size()];
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
-			items[i] = new ControlClassMenuItem(customControlClass.getControlClass());
+			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass());
 			items[i].getValue().getUserData().put(KEY_MENU_ITEM, items[i]);
 			i++;
 		}
