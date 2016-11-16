@@ -11,14 +11,19 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ControlGroupControl;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlGroupTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 07/04/2016.
@@ -27,14 +32,21 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntr
 
 	public static final ControlGroupDataCreator INSTANCE = new ControlGroupDataCreator();
 
-	@Override
-	public TreeItemEntry createNew(CellType cellType) {
-		return new ControlGroupTreeItemEntry(new ControlGroupControl("controlGroup", -1, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
-				("1", getEnv()), new Expression("1", getEnv()),
-				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
+	private Env getEnv() {
+		return ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment();
 	}
 
-	private Env getEnv(){
-		return ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment();
+	@Nullable
+	@Override
+	public TreeItemEntry createNew(@NotNull CellType cellType, @NotNull EditableTreeView<TreeItemEntry> treeView) {
+		NewControlDialog dialog = new NewControlDialog(ControlType.STATIC, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
+		dialog.show();
+		if (dialog.wasCancelled()) {
+			return null;
+		}
+
+		return new ControlGroupTreeItemEntry(new ControlGroupControl(dialog.getClassName(), -1, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
+				("1", getEnv()), new Expression("1", getEnv()),
+				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
 	}
 }

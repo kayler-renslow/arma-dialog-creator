@@ -336,15 +336,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 
-		ArmaControl control;
-		if (isControlGroup) {
-			control = new ArmaControlGroup(controlClassName, controlType, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
-		} else {
-			control = new ArmaControl(
-					controlClassName, controlType, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup,
-					DataKeys.ENV.get(dataContext)
-			);
-		}
+		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
 
 		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
 			for (ControlPropertySpecification config : properties) {

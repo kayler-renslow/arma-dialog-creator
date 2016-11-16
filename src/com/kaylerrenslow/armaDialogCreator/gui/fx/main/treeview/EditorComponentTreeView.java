@@ -297,7 +297,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		});
 	}
 
-	public void setToDisplay(ArmaDisplay display) {
+	public void setToDisplay(@NotNull ArmaDisplay display) {
 		if (this.editingDisplay != null) {
 			setDisplayListener(false); //clear the old listeners on the old editing display since they are no longer needed
 		}
@@ -317,7 +317,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 	}
 
-	/**Removes the control list listener from the list*/
+	/** Removes the control list listener from the list */
 	private void removeListeners(ControlList<ArmaControl> controls) {
 		controls.removeChangeListener(controlListChangeListener);
 		for (ArmaControl control : controls) {

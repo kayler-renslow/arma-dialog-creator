@@ -14,8 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.MacroIdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -52,7 +52,7 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	private StackPane stackPaneEditor = new StackPane();
 
 	private final TextField tfMacroDescription = new TextField();
-	private final InputField<IdentifierChecker, String> inMacroKey = new InputField<>(new IdentifierChecker());
+	private final InputField<MacroIdentifierChecker, String> inMacroKey = new InputField<>(new MacroIdentifierChecker());
 	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
 
 	private final Label lblNoTypeChosen = new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.no_type_chosen"));

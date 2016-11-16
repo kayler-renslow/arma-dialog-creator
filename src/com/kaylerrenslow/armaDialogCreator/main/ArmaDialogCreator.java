@@ -207,7 +207,12 @@ public final class ArmaDialogCreator extends Application {
 		INSTANCE.showLater.clear();
 	}
 
+	/**
+	 Get the {@link CanvasView} for the program
 
+	 @throws IllegalStateException when this method is invoked when the {@link #getPrimaryStage()} is not showing ({@link Stage#isShowing()}==false)
+	 */
+	@NotNull
 	public static CanvasView getCanvasView() {
 		return INSTANCE.mainWindow.getCanvasView();
 	}
@@ -231,7 +236,7 @@ public final class ArmaDialogCreator extends Application {
 			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
 			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
 		}
-		if (getCanvasView() != null) {
+		if (getMainWindow().isShowing()) {
 			getCanvasView().updateCanvas();
 		}
 		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
@@ -247,7 +252,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	/** Run the given runnable on the JavaFX thread after the application's main window has been initialized */
-	public static void showAfterMainWindowLoaded(@NotNull Runnable runnable) {
+	public static void runAfterMainWindowLoaded(@NotNull Runnable runnable) {
 		INSTANCE.showLater.add(runnable);
 	}
 

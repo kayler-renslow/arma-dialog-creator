@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
@@ -43,7 +44,7 @@ public class EditorComponentTreeViewTest extends Application {
 	private static class TestArmaControlClass extends ArmaControl {
 
 		public TestArmaControlClass() {
-			super("", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
+			super(ControlType.STATIC, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
 				@Override
 				public @Nullable Value getValue(String identifier) {
 					return null;

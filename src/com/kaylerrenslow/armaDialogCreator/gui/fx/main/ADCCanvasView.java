@@ -16,12 +16,9 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.ComponentContextMenuCreator;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.Selection;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlCreationContextMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
@@ -90,7 +87,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 				}
 			}
 		});
-		uiCanvasEditor.setCanvasContextMenu(new ControlCreationContextMenu(canvasControls.getTreeViewMain(), false));
+		uiCanvasEditor.setCanvasContextMenu(new CanvasContextMenu());
 		setupEditorSelectionSync();
 	}
 
@@ -181,14 +178,28 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 	}
 
+	@NotNull
 	@Override
 	public TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure() {
 		return canvasControls.getTreeViewMain().exportStructure();
 	}
 
+	@NotNull
 	@Override
 	public TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure() {
 		return canvasControls.getTreeViewBackground().exportStructure();
+	}
+
+	@NotNull
+	@Override
+	public EditableTreeView<? extends TreeItemEntry> getMainControlTreeView() {
+		return canvasControls.getTreeViewMain();
+	}
+
+	@NotNull
+	@Override
+	public EditableTreeView<? extends TreeItemEntry> getBackgroundControlTreeView() {
+		return canvasControls.getTreeViewBackground();
 	}
 
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {

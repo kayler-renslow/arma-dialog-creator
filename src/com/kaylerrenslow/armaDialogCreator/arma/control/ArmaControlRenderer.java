@@ -102,12 +102,28 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		yProperty.getValueObserver().addValueListener(positionValueListener);
 		wProperty.getValueObserver().addValueListener(positionValueListener);
 		hProperty.getValueObserver().addValueListener(positionValueListener);
+
 		enabledObserver.addValueListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				rerender();
 			}
 		});
+
+
+		if (xProperty.getValue() == null) {
+			defineX(new Expression("0", env));
+		}
+		if (yProperty.getValue() == null) {
+			defineY(new Expression("0", env));
+		}
+		if (wProperty.getValue() == null) {
+			defineW(new Expression("1", env));
+		}
+		if (hProperty.getValue() == null) {
+			defineH(new Expression("1", env));
+		}
+
 	}
 
 	/**

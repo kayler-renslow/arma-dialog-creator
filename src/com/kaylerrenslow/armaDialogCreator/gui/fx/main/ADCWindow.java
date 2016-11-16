@@ -20,6 +20,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 05/11/2016.
@@ -49,7 +50,7 @@ public class ADCWindow {
 		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/misc.css");
 		this.primaryStage.setScene(scene);
 	}
-	
+
 	public void initialize() {
 		rootElement = new VBox();
 		primaryStage.getScene().setRoot(rootElement);
@@ -68,18 +69,22 @@ public class ADCWindow {
 		scene.setOnKeyPressed(keyEvent);
 		scene.setOnKeyReleased(keyEvent);
 		scene.getMnemonics().clear();
-	
+
 	}
-		
+
 	public void show() {
 		this.primaryStage.show();
 		autoResizeCanvasView();
 	}
-	
+
+	@NotNull
 	public CanvasView getCanvasView() {
+		if (!isShowing()) {
+			throw new IllegalStateException("can't access canvas view when main window is not showing");
+		}
 		return canvasView;
 	}
-	
+
 	private void autoResizeCanvasView() {
 		ScreenDimension closest = ScreenDimension.SMALLEST;
 		for (ScreenDimension dimension : ScreenDimension.values()) {
@@ -89,7 +94,7 @@ public class ADCWindow {
 		}
 		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setScreenDimension(closest);
 	}
-	
+
 	public void setToFullScreen(boolean fullScreen) {
 		primaryStage.setFullScreen(fullScreen);
 		this.fullscreen = fullScreen;
@@ -100,5 +105,9 @@ public class ADCWindow {
 		}
 		canvasView.hideCanvasControls(fullScreen);
 		autoResizeCanvasView();
+	}
+
+	public boolean isShowing() {
+		return primaryStage.isShowing();
 	}
 }

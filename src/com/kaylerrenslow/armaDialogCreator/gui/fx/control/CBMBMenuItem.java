@@ -8,21 +8,38 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import javafx.event.ActionEvent;
+import javafx.scene.control.MenuItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/04/2016.
- */
-public class ControlGroupControl extends ArmaControlGroup {
+ @author Kayler
+ @since 11/15/2016 */
+public class CBMBMenuItem<V> extends MenuItem {
+	protected final V value;
+	protected final ImageContainer imageContainer;
 
-	public ControlGroupControl(@NotNull String name, int idc, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, idc, x, y, width, height, resolution, RendererLookup.CONTROL_GROUP, env);
+	public CBMBMenuItem(@NotNull V value, @Nullable ImageContainer image) {
+		super(value.toString(), image == null ? null : image.getNode());
+		this.value = value;
+		this.imageContainer = image;
+		setMnemonicParsing(false);
+	}
+
+	public CBMBMenuItem(@NotNull V value) {
+		this(value, null);
+	}
+
+	@NotNull
+	public V getValue() {
+		return value;
+	}
+
+	protected void actionEvent(ActionEvent event) {
+
 	}
 
 }

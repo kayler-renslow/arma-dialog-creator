@@ -88,7 +88,7 @@ public class StaticControl extends ArmaControl {
 	};
 	
 	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyleGroup style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, SPEC_PROVIDER, idc, ControlType.STATIC, style, x, y, width, height, resolution, RendererLookup.STATIC, env);
+		super(ControlType.STATIC, name, SPEC_PROVIDER, idc, style, x, y, width, height, resolution, RendererLookup.STATIC, env);
 		findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(renderer.getBackgroundColor()));
 		findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(renderer.getTextColor()));
 		findRequiredProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");

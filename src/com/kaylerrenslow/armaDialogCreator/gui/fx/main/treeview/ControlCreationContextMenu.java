@@ -13,12 +13,15 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeViewMenuItemBuilder;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
@@ -34,17 +37,18 @@ public class ControlCreationContextMenu extends ContextMenu {
 			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
 			getItems().add(newFolder);
 			TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<TreeItemEntry>() {
+				@Nullable
 				@Override
-				public TreeItemEntry createNew(CellType cellType) {
+				public TreeItemEntry createNew(@NotNull CellType cellType, @NotNull EditableTreeView<TreeItemEntry> treeView) {
 					return new FolderTreeItemEntry(newFolder.getText());
 				}
+
 			}, newFolder);
 		}
 		Menu groupMenu;
 		MenuItem menuItemType;
 		for (ControlType.TypeGroup group : ControlType.TypeGroup.values()) {
 			groupMenu = new Menu(group.displayName);
-			getItems().add(groupMenu);
 			for (ControlTreeItemDataCreatorLookup creator : ControlTreeItemDataCreatorLookup.values()) {
 				ControlType controlType = creator.controlType;
 				if (controlType.group != group) {
@@ -65,11 +69,14 @@ public class ControlCreationContextMenu extends ContextMenu {
 
 				groupMenu.getItems().add(menuItemType);
 			}
-			if (groupMenu.getItems().size() == 0) {
-				MenuItem miNone = new MenuItem(Lang.ApplicationBundle().getString("Misc.no_items_available"));
-				miNone.setDisable(true);
-				groupMenu.getItems().add(miNone);
+			if (groupMenu.getItems().size() > 0) {
+				getItems().add(groupMenu);
 			}
+			//			if (groupMenu.getItems().size() == 0) {
+			//				MenuItem miNone = new MenuItem(Lang.ApplicationBundle().getString("Misc.no_items_available"));
+			//				miNone.setDisable(true);
+			//				groupMenu.getItems().add(miNone);
+			//			}
 		}
 	}
 }

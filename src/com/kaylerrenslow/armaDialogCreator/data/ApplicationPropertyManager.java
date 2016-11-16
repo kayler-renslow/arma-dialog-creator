@@ -80,7 +80,7 @@ class ApplicationPropertyManager {
 
 		appSaveDataDir = ApplicationProperty.APP_SAVE_DATA_DIR.get(applicationProperties);
 		if (appSaveDataDir == null || !appSaveDataDir.exists()) {
-			ArmaDialogCreator.showAfterMainWindowLoaded(new Runnable() {
+			ArmaDialogCreator.runAfterMainWindowLoaded(new Runnable() {
 				@Override
 				public void run() {
 					new SelectSaveLocationPopup(null, a3ToolsDir).show();

@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
@@ -55,29 +56,25 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 		}
 	};
 
-	
-	public ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
-		super(name, SPEC_PROVIDER, resolution, renderer, env);
+
+	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
+		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, resolution, renderer, env);
 		defineStyle(ControlStyle.NA.getStyleGroup());
 		afterConstructor();
 	}
 
-	public ArmaControlGroup(@NotNull String name, @NotNull ControlType type, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
-		super(name, type, SPEC_PROVIDER, resolution, rendererLookup, env);
+	protected ArmaControlGroup(@NotNull String name, int idc, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
+		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, idc, ControlStyle.NA.getStyleGroup(), x, y, width, height, resolution, renderer, env);
 		afterConstructor();
 	}
 
-	public ArmaControlGroup(@NotNull String name, int idc, @NotNull ControlType type, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
-		super(name, SPEC_PROVIDER, idc, type, ControlStyle.NA.getStyleGroup(), x, y, width, height, resolution, renderer, env);
+	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		super(specification, provider, resolution, rendererLookup, env);
 		afterConstructor();
-	}
-
-	private void afterConstructor() {
-		init();
 	}
 
 	/** Called by the constructor and only the constructor */
-	private void init() {
+	private void afterConstructor() {
 		ArmaControlGroup group = this;
 		controlsList.addChangeListener(new ControlListChangeListener<ArmaControl>() {
 			@Override
@@ -93,7 +90,8 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 			}
 		});
 	}
-	
+
+
 	@Override
 	void setDisplay(@NotNull ArmaDisplay display) {
 		super.setDisplay(display);

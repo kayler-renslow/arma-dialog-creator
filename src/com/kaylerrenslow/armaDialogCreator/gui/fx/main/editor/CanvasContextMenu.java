@@ -8,21 +8,20 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import org.jetbrains.annotations.NotNull;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 
 /**
- Created by Kayler on 07/04/2016.
- */
-public class ControlGroupControl extends ArmaControlGroup {
+ Used with {@link UICanvasEditor#setCanvasContextMenu(ContextMenu)}.
 
-	public ControlGroupControl(@NotNull String name, int idc, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, idc, x, y, width, height, resolution, RendererLookup.CONTROL_GROUP, env);
+ @author Kayler
+ @since 11/15/2016 */
+public class CanvasContextMenu extends ContextMenu {
+	public CanvasContextMenu() {
+		getItems().add(new MenuItem("TODO"));
 	}
+
 
 }

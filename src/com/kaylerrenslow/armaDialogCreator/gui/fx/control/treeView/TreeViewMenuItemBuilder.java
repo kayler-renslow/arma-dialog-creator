@@ -25,7 +25,10 @@ public class TreeViewMenuItemBuilder {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				E treeItemData = creator.createNew(cellType);
+				E treeItemData = creator.createNew(cellType, treeView);
+				if (treeItemData == null) {
+					return;
+				}
 				if (treeItemData.getCellType() != cellType) {
 					throw new IllegalStateException("Cell type doesn't match. Current type:" + treeItemData.getCellType() + ". Requested type:" + cellType);
 				}

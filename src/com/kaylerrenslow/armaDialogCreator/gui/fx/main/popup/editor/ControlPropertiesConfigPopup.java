@@ -16,8 +16,9 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassGroupMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
@@ -155,7 +156,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"),
 				new ControlClassMenuButton(
 						Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null,
-						new ControlClassMenuButton.ControlClassGroupMenu("test group",
+						new ControlClassGroupMenu("test group",
 								ControlClassMenuButton.newItem(c, new BorderedImageView(c.getControlType().icon))
 						)
 				)

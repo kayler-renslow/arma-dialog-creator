@@ -10,8 +10,10 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -41,7 +43,16 @@ public interface CanvasView {
 	void updateAbsRegion(int alwaysFront, int showing);
 	
 	void setTreeStructure(boolean backgroundTree, TreeStructure<TreeItemEntry> treeStructure);
-	
+
+	@NotNull
 	TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure();
+
+	@NotNull
 	TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure();
+
+	@NotNull
+	EditableTreeView<? extends TreeItemEntry> getMainControlTreeView();
+
+	@NotNull
+	EditableTreeView<? extends TreeItemEntry> getBackgroundControlTreeView();
 }

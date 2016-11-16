@@ -8,21 +8,38 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 07/04/2016.
- */
-public class ControlGroupControl extends ArmaControlGroup {
+ A data checker for macro identifiers (regex: [a-zA-Z_$][$a-zA-Z_0-9]*). The input also can not be empty
 
-	public ControlGroupControl(@NotNull String name, int idc, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, idc, x, y, width, height, resolution, RendererLookup.CONTROL_GROUP, env);
+ @author Kayler
+ @since 07/08/2016. */
+public class MacroIdentifierChecker implements InputFieldDataChecker<String> {
+	@Override
+	public String validData(@NotNull String data) {
+		boolean match = data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
+		if (match) {
+			return null;
+		}
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.MacroIdentifier.not_identifier");
 	}
 
+	@Override
+	public String parse(@NotNull String data) {
+		return data;
+	}
+
+	@Override
+	public String getTypeName() {
+		return Lang.FxControlBundle().getString("InputField.DataCheckers.MacroIdentifier.type_name");
+	}
+
+	@Override
+	public boolean allowEmptyData() {
+		return false;
+	}
 }

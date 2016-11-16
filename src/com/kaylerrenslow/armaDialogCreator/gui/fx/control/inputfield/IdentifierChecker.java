@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
 public class IdentifierChecker implements InputFieldDataChecker<String> {
 	@Override
 	public String validData(@NotNull String data) {
-		boolean match = data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
+		boolean match = data.length() > 0 && data.matches("[a-zA-Z_][a-zA-Z_0-9]*");
 		if (match) {
 			return null;
 		}

@@ -17,8 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlClassMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassGroupMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuButton;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -48,7 +50,7 @@ import java.io.IOException;
  @author Kayler
  @since 07/06/2016. */
 public class NewCustomControlPopup extends StagePopup<VBox> {
-	private static final Key<ControlClassMenuButton.ControlClassMenuItem> KEY_MENU_ITEM = new Key<>("NewControlPopup.controlClassMenuItem");
+	private static final Key<ControlClassMenuItem> KEY_MENU_ITEM = new Key<>("NewControlPopup.controlClassMenuItem");
 
 	private final StackPane stackPaneProperties = new StackPane();
 	private final TextArea taPreviewSample = new TextArea();
@@ -65,14 +67,14 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	};
 
 	public NewCustomControlPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.NewControl.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.NewCustomControl.popup_title"));
 		myRootElement.setPadding(new Insets(10));
 
 		/*HEADER*/
 		final HBox hboxHeader = new HBox(10);
 		hboxHeader.setFillHeight(true);
 
-		final Label lblControlClassName = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.control_class_name"));
+		final Label lblControlClassName = new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.control_class_name"));
 		lblControlClassName.setFont(Font.font(18d));
 		hboxHeader.getChildren().add(lblControlClassName);
 		hboxHeader.getChildren().add(inClassName);
@@ -86,13 +88,13 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 			}
 		});
 
-		ControlClassMenuButton.ControlClassMenuItem[] controlTypeControlClasses = new ControlClassMenuButton.ControlClassMenuItem[ControlType.BETA_SUPPORTED.length];
-		ControlClassMenuButton.ControlClassMenuItem toSelect = null;
+		ControlClassMenuItem[] controlTypeControlClasses = new ControlClassMenuItem[ControlType.BETA_SUPPORTED.length];
+		ControlClassMenuItem toSelect = null;
 		for (int i = 0; i < controlTypeControlClasses.length; i++) {
 			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
 			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
-			controlTypeControlClasses[i] = new ControlClassMenuButton.ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
+			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
 			controlClass.getUserData().put(KEY_MENU_ITEM, controlTypeControlClasses[i]);
 			if (lookup.controlType == ControlType.STATIC) {
@@ -101,9 +103,9 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		}
 		final ControlClassMenuButton baseControlMenuButton = new ControlClassMenuButton(
 				false, "", null,
-				new ControlClassMenuButton.ControlClassGroupMenu(Lang.ApplicationBundle().getString("Popups.NewControl.base_types"), controlTypeControlClasses),
-				new ControlClassMenuButton.ControlClassGroupMenu(
-						Lang.ApplicationBundle().getString("Popups.NewControl.custom_controls"),
+				new ControlClassGroupMenu(Lang.ApplicationBundle().getString("Popups.NewCustomControl.base_types"), controlTypeControlClasses),
+				new ControlClassGroupMenu(
+						Lang.ApplicationBundle().getString("Popups.NewCustomControl.custom_controls"),
 						getCustomControlsItems()
 				)
 		);
@@ -116,7 +118,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 		baseControlMenuButton.chooseItem(toSelect);
 
-		lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewControl.base_control"), baseControlMenuButton);
+		lblBaseControl = new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.base_control"), baseControlMenuButton);
 		lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
 		hboxHeader.getChildren().add(lblBaseControl);
 
@@ -125,12 +127,12 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		final HBox hboxBody = new HBox(10);
 		VBox.setVgrow(hboxBody, Priority.ALWAYS);
 
-		final VBox vboxProperties = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.properties")), stackPaneProperties);
+		final VBox vboxProperties = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.properties")), stackPaneProperties);
 		VBox.setVgrow(vboxProperties, Priority.ALWAYS);
 		VBox.setVgrow(stackPaneProperties, Priority.ALWAYS);
 		hboxBody.getChildren().add(vboxProperties);
 
-		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.preview_sample")), taPreviewSample);
+		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.preview_sample")), taPreviewSample);
 		taPreviewSample.setEditable(false);
 		taPreviewSample.setPrefWidth(300d);
 		VBox.setVgrow(taPreviewSample, Priority.ALWAYS);
@@ -145,12 +147,12 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		myStage.sizeToScene();
 	}
 
-	private ControlClassMenuButton.ControlClassMenuItem[] getCustomControlsItems() {
+	private ControlClassMenuItem[] getCustomControlsItems() {
 		ReadOnlyList<CustomControlClass> customControlClasses = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
-		ControlClassMenuButton.ControlClassMenuItem[] items = new ControlClassMenuButton.ControlClassMenuItem[customControlClasses.size()];
+		ControlClassMenuItem[] items = new ControlClassMenuItem[customControlClasses.size()];
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
-			items[i] = new ControlClassMenuButton.ControlClassMenuItem(customControlClass.getControlClass());
+			items[i] = new ControlClassMenuItem(customControlClass.getControlClass());
 			items[i].getValue().getUserData().put(KEY_MENU_ITEM, items[i]);
 			i++;
 		}
@@ -189,7 +191,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 	@Override
 	protected void help() {
-		BrowserUtil.browse(HelpUrls.NEW_CONTROL_POPUP);
+		BrowserUtil.browse(HelpUrls.NEW_CUSTOM_CONTROL_POPUP);
 	}
 
 	private void updatePreview() {

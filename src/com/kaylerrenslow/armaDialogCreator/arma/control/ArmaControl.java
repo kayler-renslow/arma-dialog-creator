@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
@@ -27,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
  <b>NOTE: any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instanceof some extended class because when the project is loaded from .xml
  via {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
+
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControl extends ControlClass implements Control {
@@ -55,7 +57,7 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+	private ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(name, provider);
 		construct(provider, resolution, rendererLookup, env);
 	}
@@ -79,25 +81,25 @@ public class ArmaControl extends ControlClass implements Control {
 	/**
 	 Create a control where the position is to be determined
 
-	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param type control type
+	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
 	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ControlType type, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
-					   @NotNull Env
-							   env) {
+	protected ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
+						  @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
+		checkControlType(type);
 		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
 	}
 
 	/**
 	 Create a control where the position is known
 
+	 @param type type of the control
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param idc control id (-1 if doesn't matter)
-	 @param type type of the control
 	 @param style style of the control
 	 @param x x position (abs region)
 	 @param y y position (abs region)
@@ -107,10 +109,11 @@ public class ArmaControl extends ControlClass implements Control {
 	 @param rendererLookup renderer for the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlType type, @NotNull ControlStyleGroup style,
+	public ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlStyleGroup style,
 					   @NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
 					   @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		this(name, provider, resolution, rendererLookup, env);
+		checkControlType(type);
 		renderer.styleProperty.setDefaultValue(false, style);
 		renderer.xProperty.setDefaultValue(false, x);
 		renderer.yProperty.setDefaultValue(false, y);
@@ -126,7 +129,13 @@ public class ArmaControl extends ControlClass implements Control {
 		defineH(height);
 	}
 
-	public ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+	private void checkControlType(@NotNull ControlType type) {
+		if (type == ControlType.CONTROLS_GROUP && !(this instanceof ArmaControlGroup)) {
+			throw new IllegalStateException("Do not use ArmaControl for ControlType.CONTROLS_GROUP");
+		}
+	}
+
+	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
 		super(specification);
 		construct(provider, resolution, rendererLookup, env);
 	}
@@ -210,5 +219,38 @@ public class ArmaControl extends ControlClass implements Control {
 	@Override
 	public UpdateListenerGroup<Object> getReRenderUpdateGroup() {
 		return rerenderUpdateGroup;
+	}
+
+	@NotNull
+	public static ArmaControl createControl(@NotNull ControlType type, @NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider,
+											@NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		if (type == ControlType.CONTROLS_GROUP) {
+			return new ArmaControlGroup(specification, provider, resolution, rendererLookup, env);
+		}
+		return new ArmaControl(specification, provider, resolution, rendererLookup, env);
+	}
+
+	@NotNull
+	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlStyleGroup style,
+											@NotNull Expression x, @NotNull Expression y, @NotNull Expression width, @NotNull Expression height, @NotNull ArmaResolution resolution,
+											@NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		if (type == ControlType.CONTROLS_GROUP) {
+			return new ArmaControlGroup(name, idc, x, y, width, height, resolution, rendererLookup, env);
+		}
+		return new ArmaControl(type, name, provider, idc, style, x, y, width, height, resolution, rendererLookup, env);
+	}
+
+	@NotNull
+	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
+											@NotNull RendererLookup rendererLookup, @NotNull Env env) {
+		if (type == ControlType.CONTROLS_GROUP) {
+			return new ArmaControlGroup(name, resolution, rendererLookup, env);
+		}
+		return new ArmaControl(type, name, provider, resolution, rendererLookup, env);
+	}
+
+	@NotNull
+	public static ArmaControl createControl(@NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env) {
+		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env);
 	}
 }
