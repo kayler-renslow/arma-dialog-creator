@@ -1,5 +1,5 @@
 **Added:**
-* comments for custom control classes
+* notifications
 
 **Changed:**
 * none

@@ -95,6 +95,8 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		tabPane.getSelectionModel().selectLast();
 		tabPane.getSelectionModel().selectFirst();
 
+		getSelectedTab().getListView().getSelectionModel().selectFirst();
+
 		myRootElement.getChildren().add(tabPane);
 
 		myStage.sizeToScene();

@@ -29,6 +29,7 @@ public class ADCWindow {
 	private final Stage primaryStage;
 	private VBox rootElement = new VBox();
 	private ADCCanvasView canvasView;
+	private NotificationPane notificationPane;
 	private ADCMenuBar mainMenuBar;
 	private boolean fullscreen = false;
 
@@ -55,8 +56,10 @@ public class ADCWindow {
 		rootElement = new VBox();
 		primaryStage.getScene().setRoot(rootElement);
 		Scene scene = primaryStage.getScene();
-		canvasView = new ADCCanvasView();
+		notificationPane = new NotificationPane();
+		canvasView = new ADCCanvasView(notificationPane);
 		mainMenuBar = new ADCMenuBar();
+
 		rootElement.getChildren().addAll(mainMenuBar, canvasView);
 		rootElement.minWidth(ScreenDimension.SMALLEST.width + CanvasControls.PREFERRED_WIDTH);
 		rootElement.minHeight(ScreenDimension.SMALLEST.height + 50.0);
@@ -70,6 +73,11 @@ public class ADCWindow {
 		scene.setOnKeyReleased(keyEvent);
 		scene.getMnemonics().clear();
 
+	}
+
+	@NotNull
+	public NotificationPane getNotificationPane() {
+		return notificationPane;
 	}
 
 	public void show() {

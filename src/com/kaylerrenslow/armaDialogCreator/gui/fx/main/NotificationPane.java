@@ -8,22 +8,42 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notifications;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
+import javafx.scene.layout.VBox;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
- Implementation varies. Used for debugging/testing specific features
- Created on 09/14/2016. */
-public class TestAction implements EventHandler<ActionEvent> {
-	private static int i = 0;
+ @since 11/16/2016 */
+public class NotificationPane {
+	private final VBox vboxNotifications;
 
-	@Override
-	public void handle(ActionEvent event) {
-		Notifications.showNotification(new Notification("hello" + (i++), "this is a test <a href=\"google.com\">anchor</a>", 6 * 1000));
+	public NotificationPane() {
+		vboxNotifications = new VBox(10);
+		vboxNotifications.setAlignment(Pos.BOTTOM_RIGHT);
+	}
+
+	@NotNull
+	VBox getVboxNotifications() {
+		return vboxNotifications;
+	}
+
+	public void addNotification(@NotNull Notification notification) {
+		vboxNotifications.getChildren().add(notification.getContentRoot());
+		notification.showingProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean showing) {
+				if (!showing) {
+					vboxNotifications.getChildren().remove(notification.getContentRoot());
+				} else {
+					vboxNotifications.getChildren().add(notification.getContentRoot());
+				}
+			}
+		});
 	}
 }

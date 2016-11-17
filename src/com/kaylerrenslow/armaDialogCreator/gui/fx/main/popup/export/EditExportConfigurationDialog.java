@@ -10,7 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.export;
 
-import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
@@ -42,8 +41,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 /**
- Created by Kayler on 10/02/2016.
- */
+ A dialog used for editing a {@link ProjectExportConfiguration}
+
+ @author Kayler
+ @since 10/02/2016 */
 public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 	private enum DisplayType {
@@ -69,10 +70,10 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	/** observer to detect when the macros are being exported to their own file, or being placed in the display's header file */
 	private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
 
-	public EditExportConfigurationDialog(@NotNull Project project) {
+	public EditExportConfigurationDialog(@NotNull ProjectExportConfiguration configuration) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.ExportProject.dialog_title"), true, true, true);
 		btnOk.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ok_button_export"));
-		configuration = project.getExportConfiguration().copy();
+		this.configuration = configuration.copy();
 
 		setStageSize(720, 480);
 		myRootElement.setPadding(new Insets(10d));

@@ -35,7 +35,7 @@ import java.io.IOException;
 public class FileExportAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(ApplicationDataManager.getInstance().getCurrentProject());
+		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(ApplicationDataManager.getInstance().getCurrentProject().getExportConfiguration());
 		dialog.show();
 		if (dialog.getConfiguration() == null) {
 			return;

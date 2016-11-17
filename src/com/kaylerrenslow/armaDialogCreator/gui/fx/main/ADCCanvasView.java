@@ -33,6 +33,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,14 +56,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private boolean selectFromTreeView = false;
 	private ArmaDisplay display;
 
-	ADCCanvasView() {
+	ADCCanvasView(@NotNull NotificationPane notificationPane) {
 		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		canvasControls = new CanvasControls(this);
 
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
 		initializeUICanvasEditor(display);
 
-		this.getChildren().addAll(uiCanvasEditor, canvasControls);
+		final StackPane stackPane = new StackPane(uiCanvasEditor, notificationPane.getVboxNotifications());
+		notificationPane.getVboxNotifications().setMouseTransparent(true);
+
+
+		this.getChildren().addAll(stackPane, canvasControls);
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
 
 		setOnMouseMoved(new CanvasViewMouseEvent(this));

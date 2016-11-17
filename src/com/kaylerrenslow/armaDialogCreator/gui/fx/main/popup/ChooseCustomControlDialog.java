@@ -96,7 +96,6 @@ public class ChooseCustomControlDialog extends ChooseItemPopup<CustomControlClas
 			Label lblComment = new Label(Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.Category.All.comment"));
 			lblComment.setAlignment(Pos.TOP_CENTER);
 
-			//			lblComment.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, Font.getDefault().getSize()));
 			VBox vbox = new VBox(5, lblComment, stackPaneComment);
 			VBox.setVgrow(stackPaneComment, Priority.ALWAYS);
 			stackPaneComment.setAlignment(Pos.TOP_CENTER);
