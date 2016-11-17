@@ -40,6 +40,7 @@ import java.util.List;
 
 /**
  A project loader for save-verison='1'
+
  @author Kayler
  @since 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
@@ -144,11 +145,25 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private void loadCustomControlClassRegistry() throws IOException {
-		List<Element> customControlClassElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "custom-control-classes");
-		for (Element customControlClassesGroup : customControlClassElementGroups) {
-			List<ControlClassSpecification> specs = ProjectXmlUtil.loadControlClassSpecifications(customControlClassesGroup, dataContext, this.loader);
-			for (ControlClassSpecification spec : specs) {
-				project.getCustomControlClassRegistry().addControlClass(spec);
+		final String customControls = "custom-controls";
+		final String customControl = "custom-control";
+		final String comment = "comment";
+		final String classSpec = "class-spec";
+		List<Element> customControlsElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), customControls);
+		for (Element customControlClassesGroup : customControlsElementGroups) {
+			List<Element> customControlElements = XmlUtil.getChildElementsWithTagName(customControlClassesGroup, customControl);
+			for (Element customControlElement : customControlElements) {
+				List<Element> controlClassSpecs = XmlUtil.getChildElementsWithTagName(customControlElement, classSpec);
+				if (controlClassSpecs.size() <= 0) {
+					continue;
+				}
+				ControlClassSpecification spec = ProjectXmlUtil.loadControlClassSpecification(controlClassSpecs.get(0), dataContext, this.loader);
+				CustomControlClass customControlClass = new CustomControlClass(spec);
+				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
+				if (commentElements.size() > 0) {
+					customControlClass.setComment(XmlUtil.getImmediateTextContent(commentElements.get(0)));
+				}
+				project.getCustomControlClassRegistry().addControlClass(customControlClass);
 			}
 		}
 	}
@@ -156,14 +171,18 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private void loadMacroRegistry() {
 		List<Element> macrosGroupElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "macros");
 		List<Element> macroElements;
+		final String macro = "macro";
+		final String key = "key";
+		final String propertyTypeId = "property-type-id";
+		final String comment = "comment";
 		for (Element macrosGroupElement : macrosGroupElements) {
-			macroElements = XmlUtil.getChildElementsWithTagName(macrosGroupElement, "macro");
+			macroElements = XmlUtil.getChildElementsWithTagName(macrosGroupElement, macro);
 			for (Element macroElement : macroElements) {
-				String key = macroElement.getAttribute("key");
-				String propertyTypeAttr = macroElement.getAttribute("property-type-id");
-				String comment = macroElement.getAttribute("comment");
-				if (key.length() == 0 || propertyTypeAttr.length() == 0) {
-					addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_macro_key_or_type_f"), key, propertyTypeAttr)));
+				String keyAttr = macroElement.getAttribute(key);
+				String propertyTypeAttr = macroElement.getAttribute(propertyTypeId);
+				String commentAttr = macroElement.getAttribute(comment);
+				if (keyAttr.length() == 0 || propertyTypeAttr.length() == 0) {
+					addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_macro_key_or_type_f"), keyAttr, propertyTypeAttr)));
 					continue;
 				}
 				PropertyType propertyType;
@@ -177,9 +196,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				if (value == null) {
 					continue;
 				}
-				Macro<?> macro = new Macro<>(key, value, propertyType);
-				project.getMacroRegistry().getMacros().add(macro);
-				macro.setComment(comment);
+				Macro<?> macroObj = new Macro<>(keyAttr, value, propertyType);
+				project.getMacroRegistry().getMacros().add(macroObj);
+				macroObj.setComment(commentAttr);
 			}
 		}
 
@@ -257,7 +276,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		for (Element controlElement : tagElements) {
 			switch (controlElement.getTagName()) {
 				case "control": {
-					control = getControl(controlElement, false, macros);
+					control = getControl(controlElement, macros);
 					if (control == null) {
 						return controls;
 					}
@@ -266,7 +285,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					break;
 				}
 				case "control-group": {
-					control = getControl(controlElement, true, macros);
+					control = getControl(controlElement, macros);
 					if (control == null) {
 						return controls;
 					}
@@ -295,7 +314,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return controls;
 	}
 
-	private ArmaControl getControl(Element controlElement, boolean isControlGroup, List<Macro> macros) {
+	private ArmaControl getControl(Element controlElement, List<Macro> macros) {
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
 			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.missing_control_name"), controlElement.getTextContent())));
@@ -418,7 +437,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			if (match != null) {
 				setMyExtend.extendControlClass(match);
 			} else {
-				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class"), controlClassName, setMyExtend.getClassName())));
+				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
 			}
 		}
 	}

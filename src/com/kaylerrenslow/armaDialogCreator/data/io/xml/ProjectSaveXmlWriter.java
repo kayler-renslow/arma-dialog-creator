@@ -81,10 +81,19 @@ public class ProjectSaveXmlWriter {
 	}
 
 	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull CustomControlClassRegistry registry) throws IOException {
-		String customControlClasses = "custom-control-classes";
+		String customControlClasses = "custom-controls";
 		stm.writeBeginTag(customControlClasses);
+		final String customControl = "custom-control";
+		final String comment = "comment";
 		for (CustomControlClass customClass : registry.getControlClassList()) {
+			stm.writeBeginTag(customControl);
 			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.getSpecification());
+			if (customClass.getComment() != null) {
+				stm.writeBeginTag(comment);
+				stm.write(customClass.getComment());
+				stm.writeCloseTag(comment);
+			}
+			stm.writeCloseTag(customControl);
 		}
 		stm.writeCloseTag(customControlClasses);
 	}

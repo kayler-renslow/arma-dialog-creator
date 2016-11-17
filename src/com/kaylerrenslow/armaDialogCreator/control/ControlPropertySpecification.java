@@ -56,19 +56,19 @@ public class ControlPropertySpecification {
 		this.usingCustomData = property.isCustomData();
 	}
 
-	protected void setCustomData(@Nullable Object customData) {
+	public void setCustomData(@Nullable Object customData) {
 		this.customData = customData;
 	}
 
-	protected void setUsingCustomData(boolean usingCustomData) {
+	public void setUsingCustomData(boolean usingCustomData) {
 		this.usingCustomData = usingCustomData;
 	}
 
-	protected void setValue(@Nullable SerializableValue value) {
+	public void setValue(@Nullable SerializableValue value) {
 		this.value = value;
 	}
 
-	protected void setMacroKey(@Nullable String macroKey) {
+	public void setMacroKey(@Nullable String macroKey) {
 		this.macroKey = macroKey;
 	}
 

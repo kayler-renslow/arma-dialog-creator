@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -56,6 +57,7 @@ public class ProjectXmlUtil {
 		String extend = classSpecElement.getAttribute("extend");
 		ControlPropertySpecification[] requiredProperties = ControlPropertySpecification.EMPTY;
 		ControlPropertySpecification[] optionalProperties = ControlPropertySpecification.EMPTY;
+		ControlPropertySpecification[] overriddenProperties = ControlPropertySpecification.EMPTY;
 		ControlClassSpecification[] requiredClasses = ControlClassSpecification.EMPTY;
 		ControlClassSpecification[] optionalClasses = ControlClassSpecification.EMPTY;
 
@@ -73,6 +75,13 @@ public class ProjectXmlUtil {
 			optionalProperties = loadPropertyArray(context, recorder, controlProperty, optionalPropertyElementGroups.get(0));
 		}
 
+		//overridden control properties
+		List<Element> overriddenPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "overridden-properties");
+		if (overriddenPropertyElementGroups.size() > 0) {
+			overriddenProperties = loadPropertyArray(context, recorder, controlProperty, overriddenPropertyElementGroups.get(0));
+		}
+
+
 		//required sub classes
 		List<Element> requiredClassElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-classes");
 		if (requiredClassElementGroups.size() > 0) {
@@ -88,6 +97,7 @@ public class ProjectXmlUtil {
 		}
 
 		ControlClassSpecification specification = new ControlClassSpecification(className, requiredProperties, optionalProperties, requiredClasses, optionalClasses);
+		Collections.addAll(specification.getOverriddenProperties(), overriddenProperties);
 		specification.setExtendClass(extend);
 
 		return specification;
@@ -102,8 +112,11 @@ public class ProjectXmlUtil {
 		for (Element propertyElement : propertyElements) {
 			propertiesArray[i++] = loadControlProperty(propertyElement, context, recorder);
 		}
+		final String lookupId = "lookup-id";
+		final String macroKey = "macro-key";
 		for (Element missingPropertyElement : missingPropertyElements) {
-			String idAttr = missingPropertyElement.getAttribute("lookup-id");
+			String idAttr = missingPropertyElement.getAttribute(lookupId);
+			String macroId = missingPropertyElement.getAttribute(macroKey);
 			ControlPropertyLookup lookup;
 			try {
 				int id = Integer.parseInt(idAttr);
@@ -114,7 +127,12 @@ public class ProjectXmlUtil {
 				));
 				return ControlPropertySpecification.EMPTY;
 			}
-			propertiesArray[i++] = new ControlPropertySpecification(lookup);
+
+			ControlPropertySpecification newSpec = new ControlPropertySpecification(lookup);
+			if (macroId.length() > 0) {
+				newSpec.setMacroKey(macroId);
+			}
+			propertiesArray[i++] = newSpec;
 		}
 		return propertiesArray;
 	}
@@ -145,8 +163,8 @@ public class ProjectXmlUtil {
 			stm.writeCloseTag(requiredProperties);
 		}
 
+		//optional control properties
 		if (specification.getOptionalProperties().length > 0) {
-			//optional control properties
 			final String optionalProperties = "optional-properties";
 			stm.writeBeginTag(optionalProperties);
 			for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
@@ -157,6 +175,20 @@ public class ProjectXmlUtil {
 				}
 			}
 			stm.writeCloseTag(optionalProperties);
+		}
+
+		//overridden properties
+		if (specification.getOverriddenProperties().size() > 0) {
+			final String overriddenProperties = "overridden-properties";
+			stm.writeBeginTag(overriddenProperties);
+			for (ControlPropertySpecification property : specification.getOverriddenProperties()) {
+				if (property.getValue() == null) {
+					writeMissingControlPropertyValue(stm, property);
+				} else {
+					writeControlProperty(stm, property.constructNewControlProperty());
+				}
+			}
+			stm.writeCloseTag(overriddenProperties);
 		}
 
 		//required sub classes
@@ -183,7 +215,11 @@ public class ProjectXmlUtil {
 	}
 
 	private static void writeMissingControlPropertyValue(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification property) throws IOException {
-		stm.write("<undefined lookup-id='" + property.getLookup().getPropertyId() + "'/>");
+		stm.write("<undefined lookup-id='" + property.getLookup().getPropertyId() + "'");
+		if (property.getMacroKey() != null) {
+			stm.write(" macro-key='" + property.getMacroKey() + "'");
+		}
+		stm.write("/>");
 	}
 
 

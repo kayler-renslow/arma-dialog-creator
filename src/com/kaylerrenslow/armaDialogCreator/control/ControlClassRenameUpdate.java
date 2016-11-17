@@ -23,6 +23,11 @@ public class ControlClassRenameUpdate implements ControlClassUpdate {
 	private final String oldName;
 	private final String newName;
 
+	/**
+	 @param updated the updated {@link ControlClass}
+	 @param oldName the old class name
+	 @param newName the new class name
+	 */
 	public ControlClassRenameUpdate(@NotNull ControlClass updated, @NotNull String oldName, @NotNull String newName) {
 		this.updated = updated;
 		this.oldName = oldName;

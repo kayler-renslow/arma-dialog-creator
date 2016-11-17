@@ -14,14 +14,21 @@ import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ChooseItemPopup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 11/13/2016.
- */
+ This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry}.
+
+ @author Kayler
+ @since 11/13/2016 */
 public class ChooseCustomControlDialog extends ChooseItemPopup<CustomControlClass> {
 	private static final ItemCategory<CustomControlClass>[] categories = new ControlClassCategory[]{new ControlClassCategory()};
 
@@ -75,13 +82,37 @@ public class ChooseCustomControlDialog extends ChooseItemPopup<CustomControlClas
 		}
 	}
 
-	private static class CustomControlCategoryNode extends VBox {
+	private static class CustomControlCategoryNode extends StackPane {
+
+		private final TextArea taComment = new TextArea();
+		private final Label lblNoComment = new Label(Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.Category.All.no_comment"));
+		private final StackPane stackPaneComment = new StackPane();
+
 		public CustomControlCategoryNode() {
-			super(5);
+			setAlignment(Pos.TOP_CENTER);
+
+			taComment.setEditable(false);
+
+			Label lblComment = new Label(Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.Category.All.comment"));
+			lblComment.setAlignment(Pos.TOP_CENTER);
+
+			//			lblComment.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, Font.getDefault().getSize()));
+			VBox vbox = new VBox(5, lblComment, stackPaneComment);
+			VBox.setVgrow(stackPaneComment, Priority.ALWAYS);
+			stackPaneComment.setAlignment(Pos.TOP_CENTER);
+			vbox.setAlignment(Pos.TOP_CENTER);
+			vbox.setFillWidth(true);
+			getChildren().add(vbox);
 		}
 
 		public void setToControlClass(CustomControlClass controlClass) {
-
+			stackPaneComment.getChildren().clear();
+			if (controlClass.getComment() == null) {
+				stackPaneComment.getChildren().add(lblNoComment);
+			} else {
+				stackPaneComment.getChildren().add(taComment);
+				taComment.setText(controlClass.getComment());
+			}
 		}
 	}
 }

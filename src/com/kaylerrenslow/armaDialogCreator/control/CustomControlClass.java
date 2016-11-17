@@ -12,9 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  A custom control class has two things: a specification and a implementation. The specification, provided by a {@link ControlClassSpecification} instance, is a way to construct the implementation,
@@ -27,7 +26,7 @@ public class CustomControlClass {
 	private ControlClassSpecification specification;
 	private ControlClass controlClass;
 	private final DataContext programData = new DataContext();
-
+	private String comment;
 
 	/**
 	 Construct a new custom control class with the given {@link ControlClass} instance. The given instance will be the underlying instance for {@link #getControlClass()} and a new
@@ -61,15 +60,33 @@ public class CustomControlClass {
 	}
 
 	private void loadControlClassListeners() {
-		controlClass.getClassNameObserver().addValueListener(new ValueListener<String>() {
+		controlClass.getControlClassUpdateGroup().addListener(new UpdateListener<ControlClassUpdate>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-				specification.setClassName(newValue);
+			public void update(ControlClassUpdate data) {
+				if (data instanceof ControlClassRenameUpdate) {
+					ControlClassRenameUpdate update = (ControlClassRenameUpdate) data;
+					specification.setClassName(update.getNewName());
+				} else if (data instanceof ControlClassPropertyUpdate) {
+					update(((ControlClassPropertyUpdate) data).getPropertyUpdate());
+				} else if (data instanceof ControlClassOverridePropertyUpdate) {
+					ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
+					if (update.wasAdded()) {
+						specification.getOverriddenProperties().add(new ControlPropertySpecification(update.getOveridden()));
+					} else {
+						ControlPropertySpecification propertySpecification = specification.findOverridenProperty(update.getOveridden().getPropertyLookup());
+						if (propertySpecification != null) {
+							specification.getOverriddenProperties().remove(propertySpecification);
+						}
+					}
+				} else if (data instanceof ControlClassExtendUpdate) {
+					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
+					specification.setExtendClass(update.getControlClass().getClassName());
+				} else {
+					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control class update:" + data);
+				}
 			}
-		});
-		controlClass.getPropertyUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
-			@Override
-			public void update(ControlPropertyUpdate data) {
+
+			private void update(ControlPropertyUpdate data) {
 				ControlPropertySpecification propertySpec = specification.findProperty(data.getControlProperty().getPropertyLookup());
 				if (data instanceof ControlPropertyValueUpdate) {
 					ControlPropertyValueUpdate update = (ControlPropertyValueUpdate) data;
@@ -86,6 +103,20 @@ public class CustomControlClass {
 				}
 			}
 		});
+
+	}
+
+	/** Some information provided by the user about the custom control */
+	@Nullable
+	public String getComment() {
+		return comment;
+	}
+
+	/**
+	 @param comment information about the custom control
+	 */
+	public void setComment(@Nullable String comment) {
+		this.comment = comment;
 	}
 
 	@NotNull

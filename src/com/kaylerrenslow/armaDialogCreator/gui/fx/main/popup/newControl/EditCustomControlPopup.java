@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyUpdate;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassUpdate;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
@@ -26,31 +26,32 @@ import java.util.LinkedList;
  @since 11/14/2016. */
 public class EditCustomControlPopup extends NewCustomControlPopup {
 
-	private final ControlClass duplicate;
 	private final CustomControlClass toEdit;
-	private final LinkedList<ControlPropertyUpdate> updates = new LinkedList<>();
+	private final LinkedList<ControlClassUpdate> updates = new LinkedList<>();
 
 	public EditCustomControlPopup(@NotNull CustomControlClass toEdit) {
 		this.toEdit = toEdit;
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.EditCustomControl.popup_title"));
 
-		duplicate = toEdit.getSpecification().constructNewControlClass();
-		duplicate.getPropertyUpdateGroup().addListener(new UpdateListener<ControlPropertyUpdate>() {
+		ControlClass duplicate = toEdit.getSpecification().constructNewControlClass();
+		duplicate.getControlClassUpdateGroup().addListener(new UpdateListener<ControlClassUpdate>() {
 			@Override
-			public void update(ControlPropertyUpdate data) {
+			public void update(ControlClassUpdate data) {
 				updates.add(data);
 			}
 		});
+
 		setToControlClass(duplicate);
+		getTaComment().setText(toEdit.getComment());
 		hideBaseControlMenuButton(true);
 	}
 
 	@Override
 	protected void ok() {
-		for (ControlPropertyUpdate update : updates) {
-			toEdit.getControlClass().getPropertyUpdateGroup().update(update);
+		for (ControlClassUpdate update : updates) {
+			toEdit.getControlClass().getControlClassUpdateGroup().update(update);
 		}
-		toEdit.getSpecification().setClassName(duplicate.getClassName());
+		toEdit.setComment(getTaComment().getText());
 		close();
 	}
 

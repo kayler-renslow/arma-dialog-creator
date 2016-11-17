@@ -27,19 +27,19 @@ import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.ContentDisplay;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,6 +56,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	private final TextArea taPreviewSample = new TextArea();
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
 	private final Label lblBaseControl;
+	private final TextArea taComment = new TextArea();
 
 	private ControlPropertiesEditorPane editorPane;
 
@@ -132,12 +133,31 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		VBox.setVgrow(stackPaneProperties, Priority.ALWAYS);
 		hboxBody.getChildren().add(vboxProperties);
 
+		final VBox vboxComment = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.comment")), taComment);
+		vboxComment.setFillWidth(true);
+		VBox.setVgrow(taComment, Priority.ALWAYS);
+		VBox.setVgrow(vboxComment, Priority.ALWAYS);
+		taComment.focusedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
+				if (!focused) {
+					updatePreview();
+				}
+			}
+		});
+
 		final VBox vboxPreview = new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.NewCustomControl.preview_sample")), taPreviewSample);
 		taPreviewSample.setEditable(false);
-		taPreviewSample.setPrefWidth(300d);
+		vboxPreview.setFillWidth(true);
 		VBox.setVgrow(taPreviewSample, Priority.ALWAYS);
 		VBox.setVgrow(vboxPreview, Priority.ALWAYS);
-		hboxBody.getChildren().add(vboxPreview);
+
+		final SplitPane splitPane = new SplitPane(vboxComment, vboxPreview);
+		splitPane.setStyle("-fx-background-color:transparent;"); //remove border
+		splitPane.setPrefWidth(300d);
+		splitPane.setOrientation(Orientation.VERTICAL);
+
+		hboxBody.getChildren().add(splitPane);
 
 		for (Node n : hboxBody.getChildren()) {
 			HBox.setHgrow(n, Priority.ALWAYS);
@@ -181,10 +201,26 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		inClassName.setValue(controlClass.getClassName());
 	}
 
+	@NotNull
+	protected InputField<IdentifierChecker, String> getInClassName() {
+		return inClassName;
+	}
+
+	@NotNull
+	protected TextArea getTaComment() {
+		return taComment;
+	}
+
+	@Nullable
+	protected ControlPropertiesEditorPane getEditorPane() {
+		return editorPane;
+	}
 
 	@Override
 	protected void ok() {
-		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(editorPane.getControlClass());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
+		customControlClass.setComment(taComment.getText());
+		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(customControlClass);
 
 		super.ok();
 	}
@@ -201,6 +237,11 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	private String getPreviewText() {
 		ByteArrayOutputStream stream = new ByteArrayOutputStream(128);
 		try {
+			if (getTaComment().getText() != null && getTaComment().getText().length() > 0) {
+				stream.write("/*\n".getBytes());
+				stream.write(getTaComment().getText().getBytes());
+				stream.write("\n*/\n".getBytes());
+			}
 			ProjectExporter.exportControlClass(ApplicationDataManager.getInstance().getCurrentProject().getExportConfiguration(), editorPane.getControlClass(), stream);
 			stream.close();
 		} catch (IOException e) {

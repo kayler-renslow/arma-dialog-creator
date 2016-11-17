@@ -23,14 +23,13 @@ import java.util.List;
 /**
  Base class for ArmaControl that may or may not be a control (could be missing properties like style or type, which are required for all controls)<br>
  This class is useful for creating base control classes and not having to type a bunch of redundant information.
+
  @author Kayler
  @since 05/23/2016. */
 public class ControlClass {
 	public static final ControlClass[] EMPTY = new ControlClass[0];
 
 	private final ControlClassRequirementSpecification specProvider;
-	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
-
 
 	private final List<ControlProperty> requiredProperties = new LinkedList<>();
 	private final List<ControlProperty> optionalProperties = new LinkedList<>();
@@ -50,6 +49,7 @@ public class ControlClass {
 	private final DataContext userData = new DataContext();
 
 	private final ValueObserver<String> classNameObserver = new ValueObserver<>(null);
+	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
@@ -116,10 +116,11 @@ public class ControlClass {
 		initializeListeners();
 	}
 
-	public void setClassName(String className) {
+	public void setClassName(@NotNull String className) {
 		classNameObserver.updateValue(className);
 	}
 
+	@NotNull
 	public String getClassName() {
 		return classNameObserver.getValue();
 	}
@@ -142,7 +143,7 @@ public class ControlClass {
 	}
 
 	@NotNull
-	public final ValueObserver<ControlClass> getExtendClassObserver(){
+	public final ValueObserver<ControlClass> getExtendClassObserver() {
 		return extendClassObserver;
 	}
 
@@ -269,6 +270,7 @@ public class ControlClass {
 		}
 		ControlProperty newProp = new ControlProperty(toOverride.getPropertyLookup(), value);
 		overrideProperties.add(newProp);
+		controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, newProp, true));
 	}
 
 	/** Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen */
@@ -277,8 +279,10 @@ public class ControlClass {
 		while (i < overrideProperties.size()) {
 			if (overrideProperties.get(i).getPropertyLookup() == property) {
 				overrideProperties.remove(i);
-				break;
+				controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, overrideProperties.get(i), false));
+				return;
 			}
+			i++;
 		}
 	}
 
@@ -422,7 +426,7 @@ public class ControlClass {
 	 <li>{@link #removeOverrideProperty(ControlPropertyLookup)}</li>
 	 </ul>
 	 */
-	public final UpdateListenerGroup<ControlClassUpdate> getControlClassUpdateGroup(){
+	public final UpdateListenerGroup<ControlClassUpdate> getControlClassUpdateGroup() {
 		return controlClassUpdateGroup;
 	}
 

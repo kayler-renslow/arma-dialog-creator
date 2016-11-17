@@ -15,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  Used when {@link ControlClass#extendControlClass(ControlClass)} is invoked
+
  @author Kayler
  @since 11/16/16 */
 public class ControlClassExtendUpdate implements ControlClassUpdate {
@@ -22,6 +23,11 @@ public class ControlClassExtendUpdate implements ControlClassUpdate {
 	private final ControlClass oldValue;
 	private final ControlClass newValue;
 
+	/**
+	 @param controlClass {@link ControlClass} that was updated
+	 @param oldValue the {@link ControlClass} the old value from {@link ControlClass#getExtendClass()}
+	 @param newValue the {@link ControlClass} the newly extended {@link ControlClass}
+	 */
 	public ControlClassExtendUpdate(@NotNull ControlClass controlClass, @Nullable ControlClass oldValue, @Nullable ControlClass newValue) {
 		this.controlClass = controlClass;
 		this.oldValue = oldValue;
@@ -33,12 +39,14 @@ public class ControlClassExtendUpdate implements ControlClassUpdate {
 		return controlClass;
 	}
 
-	@NotNull
+	/** The {@link ControlClass} the old value from {@link ControlClass#getExtendClass()} */
+	@Nullable
 	public ControlClass getOldValue() {
 		return oldValue;
 	}
 
-	@NotNull
+	/** The {@link ControlClass} the old value from {@link ControlClass#getExtendClass()} */
+	@Nullable
 	public ControlClass getNewValue() {
 		return newValue;
 	}

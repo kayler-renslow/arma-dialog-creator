@@ -42,6 +42,10 @@ public class CustomControlClassRegistry {
 		controlClassList.add(new CustomControlClass(controlClass));
 	}
 
+	public void addControlClass(@NotNull CustomControlClass controlClass) {
+		controlClassList.add(controlClass);
+	}
+
 	/** Will get the custom control class by the given name, or null if nothing could be matched */
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
@@ -53,7 +57,7 @@ public class CustomControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClass controlClass) {
-		controlClassList.add(new CustomControlClass(controlClass));
+		addControlClass(new CustomControlClass(controlClass));
 	}
 
 	public void removeControlClass(@NotNull CustomControlClass controlClass) {

@@ -13,11 +13,13 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  @author Kayler
- @since 11/12/2016.
  @see CustomControlClass
- */
+ @since 11/12/2016. */
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
 	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
 
@@ -27,6 +29,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private final ControlClassSpecification[] requiredSubClasses;
 	private final ControlClassSpecification[] optionalSubClasses;
 	private final ControlPropertyLookup[] requiredPropertiesLookup, optionalPropertiesLookup;
+	private final List<ControlPropertySpecification> overriddenProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 
 	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties,
@@ -133,6 +136,27 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	@Override
 	public ControlPropertyLookup[] getOptionalProperties() {
 		return optionalPropertiesLookup;
+	}
+
+	@NotNull
+	public List<ControlPropertySpecification> getOverriddenProperties() {
+		return overriddenProperties;
+	}
+
+
+	/**
+	 Get a {@link ControlPropertySpecification} with the given lookup
+
+	 @return the matched instance, or null if nothing could be matched
+	 */
+	@Nullable
+	public ControlPropertySpecification findOverridenProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		for (ControlPropertySpecification propertySpecification : overriddenProperties) {
+			if (propertySpecification.getLookup() == lookup) {
+				return propertySpecification;
+			}
+		}
+		return null;
 	}
 
 	/** Just invokes {@link ControlClass(ControlClassSpecification)} with this instance provided */

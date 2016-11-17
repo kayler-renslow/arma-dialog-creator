@@ -16,7 +16,6 @@ import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ADCMustRestartDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.*;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -96,6 +95,7 @@ public class ADCProjectInitWindow extends StageDialog<VBox> {
 		myStage.setWidth(720d);
 		myStage.setHeight(400d);
 		myStage.setResizable(false);
+		footer.getBtnOk().setMinWidth(150);
 
 		//update ok button's text
 		tabPane.getSelectionModel().selectLast();
