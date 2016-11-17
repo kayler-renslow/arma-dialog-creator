@@ -69,9 +69,16 @@ public class Notifications {
 						}
 					});
 				}
-				try {
-					Thread.sleep(20);
-				} catch (Exception e) {
+				if (showingNotifications.size() == 0) {
+					try {
+						Thread.sleep(2000);
+					} catch (Exception e) {
+					}
+				} else {
+					try {
+						Thread.sleep(20);
+					} catch (Exception e) {
+					}
 				}
 			}
 
