@@ -59,7 +59,9 @@ public class FileChooserPane extends HBox {
 					case DIRECTORY: {
 						DirectoryChooser chooser = new DirectoryChooser();
 						chooser.setTitle(fileChooserPopupTitle);
-						chooser.setInitialDirectory(defaultChooserPopupLocation);
+						if (defaultChooserPopupLocation.exists()) {
+							chooser.setInitialDirectory(defaultChooserPopupLocation);
+						}
 						File f = chooser.showDialog(chooserPopupWindowOwner);
 						if (f == null) {
 							return;
@@ -71,7 +73,9 @@ public class FileChooserPane extends HBox {
 						FileChooser chooser = new FileChooser();
 						chooser.setTitle(fileChooserPopupTitle);
 						chooser.getExtensionFilters().addAll(filters);
-						chooser.setInitialDirectory(defaultChooserPopupLocation);
+						if (defaultChooserPopupLocation.exists()) {
+							chooser.setInitialDirectory(defaultChooserPopupLocation);
+						}
 						File f = chooser.showOpenDialog(chooserPopupWindowOwner);
 						if (f == null) {
 							return;

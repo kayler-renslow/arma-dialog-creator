@@ -50,6 +50,9 @@ public class ProjectExporter {
 	}
 
 	public void export() throws IOException {
+		if (!configuration.getExportLocation().exists()) {
+			configuration.getExportLocation().mkdirs();
+		}
 		if (!configuration.getExportLocation().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation ('"+configuration.getExportLocation().getPath()+"') is not a directory");
 		}

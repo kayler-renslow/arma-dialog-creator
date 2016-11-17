@@ -13,6 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.export.EditExportConfigurationDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -40,53 +42,57 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 		if (dialog.getConfiguration() == null) {
 			return;
 		}
-		ExportAftermathDialog exportAftermathDialog;
 		try {
 			ProjectExporter.export(dialog.getConfiguration());
-			exportAftermathDialog = new ExportAftermathDialog(dialog.getConfiguration().getExportLocation(), null);
+			File exportDir = dialog.getConfiguration().getExportLocation();
+
+			Notifications.showNotification(
+					new Notification(
+							Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"),
+							String.format(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
+							8 * 1000
+					)
+			);
 		} catch (IOException e) {
-			exportAftermathDialog = new ExportAftermathDialog(null, e);
+			ExportErrorAftermathDialog exportErrorAftermathDialog = new ExportErrorAftermathDialog(e);
+			exportErrorAftermathDialog.show();
 		}
-		exportAftermathDialog.show();
+
 
 	}
 
-	private static class ExportAftermathDialog extends StageDialog<VBox> {
+	private static class ExportErrorAftermathDialog extends StageDialog<VBox> {
 
-		public ExportAftermathDialog(File exportDir, Throwable error) {
+		public ExportErrorAftermathDialog(Throwable error) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), "", false, true, false);
 			myStage.setMinWidth(300d);
 			myStage.setMinHeight(100d);
-			if (error == null) {
-				setTitle(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"));
-				myRootElement.getChildren().add(new Label(String.format(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath())));
-			} else {
-				setTitle(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_failed"));
-				myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_failed")));
-				myRootElement.getChildren().add(new Label(error.getMessage()));
-				final ToggleButton toggleButton = new ToggleButton(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
-				myRootElement.getChildren().add(toggleButton);
 
-				toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
-					final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
-					boolean firstExpansion = true;
+			setTitle(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_failed"));
+			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_failed")));
+			myRootElement.getChildren().add(new Label(error.getMessage()));
+			final ToggleButton toggleButton = new ToggleButton(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+			myRootElement.getChildren().add(toggleButton);
 
-					@Override
-					public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-						if (selected) {
-							toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.hide_error_message"));
-							myRootElement.getChildren().add(taErrorMessage);
-						} else {
-							toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
-							myRootElement.getChildren().remove(taErrorMessage);
-						}
-						if (firstExpansion) {
-							firstExpansion = false;
-							ExportAftermathDialog.this.sizeToScene();
-						}
+			toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
+				boolean firstExpansion = true;
+
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					if (selected) {
+						toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.hide_error_message"));
+						myRootElement.getChildren().add(taErrorMessage);
+					} else {
+						toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+						myRootElement.getChildren().remove(taErrorMessage);
 					}
-				});
-			}
+					if (firstExpansion) {
+						firstExpansion = false;
+						ExportErrorAftermathDialog.this.sizeToScene();
+					}
+				}
+			});
 
 		}
 	}

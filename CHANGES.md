@@ -1,9 +1,9 @@
 **Added:**
-* none
+* project export notification
+* project save notification
 
 **Changed:**
-* updated notification look
-* added close button to notification
+* none
 
 **Fixed:**
 * none

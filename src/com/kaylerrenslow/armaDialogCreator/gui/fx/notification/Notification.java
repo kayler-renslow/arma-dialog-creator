@@ -23,6 +23,8 @@ import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ A {@link Notification} is displayed by {@link Notifications}.
+
  @author Kayler
  @since 11/16/2016 */
 public class Notification {
@@ -30,14 +32,39 @@ public class Notification {
 	private final VBox root = new VBox();
 	private final String notificationTitle;
 	private final String notificationText;
-	private long displayDurationMilliseconds;
 	private final BooleanProperty showProperty = new SimpleBooleanProperty(true);
+	private long displayDurationMilliseconds;
 
+	/**
+	 A non-error notification that will last 10 seconds
+
+	 @param notificationTitle title of notification
+	 @param notificationText body text of notification
+	 */
 	public Notification(@NotNull String notificationTitle, @NotNull String notificationText) {
-		this(notificationTitle, notificationText, 10 * 1000);
+		this(notificationTitle, notificationText, 10 * 1000, false);
 	}
 
+	/**
+	 A non-error notification that will be displayed for the specified amount of milliseconds.
+
+	 @param notificationTitle title of notification
+	 @param notificationText body text of notification
+	 @param displayDurationMilliseconds how many milliseconds the notification should be displayed
+	 */
 	public Notification(@NotNull String notificationTitle, @NotNull String notificationText, long displayDurationMilliseconds) {
+		this(notificationTitle, notificationText, displayDurationMilliseconds, false);
+	}
+
+	/**
+	 A notification that will be displayed for the specified amount of milliseconds. If the notification is an error notification, the header of the notification will be red.
+
+	 @param notificationTitle title of notification
+	 @param notificationText body text of notification
+	 @param displayDurationMilliseconds how many milliseconds the notification should be displayed
+	 @param isErrorNotification true if the notification should have a red header, otherwise the header will be equal to JavaFX css attribute "-fx-accent"
+	 */
+	public Notification(@NotNull String notificationTitle, @NotNull String notificationText, long displayDurationMilliseconds, boolean isErrorNotification) {
 		this.notificationTitle = notificationTitle;
 		this.notificationText = notificationText;
 		this.displayDurationMilliseconds = displayDurationMilliseconds;
@@ -55,7 +82,11 @@ public class Notification {
 		lblTitle.setFont(Font.font(15));
 		lblTitle.setStyle("-fx-text-fill:white");
 		final BorderPane borderPaneTitle = new BorderPane(null, null, btnClose, null, lblTitle);
-		borderPaneTitle.setStyle("-fx-background-color:-fx-accent;");
+		if (isErrorNotification) {
+			borderPaneTitle.setStyle("-fx-background-color:red;");
+		} else {
+			borderPaneTitle.setStyle("-fx-background-color:-fx-accent;");
+		}
 		borderPaneTitle.setPadding(new Insets(5));
 
 		VBox.setVgrow(borderPaneTitle, Priority.NEVER);
@@ -76,10 +107,18 @@ public class Notification {
 
 	}
 
+	/**
+	 @return true if the notification is showing, false if it isn't
+	 */
 	public boolean isShowing() {
 		return showProperty.get();
 	}
 
+	/**
+	 Set whether or not the notification is showing
+
+	 @param showing true if showing, false if not showing
+	 */
 	public void setShowing(boolean showing) {
 		showProperty.setValue(showing);
 	}
