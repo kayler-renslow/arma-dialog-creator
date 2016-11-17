@@ -134,6 +134,17 @@ public class ControlClass {
 		if (controlClass == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
+		if (controlClass == null) {
+
+		} else {
+			controlClass.getControlClassUpdateGroup().addListener(new UpdateListener<ControlClassUpdate>() {
+				@Override
+				public void update(ControlClassUpdate data) {
+					//todo
+				}
+			});
+		}
+
 		extendClassObserver.updateValue(controlClass);
 	}
 

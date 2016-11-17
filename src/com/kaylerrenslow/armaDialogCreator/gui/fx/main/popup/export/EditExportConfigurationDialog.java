@@ -47,21 +47,7 @@ import java.io.File;
  @since 10/02/2016 */
 public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
-	private enum DisplayType {
-		DIALOG(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.dialog")), TITLE(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.title"));
-
-		private final String displayName;
-
-		DisplayType(String displayName) {
-			this.displayName = displayName;
-		}
-
-		public static final DisplayType DEFAULT = DIALOG;
-
-	}
-
 	private boolean cancel = false;
-	private DisplayType selectedDisplayType = DisplayType.DEFAULT;
 
 	private final Insets padding10t = new Insets(10, 0, 10, 0);
 	private final ProjectExportConfiguration configuration;
@@ -110,7 +96,6 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		tabDisplayProperties.setContent(tabRoot);
 
 		/*class name*/
-		final Label lblClassName = new Label("");
 		final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker(), configuration.getExportClassName());
 		final ValueObserver<String> classNameObserver = inputFieldClassName.getValueObserver();
 		classNameObserver.addValueListener(new ValueListener<String>() {
@@ -120,31 +105,8 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 			}
 		});
 		HBox.setHgrow(inputFieldClassName, Priority.ALWAYS);
-		final HBox hboxClassName = new HBox(5, lblClassName, inputFieldClassName);
+		final HBox hboxClassName = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.class_name")), inputFieldClassName);
 		tabRoot.getChildren().add(hboxClassName);
-
-		/*display type*/
-		final Label lblDisplayType = new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.display_type"));
-		final ToggleGroup toggleGroup = new ToggleGroup();
-		final FlowPane flowPaneDisplayType = new FlowPane(Orientation.HORIZONTAL, 5, 10);
-		final HBox hboxDisplayType = new HBox(5, lblDisplayType, flowPaneDisplayType);
-		toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			@Override
-			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-				selectedDisplayType = (DisplayType) newValue.getUserData();
-				lblClassName.setText(String.format(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.class_name_f"), selectedDisplayType.displayName));
-			}
-		});
-		for (DisplayType type : DisplayType.values()) {
-			final RadioButton radioButton = new RadioButton(type.displayName);
-			radioButton.setUserData(type);
-			radioButton.setToggleGroup(toggleGroup);
-			if (type == selectedDisplayType) {
-				radioButton.setSelected(true);
-			}
-			flowPaneDisplayType.getChildren().add(radioButton);
-		}
-		tabRoot.getChildren().add(hboxDisplayType);
 
 		/*display properties*/
 		DisplayPropertiesEditorPane editorPane = new DisplayPropertiesEditorPane(configuration.getProject().getEditingDisplay());

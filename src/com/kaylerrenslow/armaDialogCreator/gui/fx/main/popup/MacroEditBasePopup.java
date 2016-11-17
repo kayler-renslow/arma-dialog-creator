@@ -17,7 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.MacroIdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ValueEditor;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -25,18 +25,15 @@ import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.IndexRange;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
+import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,11 +42,11 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/15/2016. */
-public abstract class MacroEditBasePopup extends StagePopup<VBox> {
+public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	private final Env env;
 	private ValueEditor editor;
 
-	private StackPane stackPaneEditor = new StackPane();
+	private final HBox paneEditor = new HBox();
 
 	private final TextField tfMacroDescription = new TextField();
 	private final InputField<MacroIdentifierChecker, String> inMacroKey = new InputField<>(new MacroIdentifierChecker());
@@ -63,13 +60,12 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
 	public MacroEditBasePopup(Env env) {
-		super(ArmaDialogCreator.getPrimaryStage(), new Stage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.MacroEdit.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.MacroEdit.popup_title"), true, true, true);
 		this.env = env;
-		myRootElement.setPadding(new Insets(10));
-		stackPaneEditor.minWidth(0d);
-		stackPaneEditor.setAlignment(Pos.CENTER_LEFT);
-
-		stackPaneEditor.getChildren().add(lblNoTypeChosen);
+		myStage.initStyle(StageStyle.UTILITY);
+		myStage.setMinWidth(480d);
+		myStage.setWidth(520d);
+		myStage.setHeight(240);
 
 		EventHandler<? super KeyEvent> oldEvent = inMacroKey.getOnKeyReleased();
 		inMacroKey.setOnKeyReleased(new EventHandler<KeyEvent>() {
@@ -96,36 +92,47 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 			@Override
 			public void changed(ObservableValue<? extends PropertyType> observable, PropertyType oldValue, PropertyType selected) {
 				editor = ValueEditor.getEditor(selected, env);
-				stackPaneEditor.getChildren().clear();
-				stackPaneEditor.getChildren().add(editor.getRootNode());
+				paneEditor.getChildren().clear();
+				Node editorNode = editor.getRootNode();
+				paneEditor.getChildren().add(editorNode);
 				if (editor.displayFullWidth()) {
-					HBox.setHgrow(stackPaneEditor, Priority.ALWAYS);
+					HBox.setHgrow(editorNode, Priority.ALWAYS);
 				} else {
-					HBox.setHgrow(stackPaneEditor, Priority.SOMETIMES);
+					HBox.setHgrow(editorNode, Priority.NEVER);
 				}
 			}
 		});
 
-		VBox vbTop = new VBox(5);
-		vbTop.setFillWidth(true);
-		HBox hboxValueEditor = new HBox(new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_value")), stackPaneEditor);
+		final GridPane gridPaneTop = new GridPane();
 
-		vbTop.getChildren().addAll(
-				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_key"), inMacroKey),
-				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_type"), cbMacroType),
-				hboxValueEditor,
-				hbox(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_comment"), tfMacroDescription)
-		);
-		myRootElement.getChildren().add(vbTop);
-		VBox.setVgrow(vbTop, Priority.ALWAYS);
+		final double hgap = 5;
+		final double vgap = 5;
+		gridPaneTop.setHgap(hgap);
+		gridPaneTop.setVgap(vgap);
 
-		myStage.initModality(Modality.APPLICATION_MODAL);
-		myStage.initStyle(StageStyle.UTILITY);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, true));
+		gridPaneTop.addRow(0, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_key")), inMacroKey);
+		gridPaneTop.addRow(1, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_type")), cbMacroType);
+		gridPaneTop.addRow(2, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_value")), paneEditor);
 
-		myStage.setMinWidth(480d);
-		myStage.setWidth(500d);
-		myStage.setHeight(240);
+		RowConstraints constraint = new RowConstraints(-1, -1, Double.MAX_VALUE, Priority.ALWAYS, VPos.CENTER, true);
+		gridPaneTop.getRowConstraints().addAll(constraint, constraint, constraint);
+
+		GridPane.setHgrow(inMacroKey, Priority.ALWAYS);
+		GridPane.setHgrow(tfMacroDescription, Priority.ALWAYS);
+
+		final HBox hboxMacroDescription = new HBox(hgap, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_comment")), tfMacroDescription);
+		HBox.setHgrow(tfMacroDescription, Priority.ALWAYS);
+
+		paneEditor.setAlignment(Pos.CENTER_LEFT);
+		paneEditor.getChildren().add(lblNoTypeChosen);
+		GridPane.setHgrow(paneEditor, Priority.ALWAYS);
+
+		myRootElement.getChildren().add(gridPaneTop);
+		myRootElement.getChildren().add(hboxMacroDescription);
+
+		VBox.setVgrow(gridPaneTop, Priority.SOMETIMES);
+		VBox.setVgrow(hboxMacroDescription, Priority.SOMETIMES);
+
 	}
 
 	@Override
@@ -133,11 +140,6 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 		BrowserUtil.browse(HelpUrls.MACROS);
 	}
 
-	private HBox hbox(String text, Node graphic) {
-		Label lbl = new Label(text);
-		HBox.setHgrow(graphic, Priority.ALWAYS);
-		return new HBox(5, lbl, graphic);
-	}
 
 	/** Return true if all fields have their input set (macro key, editor has valid value, type is set). If at least one input isn't set, will return false and the input will request focus. */
 	protected boolean checkFields() {
@@ -167,8 +169,8 @@ public abstract class MacroEditBasePopup extends StagePopup<VBox> {
 			inMacroKey.clear();
 			cbMacroType.setDisable(false);
 			editor = null;
-			stackPaneEditor.getChildren().clear();
-			stackPaneEditor.getChildren().add(lblNoTypeChosen);
+			paneEditor.getChildren().clear();
+			paneEditor.getChildren().add(lblNoTypeChosen);
 			cbMacroType.setValue(null);
 			return;
 		}

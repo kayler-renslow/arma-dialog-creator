@@ -15,11 +15,16 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ArmaStringC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -32,7 +37,11 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	protected InputField<ArmaStringChecker, String> inSoundName = new InputField<>(new ArmaStringChecker());
 	protected InputField<DoubleChecker, Double> inDb = new InputField<>(new DoubleChecker());
 	protected InputField<DoubleChecker, Double> inPitch = new InputField<>(new DoubleChecker());
-	private FlowPane flowPane = new FlowPane(5, 10, inSoundName, inDb, inPitch);
+	private FlowPane flowPane = new FlowPane(10, 10,
+			createHbox("ValueEditors.SoundValueEditor.sound_name", inSoundName),
+			createHbox("ValueEditors.SoundValueEditor.db", inDb),
+			createHbox("ValueEditors.SoundValueEditor.pitch", inPitch)
+	);
 	
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(flowPane);
@@ -58,6 +67,14 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 				valueObserver.updateValue(createValue());
 			}
 		});
+	}
+
+	private HBox createHbox(String bundleString, Node node) {
+		Label label = new Label(Lang.ApplicationBundle().getString(bundleString));
+		HBox hBox = new HBox(5, label, node);
+		hBox.setAlignment(Pos.CENTER_LEFT);
+		HBox.setHgrow(node, Priority.ALWAYS);
+		return hBox;
 	}
 
 	@Override
@@ -135,5 +152,10 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	@Override
 	public ReadOnlyValueObserver<ASound> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
+	}
+
+	@Override
+	public boolean displayFullWidth() {
+		return true;
 	}
 }

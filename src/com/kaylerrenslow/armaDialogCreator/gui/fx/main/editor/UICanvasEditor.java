@@ -259,7 +259,7 @@ public class UICanvasEditor extends UICanvas {
 				gc.strokeLine(0, centery, getCanvasWidth(), centery);
 			}
 			//draw selection 'shadow'
-			gc.setGlobalAlpha(0.3d);
+			gc.setGlobalAlpha(0.4d);
 			gc.setStroke(selectedBorderColor);
 			int offset = 4 + (control.getRenderer().getBorder() != null ? control.getRenderer().getBorder().getThickness() : 0);
 			Region.fillRectangle(gc, control.getRenderer().getLeftX() - offset, control.getRenderer().getTopY() - offset, control.getRenderer().getRightX() + offset, control.getRenderer().getBottomY() + offset);

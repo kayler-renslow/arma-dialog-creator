@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 	IDD(0, "idd", PropertyType.INT, new String[]{"The unique id to the display."}),
 	MOVING_ENABLE(1, "movingEnable", PropertyType.BOOLEAN, new String[]{"True if the display can be moved with mouse, false otherwise."}),
-	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.BOOLEAN, new String[]{"True if the display will allow user interaction (buttons can be pressed), false otherwise."});
+	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.BOOLEAN, new String[]{"True if the display will allow user interaction (e.g. buttons can be pressed), false otherwise."});
 
 	public static final DisplayPropertyLookup[] EMPTY = new DisplayPropertyLookup[0];
 
