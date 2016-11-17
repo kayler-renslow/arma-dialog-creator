@@ -24,7 +24,15 @@ public class TestAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		Notifications.showNotification(new Notification("hello" + (i++), "this is a test <a href=\"google.com\">anchor</a>", 6 * 1000));
-		Notifications.showNotification(new Notification("hello" + (i++), "this is a test <a href=\"google.com\">anchor</a>", 6 * 1000));
+		if (i % 2 == 0) {
+			Notifications.showNotification(new Notification("hello" + (i++),
+							"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce vestibulum nunc id ligula suscipit, nec rutrum metus lacinia. Nulla vestibulum, orci vitae dapibus elementum, leo.",
+							6 * 1000
+					)
+			);
+		} else {
+			Notifications.showNotification(new Notification("hello" + (i++), "this is a test <a href=\"google.com\">anchor</a>", 6 * 1000));
+
+		}
 	}
 }

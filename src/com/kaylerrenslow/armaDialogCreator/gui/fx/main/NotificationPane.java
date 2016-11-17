@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ public class NotificationPane {
 	public NotificationPane() {
 		vboxNotifications = new VBox(10);
 		vboxNotifications.setAlignment(Pos.BOTTOM_RIGHT);
+		vboxNotifications.setPadding(new Insets(5));
 	}
 
 	@NotNull

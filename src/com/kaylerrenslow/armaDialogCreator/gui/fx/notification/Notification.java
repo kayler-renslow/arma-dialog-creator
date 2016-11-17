@@ -12,7 +12,11 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.notification;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -38,12 +42,19 @@ public class Notification {
 		this.notificationText = notificationText;
 		this.displayDurationMilliseconds = displayDurationMilliseconds;
 
-		root.setStyle("-fx-background-color:-fx-control-inner-background");
+		root.setStyle("-fx-background-color:-fx-control-inner-background;-fx-border-color:black;-fx-border-width:1px;");
 
+		final Button btnClose = new Button("x");
+		btnClose.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				setShowing(false);
+			}
+		});
 		final Label lblTitle = new Label(notificationTitle);
 		lblTitle.setFont(Font.font(15));
 		lblTitle.setStyle("-fx-text-fill:white");
-		final BorderPane borderPaneTitle = new BorderPane(null, null, null, null, lblTitle);
+		final BorderPane borderPaneTitle = new BorderPane(null, null, btnClose, null, lblTitle);
 		borderPaneTitle.setStyle("-fx-background-color:-fx-accent;");
 		borderPaneTitle.setPadding(new Insets(5));
 
@@ -51,12 +62,17 @@ public class Notification {
 		root.getChildren().add(borderPaneTitle);
 
 
-		final StackPane content = new StackPane(new Label(notificationText));
-		content.setPadding(borderPaneTitle.getPadding());
-		root.getChildren().add(content);
+		final Label lblText = new Label(notificationText);
+		lblText.setWrapText(true);
+		final StackPane stackPaneContent = new StackPane(lblText);
+		stackPaneContent.setAlignment(Pos.TOP_LEFT);
+		stackPaneContent.setPadding(borderPaneTitle.getPadding());
+		root.getChildren().add(stackPaneContent);
 
-		root.setMaxWidth(360);
-		root.setMaxHeight(150);
+		final double width = 360;
+
+		root.setPrefWidth(width);
+		root.setMaxWidth(width);
 
 	}
 

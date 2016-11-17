@@ -1,8 +1,9 @@
 **Added:**
-* notifications
+* none
 
 **Changed:**
-* none
+* updated notification look
+* added close button to notification
 
 **Fixed:**
 * none

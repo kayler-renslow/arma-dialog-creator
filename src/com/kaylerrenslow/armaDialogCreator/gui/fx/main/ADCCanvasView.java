@@ -27,6 +27,8 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
+import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
 import javafx.scene.image.Image;
@@ -49,6 +51,7 @@ import java.util.List;
 class ADCCanvasView extends HBox implements CanvasView {
 	private final UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls;
+	private final NotificationPane notificationPane;
 
 	/** True when the treeView selection is being updated from the canvas, false when it isn't */
 	private boolean selectFromCanvas = false;
@@ -57,6 +60,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private ArmaDisplay display;
 
 	ADCCanvasView(@NotNull NotificationPane notificationPane) {
+		this.notificationPane = notificationPane;
 		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		canvasControls = new CanvasControls(this);
 
@@ -238,6 +242,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 			//use this so that when the mouse moves over the canvas and something in canvas controls has focus, the key presses
 			//and mouse events are sent to the canvas rather than the focuses control
 			canvasView.focusToCanvas(event.getTarget() == canvasView.uiCanvasEditor.getCanvas());
+
+			double sceneX = event.getSceneX();
+			double sceneY = event.getSceneY();
+			for (Node node : canvasView.notificationPane.getVboxNotifications().getChildren()) {
+				Point2D point2D = node.sceneToLocal(sceneX, sceneY);
+				if (node.contains(point2D)) {
+					canvasView.notificationPane.getVboxNotifications().setMouseTransparent(false);
+					return;
+				}
+			}
+			canvasView.notificationPane.getVboxNotifications().setMouseTransparent(true);
+
 		}
 	}
 }
