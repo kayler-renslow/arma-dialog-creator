@@ -10,7 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.notification;
 
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -33,8 +32,12 @@ public class Notifications {
 	 Shows the specified {@link Notification}
 
 	 @param notification notification to show
+	 @throws IllegalStateException when {@link #setNotificationPane(NotificationPane)} is not invoked prior to this call
 	 */
 	public static void showNotification(@NotNull Notification notification) {
+		if (INSTANCE.notificationPane == null) {
+			throw new IllegalStateException("notificationPane is not set from setNotificationPane()");
+		}
 		INSTANCE.doShowNotification(notification);
 	}
 
@@ -44,6 +47,14 @@ public class Notifications {
 		return INSTANCE.pastNotificationsReadOnly;
 	}
 
+	/**
+	 Set the {@link NotificationPane} to display the notifications on. This must be invoked before {@link #showNotification(Notification)}.
+
+	 @param notificationPane the pane
+	 */
+	public static void setNotificationPane(@NotNull NotificationPane notificationPane) {
+		INSTANCE.notificationPane = notificationPane;
+	}
 
 	private Notifications() {
 	}
@@ -53,6 +64,7 @@ public class Notifications {
 	private final NotificationsVisibilityTask visibilityTask = new NotificationsVisibilityTask(this);
 	private final LinkedList<NotificationDescriptor> pastNotifications = new LinkedList<>();
 	private final ReadOnlyList<NotificationDescriptor> pastNotificationsReadOnly = new ReadOnlyList<>(pastNotifications);
+	private NotificationPane notificationPane;
 
 	private void doShowNotification(@NotNull Notification notification) {
 		NotificationDescriptor descriptor = new NotificationDescriptor(notification, System.currentTimeMillis());
@@ -63,7 +75,7 @@ public class Notifications {
 			}
 		}
 		showingNotifications.add(descriptor);
-		ArmaDialogCreator.getMainWindow().getNotificationPane().addNotification(notification);
+		notificationPane.addNotification(notification);
 		if (!visibilityTask.isRunning()) {
 			Thread thread = new Thread(visibilityTask);
 			thread.setDaemon(true);

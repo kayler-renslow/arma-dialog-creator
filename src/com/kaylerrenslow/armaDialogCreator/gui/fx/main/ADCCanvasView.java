@@ -22,6 +22,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.NotificationPane;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -67,8 +68,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
 		initializeUICanvasEditor(display);
 
-		final StackPane stackPane = new StackPane(uiCanvasEditor, notificationPane.getVboxNotifications());
-		notificationPane.getVboxNotifications().setMouseTransparent(true);
+		final StackPane stackPane = new StackPane(uiCanvasEditor, notificationPane.getNotificationsPane());
+		notificationPane.getNotificationsPane().setMouseTransparent(true);
 
 
 		this.getChildren().addAll(stackPane, canvasControls);
@@ -245,14 +246,14 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 			double sceneX = event.getSceneX();
 			double sceneY = event.getSceneY();
-			for (Node node : canvasView.notificationPane.getVboxNotifications().getChildren()) {
+			for (Node node : canvasView.notificationPane.getNotificationsPane().getChildren()) {
 				Point2D point2D = node.sceneToLocal(sceneX, sceneY);
 				if (node.contains(point2D)) {
-					canvasView.notificationPane.getVboxNotifications().setMouseTransparent(false);
+					canvasView.notificationPane.getNotificationsPane().setMouseTransparent(false);
 					return;
 				}
 			}
-			canvasView.notificationPane.getVboxNotifications().setMouseTransparent(true);
+			canvasView.notificationPane.getNotificationsPane().setMouseTransparent(true);
 
 		}
 	}
