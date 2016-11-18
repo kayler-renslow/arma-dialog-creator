@@ -144,6 +144,10 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	/** Return true if all fields have their input set (macro key, editor has valid value, type is set). If at least one input isn't set, will return false and the input will request focus. */
 	protected boolean checkFields() {
 		inMacroKey.submitValue();
+		if (editor == null) {
+			beep();
+			return false;
+		}
 		editor.submitCurrentData();
 		if (inMacroKey.getValue() == null) {
 			inMacroKey.requestFocus();

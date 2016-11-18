@@ -161,6 +161,8 @@ public class ApplicationDataManager {
 			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.SaveProject.message")));
 			btnOk.setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
 			btnCancel.setText(Lang.ApplicationBundle().getString("Confirmation.no"));
+
+			myStage.setResizable(false);
 		}
 
 		@Override

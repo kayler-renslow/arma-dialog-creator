@@ -19,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
@@ -35,8 +36,7 @@ import java.util.List;
  @author Kayler
  @since 08/05/2016. */
 public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
-	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"),
-			null);
+	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"), null);
 	private final TextField textField = new TextField();
 	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
 	protected final ValueObserver<ControlStyleGroup> valueObserver = new ValueObserver<>(null);
@@ -66,6 +66,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 		});
 		HBox.setHgrow(textField, Priority.ALWAYS);
 		textField.setEditable(false);
+		setAlignment(Pos.CENTER_LEFT);
 	}
 
 	@Override
@@ -112,6 +113,11 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	@Override
 	public void focusToEditor() {
 		menuButton.requestFocus();
+	}
+
+	@Override
+	public boolean displayFullWidth() {
+		return true;
 	}
 
 	@Override
