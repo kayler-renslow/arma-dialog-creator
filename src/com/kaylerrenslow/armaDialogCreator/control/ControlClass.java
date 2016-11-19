@@ -24,15 +24,15 @@ import java.util.List;
  A {@link ControlClass} is merely a header file (.h) class that is:<br>
  <ol>
  <li>Extend-able via {@link ControlClass#extendControlClass(ControlClass)}</li>
- <li>Required and optional {@link ControlProperty}</li>
- <li>Required and optional nested classes (classes within this class)</li>
+ <li>Required and optional {@link ControlProperty}'s (obtainable via {@link #getRequiredProperties()} and {@link #getOptionalProperties()} respectively).</li>
+ <li>Required and optional nested classes (classes within this class) which can be accessed with {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} respectively.</li>
  </ol>
  <p>
  A required {@link ControlProperty} is a property that is necessary to fill a {@link ControlClassRequirementSpecification}. In other words, those properties' values
  ({@link ControlProperty#getValue()}) should <b>not</b> be null. An optional property is one that can be null.
  </p>
  <p>
- A required nested class is merely a class that should also have it's required properties filled in. An optional nested class
+ A required nested class is merely a class that should also have it's required properties filled in. An optional nested class doesn't need it's required properties to be filled in.
  </p>
 
  @author Kayler
