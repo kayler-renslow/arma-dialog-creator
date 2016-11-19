@@ -28,7 +28,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private final ControlPropertySpecification[] optionalProperties;
 	private final ControlClassSpecification[] requiredNestedClasses;
 	private final ControlClassSpecification[] optionalNestedClasses;
-	private final ControlPropertyLookup[] requiredPropertiesLookup, optionalPropertiesLookup;
+	private final ControlPropertyLookupConstant[] requiredPropertiesLookup, optionalPropertiesLookup;
 	private final List<ControlPropertySpecification> overriddenProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 
@@ -128,13 +128,13 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 	@NotNull
 	@Override
-	public ControlPropertyLookup[] getRequiredProperties() {
+	public ControlPropertyLookupConstant[] getRequiredProperties() {
 		return requiredPropertiesLookup;
 	}
 
 	@NotNull
 	@Override
-	public ControlPropertyLookup[] getOptionalProperties() {
+	public ControlPropertyLookupConstant[] getOptionalProperties() {
 		return optionalPropertiesLookup;
 	}
 

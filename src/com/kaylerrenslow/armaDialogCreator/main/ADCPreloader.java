@@ -78,7 +78,7 @@ public class ADCPreloader extends Preloader {
 		});
 
 		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		preloaderStage.getIcons().add(Images.IMAGE_ADC_ICON);
+		preloaderStage.getIcons().add(Images.ICON_ADC);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 

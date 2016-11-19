@@ -12,10 +12,10 @@ package com.kaylerrenslow.armaDialogCreator.data.changeRegistrars;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.*;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ChangeType;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeListener;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeType;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 
 /**
@@ -61,7 +61,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 			this.background = background;
 			this.controlControlListChange = controlControlListChange;
 
-			final ChangeType changeType = controlControlListChange.getChangeType();
+			final ControlListChangeType changeType = controlControlListChange.getChangeType();
 			switch (changeType) {
 				case ADD: {
 					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.add");
@@ -97,7 +97,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 			return background;
 		}
 
-		public ChangeType getChangeType() {
+		public ControlListChangeType getChangeType() {
 			return controlControlListChange.getChangeType();
 		}
 

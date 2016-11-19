@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
@@ -24,6 +25,7 @@ import java.util.LinkedList;
  @since 08/02/2016. */
 public class Changelog {
 
+
 	public static Changelog getInstance() {
 		return ArmaDialogCreator.getApplicationData().getChangelog();
 	}
@@ -33,6 +35,8 @@ public class Changelog {
 	private final ReadOnlyList<Change> undoReadOnly = new ReadOnlyList<>(undo);
 	private final ReadOnlyList<Change> redoReadOnly = new ReadOnlyList<>(redo);
 	private final UpdateListenerGroup<ChangelogUpdate> changeUpdateGroup = new UpdateListenerGroup<>();
+	private final LinkedList<ChangeDescriptor> pastChanges = new LinkedList<>();
+	private final ReadOnlyList<ChangeDescriptor> pastChangesReadOnly = new ReadOnlyList<>(pastChanges);
 	private int maxChanges;
 
 	public Changelog(int maxChanges) {
@@ -57,6 +61,7 @@ public class Changelog {
 				undo.removeLast();
 			}
 		}
+		updateChanges(change, Change.ChangeType.CREATED);
 		redo.clear();
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 	}
@@ -66,6 +71,7 @@ public class Changelog {
 			return;
 		}
 		Change undid = undo.removeFirst();
+		updateChanges(undid, Change.ChangeType.UNDO);
 		redo.add(undid);
 		undid.getRegistrar().undo(undid);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
@@ -76,9 +82,17 @@ public class Changelog {
 			return;
 		}
 		Change c = redo.removeFirst();
+		updateChanges(c, Change.ChangeType.REDO);
 		undo.add(c);
 		c.getRegistrar().redo(c);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
+	}
+
+	private void updateChanges(@NotNull Change toAdd, Change.ChangeType changeType) {
+		pastChanges.add(0, new ChangeDescriptor(toAdd, changeType, System.currentTimeMillis()));
+		while (pastChanges.size() >= maxChanges) {
+			pastChanges.removeLast();
+		}
 	}
 
 	@Nullable
@@ -95,6 +109,12 @@ public class Changelog {
 			return null;
 		}
 		return redo.getFirst();
+	}
+
+	/** Get a list of changes with the most recent at the beginning of list */
+	@NotNull
+	public ReadOnlyList<ChangeDescriptor> getChanges() {
+		return pastChangesReadOnly;
 	}
 
 	/** Get the list of things that can be undone */

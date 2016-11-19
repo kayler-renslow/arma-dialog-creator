@@ -590,7 +590,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 
 	static ImageView createFolderIcon() {
-		return new ImageView(Images.IMAGE_ICON_FOLDER);
+		return new ImageView(Images.ICON_FOLDER);
 	}
 
 	private static class BooleanEdit {

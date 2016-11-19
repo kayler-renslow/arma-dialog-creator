@@ -8,23 +8,32 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
+package com.kaylerrenslow.armaDialogCreator.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
- Provides a list of {@link HistoryListItem} on request.
-
  @author Kayler
- @see HistoryListPopup
- @since 11/18/16 */
-public interface HistoryListProvider {
+ @since 11/19/2016 */
+public class EpochPresentation {
+	public enum Format {
+		/** hour:minute AM/PM */
+		Hour_Minute_AM_PM("hh:mm aaa");
 
-	/** Get a list of {@link HistoryListItem}'s. */
-	@NotNull List<HistoryListItem> collectItems();
+		private final String formatString;
 
-	/** Return a string that is presentable to the user that says there are no items available from this {@link HistoryListProvider}. */
-	@NotNull String noItemsPlaceholder();
+		Format(String formatString) {
+			this.formatString = formatString;
+		}
+	}
+
+	public static String format(@NotNull EpochPresentation.Format format, long time) {
+		final Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(time);
+		return new SimpleDateFormat(format.formatString).format(new Date(time));
+	}
 }

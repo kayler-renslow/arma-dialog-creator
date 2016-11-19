@@ -8,23 +8,39 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
+package com.kaylerrenslow.armaDialogCreator.data;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
-
 /**
- Provides a list of {@link HistoryListItem} on request.
-
  @author Kayler
- @see HistoryListPopup
- @since 11/18/16 */
-public interface HistoryListProvider {
+ @since 11/19/2016 */
+public class ChangeDescriptor {
 
-	/** Get a list of {@link HistoryListItem}'s. */
-	@NotNull List<HistoryListItem> collectItems();
+	private final Change change;
+	private final Change.ChangeType changeType;
+	private final long timePerformed;
 
-	/** Return a string that is presentable to the user that says there are no items available from this {@link HistoryListProvider}. */
-	@NotNull String noItemsPlaceholder();
+	public ChangeDescriptor(@NotNull Change change, @NotNull Change.ChangeType changeType, long timePerformed) {
+		this.change = change;
+		this.changeType = changeType;
+		this.timePerformed = timePerformed;
+	}
+
+	/** Get the Epoch timestamp of when the change was performed. */
+	public long getTimePerformed() {
+		return timePerformed;
+	}
+
+	/** Return the {@link Change} */
+	@NotNull
+	public Change getChange() {
+		return change;
+	}
+
+	/** Return the {@link com.kaylerrenslow.armaDialogCreator.data.Change.ChangeType} of {@link #getChange()}. */
+	@NotNull
+	public Change.ChangeType getChangeType() {
+		return changeType;
+	}
 }

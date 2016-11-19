@@ -21,39 +21,39 @@ public class ControlListChange<C extends Control> {
 	private ControlRemove<C> removed;
 	private ControlMove<C> moved;
 	private ControlSet<C> set;
-	private ChangeType changeType = null;
+	private ControlListChangeType changeType = null;
 
 	public ControlListChange(ControlList<C> modifiedList) {
 		this.modifiedList = modifiedList;
 	}
 
 	@NotNull
-	public ChangeType getChangeType() {
+	public ControlListChangeType getChangeType() {
 		return changeType;
 	}
 
 	void setSet(ControlSet<C> set) {
 		this.set = set;
 		checkType();
-		changeType = ChangeType.SET;
+		changeType = ControlListChangeType.SET;
 	}
 
 	void setAdded(ControlAdd<C> added) {
 		this.added = added;
 		checkType();
-		changeType = ChangeType.ADD;
+		changeType = ControlListChangeType.ADD;
 	}
 
 	void setRemoved(ControlRemove<C> removed) {
 		this.removed = removed;
 		checkType();
-		changeType = ChangeType.REMOVE;
+		changeType = ControlListChangeType.REMOVE;
 	}
 
 	void setMoved(ControlMove<C> move) {
 		this.moved = move;
 		checkType();
-		changeType = ChangeType.MOVE;
+		changeType = ControlListChangeType.MOVE;
 	}
 
 	private void checkType() {
@@ -69,19 +69,19 @@ public class ControlListChange<C extends Control> {
 	}
 
 	public boolean wasSet() {
-		return changeType == ChangeType.SET;
+		return changeType == ControlListChangeType.SET;
 	}
 
 	public boolean wasAdded() {
-		return changeType == ChangeType.ADD;
+		return changeType == ControlListChangeType.ADD;
 	}
 
 	public boolean wasRemoved() {
-		return changeType == ChangeType.REMOVE;
+		return changeType == ControlListChangeType.REMOVE;
 	}
 
 	public boolean wasMoved() {
-		return changeType == ChangeType.MOVE;
+		return changeType == ControlListChangeType.MOVE;
 	}
 
 	public ControlSet<C> getSet() {

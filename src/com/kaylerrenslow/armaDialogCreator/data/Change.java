@@ -15,6 +15,17 @@ package com.kaylerrenslow.armaDialogCreator.data;
  */
 public interface Change {
 	String getShortName();
+
 	String getDescription();
+
 	ChangeRegistrar getRegistrar();
+
+	enum ChangeType {
+		/** an undo change */
+		UNDO,
+		/** a redo change */
+		REDO,
+		/** a change that was just placed on the stack */
+		CREATED
+	}
 }

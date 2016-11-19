@@ -23,27 +23,27 @@ public interface ControlClassRequirementSpecification {
 	ControlClassRequirementSpecification TRIVIAL_IMPL = new ControlClassRequirementSpecification() {
 	};
 
-	/** Get all required nested classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
+	/** Get all required nested classes for the control class. Default implementation returns {@link ControlClassSpecification#EMPTY} */
 	@NotNull
 	default ControlClassSpecification[] getRequiredNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 
-	/** Get all <b>optional</b> nested  classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
+	/** Get all <b>optional</b> nested  classes for the control class. Default implementation returns {@link ControlClassSpecification#EMPTY} */
 	@NotNull
 	default ControlClassSpecification[] getOptionalNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 
-	/** Get all required properties for the control class. Default implementation returns {@link ControlProperty#EMPTY} */
+	/** Get all required properties for the control class. Default implementation returns {@link ControlPropertyLookup#EMPTY} */
 	@NotNull
-	default ControlPropertyLookup[] getRequiredProperties() {
+	default ControlPropertyLookupConstant[] getRequiredProperties() {
 		return ControlPropertyLookup.EMPTY;
 	}
 
-	/** Get all <b>optional</b> properties for the control class. Default implementation returns {@link ControlProperty#EMPTY} */
+	/** Get all <b>optional</b> properties for the control class. Default implementation returns {@link ControlPropertyLookup#EMPTY} */
 	@NotNull
-	default ControlPropertyLookup[] getOptionalProperties() {
+	default ControlPropertyLookupConstant[] getOptionalProperties() {
 		return ControlPropertyLookup.EMPTY;
 	}
 }

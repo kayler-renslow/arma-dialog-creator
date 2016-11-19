@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.ViewChangesPopup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -19,6 +20,7 @@ import javafx.event.EventHandler;
 public class EditViewChangesAction implements EventHandler<ActionEvent>{
 	@Override
 	public void handle(ActionEvent event) {
-
+		ViewChangesPopup popup = new ViewChangesPopup();
+		popup.show();
 	}
 }

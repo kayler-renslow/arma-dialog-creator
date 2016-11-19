@@ -25,7 +25,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.help.WikiUrlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.view.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.AboutDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ProgramArgument;
 import javafx.scene.control.*;
@@ -49,8 +49,8 @@ class ADCMenuBar extends MenuBar {
 
 	
 	/*Edit*/
-	final MenuItem edit_undo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_undo"), new ImageView(ImagePaths.ICON_UNDO));
-	final MenuItem edit_redo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_redo"), new ImageView(ImagePaths.ICON_REDO));
+	final MenuItem edit_undo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_undo"), new ImageView(Images.ICON_UNDO));
+	final MenuItem edit_redo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_redo"), new ImageView(Images.ICON_REDO));
 	{
 		edit_redo.setOnAction(new EditRedoAction(edit_redo));
 		edit_undo.setOnAction(new EditUndoAction(edit_undo));

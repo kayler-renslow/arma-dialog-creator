@@ -1,8 +1,8 @@
 **Added:**
-* none
+* view changes popup
 
 **Changed:**
-* worked a little on the control class extending functionality
+* finished history list popup
 
 **Fixed:**
 * none

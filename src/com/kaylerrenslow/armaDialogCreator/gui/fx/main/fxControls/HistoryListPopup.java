@@ -13,8 +13,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
@@ -25,29 +27,52 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 /**
+ Used for displaying a list of things that have happened.
+
  @author Kayler
  @since 11/18/16 */
 public class HistoryListPopup extends StagePopup<VBox> {
 
 	private final HistoryListProvider provider;
-	private final GridPane containerContent = new GridPane();
+	private final GridPane gridPaneContent = new GridPane();
+	private final StackPane stackPaneWrapper = new StackPane(gridPaneContent);
 
 	public HistoryListPopup(@Nullable String popupTitle, @NotNull HistoryListProvider provider) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), popupTitle);
 		this.provider = provider;
-		myRootElement.getChildren().addAll(containerContent, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, false));
 
-		containerContent.setVgap(15);
-		containerContent.setHgap(5);
+		myRootElement.setPadding(new Insets(10));
+		final ScrollPane scrollPane = new ScrollPane(stackPaneWrapper);
+		VBox.setVgrow(scrollPane, Priority.ALWAYS);
+		scrollPane.setFitToHeight(true);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setStyle("-fx-background-color:transparent");
+
+		myRootElement.getChildren().addAll(scrollPane, new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, false));
+
+		gridPaneContent.setVgap(15);
+		gridPaneContent.setHgap(5);
 		ColumnConstraints constraints = new ColumnConstraints(-1, -1, Double.MAX_VALUE, Priority.ALWAYS, HPos.CENTER, true);
-		containerContent.getColumnConstraints().addAll(constraints, constraints);
+		gridPaneContent.getColumnConstraints().addAll(constraints, constraints);
+
+		myStage.setMinWidth(320);
+		myStage.setMinHeight(320);
+		myStage.setWidth(480);
 
 		fillContent();
 	}
 
 	private void fillContent() {
-		containerContent.getChildren().clear();
+		stackPaneWrapper.getChildren().clear();
+
 		List<HistoryListItem> items = provider.collectItems();
+		if (items.size() == 0) {
+			stackPaneWrapper.getChildren().add(new Label(provider.noItemsPlaceholder()));
+			return;
+		}
+
+		gridPaneContent.getChildren().clear();
+		stackPaneWrapper.getChildren().add(gridPaneContent);
 		boolean need2Columns = false;
 		for (HistoryListItem item : items) {
 			if (item.getGraphic() != null) {
@@ -60,9 +85,9 @@ public class HistoryListPopup extends StagePopup<VBox> {
 		for (HistoryListItem item : items) {
 			HistoryListItemNode listItemNode = new HistoryListItemNode(item);
 			if (need2Columns) {
-				containerContent.addRow(row++, item.getGraphic(), listItemNode);
+				gridPaneContent.addRow(row++, item.getGraphic(), listItemNode);
 			} else {
-				containerContent.addRow(row++, listItemNode);
+				gridPaneContent.addRow(row++, listItemNode);
 			}
 		}
 	}
@@ -72,12 +97,23 @@ public class HistoryListPopup extends StagePopup<VBox> {
 			super(5);
 			final VBox vboxTitle = new VBox(5);
 			final Label lblTitle = new Label(item.getItemTitle());
-			lblTitle.setFont(Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 12));
+			lblTitle.setFont(Font.font(15));
 			vboxTitle.getChildren().add(lblTitle);
+
+			Font subInfoLabelFont = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 10);
+			Font subInfoTextFont = Font.font(subInfoLabelFont.getSize());
 			for (HistoryListItemSubInfo subInfo : item.getSubInfo()) {
-				Label lbl = new Label(subInfo.getLabel());
-				
+				final Label lbl = new Label(subInfo.getLabel());
+				lbl.setFont(subInfoLabelFont);
+				final Label lblInfo = new Label(subInfo.getInfo());
+				lblInfo.setFont(subInfoTextFont);
+				vboxTitle.getChildren().add(new HBox(5, lbl, lblInfo));
 			}
+
+			getChildren().add(vboxTitle);
+			final Label lblMainInfo = new Label(item.getInformation());
+			lblMainInfo.setWrapText(true);
+			getChildren().add(lblMainInfo);
 		}
 	}
 }
