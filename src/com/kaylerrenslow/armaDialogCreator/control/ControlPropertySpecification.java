@@ -97,7 +97,7 @@ public class ControlPropertySpecification {
 		return macroKey;
 	}
 
-	/** Returns a new {@link ControlProperty} instance. Equivalent to invoking {@link ControlProperty(ControlPropertySpecification} */
+	/** Returns a new {@link ControlProperty} instance. Equivalent to invoking {@link ControlProperty#ControlProperty(ControlPropertySpecification} */
 	public ControlProperty constructNewControlProperty() {
 		return new ControlProperty(this);
 	}

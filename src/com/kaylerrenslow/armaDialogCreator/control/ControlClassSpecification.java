@@ -26,19 +26,19 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private String controlClassName;
 	private final ControlPropertySpecification[] requiredProperties;
 	private final ControlPropertySpecification[] optionalProperties;
-	private final ControlClassSpecification[] requiredSubClasses;
-	private final ControlClassSpecification[] optionalSubClasses;
+	private final ControlClassSpecification[] requiredNestedClasses;
+	private final ControlClassSpecification[] optionalNestedClasses;
 	private final ControlPropertyLookup[] requiredPropertiesLookup, optionalPropertiesLookup;
 	private final List<ControlPropertySpecification> overriddenProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 
 	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties,
-									 @NotNull ControlClassSpecification[] requiredSubClasses, @NotNull ControlClassSpecification[] optionalSubClasses) {
+									 @NotNull ControlClassSpecification[] requiredNestedClasses, @NotNull ControlClassSpecification[] optionalNestedClasses) {
 		this.controlClassName = controlClassName;
 		this.requiredProperties = requiredProperties;
 		this.optionalProperties = optionalProperties;
-		this.requiredSubClasses = requiredSubClasses;
-		this.optionalSubClasses = optionalSubClasses;
+		this.requiredNestedClasses = requiredNestedClasses;
+		this.optionalNestedClasses = optionalNestedClasses;
 
 		if (requiredProperties.length == 0) {
 			requiredPropertiesLookup = ControlPropertyLookup.EMPTY;
@@ -68,8 +68,8 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this.controlClassName = controlClass.getClassName();
 		this.requiredProperties = new ControlPropertySpecification[controlClass.getRequiredProperties().size()];
 		this.optionalProperties = new ControlPropertySpecification[controlClass.getOptionalProperties().size()];
-		this.requiredSubClasses = controlClass.getSpecProvider().getRequiredSubClasses();
-		this.optionalSubClasses = controlClass.getSpecProvider().getOptionalSubClasses();
+		this.requiredNestedClasses = controlClass.getSpecProvider().getRequiredNestedClasses();
+		this.optionalNestedClasses = controlClass.getSpecProvider().getOptionalNestedClasses();
 
 		for (int i = 0; i < requiredProperties.length; i++) {
 			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i));
@@ -106,14 +106,14 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 	@NotNull
 	@Override
-	public ControlClassSpecification[] getRequiredSubClasses() {
-		return requiredSubClasses;
+	public ControlClassSpecification[] getRequiredNestedClasses() {
+		return requiredNestedClasses;
 	}
 
 	@NotNull
 	@Override
-	public ControlClassSpecification[] getOptionalSubClasses() {
-		return optionalSubClasses;
+	public ControlClassSpecification[] getOptionalNestedClasses() {
+		return optionalNestedClasses;
 	}
 
 	@NotNull
@@ -159,7 +159,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		return null;
 	}
 
-	/** Just invokes {@link ControlClass(ControlClassSpecification)} with this instance provided */
+	/** Just invokes {@link ControlClass#ControlClass(ControlClassSpecification)} with this instance provided */
 	@NotNull
 	public ControlClass constructNewControlClass() {
 		return new ControlClass(this);

@@ -364,8 +364,12 @@ public class ControlProperty {
 	}
 
 	/** Set the first value to String. This will just wrap the String in {@link SVString} */
-	public void setValue(String v) {
-		setValue(new SVString(v));
+	public void setValue(@Nullable String v) {
+		if (v == null) {
+			setValue((SerializableValue) null);
+		} else {
+			setValue(new SVString(v));
+		}
 	}
 
 	/** Return true if instanceof {@link ControlProperty} and {@link #getPropertyLookup()} is reference-equivalent. */
@@ -387,5 +391,35 @@ public class ControlProperty {
 				"propertyLookup=" + propertyLookup +
 				", value=" + (getValue() != null ? Arrays.toString(getValue().getAsStringArray()) : "null") +
 				'}';
+	}
+
+	/**
+	 Sets this {@link ControlProperty} to the given update.
+
+	 @param update update to use
+	 @param deepCopyValue if <code>update</code> is an instance of {@link ControlPropertyValueUpdate} and if <code>deepCopyValue</code> is true, the value returned by
+	 {@link ControlPropertyValueUpdate#getNewValue()} will be copied via {@link SerializableValue#deepCopy()}, otherwise if <code>deepCopyValue</code> == false, the value will not be deep copied.
+	 If <code>update</code> is <b>not</b> an instance of {@link ControlPropertyValueUpdate}, <code>deepCopyValue</code> will have no effect.
+	 */
+	public void update(@NotNull ControlPropertyUpdate update, boolean deepCopyValue) {
+		if (update instanceof ControlPropertyValueUpdate) {
+			ControlPropertyValueUpdate update1 = (ControlPropertyValueUpdate) update;
+			if (update1.getNewValue() == null) {
+				setValue((SerializableValue) null);
+			} else if (deepCopyValue) {
+				setValue(update1.getNewValue().deepCopy());
+			} else {
+				setValue(update1.getNewValue());
+			}
+		} else if (update instanceof ControlPropertyMacroUpdate) {
+			ControlPropertyMacroUpdate update1 = (ControlPropertyMacroUpdate) update;
+			setValueToMacro(update1.getMacro());
+		} else if (update instanceof ControlPropertyCustomDataUpdate) {
+			ControlPropertyCustomDataUpdate update1 = (ControlPropertyCustomDataUpdate) update;
+			setCustomDataValue(update1.getCustomData());
+			setHasCustomData(update1.isSetTo());
+		} else {
+			throw new IllegalArgumentException("WARNING: ControlProperty.update(): unknown control property update:" + update);
+		}
 	}
 }

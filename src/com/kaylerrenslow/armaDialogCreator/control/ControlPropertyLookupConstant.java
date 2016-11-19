@@ -49,4 +49,9 @@ public interface ControlPropertyLookupConstant {
 		}
 		return r.substring(0, r.length() - 1);//remove last newline
 	}
+
+	@NotNull
+	default ControlProperty getPropertyWithNoData() {
+		return new ControlProperty(this);
+	}
 }

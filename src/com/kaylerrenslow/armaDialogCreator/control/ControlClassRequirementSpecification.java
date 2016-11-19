@@ -23,15 +23,15 @@ public interface ControlClassRequirementSpecification {
 	ControlClassRequirementSpecification TRIVIAL_IMPL = new ControlClassRequirementSpecification() {
 	};
 
-	/** Get all required sub-classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
+	/** Get all required nested classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
 	@NotNull
-	default ControlClassSpecification[] getRequiredSubClasses() {
+	default ControlClassSpecification[] getRequiredNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 
-	/** Get all <b>optional</b> sub-classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
+	/** Get all <b>optional</b> nested  classes for the control class. Default implementation returns {@link ControlClass#EMPTY} */
 	@NotNull
-	default ControlClassSpecification[] getOptionalSubClasses() {
+	default ControlClassSpecification[] getOptionalNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 

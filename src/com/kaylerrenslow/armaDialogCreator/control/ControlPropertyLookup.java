@@ -323,10 +323,6 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 		return about;
 	}
 
-	public ControlProperty getPropertyWithNoData() {
-		return new ControlProperty(this);
-	}
-
 	public ControlProperty getIntProperty(int defaultValue) {
 		if(getPropertyType() != PropertyType.INT){
 			throw new IllegalStateException("can't get int property when property type isn't int");

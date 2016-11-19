@@ -164,7 +164,7 @@ public class ProjectExporter {
 		String body = getExportControlPropertyString(tab + 1, controlClass.getDefinedProperties());
 
 		String tabS = tab(tab);
-		for (ControlClass subclass : controlClass.getAllSubClasses()) {
+		for (ControlClass subclass : controlClass.getAllNestedClasses()) {
 			body += tabS + getExportClassString(subclass, tab + 1, null);
 		}
 		if (additionalBodyContent != null) {

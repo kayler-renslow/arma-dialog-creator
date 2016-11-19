@@ -192,20 +192,20 @@ public class ProjectXmlUtil {
 		}
 
 		//required sub classes
-		if (specification.getRequiredSubClasses().length > 0) {
+		if (specification.getRequiredNestedClasses().length > 0) {
 			final String requiredClasses = "required-classes";
 			stm.writeBeginTag(requiredClasses);
-			for (ControlClassSpecification s : specification.getRequiredSubClasses()) {
+			for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
 				writeControlClassSpecification(stm, s);
 			}
 			stm.writeCloseTag(requiredClasses);
 		}
 
 		//optional sub classes
-		if (specification.getOptionalSubClasses().length > 0) {
+		if (specification.getOptionalNestedClasses().length > 0) {
 			final String optionalClasses = "optional-classes";
 			stm.writeBeginTag(optionalClasses);
-			for (ControlClassSpecification s : specification.getOptionalSubClasses()) {
+			for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
 				writeControlClassSpecification(stm, s);
 			}
 			stm.writeCloseTag(optionalClasses);
