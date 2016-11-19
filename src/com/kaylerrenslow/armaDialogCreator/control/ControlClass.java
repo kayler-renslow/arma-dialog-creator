@@ -93,14 +93,14 @@ public class ControlClass {
 		}
 	};
 
-	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification provider) {
+	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification, @NotNull SpecificationRegistry registry) {
 		classNameObserver.updateValue(name);
-		this.specProvider = provider;
+		this.specProvider = specification;
 
 		addProperties(requiredProperties, specProvider.getRequiredProperties());
 		addProperties(optionalProperties, specProvider.getOptionalProperties());
-		addNestedClasses(requiredNestedClasses, specProvider.getRequiredNestedClasses());
-		addNestedClasses(optionalNestedClasses, specProvider.getOptionalNestedClasses());
+		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses());
+		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses());
 
 		initializeListeners();
 	}
@@ -133,26 +133,38 @@ public class ControlClass {
 		});
 	}
 
-	/** Construct a {@link ControlClass} with the given specification */
-	public ControlClass(@NotNull ControlClassSpecification specification) {
+	/** Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry} */
+	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
 		classNameObserver.updateValue(specification.getClassName());
 		this.specProvider = specification;
 		if (specification.getExtendClassName() != null) {
 			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
 		}
 		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
-			requiredProperties.add(property.constructNewControlProperty());
+			requiredProperties.add(property.constructNewControlProperty(registry));
 		}
 		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
-			optionalProperties.add(property.constructNewControlProperty());
+			optionalProperties.add(property.constructNewControlProperty(registry));
 		}
 		for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
-			requiredNestedClasses.add(s.constructNewControlClass());
+			requiredNestedClasses.add(s.constructNewControlClass(registry));
 		}
 		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
-			optionalNestedClasses.add(s.constructNewControlClass());
+			optionalNestedClasses.add(s.constructNewControlClass(registry));
 		}
 		initializeListeners();
+	}
+
+	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookupConstant[] props) {
+		for (ControlPropertyLookupConstant lookup : props) {
+			propertiesList.add(lookup.getPropertyWithNoData());
+		}
+	}
+
+	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull SpecificationRegistry registry, @NotNull ControlClassSpecification... nestedClassesSpecs) {
+		for (ControlClassSpecification nestedClass : nestedClassesSpecs) {
+			nestedClasses.add(new ControlClass(nestedClass, registry));
+		}
 	}
 
 	public final void setClassName(@NotNull String className) {
@@ -201,12 +213,6 @@ public class ControlClass {
 		return specProvider;
 	}
 
-	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull ControlClassSpecification... nestedClassesSpecs) {
-		for (ControlClassSpecification nestedClass : nestedClassesSpecs) {
-			nestedClasses.add(new ControlClass(nestedClass));
-		}
-	}
-
 	@NotNull
 	public final ReadOnlyList<ControlClass> getRequiredNestedClasses() {
 		return requiredNestedClassesReadOnly;
@@ -217,9 +223,11 @@ public class ControlClass {
 		return optionalNestedClassesReadOnly;
 	}
 
+
+	/** Return a concatenation of {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} */
 	@NotNull
 	public final List<ControlClass> getAllNestedClasses() {
-		List<ControlClass> all = new ArrayList<>();
+		List<ControlClass> all = new ArrayList<>(requiredNestedClasses.size() + optionalNestedClasses.size());
 		all.addAll(requiredNestedClasses);
 		all.addAll(optionalNestedClasses);
 		return all;
@@ -243,12 +251,6 @@ public class ControlClass {
 			}
 		}
 		return defined;
-	}
-
-	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookupConstant[] props) {
-		for (ControlPropertyLookupConstant lookup : props) {
-			propertiesList.add(lookup.getPropertyWithNoData());
-		}
 	}
 
 	/**
@@ -285,10 +287,6 @@ public class ControlClass {
 		return null;
 	}
 
-	private void noPropertyMatch(@NotNull ControlPropertyLookupConstant lookup, @NotNull String place) {
-		throw new IllegalArgumentException("Lookup element '" + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]" + "' wasn't in " + place + ".");
-	}
-
 	/**
 	 Get the control property instance for the given lookup item. The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
 
@@ -309,10 +307,54 @@ public class ControlClass {
 		return null;
 	}
 
+	private void noPropertyMatch(@NotNull ControlPropertyLookupConstant lookup, @NotNull String place) {
+		throw new IllegalArgumentException("Lookup element '" + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]" + "' wasn't in " + place + ".");
+	}
+
+	@NotNull
+	public final ControlClass findRequiredNestedClass(@NotNull String className) {
+		for (ControlClass controlClass : requiredNestedClasses) {
+			if (controlClass.getClassName().equals(className)) {
+				return controlClass;
+			}
+		}
+		noClassMatch(className, "required nested classes");
+		return null;
+	}
+
+	@NotNull
+	public final ControlClass findOptionalNestedClass(@NotNull String className) {
+		for (ControlClass controlClass : optionalNestedClasses) {
+			if (controlClass.getClassName().equals(className)) {
+				return controlClass;
+			}
+		}
+		noClassMatch(className, "optional nested classes");
+		return null;
+	}
+
+	@NotNull
+	public final ControlClass findNestedClass(@NotNull String className) {
+		try {
+			return findRequiredNestedClass(className);
+		} catch (IllegalArgumentException ignore) {
+		}
+		try {
+			return findOptionalNestedClass(className);
+		} catch (IllegalArgumentException ignore) {
+		}
+		noClassMatch(className, " control class " + getClassName());
+		return null;
+	}
+
+	private void noClassMatch(@NotNull String className, @NotNull String place) {
+		throw new IllegalArgumentException("Could not find class '" + className + "' in " + place + ".");
+	}
+
 	/**
 	 Override's a property that exists inside {@link #getExtendClass()}. When the property is found, a deep copy will be created and inserted into the list {@link #getOverriddenProperties()}
 
-	 @throws IllegalArgumentException when the property doesn't exist in the extended class
+	 @throws IllegalArgumentException when the property doesn't exist in the extended class or in this control class
 	 @throws IllegalStateException    when {@link #getExtendClass()} is null
 	 */
 	public final void overrideProperty(@NotNull ControlPropertyLookupConstant property) throws IllegalArgumentException, IllegalStateException {
@@ -320,13 +362,14 @@ public class ControlClass {
 			throw new IllegalStateException("no class has been extended");
 		}
 		ControlProperty toOverride = getExtendClass().findProperty(property);
+		ControlProperty mine = findProperty(property);
 		SerializableValue value = toOverride.getValue();
 		if (value != null) {
 			value = value.deepCopy();
 		}
-		ControlProperty newProp = new ControlProperty(toOverride.getPropertyLookup(), value);
-		overrideProperties.add(newProp);
-		controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, newProp, true));
+		mine.setValue(value);
+		overrideProperties.add(mine);
+		controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, mine, true));
 	}
 
 	/** Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen */
@@ -375,20 +418,14 @@ public class ControlClass {
 		return properties;
 	}
 
-	/**
-	 Will return all properties that are defined (including inherited properties that are defined and overridden). This will return a concatenation of {@link #getDefinedProperties()} and
-	 {@link #getOverriddenDefinedProperties()}
-	 */
-	@NotNull
-	public final List<ControlProperty> getAllDefinedProperties() {
-		List<ControlProperty> defined = getDefinedProperties();
-		List<ControlProperty> override = getOverriddenDefinedProperties();
-		List<ControlProperty> properties = new ArrayList<>(defined.size() + override.size());
-		properties.addAll(defined);
-		properties.addAll(override);
-
-		return properties;
+	/** Returns all {@link ControlProperty} instances (concatenation of {@link #getRequiredProperties()}) and {@link #getOptionalProperties()} */
+	public final List<ControlProperty> getAllChildProperties() {
+		List<ControlProperty> all = new ArrayList<>(getRequiredProperties().size() + getOptionalProperties().size());
+		all.addAll(getRequiredProperties());
+		all.addAll(getOptionalProperties());
+		return all;
 	}
+
 
 	/** Will return all properties from {@link #getInheritedProperties()} that have defined properties ({@link ControlProperty#getValue()} != null) */
 	@NotNull
@@ -447,7 +484,7 @@ public class ControlClass {
 		}
 	}
 
-	public final ReadOnlyList<ControlProperty> getEventProperties() {
+	public final ReadOnlyList<ControlProperty> getEventProperties() { //todo have getOptionalPropertiesNoEvents where it returns all optional properties without event properties
 		final List<ControlProperty> eventProperties = new ArrayList<>();
 		for (ControlProperty controlProperty : requiredProperties) {
 			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
@@ -531,6 +568,37 @@ public class ControlClass {
 		}
 
 		return true;
+	}
+
+	/**
+	 Sets this {@link ControlClass} fully equal to <code>controlClass</code> (disregards {@link #getUserData()}). NOTE: nothing will be deep copied!
+
+	 @param controlClass class to use
+	 */
+	public final void setTo(@NotNull ControlClass controlClass) {
+		setClassName(controlClass.getClassName());
+		extendControlClass(controlClass.getExtendClass());
+		for (ControlProperty property : controlClass.getAllChildProperties()) {
+			try {
+				findProperty(property.getPropertyLookup()).setTo(property);
+			} catch (IllegalArgumentException ignore) {
+
+			}
+		}
+		for (ControlClass nested : controlClass.getAllNestedClasses()) {
+			try {
+				findNestedClass(nested.getClassName()).setTo(nested);
+			} catch (IllegalArgumentException ignore) {
+
+			}
+		}
+		for (ControlProperty override : controlClass.getOverriddenProperties()) {
+			try {
+				overrideProperty(findProperty(override.getPropertyLookup()).getPropertyLookup());
+			} catch (IllegalArgumentException | NullPointerException ignore) {
+
+			}
+		}
 	}
 
 	@Override

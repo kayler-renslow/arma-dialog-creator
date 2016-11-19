@@ -118,15 +118,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 
-	/** Return all properties that are being edited */
-	public List<ControlProperty> getAllProperties() {
-		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
-		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			properties.add(descriptor.getControlProperty());
-		}
-		return properties;
-	}
-
 	public ControlPropertyEditor[] getEditors() {
 		return propertyEditors;
 	}
@@ -201,21 +192,23 @@ public class ControlPropertiesEditorPane extends StackPane {
 		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
 		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
 
-		switch ((ControlPropertyLookup) c.getPropertyLookup()) {
-			case TYPE: {
-				for (MenuItem item : menuButton.getItems()) {
-					item.setDisable(true);
+		if (c.getPropertyLookup() instanceof ControlPropertyLookup) {
+			switch ((ControlPropertyLookup) c.getPropertyLookup()) {
+				case TYPE: {
+					for (MenuItem item : menuButton.getItems()) {
+						item.setDisable(true);
+					}
+					break;
 				}
-				break;
-			}
-			//intentional fallthrough for all below properties in case statements
-			case STYLE:
-			case X:
-			case Y:
-			case W:
-			case H: {
-				miOverride.setDisable(true);//NEVER allow custom input
-				break;
+				//intentional fallthrough for all below properties in case statements
+				case STYLE:
+				case X:
+				case Y:
+				case W:
+				case H: {
+					miOverride.setDisable(true);//NEVER allow custom input
+					break;
+				}
 			}
 		}
 		propertyDescriptors.add(new ControlPropertyInputDescriptor(propertyInput));

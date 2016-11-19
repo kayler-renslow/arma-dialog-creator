@@ -16,29 +16,30 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Used for a controls with type=0 (Static)
+
  @author Kayler
  @since 05/25/2016. */
 public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
-		
+
 		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.COLOR_BACKGROUND,
 				ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.TEXT,
 				ControlPropertyLookup.FONT,
 		});
-		
+
 		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
 				ControlPropertyLookup.MOVING,
 				ControlPropertyLookup.SHADOW,
@@ -49,19 +50,19 @@ public class StaticControl extends ArmaControl {
 				ControlPropertyLookup.STATIC_LINE_SPACING,
 				ControlPropertyLookup.BLINKING_PERIOD
 		});
-		
+
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getRequiredProperties() {
 			return requiredProperties;
 		}
-		
+
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getOptionalProperties() {
 			return optionalProperties;
 		}
-				
+
 		private final ControlStyle[] allowedStyles = {
 				ControlStyle.LEFT,
 				ControlStyle.RIGHT,
@@ -80,19 +81,19 @@ public class StaticControl extends ArmaControl {
 				ControlStyle.NO_RECT,
 				ControlStyle.KEEP_ASPECT_RATIO
 		};
-		
+
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return allowedStyles;
 		}
 	};
-	
-	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyleGroup style, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(ControlType.STATIC, name, SPEC_PROVIDER, idc, style, x, y, width, height, resolution, RendererLookup.STATIC, env);
+
+	public StaticControl(@NotNull String name, int idc, @NotNull ControlStyleGroup style, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(ControlType.STATIC, name, SPEC_PROVIDER, idc, style, resolution, RendererLookup.STATIC, env, registry);
 		findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(renderer.getBackgroundColor()));
 		findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(renderer.getTextColor()));
 		findRequiredProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");
 		findRequiredProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
 	}
-	
+
 }

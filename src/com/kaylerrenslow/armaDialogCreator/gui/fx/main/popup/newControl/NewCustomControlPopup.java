@@ -93,7 +93,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem toSelect = null;
 		for (int i = 0; i < controlTypeControlClasses.length; i++) {
 			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
-			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider);
+			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider, ApplicationDataManager.getInstance().getCurrentProject());
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
 			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
@@ -172,7 +172,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem[] items = new ControlClassMenuItem[customControlClasses.size()];
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
-			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass());
+			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass(ApplicationDataManager.getInstance().getCurrentProject()));
 			items[i].getValue().getUserData().put(KEY_MENU_ITEM, items[i]);
 			i++;
 		}
@@ -218,7 +218,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 	@Override
 	protected void ok() {
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), ApplicationDataManager.getInstance().getCurrentProject());
 		customControlClass.setComment(taComment.getText());
 		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(customControlClass);
 

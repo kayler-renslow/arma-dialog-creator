@@ -12,11 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
@@ -25,16 +21,17 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
+
  @author Kayler
  @since 06/08/2016. */
 public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 
 	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
-		
+
 		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
 		});
-		
+
 		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
 		});
 
@@ -43,13 +40,13 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 		public ControlPropertyLookup[] getRequiredProperties() {
 			return requiredProperties;
 		}
-		
+
 		@NotNull
 		@Override
 		public ControlPropertyLookup[] getOptionalProperties() {
 			return optionalProperties;
 		}
-		
+
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return ControlStyle.NA.getStyleGroup().getValues();
@@ -57,19 +54,21 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	};
 
 
-	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
-		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, resolution, renderer, env);
+	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, resolution, renderer, env, registry);
 		defineStyle(ControlStyle.NA.getStyleGroup());
 		afterConstructor();
 	}
 
-	protected ArmaControlGroup(@NotNull String name, int idc, Expression x, Expression y, Expression width, Expression height, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env) {
-		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, idc, ControlStyle.NA.getStyleGroup(), x, y, width, height, resolution, renderer, env);
+	protected ArmaControlGroup(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer,
+							   @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, idc, ControlStyle.NA.getStyleGroup(), resolution, renderer, env, registry);
 		afterConstructor();
 	}
 
-	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
-		super(specification, provider, resolution, rendererLookup, env);
+	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
+							   @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(specification, provider, resolution, rendererLookup, env, registry);
 		afterConstructor();
 	}
 
@@ -99,7 +98,7 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 			control.setDisplay(display);
 		}
 	}
-	
+
 	@Override
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;

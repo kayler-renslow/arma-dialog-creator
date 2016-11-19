@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassUpdate;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +34,7 @@ public class EditCustomControlPopup extends NewCustomControlPopup {
 		this.toEdit = toEdit;
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.EditCustomControl.popup_title"));
 
-		ControlClass duplicate = toEdit.getSpecification().constructNewControlClass();
+		ControlClass duplicate = toEdit.getSpecification().constructNewControlClass(ApplicationDataManager.getInstance().getCurrentProject());
 		duplicate.getControlClassUpdateGroup().addListener(new UpdateListener<ControlClassUpdate>() {
 			@Override
 			public void update(ControlClassUpdate data) {

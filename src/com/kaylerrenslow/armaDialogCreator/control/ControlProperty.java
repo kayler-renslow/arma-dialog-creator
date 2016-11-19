@@ -11,7 +11,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,26 +54,9 @@ public class ControlProperty {
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 
-	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
-	@NotNull
-	public ControlProperty deepCopy() {
-		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
-		copy.setCustomDataValue(getCustomData());
-		copy.setHasCustomData(isCustomData());
-		if (getMacro() != null) {
-			copy.setValueToMacro(getMacro());
-		}
-		return copy;
-	}
-
-
-	public ControlProperty(@NotNull ControlPropertySpecification specification) {
-		this(specification.getLookup(), specification.getValue());
-		setCustomDataValue(specification.getCustomData());
-		setHasCustomData(specification.isUsingCustomData());
-		if (specification.getMacroKey() != null) {
-			setValueToMacro(ApplicationDataManager.getInstance().getCurrentProject().getMacroRegistry().getMacroByKey(specification.getMacroKey()));
-		}
+	public ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
+		this(specification.getPropertyLookup(), specification.getValue());
+		setTo(specification, registry);
 	}
 
 	/**
@@ -421,5 +403,52 @@ public class ControlProperty {
 		} else {
 			throw new IllegalArgumentException("WARNING: ControlProperty.update(): unknown control property update:" + update);
 		}
+	}
+
+	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
+	@NotNull
+	public ControlProperty deepCopy() {
+		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
+		copy.setCustomDataValue(getCustomData());
+		copy.setHasCustomData(isCustomData());
+		if (getMacro() != null) {
+			copy.setValueToMacro(getMacro());
+		}
+		return copy;
+	}
+
+	/**
+	 Will set this property equal to the given one only if {@link #getPropertyLookup()} matches with this and <code>property</code>. Note: {@link ControlProperty#getValue()} will not be deep
+	 copied. If the desire is to deep copy the given property, use {@link ControlProperty#deepCopy()}.
+
+	 @param property property to set to
+	 */
+	public void setTo(@NotNull ControlProperty property) {
+		if (property.getPropertyLookup() != getPropertyLookup()) {
+			throw new IllegalArgumentException("not same property lookup");
+		}
+		setValue(property.getValue());
+		setValueToMacro(property.getMacro()); //do after set value
+		setHasCustomData(property.isCustomData());
+		setCustomDataValue(property.getCustomData());
+	}
+
+	/**
+	 Will set this property equal to the given specification only if {@link #getPropertyLookup()} matches with this and <code>property</code>. Note: {@link ControlPropertySpecification#getValue()} will not be
+	 deep copied.
+
+	 @param specification specification to set to
+	 @param registry registry that contains the {@link Macro} instances
+	 */
+	public void setTo(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
+		if (specification.getPropertyLookup() != getPropertyLookup()) {
+			throw new IllegalArgumentException("not same property lookup");
+		}
+		setValue(specification.getValue());
+		if (specification.getMacroKey() != null) {
+			setValueToMacro(registry.findMacroByKey(specification.getMacroKey())); //do after set value
+		}
+		setHasCustomData(specification.isCustomData());
+		setCustomDataValue(specification.getCustomData());
 	}
 }

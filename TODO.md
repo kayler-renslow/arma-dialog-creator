@@ -22,7 +22,7 @@ General
     * it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     * [https://resources.bisimulations.com/wiki/Dialogs_Static#Images](https://resources.bisimulations.com/wiki/Dialogs_Static#Images)
 * preview's resolution should be independent from the editor.
-
+* preview should have background image
 
 * for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
 
@@ -32,6 +32,7 @@ General
 
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
+* doesn't save nested classes in control xml writing and also doesn't load them
 
 Bugs
 -----------------------------------

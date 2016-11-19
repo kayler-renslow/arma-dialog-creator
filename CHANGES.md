@@ -1,8 +1,8 @@
 **Added:**
-* view changes popup
+* untested nested control class loading 
 
 **Changed:**
-* finished history list popup
+* did some modularization stuff with specifications
 
 **Fixed:**
 * none

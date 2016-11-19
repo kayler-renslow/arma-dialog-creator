@@ -26,6 +26,13 @@ public class ControlPropertySpecification {
 	private Object customData;
 	private boolean usingCustomData;
 
+	/**
+	 Construct a specification with the given lookup, value, and macro key
+
+	 @param lookup lookup to use
+	 @param value value to use (NOTE: will not deepy via {@link SerializableValue#deepCopy()})
+	 @param macroKey key to use
+	 */
 	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup, @Nullable SerializableValue value, @Nullable String macroKey) {
 		this.lookup = lookup;
 		this.value = value;
@@ -36,16 +43,35 @@ public class ControlPropertySpecification {
 		}
 	}
 
+	/**
+	 Similar to {@link ControlPropertySpecification#ControlPropertySpecification(ControlPropertyLookup, SerializableValue, String)} with value=null and macroKey=null
+	 */
 	public ControlPropertySpecification(@NotNull ControlPropertyLookup lookup) {
 		this(lookup, null, null);
 	}
 
+	/**
+	 Similar to {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)} with deepCopy=true
+	 */
 	public ControlPropertySpecification(@NotNull ControlProperty property) {
+		this(property, true);
+	}
+
+	/**
+	 Construct a specification with the given property. If <code>deepCopy</code> is true, the value returned from {@link ControlProperty#getValue()} will be deep copied via
+	 {@link SerializableValue#deepCopy()}. If <code>deepCopy</code> is false, will simply use the same value.
+
+	 @param property property to use
+	 @param deepCopy true to deep copy {@link ControlProperty#getValue()}, false otherwise
+	 */
+	public ControlPropertySpecification(@NotNull ControlProperty property, boolean deepCopy) {
 		this.lookup = (ControlPropertyLookup) property.getPropertyLookup();
-		if (property.getValue() != null) {
+		if (property.getValue() == null) {
+			this.value = null;
+		} else if (deepCopy) {
 			this.value = property.getValue().deepCopy();
 		} else {
-			this.value = null;
+			this.value = property.getValue();
 		}
 		if (property.getMacro() != null) {
 			this.macroKey = property.getMacro().getKey();
@@ -56,6 +82,11 @@ public class ControlPropertySpecification {
 		this.usingCustomData = property.isCustomData();
 	}
 
+	/**
+	 Set the custom data (will not deep copy!).
+
+	 @param customData custom data to use
+	 */
 	public void setCustomData(@Nullable Object customData) {
 		this.customData = customData;
 	}
@@ -64,10 +95,20 @@ public class ControlPropertySpecification {
 		this.usingCustomData = usingCustomData;
 	}
 
+	/**
+	 Set the value of the specification
+
+	 @param value value to use (will not deep copy!)
+	 */
 	public void setValue(@Nullable SerializableValue value) {
 		this.value = value;
 	}
 
+	/**
+	 Set the macro key (from {@link Macro#getKey()})
+
+	 @param macroKey key to use, or null if not to use a macro
+	 */
 	public void setMacroKey(@Nullable String macroKey) {
 		this.macroKey = macroKey;
 	}
@@ -77,12 +118,12 @@ public class ControlPropertySpecification {
 		return customData;
 	}
 
-	public boolean isUsingCustomData() {
+	public boolean isCustomData() {
 		return usingCustomData;
 	}
 
 	@NotNull
-	public ControlPropertyLookup getLookup() {
+	public ControlPropertyLookup getPropertyLookup() {
 		return lookup;
 	}
 
@@ -91,14 +132,14 @@ public class ControlPropertySpecification {
 		return value;
 	}
 
-	/** Get the name of the {@link Macro} to be used. */
+	/** Get the name of the {@link Macro} to be used, or null if no macro should be used. */
 	@Nullable
 	public String getMacroKey() {
 		return macroKey;
 	}
 
-	/** Returns a new {@link ControlProperty} instance. Equivalent to invoking {@link ControlProperty#ControlProperty(ControlPropertySpecification} */
-	public ControlProperty constructNewControlProperty() {
-		return new ControlProperty(this);
+	/** Returns a new {@link ControlProperty} instance. Equivalent to invoking {@link ControlProperty#ControlProperty(ControlPropertySpecification, MacroRegistry)} */
+	public ControlProperty constructNewControlProperty(@NotNull MacroRegistry registry) {
+		return new ControlProperty(this, registry);
 	}
 }

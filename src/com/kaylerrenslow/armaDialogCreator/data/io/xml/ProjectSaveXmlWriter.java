@@ -13,14 +13,11 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
-import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
-import com.kaylerrenslow.armaDialogCreator.data.MacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
@@ -191,8 +188,28 @@ public class ProjectSaveXmlWriter {
 			ProjectXmlUtil.writeControlProperty(stm, cprop);
 		}
 
+		ProjectXmlUtil.writeOverrideControlProperties(stm, control.getOverriddenProperties());
+
 		if (controlGroup) {
 			writeControls(stm, treeNode);
+		}
+
+		if (control.getRequiredNestedClasses().size() > 0) {
+			final String reqNestedClasses = "nested-required";
+			stm.writeBeginTag(reqNestedClasses);
+			for (ControlClass nested : control.getRequiredNestedClasses()) {
+				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
+			}
+			stm.writeCloseTag(reqNestedClasses);
+		}
+
+		if (control.getOptionalNestedClasses().size() > 0) {
+			final String optNestedClasses = "nested-optional";
+			stm.writeBeginTag(optNestedClasses);
+			for (ControlClass nested : control.getOptionalNestedClasses()) {
+				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
+			}
+			stm.writeCloseTag(optNestedClasses);
 		}
 
 		stm.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">"));
@@ -201,7 +218,7 @@ public class ProjectSaveXmlWriter {
 	private void writeMacros(@NotNull XmlWriterOutputStream stm) throws IOException {
 		stm.write("<macros>");
 
-		MacroRegistry registry = project.getMacroRegistry();
+		ProjectMacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
 			stm.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())));
 			writeValue(stm, macro.getValue());

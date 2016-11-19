@@ -17,7 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
@@ -41,6 +44,23 @@ public class EditorComponentTreeViewTest extends Application {
 
 	}
 
+	private static class SpecReg implements SpecificationRegistry {
+
+		static final SpecReg INSTANCE = new SpecReg();
+
+		@Nullable
+		@Override
+		public Macro findMacroByKey(@NotNull String macroKey) {
+			return null;
+		}
+
+		@Nullable
+		@Override
+		public ControlClass findControlClassByName(@NotNull String className) {
+			return null;
+		}
+	}
+
 	private static class TestArmaControlClass extends ArmaControl {
 
 		public TestArmaControlClass() {
@@ -49,7 +69,7 @@ public class EditorComponentTreeViewTest extends Application {
 				public @Nullable Value getValue(String identifier) {
 					return null;
 				}
-			});
+			}, SpecReg.INSTANCE);
 		}
 	}
 
@@ -61,7 +81,7 @@ public class EditorComponentTreeViewTest extends Application {
 				public @Nullable Value getValue(String identifier) {
 					return null;
 				}
-			});
+			}, SpecReg.INSTANCE);
 		}
 	}
 
@@ -477,7 +497,6 @@ public class EditorComponentTreeViewTest extends Application {
 
 		assertEquals(1, testTreeView.getCorrectedIndex(null, leaf1));
 	}
-
 
 
 	@Test

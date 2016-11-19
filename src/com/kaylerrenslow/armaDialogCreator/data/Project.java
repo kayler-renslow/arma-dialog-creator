@@ -12,6 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -23,18 +25,18 @@ import java.util.Calendar;
 
 /**
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor} is editing,
- the {@link MacroRegistry} instance, as well as all ExternalResources.
+ the {@link ProjectMacroRegistry} instance, as well as all ExternalResources.
 
  @author Kayler
  @since 07/19/2016. */
-public class Project {
+public class Project implements SpecificationRegistry {
 	private String projectName;
 	private String projectDescription;
 	private final File appSaveDirectory;
 	private final File projectSaveDirectory;
 
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
-	private final MacroRegistry macroRegistry = new MacroRegistry();
+	private final ProjectMacroRegistry macroRegistry = new ProjectMacroRegistry();
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
 	private final CustomControlClassRegistry controlRegistry = new CustomControlClassRegistry();
 	private ProjectExportConfiguration exportConfiguration;
@@ -114,7 +116,7 @@ public class Project {
 	}
 
 	@NotNull
-	public MacroRegistry getMacroRegistry() {
+	public ProjectMacroRegistry getMacroRegistry() {
 		return macroRegistry;
 	}
 
@@ -143,6 +145,7 @@ public class Project {
 		this.exportConfiguration = exportConfiguration;
 	}
 
+	@Override
 	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
 		ControlClass controlClass = getEditingDisplay().findControlByClassName(className);
@@ -151,5 +154,11 @@ public class Project {
 		}
 
 		return controlRegistry.findControlClassByName(className);
+	}
+
+	@Nullable
+	@Override
+	public Macro findMacroByKey(@NotNull String macroKey) {
+		return getMacroRegistry().findMacroByKey(macroKey);
 	}
 }

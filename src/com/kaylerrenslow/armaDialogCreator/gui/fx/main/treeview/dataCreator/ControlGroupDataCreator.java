@@ -11,8 +11,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ControlGroupControl;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
@@ -45,8 +46,8 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<TreeItemEntr
 			return null;
 		}
 
-		return new ControlGroupTreeItemEntry(new ControlGroupControl(dialog.getClassName(), -1, new Expression("0", getEnv()), new Expression("0", getEnv()), new Expression
-				("1", getEnv()), new Expression("1", getEnv()),
-				DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), getEnv()));
+		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
+
+		return new ControlGroupTreeItemEntry(new ControlGroupControl(dialog.getClassName(), -1, resolution, getEnv(), ApplicationDataManager.getInstance().getCurrentProject()));
 	}
 }

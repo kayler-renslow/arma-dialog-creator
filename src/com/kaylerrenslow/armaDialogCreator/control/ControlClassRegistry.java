@@ -8,21 +8,24 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
+package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/04/2016.
- */
-public class ControlGroupControl extends ArmaControlGroup {
+ Used for locating {@link ControlClass} instances.
 
-	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, idc, resolution, RendererLookup.CONTROL_GROUP, env, registry);
-	}
+ @author Kayler
+ @since 11/19/2016 */
+public interface ControlClassRegistry {
+
+	/**
+	 Will get the custom control class by the given name
+
+	 @return the matched {@link ControlClass}, or null if nothing could be matched
+	 */
+	@Nullable
+	ControlClass findControlClassByName(@NotNull String className);
 
 }

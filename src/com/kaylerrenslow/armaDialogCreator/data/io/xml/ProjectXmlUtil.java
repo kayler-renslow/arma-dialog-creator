@@ -19,11 +19,12 @@ import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -34,12 +35,12 @@ import java.util.List;
 public class ProjectXmlUtil {
 
 	/**
-	 Loads a {@link ControlClassSpecification} from xml file.
+	 Loads a {@link ControlClassSpecification} from xml.
 
 	 @param containerElement element that contains the xml tags written by {@link #writeControlClassSpecification(XmlWriterOutputStream, ControlClassSpecification)}
 	 @param context used for loading {@link ControlPropertySpecification} via {@link #loadControlProperty(Element, DataContext, XmlErrorRecorder)}
 	 */
-	public static List<ControlClassSpecification> loadControlClassSpecifications(@NotNull Element containerElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) throws IOException {
+	public static List<ControlClassSpecification> loadControlClassSpecifications(@NotNull Element containerElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		List<Element> classSpecElements = XmlUtil.getChildElementsWithTagName(containerElement, "class-spec");
 		List<ControlClassSpecification> specs = new ArrayList<>(classSpecElements.size());
 
@@ -52,12 +53,12 @@ public class ProjectXmlUtil {
 		return specs;
 	}
 
-	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) throws IOException {
+	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		String className = classSpecElement.getAttribute("name");
 		String extend = classSpecElement.getAttribute("extend");
 		ControlPropertySpecification[] requiredProperties = ControlPropertySpecification.EMPTY;
 		ControlPropertySpecification[] optionalProperties = ControlPropertySpecification.EMPTY;
-		ControlPropertySpecification[] overriddenProperties = ControlPropertySpecification.EMPTY;
+		List<ControlPropertyLookup> overriddenProperties = new LinkedList<>();
 		ControlClassSpecification[] requiredClasses = ControlClassSpecification.EMPTY;
 		ControlClassSpecification[] optionalClasses = ControlClassSpecification.EMPTY;
 
@@ -78,7 +79,7 @@ public class ProjectXmlUtil {
 		//overridden control properties
 		List<Element> overriddenPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "overridden-properties");
 		if (overriddenPropertyElementGroups.size() > 0) {
-			overriddenProperties = loadPropertyArray(context, recorder, controlProperty, overriddenPropertyElementGroups.get(0));
+			overriddenProperties = loadOverrideControlProperties(overriddenPropertyElementGroups.get(0), recorder);
 		}
 
 
@@ -97,7 +98,10 @@ public class ProjectXmlUtil {
 		}
 
 		ControlClassSpecification specification = new ControlClassSpecification(className, requiredProperties, optionalProperties, requiredClasses, optionalClasses);
-		Collections.addAll(specification.getOverriddenProperties(), overriddenProperties);
+		for (ControlPropertyLookup overriden : overriddenProperties) {
+			specification.overrideProperty(overriden);
+		}
+
 		specification.setExtendClass(extend);
 
 		return specification;
@@ -117,14 +121,8 @@ public class ProjectXmlUtil {
 		for (Element missingPropertyElement : missingPropertyElements) {
 			String idAttr = missingPropertyElement.getAttribute(lookupId);
 			String macroId = missingPropertyElement.getAttribute(macroKey);
-			ControlPropertyLookup lookup;
-			try {
-				int id = Integer.parseInt(idAttr);
-				lookup = ControlPropertyLookup.findById(id);
-			} catch (IllegalArgumentException e) {
-				recorder.addError(new ParseError(
-						String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"), idAttr, missingPropertyElement)
-				));
+			ControlPropertyLookup lookup = getLookup(idAttr, missingPropertyElement, recorder);
+			if (lookup == null) {
 				return ControlPropertySpecification.EMPTY;
 			}
 
@@ -138,7 +136,7 @@ public class ProjectXmlUtil {
 	}
 
 	/**
-	 Writes a {@link ControlClassSpecification} to xml file.
+	 Writes a {@link ControlClassSpecification} to xml.
 
 	 @param stm xml writer stream
 	 @param specification specification to write
@@ -157,7 +155,7 @@ public class ProjectXmlUtil {
 				if (property.getValue() == null) {
 					writeMissingControlPropertyValue(stm, property);
 				} else {
-					writeControlProperty(stm, property.constructNewControlProperty());
+					writeControlPropertySpecification(stm, property);
 				}
 			}
 			stm.writeCloseTag(requiredProperties);
@@ -171,7 +169,7 @@ public class ProjectXmlUtil {
 				if (property.getValue() == null) {
 					writeMissingControlPropertyValue(stm, property);
 				} else {
-					writeControlProperty(stm, property.constructNewControlProperty());
+					writeControlPropertySpecification(stm, property);
 				}
 			}
 			stm.writeCloseTag(optionalProperties);
@@ -182,11 +180,7 @@ public class ProjectXmlUtil {
 			final String overriddenProperties = "overridden-properties";
 			stm.writeBeginTag(overriddenProperties);
 			for (ControlPropertySpecification property : specification.getOverriddenProperties()) {
-				if (property.getValue() == null) {
-					writeMissingControlPropertyValue(stm, property);
-				} else {
-					writeControlProperty(stm, property.constructNewControlProperty());
-				}
+				writeOverrideControlPropertyLookup(stm, property.getPropertyLookup());
 			}
 			stm.writeCloseTag(overriddenProperties);
 		}
@@ -214,8 +208,48 @@ public class ProjectXmlUtil {
 		stm.writeCloseTag("class-spec");
 	}
 
+	/**
+	 Writes a list of {@link ControlProperty} that is overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlProperty#getPropertyLookup()}
+	 is written. This method simply invokes {@link #writeOverrideControlPropertyLookup(XmlWriterOutputStream, ControlPropertyLookupConstant)} for each {@link ControlProperty} in
+	 <code>properties</code>
+
+	 @param stm xml writer stream
+	 @param properties properties to write
+	 @throws IOException
+	 */
+	public static void writeOverrideControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull List<ControlProperty> properties) throws IOException {
+		for (ControlProperty property : properties) {
+			writeOverrideControlPropertyLookup(stm, property.getPropertyLookup());
+		}
+	}
+
+	/**
+	 Writes a {@link ControlPropertyLookupConstant} that is overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlPropertyLookupConstant#getPropertyType()} is
+	 written.
+
+	 @param stm xml writer stream
+	 @param lookup lookup to write
+	 @throws IOException
+	 */
+	public static void writeOverrideControlPropertyLookup(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup) throws IOException {
+		stm.write("<override-property lookup-id='" + lookup.getPropertyId() + "' />");
+	}
+
+	public static List<ControlPropertyLookup> loadOverrideControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
+		List<Element> overridePropertyElements = XmlUtil.getChildElementsWithTagName(parent, "override-property");
+		List<ControlPropertyLookup> list = new LinkedList<>();
+		final String lookupId = "lookup-id";
+		for (Element overridePropertyElement : overridePropertyElements) {
+			ControlPropertyLookup lookup = getLookup(overridePropertyElement.getAttribute(lookupId), overridePropertyElement, recorder);
+			if (lookup != null) {
+				list.add(lookup);
+			}
+		}
+		return list;
+	}
+
 	private static void writeMissingControlPropertyValue(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification property) throws IOException {
-		stm.write("<undefined lookup-id='" + property.getLookup().getPropertyId() + "'");
+		stm.write("<undefined lookup-id='" + property.getPropertyLookup().getPropertyId() + "'");
 		if (property.getMacroKey() != null) {
 			stm.write(" macro-key='" + property.getMacroKey() + "'");
 		}
@@ -224,15 +258,24 @@ public class ProjectXmlUtil {
 
 
 	public static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlProperty cprop) throws IOException {
-		if (cprop.getValue() == null) {
+		writeControlProperty(stm, cprop.getPropertyLookup(), cprop.getMacro() == null ? null : cprop.getMacro().getKey(), cprop.getValue());
+	}
+
+	public static void writeControlPropertySpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification specification) throws IOException {
+		writeControlProperty(stm, specification.getPropertyLookup(), specification.getMacroKey(), specification.getValue());
+	}
+
+	private static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup, @Nullable String macroKey, @Nullable SerializableValue value)
+			throws IOException {
+		if (value == null) {
 			return;
 		}
 		stm.writeBeginTag(String.format("control-property lookup-id='%d'%s",
-				cprop.getPropertyLookup().getPropertyId(),
-				cprop.getMacro() == null ? "" : String.format(" macro-key='%s'", cprop.getMacro().getKey())
+				lookup.getPropertyId(),
+				macroKey == null ? "" : String.format(" macro-key='%s'", macroKey)
 				)
 		);
-		writeValueTags(stm, cprop.getValue());
+		writeValueTags(stm, value);
 		stm.writeCloseTag("control-property");
 	}
 
@@ -244,22 +287,10 @@ public class ProjectXmlUtil {
 	 @param recorder recorder to use for reporting errors
 	 */
 	public static ControlPropertySpecification loadControlProperty(@NotNull Element controlPropertyElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
-		ControlPropertyLookup lookup;
 		String lookupIdStr = controlPropertyElement.getAttribute("lookup-id");
 		String macroKey = controlPropertyElement.getAttribute("macro-key");
-		try {
-			int id = Integer.parseInt(lookupIdStr);
-			lookup = ControlPropertyLookup.findById(id);
-		} catch (IllegalArgumentException e) {
-			recorder.addError(
-					new ParseError(
-							String.format(
-									Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"),
-									lookupIdStr,
-									controlPropertyElement.getParentNode().getNodeName()
-							)
-					)
-			);
+		ControlPropertyLookup lookup = getLookup(lookupIdStr, controlPropertyElement.getParentNode(), recorder);
+		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
 		SerializableValue value = getValue(context, lookup.getPropertyType(), controlPropertyElement, recorder);
@@ -315,5 +346,26 @@ public class ProjectXmlUtil {
 			return null;
 		}
 		return value;
+	}
+
+	@Nullable
+	private static ControlPropertyLookup getLookup(@NotNull String lookupIdStr, @NotNull Node parentNode, @NotNull XmlErrorRecorder recorder) {
+		ControlPropertyLookup lookup;
+		try {
+			int id = Integer.parseInt(lookupIdStr);
+			lookup = ControlPropertyLookup.findById(id);
+			return lookup;
+		} catch (IllegalArgumentException e) {
+			recorder.addError(
+					new ParseError(
+							String.format(
+									Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"),
+									lookupIdStr,
+									parentNode.getNodeName()
+							)
+					)
+			);
+			return null;
+		}
 	}
 }

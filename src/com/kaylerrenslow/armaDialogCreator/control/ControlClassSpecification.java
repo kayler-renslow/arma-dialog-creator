@@ -45,7 +45,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		} else {
 			requiredPropertiesLookup = new ControlPropertyLookup[requiredProperties.length];
 			for (int i = 0; i < requiredPropertiesLookup.length; i++) {
-				requiredPropertiesLookup[i] = requiredProperties[i].getLookup();
+				requiredPropertiesLookup[i] = requiredProperties[i].getPropertyLookup();
 			}
 		}
 		if (optionalProperties.length == 0) {
@@ -53,7 +53,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		} else {
 			optionalPropertiesLookup = new ControlPropertyLookup[optionalProperties.length];
 			for (int i = 0; i < optionalPropertiesLookup.length; i++) {
-				optionalPropertiesLookup[i] = optionalProperties[i].getLookup();
+				optionalPropertiesLookup[i] = optionalProperties[i].getPropertyLookup();
 			}
 		}
 
@@ -63,8 +63,20 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this(controlClassName, requiredProperties, optionalProperties, ControlClassSpecification.EMPTY, ControlClassSpecification.EMPTY);
 	}
 
-	/** Create a specification from the given {@link ControlClass} */
+	/** Create a specification from the given {@link ControlClass} and deep copy the class */
 	public ControlClassSpecification(@NotNull ControlClass controlClass) {
+		this(controlClass, true);
+	}
+
+	/**
+	 Constructs a specification from the given {@link ControlClass}. If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClass#getRequiredProperties()} and
+	 {@link ControlClass#getOptionalProperties()} will be deep copied via {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. If false, will shallow copy
+	 the values.
+
+	 @param controlClass class to use
+	 @param deepCopy true to deep copy, false otherwise
+	 */
+	public ControlClassSpecification(@NotNull ControlClass controlClass, boolean deepCopy) {
 		this.controlClassName = controlClass.getClassName();
 		this.requiredProperties = new ControlPropertySpecification[controlClass.getRequiredProperties().size()];
 		this.optionalProperties = new ControlPropertySpecification[controlClass.getOptionalProperties().size()];
@@ -72,10 +84,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this.optionalNestedClasses = controlClass.getSpecProvider().getOptionalNestedClasses();
 
 		for (int i = 0; i < requiredProperties.length; i++) {
-			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i));
+			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i), deepCopy);
 		}
 		for (int i = 0; i < optionalProperties.length; i++) {
-			optionalProperties[i] = new ControlPropertySpecification(controlClass.getOptionalProperties().get(i));
+			optionalProperties[i] = new ControlPropertySpecification(controlClass.getOptionalProperties().get(i), deepCopy);
 		}
 
 		this.optionalPropertiesLookup = controlClass.getSpecProvider().getOptionalProperties();
@@ -143,6 +155,26 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		return overriddenProperties;
 	}
 
+	/**
+	 Overrides the given property lookup and adds it to {@link #getOverriddenProperties()}
+
+	 @param lookup lookup to match
+	 @throws IllegalArgumentException when lookup couldn't be matched
+	 */
+	public void overrideProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		ControlPropertySpecification match = findProperty(lookup);
+		getOverriddenProperties().add(match);
+	}
+
+	/**
+	 De-overrides the given property lookup
+
+	 @param lookup property to remove from {@link #getOverriddenProperties()}
+	 @throws IllegalArgumentException when lookup couldn't be matched
+	 */
+	public void removeOverrideProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		getOverriddenProperties().remove(findOverridenProperty(lookup));
+	}
 
 	/**
 	 Get a {@link ControlPropertySpecification} with the given lookup
@@ -152,36 +184,38 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	@Nullable
 	public ControlPropertySpecification findOverridenProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		for (ControlPropertySpecification propertySpecification : overriddenProperties) {
-			if (propertySpecification.getLookup() == lookup) {
+			if (propertySpecification.getPropertyLookup() == lookup) {
 				return propertySpecification;
 			}
 		}
 		return null;
 	}
 
-	/** Just invokes {@link ControlClass#ControlClass(ControlClassSpecification)} with this instance provided */
+	/** Just invokes {@link ControlClass#ControlClass(ControlClassSpecification, SpecificationRegistry)} with this instance provided */
 	@NotNull
-	public ControlClass constructNewControlClass() {
-		return new ControlClass(this);
+	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry) {
+		return new ControlClass(this, registry);
 	}
 
 	/**
 	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and {@link #getOptionalControlProperties()}
 
 	 @param lookup the lookup to fetch instance for
-	 @return the instance, or null if nothing could be matched
+	 @return the instance
+	 @throws IllegalArgumentException if nothing could be matched
 	 */
+	@NotNull
 	public ControlPropertySpecification findProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		for (ControlPropertySpecification property : getRequiredControlProperties()) {
-			if (property.getLookup() == lookup) {
+			if (property.getPropertyLookup() == lookup) {
 				return property;
 			}
 		}
 		for (ControlPropertySpecification property : getOptionalControlProperties()) {
-			if (property.getLookup() == lookup) {
+			if (property.getPropertyLookup() == lookup) {
 				return property;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("couldn't find property " + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]");
 	}
 }

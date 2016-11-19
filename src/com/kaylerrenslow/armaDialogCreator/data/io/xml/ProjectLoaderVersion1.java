@@ -31,6 +31,7 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
@@ -158,7 +159,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					continue;
 				}
 				ControlClassSpecification spec = ProjectXmlUtil.loadControlClassSpecification(controlClassSpecs.get(0), dataContext, this.loader);
-				CustomControlClass customControlClass = new CustomControlClass(spec);
+				CustomControlClass customControlClass = new CustomControlClass(spec, project);
 				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
 				if (commentElements.size() > 0) {
 					customControlClass.setComment(XmlUtil.getImmediateTextContent(commentElements.get(0)));
@@ -315,12 +316,15 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private ArmaControl getControl(Element controlElement, List<Macro> macros) {
+		//class name
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
 			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.missing_control_name"), controlElement.getTextContent())));
 			return null;
 		}
 
+
+		//control type
 		ControlType controlType;
 		String controlTypeStr = controlElement.getAttribute("control-type-id");
 		try {
@@ -331,6 +335,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 
+
+		//renderer
 		RendererLookup rendererLookup;
 		String rendererStr = controlElement.getAttribute("renderer-id");
 		try {
@@ -339,8 +345,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_renderer_f"), rendererStr, controlClassName)));
 			return null;
 		}
-		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
 
+
+		//control properties
+		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
 		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
 			ControlPropertySpecification property = ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader);
@@ -349,35 +357,43 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			}
 		}
 
+
+		//control construction
 		ArmaControlSpecRequirement specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
 		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
 		if (!containsAll) {
 			return null;
 		}
 
-		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext));
+		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext), project);
 
-		for (ControlPropertyLookup lookup : specProvider.getRequiredProperties()) {
-			for (ControlPropertySpecification config : properties) {
-				if (config.getLookup() == lookup) {
-					ControlProperty property = control.findRequiredProperty(lookup);
-					setControlPropertyValue(macros, config, property);
-				}
-			}
+
+		//property matching and value setting
+		for (ControlPropertySpecification specification : properties) {
+			control.findProperty(specification.getPropertyLookup()).setTo(specification, project);
+		}
+		
+
+		//load nested classes
+		List<Element> reqNestedClassesElementGroups = XmlUtil.getChildElementsWithTagName(controlElement, "nested-required");
+		List<ControlClassSpecification> nestedRequired = null;
+		List<ControlClassSpecification> nestedOptional = null;
+		if (reqNestedClassesElementGroups.size() > 0) {
+			nestedRequired = ProjectXmlUtil.loadControlClassSpecifications(reqNestedClassesElementGroups.get(0), dataContext, this.loader);
 		}
 
-		for (ControlPropertyLookup lookup : specProvider.getOptionalProperties()) {
-			for (ControlPropertySpecification config : properties) {
-				if (config.getLookup() == lookup) {
-					ControlProperty property = control.findOptionalProperty(lookup);
-					setControlPropertyValue(macros, config, property);
-				}
-			}
+		List<Element> optNestedClassesElementGroups = XmlUtil.getChildElementsWithTagName(controlElement, "nested-optional");
+		if (optNestedClassesElementGroups.size() > 0) {
+			nestedOptional = ProjectXmlUtil.loadControlClassSpecifications(optNestedClassesElementGroups.get(0), dataContext, this.loader);
 		}
+
+		jobs.add(new ControlNestedClassesJob(control, nestedRequired, nestedOptional));
+
+		List<ControlPropertyLookup> overrideControlProperties = ProjectXmlUtil.loadOverrideControlProperties(controlElement, this.loader);
 
 		String extendClassName = controlElement.getAttribute("extend-class");
 		if (extendClassName.length() > 0) {
-			jobs.add(new ControlExtendJob(extendClassName, control));
+			jobs.add(new ControlExtendJob(extendClassName, control, overrideControlProperties));
 		}
 
 		return control;
@@ -387,22 +403,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return ProjectXmlUtil.getValue(dataContext, propertyType, controlPropertyElement, this.loader);
 	}
 
-	private void setControlPropertyValue(List<Macro> macros, ControlPropertySpecification config, ControlProperty property) {
-		property.setValue(config.getValue());
-		if (config.getMacroKey() != null) {
-			for (Macro macro : macros) {
-				if (macro.getKey().equals(config.getMacroKey())) {
-					property.setValueToMacro(macro);
-				}
-			}
-		}
-	}
-
 	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ControlPropertySpecification> master) {
 		for (ControlPropertyLookup toMatchLookup : toMatch) {
 			boolean matched = false;
 			for (ControlPropertySpecification masterLookup : master) {
-				if (masterLookup.getLookup() == toMatchLookup) {
+				if (masterLookup.getPropertyLookup() == toMatchLookup) {
 					matched = true;
 					break;
 				}
@@ -420,13 +425,51 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader);
 	}
 
+	private static class ControlNestedClassesJob implements AfterLoadJob {
+
+		private final ControlClass addToMe;
+		private final List<ControlClassSpecification> requiredNested;
+		private final List<ControlClassSpecification> optionalNested;
+
+		public ControlNestedClassesJob(@NotNull ControlClass addToMe, @Nullable List<ControlClassSpecification> requiredNested, @Nullable List<ControlClassSpecification> optionalNested) {
+			this.addToMe = addToMe;
+			this.requiredNested = requiredNested;
+			this.optionalNested = optionalNested;
+		}
+
+		@Override
+		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
+			if (requiredNested != null) {
+				for (ControlClassSpecification nested : requiredNested) {
+					loadClass(project, nested);
+				}
+			}
+			if (optionalNested != null) {
+				for (ControlClassSpecification nested : optionalNested) {
+					loadClass(project, nested);
+				}
+			}
+		}
+
+		private void loadClass(@NotNull Project project, ControlClassSpecification nested) {
+			try {
+				ControlClass nestedClass = addToMe.findNestedClass(nested.getClassName());
+				nestedClass.setTo(nested.constructNewControlClass(project));
+			} catch (IllegalArgumentException ignore) {
+
+			}
+		}
+	}
+
 	private static class ControlExtendJob implements AfterLoadJob {
 		private final String controlClassName;
 		private final ArmaControl setMyExtend;
+		private final List<ControlPropertyLookup> overrideProperties;
 
-		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend) {
+		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend, List<ControlPropertyLookup> overrideProperties) {
 			this.controlClassName = controlClassName;
 			this.setMyExtend = setMyExtend;
+			this.overrideProperties = overrideProperties;
 		}
 
 
@@ -438,6 +481,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				setMyExtend.extendControlClass(match);
 			} else {
 				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
+			}
+			for (ControlPropertyLookup overrideProperty : overrideProperties) {
+				setMyExtend.overrideProperty(overrideProperty);
 			}
 		}
 	}

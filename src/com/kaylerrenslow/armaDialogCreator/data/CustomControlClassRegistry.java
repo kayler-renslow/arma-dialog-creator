@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  Created by Kayler on 10/23/2016.
  */
-public class CustomControlClassRegistry {
+public class CustomControlClassRegistry implements ControlClassRegistry {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
 
@@ -39,7 +40,7 @@ public class CustomControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClassSpecification controlClass) {
-		controlClassList.add(new CustomControlClass(controlClass));
+		controlClassList.add(new CustomControlClass(controlClass, ApplicationDataManager.getInstance().getCurrentProject()));
 	}
 
 	public void addControlClass(@NotNull CustomControlClass controlClass) {
@@ -47,6 +48,7 @@ public class CustomControlClassRegistry {
 	}
 
 	/** Will get the custom control class by the given name, or null if nothing could be matched */
+	@Override
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
 			if (controlClass.getSpecification().getClassName().equals(className)) {
@@ -57,7 +59,7 @@ public class CustomControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClass controlClass) {
-		addControlClass(new CustomControlClass(controlClass));
+		addControlClass(new CustomControlClass(controlClass, ApplicationDataManager.getInstance().getCurrentProject()));
 	}
 
 	public void removeControlClass(@NotNull CustomControlClass controlClass) {
