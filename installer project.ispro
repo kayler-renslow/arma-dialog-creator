@@ -1,0 +1,44 @@
+; InstallSimple project
+
+[Setup]
+WindowTitle=Arma Dialog Creator Installer
+ProductName=Arma Dialog creator
+
+[Graphics]
+SplashScreen=
+SplashScreenDelay=1
+Header=
+HeaderJustify=Right
+HeaderFontColor=0
+WizardBitmap=
+WizardFontColor=0
+
+[FirstMessage]
+message text
+[LastMessage]
+Thank you for using our software.
+
+[LicenseAgreement]
+license
+
+[SetupFiles]
+SourceFolder=D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator
+SpecialFolder=Program Files
+SetupPath=Arma_Dialog_Creator
+SetupFile=D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator\Arma Dialog Creator Installer.exe
+
+[Shortcuts]
+ProgramGroup=
+Arma Dialog Creator.exe=d
+Uninstall.exe=
+
+[Registry]
+
+[Requirements]
+OperatingSystem=WinAll
+NetFramework=0
+NetFrameworkLink=http://www.microsoft.com/en-us/download/details.aspx?id=17718
+AdminRights=0
+
+[AfterInstalling]
+Reboot=0
