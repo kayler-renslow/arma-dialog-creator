@@ -77,7 +77,7 @@ public class CustomControlClass {
 					if (update.wasAdded()) {
 						specification.getOverriddenProperties().add(new ControlPropertySpecification(update.getOveridden()));
 					} else {
-						ControlPropertySpecification propertySpecification = specification.findOverridenProperty(update.getOveridden().getPropertyLookup());
+						ControlPropertySpecification propertySpecification = specification.findOverriddenProperty(update.getOveridden().getPropertyLookup());
 						if (propertySpecification != null) {
 							specification.getOverriddenProperties().remove(propertySpecification);
 						}

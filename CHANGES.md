@@ -1,8 +1,8 @@
 **Added:**
-* untested nested control class loading 
+* none 
 
 **Changed:**
-* did some modularization stuff with specifications
+* none
 
 **Fixed:**
-* none
+* control properties editor using wrong editors

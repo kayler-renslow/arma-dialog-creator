@@ -172,8 +172,8 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 @param lookup property to remove from {@link #getOverriddenProperties()}
 	 @throws IllegalArgumentException when lookup couldn't be matched
 	 */
-	public void removeOverrideProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		getOverriddenProperties().remove(findOverridenProperty(lookup));
+	public void removeOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		getOverriddenProperties().remove(findOverriddenProperty(lookup));
 	}
 
 	/**
@@ -182,7 +182,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 @return the matched instance, or null if nothing could be matched
 	 */
 	@Nullable
-	public ControlPropertySpecification findOverridenProperty(@NotNull ControlPropertyLookupConstant lookup) {
+	public ControlPropertySpecification findOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		for (ControlPropertySpecification propertySpecification : overriddenProperties) {
 			if (propertySpecification.getPropertyLookup() == lookup) {
 				return propertySpecification;

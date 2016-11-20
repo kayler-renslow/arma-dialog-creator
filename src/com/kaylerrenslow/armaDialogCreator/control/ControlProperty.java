@@ -132,7 +132,6 @@ public class ControlProperty {
 	 @see #isCustomData()
 	 */
 	public void setCustomDataValue(@Nullable Object customData) {
-		this.customDataSet = true;
 		this.customData = customData;
 		if (this.customDataValueObserver == null) {
 			customDataValueObserver = new ValueObserver<>(customData);

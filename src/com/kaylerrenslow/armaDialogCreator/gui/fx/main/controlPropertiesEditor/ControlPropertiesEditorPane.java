@@ -273,7 +273,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** Get node that holds the controls to input data. */
 	private ControlPropertyInput getPropertyInputNode(ControlProperty controlProperty) {
-		ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+		ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
 		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
 			return new ControlPropertyInputOption(controlClass, controlProperty);
 		}
@@ -567,11 +567,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return true;
-		}
-
-		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return ControlStyleGroup.class;
 		}
@@ -593,7 +588,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 			this.controlProperty = controlProperty;
 			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+
 			inputField.setValue((C) controlProperty.getValue());
 			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<C>() {
 				@Override
