@@ -123,7 +123,9 @@ public class ControlClass {
 	}
 
 	private void afterConstructor() {
-		//		overrideProperties.addAll(getAllChildProperties()); TODO UNCOMMENT THIS ------------------------------------------------------------------------------------------------------------------
+		for (ControlProperty property : getAllChildProperties()) {
+			overrideProperties.add(property);
+		}
 
 		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
 			@Override
@@ -178,21 +180,25 @@ public class ControlClass {
 		return classNameObserver;
 	}
 
+	/**
+	 Extend the given {@link ControlClass}.
+
+	 @param controlClass class to extend
+	 @throws IllegalArgumentException if <code>controlClass</code>==this
+	 */
 	public final void extendControlClass(@Nullable ControlClass controlClass) {
 		if (controlClass == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
-		ControlClass old = getExtendClass();
-		extendClassObserver.updateValue(controlClass);
+		ControlClass oldExtendClass = getExtendClass();
 		if (controlClass != null) {
-			for (ControlProperty property : controlClass.getAllChildProperties()) {
+			for (ControlProperty property : getAllChildProperties()) {
 				if (propertyIsOverridden(property.getPropertyLookup())) {
-					System.out.println("ControlClass.extendControlClass OVERRIDDEN property=" + property);
 					continue;
 				}
 				try {
-					ControlProperty match = findProperty(property.getPropertyLookup());
-					match.setTo(property);
+					ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
+					property.setTo(inherit);
 				} catch (IllegalArgumentException ignore) {
 
 				}
@@ -200,17 +206,15 @@ public class ControlClass {
 			controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 		} else {
 			for (ControlProperty property : getAllChildProperties()) {
-				if (propertyIsOverridden(property.getPropertyLookup())) {
-					continue;
-				}
-				property.setTo(property.deepCopy()); //remove any inheritance
 				overrideProperty(property.getPropertyLookup()); //override again
 			}
-			if (old == null) {
+			if (oldExtendClass == null) {
 				return;
 			}
-			old.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
+			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
 		}
+
+		extendClassObserver.updateValue(controlClass);
 
 	}
 

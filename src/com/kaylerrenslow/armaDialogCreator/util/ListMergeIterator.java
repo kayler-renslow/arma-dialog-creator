@@ -27,6 +27,7 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 	private int ind;
 	private final LinkedList<L> stack = new LinkedList<>();
 	private List<E> current;
+	private boolean used = false;
 
 
 	/**
@@ -67,9 +68,6 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 			}
 			return hasAnotherInd;
 		}
-		if (stack.size() == 0) {
-			return false;
-		}
 		if (ind < current.size()) {
 			return true;
 		}
@@ -86,6 +84,7 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 
 	@Override
 	public E next() {
+		used = true;
 		if (!hasNext()) {
 			throw new IllegalStateException("nothing left to fetch");
 		}
@@ -105,6 +104,9 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 
 	@Override
 	public Iterator<E> iterator() {
+		if (!used) {
+			return this;
+		}
 		return new ListMergeIterator<>(backwards, lists);
 	}
 }

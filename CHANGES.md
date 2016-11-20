@@ -5,4 +5,5 @@
 * none
 
 **Fixed:**
-* none
+* control class extending
+* list merge iterator
