@@ -46,7 +46,7 @@ public class FileChooserPane extends HBox {
 		super(5);
 		HBox.setHgrow(tfFile, Priority.ALWAYS);
 		this.getChildren().addAll(btnLocate, tfFile);
-		chosenFileObserver.addValueListener(new ValueListener<File>() {
+		chosenFileObserver.addListener(new ValueListener<File>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
 				setChosenFile(newValue);

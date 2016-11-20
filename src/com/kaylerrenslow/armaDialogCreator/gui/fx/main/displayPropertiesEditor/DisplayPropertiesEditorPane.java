@@ -165,7 +165,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 					property.setValue((SerializableValue) newValue);
 				}
 			});
-			displayProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+			displayProperty.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 					editor.setValue(newValue);

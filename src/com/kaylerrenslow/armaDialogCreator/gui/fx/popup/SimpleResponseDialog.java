@@ -8,41 +8,30 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.util;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.LinkedList;
 
 /**
- Created by Kayler on 07/05/2016.
- */
-public class UpdateListenerGroup<T> {
-	private final ObservableList<UpdateListener<T>> updateListeners = FXCollections.observableArrayList(new LinkedList<>());
+ A simple response dialog
+
+ @author Kayler
+ @since 11/19/2016 */
+public class SimpleResponseDialog extends StageDialog<HBox> {
+
+	public SimpleResponseDialog(Stage primaryStage, String title, String body, boolean canCancel, boolean canOk, boolean hasHelp) {
+		super(primaryStage, new HBox(), title, canCancel, canOk, hasHelp);
+		final Label lblBody = new Label(body);
+		lblBody.setWrapText(true);
+		myRootElement.getChildren().add(lblBody);
+
+	}
 
 	@NotNull
-	public ObservableList<UpdateListener<T>> getUpdateListeners() {
-		return updateListeners;
-	}
-
-	/**Will add the given listener. If the listener has already been added, will do nothing (no duplicates allowed).*/
-	public void addListener(@NotNull UpdateListener<T> listener) {
-		if (updateListeners.contains(listener)) {
-			return;
-		}
-		updateListeners.add(listener);
-	}
-
-	public boolean removeListener(@NotNull UpdateListener<T> listener) {
-		return updateListeners.remove(listener);
-	}
-
-	public void update(@Nullable T data) {
-		for (UpdateListener<T> updateListener : updateListeners) {
-			updateListener.update(data);
-		}
+	public GenericResponseFooter getFooter() {
+		return footer;
 	}
 }

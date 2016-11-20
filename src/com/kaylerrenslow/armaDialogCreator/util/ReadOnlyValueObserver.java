@@ -25,7 +25,7 @@ public class ReadOnlyValueObserver<V> {
 
 	public ReadOnlyValueObserver(@NotNull ValueObserver<V> observer) {
 		this.observer = observer;
-		observer.addValueListener(new ValueListener<V>() {
+		observer.addListener(new ValueListener<V>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
 				for (ReadOnlyValueListener<V> listener : listeners) {

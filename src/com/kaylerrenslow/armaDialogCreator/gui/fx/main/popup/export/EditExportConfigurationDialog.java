@@ -98,7 +98,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		/*class name*/
 		final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker(), configuration.getExportClassName());
 		final ValueObserver<String> classNameObserver = inputFieldClassName.getValueObserver();
-		classNameObserver.addValueListener(new ValueListener<String>() {
+		classNameObserver.addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 				configuration.setExportClassName(newValue);
@@ -129,7 +129,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.locate_export_directory"), configuration.getExportLocation());
 		Tooltip.install(chooserPane, new Tooltip(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_directory_tooltip")));
 		chooserPane.setChosenFile(configuration.getExportLocation());
-		chooserPane.getChosenFileObserver().addValueListener(new ValueListener<File>() {
+		chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
 				configuration.setExportLocation(newValue);
@@ -217,7 +217,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		VBox.setVgrow(textAreaMacros, Priority.ALWAYS);
 
 
-		exportMacrosToFileObserver.addValueListener(new ValueListener<Boolean>() {
+		exportMacrosToFileObserver.addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean export) {
 				if (export) {

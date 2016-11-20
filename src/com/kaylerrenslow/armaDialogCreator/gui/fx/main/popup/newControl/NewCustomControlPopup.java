@@ -50,7 +50,6 @@ import java.io.IOException;
  @author Kayler
  @since 07/06/2016. */
 public class NewCustomControlPopup extends StagePopup<VBox> {
-	private static final Key<ControlClassMenuItem> KEY_MENU_ITEM = new Key<>("NewControlPopup.controlClassMenuItem");
 
 	private final StackPane stackPaneProperties = new StackPane();
 	private final TextArea taPreviewSample = new TextArea();
@@ -80,7 +79,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		hboxHeader.getChildren().add(lblControlClassName);
 		hboxHeader.getChildren().add(inClassName);
 
-		inClassName.getValueObserver().addValueListener(new ValueListener<String>() {
+		inClassName.getValueObserver().addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 				newValue = newValue != null ? newValue : "";
@@ -97,7 +96,6 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
 			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
-			controlClass.getUserData().put(KEY_MENU_ITEM, controlTypeControlClasses[i]);
 			if (lookup.controlType == ControlType.STATIC) {
 				toSelect = controlTypeControlClasses[i];
 			}
@@ -173,7 +171,6 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
 			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass(ApplicationDataManager.getInstance().getCurrentProject()));
-			items[i].getValue().getUserData().put(KEY_MENU_ITEM, items[i]);
 			i++;
 		}
 		return items;
@@ -190,7 +187,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	 */
 	protected void setToControlClass(@NotNull ControlClass controlClass) {
 		if (editorPane != null) {
-			editorPane.getControlClass().getPropertyUpdateGroup().removeListener(controlClassListener);
+			removeListeners();
 		}
 		editorPane = new ControlPropertiesEditorPane(controlClass);
 		stackPaneProperties.getChildren().clear();
@@ -218,6 +215,16 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	@Nullable
 	protected ControlPropertiesEditorPane getEditorPane() {
 		return editorPane;
+	}
+
+	@Override
+	protected void closing() {
+		removeListeners();
+	}
+
+	private void removeListeners() {
+		editorPane.getControlClass().getPropertyUpdateGroup().removeListener(controlClassListener);
+		editorPane.unlink();
 	}
 
 	@Override

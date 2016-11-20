@@ -116,7 +116,7 @@ public class ADCProjectInitWindow extends StageDialog<VBox> {
 		for (ProjectInitTab initTab : initTabs) {
 			tabPane.getTabs().add(initTab.getTab());
 			initTab.getTab().setClosable(false);
-			initTab.btnOkEnabledObserver.addValueListener(enabledListener);
+			initTab.btnOkEnabledObserver.addListener(enabledListener);
 
 			tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 				@Override

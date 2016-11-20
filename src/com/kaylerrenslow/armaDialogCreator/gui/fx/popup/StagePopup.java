@@ -40,6 +40,7 @@ public class StagePopup<E extends Parent> {
 	/** The buttons used when invoking {@link #getBoundResponseFooter(boolean, boolean, boolean)}. These are no longer null after invoking the method. */
 	protected Button btnOk, btnCancel, btnHelp;
 	protected GenericResponseFooter footer;
+	private boolean hasBeenShown = false;
 	private final ListChangeListener<? super String> stageStylesheetListener = new ListChangeListener<String>() {
 		@Override
 		public void onChanged(Change<? extends String> c) {
@@ -157,11 +158,17 @@ public class StagePopup<E extends Parent> {
 	 @see Stage#show()
 	 */
 	public void show() {
+		hasBeenShown = true;
 		myStage.show();
 	}
 
 	public boolean isShowing() {
 		return myStage.isShowing();
+	}
+
+	/** Return true if the popup has ben shown via {@link #show()} at least once, false otherwise */
+	public final boolean hasBeenShown() {
+		return hasBeenShown;
 	}
 
 	/**

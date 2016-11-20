@@ -49,13 +49,13 @@ public class DefaultControlTreeItemGraphic extends HBox {
 				entry.updateVisibilityFromButton(newValue);
 			}
 		});
-		entry.getMyArmaControl().getRenderer().getEnabledObserver().addValueListener(new ValueListener<Boolean>() {
+		entry.getMyArmaControl().getRenderer().getEnabledObserver().addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
 				updateVisibilityRadioButton(enabled);
 			}
 		});
-		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
+		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addListener(new ValueListener<AColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue == null) {

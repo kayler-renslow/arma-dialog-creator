@@ -25,7 +25,7 @@ public class ValueObserver<V> {
 	private final LinkedList<ValueListener<V>> listeners = new LinkedList<>();
 	private ReadOnlyValueObserver<V> readOnlyValueObserver;
 
-	public ValueObserver(V value) {
+	public ValueObserver(@Nullable V value) {
 		this.value = value;
 	}
 
@@ -54,7 +54,7 @@ public class ValueObserver<V> {
 	}
 
 	/** Set the listener that listens to the state of the value */
-	public void addValueListener(@NotNull ValueListener<V> listener) {
+	public void addListener(@NotNull ValueListener<V> listener) {
 		if (listeners.contains(listener)) {
 			return;
 		}
@@ -62,10 +62,11 @@ public class ValueObserver<V> {
 	}
 
 	/** Remove the listener from the list. Returns true if the listener was inside the list */
-	public boolean removeListener(ValueListener<V> listener) {
+	public boolean removeListener(@NotNull ValueListener<V> listener) {
 		return listeners.remove(listener);
 	}
 
+	@Nullable
 	public V getValue() {
 		return value;
 	}

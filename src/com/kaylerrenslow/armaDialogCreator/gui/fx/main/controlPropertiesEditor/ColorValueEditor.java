@@ -84,10 +84,15 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	}
 	
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
-	
+
+	@Override
+	public boolean displayFullWidth() {
+		return false;
+	}
+
 	@Override
 	public void focusToEditor() {
 		colorPicker.requestFocus();

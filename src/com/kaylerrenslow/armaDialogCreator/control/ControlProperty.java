@@ -70,7 +70,7 @@ public class ControlProperty {
 		valueObserver = new ValueObserver<>(value);
 		defaultValue = null;
 		beforeMacroValue = value;
-		valueObserver.addValueListener(new ValueListener<SerializableValue>() {
+		valueObserver.addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(ControlProperty.this, oldValue, newValue));
@@ -200,7 +200,7 @@ public class ControlProperty {
 			setValue(beforeMacroValue);
 		} else {
 			this.myMacro = m;
-			this.myMacro.getValueObserver().addValueListener(macroListener);
+			this.myMacro.getValueObserver().addListener(macroListener);
 			beforeMacroValue = valueObserver.getValue();
 			setValue(this.myMacro.getValue());
 		}

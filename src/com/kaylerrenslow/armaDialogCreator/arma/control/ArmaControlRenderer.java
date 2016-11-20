@@ -49,7 +49,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		this.env = env;
 		this.myControl = control;
 		globalBackgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
-		globalBackgroundColorObserver.addValueListener(new ValueListener<AColor>() {
+		globalBackgroundColorObserver.addListener(new ValueListener<AColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue != null) {
@@ -98,12 +98,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				rerender();
 			}
 		};
-		xProperty.getValueObserver().addValueListener(positionValueListener);
-		yProperty.getValueObserver().addValueListener(positionValueListener);
-		wProperty.getValueObserver().addValueListener(positionValueListener);
-		hProperty.getValueObserver().addValueListener(positionValueListener);
+		xProperty.getValueObserver().addListener(positionValueListener);
+		yProperty.getValueObserver().addListener(positionValueListener);
+		wProperty.getValueObserver().addListener(positionValueListener);
+		hProperty.getValueObserver().addListener(positionValueListener);
 
-		enabledObserver.addValueListener(new ValueListener<Boolean>() {
+		enabledObserver.addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				rerender();

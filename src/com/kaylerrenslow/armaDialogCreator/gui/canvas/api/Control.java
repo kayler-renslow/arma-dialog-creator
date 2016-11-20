@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
@@ -34,11 +33,9 @@ public interface Control {
 	};
 
 	/** Get the parent of the control. */
-	@NotNull
 	ControlHolder<? extends Control> getHolder();
 
 	/** Get the display that the control is associated with */
-	@NotNull
 	Display<? extends Control> getDisplay();
 
 	/** Get the update group that will update anytime the control needs to be re-rendered */

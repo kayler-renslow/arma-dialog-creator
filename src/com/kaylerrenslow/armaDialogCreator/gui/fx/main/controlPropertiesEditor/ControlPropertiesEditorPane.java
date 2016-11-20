@@ -27,7 +27,11 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.*;
@@ -45,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -57,14 +62,28 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
 	private ControlClass controlClass;
 
-	private ArrayList<ControlPropertyInputDescriptor> propertyDescriptors = new ArrayList<>();
-	private ControlPropertyEditor[] propertyEditors;
+	private LinkedList<ControlPropertyInputDescriptor> propertyDescriptors = new LinkedList<>();
 
 	private ControlPropertiesEditorPane() {
 		ScrollPane scrollPane = new ScrollPane(accordion);
 		scrollPane.setFitToHeight(true);
 		scrollPane.setFitToWidth(true);
 		getChildren().add(scrollPane);
+	}
+
+	/** Tell all editors to stop listening to the {@link ControlProperty} values again. Invoking is ideal when the pane is no longer needed. */
+	public void unlink() {
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			descriptor.getInput().clearListeners();
+		}
+	}
+
+	/** Tell all editors to listen to the {@link ControlProperty} values again. */
+	public void relink() {
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			descriptor.getInput().initListeners();
+			descriptor.getInput().refreshValue();
+		}
 	}
 
 	private static class ControlPropertyInputDescriptor {
@@ -117,10 +136,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return getMissingProperties().size() == 0;
 	}
 
-
-	public ControlPropertyEditor[] getEditors() {
-		return propertyEditors;
+	@Nullable
+	public ControlPropertyEditor findEditorForProperty(@NotNull ControlProperty property) {
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			if (descriptor.getControlProperty() == property) {
+				return descriptor.getInput();
+			}
+		}
+		return null;
 	}
+
 
 	/** Get the {@link ControlClass} being edited */
 	@NotNull
@@ -146,10 +171,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.events"), eventProperties, true));
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
-		propertyEditors = new ControlPropertyEditor[propertyDescriptors.size()];
-		for (int i = 0; i < propertyEditors.length; i++) {
-			propertyEditors[i] = propertyDescriptors.get(i).getInput();
-		}
+
 	}
 
 	/** Get a titled pane for the accordion that holds all control properties */
@@ -186,10 +208,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.use_default_editor"));
-		final MenuItem miResetToDefault = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_default"));
+		final MenuItem miResetToInitial = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_initial"));
 		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
-		final MenuItem miOverride = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_override"));//broken. Maybe fix it later. Don't delete this in case you change your mind
-		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToDefault, miMacro/*,miOverride*/);
+		final MenuItem miCustomData = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
+		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro/*,miOverride*/);
 		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
 
 		if (c.getPropertyLookup() instanceof ControlPropertyLookup) {
@@ -206,17 +228,18 @@ public class ControlPropertiesEditorPane extends StackPane {
 				case Y:
 				case W:
 				case H: {
-					miOverride.setDisable(true);//NEVER allow custom input
+					miCustomData.setDisable(true);//NEVER allow custom input
 					break;
 				}
 			}
 		}
-		propertyDescriptors.add(new ControlPropertyInputDescriptor(propertyInput));
-		propertyDescriptors.get(propertyDescriptors.size() - 1).setIsOptional(optional);
+		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(propertyInput);
+		propertyDescriptors.add(descriptor);
+		descriptor.setIsOptional(optional);
 		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 		pane.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
-		miResetToDefault.setOnAction(new EventHandler<ActionEvent>() {
+		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				propertyInput.resetToDefaultValue();
@@ -235,15 +258,15 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 			}
 		});
-		miOverride.setOnAction(new EventHandler<ActionEvent>() {
+		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.OVERRIDE);
+				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.CUSTOM_DATA);
 			}
 		});
 
 		if (c.isCustomData()) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.OVERRIDE);
+			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.CUSTOM_DATA);
 		} else if (c.getMacro() != null) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
@@ -253,11 +276,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	@SuppressWarnings("unchecked")
 	private void updatePropertyInputMode(StackPane stackPanePropertyInput, ControlPropertyInput propertyInput, ControlPropertyInput.EditMode mode) {
-		stackPanePropertyInput.getChildren().clear();
 		if (mode == ControlPropertyInput.EditMode.MACRO) {
+			stackPanePropertyInput.getChildren().clear();
+
 			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(propertyInput.getMacroClass(), propertyInput.getControlProperty().getMacro());
 			stackPanePropertyInput.getChildren().add(macroGetterButton);
-			macroGetterButton.getChosenMacroValueObserver().addValueListener(new ValueListener() {
+			macroGetterButton.getChosenMacroValueObserver().addListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 					Macro m = (Macro) newValue;
@@ -265,9 +289,25 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			});
 		} else {
+			if (propertyInput.getControlProperty().getMacro() != null) {
+				SimpleResponseDialog dialog = new SimpleResponseDialog(
+						ArmaDialogCreator.getPrimaryStage(),
+						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.dialog_title"),
+						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.body"),
+						true, true, false
+				);
+				dialog.getFooter().getBtnCancel().setText(Lang.ApplicationBundle().getString("Confirmation.no"));
+				dialog.getFooter().getBtnOk().setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
+				dialog.show();
+				if (dialog.wasCancelled()) {
+					return;
+				}
+				propertyInput.getControlProperty().setValueToMacro(null);
+			}
+			stackPanePropertyInput.getChildren().clear();
 			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setHasCustomData(mode == ControlPropertyInput.EditMode.OVERRIDE);
+			propertyInput.getControlProperty().setHasCustomData(mode == ControlPropertyInput.EditMode.CUSTOM_DATA);
 		}
 	}
 
@@ -348,7 +388,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			 @deprecated This is broken. Maybe fix it later.
 			 */
 			@Deprecated
-			OVERRIDE,
+			CUSTOM_DATA,
 			/** The control property's value is set to a macro */
 			MACRO
 		}
@@ -357,16 +397,16 @@ public class ControlPropertiesEditorPane extends StackPane {
 		 Updating the edit mode. When this is invoked, the proper new editor should be used.
 		 <ul>
 		 <li>{@link EditMode#DEFAULT} = default editor</li>
-		 <li>{@link EditMode#OVERRIDE} = use an editor that allows for literally any input (use a {@link TextField} for input)</li>
+		 <li>{@link EditMode#CUSTOM_DATA} = use an editor that allows for literally any input (use a {@link TextField} for input)</li>
 		 <li>{@link EditMode#MACRO} = setting the ControlProperty's value equal to a {@link Macro}</li>
 		 </ul>
 		 */
 		void setToMode(EditMode mode);
 
-		Node getRootNode();
+		@NotNull Node getRootNode();
 
 		/** Get the Class type that */
-		Class<? extends SerializableValue> getMacroClass();
+		@NotNull Class<? extends SerializableValue> getMacroClass();
 
 		/**
 		 Return true if the {@link #getRootNode()}'s width should fill the parent's width.
@@ -381,7 +421,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
 				throw new IllegalArgumentException("don't use this method for ARRAY property type");
 			}
-			rawInput.getValueObserver().addValueListener(new ValueListener<String>() {
+			rawInput.getValueObserver().addListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 					controlProperty.setValue(new SVString(newValue));
@@ -389,6 +429,15 @@ public class ControlPropertiesEditorPane extends StackPane {
 			});
 			return rawInput;
 		}
+
+		/** Clear all listeners */
+		void clearListeners();
+
+		/** Initialize all listeners */
+		void initListeners();
+
+		/** Set the editor to the {@link #getControlProperty()} value. */
+		void refreshValue();
 	}
 
 	/** Used for when a set amount of options are available (uses radio button group for option selecting) */
@@ -397,6 +446,24 @@ public class ControlPropertiesEditorPane extends StackPane {
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
 		private final InputField<StringChecker, String> rawInput = new InputField<>(new StringChecker());
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				setEditorValue(newValue);
+			}
+		};
+
+		private final ChangeListener<? super Toggle> toggleGroupListener = new ChangeListener<Toggle>() {
+			@Override
+			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+				if (newValue == null) {
+					controlProperty.setValue((SerializableValue) null);
+				} else {
+					controlProperty.setValue(newValue.getUserData().toString());
+				}
+
+			}
+		};
 
 		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
@@ -428,32 +495,23 @@ public class ControlPropertiesEditorPane extends StackPane {
 			if (toSelect != null) {
 				toggleGroup.selectToggle(toSelect);
 			}
-			toggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-				@Override
-				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-					if (newValue == null) {
-						controlProperty.setValue((SerializableValue) null);
-					} else {
-						controlProperty.setValue(newValue.getUserData().toString());
-					}
+			initListeners();
+		}
 
+		private void setEditorValue(@Nullable SerializableValue newValue) {
+			if (newValue == null) {
+				toggleGroup.selectToggle(null);
+				return;
+			}
+			for (Toggle toggle : toggleGroup.getToggles()) {
+				if (controlProperty.getValue() == null) {
+					continue;
 				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					if (newValue == null) {
-						toggleGroup.selectToggle(null);
-						return;
-					}
-					for (Toggle toggle : toggleGroup.getToggles()) {
-						if (toggle.getUserData().equals(controlProperty.getValue().toString())) {
-							toggleGroup.selectToggle(toggle);
-							return;
-						}
-					}
+				if (toggle.getUserData().equals(controlProperty.getValue().toString())) {
+					toggleGroup.selectToggle(toggle);
+					return;
 				}
-			});
+			}
 		}
 
 		@Override
@@ -479,30 +537,65 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public void setToMode(EditMode mode) {
 			getChildren().clear();
-			if (mode == EditMode.OVERRIDE) {
+			if (mode == EditMode.CUSTOM_DATA) {
 				getChildren().add(rawInput);
 			} else if (mode == EditMode.DEFAULT) {
 				getChildren().addAll(radioButtons);
 			}
 		}
 
+		@NotNull
 		@Override
 		public Node getRootNode() {
 			return this;
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return SVString.class;
+		}
+
+		@Override
+		public void clearListeners() {
+			toggleGroup.selectedToggleProperty().removeListener(toggleGroupListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			toggleGroup.selectedToggleProperty().addListener(toggleGroupListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setEditorValue(controlProperty.getValue());
 		}
 	}
 
 	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<ControlStyleGroup> editorValueListener = new ReadOnlyValueListener<ControlStyleGroup>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlStyleGroup> observer, ControlStyleGroup oldValue, ControlStyleGroup newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				if (newValue == null) {
+					menuButton.clearSelection();
+				} else {
+					setValue((ControlStyleGroup) newValue);
+				}
+			}
+		};
 
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
@@ -512,22 +605,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			}
 			this.controlProperty = controlProperty;
 			setValue((ControlStyleGroup) controlProperty.getValue());
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ControlStyleGroup>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlStyleGroup> observer, ControlStyleGroup oldValue, ControlStyleGroup newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-					if (newValue == null) {
-						menuButton.clearSelection();
-					} else {
-						setValue((ControlStyleGroup) newValue);
-					}
-				}
-			});
+			initListeners();
 		}
 
 		@Override
@@ -557,7 +635,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -566,9 +644,27 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return this;
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return ControlStyleGroup.class;
+		}
+
+		@Override
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((ControlStyleGroup) controlProperty.getValue());
 		}
 	}
 
@@ -581,35 +677,36 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		private final ControlProperty controlProperty;
 		private final Class<C> macroTypeClass;
+		private final ReadOnlyValueListener<C> editorValueListener = new ReadOnlyValueListener<C>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<C> observer, C oldValue, C newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				if (controlProperty.getValue() != null) {
+					inputField.setToButton(false);
+					inputField.setValue((C) controlProperty.getValue());
+				} else {
+					setValue(null);
+				}
+			}
+		};
 
 		ControlPropertyInputField(Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
 			this.macroTypeClass = macroTypeClass;
 
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			inputField.setValue((C) controlProperty.getValue());
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<C>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<C> observer, C oldValue, C newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					if (controlProperty.getValue() != null) {
-						inputField.setToButton(false);
-						inputField.setValue((C) controlProperty.getValue());
-					} else {
-						setValue(null);
-					}
-				}
-			});
 			if (promptText != null) {
 				inputField.setPromptText(promptText);
 			}
+			initListeners();
 		}
 
 		@Override
@@ -639,17 +736,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return this.macroTypeClass;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return true;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((C) controlProperty.getValue());
 		}
 	}
 
@@ -686,11 +796,26 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<AColor> valueEditorListener = new ReadOnlyValueListener<AColor>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				if (controlProperty.getValue() != null) { //maybe wasn't updated
+					colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
+				} else {
+					colorPicker.setValue(null);
+				}
+			}
+		};
 
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				AColor value = (AColor) controlProperty.getValue();
@@ -698,22 +823,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			} else {
 				colorPicker.setValue(null);
 			}
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<AColor>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					if (controlProperty.getValue() != null) { //maybe wasn't updated
-						colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
-					} else {
-						colorPicker.setValue(null);
-					}
-				}
-			});
+			initListeners();
 		}
 
 		@Override
@@ -744,17 +854,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return AColor.class;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return false;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(valueEditorListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(valueEditorListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((AColor) controlProperty.getValue());
 		}
 	}
 
@@ -765,28 +888,28 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<SVBoolean> editorValueListener = new ReadOnlyValueListener<SVBoolean>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				choiceBox.setValue(newValue == null ? null : ((SVBoolean) newValue).isTrue());
+			}
+		};
 
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				choiceBox.setValue(controlProperty.getBooleanValue());
 			}
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<SVBoolean>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					choiceBox.setValue(newValue == null ? null : ((SVBoolean) newValue).isTrue());
-				}
-			});
+			initListeners();
 
 		}
 
@@ -817,17 +940,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return SVBoolean.class;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return false;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((SVBoolean) controlProperty.getValue());
 		}
 	}
 
@@ -839,6 +975,18 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<SVStringArray> editorValueListener = new ReadOnlyValueListener<SVStringArray>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVStringArray> observer, SVStringArray oldValue, SVStringArray newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				setValue((SVStringArray) newValue);
+			}
+		};
 
 		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
@@ -846,27 +994,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 				throw new RuntimeException("review this code to check for correctness");
 			}
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
-			InputField<ArmaStringChecker, String> inputField;
-
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<SVStringArray>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<SVStringArray> observer, SVStringArray oldValue, SVStringArray newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
 			setValue((SVStringArray) controlProperty.getValue());
-			for (InputField<ArmaStringChecker, String> editor : editors) {
-				inputField = editor;
-			}
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					setValue((SVStringArray) newValue);
-				}
-			});
+			initListeners();
 		}
 
 		@Override
@@ -909,17 +1040,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return SVStringArray.class;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return false;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((SVStringArray) controlProperty.getValue());
 		}
 	}
 
@@ -929,27 +1073,26 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 */
 	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyInput {
 
-
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<AFont> editorValueListener = new ReadOnlyValueListener<AFont>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<AFont> observer, AFont oldValue, AFont newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				comboBox.setValue((AFont) controlProperty.getValue());
+			}
+		};
 
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
-			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			setValue((AFont) controlProperty.getValue());
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<AFont>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<AFont> observer, AFont oldValue, AFont newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					comboBox.setValue((AFont) controlProperty.getValue());
-				}
-			});
+			initListeners();
 		}
 
 		@Override
@@ -979,17 +1122,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return AFont.class;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return false;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((AFont) controlProperty.getValue());
 		}
 	}
 
@@ -997,25 +1153,25 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyInput {
 
 		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<ASound> editorValueListener = new ReadOnlyValueListener<ASound>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<ASound> observer, ASound oldValue, ASound newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				setValue((ASound) newValue);
+			}
+		};
 
 		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
-			ControlPropertyInput.modifyRawInput(getOverrideTextField(), control, controlProperty);
+			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
-			getReadOnlyObserver().addValueListener(new ReadOnlyValueListener<ASound>() {
-				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver<ASound> observer, ASound oldValue, ASound newValue) {
-					controlProperty.setValue(newValue);
-				}
-			});
-
-			controlProperty.getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-					setValue((ASound) newValue);
-				}
-			});
+			initListeners();
 
 		}
 
@@ -1041,17 +1197,30 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.OVERRIDE);
+			setToOverride(mode == EditMode.CUSTOM_DATA);
 		}
 
+		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
 			return ASound.class;
 		}
 
 		@Override
-		public boolean displayFullWidth() {
-			return false;
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addValueListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refreshValue() {
+			setValue((ASound) controlProperty.getValue());
 		}
 	}
 }

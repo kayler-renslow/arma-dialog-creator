@@ -153,7 +153,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 

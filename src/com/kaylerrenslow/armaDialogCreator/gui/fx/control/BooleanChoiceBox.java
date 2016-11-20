@@ -28,7 +28,7 @@ public class BooleanChoiceBox extends StackPane{
 	private final ChoiceBox<Boolean> choiceBox = new ChoiceBox<>(FXCollections.observableArrayList(true, false));
 
 	public BooleanChoiceBox() {
-		valueObserver.addValueListener(new ValueListener<Boolean>() {
+		valueObserver.addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				choiceBox.setValue(newValue);

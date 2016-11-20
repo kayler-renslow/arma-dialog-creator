@@ -163,13 +163,11 @@ public class ArmaControl extends ControlClass implements Control {
 	}
 
 	@Override
-	@NotNull
 	public ControlHolder<ArmaControl> getHolder() {
 		return holder;
 	}
 
 	@Override
-	@NotNull
 	public ArmaDisplay getDisplay() {
 		return display;
 	}

@@ -43,13 +43,13 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 	private void init() {
 		textObj.setFont(DEFAULT_FX_FONT);
-		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				globalBackgroundColorObserver.updateValue((AColor) newValue);
 			}
 		});
-		myControl.findRequiredProperty(ControlPropertyLookup.TEXT).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+		myControl.findRequiredProperty(ControlPropertyLookup.TEXT).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue == null) {
@@ -60,7 +60,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				rerender();
 			}
 		});
-		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).getValueObserver().addValueListener(new ValueListener<SerializableValue>() {
+		myControl.findRequiredProperty(ControlPropertyLookup.COLOR_TEXT).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue instanceof AColor) {

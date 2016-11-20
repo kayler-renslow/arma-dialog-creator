@@ -92,7 +92,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 
 	private void addEditorValueUpdateListener() {
 		for (InputField inf : editors) {
-			inf.getValueObserver().addValueListener(editorValueUpdateListener);
+			inf.getValueObserver().addListener(editorValueUpdateListener);
 		}
 	}
 
@@ -163,6 +163,11 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	}
 
 	@Override
+	public boolean displayFullWidth() {
+		return false;
+	}
+
+	@Override
 	public void setToOverride(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
@@ -173,7 +178,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 }

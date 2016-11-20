@@ -140,13 +140,13 @@ public class ControlClass {
 		for (ControlProperty controlProperty : optionalProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
-		classNameObserver.addValueListener(new ValueListener<String>() {
+		classNameObserver.addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 				controlClassUpdateGroup.update(new ControlClassRenameUpdate(ControlClass.this, oldValue, newValue));
 			}
 		});
-		extendClassObserver.addValueListener(new ValueListener<ControlClass>() {
+		extendClassObserver.addListener(new ValueListener<ControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 				controlClassUpdateGroup.update(new ControlClassExtendUpdate(ControlClass.this, oldValue, newValue));
@@ -402,7 +402,10 @@ public class ControlClass {
 		controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, mine, true));
 	}
 
-	/** Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen */
+	/**
+	 Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen. If {@link #getExtendClass()}!=null, the matched
+	 {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property.
+	 */
 	public final void removeOverrideProperty(@NotNull ControlPropertyLookupConstant property) {
 		int i = 0;
 		while (i < overrideProperties.size()) {
@@ -490,7 +493,6 @@ public class ControlClass {
 
 		return definedProperties;
 	}
-
 
 	/**
 	 Returns a list of all inherited properties (retrieved from list {@link #getOverriddenProperties()}) that have an override value (the extended's control property is unedited and a new one is

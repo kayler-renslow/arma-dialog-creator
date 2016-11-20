@@ -81,7 +81,7 @@ public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 	

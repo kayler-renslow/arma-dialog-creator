@@ -85,13 +85,18 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 	
 	@Override
 	public void focusToEditor() {
 		comboBox.requestFocus();
+	}
+
+	@Override
+	public boolean displayFullWidth() {
+		return false;
 	}
 
 	@Override

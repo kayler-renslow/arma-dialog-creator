@@ -108,8 +108,8 @@ public class UICanvasEditor extends UICanvas {
 				}
 			}
 		});
-		
-		keys.getKeyStateObserver().addValueListener(new ValueListener<Boolean>() {
+
+		keys.getKeyStateObserver().addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				keyUpdate(newValue);

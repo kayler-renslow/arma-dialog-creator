@@ -106,7 +106,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return tfOverride;
 	}
 

@@ -20,15 +20,16 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  Created by Kayler on 05/27/2016.
  */
 public class DefaultComponentContextMenu extends ContextMenu {
 
-	private static ArrayList<ControlPropertiesConfigPopup> createdPopups = new ArrayList<>();
+	private static LinkedList<ControlPropertiesConfigPopup> createdPopups = new LinkedList<>();
 
 	public DefaultComponentContextMenu(ArmaControl c) {
 		MenuItem configure = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.configure"));
@@ -49,13 +50,17 @@ public class DefaultComponentContextMenu extends ContextMenu {
 		});
 	}
 
-	public static void showControlPropertiesPopup(ArmaControl c) {
+	public static void showControlPropertiesPopup(@NotNull ArmaControl c) {
+		if (createdPopups.size() > 0 && createdPopups.get(0).getControl().getDisplay() != c.getDisplay()) {
+			createdPopups.clear(); //no need to save previous popups since past controls are likely destroyed
+		}
 		for (ControlPropertiesConfigPopup popup : createdPopups) {
 			if (popup.getControl() == c && popup.isShowing()) {
 				popup.beepFocus();
 				return;
 			} else if (!popup.isShowing() && popup.getControl() == c) {
-				popup.initializeToControl(c);
+				popup.show();
+				return;
 			}
 		}
 		ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);

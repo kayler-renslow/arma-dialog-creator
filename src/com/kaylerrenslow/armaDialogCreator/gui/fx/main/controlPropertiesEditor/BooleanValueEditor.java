@@ -31,7 +31,7 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	private final ValueObserver<SVBoolean> svBooleanValueObserver = new ValueObserver<>(null);
 
 	public BooleanValueEditor() {
-		choiceBox.getValueObserver().addValueListener(new ValueListener<Boolean>() {
+		choiceBox.getValueObserver().addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				svBooleanValueObserver.updateValue(SVBoolean.get(newValue));
@@ -70,7 +70,12 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	}
 
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public boolean displayFullWidth() {
+		return false;
+	}
+
+	@Override
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 	

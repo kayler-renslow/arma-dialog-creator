@@ -44,7 +44,7 @@ public interface ValueEditor<V extends SerializableValue> {
 	void setToOverride(boolean override);
 
 	/** Get the TextField used for entering the raw text */
-	InputField<StringChecker, String> getOverrideTextField();
+	InputField<StringChecker, String> getCustomDataTextField();
 
 	/** Used for {@link Node#requestFocus()} but should target the specific editor (TextField, ColorPicker, etc) */
 	void focusToEditor();

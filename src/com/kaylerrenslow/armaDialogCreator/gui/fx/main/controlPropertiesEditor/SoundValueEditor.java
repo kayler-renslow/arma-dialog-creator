@@ -49,19 +49,19 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 
 	public SoundValueEditor() {
 		flowPane.setPrefWrapLength(300d);
-		inSoundName.getValueObserver().addValueListener(new ValueListener<String>() {
+		inSoundName.getValueObserver().addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 				valueObserver.updateValue(createValue());
 			}
 		});
-		inDb.getValueObserver().addValueListener(new ValueListener<Double>() {
+		inDb.getValueObserver().addListener(new ValueListener<Double>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Double> observer, Double oldValue, Double newValue) {
 				valueObserver.updateValue(createValue());
 			}
 		});
-		inPitch.getValueObserver().addValueListener(new ValueListener<Double>() {
+		inPitch.getValueObserver().addListener(new ValueListener<Double>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Double> observer, Double oldValue, Double newValue) {
 				valueObserver.updateValue(createValue());
@@ -132,7 +132,7 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	}
 	
 	@Override
-	public InputField<StringChecker, String> getOverrideTextField() {
+	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
 	

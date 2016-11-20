@@ -55,6 +55,7 @@ import java.util.List;
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
+	private Label lblClassName;
 	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
@@ -63,6 +64,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
+	private final ValueListener<String> classNameListener = new ValueListener<String>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+			lblClassName.setText(newValue);
+		}
+	};
+
 
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
@@ -78,24 +86,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.setPadding(new Insets(20.0));
 	}
 
-	/**
-	 Configures the popup to edit the given control.
+	private void initializeToControl(ArmaControl c) {
 
-	 @return true if the initialization was successful, or false if the initialization was canceled
-	 */
-	public boolean initializeToControl(ArmaControl c) {
-		if (myRootElement.getChildren().size() > 0) {
-			if (!editorPane.allValuesAreGood()) {
-				return false;
-			}
-			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
-		}
 		this.control = c;
 		editorPane = new ControlPropertiesEditorPane(control);
-		myRootElement.getChildren().clear();
 
 		Color bg = control.getRenderer().getBackgroundColor();
-		control.getRenderer().getBackgroundColorObserver().addValueListener(backgroundColorListener);
+
 		setBorderColor(bg);
 
 		addHeader(c);
@@ -134,7 +131,6 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		myRootElement.getChildren().add(cbIsBackgroundControl);
 
-		return true;
 	}
 
 
@@ -179,7 +175,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				control.extendControlClass(selected);
 			}
 		});
-		final HBox hboxLeft = new HBox(5, new Label(control.getClassName()), new Label(":"), menuButtonExtendControls);
+		lblClassName = new Label(control.getClassName());
+		control.getClassNameObserver().addListener(classNameListener);
+		final HBox hboxLeft = new HBox(5, lblClassName, new Label(":"), menuButtonExtendControls);
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 		myRootElement.getChildren().add(
 				new BorderPane(
@@ -192,17 +190,38 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		);
 	}
 
+	@Override
+	protected void closing() {
+		handleListeners(false);
+	}
+
+	@Override
+	public void show() {
+		if (hasBeenShown()) {
+			handleListeners(true);
+		}
+		super.show();
+	}
+
+	@NotNull
+	public ArmaControl getControl() {
+		return control;
+	}
+
 	private void setBorderColor(Color bg) {
 		myRootElement.setStyle(String.format("-fx-border-color: rgba(%f%%,%f%%,%f%%,%f);", bg.getRed() * 100.0, bg.getGreen() * 100.0, bg.getBlue() * 100.0, bg.getOpacity()));
 	}
 
-	@Override
-	protected void onCloseRequest(WindowEvent event) {
-		super.onCloseRequest(event);
-	}
-
-	public ArmaControl getControl() {
-		return control;
+	private void handleListeners(boolean add) {
+		if (add) {
+			control.getRenderer().getBackgroundColorObserver().addListener(backgroundColorListener);
+			control.getClassNameObserver().addListener(classNameListener);
+			editorPane.relink();
+		} else {
+			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
+			control.getClassNameObserver().removeListener(classNameListener);
+			editorPane.unlink();
+		}
 	}
 
 	private static class MoveOutOfControlGroupDialog extends StageDialog<VBox> {
