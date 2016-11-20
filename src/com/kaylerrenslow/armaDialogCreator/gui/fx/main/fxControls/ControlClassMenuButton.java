@@ -22,38 +22,24 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ImageContainer;
 import javafx.scene.Node;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 10/19/2016.
  */
 public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClass> {
 
-	public ControlClassMenuButton(String placeholderText, Node placeholderGraphic, ControlClassGroupMenu... classGroups) {
-		super(placeholderText, placeholderGraphic, classGroups);
+	public ControlClassMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic) {
+		super(allowClear, placeholderText, placeholderGraphic);
 	}
 
 	public ControlClassMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic, ControlClassGroupMenu... classGroups) {
 		super(allowClear, placeholderText, placeholderGraphic, classGroups);
 	}
 
-	public ControlClassMenuButton(String placeholderText, Node placeholderGraphic, ControlClassMenuItem... items) {
-		super(placeholderText, placeholderGraphic, items);
-	}
-
 	public ControlClassMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic, ControlClassMenuItem... items) {
 		super(allowClear, placeholderText, placeholderGraphic, items);
 	}
 
-	public static ControlClassMenuItem newItem(@NotNull ControlClass value, @Nullable ImageContainer graphic) {
-		return new ControlClassMenuItem(value, graphic);
-	}
-
-	public static ControlClassMenuItem newItem(@NotNull ControlClass value) {
-		return newItem(value, null);
-	}
 
 }

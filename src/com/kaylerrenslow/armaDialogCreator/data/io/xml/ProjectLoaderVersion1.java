@@ -329,7 +329,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		String controlTypeStr = controlElement.getAttribute("control-type-id");
 		try {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
-			controlType = ControlType.getById(controlTypeId);
+			controlType = ControlType.findById(controlTypeId);
 		} catch (IllegalArgumentException e) { //will catch number format exception as well
 			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_type_f"), controlTypeStr, controlClassName)));
 			return null;
@@ -372,7 +372,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		for (ControlPropertySpecification specification : properties) {
 			control.findProperty(specification.getPropertyLookup()).setTo(specification, project);
 		}
-		
+
 
 		//load nested classes
 		List<Element> reqNestedClassesElementGroups = XmlUtil.getChildElementsWithTagName(controlElement, "nested-required");
@@ -389,11 +389,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		jobs.add(new ControlNestedClassesJob(control, nestedRequired, nestedOptional));
 
-		List<ControlPropertyLookup> overrideControlProperties = ProjectXmlUtil.loadOverrideControlProperties(controlElement, this.loader);
+		List<ControlPropertyLookup> inheritControlProperties = ProjectXmlUtil.loadInheritedControlProperties(controlElement, this.loader);
 
 		String extendClassName = controlElement.getAttribute("extend-class");
 		if (extendClassName.length() > 0) {
-			jobs.add(new ControlExtendJob(extendClassName, control, overrideControlProperties));
+			jobs.add(new ControlExtendJob(extendClassName, control, inheritControlProperties));
 		}
 
 		return control;
@@ -464,12 +464,12 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private static class ControlExtendJob implements AfterLoadJob {
 		private final String controlClassName;
 		private final ArmaControl setMyExtend;
-		private final List<ControlPropertyLookup> overrideProperties;
+		private final List<ControlPropertyLookup> inheritProperties;
 
-		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend, List<ControlPropertyLookup> overrideProperties) {
+		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend, List<ControlPropertyLookup> inheritProperties) {
 			this.controlClassName = controlClassName;
 			this.setMyExtend = setMyExtend;
-			this.overrideProperties = overrideProperties;
+			this.inheritProperties = inheritProperties;
 		}
 
 
@@ -477,13 +477,13 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
 			ArmaDisplay display = project.getEditingDisplay();
 			ArmaControl match = display.findControlByClassName(controlClassName);
+			for (ControlPropertyLookup overrideProperty : inheritProperties) {
+				setMyExtend.removeOverrideProperty(overrideProperty);
+			}
 			if (match != null) {
 				setMyExtend.extendControlClass(match);
 			} else {
 				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
-			}
-			for (ControlPropertyLookup overrideProperty : overrideProperties) {
-				setMyExtend.overrideProperty(overrideProperty);
 			}
 		}
 	}

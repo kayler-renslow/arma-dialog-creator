@@ -127,7 +127,7 @@ public class ControlProperty {
 	}
 
 	/**
-	 Set the custom data value and set {@link #isCustomData()} to true.
+	 Set the custom data value.
 
 	 @see #isCustomData()
 	 */

@@ -188,7 +188,7 @@ public class ProjectSaveXmlWriter {
 			ProjectXmlUtil.writeControlProperty(stm, cprop);
 		}
 
-		ProjectXmlUtil.writeOverrideControlProperties(stm, control.getOverriddenProperties());
+		ProjectXmlUtil.writeInheritedControlProperties(stm, control.getInheritedProperties());
 
 		if (controlGroup) {
 			writeControls(stm, treeNode);

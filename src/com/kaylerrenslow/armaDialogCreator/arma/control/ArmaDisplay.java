@@ -31,31 +31,37 @@ import javafx.collections.SetChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  Interface that specifies something that is displayable in preview and in Arma 3 (title, dialog, display)
+
  @author Kayler
  @since 06/14/2016. */
 public class ArmaDisplay implements Display<ArmaControl> {
-	
+
 	private int idd = -1;
 	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
 	private final DataContext userdata = new DataContext();
 	@SuppressWarnings("unchecked")
-	private final ControlList<ArmaControl>[] controls = new ControlList[]{getBackgroundControls(), getControls()};
+	private final ArrayList<List<ArmaControl>> controlsMerged = new ArrayList(2);
 
 	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
 
 	public ArmaDisplay() {
+		controlsMerged.add(getBackgroundControls());
+		controlsMerged.add(getControls());
+
 		displayProperties.add(iddProperty);
 
 		displayProperties.addListener(new SetChangeListener<DisplayProperty>() {
 			@Override
 			public void onChanged(Change<? extends DisplayProperty> change) {
-				if(change.wasRemoved() && change.getElementRemoved().getPropertyLookup() == DisplayPropertyLookup.IDD){
+				if (change.wasRemoved() && change.getElementRemoved().getPropertyLookup() == DisplayPropertyLookup.IDD) {
 					throw new IllegalStateException("can't remove idd from display");
 				}
 			}
@@ -80,16 +86,16 @@ public class ArmaDisplay implements Display<ArmaControl> {
 		controlsList.addChangeListener(controlListListener);
 		bgControlsList.addChangeListener(controlListListener);
 	}
-	
+
 	@Override
 	public Iterator<ArmaControl> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<>(backwards, controls);
+		return new ListMergeIterator<>(backwards, controlsMerged);
 	}
-	
+
 	public int getIdd() {
 		return idd;
 	}
-	
+
 	public void setIdd(int idd) {
 		this.idd = idd;
 		iddProperty.setValue(idd);
@@ -101,9 +107,9 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	}
 
 	@Nullable
-	public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup){
-		for(DisplayProperty displayProperty : displayProperties){
-			if(propertyLookup == displayProperty.getPropertyLookup()){
+	public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup) {
+		for (DisplayProperty displayProperty : displayProperties) {
+			if (propertyLookup == displayProperty.getPropertyLookup()) {
 				return displayProperty;
 			}
 		}
@@ -131,7 +137,7 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	public ControlList<ArmaControl> getBackgroundControls() {
 		return bgControlsList;
 	}
-	
+
 	@Override
 	public void resolutionUpdate(Resolution newResolution) {
 		for (ArmaControl control : bgControlsList) {
@@ -166,11 +172,11 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;
 	}
-	
+
 	@Override
 	public DataContext getUserData() {
 		return userdata;
 	}
-	
-	
+
+
 }

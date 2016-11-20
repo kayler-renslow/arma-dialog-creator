@@ -69,13 +69,7 @@ public class ControlClass {
 		public void update(ControlClassUpdate data) {
 			if (data instanceof ControlClassPropertyUpdate) {
 				updateControlProperty((ControlClassPropertyUpdate) data);
-			} else if (data instanceof ControlClassExtendUpdate) {
-				updateControlClass((ControlClassExtendUpdate) data);
 			}
-		}
-
-		private void updateControlClass(ControlClassExtendUpdate data) {
-			//todo
 		}
 
 		private void updateControlProperty(ControlClassPropertyUpdate data) {
@@ -83,8 +77,9 @@ public class ControlClass {
 			try {
 				ControlProperty myProperty = findProperty(propertyUpdate.getControlProperty().getPropertyLookup());
 				if (overrideProperties.contains(myProperty)) {
-					return; //should not replace the value since it is overriden
+					return; //should not replace the value since it is overridden
 				}
+				System.out.println("ControlClass.updateControlProperty UPDATE FROM EXTEND" + propertyUpdate.getControlProperty().getPropertyLookup());
 				//todo we should save original value before extend so when extend is undone, that before-extend value is used/back in place
 				myProperty.update(propertyUpdate, false);
 			} catch (IllegalArgumentException ignore) {
@@ -102,10 +97,34 @@ public class ControlClass {
 		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses());
 		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses());
 
-		initializeListeners();
+		afterConstructor();
 	}
 
-	private void initializeListeners() {
+	/** Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry} */
+	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
+		classNameObserver.updateValue(specification.getClassName());
+		this.specProvider = specification;
+		if (specification.getExtendClassName() != null) {
+			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
+		}
+		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
+			requiredProperties.add(property.constructNewControlProperty(registry));
+		}
+		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
+			optionalProperties.add(property.constructNewControlProperty(registry));
+		}
+		for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
+			requiredNestedClasses.add(s.constructNewControlClass(registry));
+		}
+		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
+			optionalNestedClasses.add(s.constructNewControlClass(registry));
+		}
+		afterConstructor();
+	}
+
+	private void afterConstructor() {
+		//		overrideProperties.addAll(getAllChildProperties()); TODO UNCOMMENT THIS ------------------------------------------------------------------------------------------------------------------
+
 		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
 			@Override
 			public void update(ControlPropertyUpdate data) {
@@ -131,28 +150,6 @@ public class ControlClass {
 				controlClassUpdateGroup.update(new ControlClassExtendUpdate(ControlClass.this, oldValue, newValue));
 			}
 		});
-	}
-
-	/** Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry} */
-	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
-		classNameObserver.updateValue(specification.getClassName());
-		this.specProvider = specification;
-		if (specification.getExtendClassName() != null) {
-			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
-		}
-		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
-			requiredProperties.add(property.constructNewControlProperty(registry));
-		}
-		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
-			optionalProperties.add(property.constructNewControlProperty(registry));
-		}
-		for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
-			requiredNestedClasses.add(s.constructNewControlClass(registry));
-		}
-		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
-			optionalNestedClasses.add(s.constructNewControlClass(registry));
-		}
-		initializeListeners();
 	}
 
 	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookupConstant[] props) {
@@ -187,13 +184,32 @@ public class ControlClass {
 		}
 		ControlClass old = getExtendClass();
 		extendClassObserver.updateValue(controlClass);
-		if (controlClass == null) {
+		if (controlClass != null) {
+			for (ControlProperty property : controlClass.getAllChildProperties()) {
+				if (propertyIsOverridden(property.getPropertyLookup())) {
+					System.out.println("ControlClass.extendControlClass OVERRIDDEN property=" + property);
+					continue;
+				}
+				try {
+					ControlProperty match = findProperty(property.getPropertyLookup());
+					match.setTo(property);
+				} catch (IllegalArgumentException ignore) {
+
+				}
+			}
+			controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
+		} else {
+			for (ControlProperty property : getAllChildProperties()) {
+				if (propertyIsOverridden(property.getPropertyLookup())) {
+					continue;
+				}
+				property.setTo(property.deepCopy()); //remove any inheritance
+				overrideProperty(property.getPropertyLookup()); //override again
+			}
 			if (old == null) {
 				return;
 			}
 			old.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
-		} else {
-			controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 		}
 
 	}
@@ -224,13 +240,13 @@ public class ControlClass {
 	}
 
 
-	/** Return a concatenation of {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} */
+	/** Return a concatenation of {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} in an iterator */
 	@NotNull
-	public final List<ControlClass> getAllNestedClasses() {
-		List<ControlClass> all = new ArrayList<>(requiredNestedClasses.size() + optionalNestedClasses.size());
-		all.addAll(requiredNestedClasses);
-		all.addAll(optionalNestedClasses);
-		return all;
+	public final Iterable<ControlClass> getAllNestedClasses() {
+		ArrayList<List<ControlClass>> merge = new ArrayList<>(2);
+		merge.add(requiredNestedClasses);
+		merge.add(optionalNestedClasses);
+		return new ListMergeIterator<>(false, merge);
 	}
 
 	@NotNull
@@ -352,18 +368,28 @@ public class ControlClass {
 	}
 
 	/**
-	 Override's a property that exists inside {@link #getExtendClass()}. When the property is found, a deep copy will be created and inserted into the list {@link #getOverriddenProperties()}
+	 Override's a property that may exist inside {@link #getExtendClass()}. When a property is "overridden", the property's value will never be inherited until it is no longer overridden
+	 (achievable with {@link #removeOverrideProperty(ControlPropertyLookupConstant)}). If the property is overridden and inherited from {@link #getExtendClass()}, a deep copy of the inherited value
+	 will be created and the this class's overridden property will be inserted into the list {@link #getOverriddenProperties()}.<br>
+	 By default, all properties (optional and required) are overridden.
 
-	 @throws IllegalArgumentException when the property doesn't exist in the extended class or in this control class
-	 @throws IllegalStateException    when {@link #getExtendClass()} is null
+	 @throws IllegalArgumentException when the property doesn't exist in this control class
 	 */
 	public final void overrideProperty(@NotNull ControlPropertyLookupConstant property) throws IllegalArgumentException, IllegalStateException {
-		if (getExtendClass() == null) {
-			throw new IllegalStateException("no class has been extended");
+		if (propertyIsOverridden(property)) {
+			return;
 		}
-		ControlProperty toOverride = getExtendClass().findProperty(property);
+		SerializableValue inheritValue = null;
+		if (getExtendClass() != null) {
+			try {
+				ControlProperty toOverride = getExtendClass().findProperty(property);
+				inheritValue = toOverride.getValue();
+			} catch (IllegalArgumentException ignore) {
+
+			}
+		}
 		ControlProperty mine = findProperty(property);
-		SerializableValue value = toOverride.getValue();
+		SerializableValue value = inheritValue;
 		if (value != null) {
 			value = value.deepCopy();
 		}
@@ -377,12 +403,30 @@ public class ControlClass {
 		int i = 0;
 		while (i < overrideProperties.size()) {
 			if (overrideProperties.get(i).getPropertyLookup() == property) {
-				overrideProperties.remove(i);
+				ControlProperty removed = overrideProperties.remove(i);
+				if (getExtendClass() != null) {
+					try {
+						ControlProperty inherit = getExtendClass().findProperty(removed.getPropertyLookup());
+						removed.setTo(inherit);
+					} catch (IllegalArgumentException ignore) {
+
+					}
+				}
 				controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, overrideProperties.get(i), false));
 				return;
 			}
 			i++;
 		}
+	}
+
+	/** Return true if the given property lookup is overridden, false if it isn't */
+	public final boolean propertyIsOverridden(@NotNull ControlPropertyLookupConstant lookup) {
+		for (ControlProperty property : getOverriddenProperties()) {
+			if (property.getPropertyLookup() == lookup) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	@NotNull
@@ -395,6 +439,7 @@ public class ControlClass {
 		return optionalPropertiesReadOnly;
 	}
 
+	/** @see #overrideProperty(ControlPropertyLookupConstant) */
 	@NotNull
 	public final ReadOnlyList<ControlProperty> getOverriddenProperties() {
 		return overridePropertiesReadOnly;
@@ -418,16 +463,16 @@ public class ControlClass {
 		return properties;
 	}
 
-	/** Returns all {@link ControlProperty} instances (concatenation of {@link #getRequiredProperties()}) and {@link #getOptionalProperties()} */
-	public final List<ControlProperty> getAllChildProperties() {
-		List<ControlProperty> all = new ArrayList<>(getRequiredProperties().size() + getOptionalProperties().size());
-		all.addAll(getRequiredProperties());
-		all.addAll(getOptionalProperties());
-		return all;
+	/** Returns all {@link ControlProperty} instances (concatenation of {@link #getRequiredProperties()}) and {@link #getOptionalProperties()} in an iterator */
+	public final Iterable<ControlProperty> getAllChildProperties() {
+		ArrayList<ReadOnlyList<ControlProperty>> merge = new ArrayList<>(2);
+		merge.add(getRequiredProperties());
+		merge.add(getOptionalProperties());
+		return new ListMergeIterator<>(false, merge);
 	}
 
 
-	/** Will return all properties from {@link #getInheritedProperties()} that have defined properties ({@link ControlProperty#getValue()} != null) */
+	/** Will return all properties from {@link #getInheritedProperties()} that have defined values ({@link ControlProperty#getValue()} != null) */
 	@NotNull
 	public final List<ControlProperty> getDefinedInheritedProperties() {
 		List<ControlProperty> inheritedProperties = getInheritedProperties();
@@ -458,6 +503,7 @@ public class ControlClass {
 		return defined;
 	}
 
+	/** Return a list of {@link ControlProperty} that are <b>not</b> overridden via {@link #overrideProperty(ControlPropertyLookupConstant)} and are inherited from {@link #getExtendClass()} */
 	@NotNull
 	public final List<ControlProperty> getInheritedProperties() {
 		if (getExtendClass() == null) {
@@ -470,32 +516,25 @@ public class ControlClass {
 
 	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
 		for (ControlProperty c : extend.getDefinedProperties()) {
-			if (!list.contains(c)) {
-				list.add(c);
-			}
-		}
-		if (extend.getExtendClass() != null) {
-			for (ControlProperty c : extend.getExtendClass().getInheritedProperties()) {
+			if (!propertyIsOverridden(c.getPropertyLookup())) {
 				if (!list.contains(c)) {
 					list.add(c);
 				}
 			}
+		}
+		if (extend.getExtendClass() != null) {
 			appendInheritedProperties(extend.getExtendClass(), list);
 		}
 	}
 
 	public final ReadOnlyList<ControlProperty> getEventProperties() { //todo have getOptionalPropertiesNoEvents where it returns all optional properties without event properties
 		final List<ControlProperty> eventProperties = new ArrayList<>();
-		for (ControlProperty controlProperty : requiredProperties) {
-			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
-				eventProperties.add(controlProperty);
+		for (ControlProperty property : getAllChildProperties()) {
+			if (ControlPropertyEventLookup.getEventProperty(property.getPropertyLookup()) != null) {
+				eventProperties.add(property);
 			}
 		}
-		for (ControlProperty controlProperty : optionalProperties) {
-			if (ControlPropertyEventLookup.getEventProperty(controlProperty.getPropertyLookup()) != null) {
-				eventProperties.add(controlProperty);
-			}
-		}
+
 		return new ReadOnlyList<>(eventProperties);
 	}
 

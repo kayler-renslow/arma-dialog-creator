@@ -42,8 +42,8 @@ public class EditCustomControlPopup extends NewCustomControlPopup {
 			}
 		});
 
+		getTaComment().setText(toEdit.getComment()); //set before control class to make sure preview is correct
 		setToControlClass(duplicate);
-		getTaComment().setText(toEdit.getComment());
 		hideBaseControlMenuButton(true);
 	}
 

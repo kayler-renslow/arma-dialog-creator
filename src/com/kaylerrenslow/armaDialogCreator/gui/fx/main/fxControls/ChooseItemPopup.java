@@ -100,7 +100,6 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		myRootElement.getChildren().add(tabPane);
 
 		myStage.sizeToScene();
-		btnOk.setDisable(true);
 	}
 
 	@NotNull

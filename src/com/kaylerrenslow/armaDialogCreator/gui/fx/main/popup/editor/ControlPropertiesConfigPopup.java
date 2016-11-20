@@ -13,29 +13,31 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ImageContainer;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassGroupMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuButton;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -53,11 +55,18 @@ import java.util.List;
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
+	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+			if (newValue != null) {
+				setBorderColor(newValue.toJavaFXColor()); //update the popup's border color
+			}
+		}
+	};
 
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
 		initializePopup();
-		editorPane = new ControlPropertiesEditorPane(control);
 		initializeToControl(control);
 	}
 
@@ -66,8 +75,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myStage.initStyle(StageStyle.TRANSPARENT);
 
 		myScene.setFill(Color.TRANSPARENT);
-		final double padding = 20.0;
-		myRootElement.setPadding(new Insets(padding, padding, padding, padding));
+		myRootElement.setPadding(new Insets(20.0));
 	}
 
 	/**
@@ -80,20 +88,18 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			if (!editorPane.allValuesAreGood()) {
 				return false;
 			}
+			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 		}
 		this.control = c;
-		Color bg = control.getRenderer().getBackgroundColor();
-		control.getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-				if (newValue != null) {
-					setBorderColor(newValue.toJavaFXColor()); //update the popup's border color
-				}
-			}
-		});
-		setBorderColor(bg);
+		editorPane = new ControlPropertiesEditorPane(control);
 		myRootElement.getChildren().clear();
-		addCloseButton(c);
+
+		Color bg = control.getRenderer().getBackgroundColor();
+		control.getRenderer().getBackgroundColorObserver().addValueListener(backgroundColorListener);
+		setBorderColor(bg);
+
+		addHeader(c);
+
 		myRootElement.getChildren().add(editorPane);
 		VBox.setVgrow(editorPane, Priority.ALWAYS);
 
@@ -132,7 +138,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 
-	private void addCloseButton(ArmaControl c) {
+	private void addHeader(ArmaControl control) {
 		Button btnClose = new Button("x");
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -153,17 +159,37 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 		btnClose.getStyleClass().add("close-button");
 
-		Label lblExtendClass = new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.extend_class"),
-				new ControlClassMenuButton(
-						Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null,
-						new ControlClassGroupMenu("test group",
-								ControlClassMenuButton.newItem(c, new BorderedImageView(c.getControlType().icon))
-						)
+		final ControlClassMenuButton menuButtonExtendControls = new ControlClassMenuButton(true, Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null);
+		ReadOnlyList<CustomControlClass> customControls = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
+		for (CustomControlClass customControlClass : customControls) {
+			ImageContainer imageContainer = null;
+			try {
+				ControlProperty type = customControlClass.getControlClass().findProperty(ControlPropertyLookup.TYPE);
+				ControlType controlType = ControlType.findById(type.getIntValue());
+				imageContainer = new BorderedImageView(controlType.customIcon);
+
+			} catch (IllegalArgumentException ignore) {
+
+			}
+			menuButtonExtendControls.addItem(new ControlClassMenuItem(customControlClass.getControlClass(), imageContainer));
+		}
+		menuButtonExtendControls.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
+				control.extendControlClass(selected);
+			}
+		});
+		final HBox hboxLeft = new HBox(5, new Label(control.getClassName()), new Label(":"), menuButtonExtendControls);
+		hboxLeft.setAlignment(Pos.CENTER_LEFT);
+		myRootElement.getChildren().add(
+				new BorderPane(
+						null, //center
+						null, //top
+						btnClose, //right
+						null, //bottom
+						hboxLeft //left
 				)
 		);
-		lblExtendClass.setContentDisplay(ContentDisplay.RIGHT);
-
-		myRootElement.getChildren().add(new BorderPane(null, null, btnClose, null, lblExtendClass));
 	}
 
 	private void setBorderColor(Color bg) {

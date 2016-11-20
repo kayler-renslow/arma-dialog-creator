@@ -79,7 +79,7 @@ public class ProjectXmlUtil {
 		//overridden control properties
 		List<Element> overriddenPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "overridden-properties");
 		if (overriddenPropertyElementGroups.size() > 0) {
-			overriddenProperties = loadOverrideControlProperties(overriddenPropertyElementGroups.get(0), recorder);
+			overriddenProperties = loadInheritedControlProperties(overriddenPropertyElementGroups.get(0), recorder);
 		}
 
 
@@ -180,7 +180,7 @@ public class ProjectXmlUtil {
 			final String overriddenProperties = "overridden-properties";
 			stm.writeBeginTag(overriddenProperties);
 			for (ControlPropertySpecification property : specification.getOverriddenProperties()) {
-				writeOverrideControlPropertyLookup(stm, property.getPropertyLookup());
+				writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
 			}
 			stm.writeCloseTag(overriddenProperties);
 		}
@@ -209,38 +209,38 @@ public class ProjectXmlUtil {
 	}
 
 	/**
-	 Writes a list of {@link ControlProperty} that is overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlProperty#getPropertyLookup()}
-	 is written. This method simply invokes {@link #writeOverrideControlPropertyLookup(XmlWriterOutputStream, ControlPropertyLookupConstant)} for each {@link ControlProperty} in
+	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlProperty#getPropertyLookup()}
+	 is written. This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriterOutputStream, ControlPropertyLookupConstant)} for each {@link ControlProperty} in
 	 <code>properties</code>
 
 	 @param stm xml writer stream
 	 @param properties properties to write
 	 @throws IOException
 	 */
-	public static void writeOverrideControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull List<ControlProperty> properties) throws IOException {
+	public static void writeInheritedControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull List<ControlProperty> properties) throws IOException {
 		for (ControlProperty property : properties) {
-			writeOverrideControlPropertyLookup(stm, property.getPropertyLookup());
+			writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
 		}
 	}
 
 	/**
-	 Writes a {@link ControlPropertyLookupConstant} that is overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlPropertyLookupConstant#getPropertyType()} is
-	 written.
+	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only
+	 {@link ControlPropertyLookupConstant#getPropertyType()} is written.
 
 	 @param stm xml writer stream
 	 @param lookup lookup to write
 	 @throws IOException
 	 */
-	public static void writeOverrideControlPropertyLookup(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup) throws IOException {
-		stm.write("<override-property lookup-id='" + lookup.getPropertyId() + "' />");
+	public static void writeInheritControlPropertyLookup(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup) throws IOException {
+		stm.write("<inherit-property lookup-id='" + lookup.getPropertyId() + "' />");
 	}
 
-	public static List<ControlPropertyLookup> loadOverrideControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
-		List<Element> overridePropertyElements = XmlUtil.getChildElementsWithTagName(parent, "override-property");
+	public static List<ControlPropertyLookup> loadInheritedControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
+		List<Element> inheritPropertyElements = XmlUtil.getChildElementsWithTagName(parent, "inherit-property");
 		List<ControlPropertyLookup> list = new LinkedList<>();
 		final String lookupId = "lookup-id";
-		for (Element overridePropertyElement : overridePropertyElements) {
-			ControlPropertyLookup lookup = getLookup(overridePropertyElement.getAttribute(lookupId), overridePropertyElement, recorder);
+		for (Element inheritPropertyElement : inheritPropertyElements) {
+			ControlPropertyLookup lookup = getLookup(inheritPropertyElement.getAttribute(lookupId), inheritPropertyElement, recorder);
 			if (lookup != null) {
 				list.add(lookup);
 			}

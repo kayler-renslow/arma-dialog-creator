@@ -198,7 +198,11 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 		controlClass.getPropertyUpdateGroup().addListener(controlClassListener);
 
+		boolean updatePreview = inClassName.getValue() != null && inClassName.getValue().equals(controlClass.getClassName()); //won't be triggered by class name update
 		inClassName.setValue(controlClass.getClassName());
+		if (updatePreview) {
+			updatePreview();
+		}
 	}
 
 	@NotNull

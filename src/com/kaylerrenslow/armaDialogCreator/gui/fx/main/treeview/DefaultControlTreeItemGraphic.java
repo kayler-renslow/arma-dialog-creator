@@ -58,7 +58,11 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addValueListener(new ValueListener<AColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
-				fillBox(newValue.toJavaFXColor());
+				if (newValue == null) {
+					fillBox(Color.TRANSPARENT);
+				} else {
+					fillBox(newValue.toJavaFXColor());
+				}
 			}
 		});
 
