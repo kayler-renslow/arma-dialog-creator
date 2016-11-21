@@ -11,7 +11,8 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,9 +65,9 @@ public class CustomControlClass {
 	}
 
 	private void loadControlClassListeners() {
-		controlClass.getControlClassUpdateGroup().addListener(new UpdateListener<ControlClassUpdate>() {
+		controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 			@Override
-			public void update(ControlClassUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
 				if (data instanceof ControlClassRenameUpdate) {
 					ControlClassRenameUpdate update = (ControlClassRenameUpdate) data;
 					specification.setClassName(update.getNewName());
@@ -75,16 +76,21 @@ public class CustomControlClass {
 				} else if (data instanceof ControlClassOverridePropertyUpdate) {
 					ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
 					if (update.wasAdded()) {
-						specification.getOverriddenProperties().add(new ControlPropertySpecification(update.getOveridden()));
-					} else {
-						ControlPropertySpecification propertySpecification = specification.findOverriddenProperty(update.getOveridden().getPropertyLookup());
+						ControlPropertySpecification propertySpecification = specification.findInheritedProperty(update.getOveridden().getPropertyLookup());
 						if (propertySpecification != null) {
-							specification.getOverriddenProperties().remove(propertySpecification);
+							specification.getInheritedProperties().remove(propertySpecification);
 						}
+					} else {
+						specification.getInheritedProperties().add(new ControlPropertySpecification(update.getOveridden()));
+
 					}
 				} else if (data instanceof ControlClassExtendUpdate) {
 					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
-					specification.setExtendClass(update.getControlClass().getClassName());
+					if (update.getNewValue() == null) {
+						specification.setExtendClass(null);
+					} else {
+						specification.setExtendClass(update.getNewValue().getClassName());
+					}
 				} else {
 					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control class update:" + data);
 				}
@@ -102,6 +108,8 @@ public class CustomControlClass {
 					ControlPropertyCustomDataUpdate update = (ControlPropertyCustomDataUpdate) data;
 					propertySpec.setCustomData(update.getCustomData());
 					propertySpec.setUsingCustomData(update.isSetTo());
+				} else if (data instanceof ControlPropertyInheritUpdate) {
+					//already handled in control class update
 				} else {
 					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control property update:" + data);
 				}

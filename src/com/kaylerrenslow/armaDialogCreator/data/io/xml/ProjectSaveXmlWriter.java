@@ -178,7 +178,7 @@ public class ProjectSaveXmlWriter {
 		);
 
 		//write control properties
-		if (control.getMissingRequiredProperties().size() != 0) {
+		if (control.getFirstMissingProperty() == null) {
 			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
 		}
 		for (ControlProperty cprop : control.getDefinedProperties()) {

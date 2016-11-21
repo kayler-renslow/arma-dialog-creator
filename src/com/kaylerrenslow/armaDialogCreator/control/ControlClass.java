@@ -10,7 +10,6 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  A {@link ControlClass} is merely a header file (.h) class that is:<br>
@@ -44,7 +44,6 @@ public class ControlClass {
 
 	private final List<ControlProperty> requiredProperties = new LinkedList<>();
 	private final List<ControlProperty> optionalProperties = new LinkedList<>();
-	private final List<ControlProperty> overrideProperties = new LinkedList<>();
 
 	private final List<ControlClass> requiredNestedClasses = new LinkedList<>();
 	private final List<ControlClass> optionalNestedClasses = new LinkedList<>();
@@ -52,7 +51,6 @@ public class ControlClass {
 
 	private final ReadOnlyList<ControlProperty> requiredPropertiesReadOnly = new ReadOnlyList<>(requiredProperties);
 	private final ReadOnlyList<ControlProperty> optionalPropertiesReadOnly = new ReadOnlyList<>(optionalProperties);
-	private final ReadOnlyList<ControlProperty> overridePropertiesReadOnly = new ReadOnlyList<>(overrideProperties);
 
 	private final ReadOnlyList<ControlClass> requiredNestedClassesReadOnly = new ReadOnlyList<>(requiredNestedClasses);
 	private final ReadOnlyList<ControlClass> optionalNestedClassesReadOnly = new ReadOnlyList<>(optionalNestedClasses);
@@ -64,9 +62,9 @@ public class ControlClass {
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
-	private final UpdateListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateListener<ControlClassUpdate>() {
+	private final UpdateGroupListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateGroupListener<ControlClassUpdate>() {
 		@Override
-		public void update(ControlClassUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
 			if (data instanceof ControlClassPropertyUpdate) {
 				updateControlProperty((ControlClassPropertyUpdate) data);
 			}
@@ -76,17 +74,33 @@ public class ControlClass {
 			ControlPropertyUpdate propertyUpdate = data.getPropertyUpdate();
 			try {
 				ControlProperty myProperty = findProperty(propertyUpdate.getControlProperty().getPropertyLookup());
-				if (overrideProperties.contains(myProperty)) {
+				if (propertyIsOverridden(myProperty)) {
 					return; //should not replace the value since it is overridden
 				}
-				System.out.println("ControlClass.updateControlProperty UPDATE FROM EXTEND" + propertyUpdate.getControlProperty().getPropertyLookup());
-				//todo we should save original value before extend so when extend is undone, that before-extend value is used/back in place
-				myProperty.update(propertyUpdate, false);
+				if (propertyIsDefined(propertyUpdate.getControlProperty())) {
+					System.out.println("ControlClass.updateControlProperty UPDATE FROM EXTEND " + propertyUpdate.getControlProperty().getPropertyLookup());
+					myProperty.inherit(propertyUpdate.getControlProperty());
+				} else {
+					System.out.println("ControlClass.updateControlProperty REMOVE INHERITANCE");
+					myProperty.inherit(null);
+				}
 			} catch (IllegalArgumentException ignore) {
 				//property simple doesn't exist, so nothing to do
 			}
 		}
 	};
+	private final UpdateGroupListener<ControlPropertyUpdate> controlPropertyListener = new UpdateGroupListener<ControlPropertyUpdate>() {
+		@Override
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+			if (data instanceof ControlPropertyInheritUpdate) {
+				ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
+				controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(ControlClass.this, update.getControlProperty(), !update.wasInherited()));
+			}
+			propertyUpdateGroup.update(data);
+			controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
+		}
+	};
+	;
 
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification, @NotNull SpecificationRegistry registry) {
 		classNameObserver.updateValue(name);
@@ -123,17 +137,7 @@ public class ControlClass {
 	}
 
 	private void afterConstructor() {
-		for (ControlProperty property : getAllChildProperties()) {
-			overrideProperties.add(property);
-		}
 
-		final UpdateListener<ControlPropertyUpdate> controlPropertyListener = new UpdateListener<ControlPropertyUpdate>() {
-			@Override
-			public void update(ControlPropertyUpdate data) {
-				propertyUpdateGroup.update(data);
-				controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
-			}
-		};
 		for (ControlProperty controlProperty : requiredProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
@@ -143,6 +147,9 @@ public class ControlClass {
 		classNameObserver.addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+				if (newValue == null) {
+					throw new IllegalArgumentException("class name can't be null");
+				}
 				controlClassUpdateGroup.update(new ControlClassRenameUpdate(ControlClass.this, oldValue, newValue));
 			}
 		});
@@ -166,13 +173,16 @@ public class ControlClass {
 		}
 	}
 
-	public final void setClassName(@NotNull String className) {
-		classNameObserver.updateValue(className);
-	}
-
 	@NotNull
 	public final String getClassName() {
+		if (classNameObserver.getValue() == null) {
+			throw new IllegalArgumentException("class name can't be null");
+		}
 		return classNameObserver.getValue();
+	}
+
+	public final void setClassName(@NotNull String className) {
+		classNameObserver.updateValue(className);
 	}
 
 	@NotNull
@@ -191,14 +201,25 @@ public class ControlClass {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
 		ControlClass oldExtendClass = getExtendClass();
+		if (oldExtendClass == controlClass) {
+			return;
+		}
 		if (controlClass != null) {
 			for (ControlProperty property : getAllChildProperties()) {
-				if (propertyIsOverridden(property.getPropertyLookup())) {
+				System.out.println("ControlClass.extendControlClass property.getPropertyLookup()=" + property.getPropertyLookup());
+				if (propertyIsOverridden(property)) {
+					System.out.println("ControlClass.extendControlClass property.getValue()=" + property.getValue());
 					continue;
 				}
 				try {
 					ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
-					property.setTo(inherit);
+					System.out.println("ControlClass.extendControlClass inherit=" + inherit.getPropertyLookup() + " " + inherit.getValue());
+					if (propertyIsDefined(inherit)) {
+						System.out.println("ControlClass.extendControlClass DEFINED inherit=" + inherit.getValue());
+						property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
+						property.inherit(inherit);
+						property.getControlPropertyUpdateGroup().addListener(this.controlPropertyListener);
+					}
 				} catch (IllegalArgumentException ignore) {
 
 				}
@@ -206,10 +227,9 @@ public class ControlClass {
 			controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 		} else {
 			for (ControlProperty property : getAllChildProperties()) {
-				overrideProperty(property.getPropertyLookup()); //override again
-			}
-			if (oldExtendClass == null) {
-				return;
+				property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
+				property.inherit(null);
+				property.getControlPropertyUpdateGroup().addListener(this.controlPropertyListener);
 			}
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
 		}
@@ -253,24 +273,39 @@ public class ControlClass {
 		return new ListMergeIterator<>(false, merge);
 	}
 
-	@NotNull
-	public final List<ControlProperty> getMissingRequiredProperties() {
-		List<ControlProperty> defined = getDefinedProperties();
+	/**
+	 Get all missing properties. A missing property is one that is required and is undefined.
 
-		boolean found;
+	 @return all missing properties
+	 @see #getRequiredProperties()
+	 @see #propertyIsDefined(ControlProperty)
+	 */
+	@NotNull
+	public final Iterable<ControlProperty> getMissingRequiredProperties() {
+		List<ControlProperty> missing = new LinkedList<>();
+
 		for (ControlProperty req : requiredProperties) {
-			found = false;
-			for (ControlProperty d : defined) {
-				if (req.equals(d)) {
-					found = true;
-					break;
-				}
+			if (!propertyIsDefined(req)) {
+				missing.add(req);
 			}
-			if (found) {
-				defined.remove(req);
+
+		}
+		return missing;
+	}
+
+	/**
+	 Return the first missing property, or null if not missing an properties
+
+	 @return property, or null if nothing is missing.
+	 @see #getMissingRequiredProperties()
+	 */
+	public final ControlProperty getFirstMissingProperty() {
+		for (ControlProperty req : requiredProperties) {
+			if (!propertyIsDefined(req)) {
+				return req;
 			}
 		}
-		return defined;
+		return null;
 	}
 
 	/**
@@ -373,67 +408,64 @@ public class ControlClass {
 
 	/**
 	 Override's a property that may exist inside {@link #getExtendClass()}. When a property is "overridden", the property's value will never be inherited until it is no longer overridden
-	 (achievable with {@link #removeOverrideProperty(ControlPropertyLookupConstant)}). If the property is overridden and inherited from {@link #getExtendClass()}, a deep copy of the inherited value
-	 will be created and the this class's overridden property will be inserted into the list {@link #getOverriddenProperties()}.<br>
-	 By default, all properties (optional and required) are overridden.
+	 (achievable with {@link #removeOverriddenProperty(ControlPropertyLookupConstant)}).
 
-	 @throws IllegalArgumentException when the property doesn't exist in this control class
+	 @throws IllegalArgumentException when the property doesn't exist in this {@link ControlClass}
+	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 */
 	public final void overrideProperty(@NotNull ControlPropertyLookupConstant property) throws IllegalArgumentException, IllegalStateException {
-		if (propertyIsOverridden(property)) {
-			return;
-		}
-		SerializableValue inheritValue = null;
-		if (getExtendClass() != null) {
-			try {
-				ControlProperty toOverride = getExtendClass().findProperty(property);
-				inheritValue = toOverride.getValue();
-			} catch (IllegalArgumentException ignore) {
-
-			}
-		}
 		ControlProperty mine = findProperty(property);
-		SerializableValue value = inheritValue;
-		if (value != null) {
-			value = value.deepCopy();
-		}
-		mine.setValue(value);
-		overrideProperties.add(mine);
-		controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, mine, true));
+		mine.inherit(null);
 	}
 
 	/**
-	 Will remove the given property from {@link #getOverriddenProperties()}. If the lookup isn't found, nothing will happen. If {@link #getExtendClass()}!=null, the matched
-	 {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property.
-	 */
-	public final void removeOverrideProperty(@NotNull ControlPropertyLookupConstant property) {
-		int i = 0;
-		while (i < overrideProperties.size()) {
-			if (overrideProperties.get(i).getPropertyLookup() == property) {
-				ControlProperty removed = overrideProperties.remove(i);
-				if (getExtendClass() != null) {
-					try {
-						ControlProperty inherit = getExtendClass().findProperty(removed.getPropertyLookup());
-						removed.setTo(inherit);
-					} catch (IllegalArgumentException ignore) {
+	 If {@link #getExtendClass()}!=null, the matched {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property. If the lookup isn't found
+	 in {@link #getExtendClass()} or {@link #getExtendClass()} is null, nothing will happen.
 
-					}
-				}
-				controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(this, overrideProperties.get(i), false));
+	 @throws IllegalArgumentException when the property isn't in this control class
+	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
+	 @see #overrideProperty(ControlPropertyLookupConstant)
+	 */
+	public final void removeOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		ControlProperty mine = findProperty(lookup);
+		try {
+			if (getExtendClass() == null) {
 				return;
 			}
-			i++;
+			ControlProperty inherit = getExtendClass().findProperty(mine.getPropertyLookup());
+			mine.inherit(inherit);
+		} catch (IllegalArgumentException ignore) {
+
 		}
+
 	}
 
-	/** Return true if the given property lookup is overridden, false if it isn't */
+	/**
+	 In order for a property to be overridden, the property exists in this {@link ControlClass}, the property is defined ({@link #propertyIsDefined(ControlProperty)}), and the property isn't
+	 inherited ({@link ControlProperty#isInherited()})
+
+	 @return true if the given property lookup is overridden, false if it isn't.
+	 */
 	public final boolean propertyIsOverridden(@NotNull ControlPropertyLookupConstant lookup) {
-		for (ControlProperty property : getOverriddenProperties()) {
-			if (property.getPropertyLookup() == lookup) {
-				return true;
-			}
+		try {
+			return propertyIsOverridden(findProperty(lookup));
+		} catch (IllegalArgumentException e) {
+			return false;
 		}
-		return false;
+
+	}
+
+	/**
+	 In order for a property to be overridden, the property is not inherited ({@link ControlProperty#isInherited()}==false) and the property is defined ({@link #propertyIsDefined(ControlProperty)})
+
+	 @return true if the given property lookup is overridden, false if it isn't.
+	 */
+	public final boolean propertyIsOverridden(@NotNull ControlProperty property) {
+		try {
+			return propertyIsDefined(property) && !property.isInherited();
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 
 	@NotNull
@@ -448,22 +480,34 @@ public class ControlClass {
 
 	/** @see #overrideProperty(ControlPropertyLookupConstant) */
 	@NotNull
-	public final ReadOnlyList<ControlProperty> getOverriddenProperties() {
-		return overridePropertiesReadOnly;
+	public final Iterable<ControlProperty> getOverriddenProperties() {
+		List<ControlProperty> list = new LinkedList<>();
+		getAllChildProperties().forEach(new Consumer<ControlProperty>() {
+			@Override
+			public void accept(ControlProperty property) {
+				if (propertyIsOverridden(property)) {
+					list.add(property);
+				}
+			}
+		});
+		return list;
 	}
 
 
-	/** Will return all properties that are defined (excluding inherited properties that are defined) */
+	/**
+	 Will return all properties that are defined (excluding inherited properties that are defined). To check if property is defined, the method {@link #propertyIsDefined(ControlProperty)} will
+	 be used.
+	 */
 	@NotNull
-	public final List<ControlProperty> getDefinedProperties() {
-		List<ControlProperty> properties = new ArrayList<>(getRequiredProperties().size() + getOptionalProperties().size());
+	public final Iterable<ControlProperty> getDefinedProperties() {
+		List<ControlProperty> properties = new LinkedList<>();
 		for (ControlProperty property : getRequiredProperties()) {
-			if (property.getValue() != null) {
+			if (propertyIsDefined(property)) {
 				properties.add(property);
 			}
 		}
 		for (ControlProperty property : getOptionalProperties()) {
-			if (property.getValue() != null) {
+			if (propertyIsDefined(property)) {
 				properties.add(property);
 			}
 		}
@@ -479,48 +523,33 @@ public class ControlClass {
 	}
 
 
-	/** Will return all properties from {@link #getInheritedProperties()} that have defined values ({@link ControlProperty#getValue()} != null) */
+	/** Will return all properties from {@link #getInheritedProperties()} that have defined values ({@link #propertyIsDefined(ControlProperty)}) */
 	@NotNull
-	public final List<ControlProperty> getDefinedInheritedProperties() {
-		List<ControlProperty> inheritedProperties = getInheritedProperties();
-		ArrayList<ControlProperty> definedProperties = new ArrayList<>(inheritedProperties.size());
+	public final Iterable<ControlProperty> getDefinedInheritedProperties() {
+		Iterable<ControlProperty> inheritedProperties = getInheritedProperties();
+		List<ControlProperty> definedProperties = new LinkedList<>();
 		for (ControlProperty c : inheritedProperties) {
-			if (c.getValue() == null) {
-				continue;
+			if (propertyIsDefined(c)) {
+				definedProperties.add(c);
 			}
-			definedProperties.add(c);
 		}
 
 		return definedProperties;
 	}
 
-	/**
-	 Returns a list of all inherited properties (retrieved from list {@link #getOverriddenProperties()}) that have an override value (the extended's control property is unedited and a new one is
-	 defined in this {@link ControlClass})
-	 */
-	@NotNull
-	public final List<ControlProperty> getOverriddenDefinedProperties() {
-		List<ControlProperty> defined = new ArrayList<>(overrideProperties.size());
-		for (ControlProperty property : overrideProperties) {
-			if (property.getValue() != null) {
-				defined.add(property);
-			}
-		}
-		return defined;
-	}
 
 	/** Return a list of {@link ControlProperty} that are <b>not</b> overridden via {@link #overrideProperty(ControlPropertyLookupConstant)} and are inherited from {@link #getExtendClass()} */
 	@NotNull
-	public final List<ControlProperty> getInheritedProperties() {
+	public final Iterable<ControlProperty> getInheritedProperties() {
 		if (getExtendClass() == null) {
 			return new ArrayList<>();
 		}
-		ArrayList<ControlProperty> list = new ArrayList<>();
+		List<ControlProperty> list = new LinkedList<>();
 		appendInheritedProperties(getExtendClass(), list);
 		return list;
 	}
 
-	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull ArrayList<ControlProperty> list) {
+	private void appendInheritedProperties(@NotNull ControlClass extend, @NotNull List<ControlProperty> list) {
 		for (ControlProperty c : extend.getDefinedProperties()) {
 			if (!propertyIsOverridden(c.getPropertyLookup())) {
 				if (!list.contains(c)) {
@@ -533,15 +562,15 @@ public class ControlClass {
 		}
 	}
 
-	public final ReadOnlyList<ControlProperty> getEventProperties() { //todo have getOptionalPropertiesNoEvents where it returns all optional properties without event properties
-		final List<ControlProperty> eventProperties = new ArrayList<>();
+	public final Iterable<ControlProperty> getEventProperties() { //todo have getOptionalPropertiesNoEvents where it returns all optional properties without event properties
+		final List<ControlProperty> eventProperties = new LinkedList<>();
 		for (ControlProperty property : getAllChildProperties()) {
 			if (ControlPropertyEventLookup.getEventProperty(property.getPropertyLookup()) != null) {
 				eventProperties.add(property);
 			}
 		}
 
-		return new ReadOnlyList<>(eventProperties);
+		return eventProperties;
 	}
 
 	/**
@@ -561,7 +590,7 @@ public class ControlClass {
 	 <li>{@link #setClassName(String)}</li>
 	 <li>{@link #extendControlClass(ControlClass)}</li>
 	 <li>{@link #overrideProperty(ControlPropertyLookupConstant)}</li>
-	 <li>{@link #removeOverrideProperty(ControlPropertyLookupConstant)}</li>
+	 <li>{@link #removeOverriddenProperty(ControlPropertyLookupConstant)}</li>
 	 </ul>
 	 */
 	@NotNull
@@ -622,7 +651,7 @@ public class ControlClass {
 	 */
 	public final void setTo(@NotNull ControlClass controlClass) {
 		setClassName(controlClass.getClassName());
-		extendControlClass(controlClass.getExtendClass());
+
 		for (ControlProperty property : controlClass.getAllChildProperties()) {
 			try {
 				findProperty(property.getPropertyLookup()).setTo(property);
@@ -637,13 +666,27 @@ public class ControlClass {
 
 			}
 		}
+
 		for (ControlProperty override : controlClass.getOverriddenProperties()) {
 			try {
-				overrideProperty(findProperty(override.getPropertyLookup()).getPropertyLookup());
-			} catch (IllegalArgumentException | NullPointerException ignore) {
+				overrideProperty(override.getPropertyLookup());
+			} catch (IllegalArgumentException ignore) {
 
 			}
 		}
+
+		extendControlClass(controlClass.getExtendClass());
+	}
+
+	/**
+	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null or if {@link ControlProperty#isCustomData()} and
+	 {@link ControlProperty#getCustomData()} != null;
+
+	 @param property property to check
+	 @return true if the property is defined, false otherwise
+	 */
+	public static boolean propertyIsDefined(@NotNull ControlProperty property) {
+		return property.getValue() != null || (property.isCustomData() && property.getCustomData() != null);
 	}
 
 	@Override
@@ -657,4 +700,49 @@ public class ControlClass {
 		return userData;
 	}
 
+
+	/**
+	 Updates this {@link ControlClass} to the given update
+
+	 @param data update to give
+	 @param deepCopy true if any values passed should be deep copied, false otherwise
+	 */
+	public final void update(@NotNull ControlClassUpdate data, boolean deepCopy) {
+		if (data instanceof ControlClassRenameUpdate) {
+			ControlClassRenameUpdate update = (ControlClassRenameUpdate) data;
+			setClassName(update.getNewName());
+		} else if (data instanceof ControlClassPropertyUpdate) {
+			update(((ControlClassPropertyUpdate) data).getPropertyUpdate(), deepCopy);
+		} else if (data instanceof ControlClassOverridePropertyUpdate) {
+			ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
+			if (update.wasAdded()) {
+				try {
+					overrideProperty(update.getOveridden().getPropertyLookup());
+				} catch (IllegalArgumentException ignore) {
+
+				}
+
+			} else {
+				try {
+					removeOverriddenProperty(update.getOveridden().getPropertyLookup());
+				} catch (IllegalArgumentException ignore) {
+
+				}
+
+			}
+		} else if (data instanceof ControlClassExtendUpdate) {
+			ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
+			extendControlClass(update.getNewValue());
+		} else {
+			System.err.println("WARNING: ControlClass.update(): unknown control class update:" + data);
+		}
+	}
+
+	private void update(@NotNull ControlPropertyUpdate propertyUpdate, boolean deepCopy) {
+		try {
+			findProperty(propertyUpdate.getControlProperty().getPropertyLookup()).update(propertyUpdate, deepCopy);
+		} catch (IllegalArgumentException ignore) {
+
+		}
+	}
 }

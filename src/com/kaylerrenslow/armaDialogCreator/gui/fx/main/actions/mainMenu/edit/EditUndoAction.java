@@ -15,10 +15,12 @@ import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 05/20/2016.
@@ -30,9 +32,9 @@ public class EditUndoAction implements EventHandler<ActionEvent> {
 		this.undoMenuItem = undoMenuItem;
 		this.undoMenuItem.setDisable(true);
 		final Changelog changelog = Changelog.getInstance();
-		changelog.getChangeUpdateGroup().addListener(new UpdateListener<ChangelogUpdate>() {
+		changelog.getChangeUpdateGroup().addListener(new UpdateGroupListener<ChangelogUpdate>() {
 			@Override
-			public void update(ChangelogUpdate newChange) {
+			public void update(@NotNull UpdateListenerGroup<ChangelogUpdate> group, ChangelogUpdate newChange) {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						undoMenuItem.setDisable(false);

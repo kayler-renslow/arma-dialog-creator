@@ -8,13 +8,35 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.util;
+package com.kaylerrenslow.armaDialogCreator.control;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/05/2016.
- */
-public interface UpdateListener<T> {
-	void update(@Nullable T data);
+ @author Kayler
+ @since 11/20/2016 */
+public class ControlPropertyInheritUpdate implements ControlPropertyUpdate {
+	private final ControlProperty property;
+	private final ControlProperty inheritedProperty;
+
+	public ControlPropertyInheritUpdate(@NotNull ControlProperty property, @Nullable ControlProperty inheritedProperty) {
+		this.property = property;
+		this.inheritedProperty = inheritedProperty;
+	}
+
+	@Override
+	@NotNull
+	public ControlProperty getControlProperty() {
+		return property;
+	}
+
+	@Nullable
+	public ControlProperty getInheritedProperty() {
+		return inheritedProperty;
+	}
+
+	public boolean wasInherited() {
+		return inheritedProperty != null;
+	}
 }

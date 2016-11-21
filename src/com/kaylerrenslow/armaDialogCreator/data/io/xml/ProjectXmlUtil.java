@@ -176,13 +176,13 @@ public class ProjectXmlUtil {
 		}
 
 		//overridden properties
-		if (specification.getOverriddenProperties().size() > 0) {
-			final String overriddenProperties = "overridden-properties";
-			stm.writeBeginTag(overriddenProperties);
-			for (ControlPropertySpecification property : specification.getOverriddenProperties()) {
+		if (specification.getInheritedProperties().size() > 0) {
+			final String inheritedProperties = "inherit-properties";
+			stm.writeBeginTag(inheritedProperties);
+			for (ControlPropertySpecification property : specification.getInheritedProperties()) {
 				writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
 			}
-			stm.writeCloseTag(overriddenProperties);
+			stm.writeCloseTag(inheritedProperties);
 		}
 
 		//required sub classes
@@ -217,7 +217,7 @@ public class ProjectXmlUtil {
 	 @param properties properties to write
 	 @throws IOException
 	 */
-	public static void writeInheritedControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull List<ControlProperty> properties) throws IOException {
+	public static void writeInheritedControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull Iterable<ControlProperty> properties) throws IOException {
 		for (ControlProperty property : properties) {
 			writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
 		}

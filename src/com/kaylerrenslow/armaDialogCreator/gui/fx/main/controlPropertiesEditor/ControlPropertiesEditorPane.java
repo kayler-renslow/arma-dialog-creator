@@ -49,6 +49,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -74,24 +75,25 @@ public class ControlPropertiesEditorPane extends StackPane {
 	/** Tell all editors to stop listening to the {@link ControlProperty} values again. Invoking is ideal when the pane is no longer needed. */
 	public void unlink() {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			descriptor.getInput().clearListeners();
+			descriptor.unlink();
 		}
 	}
 
 	/** Tell all editors to listen to the {@link ControlProperty} values again. */
 	public void relink() {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			descriptor.getInput().initListeners();
-			descriptor.getInput().refreshValue();
+			descriptor.relink();
 		}
 	}
 
 	private static class ControlPropertyInputDescriptor {
 		private final ControlPropertyInput input;
+		private final ControlPropertyUpdateListener updateListener;
 		private boolean optional;
 
-		public ControlPropertyInputDescriptor(ControlPropertyInput input) {
+		public ControlPropertyInputDescriptor(ControlPropertyInput input, ControlPropertyUpdateListener updateListener) {
 			this.input = input;
+			this.updateListener = updateListener;
 		}
 
 		public ControlPropertyInput getInput() {
@@ -116,6 +118,17 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public boolean hasValidData() {
 			return input.hasValidData();
 		}
+
+		public void unlink() {
+			getInput().clearListeners();
+			updateListener.unlinkListener();
+		}
+
+		public void relink() {
+			getInput().initListeners();
+			getInput().refreshValue();
+			updateListener.linkListener();
+		}
 	}
 
 
@@ -136,14 +149,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return getMissingProperties().size() == 0;
 	}
 
-	@Nullable
+	@NotNull
 	public ControlPropertyEditor findEditorForProperty(@NotNull ControlProperty property) {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
 			if (descriptor.getControlProperty() == property) {
 				return descriptor.getInput();
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("property isn't being edited");
 	}
 
 
@@ -165,7 +178,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return properties;
 	}
 
-	private void setupAccordion(ReadOnlyList<ControlProperty> requiredProperties, ReadOnlyList<ControlProperty> optionalProperties, ReadOnlyList<ControlProperty> eventProperties) {
+	private void setupAccordion(Iterable<ControlProperty> requiredProperties, Iterable<ControlProperty> optionalProperties, Iterable<ControlProperty> eventProperties) {
 		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.required"), requiredProperties, false));
 		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.optional"), optionalProperties, true));
 		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.events"), eventProperties, true));
@@ -175,11 +188,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	/** Get a titled pane for the accordion that holds all control properties */
-	private TitledPane getTitledPane(String title, List<ControlProperty> properties, boolean optional) {
+	private TitledPane getTitledPane(String title, Iterable<ControlProperty> properties, boolean optional) {
 		VBox vb = new VBox(10);
 		TitledPane tp = new TitledPane(title, vb);
 		tp.setAnimated(false);
-		if (properties.size() == 0) {
+		Iterator<ControlProperty> iterator = properties.iterator();
+
+		if (!iterator.hasNext()) {
 			vb.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_properties_available")));
 		} else {
 			for (ControlProperty controlProperty : properties) {
@@ -190,20 +205,20 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	/** Get the pane that shows the name of the property as well as the controls to input data */
-	private Node getControlPropertyEntry(ControlProperty c, boolean optional) {
-		HBox pane = new HBox(5);
-		pane.setAlignment(Pos.TOP_LEFT);
+	private Node getControlPropertyEntry(ControlProperty property, boolean optional) {
+		HBox paneProperty = new HBox(5);
+		paneProperty.setAlignment(Pos.TOP_LEFT);
 		StackPane stackPanePropertyInput = new StackPane();
 
-		final ControlPropertyInput propertyInput = getPropertyInputNode(c);
+		final ControlPropertyInput propertyInput = getPropertyInputNode(property);
 
-		propertyInput.disableEditing(c.getPropertyLookup() == ControlPropertyLookup.TYPE);
+		propertyInput.disableEditing(property.getPropertyLookup() == ControlPropertyLookup.TYPE);
 
 		if (propertyInput.displayFullWidth()) {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 
-		if (c.getMacro() != null) {
+		if (property.getMacro() != null) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
 
@@ -211,11 +226,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		final MenuItem miResetToInitial = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_initial"));
 		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
 		final MenuItem miCustomData = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
-		final MenuButton menuButton = new MenuButton(c.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro/*,miOverride*/);
+		final MenuButton menuButton = new MenuButton(property.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro/*,miCustomData*/);
 		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
 
-		if (c.getPropertyLookup() instanceof ControlPropertyLookup) {
-			switch ((ControlPropertyLookup) c.getPropertyLookup()) {
+		if (property.getPropertyLookup() instanceof ControlPropertyLookup) {
+			switch ((ControlPropertyLookup) property.getPropertyLookup()) {
 				case TYPE: {
 					for (MenuItem item : menuButton.getItems()) {
 						item.setDisable(true);
@@ -233,11 +248,29 @@ public class ControlPropertiesEditorPane extends StackPane {
 				}
 			}
 		}
-		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(propertyInput);
+
+		ControlPropertyUpdateListener updateListener = new ControlPropertyUpdateListener(property) {
+			@Override
+			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+				if (data instanceof ControlPropertyInheritUpdate) {
+					ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
+					boolean disable = update.wasInherited();
+					stackPanePropertyInput.setDisable(disable);
+					miCustomData.setDisable(disable);
+					miDefaultEditor.setDisable(disable);
+					miResetToInitial.setDisable(disable);
+					miMacro.setDisable(disable);
+				}
+			}
+		};
+		property.getControlPropertyUpdateGroup().addListener(updateListener);
+
+		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(propertyInput, updateListener);
 		propertyDescriptors.add(descriptor);
+
 		descriptor.setIsOptional(optional);
 		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
-		pane.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
+		paneProperty.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
 		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -265,13 +298,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 			}
 		});
 
-		if (c.isCustomData()) {
+		if (property.isCustomData()) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.CUSTOM_DATA);
-		} else if (c.getMacro() != null) {
+		} else if (property.getMacro() != null) {
 			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
 		}
 
-		return pane;
+		return paneProperty;
 	}
 
 	@SuppressWarnings("unchecked")

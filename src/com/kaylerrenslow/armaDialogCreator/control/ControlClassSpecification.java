@@ -29,7 +29,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private final ControlClassSpecification[] requiredNestedClasses;
 	private final ControlClassSpecification[] optionalNestedClasses;
 	private final ControlPropertyLookupConstant[] requiredPropertiesLookup, optionalPropertiesLookup;
-	private final List<ControlPropertySpecification> overriddenProperties = new LinkedList<>();
+	private final List<ControlPropertySpecification> inheritedProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 
 	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties,
@@ -151,29 +151,29 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	@NotNull
-	public List<ControlPropertySpecification> getOverriddenProperties() {
-		return overriddenProperties;
+	public List<ControlPropertySpecification> getInheritedProperties() {
+		return inheritedProperties;
 	}
 
 	/**
-	 Overrides the given property lookup and adds it to {@link #getOverriddenProperties()}
+	 Overrides the given property lookup and adds it to {@link #getInheritedProperties()}
 
 	 @param lookup lookup to match
 	 @throws IllegalArgumentException when lookup couldn't be matched
 	 */
 	public void overrideProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		ControlPropertySpecification match = findProperty(lookup);
-		getOverriddenProperties().add(match);
+		getInheritedProperties().remove(match);
 	}
 
 	/**
 	 De-overrides the given property lookup
 
-	 @param lookup property to remove from {@link #getOverriddenProperties()}
+	 @param lookup property to remove from {@link #getInheritedProperties()}
 	 @throws IllegalArgumentException when lookup couldn't be matched
 	 */
 	public void removeOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		getOverriddenProperties().remove(findOverriddenProperty(lookup));
+		getInheritedProperties().add(findInheritedProperty(lookup));
 	}
 
 	/**
@@ -182,8 +182,8 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 @return the matched instance, or null if nothing could be matched
 	 */
 	@Nullable
-	public ControlPropertySpecification findOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		for (ControlPropertySpecification propertySpecification : overriddenProperties) {
+	public ControlPropertySpecification findInheritedProperty(@NotNull ControlPropertyLookupConstant lookup) {
+		for (ControlPropertySpecification propertySpecification : inheritedProperties) {
 			if (propertySpecification.getPropertyLookup() == lookup) {
 				return propertySpecification;
 			}

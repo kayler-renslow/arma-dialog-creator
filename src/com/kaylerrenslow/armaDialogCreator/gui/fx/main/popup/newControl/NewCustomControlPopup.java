@@ -59,9 +59,9 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 	private ControlPropertiesEditorPane editorPane;
 
-	private final UpdateListener<ControlPropertyUpdate> controlClassListener = new UpdateListener<ControlPropertyUpdate>() {
+	private final UpdateGroupListener<ControlPropertyUpdate> controlClassListener = new UpdateGroupListener<ControlPropertyUpdate>() {
 		@Override
-		public void update(ControlPropertyUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 			updatePreview();
 		}
 	};

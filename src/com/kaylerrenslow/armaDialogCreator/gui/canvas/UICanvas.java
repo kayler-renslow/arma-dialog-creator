@@ -13,7 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -86,9 +87,9 @@ public abstract class UICanvas extends AnchorPane {
 			paint();
 		}
 	};
-	private final UpdateListener<Object> controlUpdateListener = new UpdateListener<Object>() {
+	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
 		@Override
-		public void update(Object data) {
+		public void update(@NotNull UpdateListenerGroup<Object> group, Object data) {
 			paint();
 		}
 	};
@@ -108,9 +109,9 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends Control> display) {
-		resolution.getUpdateGroup().addListener(new UpdateListener<Resolution>() {
+		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
-			public void update(Resolution newResolution) {
+			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
 				if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
 					canvas.setWidth(newResolution.getScreenWidth());
 					canvas.setHeight(newResolution.getScreenHeight());

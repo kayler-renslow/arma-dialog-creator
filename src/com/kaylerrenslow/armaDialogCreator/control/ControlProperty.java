@@ -52,7 +52,17 @@ public class ControlProperty {
 	private SerializableValue beforeMacroValue;
 	private @Nullable Macro myMacro;
 
+	private ControlProperty inherited;
+	private ControlProperty beforeInherit;
+
 	private final UpdateListenerGroup<ControlPropertyUpdate> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
+	private final UpdateGroupListener<ControlPropertyUpdate> inheritListener = new UpdateGroupListener<ControlPropertyUpdate>() {
+		@Override
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+			ControlProperty.this.update(data, false);
+		}
+	};
+
 
 	public ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
 		this(specification.getPropertyLookup(), specification.getValue());
@@ -76,6 +86,7 @@ public class ControlProperty {
 				controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(ControlProperty.this, oldValue, newValue));
 			}
 		});
+
 	}
 
 	/**
@@ -399,6 +410,9 @@ public class ControlProperty {
 			ControlPropertyCustomDataUpdate update1 = (ControlPropertyCustomDataUpdate) update;
 			setCustomDataValue(update1.getCustomData());
 			setHasCustomData(update1.isSetTo());
+		} else if (update instanceof ControlPropertyInheritUpdate) {
+			ControlPropertyInheritUpdate update1 = (ControlPropertyInheritUpdate) update;
+			inherit(update1.getInheritedProperty());
 		} else {
 			throw new IllegalArgumentException("WARNING: ControlProperty.update(): unknown control property update:" + update);
 		}
@@ -410,6 +424,7 @@ public class ControlProperty {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
 		copy.setCustomDataValue(getCustomData());
 		copy.setHasCustomData(isCustomData());
+		copy.setDefaultValue(false, getDefaultValue());
 		if (getMacro() != null) {
 			copy.setValueToMacro(getMacro());
 		}
@@ -430,6 +445,7 @@ public class ControlProperty {
 		setValueToMacro(property.getMacro()); //do after set value
 		setHasCustomData(property.isCustomData());
 		setCustomDataValue(property.getCustomData());
+		setDefaultValue(false, property.getDefaultValue());
 	}
 
 	/**
@@ -449,5 +465,41 @@ public class ControlProperty {
 		}
 		setHasCustomData(specification.isCustomData());
 		setCustomDataValue(specification.getCustomData());
+	}
+
+	/**
+	 Inherit values, macro, and custom data from the given {@link ControlProperty}. If the property is inherited and then this method is invoked again with <code>inherit</code>==null, the
+	 previous values, macro, and custom data will be given back to this property
+
+	 @param inherit property to inherit, or null to remove any inheritance
+	 */
+	public void inherit(@Nullable ControlProperty inherit) {
+		if (inherited == inherit) {
+			return;
+		}
+		if (inherit == null) {
+			if (beforeInherit != null) {
+				setTo(beforeInherit);
+			}
+			if (inherited != null) {
+				inherited.getControlPropertyUpdateGroup().removeListener(inheritListener);
+			}
+		} else {
+			beforeInherit = this.deepCopy();
+			setTo(inherit);
+			inherit.getControlPropertyUpdateGroup().addListener(inheritListener);
+		}
+		inherited = inherit;
+		controlPropertyUpdateGroup.update(new ControlPropertyInheritUpdate(this, inherit));
+	}
+
+	/**
+	 Get if this property is inheriting another property
+
+	 @return true if inheriting, false otherwise
+	 @see #inherit(ControlProperty)
+	 */
+	public boolean isInherited() {
+		return inherited != null;
 	}
 }

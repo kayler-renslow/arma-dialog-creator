@@ -477,8 +477,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
 			ArmaDisplay display = project.getEditingDisplay();
 			ArmaControl match = display.findControlByClassName(controlClassName);
-			for (ControlPropertyLookup overrideProperty : inheritProperties) {
-				setMyExtend.removeOverrideProperty(overrideProperty);
+			for (ControlPropertyLookup inheritProperty : inheritProperties) {
+				setMyExtend.removeOverriddenProperty(inheritProperty);
 			}
 			if (match != null) {
 				setMyExtend.extendControlClass(match);
