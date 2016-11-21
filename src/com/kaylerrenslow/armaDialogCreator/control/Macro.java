@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  Holds a simple macro. The macro is referenced by a key and the result is text that is appended into the ending .h file.
+
  @author Kayler
  @since 07/05/2016. */
 public class Macro<T extends SerializableValue> {
@@ -96,7 +97,7 @@ public class Macro<T extends SerializableValue> {
 	public PropertyType getPropertyType() {
 		return propertyType;
 	}
-	
+
 	public void setKey(@NotNull String key) {
 		this.key = key;
 	}
@@ -108,5 +109,22 @@ public class Macro<T extends SerializableValue> {
 
 	public void setMacroType(@NotNull MacroType myType) {
 		this.myType = myType;
+	}
+
+	/**
+	 Checks if key and value are equal
+
+	 @param o to check
+	 @return true if equal, false otherwise
+	 */
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof Macro) {
+			Macro other = (Macro) o;
+			return this.getKey().equals(other.getKey()) && this.getValue().equals(other.getValue());
+		}
+		return false;
 	}
 }

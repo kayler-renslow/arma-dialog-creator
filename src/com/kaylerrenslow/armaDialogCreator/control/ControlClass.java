@@ -65,6 +65,9 @@ public class ControlClass {
 	private final UpdateGroupListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateGroupListener<ControlClassUpdate>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
+			if (data.getControlClass() != ControlClass.this) { //forwarded update
+				return;
+			}
 			if (data instanceof ControlClassPropertyUpdate) {
 				updateControlProperty((ControlClassPropertyUpdate) data);
 			}
@@ -74,14 +77,13 @@ public class ControlClass {
 			ControlPropertyUpdate propertyUpdate = data.getPropertyUpdate();
 			try {
 				ControlProperty myProperty = findProperty(propertyUpdate.getControlProperty().getPropertyLookup());
+
 				if (propertyIsOverridden(myProperty)) {
 					return; //should not replace the value since it is overridden
 				}
 				if (propertyIsDefined(propertyUpdate.getControlProperty())) {
-					System.out.println("ControlClass.updateControlProperty UPDATE FROM EXTEND " + propertyUpdate.getControlProperty().getPropertyLookup());
 					myProperty.inherit(propertyUpdate.getControlProperty());
 				} else {
-					System.out.println("ControlClass.updateControlProperty REMOVE INHERITANCE");
 					myProperty.inherit(null);
 				}
 			} catch (IllegalArgumentException ignore) {
@@ -100,7 +102,7 @@ public class ControlClass {
 			controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
 		}
 	};
-	;
+
 
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification, @NotNull SpecificationRegistry registry) {
 		classNameObserver.updateValue(name);
@@ -206,16 +208,12 @@ public class ControlClass {
 		}
 		if (controlClass != null) {
 			for (ControlProperty property : getAllChildProperties()) {
-				System.out.println("ControlClass.extendControlClass property.getPropertyLookup()=" + property.getPropertyLookup());
 				if (propertyIsOverridden(property)) {
-					System.out.println("ControlClass.extendControlClass property.getValue()=" + property.getValue());
 					continue;
 				}
 				try {
 					ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
-					System.out.println("ControlClass.extendControlClass inherit=" + inherit.getPropertyLookup() + " " + inherit.getValue());
 					if (propertyIsDefined(inherit)) {
-						System.out.println("ControlClass.extendControlClass DEFINED inherit=" + inherit.getValue());
 						property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
 						property.inherit(inherit);
 						property.getControlPropertyUpdateGroup().addListener(this.controlPropertyListener);
@@ -408,7 +406,7 @@ public class ControlClass {
 
 	/**
 	 Override's a property that may exist inside {@link #getExtendClass()}. When a property is "overridden", the property's value will never be inherited until it is no longer overridden
-	 (achievable with {@link #removeOverriddenProperty(ControlPropertyLookupConstant)}).
+	 (achievable with {@link #inheritProperty(ControlPropertyLookupConstant)}).
 
 	 @throws IllegalArgumentException when the property doesn't exist in this {@link ControlClass}
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
@@ -426,7 +424,7 @@ public class ControlClass {
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 */
-	public final void removeOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
+	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		ControlProperty mine = findProperty(lookup);
 		try {
 			if (getExtendClass() == null) {
@@ -590,7 +588,7 @@ public class ControlClass {
 	 <li>{@link #setClassName(String)}</li>
 	 <li>{@link #extendControlClass(ControlClass)}</li>
 	 <li>{@link #overrideProperty(ControlPropertyLookupConstant)}</li>
-	 <li>{@link #removeOverriddenProperty(ControlPropertyLookupConstant)}</li>
+	 <li>{@link #inheritProperty(ControlPropertyLookupConstant)}</li>
 	 </ul>
 	 */
 	@NotNull
@@ -724,7 +722,7 @@ public class ControlClass {
 
 			} else {
 				try {
-					removeOverriddenProperty(update.getOveridden().getPropertyLookup());
+					inheritProperty(update.getOveridden().getPropertyLookup());
 				} catch (IllegalArgumentException ignore) {
 
 				}

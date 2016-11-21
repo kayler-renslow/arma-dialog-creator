@@ -31,18 +31,19 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionC
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputFieldDataChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.NotNull;
@@ -82,22 +83,22 @@ public class ControlPropertiesEditorPane extends StackPane {
 	/** Tell all editors to listen to the {@link ControlProperty} values again. */
 	public void relink() {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			descriptor.relink();
+			descriptor.link();
 		}
 	}
 
 	private static class ControlPropertyInputDescriptor {
-		private final ControlPropertyInput input;
-		private final ControlPropertyUpdateListener updateListener;
+		private final ControlPropertyEditorContainer container;
 		private boolean optional;
 
-		public ControlPropertyInputDescriptor(ControlPropertyInput input, ControlPropertyUpdateListener updateListener) {
-			this.input = input;
-			this.updateListener = updateListener;
+
+		public ControlPropertyInputDescriptor(@NotNull ControlPropertyEditorContainer container) {
+			this.container = container;
 		}
 
-		public ControlPropertyInput getInput() {
-			return input;
+		@NotNull
+		public ControlPropertyValueEditor getInput() {
+			return container.getPropertyInput();
 		}
 
 		public boolean isOptional() {
@@ -111,23 +112,20 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		/** Does same thing as {@link #getInput()}.getControlProperty() */
 		public ControlProperty getControlProperty() {
-			return input.getControlProperty();
+			return getInput().getControlProperty();
 		}
 
 		/** Does same thing as {@link #getInput()}.hasValidData() */
 		public boolean hasValidData() {
-			return input.hasValidData();
+			return getInput().hasValidData();
 		}
 
 		public void unlink() {
-			getInput().clearListeners();
-			updateListener.unlinkListener();
+			container.unlink();
 		}
 
-		public void relink() {
-			getInput().initListeners();
-			getInput().refreshValue();
-			updateListener.linkListener();
+		public void link() {
+			container.link();
 		}
 	}
 
@@ -206,146 +204,17 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** Get the pane that shows the name of the property as well as the controls to input data */
 	private Node getControlPropertyEntry(ControlProperty property, boolean optional) {
-		HBox paneProperty = new HBox(5);
-		paneProperty.setAlignment(Pos.TOP_LEFT);
-		StackPane stackPanePropertyInput = new StackPane();
-
-		final ControlPropertyInput propertyInput = getPropertyInputNode(property);
-
-		propertyInput.disableEditing(property.getPropertyLookup() == ControlPropertyLookup.TYPE);
-
-		if (propertyInput.displayFullWidth()) {
-			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
-		}
-
-		if (property.getMacro() != null) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
-		}
-
-		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.use_default_editor"));
-		final MenuItem miResetToInitial = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_initial"));
-		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
-		final MenuItem miCustomData = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
-		final MenuButton menuButton = new MenuButton(property.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro/*,miCustomData*/);
-		placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
-
-		if (property.getPropertyLookup() instanceof ControlPropertyLookup) {
-			switch ((ControlPropertyLookup) property.getPropertyLookup()) {
-				case TYPE: {
-					for (MenuItem item : menuButton.getItems()) {
-						item.setDisable(true);
-					}
-					break;
-				}
-				//intentional fallthrough for all below properties in case statements
-				case STYLE:
-				case X:
-				case Y:
-				case W:
-				case H: {
-					miCustomData.setDisable(true);//NEVER allow custom input
-					break;
-				}
-			}
-		}
-
-		ControlPropertyUpdateListener updateListener = new ControlPropertyUpdateListener(property) {
-			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
-				if (data instanceof ControlPropertyInheritUpdate) {
-					ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
-					boolean disable = update.wasInherited();
-					stackPanePropertyInput.setDisable(disable);
-					miCustomData.setDisable(disable);
-					miDefaultEditor.setDisable(disable);
-					miResetToInitial.setDisable(disable);
-					miMacro.setDisable(disable);
-				}
-			}
-		};
-		property.getControlPropertyUpdateGroup().addListener(updateListener);
-
-		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(propertyInput, updateListener);
+		ControlPropertyEditorContainer container = new ControlPropertyEditorContainer(controlClass, getPropertyInputNode(property));
+		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(container);
 		propertyDescriptors.add(descriptor);
-
 		descriptor.setIsOptional(optional);
-		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
-		paneProperty.getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
-		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				propertyInput.resetToDefaultValue();
-			}
-		});
-		miDefaultEditor.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.DEFAULT);
-			}
-		});
-		miMacro.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
-
-			}
-		});
-		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.CUSTOM_DATA);
-			}
-		});
-
-		if (property.isCustomData()) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.CUSTOM_DATA);
-		} else if (property.getMacro() != null) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyInput.EditMode.MACRO);
-		}
-
-		return paneProperty;
+		return container;
 	}
 
-	@SuppressWarnings("unchecked")
-	private void updatePropertyInputMode(StackPane stackPanePropertyInput, ControlPropertyInput propertyInput, ControlPropertyInput.EditMode mode) {
-		if (mode == ControlPropertyInput.EditMode.MACRO) {
-			stackPanePropertyInput.getChildren().clear();
-
-			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(propertyInput.getMacroClass(), propertyInput.getControlProperty().getMacro());
-			stackPanePropertyInput.getChildren().add(macroGetterButton);
-			macroGetterButton.getChosenMacroValueObserver().addListener(new ValueListener() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
-					Macro m = (Macro) newValue;
-					propertyInput.getControlProperty().setValueToMacro(m);
-				}
-			});
-		} else {
-			if (propertyInput.getControlProperty().getMacro() != null) {
-				SimpleResponseDialog dialog = new SimpleResponseDialog(
-						ArmaDialogCreator.getPrimaryStage(),
-						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.dialog_title"),
-						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.body"),
-						true, true, false
-				);
-				dialog.getFooter().getBtnCancel().setText(Lang.ApplicationBundle().getString("Confirmation.no"));
-				dialog.getFooter().getBtnOk().setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
-				dialog.show();
-				if (dialog.wasCancelled()) {
-					return;
-				}
-				propertyInput.getControlProperty().setValueToMacro(null);
-			}
-			stackPanePropertyInput.getChildren().clear();
-			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
-			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setHasCustomData(mode == ControlPropertyInput.EditMode.CUSTOM_DATA);
-		}
-	}
 
 	/** Get node that holds the controls to input data. */
-	private ControlPropertyInput getPropertyInputNode(ControlProperty controlProperty) {
+	private ControlPropertyValueEditor getPropertyInputNode(ControlProperty controlProperty) {
 		ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
 		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
 			return new ControlPropertyInputOption(controlClass, controlProperty);
@@ -386,7 +255,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		throw new IllegalStateException("Should have made a match");
 	}
 
-	private Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
+	static Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
 		String tooltip = "";
 		for (int i = 0; i < lookup.getAbout().length; i++) {
 			tooltip += lookup.getAbout()[i] + "\n";
@@ -403,78 +272,14 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 @param lookup constant to create tooltip of
 	 @return tooltip placed inside n
 	 */
-	private Tooltip placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
+	static Tooltip placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
 		Tooltip tip = getTooltip(lookup);
 		Tooltip.install(n, tip);
 		return tip;
 	}
 
-	private interface ControlPropertyInput extends ControlPropertyEditor {
-
-		enum EditMode {
-			/** Using default editor */
-			DEFAULT,
-			/**
-			 Uses a raw input field in which the user can enter anything they want. When this scenario happens, must be careful with casting after this is turned off.
-			 It is recommended to just clear the user's entered data to prevent exceptions from occurring.
-
-			 @deprecated This is broken. Maybe fix it later.
-			 */
-			@Deprecated
-			CUSTOM_DATA,
-			/** The control property's value is set to a macro */
-			MACRO
-		}
-
-		/**
-		 Updating the edit mode. When this is invoked, the proper new editor should be used.
-		 <ul>
-		 <li>{@link EditMode#DEFAULT} = default editor</li>
-		 <li>{@link EditMode#CUSTOM_DATA} = use an editor that allows for literally any input (use a {@link TextField} for input)</li>
-		 <li>{@link EditMode#MACRO} = setting the ControlProperty's value equal to a {@link Macro}</li>
-		 </ul>
-		 */
-		void setToMode(EditMode mode);
-
-		@NotNull Node getRootNode();
-
-		/** Get the Class type that */
-		@NotNull Class<? extends SerializableValue> getMacroClass();
-
-		/**
-		 Return true if the {@link #getRootNode()}'s width should fill the parent's width.
-		 False if the width should be whatever it is initially. By default, will return false.
-		 */
-		default boolean displayFullWidth() {
-			return false;
-		}
-
-		/** DO NOT USE THIS FOR ARRAY INPUT */
-		static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlClass control, ControlProperty controlProperty) {
-			if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
-				throw new IllegalArgumentException("don't use this method for ARRAY property type");
-			}
-			rawInput.getValueObserver().addListener(new ValueListener<String>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-					controlProperty.setValue(new SVString(newValue));
-				}
-			});
-			return rawInput;
-		}
-
-		/** Clear all listeners */
-		void clearListeners();
-
-		/** Initialize all listeners */
-		void initListeners();
-
-		/** Set the editor to the {@link #getControlProperty()} value. */
-		void refreshValue();
-	}
-
 	/** Used for when a set amount of options are available (uses radio button group for option selecting) */
-	private static class ControlPropertyInputOption extends FlowPane implements ControlPropertyInput {
+	private static class ControlPropertyInputOption extends FlowPane implements ControlPropertyValueEditor {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
@@ -501,7 +306,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(rawInput, control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(rawInput, control, controlProperty);
 			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
@@ -552,14 +357,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return toggleGroup.getSelectedToggle() != null;
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			toggleGroup.selectToggle(null);
 		}
 
 		@Override
@@ -602,12 +403,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setEditorValue(controlProperty.getValue());
 		}
 	}
 
-	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyInput {
+	private static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<ControlStyleGroup> editorValueListener = new ReadOnlyValueListener<ControlStyleGroup>() {
@@ -628,7 +429,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		};
 
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
@@ -641,6 +442,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			initListeners();
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
@@ -649,16 +451,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public boolean hasValidData() {
 			return menuButton.getSelectedItems().size() > 0;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			if (controlProperty.getDefaultValue() == null) {
-				menuButton.clearSelection();
-			} else {
-				ControlStyleGroup group = (ControlStyleGroup) controlProperty.getDefaultValue();
-				menuButton.setSelected(group.getValues());
-			}
 		}
 
 		@Override
@@ -696,7 +488,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((ControlStyleGroup) controlProperty.getValue());
 		}
 	}
@@ -706,7 +498,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link Expression}
 	 */
 	@SuppressWarnings("unchecked")
-	private static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyInput {
+	private static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final Class<C> macroTypeClass;
@@ -733,7 +525,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			this.macroTypeClass = macroTypeClass;
 
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			inputField.setValue((C) controlProperty.getValue());
 			if (promptText != null) {
@@ -747,18 +539,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return inputField.hasValidData();
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			if (getControlProperty().getDefaultValue() == null) {
-				inputField.setValue(null);
-			} else {
-				inputField.setValueFromText(getControlProperty().getDefaultValue().toString());
-			}
 		}
 
 		@Override
@@ -791,7 +575,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((C) controlProperty.getValue());
 		}
 	}
@@ -826,7 +610,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 Used for when control property requires color input.
 	 Use this only when the ControlProperty's value is of type {@link AColor}
 	 */
-	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyInput {
+	private static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<AColor> valueEditorListener = new ReadOnlyValueListener<AColor>() {
@@ -848,7 +632,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				AColor value = (AColor) controlProperty.getValue();
@@ -864,19 +648,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return colorPicker.getValue() != null;
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			if (controlProperty.getDefaultValue() == null) {
-				setValue(null);
-				return;
-			}
-			AColor color = (AColor) controlProperty.getDefaultValue();
-			colorPicker.setValue(color.toJavaFXColor());
 		}
 
 		@Override
@@ -909,7 +684,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((AColor) controlProperty.getValue());
 		}
 	}
@@ -918,7 +693,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 Used for boolean control properties
 	 Use this editor for when the ControlProperty's value is of type {@link SVBoolean}
 	 */
-	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyInput {
+	private static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<SVBoolean> editorValueListener = new ReadOnlyValueListener<SVBoolean>() {
@@ -936,7 +711,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -951,19 +726,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return choiceBox.getValue() != null;
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			SVBoolean def = (SVBoolean) getControlProperty().getDefaultValue();
-			if (def == null) { //no intellij this is not always false
-				choiceBox.setValue(null);
-				return;
-			}
-			choiceBox.setValue(def.isTrue());
 		}
 
 		@Override
@@ -995,7 +761,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((SVBoolean) controlProperty.getValue());
 		}
 	}
@@ -1005,7 +771,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 This editor will use {@link SVStringArray} as the ControlProperty's value type
 	 */
 	@SuppressWarnings("unchecked")
-	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyInput {
+	private static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<SVStringArray> editorValueListener = new ReadOnlyValueListener<SVStringArray>() {
@@ -1027,7 +793,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				throw new RuntimeException("review this code to check for correctness");
 			}
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			setValue((SVStringArray) controlProperty.getValue());
 			initListeners();
@@ -1043,27 +809,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return true;
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			SerializableValue defaultValue = controlProperty.getDefaultValue();
-			String[] defaultValues;
-			if (defaultValue == null) {
-				defaultValues = new String[controlProperty.getPropertyType().propertyValuesSize];
-			} else {
-				defaultValues = defaultValue.getAsStringArray();
-			}
-			for (int i = 0; i < editors.size(); i++) {
-				if (defaultValues[i] == null) {
-					editors.get(i).clear();
-				} else {
-					editors.get(i).setValue(defaultValues[i]);
-				}
-			}
 		}
 
 		@Override
@@ -1095,7 +844,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((SVStringArray) controlProperty.getValue());
 		}
 	}
@@ -1104,7 +853,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	 Used for control property font picking
 	 Used for ControlProperty instances where it's value is {@link AFont}
 	 */
-	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyInput {
+	private static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<AFont> editorValueListener = new ReadOnlyValueListener<AFont>() {
@@ -1122,7 +871,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			setValue((AFont) controlProperty.getValue());
 			initListeners();
@@ -1133,18 +882,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return !comboBox.getSelectionModel().isEmpty();
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			if (controlProperty.getDefaultValue() == null) {
-				comboBox.getSelectionModel().clearSelection();
-			} else {
-				comboBox.getSelectionModel().select((AFont) controlProperty.getDefaultValue());
-			}
 		}
 
 		@Override
@@ -1177,13 +918,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((AFont) controlProperty.getValue());
 		}
 	}
 
 	/** Use this editor for {@link ASound} ControlProperty values */
-	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyInput {
+	private class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<ASound> editorValueListener = new ReadOnlyValueListener<ASound>() {
@@ -1202,12 +943,13 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
-			ControlPropertyInput.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
 
 			initListeners();
 
 		}
 
+		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
@@ -1216,11 +958,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		@Override
 		public boolean hasValidData() {
 			return getValue() != null;
-		}
-
-		@Override
-		public void resetToDefaultValue() {
-			setValue((ASound) controlProperty.getDefaultValue());
 		}
 
 		@Override
@@ -1252,7 +989,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@Override
-		public void refreshValue() {
+		public void refresh() {
 			setValue((ASound) controlProperty.getValue());
 		}
 	}

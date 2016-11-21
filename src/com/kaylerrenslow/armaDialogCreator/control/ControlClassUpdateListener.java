@@ -8,23 +8,27 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
+package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 07/08/2016.
- */
-public interface ControlPropertyEditor {
-	/** Get the ControlProperty being edited. */
-	@NotNull
-	ControlProperty getControlProperty();
+ @author Kayler
+ @see ControlPropertyUpdateListener
+ @since 11/20/2016 */
+public abstract class ControlClassUpdateListener implements UpdateGroupListener<ControlClassUpdate> {
+	private final ControlClass controlClass;
 
-	/** Returns true if all data entered is valid, false if the data is not valid */
-	boolean hasValidData();
+	public ControlClassUpdateListener(@NotNull ControlClass controlClass) {
+		this.controlClass = controlClass;
+	}
 
-	/** Set whether or not the property can be edited by the user. */
-	void disableEditing(boolean disable);
+	public void unlink() {
+		controlClass.getControlClassUpdateGroup().removeListener(this);
+	}
 
+	public void relink() {
+		controlClass.getControlClassUpdateGroup().addListener(this);
+	}
 }

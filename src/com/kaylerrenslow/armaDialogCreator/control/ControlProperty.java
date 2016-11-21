@@ -143,6 +143,10 @@ public class ControlProperty {
 	 @see #isCustomData()
 	 */
 	public void setCustomDataValue(@Nullable Object customData) {
+		if (customData == this.customData || (customData != null && customData.equals(this.customData))) {
+			//either both null (or same references for that matter) or customData is potentially null, but may still equal this.customData
+			return;
+		}
 		this.customData = customData;
 		if (this.customDataValueObserver == null) {
 			customDataValueObserver = new ValueObserver<>(customData);
@@ -152,6 +156,9 @@ public class ControlProperty {
 
 	/** Does nothing except mark that the {@link ControlProperty} is/ins't using custom data. @see #isCustomData() */
 	public void setHasCustomData(boolean custom) {
+		if (custom == this.customDataSet) {
+			return;
+		}
 		this.customDataSet = custom;
 		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, custom));
 	}
@@ -203,10 +210,11 @@ public class ControlProperty {
 	 @param m the macro to set to, or null if not to set to macro
 	 */
 	public void setValueToMacro(@Nullable Macro m) {
+		if (m == this.myMacro || (m != null && m.equals(this.myMacro))) { //either both null (or same references for that matter) or m might still equal this.myMacro)
+			return;
+		}
 		if (m == null) {
-			if (this.myMacro != null) {
-				myMacro.getValueObserver().removeListener(macroListener);
-			}
+			myMacro.getValueObserver().removeListener(macroListener);
 			this.myMacro = null;
 			setValue(beforeMacroValue);
 		} else {
@@ -425,9 +433,7 @@ public class ControlProperty {
 		copy.setCustomDataValue(getCustomData());
 		copy.setHasCustomData(isCustomData());
 		copy.setDefaultValue(false, getDefaultValue());
-		if (getMacro() != null) {
-			copy.setValueToMacro(getMacro());
-		}
+		copy.setValueToMacro(getMacro());
 		return copy;
 	}
 
@@ -450,7 +456,7 @@ public class ControlProperty {
 
 	/**
 	 Will set this property equal to the given specification only if {@link #getPropertyLookup()} matches with this and <code>property</code>. Note: {@link ControlPropertySpecification#getValue()} will not be
-	 deep copied.
+	 deep copied. The value returned by {@link ControlPropertySpecification#getValue()} will also become the default value ({@link #getDefaultValue()})
 
 	 @param specification specification to set to
 	 @param registry registry that contains the {@link Macro} instances
@@ -459,7 +465,7 @@ public class ControlProperty {
 		if (specification.getPropertyLookup() != getPropertyLookup()) {
 			throw new IllegalArgumentException("not same property lookup");
 		}
-		setValue(specification.getValue());
+		setDefaultValue(true, specification.getValue());
 		if (specification.getMacroKey() != null) {
 			setValueToMacro(registry.findMacroByKey(specification.getMacroKey())); //do after set value
 		}
@@ -477,19 +483,22 @@ public class ControlProperty {
 		if (inherited == inherit) {
 			return;
 		}
+		if (inherit != null && inherit.inherited == this) {
+			throw new IllegalArgumentException("circular inheritance");
+		}
+		ControlProperty oldInherited = inherited;
+		inherited = inherit;
 		if (inherit == null) {
 			if (beforeInherit != null) {
 				setTo(beforeInherit);
 			}
-			if (inherited != null) {
-				inherited.getControlPropertyUpdateGroup().removeListener(inheritListener);
-			}
+			oldInherited.getControlPropertyUpdateGroup().removeListener(inheritListener);
 		} else {
 			beforeInherit = this.deepCopy();
 			setTo(inherit);
 			inherit.getControlPropertyUpdateGroup().addListener(inheritListener);
 		}
-		inherited = inherit;
+
 		controlPropertyUpdateGroup.update(new ControlPropertyInheritUpdate(this, inherit));
 	}
 
@@ -501,5 +510,11 @@ public class ControlProperty {
 	 */
 	public boolean isInherited() {
 		return inherited != null;
+	}
+
+	/** Get the {@link ControlProperty} this property is inheriting, or null if not inheriting anything */
+	@Nullable
+	public ControlProperty getInherited() {
+		return inherited;
 	}
 }
