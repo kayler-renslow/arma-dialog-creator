@@ -460,7 +460,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -553,7 +553,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -662,7 +662,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -739,7 +739,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -822,7 +822,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -896,7 +896,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull
@@ -967,7 +967,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		@Override
 		public void setToMode(EditMode mode) {
-			setToOverride(mode == EditMode.CUSTOM_DATA);
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
 		}
 
 		@NotNull

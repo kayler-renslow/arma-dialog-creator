@@ -95,7 +95,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	}
 
 	@Override
-	public void setToOverride(boolean override) {
+	public void setToCustomData(boolean override) {
 		getChildren().clear();
 		if (override) {
 			getChildren().add(this.tfOverride);

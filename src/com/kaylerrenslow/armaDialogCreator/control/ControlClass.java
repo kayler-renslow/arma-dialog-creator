@@ -65,9 +65,6 @@ public class ControlClass {
 	private final UpdateGroupListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateGroupListener<ControlClassUpdate>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
-			if (data.getControlClass() != ControlClass.this) { //forwarded update
-				return;
-			}
 			if (data instanceof ControlClassPropertyUpdate) {
 				updateControlProperty((ControlClassPropertyUpdate) data);
 			}
@@ -118,11 +115,8 @@ public class ControlClass {
 
 	/** Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry} */
 	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
-		classNameObserver.updateValue(specification.getClassName());
+		setClassName(specification.getClassName());
 		this.specProvider = specification;
-		if (specification.getExtendClassName() != null) {
-			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
-		}
 		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
 			requiredProperties.add(property.constructNewControlProperty(registry));
 		}
@@ -134,6 +128,9 @@ public class ControlClass {
 		}
 		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
 			optionalNestedClasses.add(s.constructNewControlClass(registry));
+		}
+		if (specification.getExtendClassName() != null) {
+			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
 		}
 		afterConstructor();
 	}

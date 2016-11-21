@@ -13,14 +13,17 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ImageContainer;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuButton;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ControlClassMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopupUndecorated;
@@ -155,7 +158,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 		btnClose.getStyleClass().add("close-button");
 
-		final ControlClassMenuButton menuButtonExtendControls = new ControlClassMenuButton(true, Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null);
+		final ComboBoxMenuButton<CustomControlClass> menuButtonExtendControls = new ComboBoxMenuButton<>(
+				true, Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null
+		);
 		ReadOnlyList<CustomControlClass> customControls = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
 		for (CustomControlClass customControlClass : customControls) {
 			ImageContainer imageContainer = null;
@@ -167,12 +172,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			} catch (IllegalArgumentException ignore) {
 
 			}
-			menuButtonExtendControls.addItem(new ControlClassMenuItem(customControlClass.getControlClass(), imageContainer));
+			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass, imageContainer));
 		}
-		menuButtonExtendControls.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
+		menuButtonExtendControls.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<CustomControlClass>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
-				control.extendControlClass(selected);
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<CustomControlClass> observer, CustomControlClass oldValue, CustomControlClass selected) {
+				if (selected != null) {
+					control.extendControlClass(selected.getControlClass());
+				}
 			}
 		});
 		lblClassName = new Label(control.getClassName());

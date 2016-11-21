@@ -55,7 +55,7 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	}
 
 	@Override
-	public void setToOverride(boolean override) {
+	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
 			masterPane.getChildren().add(overrideField);

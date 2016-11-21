@@ -122,7 +122,7 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 	}
 	
 	@Override
-	public void setToOverride(boolean override) {
+	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
 			masterPane.getChildren().add(overrideField);

@@ -41,7 +41,7 @@ public interface ValueEditor<V extends SerializableValue> {
 	@NotNull Node getRootNode();
 
 	/** Set to override mode. Override mode is used for allowing the user to enter whatever they want, even if it appears invalid to the normal editor. Use this with caution. */
-	void setToOverride(boolean override);
+	void setToCustomData(boolean override);
 
 	/** Get the TextField used for entering the raw text */
 	InputField<StringChecker, String> getCustomDataTextField();

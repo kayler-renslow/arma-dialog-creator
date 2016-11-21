@@ -1,9 +1,8 @@
 **Added:**
-* clear value support in control properties editor
-* inherit/override buttons in control properties editor
+* none
 
 **Changed:**
 * none
 
 **Fixed:**
-* none
+* control class extending
