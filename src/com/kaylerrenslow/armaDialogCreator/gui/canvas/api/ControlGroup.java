@@ -10,11 +10,20 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 08/04/2016.
  */
-public interface ControlGroup extends Control, ControlHolder<ArmaControl>{
-	
+public interface ControlGroup<C extends Control> extends Control<C>, ControlHolder<C> {
+
+	default void setDisplayForGroup(@NotNull Display<C> display) {
+		setDisplay(display);
+		for (C c : getControls()) {
+			if (c instanceof ControlGroup) {
+				((ControlGroup) c).setDisplayForGroup(display);
+			}
+			c.setDisplay(display);
+		}
+	}
 }

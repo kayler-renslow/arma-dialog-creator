@@ -19,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControl extends ControlClass implements Control {
+public class ArmaControl extends ControlClass implements Control<ArmaControl> {
 	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;
 	/** Type of the control */
@@ -41,7 +42,7 @@ public class ArmaControl extends ControlClass implements Control {
 	protected ArmaControlRenderer renderer;
 
 	private ControlHolder<ArmaControl> holder;
-	private ArmaDisplay display;
+	private @NotNull Display<ArmaControl> display;
 
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
@@ -154,11 +155,11 @@ public class ArmaControl extends ControlClass implements Control {
 		renderer.resolutionUpdate(newResolution);
 	}
 
-	void setHolder(@NotNull ControlHolder<ArmaControl> holder) {
+	public void setHolder(@NotNull ControlHolder<ArmaControl> holder) {
 		this.holder = holder;
 	}
 
-	void setDisplay(@NotNull ArmaDisplay display) {
+	public void setDisplay(@NotNull Display<ArmaControl> display) {
 		this.display = display;
 	}
 
@@ -167,8 +168,9 @@ public class ArmaControl extends ControlClass implements Control {
 		return holder;
 	}
 
+	@NotNull
 	@Override
-	public ArmaDisplay getDisplay() {
+	public Display<ArmaControl> getDisplay() {
 		return display;
 	}
 

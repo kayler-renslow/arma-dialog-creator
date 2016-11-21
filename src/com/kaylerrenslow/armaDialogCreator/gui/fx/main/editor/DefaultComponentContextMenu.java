@@ -14,12 +14,15 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.Counter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor.ControlPropertiesConfigPopup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -41,7 +44,7 @@ public class DefaultComponentContextMenu extends ContextMenu {
 
 		Menu renderQueueMenu = new Menu(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.render_queue"), null, renderQueueItem);
 
-		getItems().addAll(renderQueueMenu, configure);
+		getItems().addAll(/*renderQueueMenu, */configure);
 		configure.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -51,20 +54,19 @@ public class DefaultComponentContextMenu extends ContextMenu {
 	}
 
 	public static void showControlPropertiesPopup(@NotNull ArmaControl c) {
-		if (createdPopups.size() > 0 && createdPopups.get(0).getControl().getDisplay() != c.getDisplay()) {
-			createdPopups.clear(); //no need to save previous popups since past controls are likely destroyed
-		}
 		for (ControlPropertiesConfigPopup popup : createdPopups) {
 			if (popup.getControl() == c && popup.isShowing()) {
 				popup.beepFocus();
 				return;
-			} else if (!popup.isShowing() && popup.getControl() == c) {
-				popup.show();
-				return;
 			}
 		}
 		ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);
-		createdPopups.add(popup);
+		popup.getOnHiddenProperty().addListener(new ChangeListener<EventHandler<WindowEvent>>() {
+			@Override
+			public void changed(ObservableValue<? extends EventHandler<WindowEvent>> observable, EventHandler<WindowEvent> oldValue, EventHandler<WindowEvent> newValue) {
+				createdPopups.remove(popup);
+			}
+		});
 		popup.show();
 	}
 }

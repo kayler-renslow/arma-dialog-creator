@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -251,9 +252,9 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant{
 	/*ShortcutPos class*/
 	/*CLASS_SHORTCUT_POS__W(0, "w", PropertyType.FLOAT, null),
 	CLASS_SHORTCUT_POS__H(0, "h", PropertyType.FLOAT, null)*/;
-	
-	
-	public static final ControlPropertyLookup[] EMPTY = new ControlPropertyLookup[0];
+
+
+	public static final ReadOnlyList<ControlPropertyLookup> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
 	private final @Nullable ControlPropertyOption[] options;
 	private final String propertyName;

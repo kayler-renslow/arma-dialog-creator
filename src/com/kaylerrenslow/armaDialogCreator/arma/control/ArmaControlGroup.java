@@ -14,8 +14,11 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -24,26 +27,28 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 06/08/2016. */
-public class ArmaControlGroup extends ArmaControl implements ControlGroup {
+public class ArmaControlGroup extends ArmaControl implements ControlGroup<ArmaControl> {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 
 	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
 
-		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
-		});
+		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+				defaultRequiredProperties, new ControlPropertyLookup[]{
+				}));
 
-		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
-		});
+		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+				defaultOptionalProperties, new ControlPropertyLookup[]{
+				}));
 
 		@NotNull
 		@Override
-		public ControlPropertyLookup[] getRequiredProperties() {
+		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
 			return requiredProperties;
 		}
 
 		@NotNull
 		@Override
-		public ControlPropertyLookup[] getOptionalProperties() {
+		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
 			return optionalProperties;
 		}
 
@@ -57,47 +62,18 @@ public class ArmaControlGroup extends ArmaControl implements ControlGroup {
 	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, resolution, renderer, env, registry);
 		defineStyle(ControlStyle.NA.getStyleGroup());
-		afterConstructor();
 	}
 
 	protected ArmaControlGroup(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer,
 							   @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(ControlType.CONTROLS_GROUP, name, SPEC_PROVIDER, idc, ControlStyle.NA.getStyleGroup(), resolution, renderer, env, registry);
-		afterConstructor();
 	}
 
 	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
 							   @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(specification, provider, resolution, rendererLookup, env, registry);
-		afterConstructor();
 	}
 
-	/** Called by the constructor and only the constructor */
-	private void afterConstructor() {
-		ArmaControlGroup group = this;
-		controlsList.addChangeListener(new ControlListChangeListener<ArmaControl>() {
-			@Override
-			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-				//do not set the display in here
-				if (change.wasAdded()) {
-					change.getAdded().getControl().setHolder(group);
-				} else if (change.wasSet()) {
-					change.getSet().getNewControl().setHolder(group);
-				} else if (change.wasMoved() && change.getMoved().getDestinationList() == group.getControls()) {
-					change.getMoved().getMovedControl().setHolder(group);
-				}
-			}
-		});
-	}
-
-
-	@Override
-	void setDisplay(@NotNull ArmaDisplay display) {
-		super.setDisplay(display);
-		for (ArmaControl control : controlsList) {
-			control.setDisplay(display);
-		}
-	}
 
 	@Override
 	public ControlList<ArmaControl> getControls() {

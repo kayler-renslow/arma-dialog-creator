@@ -11,14 +11,19 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 /**
  A {@link ControlPropertyLookupConstant} is a way to check if one {@link ControlProperty} equals another. Each instance that implements this interface must be instantiated only <b>once</b>.
  @author Kayler
  @since 09/15/2016. */
 public interface ControlPropertyLookupConstant {
+	ReadOnlyList<ControlPropertyLookupConstant> EMPTY = new ReadOnlyList<>(new ArrayList<>());
+
 	/** All values that the property can be, or null if user defined. */
 	@Nullable
 	ControlPropertyOption[] getOptions();

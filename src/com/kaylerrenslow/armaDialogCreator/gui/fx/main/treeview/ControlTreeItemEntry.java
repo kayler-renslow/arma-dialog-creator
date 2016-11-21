@@ -73,7 +73,7 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	}
 
 	/** Set whether or not the control is visible or not (updates the radio button as well) */
-	public void updateVisibilityFromButton(boolean visible) {
+	public void setVisible(boolean visible) {
 		// Sets the visibility and enable values. A ghost is not visible and is not enabled.
 		myArmaControl.getRenderer().setGhost(!visible);
 	}
@@ -89,5 +89,9 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	/** Return the control's enabled state that this tree item entry represents */
 	public boolean isEnabled() {
 		return myArmaControl.getRenderer().isEnabled();
+	}
+
+	public boolean isVisible() {
+		return !myArmaControl.getRenderer().isGhost();
 	}
 }

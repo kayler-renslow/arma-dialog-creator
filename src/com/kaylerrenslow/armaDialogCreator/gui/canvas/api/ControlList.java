@@ -30,7 +30,7 @@ public class ControlList<C extends Control> implements List<C> {
 	private final UpdateListenerGroup<Object> onClear = new UpdateListenerGroup<>();
 
 
-	public ControlList(ControlHolder<C> holder) {
+	public ControlList(@NotNull ControlHolder<C> holder) {
 		this.holder = holder;
 	}
 
@@ -171,7 +171,9 @@ public class ControlList<C extends Control> implements List<C> {
 
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex));
+		change.getMoved().setOriginalUpdate(true);
 		notifyListeners(change);
+		change.getMoved().setOriginalUpdate(false);
 		newList.notifyListeners(change);
 	}
 
@@ -310,5 +312,54 @@ public class ControlList<C extends Control> implements List<C> {
 	@Override
 	public List<C> subList(int fromIndex, int toIndex) {
 		throw new UnsupportedOperationException();
+	}
+
+	/** Get an iterator that will traverse all descendants (all controls and all their controls) */
+	@NotNull
+	public Iterable<C> deepIterator() {
+		return new DeepIterator<>(this);
+	}
+
+	private static class DeepIterator<C extends Control> implements Iterable<C>, Iterator<C> {
+
+		private final ControlList<C> list;
+		private final LinkedList<C> toVisit = new LinkedList<>();
+		private final Iterator<C> primaryListIterator;
+
+		public DeepIterator(@NotNull ControlList<C> list) {
+			this.list = list;
+			primaryListIterator = list.iterator();
+		}
+
+		@Override
+		public Iterator<C> iterator() {
+			return this;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return primaryListIterator.hasNext() || toVisit.size() > 0;
+		}
+
+		@Override
+		public C next() {
+			if (!hasNext()) {
+				throw new IllegalStateException("nothing left to iterate");
+			}
+			if (primaryListIterator.hasNext()) {
+				C next = primaryListIterator.next();
+				toVisit(next);
+				return next;
+			}
+			C next = toVisit.pop();
+			toVisit(next);
+			return next;
+		}
+
+		private void toVisit(C next) {
+			if (next instanceof ControlGroup) {
+				toVisit.addAll(((ControlGroup<C>) next).getControls());
+			}
+		}
 	}
 }

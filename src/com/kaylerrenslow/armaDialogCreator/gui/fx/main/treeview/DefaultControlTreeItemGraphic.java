@@ -46,13 +46,13 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		rbSelected.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				entry.updateVisibilityFromButton(newValue);
+				entry.setVisible(newValue);
 			}
 		});
 		entry.getMyArmaControl().getRenderer().getEnabledObserver().addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
-				updateVisibilityRadioButton(enabled);
+				updateVisibilityRadioButton(!entry.getMyArmaControl().getRenderer().isGhost());
 			}
 		});
 		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addListener(new ValueListener<AColor>() {

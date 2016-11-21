@@ -403,8 +403,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return ProjectXmlUtil.getValue(dataContext, propertyType, controlPropertyElement, this.loader);
 	}
 
-	private boolean containsAllProperties(String controlClassName, ControlPropertyLookup[] toMatch, LinkedList<ControlPropertySpecification> master) {
-		for (ControlPropertyLookup toMatchLookup : toMatch) {
+	private boolean containsAllProperties(String controlClassName, @NotNull List<ControlPropertyLookupConstant> toMatch, LinkedList<ControlPropertySpecification> master) {
+		for (ControlPropertyLookupConstant toMatchLookup : toMatch) {
 			boolean matched = false;
 			for (ControlPropertySpecification masterLookup : master) {
 				if (masterLookup.getPropertyLookup() == toMatchLookup) {

@@ -160,13 +160,13 @@ public class ControlClass {
 		});
 	}
 
-	private void addProperties(List<ControlProperty> propertiesList, ControlPropertyLookupConstant[] props) {
+	private void addProperties(List<ControlProperty> propertiesList, List<ControlPropertyLookupConstant> props) {
 		for (ControlPropertyLookupConstant lookup : props) {
 			propertiesList.add(lookup.getPropertyWithNoData());
 		}
 	}
 
-	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull SpecificationRegistry registry, @NotNull ControlClassSpecification... nestedClassesSpecs) {
+	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull SpecificationRegistry registry, @NotNull List<ControlClassSpecification> nestedClassesSpecs) {
 		for (ControlClassSpecification nestedClass : nestedClassesSpecs) {
 			nestedClasses.add(new ControlClass(nestedClass, registry));
 		}

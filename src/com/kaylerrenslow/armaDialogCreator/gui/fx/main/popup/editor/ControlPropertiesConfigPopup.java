@@ -19,6 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
@@ -108,7 +109,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
-				ArmaDisplay display = c.getDisplay();
+				Display<ArmaControl> display = c.getDisplay();
 				if (c.getHolder() instanceof ArmaControlGroup) {
 					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(c);
 					popup.show();

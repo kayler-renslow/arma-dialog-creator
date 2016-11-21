@@ -11,54 +11,121 @@
 package com.kaylerrenslow.armaDialogCreator.data.changeRegistrars;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.*;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeListener;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeType;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 08/10/2016.
  */
 public class DisplayChangeRegistrar implements ChangeRegistrar {
+	private final ApplicationData data;
+	private boolean disableListener = false;
+
 	public DisplayChangeRegistrar(ApplicationData data) {
+		this.data = data;
 		final DisplayChangeRegistrar self = this;
 		final Changelog changelog = Changelog.getInstance();
-		final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
+
+		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
+		UpdateGroupListener<ControlListChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
 			@Override
-			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-				if (change.wasMoved() && change.getMoved().getDestinationList() == controlList) {
+			public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, ControlListChange<ArmaControl> change) {
+				if (disableListener) {
+					return;
+				}
+				if (change.wasMoved() && change.getMoved().isOriginalUpdate()) {
 					return; //only register the change once (register the change when the old list is notified and not the destination list)
 				}
-				changelog.addChange(new DisplayControlChange(self, controlList == data.getCurrentProject().getEditingDisplay().getBackgroundControls(), change));
+				changelog.addChange(new DisplayControlChange(self, change));
 			}
 		};
-		data.getCurrentProject().getEditingDisplay().getBackgroundControls().addChangeListener(controlListChangeListener);
-		data.getCurrentProject().getEditingDisplay().getControls().addChangeListener(controlListChangeListener);
+		display.getControls().getUpdateGroup().addListener(listChangeListener);
+		display.getBackgroundControls().getUpdateGroup().addListener(listChangeListener);
+
 	}
 
 	@Override
 	public void undo(Change c) throws ChangeUpdateFailedException {
+		disableListener = true;
 		DisplayControlChange change = (DisplayControlChange) c;
+		ControlList<ArmaControl> modifiedList = change.getListChange().getModifiedList();
+		switch (change.getChangeType()) {
+			case ADD: {
+				ControlAdd<ArmaControl> added = change.getListChange().getAdded();
+				modifiedList.remove(added.getControl());
+				break;
+			}
+			case SET: {
+				ControlSet<ArmaControl> set = change.getListChange().getSet();
+				modifiedList.set(set.getIndex(), set.getOldControl());
+				break;
+			}
+			case REMOVE: {
+				ControlRemove<ArmaControl> removed = change.getListChange().getRemoved();
+				modifiedList.add(removed.getIndex(), removed.getControl());
+				break;
+			}
+			case MOVE: {
+				ControlMove<ArmaControl> moved = change.getListChange().getMoved();
+				moved.getDestinationList().move(moved.getMovedControl(), moved.getOldList(), moved.getOldIndex());
+				break;
+			}
+			default: {
+				throw new IllegalStateException("unexpected change type:" + change.getChangeType());
+			}
+
+		}
+		disableListener = false;
 	}
 
 	@Override
 	public void redo(Change c) throws ChangeUpdateFailedException {
+		disableListener = true;
 		DisplayControlChange change = (DisplayControlChange) c;
+		ControlList<ArmaControl> modifiedList = change.getListChange().getModifiedList();
+		switch (change.getChangeType()) {
+			case ADD: {
+				ControlAdd<ArmaControl> added = change.getListChange().getAdded();
+				modifiedList.add(added.getIndex(), added.getControl());
+				break;
+			}
+			case SET: {
+				ControlSet<ArmaControl> set = change.getListChange().getSet();
+				modifiedList.set(set.getIndex(), set.getNewControl());
+				break;
+			}
+			case REMOVE: {
+				ControlRemove<ArmaControl> removed = change.getListChange().getRemoved();
+				modifiedList.remove(removed.getControl());
+				break;
+			}
+			case MOVE: {
+				ControlMove<ArmaControl> moved = change.getListChange().getMoved();
+				moved.getOldList().move(moved.getMovedControl(), moved.getDestinationList(), moved.getDestinationIndex());
+				break;
+			}
+			default: {
+				throw new IllegalStateException("unexpected change type:" + change.getChangeType());
+			}
+
+		}
+		disableListener = false;
 	}
 
 	private static class DisplayControlChange implements Change {
 
 		private final DisplayChangeRegistrar registrar;
-		private final boolean background;
 		private final ControlListChange<ArmaControl> controlControlListChange;
 		private final String shortName;
 		private final String description;
 
-		public DisplayControlChange(DisplayChangeRegistrar registrar, boolean background, ControlListChange<ArmaControl> controlControlListChange) {
+		public DisplayControlChange(DisplayChangeRegistrar registrar, ControlListChange<ArmaControl> controlControlListChange) {
 			this.registrar = registrar;
-			this.background = background;
 			this.controlControlListChange = controlControlListChange;
 
 			final ControlListChangeType changeType = controlControlListChange.getChangeType();
@@ -93,24 +160,29 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 			}
 		}
 
-		public boolean isBackground() {
-			return background;
-		}
-
+		@NotNull
 		public ControlListChangeType getChangeType() {
 			return controlControlListChange.getChangeType();
 		}
 
+		@NotNull
+		public ControlListChange<ArmaControl> getListChange() {
+			return controlControlListChange;
+		}
+
+		@NotNull
 		@Override
 		public String getShortName() {
 			return shortName;
 		}
 
+		@NotNull
 		@Override
 		public String getDescription() {
 			return description;
 		}
 
+		@NotNull
 		@Override
 		public ChangeRegistrar getRegistrar() {
 			return registrar;

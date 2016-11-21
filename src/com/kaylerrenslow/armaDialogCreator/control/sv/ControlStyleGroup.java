@@ -28,7 +28,7 @@ public class ControlStyleGroup extends SerializableValue {
 	public static final ValueConverter<ControlStyleGroup> CONVERTER = new ValueConverter<ControlStyleGroup>() {
 		@Override
 		public ControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
-			String[] split = values[0].split("\\" + DEFAULT_DELIMITER);
+			String[] split = values[0].split("\\+");
 			ControlStyle[] styles = new ControlStyle[split.length];
 			int styleInd = 0;
 			for (String s : split) {

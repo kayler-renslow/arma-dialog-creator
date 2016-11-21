@@ -12,7 +12,9 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassRequirementSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -23,33 +25,32 @@ public interface ArmaControlSpecRequirement extends ControlClassRequirementSpeci
 	};
 
 	/** Returns a new array of the properties that are required for all controls */
-	ControlPropertyLookup[] DEFAULT_REQUIRED_PROPERTIES = {
+	ControlPropertyLookupConstant[] defaultRequiredProperties = {
 			ControlPropertyLookup.TYPE,
 			ControlPropertyLookup.IDC,
 			ControlPropertyLookup.STYLE,
 			ControlPropertyLookup.X,
 			ControlPropertyLookup.Y,
 			ControlPropertyLookup.W,
-			ControlPropertyLookup.H
-	};
+			ControlPropertyLookup.H};
 
 
 	/** Returns a new array of properties that are optional for all controls */
-	ControlPropertyLookup[] DEFAULT_OPTIONAL_PROPERTIES = {
-			ControlPropertyLookup.ACCESS
-	};
+	ControlPropertyLookupConstant[] defaultOptionalProperties = {ControlPropertyLookup.ACCESS};
 
+	ReadOnlyList<ControlPropertyLookupConstant> defaultRequiredPropertiesReadOnly = new ReadOnlyList<>(defaultRequiredProperties);
+	ReadOnlyList<ControlPropertyLookupConstant> defaultOptionalPropertiesReadOnly = new ReadOnlyList<>(defaultOptionalProperties);
 
 	@NotNull
 	@Override
-	default ControlPropertyLookup[] getRequiredProperties() {
-		return DEFAULT_REQUIRED_PROPERTIES;
+	default ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		return defaultRequiredPropertiesReadOnly;
 	}
 
 	@NotNull
 	@Override
-	default ControlPropertyLookup[] getOptionalProperties() {
-		return DEFAULT_OPTIONAL_PROPERTIES;
+	default ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		return defaultOptionalPropertiesReadOnly;
 	}
 
 	default ControlStyle[] getAllowedStyles() {

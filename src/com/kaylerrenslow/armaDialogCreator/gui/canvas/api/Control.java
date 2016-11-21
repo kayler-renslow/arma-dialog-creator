@@ -12,13 +12,14 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
 
 /**
  Created by Kayler on 08/04/2016.
  */
-public interface Control {
+public interface Control<C extends Control> {
 	/** Get the {@link CanvasComponent} instance used for rendering the control is a {@link com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas} */
 	CanvasComponent getRenderer();
 
@@ -33,10 +34,16 @@ public interface Control {
 	};
 
 	/** Get the parent of the control. */
-	ControlHolder<? extends Control> getHolder();
+	ControlHolder<C> getHolder();
 
 	/** Get the display that the control is associated with */
-	Display<? extends Control> getDisplay();
+	Display<C> getDisplay();
+
+	/** Sets the holder. Can be fetched with {@link #getHolder()} */
+	void setHolder(@NotNull ControlHolder<C> holder);
+
+	/** Sets the display. Can be fetched with {@link #getDisplay()} */
+	void setDisplay(@NotNull Display<C> display);
 
 	/** Get the update group that will update anytime the control needs to be re-rendered */
 	UpdateListenerGroup<Object> getReRenderUpdateGroup();

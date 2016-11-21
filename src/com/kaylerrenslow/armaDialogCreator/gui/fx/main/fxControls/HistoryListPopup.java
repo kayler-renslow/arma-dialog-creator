@@ -85,7 +85,11 @@ public class HistoryListPopup extends StagePopup<VBox> {
 		for (HistoryListItem item : items) {
 			HistoryListItemNode listItemNode = new HistoryListItemNode(item);
 			if (need2Columns) {
-				gridPaneContent.addRow(row++, item.getGraphic(), listItemNode);
+				if (item.getGraphic() != null) {
+					gridPaneContent.addRow(row++, item.getGraphic(), listItemNode);
+				} else {
+					gridPaneContent.addRow(row++, new AnchorPane(), listItemNode); //use empty pane to prevent disalignment
+				}
 			} else {
 				gridPaneContent.addRow(row++, listItemNode);
 			}

@@ -32,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  @author Kayler
@@ -43,7 +44,7 @@ public abstract class UICanvas extends AnchorPane {
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
 
-	protected @NotNull Display<? extends Control> display;
+	protected @NotNull Display<Control> display;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -59,54 +60,24 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
 
-	@SuppressWarnings("unchecked")
-	private final ControlListChangeListener controlListChangeListener = new ControlListChangeListener() {
-		@Override
-		public void onChanged(ControlList controlList, ControlListChange change) {
-			switch (change.getChangeType()) {
-				case ADD: {
-					setControlUpdateListener(change.getAdded().getControl(), true);
-					break;
-				}
-				case REMOVE: {
-					setControlUpdateListener(change.getRemoved().getControl(), false);
-					break;
-				}
-				case SET: {
-					setControlUpdateListener(change.getSet().getOldControl(), false);
-					setControlUpdateListener(change.getSet().getNewControl(), true);
-					break;
-				}
-				case MOVE: {
-					break;
-				}
-				default: {
-					throw new IllegalStateException("unexpected change type:" + change.getChangeType());
-				}
-			}
-			paint();
-		}
-	};
 	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<Object> group, Object data) {
 			paint();
 		}
 	};
-
-	private void setControlUpdateListener(Control c, boolean activate) {
-		if (c instanceof ControlGroup) {
-			ControlGroup controlGroup = (ControlGroup) c;
-			for (Control c1 : controlGroup.getControls()) {
-				setControlUpdateListener(c1, activate);
+	private UpdateGroupListener<ControlListChange<Control>> controlListListener = new UpdateGroupListener<ControlListChange<Control>>() {
+		@Override
+		public void update(@NotNull UpdateListenerGroup<ControlListChange<Control>> group, ControlListChange<Control> data) {
+			if (data.wasRemoved()) {
+				data.getRemoved().getControl().getReRenderUpdateGroup().removeListener(controlUpdateListener);
+			} else if (data.wasSet()) {
+				data.getSet().getOldControl().getReRenderUpdateGroup().removeListener(controlUpdateListener);
+				data.getSet().getNewControl().getReRenderUpdateGroup().addListener(controlUpdateListener);
 			}
+			paint();
 		}
-		if (activate) {
-			c.getReRenderUpdateGroup().addListener(controlUpdateListener);
-		} else {
-			c.getReRenderUpdateGroup().removeListener(controlUpdateListener);
-		}
-	}
+	};
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends Control> display) {
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
@@ -140,8 +111,8 @@ public abstract class UICanvas extends AnchorPane {
 		});
 
 		//do this last
-		this.display = display;
-		setDisplayListeners(display);
+		this.display = (Display<Control>) display;
+		setDisplayListeners();
 
 	}
 
@@ -155,23 +126,22 @@ public abstract class UICanvas extends AnchorPane {
 
 	@SuppressWarnings("unchecked")
 	public void setDisplay(@NotNull Display<? extends Control> display) {
-		this.display.getControls().removeChangeListener(controlListChangeListener);
-		this.display.getBackgroundControls().removeChangeListener(controlListChangeListener);
-		this.display = display;
-		setDisplayListeners(display);
+		this.display.getControls().getUpdateGroup().removeListener(controlListListener);
+		this.display.getBackgroundControls().getUpdateGroup().removeListener(controlListListener);
+		this.display = (Display<Control>) display;
+		setDisplayListeners();
 		paint();
 	}
 
-	private void setDisplayListeners(@NotNull Display<? extends Control> display) {
-		this.display = display;
-		for(Control control : display.getControls()){
-			setControlUpdateListener(control, true);
-		}
-		for(Control control : display.getBackgroundControls()){
-			setControlUpdateListener(control, true);
-		}
-		this.display.getControls().addChangeListener(controlListChangeListener);
-		this.display.getBackgroundControls().addChangeListener(controlListChangeListener);
+	private void setDisplayListeners() {
+		this.display.getControls().deepIterator().forEach(new Consumer<Control>() {
+			@Override
+			public void accept(Control control) {
+				control.getReRenderUpdateGroup().addListener(controlUpdateListener);
+			}
+		});
+		this.display.getControls().getUpdateGroup().addListener(controlListListener);
+		this.display.getBackgroundControls().getUpdateGroup().addListener(controlListListener);
 	}
 
 	/** Adds a component to the canvas and repaints the canvas */
@@ -304,6 +274,7 @@ public abstract class UICanvas extends AnchorPane {
 	 */
 	public void keyEvent(String key, boolean keyIsDown, boolean shiftDown, boolean ctrlDown, boolean altDown) {
 		keys.update(key, keyIsDown, shiftDown, ctrlDown, altDown);
+		paint();
 	}
 
 

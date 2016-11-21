@@ -19,8 +19,11 @@ public interface Display<C extends Control> extends ControlHolder<C> {
 	
 	
 	/** Get controls that are rendered first and have no user interaction */
-	ControlList<C> getBackgroundControls();
-	
+	DisplayControlList<C> getBackgroundControls();
+
+	@Override
+	DisplayControlList<C> getControls();
+
 	/**
 	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()}). This will not iterate through controls
 	 within possible control groups in either controls list or background controls list.

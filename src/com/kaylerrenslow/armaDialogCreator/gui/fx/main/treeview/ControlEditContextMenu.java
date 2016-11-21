@@ -10,10 +10,13 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.DefaultComponentContextMenu;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -22,8 +25,8 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 07/13/2016. */
 public class ControlEditContextMenu extends ContextMenu {
-	public ControlEditContextMenu(@NotNull ControlTreeItemEntry entryClicked) {
-		CheckMenuItem checkMenuItemEnable = new CheckMenuItem("Enable");
+	public ControlEditContextMenu(EditorComponentTreeView<? extends TreeItemEntry> treeView, @NotNull ControlTreeItemEntry entryClicked) {
+		CheckMenuItem checkMenuItemEnable = new CheckMenuItem(Lang.ApplicationBundle().getString("ContextMenu.ControlEdit.enable"));
 		checkMenuItemEnable.setSelected(entryClicked.isEnabled());
 		checkMenuItemEnable.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -32,5 +35,24 @@ public class ControlEditContextMenu extends ContextMenu {
 			}
 		});
 		getItems().add(checkMenuItemEnable);
+
+
+		MenuItem miConfigProperties = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.configure"));
+		miConfigProperties.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				DefaultComponentContextMenu.showControlPropertiesPopup(entryClicked.getMyArmaControl());
+			}
+		});
+		getItems().add(miConfigProperties);
+
+		MenuItem miClearSelection = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.ControlEdit.clear_selection"));
+		miClearSelection.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				treeView.getSelectionModel().clearSelection();
+			}
+		});
+		getItems().add(miClearSelection);
 	}
 }

@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,25 +26,25 @@ public interface ControlClassRequirementSpecification {
 
 	/** Get all required nested classes for the control class. Default implementation returns {@link ControlClassSpecification#EMPTY} */
 	@NotNull
-	default ControlClassSpecification[] getRequiredNestedClasses() {
+	default ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 
 	/** Get all <b>optional</b> nested  classes for the control class. Default implementation returns {@link ControlClassSpecification#EMPTY} */
 	@NotNull
-	default ControlClassSpecification[] getOptionalNestedClasses() {
+	default ReadOnlyList<ControlClassSpecification> getOptionalNestedClasses() {
 		return ControlClassSpecification.EMPTY;
 	}
 
-	/** Get all required properties for the control class. Default implementation returns {@link ControlPropertyLookup#EMPTY} */
+	/** Get all required properties for the control class. Default implementation returns {@link ControlPropertyLookupConstant#EMPTY} */
 	@NotNull
-	default ControlPropertyLookupConstant[] getRequiredProperties() {
-		return ControlPropertyLookup.EMPTY;
+	default ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		return ControlPropertyLookupConstant.EMPTY;
 	}
 
-	/** Get all <b>optional</b> properties for the control class. Default implementation returns {@link ControlPropertyLookup#EMPTY} */
+	/** Get all <b>optional</b> properties for the control class. Default implementation returns {@link ControlPropertyLookupConstant#EMPTY} */
 	@NotNull
-	default ControlPropertyLookupConstant[] getOptionalProperties() {
-		return ControlPropertyLookup.EMPTY;
+	default ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		return ControlPropertyLookupConstant.EMPTY;
 	}
 }

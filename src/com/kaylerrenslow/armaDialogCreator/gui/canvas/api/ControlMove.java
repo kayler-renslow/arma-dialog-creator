@@ -21,7 +21,8 @@ public class ControlMove<C extends Control> {
 	private final int oldIndex;
 	private final ControlList<C> newList;
 	private final int newParentIndex;
-	
+	private boolean isOriginalUpdate;
+
 	public ControlMove(C controlMoved, ControlList<C> oldList, int oldIndex, ControlList<C> newList, int newParentIndex) {
 		this.controlMoved = controlMoved;
 		this.oldList = oldList;
@@ -29,43 +30,51 @@ public class ControlMove<C extends Control> {
 		this.newList = newList;
 		this.newParentIndex = newParentIndex;
 	}
-	
+
 	/** The control that was moved from one list to another */
 	@NotNull
 	public C getMovedControl() {
 		return controlMoved;
 	}
-	
+
 	/** Equivalent to {@link #getOldList()} as the ControlList in {@link ControlList#getHolder()} */
 	@NotNull
 	public ControlHolder<C> getOldHolder() {
 		return oldList.getHolder();
 	}
-	
+
 	public int getOldIndex() {
 		return oldIndex;
 	}
-	
+
 	/** Equivalent to {@link #getDestinationList()} as the ControlList in {@link ControlList#getHolder()} */
 	@NotNull
 	public ControlHolder<C> getDestinationHolder() {
 		return newList.getHolder();
 	}
-	
+
 	public int getDestinationIndex() {
 		return newParentIndex;
 	}
-	
+
 	/** Get the list that the moved control belonged to before the move */
 	@NotNull
 	public ControlList<C> getOldList() {
 		return oldList;
 	}
-	
+
 	/** Get the list that the control moved to */
 	@NotNull
 	public ControlList<C> getDestinationList() {
 		return newList;
 	}
-	
+
+	/** Return true if this update was triggered inside {@link ControlListChange#getModifiedList()} by {@link ControlList#move(int, ControlList, int)} */
+	public boolean isOriginalUpdate() {
+		return isOriginalUpdate;
+	}
+
+	void setOriginalUpdate(boolean firstUpdate) {
+		isOriginalUpdate = firstUpdate;
+	}
 }

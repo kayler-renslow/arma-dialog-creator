@@ -22,7 +22,9 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.DisplayControlList;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
 import javafx.collections.FXCollections;
@@ -44,8 +46,8 @@ public class ArmaDisplay implements Display<ArmaControl> {
 
 	private int idd = -1;
 	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
-	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
-	private final ControlList<ArmaControl> bgControlsList = new ControlList<>(this);
+	private final DisplayControlList<ArmaControl> controlsList = new DisplayControlList<>(this);
+	private final DisplayControlList<ArmaControl> bgControlsList = new DisplayControlList<>(this);
 	private final DataContext userdata = new DataContext();
 	@SuppressWarnings("unchecked")
 	private final ArrayList<List<ArmaControl>> controlsMerged = new ArrayList(2);
@@ -67,24 +69,6 @@ public class ArmaDisplay implements Display<ArmaControl> {
 			}
 		});
 
-		final ArmaDisplay display = this;
-		final ControlListChangeListener<ArmaControl> controlListListener = new ControlListChangeListener<ArmaControl>() {
-			@Override
-			public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-				if (change.wasAdded()) {
-					change.getAdded().getControl().setHolder(display);
-					change.getAdded().getControl().setDisplay(display);
-				} else if (change.wasSet()) {
-					change.getSet().getNewControl().setHolder(display);
-					change.getSet().getNewControl().setDisplay(display);
-				} else if (change.wasMoved() && (change.getMoved().getDestinationHolder() == display)) {
-					change.getMoved().getMovedControl().setHolder(display);
-					change.getMoved().getMovedControl().setDisplay(display);
-				}
-			}
-		};
-		controlsList.addChangeListener(controlListListener);
-		bgControlsList.addChangeListener(controlListListener);
 	}
 
 	@Override
@@ -134,8 +118,14 @@ public class ArmaDisplay implements Display<ArmaControl> {
 	}
 
 	@Override
-	public ControlList<ArmaControl> getBackgroundControls() {
+	public DisplayControlList<ArmaControl> getBackgroundControls() {
 		return bgControlsList;
+	}
+
+	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
+	@NotNull
+	public DisplayControlList<ArmaControl> getControls() {
+		return controlsList;
 	}
 
 	@Override
@@ -166,11 +156,6 @@ public class ArmaDisplay implements Display<ArmaControl> {
 			}
 		}
 		return null;
-	}
-
-	/** Get all controls. If simulation isn't enabled, return the controls regardless. */
-	public ControlList<ArmaControl> getControls() {
-		return controlsList;
 	}
 
 	@Override

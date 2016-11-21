@@ -10,9 +10,11 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,45 +23,82 @@ import java.util.List;
  @see CustomControlClass
  @since 11/12/2016. */
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
-	public static final ControlClassSpecification[] EMPTY = new ControlClassSpecification[0];
+	public static final ReadOnlyList<ControlClassSpecification> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
 	private String controlClassName;
-	private final ControlPropertySpecification[] requiredProperties;
-	private final ControlPropertySpecification[] optionalProperties;
-	private final ControlClassSpecification[] requiredNestedClasses;
-	private final ControlClassSpecification[] optionalNestedClasses;
-	private final ControlPropertyLookupConstant[] requiredPropertiesLookup, optionalPropertiesLookup;
+	private final ReadOnlyList<ControlPropertySpecification> requiredProperties;
+	private final ReadOnlyList<ControlPropertySpecification> optionalProperties;
+	private final ReadOnlyList<ControlClassSpecification> requiredNestedClasses;
+	private final ReadOnlyList<ControlClassSpecification> optionalNestedClasses;
+	private final ReadOnlyList<ControlPropertyLookupConstant> requiredPropertiesLookup, optionalPropertiesLookup;
 	private final List<ControlPropertySpecification> inheritedProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties,
-									 @NotNull ControlClassSpecification[] requiredNestedClasses, @NotNull ControlClassSpecification[] optionalNestedClasses) {
-		this.controlClassName = controlClassName;
-		this.requiredProperties = requiredProperties;
-		this.optionalProperties = optionalProperties;
-		this.requiredNestedClasses = requiredNestedClasses;
-		this.optionalNestedClasses = optionalNestedClasses;
+	/**
+	 Construct a specification with the given lists. Note: the lists will not be deep copied.
 
-		if (requiredProperties.length == 0) {
-			requiredPropertiesLookup = ControlPropertyLookup.EMPTY;
+	 @param controlClassName class name
+	 @param requiredProperties required properties
+	 @param optionalProperties optional properties
+	 @param requiredNestedClasses required nested classes
+	 @param optionalNestedClasses optional nested classes
+	 */
+	public ControlClassSpecification(@NotNull String controlClassName, @NotNull List<ControlPropertySpecification> requiredProperties, @NotNull List<ControlPropertySpecification> optionalProperties,
+									 @NotNull List<ControlClassSpecification> requiredNestedClasses, @NotNull List<ControlClassSpecification> optionalNestedClasses) {
+		this.controlClassName = controlClassName;
+		if (requiredProperties instanceof ReadOnlyList) {
+			this.requiredProperties = (ReadOnlyList<ControlPropertySpecification>) requiredProperties;
 		} else {
-			requiredPropertiesLookup = new ControlPropertyLookup[requiredProperties.length];
-			for (int i = 0; i < requiredPropertiesLookup.length; i++) {
-				requiredPropertiesLookup[i] = requiredProperties[i].getPropertyLookup();
+			this.requiredProperties = new ReadOnlyList<>(requiredProperties);
+		}
+		if (optionalProperties instanceof ReadOnlyList) {
+			this.optionalProperties = (ReadOnlyList<ControlPropertySpecification>) optionalProperties;
+		} else {
+			this.optionalProperties = new ReadOnlyList<>(optionalProperties);
+		}
+		if (requiredNestedClasses instanceof ReadOnlyList) {
+			this.requiredNestedClasses = (ReadOnlyList<ControlClassSpecification>) requiredNestedClasses;
+		} else {
+			this.requiredNestedClasses = new ReadOnlyList<>(requiredNestedClasses);
+		}
+		if (optionalNestedClasses instanceof ReadOnlyList) {
+			this.optionalNestedClasses = (ReadOnlyList<ControlClassSpecification>) optionalNestedClasses;
+		} else {
+			this.optionalNestedClasses = new ReadOnlyList<>(optionalNestedClasses);
+		}
+
+		if (requiredProperties.size() == 0) {
+			requiredPropertiesLookup = ControlPropertyLookupConstant.EMPTY;
+		} else {
+			List<ControlPropertyLookupConstant> required = new LinkedList<>();
+			requiredPropertiesLookup = new ReadOnlyList<>(required);
+
+			for (ControlPropertySpecification property : requiredProperties) {
+				required.add(property.getPropertyLookup());
 			}
 		}
-		if (optionalProperties.length == 0) {
-			optionalPropertiesLookup = ControlPropertyLookup.EMPTY;
+		if (optionalProperties.size() == 0) {
+			optionalPropertiesLookup = ControlPropertyLookupConstant.EMPTY;
 		} else {
-			optionalPropertiesLookup = new ControlPropertyLookup[optionalProperties.length];
-			for (int i = 0; i < optionalPropertiesLookup.length; i++) {
-				optionalPropertiesLookup[i] = optionalProperties[i].getPropertyLookup();
+			List<ControlPropertyLookupConstant> optional = new LinkedList<>();
+			optionalPropertiesLookup = new ReadOnlyList<>(optional);
+			for (ControlPropertySpecification property : optionalProperties) {
+				optional.add(property.getPropertyLookup());
 			}
+
 		}
 
 	}
 
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull ControlPropertySpecification[] requiredProperties, @NotNull ControlPropertySpecification[] optionalProperties) {
+	/**
+	 Constructs a specification with the given properties and assumes there to be no nested classes (will use {@link ControlClassSpecification#EMPTY} as parameters)
+
+	 @param controlClassName class name
+	 @param requiredProperties required properties
+	 @param optionalProperties optional properties
+	 @see #ControlClassSpecification(String, List, List, List, List)
+	 */
+	public ControlClassSpecification(@NotNull String controlClassName, @NotNull List<ControlPropertySpecification> requiredProperties, @NotNull List<ControlPropertySpecification> optionalProperties) {
 		this(controlClassName, requiredProperties, optionalProperties, ControlClassSpecification.EMPTY, ControlClassSpecification.EMPTY);
 	}
 
@@ -70,26 +109,44 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 	/**
 	 Constructs a specification from the given {@link ControlClass}. If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClass#getRequiredProperties()} and
-	 {@link ControlClass#getOptionalProperties()} will be deep copied via {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. If false, will shallow copy
-	 the values.
+	 {@link ControlClass#getOptionalProperties()} will be deep copied via {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. Also,
+	 any nested classes would be deep copied as well. If <code>deepCopy</code> is false , will shallow copy the values.
 
 	 @param controlClass class to use
 	 @param deepCopy true to deep copy, false otherwise
 	 */
 	public ControlClassSpecification(@NotNull ControlClass controlClass, boolean deepCopy) {
 		this.controlClassName = controlClass.getClassName();
-		this.requiredProperties = new ControlPropertySpecification[controlClass.getRequiredProperties().size()];
-		this.optionalProperties = new ControlPropertySpecification[controlClass.getOptionalProperties().size()];
-		this.requiredNestedClasses = controlClass.getSpecProvider().getRequiredNestedClasses();
-		this.optionalNestedClasses = controlClass.getSpecProvider().getOptionalNestedClasses();
 
-		for (int i = 0; i < requiredProperties.length; i++) {
-			requiredProperties[i] = new ControlPropertySpecification(controlClass.getRequiredProperties().get(i), deepCopy);
-		}
-		for (int i = 0; i < optionalProperties.length; i++) {
-			optionalProperties[i] = new ControlPropertySpecification(controlClass.getOptionalProperties().get(i), deepCopy);
+		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
+		List<ControlPropertySpecification> optionalProperties = new LinkedList<>();
+		this.requiredProperties = new ReadOnlyList<>(requiredProperties);
+		this.optionalProperties = new ReadOnlyList<>(optionalProperties);
+
+		if (deepCopy) {
+			List<ControlClassSpecification> requiredNested = new LinkedList<>();
+			List<ControlClassSpecification> optionalNested = new LinkedList<>();
+
+			this.optionalNestedClasses = new ReadOnlyList<>(optionalNested);
+			this.requiredNestedClasses = new ReadOnlyList<>(requiredNested);
+
+			for (ControlClass nested : controlClass.getRequiredNestedClasses()) {
+				requiredNested.add(new ControlClassSpecification(nested, true));
+			}
+			for (ControlClass nested : controlClass.getOptionalNestedClasses()) {
+				optionalNested.add(new ControlClassSpecification(nested, true));
+			}
+		} else {
+			this.requiredNestedClasses = controlClass.getSpecProvider().getRequiredNestedClasses();
+			this.optionalNestedClasses = controlClass.getSpecProvider().getOptionalNestedClasses();
 		}
 
+		for (ControlProperty property : controlClass.getRequiredProperties()) {
+			requiredProperties.add(new ControlPropertySpecification(property, deepCopy));
+		}
+		for (ControlProperty property : controlClass.getOptionalProperties()) {
+			optionalProperties.add(new ControlPropertySpecification(property, deepCopy));
+		}
 		this.optionalPropertiesLookup = controlClass.getSpecProvider().getOptionalProperties();
 		this.requiredPropertiesLookup = controlClass.getSpecProvider().getRequiredProperties();
 
@@ -118,35 +175,35 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 	@NotNull
 	@Override
-	public ControlClassSpecification[] getRequiredNestedClasses() {
+	public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
 		return requiredNestedClasses;
 	}
 
 	@NotNull
 	@Override
-	public ControlClassSpecification[] getOptionalNestedClasses() {
+	public ReadOnlyList<ControlClassSpecification> getOptionalNestedClasses() {
 		return optionalNestedClasses;
 	}
 
 	@NotNull
-	public ControlPropertySpecification[] getRequiredControlProperties() {
+	public ReadOnlyList<ControlPropertySpecification> getRequiredControlProperties() {
 		return requiredProperties;
 	}
 
 	@NotNull
-	public ControlPropertySpecification[] getOptionalControlProperties() {
+	public ReadOnlyList<ControlPropertySpecification> getOptionalControlProperties() {
 		return optionalProperties;
 	}
 
 	@NotNull
 	@Override
-	public ControlPropertyLookupConstant[] getRequiredProperties() {
+	public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
 		return requiredPropertiesLookup;
 	}
 
 	@NotNull
 	@Override
-	public ControlPropertyLookupConstant[] getOptionalProperties() {
+	public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
 		return optionalPropertiesLookup;
 	}
 

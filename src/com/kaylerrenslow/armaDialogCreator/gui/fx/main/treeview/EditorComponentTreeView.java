@@ -235,7 +235,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<T>> observable, TreeItem<T> oldValue, TreeItem<T> selected) {
 				if (selected != null && selected.getValue() instanceof ControlTreeItemEntry) {
-					treeView.setContextMenu(new ControlEditContextMenu((ControlTreeItemEntry) selected.getValue()));
+					treeView.setContextMenu(new ControlEditContextMenu(EditorComponentTreeView.this, (ControlTreeItemEntry) selected.getValue()));
 				} else {
 					treeView.setContextMenu(controlCreationContextMenu);
 				}

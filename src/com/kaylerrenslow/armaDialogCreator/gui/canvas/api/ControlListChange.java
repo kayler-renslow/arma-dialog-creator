@@ -23,7 +23,7 @@ public class ControlListChange<C extends Control> {
 	private ControlSet<C> set;
 	private ControlListChangeType changeType = null;
 
-	public ControlListChange(ControlList<C> modifiedList) {
+	protected ControlListChange(ControlList<C> modifiedList) {
 		this.modifiedList = modifiedList;
 	}
 
@@ -62,7 +62,7 @@ public class ControlListChange<C extends Control> {
 		}
 	}
 
-	/** Get the list that had the change */
+	/** Get the list that had the change (where the change was triggered) */
 	@NotNull
 	public ControlList<C> getModifiedList() {
 		return modifiedList;

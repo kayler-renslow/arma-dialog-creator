@@ -13,15 +13,13 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -33,14 +31,16 @@ public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
 
-		private final ControlPropertyLookup[] requiredProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_REQUIRED_PROPERTIES, new ControlPropertyLookup[]{
+		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class, defaultRequiredProperties, new
+				ControlPropertyLookup[]{
 				ControlPropertyLookup.COLOR_BACKGROUND,
 				ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.TEXT,
 				ControlPropertyLookup.FONT,
-		});
+		}));
 
-		private final ControlPropertyLookup[] optionalProperties = ArrayUtil.mergeArrays(ControlPropertyLookup.class, DEFAULT_OPTIONAL_PROPERTIES, new ControlPropertyLookup[]{
+		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class, defaultOptionalProperties, new
+				ControlPropertyLookup[]{
 				ControlPropertyLookup.MOVING,
 				ControlPropertyLookup.SHADOW,
 				ControlPropertyLookup.TOOLTIP,
@@ -49,17 +49,17 @@ public class StaticControl extends ArmaControl {
 				ControlPropertyLookup.STATIC_FIXED_WIDTH,
 				ControlPropertyLookup.STATIC_LINE_SPACING,
 				ControlPropertyLookup.BLINKING_PERIOD
-		});
+		}));
 
 		@NotNull
 		@Override
-		public ControlPropertyLookup[] getRequiredProperties() {
+		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
 			return requiredProperties;
 		}
 
 		@NotNull
 		@Override
-		public ControlPropertyLookup[] getOptionalProperties() {
+		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
 			return optionalProperties;
 		}
 

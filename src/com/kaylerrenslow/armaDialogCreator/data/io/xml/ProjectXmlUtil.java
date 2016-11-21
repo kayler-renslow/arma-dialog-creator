@@ -56,24 +56,24 @@ public class ProjectXmlUtil {
 	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		String className = classSpecElement.getAttribute("name");
 		String extend = classSpecElement.getAttribute("extend");
-		ControlPropertySpecification[] requiredProperties = ControlPropertySpecification.EMPTY;
-		ControlPropertySpecification[] optionalProperties = ControlPropertySpecification.EMPTY;
+		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
+		List<ControlPropertySpecification> optionalProperties = new LinkedList<>();
 		List<ControlPropertyLookup> overriddenProperties = new LinkedList<>();
-		ControlClassSpecification[] requiredClasses = ControlClassSpecification.EMPTY;
-		ControlClassSpecification[] optionalClasses = ControlClassSpecification.EMPTY;
+		List<ControlClassSpecification> requiredClasses = ControlClassSpecification.EMPTY;
+		List<ControlClassSpecification> optionalClasses = ControlClassSpecification.EMPTY;
 
 		final String controlProperty = "control-property";
 
 		//required control properties
 		List<Element> requiredPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-properties");
 		if (requiredPropertyElementGroups.size() > 0) {
-			requiredProperties = loadPropertyArray(context, recorder, controlProperty, requiredPropertyElementGroups.get(0));
+			loadPropertyList(requiredProperties, context, recorder, controlProperty, requiredPropertyElementGroups.get(0));
 		}
 
 		//optional control properties
 		List<Element> optionalPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-properties");
 		if (optionalPropertyElementGroups.size() > 0) {
-			optionalProperties = loadPropertyArray(context, recorder, controlProperty, optionalPropertyElementGroups.get(0));
+			loadPropertyList(optionalProperties, context, recorder, controlProperty, optionalPropertyElementGroups.get(0));
 		}
 
 		//overridden control properties
@@ -87,14 +87,14 @@ public class ProjectXmlUtil {
 		List<Element> requiredClassElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-classes");
 		if (requiredClassElementGroups.size() > 0) {
 			Element requiredClassElementGroup = requiredClassElementGroups.get(0);
-			requiredClasses = loadControlClassSpecifications(requiredClassElementGroup, context, recorder).toArray(new ControlClassSpecification[0]);
+			requiredClasses = loadControlClassSpecifications(requiredClassElementGroup, context, recorder);
 		}
 
 		//optional sub classes
 		List<Element> optionalClassElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-classes");
 		if (optionalClassElementGroups.size() > 0) {
 			Element optionalClassElementGroup = optionalClassElementGroups.get(0);
-			requiredClasses = loadControlClassSpecifications(optionalClassElementGroup, context, recorder).toArray(new ControlClassSpecification[0]);
+			requiredClasses = loadControlClassSpecifications(optionalClassElementGroup, context, recorder);
 		}
 
 		ControlClassSpecification specification = new ControlClassSpecification(className, requiredProperties, optionalProperties, requiredClasses, optionalClasses);
@@ -107,14 +107,13 @@ public class ProjectXmlUtil {
 		return specification;
 	}
 
-	private static ControlPropertySpecification[] loadPropertyArray(@Nullable DataContext context, @NotNull XmlErrorRecorder recorder, String controlProperty, Element propertyElementGroup) {
+	private static void loadPropertyList(@NotNull List<ControlPropertySpecification> list, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder,
+										 String controlProperty, Element propertyElementGroup) {
 		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlProperty);
 		List<Element> missingPropertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, "undefined");
 
-		ControlPropertySpecification[] propertiesArray = new ControlPropertySpecification[propertyElements.size() + missingPropertyElements.size()];
-		int i = 0;
 		for (Element propertyElement : propertyElements) {
-			propertiesArray[i++] = loadControlProperty(propertyElement, context, recorder);
+			list.add(loadControlProperty(propertyElement, context, recorder));
 		}
 		final String lookupId = "lookup-id";
 		final String macroKey = "macro-key";
@@ -123,16 +122,16 @@ public class ProjectXmlUtil {
 			String macroId = missingPropertyElement.getAttribute(macroKey);
 			ControlPropertyLookup lookup = getLookup(idAttr, missingPropertyElement, recorder);
 			if (lookup == null) {
-				return ControlPropertySpecification.EMPTY;
+				return;
 			}
 
 			ControlPropertySpecification newSpec = new ControlPropertySpecification(lookup);
 			if (macroId.length() > 0) {
 				newSpec.setMacroKey(macroId);
 			}
-			propertiesArray[i++] = newSpec;
+			list.add(newSpec);
 		}
-		return propertiesArray;
+
 	}
 
 	/**
@@ -148,7 +147,7 @@ public class ProjectXmlUtil {
 		);
 
 		//required control properties
-		if (specification.getRequiredProperties().length > 0) {
+		if (specification.getRequiredProperties().size() > 0) {
 			final String requiredProperties = "required-properties";
 			stm.writeBeginTag(requiredProperties);
 			for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
@@ -162,7 +161,7 @@ public class ProjectXmlUtil {
 		}
 
 		//optional control properties
-		if (specification.getOptionalProperties().length > 0) {
+		if (specification.getOptionalProperties().size() > 0) {
 			final String optionalProperties = "optional-properties";
 			stm.writeBeginTag(optionalProperties);
 			for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
@@ -186,7 +185,7 @@ public class ProjectXmlUtil {
 		}
 
 		//required sub classes
-		if (specification.getRequiredNestedClasses().length > 0) {
+		if (specification.getRequiredNestedClasses().size() > 0) {
 			final String requiredClasses = "required-classes";
 			stm.writeBeginTag(requiredClasses);
 			for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
@@ -196,7 +195,7 @@ public class ProjectXmlUtil {
 		}
 
 		//optional sub classes
-		if (specification.getOptionalNestedClasses().length > 0) {
+		if (specification.getOptionalNestedClasses().size() > 0) {
 			final String optionalClasses = "optional-classes";
 			stm.writeBeginTag(optionalClasses);
 			for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {

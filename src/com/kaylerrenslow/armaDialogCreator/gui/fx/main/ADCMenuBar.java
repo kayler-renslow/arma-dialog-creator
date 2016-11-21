@@ -138,8 +138,8 @@ class ADCMenuBar extends MenuBar {
 			edit_viewChanges,
 			new SeparatorMenuItem(),
 			edit_macros,
-			edit_custom_control,
-			edit_exportConfig
+			edit_custom_control/*,
+			edit_exportConfig*/ //todo
 	);
 	final Menu menuView = new Menu(
 			ApplicationBundle().getString("MainMenuBar.view"), null,

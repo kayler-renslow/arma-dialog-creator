@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -295,5 +297,15 @@ public class StagePopup<E extends Parent> {
 	/** Performs the operation description at {@link Stage#showAndWait()} */
 	public void showAndWait() {
 		myStage.showAndWait();
+	}
+
+	@NotNull
+	public ObjectProperty<EventHandler<WindowEvent>> getOnHiddenProperty() {
+		return myStage.onHiddenProperty();
+	}
+
+	@NotNull
+	public ReadOnlyBooleanProperty getShowingProperty() {
+		return myStage.showingProperty();
 	}
 }
