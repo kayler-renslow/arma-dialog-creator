@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,12 +48,27 @@ public class CustomControlClassRegistry implements ControlClassRegistry {
 		controlClassList.add(controlClass);
 	}
 
-	/** Will get the custom control class by the given name, or null if nothing could be matched */
+	/** Will get the {@link CustomControlClass#getControlClass()} by the given name, or null if nothing could be matched */
 	@Override
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
 			if (controlClass.getSpecification().getClassName().equals(className)) {
 				return controlClass.getControlClass();
+			}
+		}
+		return null;
+	}
+
+	/**
+	 Will get the {@link CustomControlClass} by the given name, or null if nothing could be matched
+
+	 @return matched class, null if couldn't be matched
+	 */
+	@Nullable
+	public CustomControlClass findCustomControlClassByName(@NotNull String className) {
+		for (CustomControlClass controlClass : controlClassList) {
+			if (controlClass.getSpecification().getClassName().equals(className)) {
+				return controlClass;
 			}
 		}
 		return null;

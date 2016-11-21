@@ -75,7 +75,7 @@ public class CustomControlClass {
 					update(((ControlClassPropertyUpdate) data).getPropertyUpdate());
 				} else if (data instanceof ControlClassOverridePropertyUpdate) {
 					ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
-					if (update.wasAdded()) {
+					if (update.wasOverridden()) {
 						ControlPropertySpecification propertySpecification = specification.findInheritedProperty(update.getOveridden().getPropertyLookup());
 						if (propertySpecification != null) {
 							specification.getInheritedProperties().remove(propertySpecification);
@@ -103,11 +103,11 @@ public class CustomControlClass {
 					propertySpec.setValue(update.getNewValue());
 				} else if (data instanceof ControlPropertyMacroUpdate) {
 					ControlPropertyMacroUpdate update = (ControlPropertyMacroUpdate) data;
-					propertySpec.setMacroKey(update.getMacro() != null ? update.getMacro().getKey() : null);
+					propertySpec.setMacroKey(update.getNewMacro() != null ? update.getNewMacro().getKey() : null);
 				} else if (data instanceof ControlPropertyCustomDataUpdate) {
 					ControlPropertyCustomDataUpdate update = (ControlPropertyCustomDataUpdate) data;
-					propertySpec.setCustomData(update.getCustomData());
-					propertySpec.setUsingCustomData(update.isSetTo());
+					propertySpec.setCustomData(update.getNewCustomData());
+					propertySpec.setUsingCustomData(update.isUsingCustomData());
 				} else if (data instanceof ControlPropertyInheritUpdate) {
 					//already handled in control class update
 				} else {

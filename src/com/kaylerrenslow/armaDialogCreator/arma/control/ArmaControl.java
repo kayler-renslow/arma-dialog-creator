@@ -17,11 +17,12 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -32,7 +33,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControl extends ControlClass implements Control<ArmaControl> {
+public class ArmaControl extends ControlClass implements CanvasControl<ArmaControl> {
 	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;
 	/** Type of the control */
@@ -41,14 +42,14 @@ public class ArmaControl extends ControlClass implements Control<ArmaControl> {
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
 
-	private ControlHolder<ArmaControl> holder;
-	private @NotNull Display<ArmaControl> display;
 
 	/** Control id (-1 if doesn't matter) */
 	private int idc = -1;
 
 	private ControlProperty idcProperty, accessProperty;
 	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
+	private ValueObserver<Display<ArmaControl>> displayObserver = new ValueObserver<>(null);
+	private ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
 
 	/**
 	 Create a control where the position is to be determined
@@ -155,24 +156,19 @@ public class ArmaControl extends ControlClass implements Control<ArmaControl> {
 		renderer.resolutionUpdate(newResolution);
 	}
 
-	public void setHolder(@NotNull ControlHolder<ArmaControl> holder) {
-		this.holder = holder;
-	}
 
-	public void setDisplay(@NotNull Display<ArmaControl> display) {
-		this.display = display;
-	}
-
+	@NotNull
 	@Override
-	public ControlHolder<ArmaControl> getHolder() {
-		return holder;
+	public ValueObserver<Display<ArmaControl>> getDisplayObserver() {
+		return displayObserver;
 	}
 
 	@NotNull
 	@Override
-	public Display<ArmaControl> getDisplay() {
-		return display;
+	public ValueObserver<ControlHolder<ArmaControl>> getHolderObserver() {
+		return holderObserver;
 	}
+
 
 	@NotNull
 	public ControlProperty getIdcProperty() {

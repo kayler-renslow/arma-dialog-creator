@@ -674,14 +674,14 @@ public class ControlClass {
 	}
 
 	/**
-	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null or if {@link ControlProperty#isCustomData()} and
+	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null or if {@link ControlProperty#isUsingCustomData()} and
 	 {@link ControlProperty#getCustomData()} != null;
 
 	 @param property property to check
 	 @return true if the property is defined, false otherwise
 	 */
 	public static boolean propertyIsDefined(@NotNull ControlProperty property) {
-		return property.getValue() != null || (property.isCustomData() && property.getCustomData() != null);
+		return property.getValue() != null || (property.isUsingCustomData() && property.getCustomData() != null);
 	}
 
 	@Override
@@ -710,7 +710,7 @@ public class ControlClass {
 			update(((ControlClassPropertyUpdate) data).getPropertyUpdate(), deepCopy);
 		} else if (data instanceof ControlClassOverridePropertyUpdate) {
 			ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
-			if (update.wasAdded()) {
+			if (update.wasOverridden()) {
 				try {
 					overrideProperty(update.getOveridden().getPropertyLookup());
 				} catch (IllegalArgumentException ignore) {

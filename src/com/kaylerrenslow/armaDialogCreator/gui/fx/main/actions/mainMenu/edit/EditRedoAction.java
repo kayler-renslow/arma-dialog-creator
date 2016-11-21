@@ -13,6 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.edit;
 import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
@@ -61,12 +63,24 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		final Changelog changelog = Changelog.getInstance();
+		Changelog changelog = Changelog.getInstance();
+
 		try {
 			changelog.redo();
-		} catch (ChangeUpdateFailedException e) {
-			ExceptionHandler.getInstance().uncaughtException(e);
+		} catch (Exception e) {
+			if (e instanceof ChangeUpdateFailedException) {
+				Notifications.showNotification(new Notification(
+								Lang.ApplicationBundle().getString("Notifications.RedoOperation.notification_title"),
+								String.format(Lang.ApplicationBundle().getString("Notifications.RedoOperation.notification_body_f"), e.getMessage()),
+								Notification.DEFAULT_DURATION,
+								true
+						)
+				);
+			} else {
+				ExceptionHandler.error(e);
+			}
 		}
+
 		editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 	}
 }

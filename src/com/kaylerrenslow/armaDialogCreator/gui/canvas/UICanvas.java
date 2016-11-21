@@ -44,7 +44,7 @@ public abstract class UICanvas extends AnchorPane {
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
 
-	protected @NotNull Display<Control> display;
+	protected @NotNull Display<CanvasControl> display;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -66,9 +66,9 @@ public abstract class UICanvas extends AnchorPane {
 			paint();
 		}
 	};
-	private UpdateGroupListener<ControlListChange<Control>> controlListListener = new UpdateGroupListener<ControlListChange<Control>>() {
+	private UpdateGroupListener<ControlListChange<CanvasControl>> controlListListener = new UpdateGroupListener<ControlListChange<CanvasControl>>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlListChange<Control>> group, ControlListChange<Control> data) {
+		public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
 			if (data.wasRemoved()) {
 				data.getRemoved().getControl().getReRenderUpdateGroup().removeListener(controlUpdateListener);
 			} else if (data.wasSet()) {
@@ -79,7 +79,7 @@ public abstract class UICanvas extends AnchorPane {
 		}
 	};
 
-	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends Control> display) {
+	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends CanvasControl> display) {
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
@@ -111,7 +111,7 @@ public abstract class UICanvas extends AnchorPane {
 		});
 
 		//do this last
-		this.display = (Display<Control>) display;
+		this.display = (Display<CanvasControl>) display;
 		setDisplayListeners();
 
 	}
@@ -125,18 +125,18 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setDisplay(@NotNull Display<? extends Control> display) {
+	public void setDisplay(@NotNull Display<? extends CanvasControl> display) {
 		this.display.getControls().getUpdateGroup().removeListener(controlListListener);
 		this.display.getBackgroundControls().getUpdateGroup().removeListener(controlListListener);
-		this.display = (Display<Control>) display;
+		this.display = (Display<CanvasControl>) display;
 		setDisplayListeners();
 		paint();
 	}
 
 	private void setDisplayListeners() {
-		this.display.getControls().deepIterator().forEach(new Consumer<Control>() {
+		this.display.getControls().deepIterator().forEach(new Consumer<CanvasControl>() {
 			@Override
-			public void accept(Control control) {
+			public void accept(CanvasControl control) {
 				control.getReRenderUpdateGroup().addListener(controlUpdateListener);
 			}
 		});
@@ -180,10 +180,10 @@ public abstract class UICanvas extends AnchorPane {
 	 The background controls are painted first, then controls are painted
 	 */
 	protected void paintControls() {
-		for (Control control : display.getBackgroundControls()) {
+		for (CanvasControl control : display.getBackgroundControls()) {
 			paintControl(control);
 		}
-		for (Control control : display.getControls()) {
+		for (CanvasControl control : display.getControls()) {
 			paintControl(control);
 		}
 	}
@@ -209,7 +209,7 @@ public abstract class UICanvas extends AnchorPane {
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
-	protected void paintControl(Control control) {
+	protected void paintControl(CanvasControl control) {
 		gc.save();
 		paintComponent(control.getRenderer());
 		gc.restore();

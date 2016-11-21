@@ -15,7 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Control;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.*;
@@ -89,9 +89,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
-		uiCanvasEditor.getDoubleClickObserver().addListener(new ValueListener<Control>() {
+		uiCanvasEditor.getDoubleClickObserver().addListener(new ValueListener<CanvasControl>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<Control> observer, Control oldValue, Control newValue) {
+			public void valueUpdated(@NotNull ValueObserver<CanvasControl> observer, CanvasControl oldValue, CanvasControl newValue) {
 				if (newValue != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
 					DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) newValue);
 				}
@@ -107,15 +107,15 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void syncTreeView(EditorComponentTreeView<? extends TreeItemEntry> treeView) {
-		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<Control>() {
+		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasControl>() {
 			@Override
-			public void onChanged(Change<? extends Control> c) {
+			public void onChanged(Change<? extends CanvasControl> c) {
 				if (selectFromTreeView) {
 					return;
 				}
 				selectFromCanvas = true;
 				List<ArmaControl> controlList = new ArrayList<>(uiCanvasEditor.getSelection().getSelected().size());
-				for (Control control : uiCanvasEditor.getSelection().getSelected()) {
+				for (CanvasControl control : uiCanvasEditor.getSelection().getSelected()) {
 					if (control instanceof ArmaControl) {
 						controlList.add((ArmaControl) control);
 					}

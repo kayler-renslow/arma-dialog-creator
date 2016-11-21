@@ -39,14 +39,29 @@ public class Changelog {
 	private final ReadOnlyList<ChangeDescriptor> pastChangesReadOnly = new ReadOnlyList<>(pastChanges);
 	private int maxChanges;
 
+	/**
+	 Constructs a {@link Changelog} that stores <code>maxChanges</code> number of changes.
+
+	 @param maxChanges how many changes to store before some are removed after {@link #addChange(Change)}
+	 */
 	public Changelog(int maxChanges) {
 		setMaxChanges(maxChanges);
 	}
 
+	/**
+	 Get how many changes to store before some are removed after {@link #addChange(Change)}
+
+	 @return max number of changes
+	 */
 	public int getMaxChanges() {
 		return maxChanges;
 	}
 
+	/**
+	 Set maximum number of stored changes
+
+	 @param maxChanges maximum number of stored changes
+	 */
 	public void setMaxChanges(int maxChanges) {
 		if (maxChanges <= 0) {
 			throw new IllegalArgumentException("maxChanges must be > 0");
@@ -54,8 +69,13 @@ public class Changelog {
 		this.maxChanges = maxChanges;
 	}
 
+	/**
+	 Add a change to the stack. {@link #getRedoList()} will be cleared
+
+	 @param change change to add
+	 */
 	public void addChange(Change change) {
-		undo.addFirst(change);
+		undo.push(change);
 		if (undo.size() >= maxChanges) {
 			while (undo.size() >= maxChanges) {
 				undo.removeLast();
@@ -66,24 +86,34 @@ public class Changelog {
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 	}
 
+	/**
+	 Undo {@link #getToUndo()}
+
+	 @throws ChangeUpdateFailedException when undo couldn't be performed
+	 */
 	public void undo() throws ChangeUpdateFailedException {
 		if (undo.size() == 0) {
 			return;
 		}
-		Change undid = undo.removeFirst();
+		Change undid = undo.pop();
 		updateChanges(undid, Change.ChangeType.UNDO);
-		redo.add(undid);
+		redo.push(undid);
 		undid.getRegistrar().undo(undid);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
 	}
 
+	/**
+	 Redo {@link #getToRedo()}
+
+	 @throws ChangeUpdateFailedException when redo couldn't be performed
+	 */
 	public void redo() throws ChangeUpdateFailedException {
 		if (redo.size() == 0) {
 			return;
 		}
-		Change c = redo.removeFirst();
+		Change c = redo.pop();
 		updateChanges(c, Change.ChangeType.REDO);
-		undo.add(c);
+		undo.push(c);
 		c.getRegistrar().redo(c);
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
 	}
@@ -95,20 +125,30 @@ public class Changelog {
 		}
 	}
 
+	/**
+	 Get the first {@link Change} instance to undo with {@link #undo()}
+
+	 @return first {@link Change}, or null if nothing to undo
+	 */
 	@Nullable
 	public Change getToUndo() {
 		if (undo.size() == 0) {
 			return null;
 		}
-		return undo.getFirst();
+		return undo.peek();
 	}
 
+	/**
+	 Get the first {@link Change} instance to redo with {@link #redo()}
+
+	 @return first {@link Change}, or null if nothing to undo
+	 */
 	@Nullable
 	public Change getToRedo() {
 		if (redo.size() == 0) {
 			return null;
 		}
-		return redo.getFirst();
+		return redo.peek();
 	}
 
 	/** Get a list of changes with the most recent at the beginning of list */

@@ -18,13 +18,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ControlPropertyMacroUpdate implements ControlPropertyUpdate {
 	private ControlProperty controlProperty;
-	private final Macro macro;
-	private final boolean setTo;
 
-	public ControlPropertyMacroUpdate(@NotNull ControlProperty controlProperty, @Nullable Macro macro, boolean setTo) {
+	private final Macro oldMacro;
+	private final Macro newMacro;
+
+	public ControlPropertyMacroUpdate(@NotNull ControlProperty controlProperty, @Nullable Macro oldMacro, @Nullable Macro newMacro) {
 		this.controlProperty = controlProperty;
-		this.macro = macro;
-		this.setTo = setTo;
+		this.oldMacro = oldMacro;
+		this.newMacro = newMacro;
 	}
 
 	@Override
@@ -33,12 +34,13 @@ public class ControlPropertyMacroUpdate implements ControlPropertyUpdate {
 	}
 
 	@Nullable
-	public Macro getMacro() {
-		return macro;
+	public Macro getNewMacro() {
+		return newMacro;
 	}
 
-	/** Return true if the {@link #getControlProperty()} was set to a {@link Macro} via {@link ControlProperty#setValueToMacro(Macro)}, false otherwise */
-	public boolean isSetTo() {
-		return setTo;
+	@Nullable
+	public Macro getOldMacro() {
+		return oldMacro;
 	}
+
 }

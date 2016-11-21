@@ -14,7 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlGroup;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasControlGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 06/08/2016. */
-public class ArmaControlGroup extends ArmaControl implements ControlGroup<ArmaControl> {
+public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<ArmaControl> {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 
 	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {

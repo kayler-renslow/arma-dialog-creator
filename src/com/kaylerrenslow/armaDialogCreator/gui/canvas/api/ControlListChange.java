@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 08/12/2016.
  */
-public class ControlListChange<C extends Control> {
+public class ControlListChange<C extends CanvasControl> {
 	private final ControlList<C> modifiedList;
 	private ControlAdd<C> added;
 	private ControlRemove<C> removed;

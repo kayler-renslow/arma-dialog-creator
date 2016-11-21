@@ -15,7 +15,7 @@ import java.util.Iterator;
 /**
  Created by Kayler on 08/04/2016.
  */
-public interface Display<C extends Control> extends ControlHolder<C> {
+public interface Display<C extends CanvasControl> extends ControlHolder<C> {
 	
 	
 	/** Get controls that are rendered first and have no user interaction */

@@ -39,7 +39,7 @@ public class ControlClassOverridePropertyUpdate implements ControlClassUpdate {
 	}
 
 	/** @return true if {@link #getOveridden()} was added to {@link ControlClass#getOverriddenProperties()}, false if it was removed */
-	public boolean wasAdded() {
+	public boolean wasOverridden() {
 		return wasAdded;
 	}
 

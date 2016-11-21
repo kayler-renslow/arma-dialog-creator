@@ -39,13 +39,13 @@ public class ControlProperty {
 	};
 
 	private final ControlPropertyLookupConstant propertyLookup;
-	private final ValueObserver<SerializableValue> valueObserver;
+	private final ControlPropertyValueObserver valueObserver;
 	private SerializableValue defaultValue;
 
 	/** The custom data instance for when {@link #setCustomDataValue(Object)} is invoked */
 	private Object customData;
-	/** True when {@link #setHasCustomData(boolean)} with true passed in parameter, false otherwise. */
-	private boolean customDataSet = false;
+	/** True when {@link #setUsingCustomData(boolean)} with true passed in parameter, false otherwise. */
+	private boolean usingCustomData = false;
 	private ValueObserver<Object> customDataValueObserver;
 
 	/** Value to switch to when the set macro becomes null. */
@@ -77,15 +77,9 @@ public class ControlProperty {
 	 */
 	public ControlProperty(ControlPropertyLookupConstant propertyLookup, @Nullable SerializableValue value) {
 		this.propertyLookup = propertyLookup;
-		valueObserver = new ValueObserver<>(value);
+		valueObserver = new ControlPropertyValueObserver(this, value);
 		defaultValue = null;
 		beforeMacroValue = value;
-		valueObserver.addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(ControlProperty.this, oldValue, newValue));
-			}
-		});
 
 	}
 
@@ -137,30 +131,36 @@ public class ControlProperty {
 		valueObserver.updateValue(v);
 	}
 
+	private void setValue(@Nullable SerializableValue v, ControlPropertyValueUpdate.ValueOrigin origin) {
+		beforeMacroValue = v;
+		valueObserver.updateValue(v, origin);
+	}
+
 	/**
 	 Set the custom data value.
 
-	 @see #isCustomData()
+	 @see #isUsingCustomData()
 	 */
 	public void setCustomDataValue(@Nullable Object customData) {
 		if (customData == this.customData || (customData != null && customData.equals(this.customData))) {
 			//either both null (or same references for that matter) or customData is potentially null, but may still equal this.customData
 			return;
 		}
+		Object oldData = this.customData;
 		this.customData = customData;
 		if (this.customDataValueObserver == null) {
 			customDataValueObserver = new ValueObserver<>(customData);
 		}
-		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, true));
+		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, oldData, customData, true, this.isUsingCustomData()));
 	}
 
 	/** Does nothing except mark that the {@link ControlProperty} is/ins't using custom data. @see #isCustomData() */
-	public void setHasCustomData(boolean custom) {
-		if (custom == this.customDataSet) {
+	public void setUsingCustomData(boolean custom) {
+		if (custom == this.usingCustomData) {
 			return;
 		}
-		this.customDataSet = custom;
-		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, custom));
+		this.usingCustomData = custom;
+		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, customData, false, this.isUsingCustomData()));
 	}
 
 	/**
@@ -207,23 +207,24 @@ public class ControlProperty {
 	 Set the control property's values equal to a macro. The properties prior to being set to the macro will be preserved.
 	 If this method is invoked again with the macro=null, the preserved values will be inserted. In either scenario, the values observer will be notified of the change.
 
-	 @param m the macro to set to, or null if not to set to macro
+	 @param newMacro the macro to set to, or null if not to set to macro
 	 */
-	public void setValueToMacro(@Nullable Macro m) {
-		if (m == this.myMacro || (m != null && m.equals(this.myMacro))) { //either both null (or same references for that matter) or m might still equal this.myMacro)
+	public void setValueToMacro(@Nullable Macro newMacro) {
+		if (newMacro == this.myMacro || (newMacro != null && newMacro.equals(this.myMacro))) { //either both null (or same references for that matter) or m might still equal this.myMacro)
 			return;
 		}
-		if (m == null) {
+		Macro oldMacro = this.myMacro;
+		if (newMacro == null) {
 			myMacro.getValueObserver().removeListener(macroListener);
 			this.myMacro = null;
-			setValue(beforeMacroValue);
+			setValue(beforeMacroValue, ControlPropertyValueUpdate.ValueOrigin.MACRO);
 		} else {
-			this.myMacro = m;
+			this.myMacro = newMacro;
 			this.myMacro.getValueObserver().addListener(macroListener);
 			beforeMacroValue = valueObserver.getValue();
-			setValue(this.myMacro.getValue());
+			setValue(this.myMacro.getValue(), ControlPropertyValueUpdate.ValueOrigin.MACRO);
 		}
-		controlPropertyUpdateGroup.update(new ControlPropertyMacroUpdate(this, m, m != null));
+		controlPropertyUpdateGroup.update(new ControlPropertyMacroUpdate(this, oldMacro, newMacro));
 	}
 
 	/** Get the custom data set from {@link #setCustomDataValue(Object)} */
@@ -238,6 +239,7 @@ public class ControlProperty {
 		return customDataValueObserver.getReadOnlyValueObserver();
 	}
 
+	/** Return {@link ControlPropertyLookupConstant#getPropertyName()} with instance {@link #getPropertyLookup()} */
 	@NotNull
 	public String getName() {
 		return propertyLookup.getPropertyName();
@@ -267,8 +269,8 @@ public class ControlProperty {
 	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
 	 invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
 	 */
-	public boolean isCustomData() {
-		return customDataSet;
+	public boolean isUsingCustomData() {
+		return usingCustomData;
 	}
 
 	/** Get the default value for the property */
@@ -413,11 +415,11 @@ public class ControlProperty {
 			}
 		} else if (update instanceof ControlPropertyMacroUpdate) {
 			ControlPropertyMacroUpdate update1 = (ControlPropertyMacroUpdate) update;
-			setValueToMacro(update1.getMacro());
+			setValueToMacro(update1.getNewMacro());
 		} else if (update instanceof ControlPropertyCustomDataUpdate) {
 			ControlPropertyCustomDataUpdate update1 = (ControlPropertyCustomDataUpdate) update;
-			setCustomDataValue(update1.getCustomData());
-			setHasCustomData(update1.isSetTo());
+			setCustomDataValue(update1.getNewCustomData());
+			setUsingCustomData(update1.isUsingCustomData());
 		} else if (update instanceof ControlPropertyInheritUpdate) {
 			ControlPropertyInheritUpdate update1 = (ControlPropertyInheritUpdate) update;
 			inherit(update1.getInheritedProperty());
@@ -431,7 +433,7 @@ public class ControlProperty {
 	public ControlProperty deepCopy() {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
 		copy.setCustomDataValue(getCustomData());
-		copy.setHasCustomData(isCustomData());
+		copy.setUsingCustomData(isUsingCustomData());
 		copy.setDefaultValue(false, getDefaultValue());
 		copy.setValueToMacro(getMacro());
 		return copy;
@@ -444,12 +446,16 @@ public class ControlProperty {
 	 @param property property to set to
 	 */
 	public void setTo(@NotNull ControlProperty property) {
+		setTo(property, ControlPropertyValueUpdate.ValueOrigin.OTHER);
+	}
+
+	private void setTo(@NotNull ControlProperty property, @NotNull ControlPropertyValueUpdate.ValueOrigin origin) {
 		if (property.getPropertyLookup() != getPropertyLookup()) {
 			throw new IllegalArgumentException("not same property lookup");
 		}
-		setValue(property.getValue());
+		setValue(property.getValue(), origin);
 		setValueToMacro(property.getMacro()); //do after set value
-		setHasCustomData(property.isCustomData());
+		setUsingCustomData(property.isUsingCustomData());
 		setCustomDataValue(property.getCustomData());
 		setDefaultValue(false, property.getDefaultValue());
 	}
@@ -469,7 +475,7 @@ public class ControlProperty {
 		if (specification.getMacroKey() != null) {
 			setValueToMacro(registry.findMacroByKey(specification.getMacroKey())); //do after set value
 		}
-		setHasCustomData(specification.isCustomData());
+		setUsingCustomData(specification.isCustomData());
 		setCustomDataValue(specification.getCustomData());
 	}
 
@@ -490,12 +496,12 @@ public class ControlProperty {
 		inherited = inherit;
 		if (inherit == null) {
 			if (beforeInherit != null) {
-				setTo(beforeInherit);
+				setTo(beforeInherit, ControlPropertyValueUpdate.ValueOrigin.INHERIT);
 			}
 			oldInherited.getControlPropertyUpdateGroup().removeListener(inheritListener);
 		} else {
 			beforeInherit = this.deepCopy();
-			setTo(inherit);
+			setTo(inherit, ControlPropertyValueUpdate.ValueOrigin.INHERIT);
 			inherit.getControlPropertyUpdateGroup().addListener(inheritListener);
 		}
 
@@ -516,5 +522,33 @@ public class ControlProperty {
 	@Nullable
 	public ControlProperty getInherited() {
 		return inherited;
+	}
+
+	private static class ControlPropertyValueObserver extends ValueObserver<SerializableValue> {
+
+		private final ControlProperty property;
+		private boolean disableUpdate = false;
+
+		public ControlPropertyValueObserver(@NotNull ControlProperty property, SerializableValue value) {
+			super(value);
+			this.property = property;
+		}
+
+		@Override
+		public void updateValue(SerializableValue newValue) {
+			SerializableValue old = this.getValue();
+			super.updateValue(newValue);
+			if (!disableUpdate) {
+				property.controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(property, old, newValue, ControlPropertyValueUpdate.ValueOrigin.OTHER));
+			}
+		}
+
+		public void updateValue(@Nullable SerializableValue newValue, @NotNull ControlPropertyValueUpdate.ValueOrigin origin) {
+			SerializableValue old = this.getValue();
+			disableUpdate = true;
+			updateValue(newValue);
+			disableUpdate = false;
+			property.controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(property, old, newValue, origin));
+		}
 	}
 }

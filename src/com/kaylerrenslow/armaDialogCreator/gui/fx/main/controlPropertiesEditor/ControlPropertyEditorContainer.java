@@ -60,9 +60,6 @@ class ControlPropertyEditorContainer extends HBox {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 
-		if (property.getMacro() != null) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.MACRO);
-		}
 
 		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.use_default_editor"));
 		final MenuItem miResetToInitial = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_initial"));
@@ -124,6 +121,9 @@ class ControlPropertyEditorContainer extends HBox {
 					} else {
 						miInheritanceButton.setText(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.inherit"));
 					}
+				} else if (data instanceof ControlPropertyMacroUpdate) {
+					ControlPropertyMacroUpdate macroUpdate = (ControlPropertyMacroUpdate) data;
+					updatePropertyInputMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
 				}
 			}
 		};
@@ -142,20 +142,20 @@ class ControlPropertyEditorContainer extends HBox {
 		miDefaultEditor.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.DEFAULT);
+				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.DEFAULT);
 			}
 		});
 		miMacro.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.MACRO);
+				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
 
 			}
 		});
 		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
+				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 			}
 		});
 		miInheritanceButton.setOnAction(new EventHandler<ActionEvent>() {
@@ -201,19 +201,22 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private void updateContainer() {
 		miInheritanceButton.setVisible(controlClass.getExtendClass() != null);
-		if (getControlProperty().isCustomData()) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
+		if (getControlProperty().isUsingCustomData()) {
+			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 		} else if (getControlProperty().getMacro() != null) {
-			updatePropertyInputMode(stackPanePropertyInput, propertyInput, ControlPropertyValueEditor.EditMode.MACRO);
+			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	private void updatePropertyInputMode(StackPane stackPanePropertyInput, ControlPropertyValueEditor propertyInput, ControlPropertyValueEditor.EditMode mode) {
+	private void updatePropertyInputMode(ControlPropertyValueEditor.EditMode mode) {
 		if (mode == ControlPropertyValueEditor.EditMode.MACRO) {
 			stackPanePropertyInput.getChildren().clear();
 
 			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(propertyInput.getMacroClass(), propertyInput.getControlProperty().getMacro());
+
+			macroGetterButton.getChosenMacroValueObserver().updateValue(getControlProperty().getMacro());
+
 			stackPanePropertyInput.getChildren().add(macroGetterButton);
 			macroGetterButton.getChosenMacroValueObserver().addListener(new ValueListener() {
 				@Override
@@ -232,7 +235,7 @@ class ControlPropertyEditorContainer extends HBox {
 			stackPanePropertyInput.getChildren().clear();
 			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
 			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setHasCustomData(mode == ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
+			propertyInput.getControlProperty().setUsingCustomData(mode == ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 		}
 	}
 

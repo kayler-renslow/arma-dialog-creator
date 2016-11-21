@@ -143,6 +143,9 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			clearSelectedValue();
 			return;
 		}
+		if (value == selectedItemObserver.getValue()) {
+			return;
+		}
 		for (MenuItem menuItem : menuButton.getItems()) {
 			if (menuItem instanceof CBMBMenuItem) {
 				CBMBMenuItem<V> item = (CBMBMenuItem<V>) menuItem;

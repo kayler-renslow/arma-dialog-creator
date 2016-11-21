@@ -14,6 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ A {@link UpdateGroupListener} useful for preventing memory leaks while wanting to listen to {@link ControlClass#getControlClassUpdateGroup()}
+
  @author Kayler
  @see ControlPropertyUpdateListener
  @since 11/20/2016 */

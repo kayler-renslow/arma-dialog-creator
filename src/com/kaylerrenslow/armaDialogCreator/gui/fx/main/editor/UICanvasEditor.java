@@ -65,13 +65,13 @@ public class UICanvasEditor extends UICanvas {
 	private KeyMap keyMap = new KeyMap();
 	
 	/** Component that is ready to be scaled, null if none is ready to be scaled */
-	private Control scaleControl;
+	private CanvasControl scaleControl;
 	/** Edge that the scaling will be conducted, or Edge.NONE is no scaling is being done */
 	private Edge scaleEdge = Edge.NONE;
 	/** Component that the mouse is over, or null if not over any component */
-	private Control mouseOverControl;
+	private CanvasControl mouseOverControl;
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
-	private Control contextMenuControl;
+	private CanvasControl contextMenuControl;
 	
 	private SnapConfiguration calc;
 	
@@ -90,10 +90,10 @@ public class UICanvasEditor extends UICanvas {
 	
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
-	
-	private ValueObserver<Control> doubleClickObserver = new ValueObserver<>(null);
-	
-	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display<? extends Control> display) {
+
+	private ValueObserver<CanvasControl> doubleClickObserver = new ValueObserver<>(null);
+
+	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display<? extends CanvasControl> display) {
 		super(resolution, display);
 		
 		setSnapConfig(calculator);
@@ -116,16 +116,16 @@ public class UICanvasEditor extends UICanvas {
 			}
 		});
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
-		selection.selected.addListener(new ListChangeListener<Control>() {
+		selection.selected.addListener(new ListChangeListener<CanvasControl>() {
 			@Override
-			public void onChanged(Change<? extends Control> c) {
+			public void onChanged(Change<? extends CanvasControl> c) {
 				paint();
 			}
 		});
 	}
 	
 	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */
-	public ValueObserver<Control> getDoubleClickObserver() {
+	public ValueObserver<CanvasControl> getDoubleClickObserver() {
 		return doubleClickObserver;
 	}
 	
@@ -163,8 +163,8 @@ public class UICanvasEditor extends UICanvas {
 	public boolean getSafeMovement() {
 		return this.safeMovement;
 	}
-	
-	public Control getMouseOverControl() {
+
+	public CanvasControl getMouseOverControl() {
 		return mouseOverControl;
 	}
 	
@@ -220,7 +220,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintControls();
 		gc.save();
-		for (Control control : selection.getSelected()) {
+		for (CanvasControl control : selection.getSelected()) {
 			gc.setStroke(control.getRenderer().getBackgroundColor());
 			control.getRenderer().drawRectangle(gc);
 		}
@@ -236,7 +236,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 	
 	@Override
-	protected void paintControl(Control control) {
+	protected void paintControl(CanvasControl control) {
 		if (isSelectingArea() && !control.getRenderer().isEnabled()) {
 			return;
 		}
@@ -359,7 +359,7 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
-			Control control;
+			CanvasControl control;
 			for (int i = selection.numSelected() - 1; i >= 0; i--) {
 				control = selection.getSelected().get(i);
 				if (control.getRenderer().containsPoint(mousex, mousey)) {
@@ -367,7 +367,7 @@ public class UICanvasEditor extends UICanvas {
 					return;
 				}
 			}
-			Iterator<? extends Control> controlIterator = display.iteratorForAllControls(true);
+			Iterator<? extends CanvasControl> controlIterator = display.iteratorForAllControls(true);
 			while (controlIterator.hasNext()) {
 				control = controlIterator.next();
 				if (!control.getRenderer().isEnabled()) {
@@ -395,7 +395,7 @@ public class UICanvasEditor extends UICanvas {
 						return;
 					}
 					if (!keys.spaceDown()) { //if space is down, mouse over component should be selected
-						Control control;
+						CanvasControl control;
 						for (int i = selection.numSelected() - 1; i >= 0; i--) {
 							control = selection.getSelected().get(i);
 							if (control.getRenderer().containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
@@ -496,8 +496,8 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 		//not scaling and simply translating (moving)
-		
-		for (Control control : selection.getSelected()) {
+
+		for (CanvasControl control : selection.getSelected()) {
 			//only move-able controls should be inside selection
 			if (!safeMovement || boundUpdateSafe(control.getRenderer(), dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
 				control.getRenderer().translate(dx1, dy1);
@@ -578,9 +578,9 @@ public class UICanvasEditor extends UICanvas {
 		
 		updateContextMenu();
 		mouseOverControl = null;
-		
-		Control control;
-		Iterator<? extends Control> iteratorControl = display.iteratorForAllControls(true);
+
+		CanvasControl control;
+		Iterator<? extends CanvasControl> iteratorControl = display.iteratorForAllControls(true);
 		while (iteratorControl.hasNext()) {
 			control = iteratorControl.next();
 			if (control.getRenderer().isEnabled()) {
@@ -640,7 +640,7 @@ public class UICanvasEditor extends UICanvas {
 	private void checkForScaling(int mousex, int mousey) {
 		Edge edge;
 		setReadyForScale(null, Edge.NONE);
-		Control component;
+		CanvasControl component;
 		for (int i = selection.numSelected() - 1; i >= 0; i--) {
 			component = selection.getSelected().get(i);
 			if (!component.getRenderer().isEnabled()) {
@@ -655,8 +655,8 @@ public class UICanvasEditor extends UICanvas {
 			return;
 		}
 	}
-	
-	private void setReadyForScale(@Nullable Control toScale, @NotNull Edge scaleEdge) {
+
+	private void setReadyForScale(@Nullable CanvasControl toScale, @NotNull Edge scaleEdge) {
 		this.scaleControl = toScale;
 		this.scaleEdge = scaleEdge;
 	}
@@ -786,7 +786,7 @@ public class UICanvasEditor extends UICanvas {
 		} else {
 			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
 				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
-					for (Control control : selection.getSelected()) {
+					for (CanvasControl control : selection.getSelected()) {
 						control.getRenderer().setEnabled(false);
 					}
 					selection.clearSelected();
@@ -804,17 +804,17 @@ public class UICanvasEditor extends UICanvas {
 	 Created on 05/13/2016.
 	 */
 	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
-		private ObservableList<Control> selected = FXCollections.observableArrayList(new ArrayList<>());
+		private ObservableList<CanvasControl> selected = FXCollections.observableArrayList(new ArrayList<>());
 		private boolean isSelecting;
 		
 		@Override
-		public @NotNull ObservableList<Control> getSelected() {
+		public @NotNull ObservableList<CanvasControl> getSelected() {
 			return selected;
 		}
 		
 		@Nullable
 		@Override
-		public Control getFirst() {
+		public CanvasControl getFirst() {
 			if (selected.size() == 0) {
 				return null;
 			}
@@ -822,7 +822,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 		@Override
-		public void toggleFromSelection(Control control) {
+		public void toggleFromSelection(CanvasControl control) {
 			if (isSelected(control)) {
 				selected.remove(control);
 			} else {
@@ -831,18 +831,18 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 		@Override
-		public void addToSelection(Control control) {
+		public void addToSelection(CanvasControl control) {
 			if (!isSelected(control)) {
 				this.selected.add(control);
 			}
 		}
 		
 		@Override
-		public boolean isSelected(@Nullable Control control) {
+		public boolean isSelected(@Nullable CanvasControl control) {
 			if (control == null) {
 				return false;
 			}
-			for (Control c : selected) {
+			for (CanvasControl c : selected) {
 				if (c == control) {
 					return true;
 				}
@@ -851,7 +851,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		
 		@Override
-		public boolean removeFromSelection(Control control) {
+		public boolean removeFromSelection(CanvasControl control) {
 			return this.selected.remove(control);
 		}
 		
@@ -872,8 +872,8 @@ public class UICanvasEditor extends UICanvas {
 		void setSelecting(boolean selecting) {
 			this.isSelecting = selecting;
 		}
-		
-		void removeAllAndAdd(@NotNull Control toAdd) {
+
+		void removeAllAndAdd(@NotNull CanvasControl toAdd) {
 			clearSelected();
 			this.selected.add(toAdd);
 		}

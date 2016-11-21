@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
  @since 11/16/2016 */
 public class Notification {
 
+	public static final long DEFAULT_DURATION = 10 * 1000;
 	private final VBox root = new VBox();
 	private final String notificationTitle;
 	private final String notificationText;
@@ -36,13 +37,13 @@ public class Notification {
 	private long displayDurationMilliseconds;
 
 	/**
-	 A non-error notification that will last 10 seconds
+	 A non-error notification that will last {@link #DEFAULT_DURATION} seconds
 
 	 @param notificationTitle title of notification
 	 @param notificationText body text of notification
 	 */
 	public Notification(@NotNull String notificationTitle, @NotNull String notificationText) {
-		this(notificationTitle, notificationText, 10 * 1000, false);
+		this(notificationTitle, notificationText, DEFAULT_DURATION, false);
 	}
 
 	/**

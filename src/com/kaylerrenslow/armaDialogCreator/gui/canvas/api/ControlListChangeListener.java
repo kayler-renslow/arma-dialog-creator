@@ -13,7 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 /**
  Created by Kayler on 08/12/2016.
  */
-public interface ControlListChangeListener<C extends Control> {
+public interface ControlListChangeListener<C extends CanvasControl> {
 	/**
 	 A change was invoked on the given control list. Only one operation is performed at once. Therefore, only one of the following will be true:<br>
 	 <ul>

@@ -10,7 +10,9 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.data.changeRegistrars.ControlClassChangeRegistrar;
 import com.kaylerrenslow.armaDialogCreator.data.changeRegistrars.DisplayChangeRegistrar;
+import org.jetbrains.annotations.NotNull;
 
 /**
  A place to initiate all {@link ChangeRegistrar} instances.
@@ -18,8 +20,9 @@ import com.kaylerrenslow.armaDialogCreator.data.changeRegistrars.DisplayChangeRe
  @author Kayler
  @since 08/10/2016. */
 public final class ChangeRegistrars {
-	ChangeRegistrars(ApplicationData data) {
+	ChangeRegistrars(@NotNull ApplicationData data) {
 		DisplayChangeRegistrar displayChangeRegistrar = new DisplayChangeRegistrar(data);
+		ControlClassChangeRegistrar controlClassChangeRegistrar = new ControlClassChangeRegistrar(data);
 	}
 
 }

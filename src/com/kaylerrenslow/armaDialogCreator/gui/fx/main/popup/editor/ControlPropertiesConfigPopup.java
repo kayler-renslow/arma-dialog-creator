@@ -13,12 +13,11 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.editor;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
@@ -60,6 +59,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
 	private Label lblClassName;
+	private ComboBoxMenuButton<CustomControlClass> menuButtonExtendControls;
+	private CheckBox cbIsBackgroundControl;
 	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
@@ -74,12 +75,32 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setText(newValue);
 		}
 	};
+	private ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+			if (newValue == null) {
+				menuButtonExtendControls.chooseItem((CustomControlClass) null);
+			} else {
+				CustomControlClassRegistry registry = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry();
+				CustomControlClass customControlClass = registry.findCustomControlClassByName(newValue.getClassName());
+				menuButtonExtendControls.chooseItem(customControlClass);
+			}
+		}
+	};
+	private ValueListener<ControlHolder<ArmaControl>> backgroundControlListener = new ValueListener<ControlHolder<ArmaControl>>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<ControlHolder<ArmaControl>> observer, ControlHolder<ArmaControl> oldValue, ControlHolder<ArmaControl> newValue) {
+			System.out.println("ControlPropertiesConfigPopup.valueUpdated ");
+			cbIsBackgroundControl.setSelected(control.isBackgroundControl());
+		}
+	};
 
 
 	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
+		this.control = control;
 		initializePopup();
-		initializeToControl(control);
+		initializeToControl();
 	}
 
 	private void initializePopup() {
@@ -90,45 +111,43 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.setPadding(new Insets(20.0));
 	}
 
-	private void initializeToControl(ArmaControl c) {
+	private void initializeToControl() {
+		editorPane = new ControlPropertiesEditorPane(this.control);
 
-		this.control = c;
-		editorPane = new ControlPropertiesEditorPane(control);
-
-		Color bg = control.getRenderer().getBackgroundColor();
+		Color bg = this.control.getRenderer().getBackgroundColor();
 
 		setBorderColor(bg);
 
-		addHeader(c);
+		addHeader(control);
 
 		myRootElement.getChildren().add(editorPane);
 		VBox.setVgrow(editorPane, Priority.ALWAYS);
 
-		CheckBox cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
-		cbIsBackgroundControl.setSelected(c.isBackgroundControl());
+		cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
+		cbIsBackgroundControl.setSelected(control.isBackgroundControl());
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
-				Display<ArmaControl> display = c.getDisplay();
-				if (c.getHolder() instanceof ArmaControlGroup) {
-					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(c);
+				Display<ArmaControl> display = control.getDisplay();
+				if (control.getHolder() instanceof ArmaControlGroup) {
+					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(control);
 					popup.show();
 					if (popup.isMoveOut()) {
-						ArmaControlGroup group = (ArmaControlGroup) c.getHolder();
-						group.getControls().move(c, (isBackground ? display.getBackgroundControls() : display.getControls()));
+						ArmaControlGroup group = (ArmaControlGroup) control.getHolder();
+						group.getControls().move(control, (isBackground ? display.getBackgroundControls() : display.getControls()));
 						return;
 					} else {
 						return;
 					}
-				} else if (c.getHolder() instanceof ArmaDisplay) {
+				} else if (control.getHolder() instanceof ArmaDisplay) {
 					if (isBackground) {
-						display.getControls().move(c, display.getBackgroundControls());
+						display.getControls().move(control, display.getBackgroundControls());
 					} else {
-						display.getBackgroundControls().move(c, display.getControls());
+						display.getBackgroundControls().move(control, display.getControls());
 					}
 					return;
 				} else {
-					throw new IllegalStateException("unknown holder type:" + c.getHolder().getClass().getName());
+					throw new IllegalStateException("unknown holder type:" + control.getHolder().getClass().getName());
 				}
 			}
 		});
@@ -159,7 +178,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 		btnClose.getStyleClass().add("close-button");
 
-		final ComboBoxMenuButton<CustomControlClass> menuButtonExtendControls = new ComboBoxMenuButton<>(
+		menuButtonExtendControls = new ComboBoxMenuButton<>(
 				true, Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null
 		);
 		ReadOnlyList<CustomControlClass> customControls = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
@@ -183,8 +202,8 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				}
 			}
 		});
+
 		lblClassName = new Label(control.getClassName());
-		control.getClassNameObserver().addListener(classNameListener);
 		final HBox hboxLeft = new HBox(5, lblClassName, new Label(":"), menuButtonExtendControls);
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 		myRootElement.getChildren().add(
@@ -205,9 +224,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 	@Override
 	public void show() {
-		if (hasBeenShown()) {
-			handleListeners(true);
-		}
+		handleListeners(true);
 		super.show();
 	}
 
@@ -224,10 +241,16 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (add) {
 			control.getRenderer().getBackgroundColorObserver().addListener(backgroundColorListener);
 			control.getClassNameObserver().addListener(classNameListener);
+			control.getExtendClassObserver().addListener(controlClassExtendListener);
+			control.getHolderObserver().addListener(backgroundControlListener);
+
 			editorPane.relink();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);
+			control.getExtendClassObserver().removeListener(controlClassExtendListener);
+			control.getHolderObserver().removeListener(backgroundControlListener);
+
 			editorPane.unlink();
 		}
 	}

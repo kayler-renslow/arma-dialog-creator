@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 11/21/2016 */
-public class DisplayControlList<C extends Control> extends ControlList<C> {
+public class DisplayControlList<C extends CanvasControl> extends ControlList<C> {
 
 	private final ControlListChangeListener<C> controlListChangeListener = new ControlListChangeListener<C>() {
 		@Override
@@ -64,20 +64,20 @@ public class DisplayControlList<C extends Control> extends ControlList<C> {
 			@Override
 			public void onChanged(ControlList<C> controlList, ControlListChange<C> change) {
 				if (change.wasAdded()) {
-					if (change.getAdded().getControl() instanceof ControlGroup) {
-						((ControlGroup) change.getAdded().getControl()).setDisplayForGroup(display);
+					if (change.getAdded().getControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) change.getAdded().getControl()).setDisplayForGroup(display);
 					}
 					change.getAdded().getControl().setHolder(display);
 					change.getAdded().getControl().setDisplay(display);
 				} else if (change.wasSet()) {
-					if (change.getSet().getNewControl() instanceof ControlGroup) {
-						((ControlGroup) change.getSet().getNewControl()).setDisplayForGroup(display);
+					if (change.getSet().getNewControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) change.getSet().getNewControl()).setDisplayForGroup(display);
 					}
 					change.getSet().getNewControl().setHolder(display);
 					change.getSet().getNewControl().setDisplay(display);
 				} else if (change.wasMoved() && (change.getMoved().getDestinationHolder() == display)) {
-					if (change.getMoved().getMovedControl() instanceof ControlGroup) {
-						((ControlGroup) change.getMoved().getMovedControl()).setDisplayForGroup(display);
+					if (change.getMoved().getMovedControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) change.getMoved().getMovedControl()).setDisplayForGroup(display);
 					}
 					change.getMoved().getMovedControl().setHolder(display);
 					change.getMoved().getMovedControl().setDisplay(display);
@@ -92,9 +92,9 @@ public class DisplayControlList<C extends Control> extends ControlList<C> {
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addChangeListenerToChild(Control c, boolean activate) {
-		if (c instanceof ControlGroup) {
-			ControlGroup<C> controlGroup = (ControlGroup<C>) c;
+	private void addChangeListenerToChild(CanvasControl c, boolean activate) {
+		if (c instanceof CanvasControlGroup) {
+			CanvasControlGroup<C> controlGroup = (CanvasControlGroup<C>) c;
 			if (activate) {
 				controlGroup.getControls().addChangeListener(controlListChangeListener);
 				controlGroup.getControls().addChangeListener(new GroupHolderListener<>(controlGroup));
@@ -102,17 +102,17 @@ public class DisplayControlList<C extends Control> extends ControlList<C> {
 				controlGroup.getControls().removeChangeListener(controlListChangeListener);
 				controlGroup.getControls().removeChangeListener(new GroupHolderListener<>(controlGroup));
 			}
-			for (Control c1 : controlGroup.getControls()) {
+			for (CanvasControl c1 : controlGroup.getControls()) {
 				addChangeListenerToChild(c1, activate);
 			}
 		}
 	}
 
-	private static class GroupHolderListener<C extends Control> implements ControlListChangeListener<C> {
+	private static class GroupHolderListener<C extends CanvasControl> implements ControlListChangeListener<C> {
 
-		private final ControlGroup<C> controlGroup;
+		private final CanvasControlGroup<C> controlGroup;
 
-		public GroupHolderListener(@NotNull ControlGroup<C> controlGroup) {
+		public GroupHolderListener(@NotNull CanvasControlGroup<C> controlGroup) {
 			this.controlGroup = controlGroup;
 		}
 

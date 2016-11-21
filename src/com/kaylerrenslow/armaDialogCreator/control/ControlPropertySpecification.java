@@ -79,7 +79,7 @@ public class ControlPropertySpecification {
 			this.macroKey = null;
 		}
 		this.customData = property.getCustomData();
-		this.usingCustomData = property.isCustomData();
+		this.usingCustomData = property.isUsingCustomData();
 	}
 
 	/**

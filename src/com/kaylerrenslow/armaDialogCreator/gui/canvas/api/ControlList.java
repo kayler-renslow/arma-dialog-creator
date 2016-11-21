@@ -23,7 +23,7 @@ import java.util.*;
 
  @author Kayler
  @since 08/12/2016. */
-public class ControlList<C extends Control> implements List<C> {
+public class ControlList<C extends CanvasControl> implements List<C> {
 	private final ArrayList<C> controls = new ArrayList<>();
 	private final LinkedList<ControlListChangeListener<C>> listeners = new LinkedList<>();
 	private final ControlHolder<C> holder;
@@ -320,7 +320,7 @@ public class ControlList<C extends Control> implements List<C> {
 		return new DeepIterator<>(this);
 	}
 
-	private static class DeepIterator<C extends Control> implements Iterable<C>, Iterator<C> {
+	private static class DeepIterator<C extends CanvasControl> implements Iterable<C>, Iterator<C> {
 
 		private final ControlList<C> list;
 		private final LinkedList<C> toVisit = new LinkedList<>();
@@ -357,8 +357,8 @@ public class ControlList<C extends Control> implements List<C> {
 		}
 
 		private void toVisit(C next) {
-			if (next instanceof ControlGroup) {
-				toVisit.addAll(((ControlGroup<C>) next).getControls());
+			if (next instanceof CanvasControlGroup) {
+				toVisit.addAll(((CanvasControlGroup<C>) next).getControls());
 			}
 		}
 	}

@@ -59,6 +59,8 @@ public class HistoryListPopup extends StagePopup<VBox> {
 		myStage.setMinHeight(320);
 		myStage.setWidth(480);
 
+		stackPaneWrapper.setPrefHeight(320);
+
 		fillContent();
 	}
 

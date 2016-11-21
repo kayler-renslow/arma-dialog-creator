@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 08/12/2016.
  */
-public class ControlMove<C extends Control> {
+public class ControlMove<C extends CanvasControl> {
 	private final C controlMoved;
 	private final ControlList<C> oldList;
 	private final int oldIndex;

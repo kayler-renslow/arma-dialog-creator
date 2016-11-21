@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 08/12/2016.
  */
-public class ControlAdd<C extends Control> {
+public class ControlAdd<C extends CanvasControl> {
 	private final C added;
 	private final int index;
 	

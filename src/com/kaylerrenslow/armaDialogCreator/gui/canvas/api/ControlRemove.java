@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 08/12/2016.
  */
-public class ControlRemove<C extends Control> {
+public class ControlRemove<C extends CanvasControl> {
 	private final C removed;
 	private final int index;
 	

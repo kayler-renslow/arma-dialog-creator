@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Comparator;
@@ -19,45 +20,60 @@ import java.util.Comparator;
 /**
  Created by Kayler on 08/04/2016.
  */
-public interface Control<C extends Control> {
+public interface CanvasControl<C extends CanvasControl> {
 	/** Get the {@link CanvasComponent} instance used for rendering the control is a {@link com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas} */
 	CanvasComponent getRenderer();
 
 	/** Invoked when the resolution is changed */
 	void resolutionUpdate(Resolution newResolution);
 
-	Comparator<Control> RENDER_PRIORITY_COMPARATOR = new Comparator<Control>() {
+	Comparator<CanvasControl> RENDER_PRIORITY_COMPARATOR = new Comparator<CanvasControl>() {
 		@Override
-		public int compare(Control o1, Control o2) {
+		public int compare(CanvasControl o1, CanvasControl o2) {
 			return CanvasComponent.RENDER_PRIORITY_COMPARATOR.compare(o1.getRenderer(), o2.getRenderer());
 		}
 	};
 
 	/** Get the parent of the control. */
-	ControlHolder<C> getHolder();
+	default ControlHolder<C> getHolder() {
+		return getHolderObserver().getValue();
+	}
 
 	/** Get the display that the control is associated with */
-	Display<C> getDisplay();
+	default Display<C> getDisplay() {
+		return getDisplayObserver().getValue();
+	}
+
+
+	@NotNull
+	ValueObserver<Display<C>> getDisplayObserver();
+
+	@NotNull
+	ValueObserver<ControlHolder<C>> getHolderObserver();
 
 	/** Sets the holder. Can be fetched with {@link #getHolder()} */
-	void setHolder(@NotNull ControlHolder<C> holder);
+	default void setHolder(@NotNull ControlHolder<C> holder) {
+		getHolderObserver().updateValue(holder);
+	}
 
 	/** Sets the display. Can be fetched with {@link #getDisplay()} */
-	void setDisplay(@NotNull Display<C> display);
+	default void setDisplay(@NotNull Display<C> display) {
+		getDisplayObserver().updateValue(display);
+	}
 
 	/** Get the update group that will update anytime the control needs to be re-rendered */
 	UpdateListenerGroup<Object> getReRenderUpdateGroup();
 
 	/**
 	 Return true if the control is a background control (inside {@link Display#getBackgroundControls()}), false otherwise.<br>
-	 Will return true if the control is within a {@link ControlGroup} which is then inside the background controls.
+	 Will return true if the control is within a {@link CanvasControlGroup} which is then inside the background controls.
 	 */
 	default boolean isBackgroundControl() {
 		if (getHolder() instanceof Display) {
 			return ((Display) getHolder()).getBackgroundControls().contains(this);
 		}
-		if (getHolder() instanceof ControlGroup) {
-			return ((ControlGroup) getHolder()).isBackgroundControl();
+		if (getHolder() instanceof CanvasControlGroup) {
+			return ((CanvasControlGroup) getHolder()).isBackgroundControl();
 		} else {
 			throw new IllegalStateException("unknown holder type:" + getHolder().getClass().getName());
 		}

@@ -20,15 +20,14 @@ import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/10/2016.
- */
+ Tracks {@link ArmaControl} movement changes made to {@link Project#getEditingDisplay()}. The movement changes are tracked with {@link DisplayControlList#getUpdateGroup()}
+
+ @author Kayler
+ @since 08/10/2016 */
 public class DisplayChangeRegistrar implements ChangeRegistrar {
-	private final ApplicationData data;
 	private boolean disableListener = false;
 
-	public DisplayChangeRegistrar(ApplicationData data) {
-		this.data = data;
-		final DisplayChangeRegistrar self = this;
+	public DisplayChangeRegistrar(@NotNull ApplicationData data) {
 		final Changelog changelog = Changelog.getInstance();
 
 		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
@@ -41,7 +40,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 				if (change.wasMoved() && change.getMoved().isOriginalUpdate()) {
 					return; //only register the change once (register the change when the old list is notified and not the destination list)
 				}
-				changelog.addChange(new DisplayControlChange(self, change));
+				changelog.addChange(new DisplayControlChange(DisplayChangeRegistrar.this, change));
 			}
 		};
 		display.getControls().getUpdateGroup().addListener(listChangeListener);
@@ -50,7 +49,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 	}
 
 	@Override
-	public void undo(Change c) throws ChangeUpdateFailedException {
+	public void undo(@NotNull Change c) throws ChangeUpdateFailedException {
 		disableListener = true;
 		DisplayControlChange change = (DisplayControlChange) c;
 		ControlList<ArmaControl> modifiedList = change.getListChange().getModifiedList();
@@ -84,7 +83,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 	}
 
 	@Override
-	public void redo(Change c) throws ChangeUpdateFailedException {
+	public void redo(@NotNull Change c) throws ChangeUpdateFailedException {
 		disableListener = true;
 		DisplayControlChange change = (DisplayControlChange) c;
 		ControlList<ArmaControl> modifiedList = change.getListChange().getModifiedList();
@@ -132,12 +131,12 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 			switch (changeType) {
 				case ADD: {
 					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.add");
-					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.add"), controlControlListChange.getAdded().getControl().getClassName());
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.add_f"), controlControlListChange.getAdded().getControl().getClassName());
 					break;
 				}
 				case SET: {
 					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.set");
-					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.set"),
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.set_f"),
 							controlControlListChange.getSet().getOldControl().getClassName(),
 							controlControlListChange.getSet().getNewControl().getClassName()
 					);
@@ -145,12 +144,12 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 				}
 				case REMOVE: {
 					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.remove");
-					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.remove"), controlControlListChange.getRemoved().getControl().getClassName());
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.remove_f"), controlControlListChange.getRemoved().getControl().getClassName());
 					break;
 				}
 				case MOVE: {
 					shortName = Lang.EditChangeBundle().getString("DisplayChange.ShortName.move");
-					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.move"), controlControlListChange.getMoved().getMovedControl().getClassName());
+					description = String.format(Lang.EditChangeBundle().getString("DisplayChange.Description.move_f"), controlControlListChange.getMoved().getMovedControl().getClassName());
 					break;
 				}
 				default: {
