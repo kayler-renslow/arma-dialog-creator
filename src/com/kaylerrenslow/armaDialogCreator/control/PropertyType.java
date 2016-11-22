@@ -21,13 +21,13 @@ import java.util.LinkedList;
  @since 07/15/2016. */
 public enum PropertyType {
 	/** Is a integer value. Current implementation is a 32 bit integer (java int) */
-	INT(0, SVInteger.CONVERTER, getString("PropertyType.int")),
+	INT(0, Expression.CONVERTER, getString("PropertyType.int")),
 	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
-	FLOAT(1, SVDouble.CONVERTER, getString("PropertyType.float")),
+	FLOAT(1, Expression.CONVERTER, getString("PropertyType.float")),
 	/** Unique property type to {@link ControlPropertyLookup#STYLE} */
 	CONTROL_STYLE(2, ControlStyleGroup.CONVERTER, getString("PropertyType.control_style")),
-	/** Is an expression */
-	EXP(3, Expression.CONVERTER, getString("PropertyType.exp")),
+	/** Denotes an image path inside a String */
+	IMAGE(3, SVImage.CONVERTER, getString("PropertyType.image"), true),
 	/** Is a boolean (0 for false, 1 for true) */
 	BOOLEAN(4, SVBoolean.CONVERTER, getString("PropertyType.boolean")),
 	/** Is a String */
@@ -42,14 +42,12 @@ public enum PropertyType {
 	FONT(9, AFont.CONVERTER, getString("PropertyType.font"), true),
 	/** Denotes a file name inside a String */
 	FILE_NAME(10, SVString.CONVERTER, getString("PropertyType.file_name"), true),
-	/** Denotes an image path inside a String */
-	IMAGE(11, SVImage.CONVERTER, getString("PropertyType.image"), true),
 	/** Color is set to a hex string like #ffffff or #ffffffff */
-	HEX_COLOR_STRING(12, AHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
+	HEX_COLOR_STRING(11, AHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-	TEXTURE(13, SVString.CONVERTER, getString("PropertyType.texture"), true),
+	TEXTURE(12, SVString.CONVERTER, getString("PropertyType.texture"), true),
 	/** SQF code String */
-	SQF(14, SVString.CONVERTER, getString("PropertyType.sqf"), true);
+	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true);
 	
 	/** Number of values used to represent the data */
 	public final int propertyValuesSize;

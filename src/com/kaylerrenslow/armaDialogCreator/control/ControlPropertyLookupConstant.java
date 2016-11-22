@@ -16,9 +16,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 
 /**
  A {@link ControlPropertyLookupConstant} is a way to check if one {@link ControlProperty} equals another. Each instance that implements this interface must be instantiated only <b>once</b>.
+
  @author Kayler
  @since 09/15/2016. */
 public interface ControlPropertyLookupConstant {
@@ -46,7 +48,7 @@ public interface ControlPropertyLookupConstant {
 
 	default String getAboutText() {
 		String r = "";
-		if(getAbout() == null){
+		if (getAbout() == null) {
 			return Lang.ApplicationBundle().getString("Misc.no_documentation");
 		}
 		for (String s : getAbout()) {
@@ -59,4 +61,22 @@ public interface ControlPropertyLookupConstant {
 	default ControlProperty getPropertyWithNoData() {
 		return new ControlProperty(this);
 	}
+
+	/** Return the sort priority for {@link #PRIORITY_SORT}. By default, returns {@link Integer#MAX_VALUE} */
+	default int priority() {
+		return Integer.MAX_VALUE;
+	}
+
+	Comparator<ControlPropertyLookupConstant> PRIORITY_SORT = new Comparator<ControlPropertyLookupConstant>() {
+		@Override
+		public int compare(ControlPropertyLookupConstant o1, ControlPropertyLookupConstant o2) {
+			if (o1.priority() == o2.priority()) {
+				return o1.getPropertyName().compareTo(o2.getPropertyName());
+			}
+			if (o1.priority() < o2.priority()) {
+				return -1;
+			}
+			return 1;
+		}
+	};
 }

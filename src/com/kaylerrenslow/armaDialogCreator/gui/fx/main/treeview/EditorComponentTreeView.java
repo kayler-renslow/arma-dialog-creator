@@ -13,10 +13,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChangeListener;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.FoundChild;
@@ -126,7 +126,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		private void handleAdd(ControlList<ArmaControl> controlList, final ControlListChange<ArmaControl> change) {
 			int insertIndex = controlList.indexOf(change.getAdded().getControl());
 			TreeItem<T> newTreeItem = createTreeItemForControl(change.getAdded().getControl());
-			if (change.getAdded().getControl().getHolder() instanceof Display) {
+			if (change.getAdded().getControl().getHolder() instanceof CanvasDisplay) {
 				getRoot().getChildren().add(insertIndex, newTreeItem);
 				if (change.getAdded().getControl() instanceof ArmaControlGroup) {
 					addControls(newTreeItem, ((ArmaControlGroup) change.getAdded().getControl()).getControls());
@@ -243,7 +243,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		});
 	}
 
-	/**Get either the display's background controls ({@link #backgroundControlEditor} == true) or the display main controls ({@link #backgroundControlEditor} == false).*/
+	/** Get either the display's background controls ({@link #backgroundControlEditor} == true) or the display main controls ({@link #backgroundControlEditor} == false). */
 	private ControlList<ArmaControl> getTargetControlList() {
 		return backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 	}

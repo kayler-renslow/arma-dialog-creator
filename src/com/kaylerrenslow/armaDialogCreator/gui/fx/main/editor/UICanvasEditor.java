@@ -93,7 +93,7 @@ public class UICanvasEditor extends UICanvas {
 
 	private ValueObserver<CanvasControl> doubleClickObserver = new ValueObserver<>(null);
 
-	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull Display<? extends CanvasControl> display) {
+	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
 		
 		setSnapConfig(calculator);

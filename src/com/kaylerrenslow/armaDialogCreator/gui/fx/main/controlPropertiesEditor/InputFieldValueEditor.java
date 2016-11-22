@@ -10,7 +10,9 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
@@ -84,15 +86,15 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		return inputField.getValueObserver().getReadOnlyValueObserver();
 	}
 
-	public static class IntegerEditor extends InputFieldValueEditor<SVInteger>{
-		public IntegerEditor() {
-			super(new SVIntegerChecker());
+	public static class IntegerEditor extends InputFieldValueEditor<Expression> {
+		public IntegerEditor(@NotNull Env env) {
+			super(new ExpressionChecker(env, ExpressionChecker.TYPE_INT));
 		}
 	}
 
-	public static class DoubleEditor extends InputFieldValueEditor<SVDouble>{
-		public DoubleEditor() {
-			super(new SVDoubleChecker());
+	public static class DoubleEditor extends InputFieldValueEditor<Expression> {
+		public DoubleEditor(@NotNull Env env) {
+			super(new ExpressionChecker(env, ExpressionChecker.TYPE_FLOAT));
 		}
 	}
 
@@ -102,9 +104,4 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		}
 	}
 
-	public static class ExpressionEditor extends InputFieldValueEditor<Expression> {
-		public ExpressionEditor(Env env) {
-			super(new ExpressionChecker(env));
-		}
-	}
 }

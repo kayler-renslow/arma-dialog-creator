@@ -67,6 +67,7 @@ public class DefaultComponentContextMenu extends ContextMenu {
 				createdPopups.remove(popup);
 			}
 		});
+		createdPopups.add(popup);
 		popup.show();
 	}
 }

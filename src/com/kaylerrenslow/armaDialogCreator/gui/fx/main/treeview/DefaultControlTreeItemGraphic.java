@@ -66,8 +66,8 @@ public class DefaultControlTreeItemGraphic extends HBox {
 			}
 		});
 
-		final BorderedImageView imageView = new BorderedImageView(entry.getMyArmaControl().getControlType().icon);
-		Tooltip.install(imageView, new Tooltip(entry.getMyArmaControl().getControlType().displayName));
+		final BorderedImageView imageView = new BorderedImageView(entry.getMyArmaControl().getControlType().getIcon());
+		Tooltip.install(imageView, new Tooltip(entry.getMyArmaControl().getControlType().getDisplayName()));
 
 		fillBox(entry.getPrimaryColor());
 		StackPane boxBorder = new StackPane(box);

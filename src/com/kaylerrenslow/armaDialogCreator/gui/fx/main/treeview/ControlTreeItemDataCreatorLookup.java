@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeItemDataCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.ButtonDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.ControlGroupDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator.StaticDataCreator;
 
@@ -25,7 +26,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	STRUCTURED_TEXT(ControlType.STRUCTURED_TEXT, StaticDataCreator.INSTANCE),
 	ACTIVETEXT(ControlType.ACTIVETEXT, StaticDataCreator.INSTANCE),
 
-	BUTTON(ControlType.BUTTON, StaticDataCreator.INSTANCE),
+	BUTTON(ControlType.BUTTON, ButtonDataCreator.INSTANCE),
 	SHORTCUTBUTTON(ControlType.SHORTCUTBUTTON, StaticDataCreator.INSTANCE),
 	XBUTTON(ControlType.XBUTTON, StaticDataCreator.INSTANCE),
 

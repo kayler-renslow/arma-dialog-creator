@@ -96,6 +96,7 @@ public interface Region {
 		gc.strokeLine(x1a, y2a, x1a, y1a); //bottom left to top left
 	}
 
+	/** Fills a rectangle (will use {@link GraphicsContext#getStroke()}) as fill color */
 	static void fillRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		for (int y = y1; y < y2; y++) {

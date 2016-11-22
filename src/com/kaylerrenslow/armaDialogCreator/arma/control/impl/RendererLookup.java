@@ -23,6 +23,7 @@ public enum RendererLookup {
 	/** Renderer for a basic static control */
 	STATIC(0, StaticRenderer.class),
 	CONTROL_GROUP(1, ControlGroupRenderer.class),
+	BUTTON(2, ButtonRenderer.class),
 	/**Renderer for tests. DO NOT USE FOR CLIENT CODE.*/
 	TEST(-1, ArmaControlRenderer.class);
 	

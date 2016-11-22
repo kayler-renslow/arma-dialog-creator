@@ -171,7 +171,7 @@ public class ProjectSaveXmlWriter {
 		stm.write(String.format("<%s renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getRendererLookup().id,
-				control.getControlType().typeId,
+				control.getControlType().getTypeId(),
 				control.getClassName(),
 				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass().getClassName()) : ""
 				)

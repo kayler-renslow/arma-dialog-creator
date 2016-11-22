@@ -35,7 +35,14 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
-	protected final ValueObserver<AColor> globalBackgroundColorObserver;
+	private final ValueObserver<AColor> globalBackgroundColorObserver;
+	/** A simple value listener that will only invoke {@link #render()} when update is received */
+	protected final ValueListener<SerializableValue> renderValueUpdateListener = new ValueListener<SerializableValue>() {
+		@Override
+		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+			render();
+		}
+	};
 
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
@@ -54,7 +61,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
-					rerender();
+					render();
 				}
 			}
 		});
@@ -95,7 +102,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 				} else {
 					throw new IllegalStateException("unmatched observer");
 				}
-				rerender();
+				render();
 			}
 		};
 		xProperty.getValueObserver().addListener(positionValueListener);
@@ -106,7 +113,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		enabledObserver.addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-				rerender();
+				render();
 			}
 		});
 
@@ -130,8 +137,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	 Since the control's update group will update before the renderer's control property value listeners get notified, the re-render must occur AFTER the renderer's internal values change. Invoke
 	 this whenever a new render needs to happen.
 	 */
-	protected final void rerender() {
-		myControl.getReRenderUpdateGroup().update(null);
+	public final void render() {
+		myControl.getRenderUpdateGroup().update(null);
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
@@ -231,7 +238,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		wProperty.setValue(w);
 		hProperty.setValue(h);
 		this.recalcingPosition = false;
-		rerender();
+		render();
 	}
 
 	@Override
@@ -240,14 +247,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		enabledObserver.updateValue(enabled);
 	}
 
+	@NotNull
 	public ValueObserver<Boolean> getEnabledObserver() {
 		return enabledObserver;
 	}
 
+	@NotNull
 	public ArmaControl getMyControl() {
 		return myControl;
 	}
 
+	@NotNull
 	public ValueObserver<AColor> getBackgroundColorObserver() {
 		return globalBackgroundColorObserver;
 	}

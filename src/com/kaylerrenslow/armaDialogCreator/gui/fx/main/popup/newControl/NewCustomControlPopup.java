@@ -92,9 +92,9 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem toSelect = null;
 		for (int i = 0; i < controlTypeControlClasses.length; i++) {
 			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
-			ControlClass controlClass = new ControlClass(lookup.controlType.displayName, lookup.specProvider, ApplicationDataManager.getInstance().getCurrentProject());
-			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.typeId);
-			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.icon));
+			ControlClass controlClass = new ControlClass(lookup.controlType.getDisplayName(), lookup.specProvider, ApplicationDataManager.getInstance().getCurrentProject());
+			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.getTypeId());
+			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.getIcon()));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
 			if (lookup.controlType == ControlType.STATIC) {
 				toSelect = controlTypeControlClasses[i];

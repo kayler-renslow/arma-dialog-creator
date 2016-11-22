@@ -13,95 +13,81 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVIntegerUnmodifiable;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.image.Image;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 05/20/2016.
  */
 public enum ControlType {
 	//@formatter:off
-	STATIC(0, getString("ControlType.static"), TypeGroup.TEXT, "control_static.png"),
-	HTML(9, getString("ControlType.html"), TypeGroup.TEXT, "control_html.png"),
-	EDIT(2, getString("ControlType.edit"), TypeGroup.TEXT, "control_edit.png"),
-	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), TypeGroup.TEXT, "control_structuredtext.png"),
-	ACTIVETEXT(11, getString("ControlType.activetext"), TypeGroup.TEXT, "control_activetext.png"),
+	STATIC(0, getString("ControlType.static"), ControlTypeGroup.TEXT, "control_static.png"),
+	HTML(9, getString("ControlType.html"), ControlTypeGroup.TEXT, "control_html.png"),
+	EDIT(2, getString("ControlType.edit"), ControlTypeGroup.TEXT, "control_edit.png"),
+	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), ControlTypeGroup.TEXT, "control_structuredtext.png"),
+	ACTIVETEXT(11, getString("ControlType.activetext"), ControlTypeGroup.TEXT, "control_activetext.png"),
 	
-	BUTTON(1, getString("ControlType.button"), TypeGroup.BUTTON, "control_button.png"),
-	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), TypeGroup.BUTTON, "control_shortcutbutton.png"),
-	XBUTTON(41, getString("ControlType.xbutton"), TypeGroup.BUTTON),
+	BUTTON(1, getString("ControlType.button"), ControlTypeGroup.BUTTON, "control_button.png"),
+	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), ControlTypeGroup.BUTTON, "control_shortcutbutton.png"),
+	XBUTTON(41, getString("ControlType.xbutton"), ControlTypeGroup.BUTTON),
 	
-	PROGRESS(8, getString("ControlType.progress"), TypeGroup.MISC, "control_progress.png"),
-	STATIC_SKEW(10, getString("ControlType.static_skew"), TypeGroup.MISC),
-	LINEBREAK(98, getString("ControlType.linebreak"), TypeGroup.MISC),
-	TREE(12, getString("ControlType.tree"), TypeGroup.MISC, "control_tree.png"),
-	CONTROLS_GROUP(15, getString("ControlType.controls_group"), TypeGroup.MISC, "control_group.png"),
-	XKEYDESC(40, getString("ControlType.xkeydesc"), TypeGroup.MISC),
-	ANIMATED_TEXTURE(45, getString("ControlType.animated_texture"), TypeGroup.MISC),
-	ANIMATED_USER(99, getString("ControlType.animated_user"), TypeGroup.MISC),
-	ITEMSLOT(103, getString("ControlType.itemslot"), TypeGroup.MISC),
+	PROGRESS(8, getString("ControlType.progress"), ControlTypeGroup.MISC, "control_progress.png"),
+	STATIC_SKEW(10, getString("ControlType.static_skew"), ControlTypeGroup.MISC),
+	LINEBREAK(98, getString("ControlType.linebreak"), ControlTypeGroup.MISC),
+	TREE(12, getString("ControlType.tree"), ControlTypeGroup.MISC, "control_tree.png"),
+	CONTROLS_GROUP(15, getString("ControlType.controls_group"), ControlTypeGroup.MISC, "control_group.png"),
+	XKEYDESC(40, getString("ControlType.xkeydesc"), ControlTypeGroup.MISC),
+	ANIMATED_TEXTURE(45, getString("ControlType.animated_texture"), ControlTypeGroup.MISC),
+	ANIMATED_USER(99, getString("ControlType.animated_user"), ControlTypeGroup.MISC),
+	ITEMSLOT(103, getString("ControlType.itemslot"), ControlTypeGroup.MISC),
 	
-	SLIDER(3, getString("ControlType.slider"), TypeGroup.SLIDER, "control_slider.png", true),
-	XSLIDER(43, getString("ControlType.xslider"), TypeGroup.SLIDER),
+	SLIDER(3, getString("ControlType.slider"), ControlTypeGroup.SLIDER, "control_slider.png", true),
+	XSLIDER(43, getString("ControlType.xslider"), ControlTypeGroup.SLIDER),
 	
-	COMBO(4, getString("ControlType.combo"), TypeGroup.COMBO, "control_combobox.png"),
-	XCOMBO(44, getString("ControlType.xcombo"), TypeGroup.COMBO),
+	COMBO(4, getString("ControlType.combo"), ControlTypeGroup.COMBO, "control_combobox.png"),
+	XCOMBO(44, getString("ControlType.xcombo"), ControlTypeGroup.COMBO),
 	
-	LISTBOX(5, getString("ControlType.listbox"), TypeGroup.LIST_BOX, "control_listbox.png"),
-	XLISTBOX(42, getString("ControlType.xlistbox"), TypeGroup.LIST_BOX, "control_xlistbox.png"),
-	LISTNBOX(102, getString("ControlType.listnbox"), TypeGroup.LIST_BOX, "control_nlistbox.png"),
+	LISTBOX(5, getString("ControlType.listbox"), ControlTypeGroup.LIST_BOX, "control_listbox.png"),
+	XLISTBOX(42, getString("ControlType.xlistbox"), ControlTypeGroup.LIST_BOX, "control_xlistbox.png"),
+	LISTNBOX(102, getString("ControlType.listnbox"), ControlTypeGroup.LIST_BOX, "control_nlistbox.png"),
 	
-	TOOLBOX(6, getString("ControlType.toolbox"), TypeGroup.CHECK_BOX),
-	CHECKBOXES(7, getString("ControlType.checkboxes"), TypeGroup.CHECK_BOX),
-	CHECKBOX(77, getString("ControlType.checkbox"), TypeGroup.CHECK_BOX),
+	TOOLBOX(6, getString("ControlType.toolbox"), ControlTypeGroup.CHECK_BOX),
+	CHECKBOXES(7, getString("ControlType.checkboxes"), ControlTypeGroup.CHECK_BOX),
+	CHECKBOX(77, getString("ControlType.checkbox"), ControlTypeGroup.CHECK_BOX),
 	
-	CONTEXT_MENU(14, getString("ControlType.context_menu"), TypeGroup.MENU),
-	MENU(46, getString("ControlType.menu"), TypeGroup.MENU),
-	MENU_STRIP(47, getString("ControlType.menu_strip"), TypeGroup.MENU),
+	CONTEXT_MENU(14, getString("ControlType.context_menu"), ControlTypeGroup.MENU),
+	MENU(46, getString("ControlType.menu"), ControlTypeGroup.MENU),
+	MENU_STRIP(47, getString("ControlType.menu_strip"), ControlTypeGroup.MENU),
 	
-	OBJECT(80, getString("ControlType.object"), TypeGroup.OBJECT),
-	OBJECT_ZOOM(81, getString("ControlType.object_zoom"), TypeGroup.OBJECT),
-	OBJECT_CONTAINER(82, getString("ControlType.object_container"), TypeGroup.OBJECT),
-	OBJECT_CONT_ANIM(83, getString("ControlType.object_cont_anim"), TypeGroup.OBJECT),
+	OBJECT(80, getString("ControlType.object"), ControlTypeGroup.OBJECT),
+	OBJECT_ZOOM(81, getString("ControlType.object_zoom"), ControlTypeGroup.OBJECT),
+	OBJECT_CONTAINER(82, getString("ControlType.object_container"), ControlTypeGroup.OBJECT),
+	OBJECT_CONT_ANIM(83, getString("ControlType.object_cont_anim"), ControlTypeGroup.OBJECT),
 	
-	MAP(100, getString("ControlType.map"), TypeGroup.MAP),
-	MAP_MAIN(101, getString("ControlType.map_main"), TypeGroup.MAP);
+	MAP(100, getString("ControlType.map"), ControlTypeGroup.MAP),
+	MAP_MAIN(101, getString("ControlType.map_main"), ControlTypeGroup.MAP);
 	//@formatter:on
 
-	public enum TypeGroup {
-		TEXT(getString("ControlType.TypeGroup.text")), BUTTON(getString("ControlType.TypeGroup.button")), COMBO(getString("ControlType.TypeGroup.combo")), SLIDER(getString("ControlType.TypeGroup.slider")),
-		LIST_BOX(getString("ControlType.TypeGroup.list_box")), CHECK_BOX(getString("ControlType.TypeGroup.check_box")), MENU(getString("ControlType.TypeGroup.menu")), OBJECT(getString("ControlType.TypeGroup.object")),
-		MAP(getString("ControlType.TypeGroup.map")), MISC(getString("ControlType.TypeGroup.misc"));
+	public static final ControlType[] BETA_SUPPORTED = {STATIC, CONTROLS_GROUP, BUTTON};
 
-		public final String displayName;
+	private final int typeId;
+	private final String displayName;
+	private final Image icon;
+	private final Image customIcon;
 
-		TypeGroup(String displayName) {
-			this.displayName = displayName;
-		}
-	}
-
-	public static final ControlType[] BETA_SUPPORTED = {STATIC, CONTROLS_GROUP};
-
-	public final int typeId;
-	public final String displayName;
-	/** Default icon */
-	public final Image icon;
-	/** The icon used to designate that the {@link ControlClass} using this type is from {@link CustomControlClass} */
-	public final Image customIcon;
-
-	/** If true, the type should be avoided. */
-	public final boolean deprecated;
-	public final TypeGroup group;
+	private final boolean deprecated;
+	private final ControlTypeGroup group;
 	private SVIntegerUnmodifiable sv;
 
-	ControlType(int typeId, String displayName, TypeGroup group) {
+	ControlType(int typeId, String displayName, ControlTypeGroup group) {
 		this(typeId, displayName, group, ControlIcons.placeholder, false);
 	}
 
-	ControlType(int typeId, String displayName, TypeGroup group, String iconPath) {
+	ControlType(int typeId, String displayName, ControlTypeGroup group, String iconPath) {
 		this(typeId, displayName, group, iconPath, false);
 	}
 
 	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type STATIC)
-	ControlType(int typeId, String displayName, TypeGroup group, String iconPath, boolean deprecated) {
+	ControlType(int typeId, String displayName, ControlTypeGroup group, String iconPath, boolean deprecated) {
 		this.typeId = typeId;
 		this.displayName = displayName;
 		this.group = group;
@@ -119,7 +105,7 @@ public enum ControlType {
 	/** Returns the {@link #typeId} inside a {@link SVIntegerUnmodifiable} instance. Only one instance is returned */
 	public SVIntegerUnmodifiable toSerializableValue() {
 		if (sv == null) {
-			sv = new SVIntegerUnmodifiable(typeId);
+			sv = new SVIntegerUnmodifiable(getTypeId());
 		}
 		return sv;
 	}
@@ -127,12 +113,12 @@ public enum ControlType {
 
 	/** Return a string formatted as such: 'displayName (typeId)'. {@link #toString()} will return this value */
 	public String fullDisplayText() {
-		return displayName + " (" + typeId + ")";
+		return getDisplayName() + " (" + getTypeId() + ")";
 	}
 
 	/** Return the class name for the root control type */
 	public String getNameAsClassName() {
-		return "ADC_" + displayName.replaceAll("\\s", "_");
+		return "ADC_" + getDisplayName().replaceAll("\\s", "_");
 	}
 
 	/**
@@ -142,7 +128,7 @@ public enum ControlType {
 	 */
 	public static ControlType findById(int typeId) {
 		for (ControlType type : values()) {
-			if (type.typeId == typeId) {
+			if (type.getTypeId() == typeId) {
 				return type;
 			}
 		}
@@ -161,6 +147,38 @@ public enum ControlType {
 			}
 		}
 		return false;
+	}
+
+
+	public int getTypeId() {
+		return typeId;
+	}
+
+	@NotNull
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	/** Default icon */
+	@NotNull
+	public Image getIcon() {
+		return icon;
+	}
+
+	/** The icon used to designate that the {@link ControlClass} using this type is from {@link CustomControlClass} */
+	@NotNull
+	public Image getCustomIcon() {
+		return customIcon;
+	}
+
+	/** If true, the type should be avoided. */
+	public boolean isDeprecated() {
+		return deprecated;
+	}
+
+	@NotNull
+	public ControlTypeGroup getGroup() {
+		return group;
 	}
 
 

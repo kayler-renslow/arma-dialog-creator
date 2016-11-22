@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.ControlTypeGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
@@ -47,18 +48,18 @@ public class ControlCreationContextMenu extends ContextMenu {
 		}
 		Menu groupMenu;
 		MenuItem menuItemType;
-		for (ControlType.TypeGroup group : ControlType.TypeGroup.values()) {
-			groupMenu = new Menu(group.displayName);
+		for (ControlTypeGroup group : ControlTypeGroup.values()) {
+			groupMenu = new Menu(group.getDisplayName());
 			for (ControlTreeItemDataCreatorLookup creator : ControlTreeItemDataCreatorLookup.values()) {
 				ControlType controlType = creator.controlType;
-				if (controlType.group != group) {
+				if (controlType.getGroup() != group) {
 					continue;
 				}
 				if (!controlType.betaSupported()) {
 					continue;
 				}
-				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.icon));
-				if (controlType.deprecated) {
+				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.getIcon()));
+				if (controlType.isDeprecated()) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}
 				if (creator.allowsSubControls) {

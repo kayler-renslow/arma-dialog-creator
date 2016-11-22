@@ -20,39 +20,51 @@ import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Used for a controls with type=0 (Static)
-
  @author Kayler
- @since 05/25/2016. */
-public class StaticControl extends ArmaControl {
-
+ @since 11/21/2016 */
+public class ButtonControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
 
 		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
 				new ControlPropertyLookup[]{
 						ControlPropertyLookup.COLOR_BACKGROUND,
-						ControlPropertyLookup.COLOR_TEXT,
+						ControlPropertyLookup.SOUND_ENTER,
+						ControlPropertyLookup.SOUND_PUSH,
+						ControlPropertyLookup.SOUND_CLICK,
+						ControlPropertyLookup.SOUND_ESCAPE,
 						ControlPropertyLookup.TEXT,
+						ControlPropertyLookup.COLOR_TEXT,
+						ControlPropertyLookup.BTN_COLOR_DISABLED,
 						ControlPropertyLookup.FONT,
-						ControlPropertyLookup.SIZE_EX
+						ControlPropertyLookup.SIZE_EX,
+						ControlPropertyLookup.BTN_COLOR_BACKGROUND_ACTIVE,
+						ControlPropertyLookup.BTN_COLOR_BACKGROUND_DISABLED,
+						ControlPropertyLookup.BTN_COLOR_FOCUSED,
+						ControlPropertyLookup.BTN_OFFSET_X,
+						ControlPropertyLookup.BTN_OFFSET_Y,
+						ControlPropertyLookup.BTN_OFFSET_PRESSED_X,
+						ControlPropertyLookup.BTN_OFFSET_PRESSED_Y,
+						ControlPropertyLookup.BTN_COLOR_SHADOW,
+						ControlPropertyLookup.BTN_COLOR_BORDER,
+						ControlPropertyLookup.BTN_BORDER_SIZE
 				},
 				ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
 
 		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
 				new ControlPropertyLookup[]{
-						ControlPropertyLookup.MOVING,
+						ControlPropertyLookup.BTN_DEFAULT,
+						ControlPropertyLookup.BTN_ACTION,
 						ControlPropertyLookup.SHADOW,
 						ControlPropertyLookup.TOOLTIP,
 						ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-						ControlPropertyLookup.TOOLTIP_COLOR_BOX,
 						ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-						ControlPropertyLookup.STATIC_FIXED_WIDTH,
-						ControlPropertyLookup.STATIC_LINE_SPACING,
+						ControlPropertyLookup.TOOLTIP_COLOR_BOX,
 						ControlPropertyLookup.BLINKING_PERIOD
 				},
 				ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
+
 
 		@NotNull
 		@Override
@@ -69,20 +81,7 @@ public class StaticControl extends ArmaControl {
 		private final ControlStyle[] allowedStyles = {
 				ControlStyle.LEFT,
 				ControlStyle.RIGHT,
-				ControlStyle.CENTER,
-				ControlStyle.MULTI,
-				ControlStyle.TITLE_BAR,
-				ControlStyle.PICTURE,
-				ControlStyle.FRAME,
-				ControlStyle.BACKGROUND,
-				ControlStyle.GROUP_BOX,
-				ControlStyle.GROUP_BOX2,
-				ControlStyle.HUD_BACKGROUND,
-				ControlStyle.WITH_RECT,
-				ControlStyle.LINE,
-				ControlStyle.SHADOW,
-				ControlStyle.NO_RECT,
-				ControlStyle.KEEP_ASPECT_RATIO
+				ControlStyle.CENTER
 		};
 
 		@Override
@@ -91,8 +90,7 @@ public class StaticControl extends ArmaControl {
 		}
 	};
 
-	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.STATIC, name, SPEC_PROVIDER, idc, ControlStyle.CENTER.getStyleGroup(), resolution, RendererLookup.STATIC, env, registry);
+	public ButtonControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(ControlType.BUTTON, name, SPEC_PROVIDER, idc, ControlStyle.CENTER.getStyleGroup(), resolution, RendererLookup.BUTTON, env, registry);
 	}
-
 }

@@ -225,8 +225,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 				return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
 			case FLOAT:
 				return new ControlPropertyInputFieldDouble(controlClass, controlProperty);
-			case EXP:
-				return new ControlPropertyExprInput(controlClass, controlProperty);
 			case CONTROL_STYLE:
 				return new ControlStylePropertyInput(controlClass, controlProperty);
 			case BOOLEAN:
@@ -586,23 +584,21 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	private static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<SVDouble> {
+	private static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<Expression> {
 		ControlPropertyInputFieldDouble(ControlClass control, ControlProperty controlProperty) {
-			super(SVDouble.class, control, controlProperty, new SVDoubleChecker(), Lang.LookupBundle().getString("PropertyType.float"));
-		}
-	}
-
-	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<SVInteger> {
-		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
-			super(SVInteger.class, control, controlProperty, new SVIntegerChecker(), Lang.LookupBundle().getString("PropertyType.int"));
-		}
-	}
-
-	private class ControlPropertyExprInput extends ControlPropertyInputField<Expression> {
-		public ControlPropertyExprInput(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
-					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment()),
-					Lang.LookupBundle().getString("PropertyType.exp"));
+					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_FLOAT),
+					Lang.LookupBundle().getString("PropertyType.float")
+			);
+		}
+	}
+
+	private static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<Expression> {
+		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
+			super(Expression.class, control, controlProperty,
+					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_INT),
+					Lang.LookupBundle().getString("PropertyType.int")
+			);
 		}
 	}
 

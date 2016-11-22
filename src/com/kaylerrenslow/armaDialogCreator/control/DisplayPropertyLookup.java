@@ -82,6 +82,7 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 		return about;
 	}
 
+	@NotNull
 	public DisplayProperty getPropertyWithNoData() {
 		return new DisplayProperty(this);
 	}

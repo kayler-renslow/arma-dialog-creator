@@ -80,8 +80,7 @@ public class Expression extends SerializableValue {
 	public String toString() {
 		return valuesAsArray[0];
 	}
-	
-	
+
 	@Override
 	public boolean equals(Object o){
 		if(o == this){

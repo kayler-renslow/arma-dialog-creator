@@ -24,7 +24,7 @@ public enum ArmaControlLookup {
 	STRUCTURED_TEXT(ControlType.STRUCTURED_TEXT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
 	ACTIVETEXT(ControlType.ACTIVETEXT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
 
-	BUTTON(ControlType.BUTTON, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	BUTTON(ControlType.BUTTON, ButtonControl.SPEC_PROVIDER, RendererLookup.BUTTON),
 	SHORTCUTBUTTON(ControlType.SHORTCUTBUTTON, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
 	XBUTTON(ControlType.XBUTTON, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
 

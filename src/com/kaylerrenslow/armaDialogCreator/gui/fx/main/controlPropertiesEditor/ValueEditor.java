@@ -64,18 +64,16 @@ public interface ValueEditor<V extends SerializableValue> {
 	 Get a new ValueEditor instance associated with the given property type.
 
 	 @param propertyType type of property to get editor for
-	 @param env used only for {@link InputFieldValueEditor.ExpressionEditor}. If propertyType != {@link PropertyType#EXP}, this parameter is ignored.
+	 @param env environment
 	 */
 	static ValueEditor getEditor(PropertyType propertyType, Env env) {
 		switch (propertyType) {
 			case INT:
-				return new InputFieldValueEditor.IntegerEditor();
+				return new InputFieldValueEditor.IntegerEditor(env);
 			case FLOAT:
-				return new InputFieldValueEditor.DoubleEditor();
+				return new InputFieldValueEditor.DoubleEditor(env);
 			case CONTROL_STYLE:
 				return new ControlStyleValueEditor();
-			case EXP:
-				return new InputFieldValueEditor.ExpressionEditor(env);
 			case BOOLEAN:
 				return new BooleanValueEditor();
 			case STRING:

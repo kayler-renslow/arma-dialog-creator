@@ -12,7 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
@@ -41,7 +40,7 @@ public class StaticDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 		}
 
 		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
-		StaticControl control = new StaticControl(dialog.getClassName(), 0, ControlStyle.CENTER.getStyleGroup(), resolution, getEnv(), ApplicationDataManager.getInstance().getCurrentProject());
+		StaticControl control = new StaticControl(dialog.getClassName(), 0, resolution, getEnv(), ApplicationDataManager.getInstance().getCurrentProject());
 		return new ControlTreeItemEntry(control);
 	}
 

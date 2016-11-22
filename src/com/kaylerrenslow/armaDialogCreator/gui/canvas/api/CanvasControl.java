@@ -40,37 +40,27 @@ public interface CanvasControl<C extends CanvasControl> {
 	}
 
 	/** Get the display that the control is associated with */
-	default Display<C> getDisplay() {
+	default CanvasDisplay<C> getDisplay() {
 		return getDisplayObserver().getValue();
 	}
 
 
 	@NotNull
-	ValueObserver<Display<C>> getDisplayObserver();
+	ValueObserver<CanvasDisplay<C>> getDisplayObserver();
 
 	@NotNull
 	ValueObserver<ControlHolder<C>> getHolderObserver();
 
-	/** Sets the holder. Can be fetched with {@link #getHolder()} */
-	default void setHolder(@NotNull ControlHolder<C> holder) {
-		getHolderObserver().updateValue(holder);
-	}
-
-	/** Sets the display. Can be fetched with {@link #getDisplay()} */
-	default void setDisplay(@NotNull Display<C> display) {
-		getDisplayObserver().updateValue(display);
-	}
-
 	/** Get the update group that will update anytime the control needs to be re-rendered */
-	UpdateListenerGroup<Object> getReRenderUpdateGroup();
+	UpdateListenerGroup<Object> getRenderUpdateGroup();
 
 	/**
-	 Return true if the control is a background control (inside {@link Display#getBackgroundControls()}), false otherwise.<br>
+	 Return true if the control is a background control (inside {@link CanvasDisplay#getBackgroundControls()}), false otherwise.<br>
 	 Will return true if the control is within a {@link CanvasControlGroup} which is then inside the background controls.
 	 */
 	default boolean isBackgroundControl() {
-		if (getHolder() instanceof Display) {
-			return ((Display) getHolder()).getBackgroundControls().contains(this);
+		if (getHolder() instanceof CanvasDisplay) {
+			return ((CanvasDisplay) getHolder()).getBackgroundControls().contains(this);
 		}
 		if (getHolder() instanceof CanvasControlGroup) {
 			return ((CanvasControlGroup) getHolder()).isBackgroundControl();

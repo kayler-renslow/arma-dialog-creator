@@ -370,7 +370,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		//property matching and value setting
 		for (ControlPropertySpecification specification : properties) {
-			control.findProperty(specification.getPropertyLookup()).setTo(specification, project);
+			try {
+				control.findProperty(specification.getPropertyLookup()).setTo(specification, project);
+			} catch (IllegalArgumentException ignore) {
+				//if this happens, had an unnecessary property saved to file
+			}
 		}
 
 
@@ -477,13 +481,13 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
 			ArmaDisplay display = project.getEditingDisplay();
 			ArmaControl match = display.findControlByClassName(controlClassName);
-			for (ControlPropertyLookup inheritProperty : inheritProperties) {
-				setMyExtend.inheritProperty(inheritProperty);
-			}
 			if (match != null) {
 				setMyExtend.extendControlClass(match);
 			} else {
 				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
+			}
+			for (ControlPropertyLookup inheritProperty : inheritProperties) {
+				setMyExtend.inheritProperty(inheritProperty);
 			}
 		}
 	}

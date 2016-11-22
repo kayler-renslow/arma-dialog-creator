@@ -22,7 +22,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.DisplayControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -42,7 +42,7 @@ import java.util.List;
 
  @author Kayler
  @since 06/14/2016. */
-public class ArmaDisplay implements Display<ArmaControl> {
+public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 
 	private int idd = -1;
 	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);

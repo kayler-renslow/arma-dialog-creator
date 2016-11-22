@@ -44,7 +44,7 @@ public abstract class UICanvas extends AnchorPane {
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
 
-	protected @NotNull Display<CanvasControl> display;
+	protected @NotNull CanvasDisplay<CanvasControl> display;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -68,18 +68,27 @@ public abstract class UICanvas extends AnchorPane {
 	};
 	private UpdateGroupListener<ControlListChange<CanvasControl>> controlListListener = new UpdateGroupListener<ControlListChange<CanvasControl>>() {
 		@Override
+		@SuppressWarnings("unchecked")
 		public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
 			if (data.wasRemoved()) {
-				data.getRemoved().getControl().getReRenderUpdateGroup().removeListener(controlUpdateListener);
+				data.getRemoved().getControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
 			} else if (data.wasSet()) {
-				data.getSet().getOldControl().getReRenderUpdateGroup().removeListener(controlUpdateListener);
-				data.getSet().getNewControl().getReRenderUpdateGroup().addListener(controlUpdateListener);
+				data.getSet().getOldControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
+				data.getSet().getNewControl().getRenderUpdateGroup().addListener(controlUpdateListener);
+			} else if (data.wasAdded()) {
+				data.getAdded().getControl().getRenderUpdateGroup().addListener(controlUpdateListener);
+			} else if (data.wasMoved()) {
+				if (data.getMoved().isOriginalUpdate()) {
+					data.getMoved().getMovedControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
+				} else {
+					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(controlUpdateListener);
+				}
 			}
 			paint();
 		}
 	};
 
-	public UICanvas(@NotNull Resolution resolution, @NotNull Display<? extends CanvasControl> display) {
+	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
@@ -111,7 +120,7 @@ public abstract class UICanvas extends AnchorPane {
 		});
 
 		//do this last
-		this.display = (Display<CanvasControl>) display;
+		this.display = (CanvasDisplay<CanvasControl>) display;
 		setDisplayListeners();
 
 	}
@@ -125,10 +134,10 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	@SuppressWarnings("unchecked")
-	public void setDisplay(@NotNull Display<? extends CanvasControl> display) {
+	public void setDisplay(@NotNull CanvasDisplay<? extends CanvasControl> display) {
 		this.display.getControls().getUpdateGroup().removeListener(controlListListener);
 		this.display.getBackgroundControls().getUpdateGroup().removeListener(controlListListener);
-		this.display = (Display<CanvasControl>) display;
+		this.display = (CanvasDisplay<CanvasControl>) display;
 		setDisplayListeners();
 		paint();
 	}
@@ -137,7 +146,7 @@ public abstract class UICanvas extends AnchorPane {
 		this.display.getControls().deepIterator().forEach(new Consumer<CanvasControl>() {
 			@Override
 			public void accept(CanvasControl control) {
-				control.getReRenderUpdateGroup().addListener(controlUpdateListener);
+				control.getRenderUpdateGroup().addListener(controlUpdateListener);
 			}
 		});
 		this.display.getControls().getUpdateGroup().addListener(controlListListener);

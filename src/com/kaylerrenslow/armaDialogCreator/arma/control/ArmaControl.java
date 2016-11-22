@@ -18,8 +18,8 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasControl;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -48,8 +48,8 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	private ControlProperty idcProperty, accessProperty;
 	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
-	private ValueObserver<Display<ArmaControl>> displayObserver = new ValueObserver<>(null);
-	private ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
+	private final ValueObserver<CanvasDisplay<ArmaControl>> displayObserver = new ValueObserver<>(null);
+	private final ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
 
 	/**
 	 Create a control where the position is to be determined
@@ -75,7 +75,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		}
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setDefaultValue(true, -1);
-		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
+		defineType(type);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		this.allowedStyles = provider.getAllowedStyles();
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
@@ -94,7 +94,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		this(name, provider, resolution, rendererLookup, env, registry);
 		checkControlType(type);
-		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
+		defineType(type);
 	}
 
 	/**
@@ -114,21 +114,25 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		checkControlType(type);
 		renderer.styleProperty.setDefaultValue(false, style);
 
-		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.typeId);
+		defineType(type);
 		idcProperty.setDefaultValue(false, idc);
 		defineStyle(style);
-	}
-
-	private void checkControlType(@NotNull ControlType type) {
-		if (type == ControlType.CONTROLS_GROUP && !(this instanceof ArmaControlGroup)) {
-			throw new IllegalStateException("Do not use ArmaControl for ControlType.CONTROLS_GROUP");
-		}
 	}
 
 	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
 						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(specification, registry);
 		construct(provider, resolution, rendererLookup, env);
+	}
+
+	private void defineType(@NotNull ControlType type) {
+		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.getTypeId());
+	}
+
+	private void checkControlType(@NotNull ControlType type) {
+		if (type == ControlType.CONTROLS_GROUP && !(this instanceof ArmaControlGroup)) {
+			throw new IllegalStateException("Do not use ArmaControl for ControlType.CONTROLS_GROUP");
+		}
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
@@ -159,7 +163,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	@NotNull
 	@Override
-	public ValueObserver<Display<ArmaControl>> getDisplayObserver() {
+	public ValueObserver<CanvasDisplay<ArmaControl>> getDisplayObserver() {
 		return displayObserver;
 	}
 
@@ -202,7 +206,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	@Override
-	public UpdateListenerGroup<Object> getReRenderUpdateGroup() {
+	public UpdateListenerGroup<Object> getRenderUpdateGroup() {
 		return rerenderUpdateGroup;
 	}
 
@@ -236,5 +240,10 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@NotNull
 	public static ArmaControl createControl(@NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
+	}
+
+	public static ArmaControl createControl(@NotNull ControlType controlType, @NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
+											@NotNull Env env, @NotNull SpecificationRegistry registry) {
+		return createControl(controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
 	}
 }

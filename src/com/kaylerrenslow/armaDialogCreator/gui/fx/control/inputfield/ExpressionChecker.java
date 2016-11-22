@@ -24,10 +24,14 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 07/15/2016. */
 public class ExpressionChecker implements InputFieldDataChecker<Expression> {
+	public static final int TYPE_INT = 0;
+	public static final int TYPE_FLOAT = 1;
 	private final Env env;
+	private final int type;
 
-	public ExpressionChecker(Env env) {
+	public ExpressionChecker(@NotNull Env env, int type) {
 		this.env = env;
+		this.type = type;
 	}
 
 	@Override
@@ -48,7 +52,13 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 
 	@Override
 	public String getTypeName() {
-		return Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.type_name");
+		switch (type) {
+			case TYPE_INT:
+				return Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.Int.type_name");
+			default:
+			case TYPE_FLOAT:
+				return Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.FPN.type_name");
+		}
 	}
 
 	@Override

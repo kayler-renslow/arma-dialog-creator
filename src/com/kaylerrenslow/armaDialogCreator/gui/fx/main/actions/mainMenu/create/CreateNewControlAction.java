@@ -35,8 +35,7 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		ControlType controlType = dialog.getControlType();
 		boolean backgroundControl = dialog.isBackgroundControl();
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
-		ArmaControl control = ArmaControl.createControl(
-				className, lookup, DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()),
+		ArmaControl control = ArmaControl.createControl(controlType, className, lookup, DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()),
 				DataKeys.ENV.get(ArmaDialogCreator.getApplicationData()), ApplicationDataManager.getInstance().getCurrentProject()
 		);
 		if (backgroundControl) {

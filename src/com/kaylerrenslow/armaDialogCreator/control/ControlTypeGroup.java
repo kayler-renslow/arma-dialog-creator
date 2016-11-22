@@ -8,32 +8,32 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
+package com.kaylerrenslow.armaDialogCreator.control;
 
-import java.util.Iterator;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/04/2016.
- */
-public interface Display<C extends CanvasControl> extends ControlHolder<C> {
-	
-	
-	/** Get controls that are rendered first and have no user interaction */
-	DisplayControlList<C> getBackgroundControls();
+ @author Kayler
+ @since 11/21/2016 */
+public enum ControlTypeGroup {
+	TEXT(getString("ControlType.TypeGroup.text")), BUTTON(getString("ControlType.TypeGroup.button")), COMBO(getString("ControlType.TypeGroup.combo")), SLIDER(getString("ControlType.TypeGroup.slider")),
+	LIST_BOX(getString("ControlType.TypeGroup.list_box")), CHECK_BOX(getString("ControlType.TypeGroup.check_box")), MENU(getString("ControlType.TypeGroup.menu")), OBJECT(getString("ControlType.TypeGroup.object")),
+	MAP(getString("ControlType.TypeGroup.map")), MISC(getString("ControlType.TypeGroup.misc"));
 
-	@Override
-	DisplayControlList<C> getControls();
+	private final String displayName;
 
-	/**
-	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()}). This will not iterate through controls
-	 within possible control groups in either controls list or background controls list.
-	 
-	 @param backwards if true, the iterator will iterate through the other controls from size-1 to 0 and then the background controls in reverse (starting from size-1 to 0).<br>
-	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
-	 */
-	Iterator<C> iteratorForAllControls(boolean backwards);
-		
-	void resolutionUpdate(Resolution newResolution);
-	
+	ControlTypeGroup(String displayName) {
+		this.displayName = displayName;
+	}
+
+	@NotNull
+	public String getDisplayName() {
+		return displayName;
+	}
+
+
+	private static String getString(String s) {
+		return Lang.LookupBundle().getString(s);
+	}
 }
-

@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.ControlTypeGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBGroupMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
@@ -49,13 +50,13 @@ public class NewControlDialog extends StageDialog<GridPane> {
 
 		menuButtonControlType = new ComboBoxMenuButton<>(false, "", null);
 
-		for (ControlType.TypeGroup group : ControlType.TypeGroup.values()) {
-			CBMBGroupMenu<ControlType> groupMenu = new CBMBGroupMenu<>(group.displayName);
+		for (ControlTypeGroup group : ControlTypeGroup.values()) {
+			CBMBGroupMenu<ControlType> groupMenu = new CBMBGroupMenu<>(group.getDisplayName());
 			for (ControlType controlType : ControlType.BETA_SUPPORTED) {
-				if (group != controlType.group) {
+				if (group != controlType.getGroup()) {
 					continue;
 				}
-				groupMenu.getCbmbMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.icon)));
+				groupMenu.getCbmbMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.getIcon())));
 			}
 			if (groupMenu.getItems().size() > 0) {
 				menuButtonControlType.addItem(groupMenu);

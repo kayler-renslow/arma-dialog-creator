@@ -17,8 +17,8 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Display;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
@@ -75,7 +75,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setText(newValue);
 		}
 	};
-	private ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
+	private final ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 			if (newValue == null) {
@@ -87,11 +87,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
-	private ValueListener<ControlHolder<ArmaControl>> backgroundControlListener = new ValueListener<ControlHolder<ArmaControl>>() {
+	private final UpdateGroupListener<ControlListChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ControlHolder<ArmaControl>> observer, ControlHolder<ArmaControl> oldValue, ControlHolder<ArmaControl> newValue) {
-			System.out.println("ControlPropertiesConfigPopup.valueUpdated ");
-			cbIsBackgroundControl.setSelected(control.isBackgroundControl());
+		public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, ControlListChange<ArmaControl> data) {
+			if (data.wasMoved()) {
+				if (data.getMoved().getMovedControl() == control) {
+					cbIsBackgroundControl.setSelected(control.isBackgroundControl());
+				}
+			}
 		}
 	};
 
@@ -128,7 +131,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
-				Display<ArmaControl> display = control.getDisplay();
+				CanvasDisplay<ArmaControl> display = control.getDisplay();
 				if (control.getHolder() instanceof ArmaControlGroup) {
 					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(control);
 					popup.show();
@@ -187,7 +190,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			try {
 				ControlProperty type = customControlClass.getControlClass().findProperty(ControlPropertyLookup.TYPE);
 				ControlType controlType = ControlType.findById(type.getIntValue());
-				imageContainer = new BorderedImageView(controlType.customIcon);
+				imageContainer = new BorderedImageView(controlType.getCustomIcon());
 
 			} catch (IllegalArgumentException ignore) {
 
@@ -242,14 +245,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			control.getRenderer().getBackgroundColorObserver().addListener(backgroundColorListener);
 			control.getClassNameObserver().addListener(classNameListener);
 			control.getExtendClassObserver().addListener(controlClassExtendListener);
-			control.getHolderObserver().addListener(backgroundControlListener);
+			control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
 
 			editorPane.relink();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);
 			control.getExtendClassObserver().removeListener(controlClassExtendListener);
-			control.getHolderObserver().removeListener(backgroundControlListener);
+			control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
 
 			editorPane.unlink();
 		}
