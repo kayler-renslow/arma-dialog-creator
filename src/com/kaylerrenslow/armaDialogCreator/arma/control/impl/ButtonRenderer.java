@@ -49,7 +49,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		});
 		shadowProperty = myControl.findProperty(ControlPropertyLookup.BTN_COLOR_SHADOW);
 		shadowProperty.getValueObserver().addListener(renderValueUpdateListener);
-		shadowProperty.setDefaultValue(true, new AColor(0, 0, 0, 1));
+		shadowProperty.setDefaultValue(true, new AColor(0d, 0d, 0d, 1d));
 
 		offsetXProperty = myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X);
 		offsetXProperty.getValueObserver().addListener(renderValueUpdateListener);
@@ -80,10 +80,16 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	}
 
 	private double getOffsetX() {
+		if (offsetXProperty.getValue() == null) {
+			return 0;
+		}
 		return offsetXProperty.getFloatValue();
 	}
 
 	private double getOffsetY() {
+		if (offsetYProperty.getValue() == null) {
+			return 0;
+		}
 		return offsetYProperty.getFloatValue();
 	}
 

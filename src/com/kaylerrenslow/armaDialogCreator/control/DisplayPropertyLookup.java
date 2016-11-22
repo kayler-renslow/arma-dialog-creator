@@ -23,19 +23,19 @@ import java.util.ArrayList;
  Created by Kayler on 09/15/2016.
  */
 public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
-	IDD(0, "idd", PropertyType.INT, new String[]{"The unique id to the display."}),
-	MOVING_ENABLE(1, "movingEnable", PropertyType.BOOLEAN, new String[]{"True if the display can be moved with mouse, false otherwise."}),
-	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.BOOLEAN, new String[]{"True if the display will allow user interaction (e.g. buttons can be pressed), false otherwise."});
+	IDD(0, "idd", PropertyType.INT, "The unique id to the display."),
+	MOVING_ENABLE(1, "movingEnable", PropertyType.BOOLEAN, "True if the display can be moved with mouse, false otherwise."),
+	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.BOOLEAN, "True if the display will allow user interaction (e.g. buttons can be pressed), false otherwise.");
 
 	public static final DisplayPropertyLookup[] EMPTY = new DisplayPropertyLookup[0];
 
 	private final @Nullable ControlPropertyOption[] options;
 	private final String propertyName;
 	private final PropertyType propertyType;
-	private final String[] about;
+	private final String about;
 	private final int propertyId;
 
-	DisplayPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String[] about, @Nullable ControlPropertyOption... options) {
+	DisplayPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String about, @Nullable ControlPropertyOption... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
 			throw new IllegalArgumentException("display propertyId for " + name() + " is not unique");
 		}
@@ -78,7 +78,7 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 	}
 
 	@Override
-	public String[] getAbout() {
+	public String getAbout() {
 		return about;
 	}
 

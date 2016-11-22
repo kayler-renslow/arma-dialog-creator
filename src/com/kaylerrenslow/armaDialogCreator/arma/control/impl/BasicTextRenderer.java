@@ -107,7 +107,7 @@ public class BasicTextRenderer {
 				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.01);
 			}
 			case ALIGN_RIGHT: {
-				return renderer.getRightX() + (int) (renderer.getWidth() * 0.01);
+				return renderer.getRightX() - (int) (renderer.getWidth() * 0.01);
 			}
 			default:
 			case ALIGN_CENTER: {
@@ -122,6 +122,8 @@ public class BasicTextRenderer {
 	}
 
 	public void paint(GraphicsContext gc) {
+		gc.rect(renderer.getLeftX(), renderer.getTopY(), renderer.getWidth(), renderer.getHeight());
+		gc.clip();
 		gc.setFont(getFont());
 		gc.setFill(textColor);
 		gc.fillText(getText(), getTextX(), getTextY());

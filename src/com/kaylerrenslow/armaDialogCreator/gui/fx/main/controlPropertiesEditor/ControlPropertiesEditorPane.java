@@ -254,11 +254,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	static Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
-		String tooltip = "";
-		for (int i = 0; i < lookup.getAbout().length; i++) {
-			tooltip += lookup.getAbout()[i] + "\n";
-		}
-		Tooltip tp = new Tooltip(tooltip);
+		Tooltip tp = new Tooltip(lookup.getAbout());
 		tp.setFont(TOOLTIP_FONT);
 		return tp;
 	}

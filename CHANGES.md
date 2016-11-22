@@ -1,10 +1,8 @@
 **Added:**
-* control property priority
-* basis for button control
+* none
 
 **Changed:**
-* removed property type 'expression'
-* all properties are now sorted in static control and button control
+* moved control property documentation to file
 
 **Fixed:**
-* background control checkbox not updating in control properties config popup
+* none

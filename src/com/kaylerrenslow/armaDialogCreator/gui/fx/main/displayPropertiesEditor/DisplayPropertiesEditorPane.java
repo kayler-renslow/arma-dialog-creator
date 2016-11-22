@@ -185,7 +185,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			});
 			final Label lblPropertyName = new Label(property.getName() + "=");
 			hBox = new HBox(5, btnRemoveProperty, lblPropertyName, editor.getRootNode());
-			lblPropertyName.setTooltip(new Tooltip(property.getPropertyLookup().getAboutText()));
+			lblPropertyName.setTooltip(new Tooltip(property.getPropertyLookup().getAbout()));
 			hBox.setAlignment(Pos.CENTER_LEFT);
 		}
 
