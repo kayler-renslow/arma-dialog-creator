@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import javafx.animation.AnimationTimer;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -43,6 +44,8 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
+	/** The timer that handles repainting */
+	protected final AnimationTimer timer;
 
 	protected @NotNull CanvasDisplay<CanvasControl> display;
 
@@ -63,7 +66,7 @@ public abstract class UICanvas extends AnchorPane {
 	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<Object> group, Object data) {
-			paint();
+			requestPaint();
 		}
 	};
 	private UpdateGroupListener<ControlListChange<CanvasControl>> controlListListener = new UpdateGroupListener<ControlListChange<CanvasControl>>() {
@@ -84,9 +87,10 @@ public abstract class UICanvas extends AnchorPane {
 					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(controlUpdateListener);
 				}
 			}
-			paint();
+			requestPaint();
 		}
 	};
+	private boolean needPaint;
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
@@ -97,7 +101,7 @@ public abstract class UICanvas extends AnchorPane {
 					canvas.setHeight(newResolution.getScreenHeight());
 				}
 				display.resolutionUpdate(newResolution);
-				paint();
+				requestPaint();
 			}
 		});
 
@@ -115,13 +119,24 @@ public abstract class UICanvas extends AnchorPane {
 		components.addListener(new ListChangeListener<CanvasComponent>() {
 			@Override
 			public void onChanged(Change<? extends CanvasComponent> c) {
-				paint();
+				requestPaint();
 			}
 		});
 
 		//do this last
 		this.display = (CanvasDisplay<CanvasControl>) display;
 		setDisplayListeners();
+
+		timer = new AnimationTimer() {
+			@Override
+			public void handle(long now) {
+				if (needPaint) {
+					needPaint = false;
+					paint();
+				}
+			}
+		};
+		timer.start();
 
 	}
 
@@ -139,7 +154,7 @@ public abstract class UICanvas extends AnchorPane {
 		this.display.getBackgroundControls().getUpdateGroup().removeListener(controlListListener);
 		this.display = (CanvasDisplay<CanvasControl>) display;
 		setDisplayListeners();
-		paint();
+		requestPaint();
 	}
 
 	private void setDisplayListeners() {
@@ -182,6 +197,11 @@ public abstract class UICanvas extends AnchorPane {
 		paintControls();
 		paintComponents();
 		gc.restore();
+	}
+
+	/** Request a repaint. The paint operation will be done by {@link #getTimer()} */
+	protected void requestPaint() {
+		needPaint = true;
 	}
 
 	/**
@@ -283,7 +303,7 @@ public abstract class UICanvas extends AnchorPane {
 	 */
 	public void keyEvent(String key, boolean keyIsDown, boolean shiftDown, boolean ctrlDown, boolean altDown) {
 		keys.update(key, keyIsDown, shiftDown, ctrlDown, altDown);
-		paint();
+		requestPaint();
 	}
 
 
@@ -292,6 +312,10 @@ public abstract class UICanvas extends AnchorPane {
 		lastMousePosition.set(mousex, mousey);
 	}
 
+	@NotNull
+	public AnimationTimer getTimer() {
+		return timer;
+	}
 
 	@Override
 	protected double computeMinWidth(double height) {
@@ -359,7 +383,7 @@ public abstract class UICanvas extends AnchorPane {
 					canvas.mouseReleased(mousex, mousey, btn);
 				}
 			}
-			this.canvas.paint();
+			this.canvas.requestPaint();
 		}
 
 	}

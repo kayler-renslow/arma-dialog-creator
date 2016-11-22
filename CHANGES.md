@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* moved control property documentation to file
+* made UICanvas repaint on a timer
 
 **Fixed:**
-* none
+* right aligned text in control positioned wrong

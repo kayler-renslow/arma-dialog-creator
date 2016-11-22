@@ -24,7 +24,13 @@ public class UICanvasPreview extends UICanvas {
 	public UICanvasPreview(Resolution resolution, ArmaDisplay display) {
 		super(resolution, display);
 	}
-	
+
+	@Override
+	protected void paint() {
+		super.paint();
+		requestPaint();
+	}
+
 	@Override
 	protected void mousePressed(int mousex, int mousey, @NotNull MouseButton mb) {
 		

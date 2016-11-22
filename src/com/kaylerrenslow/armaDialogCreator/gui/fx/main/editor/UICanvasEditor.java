@@ -119,7 +119,7 @@ public class UICanvasEditor extends UICanvas {
 		selection.selected.addListener(new ListChangeListener<CanvasControl>() {
 			@Override
 			public void onChanged(Change<? extends CanvasControl> c) {
-				paint();
+				requestPaint();
 			}
 		});
 	}
