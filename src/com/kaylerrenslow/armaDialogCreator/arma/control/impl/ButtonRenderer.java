@@ -12,6 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
@@ -20,6 +22,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -35,7 +38,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	private final ControlProperty shadowProperty;
 	private final ControlProperty offsetXProperty;
 	private final ControlProperty offsetYProperty;
-
+	private final BlinkControlHandler blinkControlHandler;
 
 	public ButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
@@ -56,6 +59,8 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		offsetYProperty = myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_Y);
 		offsetYProperty.getValueObserver().addListener(renderValueUpdateListener);
 
+		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
+
 		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(getBackgroundColor()));
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");
@@ -66,7 +71,10 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	}
 
 	@Override
-	public void paint(GraphicsContext gc) {
+	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+		if (paintPreview(dataContext)) {
+			blinkControlHandler.paint(gc, dataContext);
+		}
 		Paint old = gc.getStroke();
 		gc.setStroke(getShadowColor());
 		double offsetx = getOffsetX();
@@ -75,8 +83,9 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		int h = (int) (getHeight() * offsety);
 		Region.fillRectangle(gc, getLeftX() + w, getTopY() + h, getRightX() + w, getBottomY() + h);
 		gc.setStroke(old);
-		super.paint(gc);
+		super.paint(gc, dataContext);
 		textRenderer.paint(gc);
+
 	}
 
 	private double getOffsetX() {

@@ -1,8 +1,9 @@
 **Added:**
-* none
+* blinking period to button and static
+* control property searching in control properties editor
 
 **Changed:**
-* made UICanvas repaint on a timer
+* none
 
 **Fixed:**
-* right aligned text in control positioned wrong
+* none

@@ -15,7 +15,9 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Renderer for a ControlGroup control. Use for controls whose classes that extends ArmaControlGroup
@@ -28,8 +30,8 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 	}
 	
 	@Override
-	public void paint(GraphicsContext gc) {
-		super.paint(gc);
+	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+		super.paint(gc, dataContext);
 		if (getArea() < 2) {
 			return;
 		}
@@ -47,7 +49,7 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 			if (control.getRenderer().isGhost()) {
 				continue;
 			}
-			control.getRenderer().paint(gc);
+			control.getRenderer().paint(gc, dataContext);
 		}
 		gc.restore();
 	}

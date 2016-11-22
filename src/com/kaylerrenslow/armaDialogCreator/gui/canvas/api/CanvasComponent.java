@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.canvas.api;
 
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -22,8 +23,8 @@ import java.util.Comparator;
  A component that is drawable and interactable in the UICanvas.
  Created on 06/18/2016. */
 public interface CanvasComponent extends Region {
-	
-	void paint(GraphicsContext gc);
+
+	void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext);
 	
 	void setBackgroundColor(@NotNull Color paint);
 	

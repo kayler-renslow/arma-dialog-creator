@@ -16,12 +16,14 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequireme
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlGroupTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
@@ -40,13 +42,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- A project loader for save-verison='1'
+ A project loader for save-version='1'
 
  @author Kayler
  @since 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+	private ArmaResolution resolution;
+	private Env env;
 
 	protected ProjectLoaderVersion1(ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
@@ -63,6 +67,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private void loadProject() throws XmlParseException {
 		try {
+			resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
+			env = DataKeys.ENV.get(dataContext);
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
 			loadMacroRegistry();
@@ -360,12 +366,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		//control construction
 		ArmaControlSpecRequirement specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
-		boolean containsAll = containsAllProperties(controlClassName, specProvider.getRequiredProperties(), properties);
-		if (!containsAll) {
-			return null;
-		}
 
-		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, DataKeys.ARMA_RESOLUTION.get(dataContext), rendererLookup, DataKeys.ENV.get(dataContext), project);
+		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, resolution, rendererLookup, env, project);
 
 
 		//property matching and value setting
@@ -407,22 +409,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return ProjectXmlUtil.getValue(dataContext, propertyType, controlPropertyElement, this.loader);
 	}
 
-	private boolean containsAllProperties(String controlClassName, @NotNull List<ControlPropertyLookupConstant> toMatch, LinkedList<ControlPropertySpecification> master) {
-		for (ControlPropertyLookupConstant toMatchLookup : toMatch) {
-			boolean matched = false;
-			for (ControlPropertySpecification masterLookup : master) {
-				if (masterLookup.getPropertyLookup() == toMatchLookup) {
-					matched = true;
-					break;
-				}
-			}
-			if (!matched) {
-				addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.missing_control_property_f"), toMatchLookup.getPropertyName(), controlClassName)));
-				return false;
-			}
-		}
-		return true;
-	}
 
 
 	private interface AfterLoadJob {

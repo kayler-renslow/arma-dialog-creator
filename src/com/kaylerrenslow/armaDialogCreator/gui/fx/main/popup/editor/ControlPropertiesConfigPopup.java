@@ -39,6 +39,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -209,11 +210,22 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		lblClassName = new Label(control.getClassName());
 		final HBox hboxLeft = new HBox(5, lblClassName, new Label(":"), menuButtonExtendControls);
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
+
+		final TextField tfSearch = new TextField();
+		tfSearch.textProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				newValue = newValue != null ? newValue : "";
+				editorPane.showPropertiesWithNameContaining(newValue);
+			}
+		});
+		final HBox hboxRight = new HBox(10, new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.search")), tfSearch, btnClose);
+		hboxRight.setAlignment(Pos.CENTER_RIGHT);
 		myRootElement.getChildren().add(
 				new BorderPane(
 						null, //center
 						null, //top
-						btnClose, //right
+						hboxRight, //right
 						null, //bottom
 						hboxLeft //left
 				)

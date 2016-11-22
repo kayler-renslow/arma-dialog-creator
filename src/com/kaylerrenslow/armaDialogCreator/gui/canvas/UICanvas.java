@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.canvas;
 
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
@@ -32,7 +33,7 @@ import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.function.Consumer;
 
 /**
@@ -44,6 +45,8 @@ public abstract class UICanvas extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
+	/** {@link DataContext} for the canvas */
+	protected final DataContext dataContext = new DataContext();
 	/** The timer that handles repainting */
 	protected final AnimationTimer timer;
 
@@ -61,7 +64,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected Keys keys = new Keys();
 
 	/** All components added */
-	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
+	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new LinkedList<>());
 
 	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
 		@Override
@@ -249,7 +252,7 @@ public abstract class UICanvas extends AnchorPane {
 			return;
 		}
 		gc.save();
-		component.paint(gc);
+		component.paint(gc, dataContext);
 		gc.restore();
 	}
 
@@ -315,6 +318,11 @@ public abstract class UICanvas extends AnchorPane {
 	@NotNull
 	public AnimationTimer getTimer() {
 		return timer;
+	}
+
+	@NotNull
+	public DataContext getDataContext() {
+		return dataContext;
 	}
 
 	@Override

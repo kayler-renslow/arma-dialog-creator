@@ -23,15 +23,25 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Base class for JavaFX canvas rendering of arma controls
+
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent {
+	/**
+	 Key used for determining if {@link #paint(GraphicsContext, DataContext)} will paint the control for Arma Preview. If key value is true, will paint preview. If key is false, will paint editor
+	 version.
+	 */
+	public static final Key<Boolean> KEY_PAINT_PREVIEW = new Key<>("ArmaControlRenderer.PaintPreview", false);
+
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
@@ -139,6 +149,15 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	 */
 	public final void render() {
 		myControl.getRenderUpdateGroup().update(null);
+	}
+
+	/**
+	 Return true if {@link #paint(GraphicsContext, DataContext)} should paint in preview form, false if should paint in editor form.
+
+	 @param dataContext context from {@link #paint(GraphicsContext, DataContext)}
+	 */
+	protected boolean paintPreview(@NotNull DataContext dataContext) {
+		return KEY_PAINT_PREVIEW.get(dataContext);
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */

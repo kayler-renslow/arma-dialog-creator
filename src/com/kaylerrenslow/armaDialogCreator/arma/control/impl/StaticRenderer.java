@@ -12,12 +12,15 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -29,6 +32,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class StaticRenderer extends ArmaControlRenderer {
 
+	private final BlinkControlHandler blinkControlHandler;
 	private BasicTextRenderer textRenderer;
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
@@ -45,11 +49,16 @@ public class StaticRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");
 		myControl.findProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
+		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 	}
 
 
-	public void paint(GraphicsContext gc) {
-		super.paint(gc);
+	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+		if (paintPreview(dataContext)) {
+			blinkControlHandler.paint(gc, dataContext);
+		}
+
+		super.paint(gc, dataContext);
 		textRenderer.paint(gc);
 	}
 

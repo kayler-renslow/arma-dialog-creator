@@ -127,6 +127,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public void link() {
 			container.link();
 		}
+
+		@NotNull
+		public ControlPropertyEditorContainer getContainer() {
+			return container;
+		}
 	}
 
 
@@ -157,6 +162,18 @@ public class ControlPropertiesEditorPane extends StackPane {
 		throw new IllegalArgumentException("property isn't being edited");
 	}
 
+	/** Show only the editors with property names containing <code>name</code>. If length of <code>name</code>.trim() is 0 (), will show all editors */
+	public void showPropertiesWithNameContaining(@NotNull String name) {
+		name = name.trim().toLowerCase();
+		boolean showAll = name.length() == 0;
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			if (showAll || descriptor.getControlProperty().getName().toLowerCase().contains(name)) {
+				descriptor.getContainer().setVisible(true);
+			} else {
+				descriptor.getContainer().setVisible(false);
+			}
+		}
+	}
 
 	/** Get the {@link ControlClass} being edited */
 	@NotNull

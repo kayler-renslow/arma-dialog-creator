@@ -274,7 +274,7 @@ public class UICanvasEditor extends UICanvas {
 	
 	protected void paintAbsRegionComponent() {
 		if (!absRegionComponent.isGhost() && !isSelectingArea()) {
-			absRegionComponent.paint(gc);
+			absRegionComponent.paint(gc, dataContext);
 		}
 	}
 	

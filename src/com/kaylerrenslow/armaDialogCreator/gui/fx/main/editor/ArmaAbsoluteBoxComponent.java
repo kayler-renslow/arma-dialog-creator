@@ -14,7 +14,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 05/18/2016.
@@ -39,7 +41,7 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	}
 	
 	@Override
-	public void paint(GraphicsContext gc) {
+	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
 		gc.save();
 		gc.setStroke(backgroundColor);
 		Region.drawRectangle(gc, resolution.getViewportX(), resolution.getViewportY(), resolution.getViewportX() + resolution.getViewportWidth(), resolution.getViewportY() + resolution.getViewportHeight());

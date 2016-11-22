@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.preview;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
@@ -23,6 +24,7 @@ public class UICanvasPreview extends UICanvas {
 	
 	public UICanvasPreview(Resolution resolution, ArmaDisplay display) {
 		super(resolution, display);
+		dataContext.put(ArmaControlRenderer.KEY_PAINT_PREVIEW, true);
 	}
 
 	@Override
