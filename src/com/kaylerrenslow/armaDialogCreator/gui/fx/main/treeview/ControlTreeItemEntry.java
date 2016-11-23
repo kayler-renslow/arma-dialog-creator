@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class ControlTreeItemEntry extends TreeItemEntry {
 	private final ArmaControl myArmaControl;
 
-	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, ArmaControl control) {
+	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, @NotNull ArmaControl control) {
 		super(control.getClassName(), cellType, graphic);
 		this.myArmaControl = control;
 		myArmaControl.getRenderer().getEnabledObserver().addListener(new ValueListener<Boolean>() {
@@ -41,7 +41,7 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		}
 	}
 
-	public ControlTreeItemEntry(ArmaControl control) {
+	public ControlTreeItemEntry(@NotNull ArmaControl control) {
 		this(CellType.LEAF, new DefaultControlTreeItemGraphic(), control);
 		setUpdateListener(new TreeNodeUpdateListener() {
 			@Override

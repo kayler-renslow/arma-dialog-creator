@@ -12,8 +12,10 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor} is editing,
@@ -40,6 +43,8 @@ public class Project implements SpecificationRegistry {
 	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
 	private final CustomControlClassRegistry controlRegistry = new CustomControlClassRegistry();
 	private ProjectExportConfiguration exportConfiguration;
+
+	private ProjectDefaultValueProvider defaultValueProvider;
 
 	public Project(@Nullable String projectName, @NotNull File appSaveDirectory) {
 		if (projectName == null || projectName.trim().length() == 0) {
@@ -160,5 +165,17 @@ public class Project implements SpecificationRegistry {
 	@Override
 	public Macro findMacroByKey(@NotNull String macroKey) {
 		return getMacroRegistry().findMacroByKey(macroKey);
+	}
+
+	@Nullable
+	@Override
+	public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
+		return defaultValueProvider.getDefaultValue(lookup);
+	}
+
+	@Override
+	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
+		defaultValueProvider = new ProjectDefaultValueProvider();
+		defaultValueProvider.prefetchValues(tofetch);
 	}
 }

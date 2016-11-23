@@ -27,14 +27,14 @@ public class ASound extends SerializableValue {
 			return new ASound(values);
 		}
 	};
-	
+
 	private String soundName;
 	private double db;
 	private double pitch;
-	
+
 	/**
 	 Create a new sound from String array that is formatted like so: {name, db, pitch}. Name must be String, db must be a double, and pitch must be a double
-	 
+
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 3)
 	 */
@@ -42,10 +42,10 @@ public class ASound extends SerializableValue {
 		super(values);
 		init(values[0], Double.valueOf(values[1]), Double.valueOf(values[2]));
 	}
-	
+
 	/**
 	 Creates a sound
-	 
+
 	 @param soundName sound name
 	 @param db db value
 	 @param pitch pitch (ranged 0.0 - 1.0)
@@ -55,36 +55,36 @@ public class ASound extends SerializableValue {
 		super(new String[]{soundName, db + "", pitch + ""});
 		init(soundName, db, pitch);
 	}
-	
+
 	private void init(String soundName, double db, double pitch) {
 		this.soundName = soundName;
 		this.db = db;
 		setPitch(pitch);
 	}
-	
+
 	public String getSoundName() {
 		return soundName;
 	}
-	
+
 	public void setSoundName(String soundName) {
 		this.soundName = soundName;
 	}
-	
+
 	public double getDb() {
 		return db;
 	}
-	
+
 	public void setDb(double db) {
 		this.db = db;
 	}
-	
+
 	public double getPitch() {
 		return pitch;
 	}
-	
+
 	/**
 	 Set the pitch
-	 
+
 	 @throws IllegalArgumentException when pitch is less than 0 or greater than 1
 	 */
 	public void setPitch(double pitch) {
@@ -93,7 +93,7 @@ public class ASound extends SerializableValue {
 		}
 		this.pitch = pitch;
 	}
-	
+
 	/** Serializes the sound array into a String. Example: "hello.ogg", 0 db, and 1 pitch alpha becomes "{"hello",db-0,1}" */
 	public String toArrayString() {
 		String str = "{\"" + soundName + "\"";
@@ -101,7 +101,7 @@ public class ASound extends SerializableValue {
 		str += pitch;
 		return str + "}";
 	}
-	
+
 	/** Get the colors as a string array formatted like so: {soundName, db, pitch} */
 	public String[] getAsStringArray() {
 		valuesAsArray[0] = soundName;
@@ -109,17 +109,17 @@ public class ASound extends SerializableValue {
 		valuesAsArray[2] = pitch + "";
 		return valuesAsArray;
 	}
-	
+
 	@Override
 	public SerializableValue deepCopy() {
 		return new ASound(soundName, db, pitch);
 	}
-	
+
 	@Override
 	public String toString() {
 		return toArrayString();
 	}
-		
+
 	@Override
 	public boolean equals(Object o){
 		if(o == this){

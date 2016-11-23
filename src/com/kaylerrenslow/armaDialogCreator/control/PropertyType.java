@@ -13,6 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 
@@ -33,11 +34,11 @@ public enum PropertyType {
 	/** Is a String */
 	STRING(5, SVString.CONVERTER, getString("PropertyType.string"), true),
 	/** Generic array property type */
-	ARRAY(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2),
+	ARRAY(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2, PropertyTypeHelper.EMPTY),
 	/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
-	COLOR(7, AColor.CONVERTER, getString("PropertyType.color"), 4),
+	COLOR(7, AColor.CONVERTER, getString("PropertyType.color"), 4, PropertyTypeHelper.EMPTY),
 	/** Is an array that is formatted to fit a sound and its params */
-	SOUND(8, ASound.CONVERTER, getString("PropertyType.sound"), 3),
+	SOUND(8, ASound.CONVERTER, getString("PropertyType.sound"), 3, 0),
 	/** Is font name */
 	FONT(9, AFont.CONVERTER, getString("PropertyType.font"), true),
 	/** Denotes a file name inside a String */
@@ -48,37 +49,38 @@ public enum PropertyType {
 	TEXTURE(12, SVString.CONVERTER, getString("PropertyType.texture"), true),
 	/** SQF code String */
 	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true);
-	
-	/** Number of values used to represent the data */
-	public final int propertyValuesSize;
-	/** If true, when this control property is exported, the value should have quotes around it */
-	public final boolean exportHasQuotes;
-	public final String displayName;
-	public final ValueConverter<? extends SerializableValue> converter;
-	/** Unique id. Used when saving for file. Do not change when assigned. */
-	public final int id;
-	
+
+	private final int propertyValuesSize;
+	private final String displayName;
+	private final ValueConverter<? extends SerializableValue> converter;
+	private final int id;
+	private int[] quoteIndexes;
+
 	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName) {
 		this(id, converter, displayName, 1);
 	}
-	
+
 	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName, boolean exportHasQuotes) {
-		if (IdChecker.usedIds.contains(id)) {
+		if (PropertyTypeHelper.usedIds.contains(id)) {
 			throw new IllegalStateException("used id:" + id);
 		}
-		IdChecker.usedIds.add(id);
+		PropertyTypeHelper.usedIds.add(id);
 		this.id = id;
 		this.converter = converter;
 		this.propertyValuesSize = 1;
 		this.displayName = displayName;
-		this.exportHasQuotes = exportHasQuotes;
+		if (exportHasQuotes) {
+			this.quoteIndexes = new int[]{0};
+		} else {
+			this.quoteIndexes = PropertyTypeHelper.EMPTY;
+		}
 	}
-	
-	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName, int propertyValueSize) {
-		if (IdChecker.usedIds.contains(id)) {
+
+	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName, int propertyValueSize, int... quoteIndexes) {
+		if (PropertyTypeHelper.usedIds.contains(id)) {
 			throw new IllegalStateException("used id:" + id);
 		}
-		IdChecker.usedIds.add(id);
+		PropertyTypeHelper.usedIds.add(id);
 		this.id = id;
 		if (propertyValueSize <= 0) {
 			throw new IllegalArgumentException("Number of values must be >= 1");
@@ -86,18 +88,18 @@ public enum PropertyType {
 		this.converter = converter;
 		this.displayName = displayName;
 		propertyValuesSize = propertyValueSize;
-		exportHasQuotes = false;
+		this.quoteIndexes = quoteIndexes;
 	}
-	
+
 	@Override
 	public String toString() {
-		return displayName;
+		return getDisplayName();
 	}
-	
+
 	/** @throws IllegalArgumentException when id couldn't be matched */
 	public static PropertyType findById(int id) {
 		for (PropertyType propertyType : values()) {
-			if (propertyType.id == id) {
+			if (propertyType.getId() == id) {
 				return propertyType;
 			}
 		}
@@ -108,7 +110,42 @@ public enum PropertyType {
 		return Lang.LookupBundle().getString(s);
 	}
 
-	private static class IdChecker {
+	/** Number of values used to represent the data */
+	public int getPropertyValuesSize() {
+		return propertyValuesSize;
+	}
+
+	/**
+	 Get an array of indexes describing which value in {@link #getPropertyValuesSize()} should be exported with quotes.
+	 Examples:
+	 <ul>
+	 <li>{@link #getPropertyValuesSize()} == 2, this method returns {1}, so export should be {value, "value"}</li>
+	 <li>{@link #getPropertyValuesSize()} == 1, this method returns {}, so export should be {value}</li>
+	 <li>{@link #getPropertyValuesSize()} == 3, this method returns {0,2}, so export should be {"value", value, "value"}</li>
+	 </ul>
+	 */
+	@NotNull
+	public int[] getIndexesWithQuotes() {
+		return quoteIndexes;
+	}
+
+	@NotNull
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	@NotNull
+	public ValueConverter<? extends SerializableValue> getConverter() {
+		return converter;
+	}
+
+	/** Unique id. Used when saving for file. Do not change when assigned. */
+	public int getId() {
+		return id;
+	}
+
+	private static class PropertyTypeHelper {
 		static final LinkedList<Integer> usedIds = new LinkedList<>();
+		static final int[] EMPTY = {};
 	}
 }

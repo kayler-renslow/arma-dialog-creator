@@ -1,9 +1,9 @@
 **Added:**
-* blinking period to button and static
-* control property searching in control properties editor
+* min/max to expression evaluator
+* default value fetcher
 
 **Changed:**
-* none
+* made sound value editor not so ugly
 
 **Fixed:**
-* none
+* exporting sound wasn't quoting sound name

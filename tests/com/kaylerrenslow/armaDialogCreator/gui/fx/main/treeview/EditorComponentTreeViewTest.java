@@ -17,10 +17,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
@@ -32,6 +30,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -58,6 +58,17 @@ public class EditorComponentTreeViewTest extends Application {
 		@Override
 		public ControlClass findControlClassByName(@NotNull String className) {
 			return null;
+		}
+
+		@Nullable
+		@Override
+		public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
+			return null;
+		}
+
+		@Override
+		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
+
 		}
 	}
 

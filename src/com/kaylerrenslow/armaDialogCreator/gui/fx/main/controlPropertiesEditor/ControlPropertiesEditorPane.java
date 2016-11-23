@@ -39,6 +39,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
@@ -67,10 +68,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private LinkedList<ControlPropertyInputDescriptor> propertyDescriptors = new LinkedList<>();
 
 	private ControlPropertiesEditorPane() {
-		ScrollPane scrollPane = new ScrollPane(accordion);
-		scrollPane.setFitToHeight(true);
-		scrollPane.setFitToWidth(true);
-		getChildren().add(scrollPane);
+		getChildren().add(accordion);
 	}
 
 	/** Tell all editors to stop listening to the {@link ControlProperty} values again. Invoking is ideal when the pane is no longer needed. */
@@ -172,6 +170,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			} else {
 				descriptor.getContainer().setVisible(false);
 			}
+			descriptor.getContainer().setManaged(descriptor.getContainer().isVisible());
 		}
 	}
 
@@ -204,16 +203,20 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** Get a titled pane for the accordion that holds all control properties */
 	private TitledPane getTitledPane(String title, Iterable<ControlProperty> properties, boolean optional) {
-		VBox vb = new VBox(10);
-		TitledPane tp = new TitledPane(title, vb);
+		final VBox vb = new VBox(10);
+		vb.setPadding(new Insets(5));
+		final ScrollPane scrollPane = new ScrollPane(vb);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setStyle("-fx-background-color:transparent");
+		final TitledPane tp = new TitledPane(title, scrollPane);
 		tp.setAnimated(false);
 		Iterator<ControlProperty> iterator = properties.iterator();
 
 		if (!iterator.hasNext()) {
 			vb.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_properties_available")));
 		} else {
-			for (ControlProperty controlProperty : properties) {
-				vb.getChildren().add(getControlPropertyEntry(controlProperty, optional));
+			while (iterator.hasNext()) {
+				vb.getChildren().add(getControlPropertyEntry(iterator.next(), optional));
 			}
 		}
 		return tp;

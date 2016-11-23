@@ -332,7 +332,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		//control type
 		ControlType controlType;
-		String controlTypeStr = controlElement.getAttribute("control-type-id");
+		String controlTypeStr = controlElement.getAttribute("control-id");
 		try {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.findById(controlTypeId);
@@ -354,7 +354,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 
 		//control properties
-		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "control-property");
+		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "property");
 		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
 			ControlPropertySpecification property = ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader);
@@ -406,7 +406,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private SerializableValue getValue(@NotNull PropertyType propertyType, @NotNull Element controlPropertyElement) {
-		return ProjectXmlUtil.getValue(dataContext, propertyType, controlPropertyElement, this.loader);
+		return ProjectXmlUtil.loadValue(controlPropertyElement, propertyType, dataContext, this.loader);
 	}
 
 

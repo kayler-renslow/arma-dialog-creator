@@ -10,6 +10,8 @@ expression returns [AST.Expr ast]:
     | la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
     | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
     | ll=literal_expression {$ast = $ll.ast;}
+    | lmax=expression Max rmax=expression {$ast = new AST.MaxExpr($lmax.ast, $rmax.ast);}
+    | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
     ;
 
 unary_expression returns [AST.UnaryExpr ast]:
@@ -44,6 +46,9 @@ FSlash : '/';
 Star : '*';
 LParen : '(';
 RParen : ')';
+Min : 'min';
+Max : 'max';
+
 
 Identifier :  Letter LetterOrDigit*;
 IntegerLiteral : Digits;

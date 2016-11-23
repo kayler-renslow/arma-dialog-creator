@@ -243,5 +243,36 @@ public class ExpressionInterpreterTest {
 		}
 	}
 
+	@Test
+	public void min1() throws Exception {
+		double v = 1 + 2 * 0 + Math.min(5, 1 + 8 * 8) * 5;
+		String exp = "1 + 2 * 0 + (5 min (1 + 8 * 8)) * 5";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		assertEquals("", v, ret.v(), 0);
+	}
+
+	@Test
+	public void min2() throws Exception {
+		double v = Math.min(5, 9);
+		String exp = "5 min 9";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		assertEquals("", v, ret.v(), 0);
+	}
+
+	@Test
+	public void max1() throws Exception {
+		double v = 1 + 2 * 0 + Math.max(5, 1 + 8 * 8) * 5;
+		String exp = "1 + 2 * 0 + (5 max (1 + 8 * 8)) * 5";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		assertEquals("", v, ret.v(), 0);
+	}
+
+	@Test
+	public void max2() throws Exception {
+		double v = Math.max(5, 9);
+		String exp = "5 max 9";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		assertEquals("", v, ret.v(), 0);
+	}
 
 }

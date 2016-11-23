@@ -168,7 +168,7 @@ public class ProjectSaveXmlWriter {
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
 
-		stm.write(String.format("<%s renderer-id='%d' control-type-id='%d' class-name='%s'%s>",
+		stm.write(String.format("<%s renderer-id='%d' control-id='%d' class-name='%s'%s>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getRendererLookup().id,
 				control.getControlType().getTypeId(),
@@ -220,7 +220,7 @@ public class ProjectSaveXmlWriter {
 
 		ProjectMacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
-			stm.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().id, esc(macro.getComment())));
+			stm.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().getId(), esc(macro.getComment())));
 			writeValue(stm, macro.getValue());
 			stm.write("</macro>");
 		}
@@ -229,7 +229,7 @@ public class ProjectSaveXmlWriter {
 	}
 
 	private void writeValue(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
-		ProjectXmlUtil.writeValueTags(stm, svalue);
+		ProjectXmlUtil.writeValue(stm, svalue);
 	}
 
 	private static String esc(String value) {

@@ -105,8 +105,13 @@ public class ControlClass {
 		classNameObserver.updateValue(name);
 		this.specProvider = specification;
 
-		addProperties(requiredProperties, specProvider.getRequiredProperties());
-		addProperties(optionalProperties, specProvider.getOptionalProperties());
+		List<ControlPropertyLookupConstant> prefetch = new LinkedList<>();
+		prefetch.addAll(specProvider.getRequiredProperties());
+		prefetch.addAll(specProvider.getOptionalProperties());
+		registry.prefetchValues(prefetch);
+
+		addProperties(requiredProperties, specProvider.getRequiredProperties(), registry, true);
+		addProperties(optionalProperties, specProvider.getOptionalProperties(), registry, false);
 		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses());
 		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses());
 
@@ -160,9 +165,13 @@ public class ControlClass {
 		});
 	}
 
-	private void addProperties(List<ControlProperty> propertiesList, List<ControlPropertyLookupConstant> props) {
+	private void addProperties(List<ControlProperty> propertiesList, List<ControlPropertyLookupConstant> props, @NotNull SpecificationRegistry registry, boolean required) {
 		for (ControlPropertyLookupConstant lookup : props) {
-			propertiesList.add(lookup.getPropertyWithNoData());
+			if (required) {
+				propertiesList.add(lookup.newEmptyProperty(registry));
+			} else {
+				propertiesList.add(lookup.newEmptyProperty(null));
+			}
 		}
 	}
 

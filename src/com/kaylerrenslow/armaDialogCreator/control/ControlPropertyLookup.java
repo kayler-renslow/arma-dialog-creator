@@ -17,7 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
@@ -51,10 +54,6 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	COLOR_HEX(21, "color", PropertyType.HEX_COLOR_STRING),
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HEX_COLOR_STRING), //default shadow color
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.FLOAT),
-	SOUND_CLICK(54, "soundClick", PropertyType.SOUND),
-	SOUND_ENTER(55, "soundEnter", PropertyType.SOUND),
-	SOUND_ESCAPE(56, "soundEscape", PropertyType.SOUND),
-	SOUND_PUSH(57, "soundPush", PropertyType.SOUND),
 
 	/*Static*/
 	STATIC_AUTO_PLAY(24, "autoPlay", PropertyType.BOOLEAN),
@@ -93,7 +92,11 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	BTN_OFFSET_PRESSED_Y(51, "offsetPressedY", PropertyType.FLOAT),
 	BTN_OFFSET_X(52, "offsetX", PropertyType.FLOAT),
 	BTN_OFFSET_Y(53, "offsetY", PropertyType.FLOAT),
-	// a note on toolTip: can be tooltip
+	SOUND_CLICK(54, "soundClick", PropertyType.SOUND),
+	SOUND_ENTER(55, "soundEnter", PropertyType.SOUND),
+	SOUND_ESCAPE(56, "soundEscape", PropertyType.SOUND),
+	SOUND_PUSH(57, "soundPush", PropertyType.SOUND),
+
 	/* ..Shortcut Button */
 	BTN_ANIM_TEXTURE_NORMAL(58, "animTextureNormal", PropertyType.TEXTURE),
 	BTN_ANIM_TEXTURE_DISABLED(59, "animTextureDisabled", PropertyType.TEXTURE),
@@ -261,7 +264,6 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	private final PropertyType propertyType;
 	private final int propertyId;
 	private final int priority;
-	private List<String> aboutCache;
 
 	ControlPropertyLookup(int propertyId, int priority, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable ControlPropertyOption... options) {
 		if (PropertiesLookupData.usedIds.contains(propertyId)) {

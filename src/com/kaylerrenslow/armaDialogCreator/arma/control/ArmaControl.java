@@ -127,6 +127,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	private void defineType(@NotNull ControlType type) {
 		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.getTypeId());
+		this.type = type;
 	}
 
 	private void checkControlType(@NotNull ControlType type) {
@@ -189,6 +190,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		this.accessProperty.setValue(access);
 	}
 
+	@NotNull
 	public final ControlType getControlType() {
 		return type;
 	}

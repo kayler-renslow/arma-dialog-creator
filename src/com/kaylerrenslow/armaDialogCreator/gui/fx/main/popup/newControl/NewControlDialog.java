@@ -83,6 +83,8 @@ public class NewControlDialog extends StageDialog<GridPane> {
 			checkBoxBackgroundControl.setSelected(fixedIsBackgroundControl);
 			checkBoxBackgroundControl.setDisable(true);
 		}
+
+		inClassName.setToButton(false);
 	}
 
 	@Override

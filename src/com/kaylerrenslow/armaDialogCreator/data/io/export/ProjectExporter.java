@@ -225,22 +225,19 @@ public class ProjectExporter {
 
 	public static String getExportValueString(@NotNull SerializableValue value, @NotNull PropertyType type) {
 		String[] arr = value.getAsStringArray();
-		if (arr.length == 1) {
-			if (type.exportHasQuotes) {
-				return "\"" + arr[0] + "\"";
-			}
-			return arr[0];
-		}
-		String ret = "{";
+		String ret = "";
 		String v;
 		for (int i = 0; i < arr.length; i++) {
 			v = arr[i];
-			if (type.exportHasQuotes) {
-				v = "\"" + v + "\"";
+			for (int quoteIndex : type.getIndexesWithQuotes()) {
+				if (quoteIndex == i) {
+					v = "\"" + v + "\"";
+					break;
+				}
 			}
 			ret += v + (i != arr.length - 1 ? "," : "");
 		}
-		return ret + "}";
+		return arr.length > 1 ? "{" + ret + "}" : ret;
 	}
 
 	private static void writelnComment(OutputStream os, String s) throws IOException {

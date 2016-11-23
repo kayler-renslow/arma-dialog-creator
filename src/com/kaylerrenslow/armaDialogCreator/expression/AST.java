@@ -15,6 +15,10 @@ package com.kaylerrenslow.armaDialogCreator.expression;
  */
 interface AST {
 	interface Visitor<T> {
+		T visit(AST.MaxExpr expr, Env env) throws ExpressionEvaluationException;
+
+		T visit(AST.MinExpr expr, Env env) throws ExpressionEvaluationException;
+
 		T visit(AST.AddExpr expr, Env env) throws ExpressionEvaluationException;
 
 		T visit(AST.SubExpr expr, Env env) throws ExpressionEvaluationException;
@@ -40,6 +44,52 @@ interface AST {
 
 	abstract class Expr extends ASTNode {
 
+	}
+
+	class MaxExpr extends CommandExpr {
+
+		public MaxExpr(Expr left, Expr right) {
+			super(left, right);
+		}
+
+		@Override
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+
+	}
+
+	class MinExpr extends CommandExpr {
+
+		public MinExpr(Expr left, Expr right) {
+			super(left, right);
+		}
+
+		@Override
+		public Object accept(Visitor visitor, Env env) {
+			return visitor.visit(this, env);
+		}
+
+	}
+
+	abstract class CommandExpr extends Expr {
+		private final Expr left;
+		private final Expr right;
+
+		public CommandExpr(Expr left, Expr right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		/** Get left expression (left COMMAND right) */
+		public Expr getLeft() {
+			return left;
+		}
+
+		/** Get right expression (left COMMAND right) */
+		public Expr getRight() {
+			return right;
+		}
 	}
 
 	abstract class ArithExpr extends Expr {

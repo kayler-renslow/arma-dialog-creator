@@ -19,11 +19,11 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.geometry.Pos;
+import javafx.geometry.HPos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
@@ -33,22 +33,23 @@ import org.jetbrains.annotations.Nullable;
  Created by Kayler on 07/13/2016.
  */
 public class SoundValueEditor implements ValueEditor<ASound> {
-	
+
 	protected InputField<ArmaStringChecker, String> inSoundName = new InputField<>(new ArmaStringChecker());
 	protected InputField<DoubleChecker, Double> inDb = new InputField<>(new DoubleChecker());
 	protected InputField<DoubleChecker, Double> inPitch = new InputField<>(new DoubleChecker());
-	private FlowPane flowPane = new FlowPane(10, 10,
-			createHbox("ValueEditors.SoundValueEditor.sound_name", inSoundName),
-			createHbox("ValueEditors.SoundValueEditor.db", inDb),
-			createHbox("ValueEditors.SoundValueEditor.pitch", inPitch)
-	);
-	
+	private final GridPane gridPaneEditors = new GridPane();
+
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
-	private final StackPane masterPane = new StackPane(flowPane);
+	private final StackPane masterPane = new StackPane(gridPaneEditors);
 	private final ValueObserver<ASound> valueObserver = new ValueObserver<>(null);
 
 	public SoundValueEditor() {
-		flowPane.setPrefWrapLength(300d);
+		gridPaneEditors.addRow(0, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.sound_name")), inSoundName);
+		gridPaneEditors.addRow(1, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.db") + " "), inDb);
+		gridPaneEditors.addRow(2, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.pitch")), inPitch);
+		gridPaneEditors.getColumnConstraints().add(new ColumnConstraints(-1, -1, Double.MAX_VALUE, Priority.NEVER, HPos.LEFT, true));
+		gridPaneEditors.getColumnConstraints().add(new ColumnConstraints(-1, -1, Double.MAX_VALUE, Priority.ALWAYS, HPos.LEFT, true));
+
 		inSoundName.getValueObserver().addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
@@ -67,14 +68,6 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 				valueObserver.updateValue(createValue());
 			}
 		});
-	}
-
-	private HBox createHbox(String bundleString, Node node) {
-		Label label = new Label(Lang.ApplicationBundle().getString(bundleString));
-		HBox hBox = new HBox(5, label, node);
-		hBox.setAlignment(Pos.CENTER_LEFT);
-		HBox.setHgrow(node, Priority.ALWAYS);
-		return hBox;
 	}
 
 	@Override
@@ -115,27 +108,27 @@ public class SoundValueEditor implements ValueEditor<ASound> {
 			inPitch.setValue(val.getPitch());
 		}
 	}
-	
+
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
 	}
-	
+
 	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
 			masterPane.getChildren().add(overrideField);
 		} else {
-			masterPane.getChildren().add(flowPane);
+			masterPane.getChildren().add(gridPaneEditors);
 		}
 	}
-	
+
 	@Override
 	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
-	
+
 	@Override
 	public void focusToEditor() {
 		if (inSoundName.getValue() == null) {

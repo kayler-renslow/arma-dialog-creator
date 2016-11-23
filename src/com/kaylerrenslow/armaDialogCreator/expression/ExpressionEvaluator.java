@@ -33,6 +33,20 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
+	public Value visit(AST.MaxExpr expr, Env env) throws ExpressionEvaluationException {
+		Value.NumVal left = (Value.NumVal) expr.getLeft().accept(this, env);
+		Value.NumVal right = (Value.NumVal) expr.getRight().accept(this, env);
+		return new Value.NumVal(Math.max(left.v(), right.v()));
+	}
+
+	@Override
+	public Value visit(AST.MinExpr expr, Env env) throws ExpressionEvaluationException {
+		Value.NumVal left = (Value.NumVal) expr.getLeft().accept(this, env);
+		Value.NumVal right = (Value.NumVal) expr.getRight().accept(this, env);
+		return new Value.NumVal(Math.min(left.v(), right.v()));
+	}
+
+	@Override
 	public Value visit(AST.AddExpr expr, Env env) {
 		Value.NumVal left = (Value.NumVal) expr.getLeft().accept(this, env);
 		Value.NumVal right = (Value.NumVal) expr.getRight().accept(this, env);

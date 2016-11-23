@@ -76,7 +76,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			mi.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					display.getDisplayProperties().add(propertyLookup.getPropertyWithNoData());
+					display.getDisplayProperties().add(propertyLookup.newEmptyProperty());
 				}
 			});
 			menuButtonAddDisplayProperty.getItems().add(mi);

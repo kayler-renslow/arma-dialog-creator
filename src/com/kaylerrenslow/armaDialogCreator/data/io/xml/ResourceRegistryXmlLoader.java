@@ -29,7 +29,7 @@ import java.util.List;
 public class ResourceRegistryXmlLoader extends XmlLoader {
 
 	/**
-	 Construct a loader for an xml file that has the root tag {@link ResourceRegistryXmlWriter#EXTERNAL_RESOURCES_TAG_NAME}.
+	 Construct a loader for an xml file that has the root tag "external-resources".
 	 This constructed loader is used explicitly for {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter}.
 	 <br>
 	 If you wish to load resources into an existing registry, use {@link #loadRegistryFromElement(ResourceRegistry, Element)}
@@ -44,7 +44,7 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 
 	public static void loadRegistryFromElement(@NotNull ResourceRegistry resourceRegistry, @NotNull Element externalResourcesTag) {
 		if (!externalResourcesTag.getTagName().equals("external-resources")) {
-			throw new IllegalArgumentException("externalResourcesTag does not have the tag name '" + "external-resources" + "'");
+			throw new IllegalArgumentException("externalResourcesTag does not have the tag name 'external-resources'");
 		}
 		List<Element> externalResourceList = XmlUtil.getChildElementsWithTagName(externalResourcesTag, "external-resource");
 		for (Element externalResourceElement : externalResourceList) {

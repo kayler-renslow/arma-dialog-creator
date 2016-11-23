@@ -62,7 +62,7 @@ public class ProjectXmlUtil {
 		List<ControlClassSpecification> requiredClasses = ControlClassSpecification.EMPTY;
 		List<ControlClassSpecification> optionalClasses = ControlClassSpecification.EMPTY;
 
-		final String controlProperty = "control-property";
+		final String controlProperty = "property";
 
 		//required control properties
 		List<Element> requiredPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-properties");
@@ -269,20 +269,20 @@ public class ProjectXmlUtil {
 		if (value == null) {
 			return;
 		}
-		stm.writeBeginTag(String.format("control-property lookup-id='%d'%s",
+		stm.writeBeginTag(String.format("property lookup-id='%d'%s",
 				lookup.getPropertyId(),
 				macroKey == null ? "" : String.format(" macro-key='%s'", macroKey)
 				)
 		);
-		writeValueTags(stm, value);
-		stm.writeCloseTag("control-property");
+		writeValue(stm, value);
+		stm.writeCloseTag("property");
 	}
 
 	/**
 	 Loads a {@link ControlPropertySpecification} from the given xml element.
 
-	 @param controlPropertyElement xml element (should be a &lt;control-property&gt; tag)
-	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See {@link #getValue(DataContext, PropertyType, Element, XmlErrorRecorder)}
+	 @param controlPropertyElement xml element (should be a &lt;property&gt; tag)
+	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See {@link #loadValue(Element, PropertyType, DataContext, XmlErrorRecorder)}
 	 @param recorder recorder to use for reporting errors
 	 */
 	public static ControlPropertySpecification loadControlProperty(@NotNull Element controlPropertyElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
@@ -292,7 +292,7 @@ public class ProjectXmlUtil {
 		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
-		SerializableValue value = getValue(context, lookup.getPropertyType(), controlPropertyElement, recorder);
+		SerializableValue value = loadValue(controlPropertyElement, lookup.getPropertyType(), context, recorder);
 		if (value == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
@@ -300,13 +300,13 @@ public class ProjectXmlUtil {
 	}
 
 	/**
-	 Writes the given {@link SerializableValue} as a series of &lt;value&gt; tags. Example:"&lt;value&gt;1&lt;/value&gt;&lt;value&gt;0&lt;/value&gt;"
+	 Writes the given {@link SerializableValue} as a series of &lt;v&gt; tags. Example:"&lt;v&gt;1&lt;/v&gt;&lt;v&gt;0&lt;/v&gt;"
 	 */
-	public static void writeValueTags(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
+	public static void writeValue(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
 		for (String value : svalue.getAsStringArray()) {
-			stm.write("<value>");
+			stm.write("<v>");
 			stm.write(XmlWriterOutputStream.esc(value));
-			stm.write("</value>");
+			stm.write("</v>");
 		}
 	}
 
@@ -315,30 +315,30 @@ public class ProjectXmlUtil {
 	 Sample:<br>
 	 <code>
 	 &lt;parentElement&gt;<br>
-	 &nbsp;&nbsp;&lt;value&gt;value text&lt;/value&gt;<br>
-	 &nbsp;&nbsp;&lt;value&gt;value text&lt;/value&gt;<br>
+	 &nbsp;&nbsp;&lt;v&gt;value text&lt;/v&gt;<br>
+	 &nbsp;&nbsp;&lt;v&gt;value text&lt;/v&gt;<br>
 	 &lt;/parentElement&gt;
 	 </code>
 
-	 @param dataContext context to use for when converting text values to Java objects. See {@link ValueConverter#convert(DataContext, String...)}
-	 @param propertyType type that will be used to determine the type of {@link ValueConverter}
 	 @param parentElement element that is the parent of the value tags
+	 @param propertyType type that will be used to determine the type of {@link ValueConverter}
+	 @param dataContext context to use for when converting text values to Java objects. See {@link ValueConverter#convert(DataContext, String...)}
 	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in errors).
 	 */
-	public static SerializableValue getValue(@Nullable DataContext dataContext, @NotNull PropertyType propertyType, @NotNull Element parentElement, @NotNull XmlErrorRecorder recorder) {
-		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "value");
-		if (valueElements.size() < propertyType.propertyValuesSize) {
+	public static SerializableValue loadValue(@NotNull Element parentElement, @NotNull PropertyType propertyType, @Nullable DataContext dataContext, @NotNull XmlErrorRecorder recorder) {
+		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
+		if (valueElements.size() < propertyType.getPropertyValuesSize()) {
 			recorder.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
 			return null;
 		}
-		String[] values = new String[propertyType.propertyValuesSize];
+		String[] values = new String[propertyType.getPropertyValuesSize()];
 		int valueInd = 0;
 		for (Element valueElement : valueElements) {
 			values[valueInd++] = XmlUtil.getImmediateTextContent(valueElement);
 		}
 		SerializableValue value;
 		try {
-			value = propertyType.converter.convert(dataContext, values);
+			value = propertyType.getConverter().convert(dataContext, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			recorder.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_values_f"), Arrays.toString(values))));
@@ -348,7 +348,7 @@ public class ProjectXmlUtil {
 	}
 
 	@Nullable
-	private static ControlPropertyLookup getLookup(@NotNull String lookupIdStr, @NotNull Node parentNode, @NotNull XmlErrorRecorder recorder) {
+	public static ControlPropertyLookup getLookup(@NotNull String lookupIdStr, @NotNull Node parentNode, @NotNull XmlErrorRecorder recorder) {
 		ControlPropertyLookup lookup;
 		try {
 			int id = Integer.parseInt(lookupIdStr);

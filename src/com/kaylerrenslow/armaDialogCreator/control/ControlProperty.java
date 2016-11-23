@@ -64,7 +64,7 @@ public class ControlProperty {
 	};
 
 
-	public ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
+	protected ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
 		this(specification.getPropertyLookup(), specification.getValue());
 		setTo(specification, registry);
 	}
@@ -75,7 +75,7 @@ public class ControlProperty {
 	 @param propertyLookup unique lookup for the property.
 	 @param value current value of the property
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup, @Nullable SerializableValue value) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, @Nullable SerializableValue value) {
 		this.propertyLookup = propertyLookup;
 		valueObserver = new ControlPropertyValueObserver(this, value);
 		defaultValue = null;
@@ -89,7 +89,7 @@ public class ControlProperty {
 
 	 @param propertyLookup propertyLookup
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup) {
 		this(propertyLookup, (SerializableValue) null);
 	}
 
@@ -97,7 +97,7 @@ public class ControlProperty {
 	 Creates a control property of type {@link SVInteger}<br>
 	 See constructor {@link #ControlProperty(ControlPropertyLookupConstant, SerializableValue)}
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup, int value) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, int value) {
 		this(propertyLookup, new SVInteger(value));
 	}
 
@@ -105,7 +105,7 @@ public class ControlProperty {
 	 Creates a control property of type {@link SVDouble}<br>
 	 See constructor {@link #ControlProperty(ControlPropertyLookupConstant, SerializableValue)}
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup, double value) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, double value) {
 		this(propertyLookup, new SVDouble(value));
 	}
 
@@ -113,7 +113,7 @@ public class ControlProperty {
 	 Creates a control property of type {@link SVBoolean}<br>
 	 See constructor {@link #ControlProperty(ControlPropertyLookupConstant, SerializableValue)}
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup, boolean value) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, boolean value) {
 		this(propertyLookup, SVBoolean.get(value));
 	}
 
@@ -121,7 +121,7 @@ public class ControlProperty {
 	 Creates a control property of type {@link SVString}<br>
 	 See constructor {@link #ControlProperty(ControlPropertyLookupConstant, SerializableValue)}
 	 */
-	public ControlProperty(ControlPropertyLookupConstant propertyLookup, String value) {
+	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, String value) {
 		this(propertyLookup, new SVString(value));
 	}
 

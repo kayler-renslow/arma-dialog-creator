@@ -10,6 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -47,8 +48,14 @@ public interface ControlPropertyLookupConstant {
 
 
 	@NotNull
-	default ControlProperty getPropertyWithNoData() {
-		return new ControlProperty(this);
+	default ControlProperty newEmptyProperty(@Nullable DefaultValueProvider provider) {
+		if (provider == null) {
+			return new ControlProperty(this);
+		}
+		SerializableValue value = provider.getDefaultValue(this);
+		ControlProperty property = new ControlProperty(this, value);
+		property.setDefaultValue(false, value);
+		return property;
 	}
 
 	/** Return the sort priority for {@link #PRIORITY_SORT}. By default, returns {@link Integer#MAX_VALUE} */

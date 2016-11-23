@@ -41,6 +41,7 @@ public class ButtonDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 
 		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
 		ButtonControl control = new ButtonControl(dialog.getClassName(), 0, resolution, getEnv(), ApplicationDataManager.getInstance().getCurrentProject());
+		System.out.println(control.getControlType());
 		return new ControlTreeItemEntry(control);
 	}
 
