@@ -61,7 +61,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ControlPropertiesEditorPane editorPane;
 	private Label lblClassName;
 	private ComboBoxMenuButton<CustomControlClass> menuButtonExtendControls;
-	private CheckBox cbIsBackgroundControl;
+	private CheckBox checkBoxIsBackgroundControl;
 	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
@@ -93,7 +93,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, ControlListChange<ArmaControl> data) {
 			if (data.wasMoved()) {
 				if (data.getMoved().getMovedControl() == control) {
-					cbIsBackgroundControl.setSelected(control.isBackgroundControl());
+					checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
 				}
 			}
 		}
@@ -127,9 +127,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.getChildren().add(editorPane);
 		VBox.setVgrow(editorPane, Priority.ALWAYS);
 
-		cbIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
-		cbIsBackgroundControl.setSelected(control.isBackgroundControl());
-		cbIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		addFooter(control);
+
+	}
+
+	private void addFooter(ArmaControl control) {
+		checkBoxIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
+		checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
+		checkBoxIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
 				CanvasDisplay<ArmaControl> display = control.getDisplay();
@@ -156,10 +161,26 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		});
 
-		myRootElement.getChildren().add(cbIsBackgroundControl);
+		final CheckBox checkBoxHideInherited = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.hide_inherited"));
+		checkBoxHideInherited.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				editorPane.hideInheritedProperties(newValue);
+			}
+		});
 
+		final HBox hboxLeft = new HBox(15, checkBoxIsBackgroundControl, checkBoxHideInherited);
+
+		myRootElement.getChildren().add(
+				new BorderPane(
+						null, //center
+						null, //top
+						null, //right
+						null, //bottom
+						hboxLeft //left
+				)
+		);
 	}
-
 
 	private void addHeader(ArmaControl control) {
 		Button btnClose = new Button("x");

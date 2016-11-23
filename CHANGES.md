@@ -1,9 +1,8 @@
 **Added:**
-* min/max to expression evaluator
-* default value fetcher
+* hide inherited properties in editor pane
 
 **Changed:**
-* made sound value editor not so ugly
+* none
 
 **Fixed:**
-* exporting sound wasn't quoting sound name
+* none

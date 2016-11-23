@@ -40,6 +40,7 @@ class ControlPropertyEditorContainer extends HBox {
 	private ControlClassUpdateListener controlClassUpdateListener;
 	private StackPane stackPanePropertyInput;
 	private MenuItem miInheritanceButton;
+	private boolean hideIfInherited;
 
 	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlPropertyValueEditor input) {
 		super(5);
@@ -121,6 +122,7 @@ class ControlPropertyEditorContainer extends HBox {
 					} else {
 						miInheritanceButton.setText(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.inherit"));
 					}
+					hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
 					ControlPropertyMacroUpdate macroUpdate = (ControlPropertyMacroUpdate) data;
 					updatePropertyInputMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
@@ -274,5 +276,12 @@ class ControlPropertyEditorContainer extends HBox {
 	@NotNull
 	public ControlProperty getControlProperty() {
 		return getPropertyInput().getControlProperty();
+	}
+
+	public void hideIfInherited(boolean hide) {
+		this.hideIfInherited = hide;
+		boolean visible = !(hide && getControlProperty().isInherited());
+		setVisible(visible);
+		setManaged(visible);
 	}
 }

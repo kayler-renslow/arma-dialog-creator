@@ -88,6 +88,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyInputDescriptor {
 		private final ControlPropertyEditorContainer container;
 		private boolean optional;
+		private boolean nameFound;
+		private boolean hideIfInherited;
 
 
 		public ControlPropertyInputDescriptor(@NotNull ControlPropertyEditorContainer container) {
@@ -130,6 +132,28 @@ public class ControlPropertiesEditorPane extends StackPane {
 		public ControlPropertyEditorContainer getContainer() {
 			return container;
 		}
+
+		public void showIfNameContains(@NotNull String name) {
+			this.nameFound = name.length() == 0 || getControlProperty().getName().toLowerCase().contains(name);
+			setVisible();
+		}
+
+		public void hideIfInherited(boolean hide) {
+			hideIfInherited = hide;
+			getContainer().hideIfInherited(hide);
+			setVisible();
+		}
+
+		private void setVisible() {
+			boolean visible;
+			if (getControlProperty().isInherited() && hideIfInherited) {
+				visible = false;
+			} else {
+				visible = nameFound;
+			}
+			getContainer().setVisible(visible);
+			getContainer().setManaged(visible);
+		}
 	}
 
 
@@ -163,14 +187,15 @@ public class ControlPropertiesEditorPane extends StackPane {
 	/** Show only the editors with property names containing <code>name</code>. If length of <code>name</code>.trim() is 0 (), will show all editors */
 	public void showPropertiesWithNameContaining(@NotNull String name) {
 		name = name.trim().toLowerCase();
-		boolean showAll = name.length() == 0;
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			if (showAll || descriptor.getControlProperty().getName().toLowerCase().contains(name)) {
-				descriptor.getContainer().setVisible(true);
-			} else {
-				descriptor.getContainer().setVisible(false);
-			}
-			descriptor.getContainer().setManaged(descriptor.getContainer().isVisible());
+			descriptor.showIfNameContains(name);
+		}
+	}
+
+	/** Show only editors with properties that have no inherited value ({@link ControlProperty#getInherited()} == null) */
+	public void hideInheritedProperties(boolean hide) {
+		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
+			descriptor.hideIfInherited(hide);
 		}
 	}
 

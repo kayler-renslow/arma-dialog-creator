@@ -191,6 +191,9 @@ public class ProjectExporter {
 			if (property.getValue() == null/* && editor.isOptional()*/) { //can allow for partial implementation, so we don't need to check if it is optional
 				continue;
 			}
+			if (property.isInherited()) {
+				continue;
+			}
 			if (property.getMacro() != null) {
 				body += String.format(itemFormatString, property.getName(), property.getMacro().getKey());
 			} else {
