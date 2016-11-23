@@ -23,6 +23,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -35,7 +36,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControlRenderer extends SimpleCanvasComponent {
+public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
 	/**
 	 Key used for determining if {@link #paint(GraphicsContext, DataContext)} will paint the control for Arma Preview. If key value is true, will paint preview. If key is false, will paint editor
 	 version.
@@ -46,11 +47,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
 	private final ValueObserver<AColor> globalBackgroundColorObserver;
-	/** A simple value listener that will only invoke {@link #render()} when update is received */
+	/** A simple value listener that will only invoke {@link #requestRender()} when update is received */
 	protected final ValueListener<SerializableValue> renderValueUpdateListener = new ValueListener<SerializableValue>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-			render();
+			requestRender();
 		}
 	};
 
@@ -58,7 +59,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
 	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private final Env env;
-	private boolean recalcingPosition = false;
+	private boolean disablePositionPropertyListener = false;
+	private boolean disableRecalc = false;
 
 	public ArmaControlRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(0, 0, 0, 0);
@@ -71,7 +73,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
-					render();
+					requestRender();
 				}
 			}
 		});
@@ -85,34 +87,34 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		final ValueListener<SerializableValue> positionValueListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (recalcingPosition) {
-					return;
-				}
-				if (xProperty.getValue() == null) {
-					return;
-				}
-				if (yProperty.getValue() == null) {
-					return;
-				}
-				if (wProperty.getValue() == null) {
-					return;
-				}
-				if (hProperty.getValue() == null) {
+				if (disablePositionPropertyListener) {
 					return;
 				}
 
 				if (xProperty.getValueObserver() == observer) {
+					if (xProperty.getValue() == null) {
+						return;
+					}
 					setXSilent((Expression) xProperty.getValue());
 				} else if (yProperty.getValueObserver() == observer) {
+					if (yProperty.getValue() == null) {
+						return;
+					}
 					setYSilent((Expression) yProperty.getValue());
 				} else if (wProperty.getValueObserver() == observer) {
+					if (wProperty.getValue() == null) {
+						return;
+					}
 					setWSilent((Expression) wProperty.getValue());
 				} else if (hProperty.getValueObserver() == observer) {
+					if (hProperty.getValue() == null) {
+						return;
+					}
 					setHSilent((Expression) hProperty.getValue());
 				} else {
 					throw new IllegalStateException("unmatched observer");
 				}
-				render();
+				requestRender();
 			}
 		};
 		xProperty.getValueObserver().addListener(positionValueListener);
@@ -123,7 +125,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		enabledObserver.addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-				render();
+				requestRender();
 			}
 		});
 
@@ -147,7 +149,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	 Since the control's update group will update before the renderer's control property value listeners get notified, the re-render must occur AFTER the renderer's internal values change. Invoke
 	 this whenever a new render needs to happen.
 	 */
-	public final void render() {
+	public final void requestRender() {
 		myControl.getRenderUpdateGroup().update(null);
 	}
 
@@ -163,25 +165,21 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(Expression x) {
 		xProperty.setValue(x);
-		setXSilent(x);
 	}
 
 	/** Set y and define the y control property. This will also update the renderer's position. */
 	public void defineY(Expression y) {
 		yProperty.setValue(y);
-		setYSilent(y);
 	}
 
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
 	public void defineW(Expression width) {
 		wProperty.setValue(width);
-		setWSilent(width);
 	}
 
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
 	public void defineH(Expression height) {
 		hProperty.setValue(height);
-		setHSilent(height);
 	}
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
@@ -189,7 +187,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		if (x == null) {
 			return;
 		}
-		setX1Silent(calcScreenX(x.getNumVal()));
+		int newX1 = calcScreenX(x.getNumVal());
+		int oldX1 = x1;
+		int dx = newX1 - oldX1;
+		setX1Silent(newX1);
+		setX2Silent(x2 + dx);//keep old width
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
@@ -197,7 +199,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		if (y == null) {
 			return;
 		}
-		setY1Silent(calcScreenY(y.getNumVal()));
+		int newY1 = calcScreenY(y.getNumVal());
+		int oldY1 = y1;
+		int dy = newY1 - oldY1;
+		setY1Silent(newY1);
+		setY2Silent(y2 + dy); //keep old height
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
@@ -218,46 +224,92 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		setY2Silent(getY1() + h);
 	}
 
-	protected final int calcScreenX(double percentX) {
+	@Override
+	public void setPercentX(double percentX) {
+		defineX(new Expression(PositionCalculator.format(percentX), env));
+	}
+
+	@Override
+	public void setPercentY(double percentY) {
+		defineY(new Expression(PositionCalculator.format(percentY), env));
+	}
+
+	@Override
+	public void setPercentW(double percentW) {
+		defineW(new Expression(PositionCalculator.format(percentW), env));
+	}
+
+	@Override
+	public void setPercentH(double percentH) {
+		defineH(new Expression(PositionCalculator.format(percentH), env));
+	}
+
+	@Override
+	public void setPositionPercent(double percentX, double percentY, double percentW, double percentH) {
+		setPercentX(percentX);
+		setPercentY(percentY);
+		setPercentW(percentW);
+		setPercentH(percentH);
+	}
+
+	@Override
+	public double getPercentX() {
+		return xProperty.getFloatValue();
+	}
+
+	@Override
+	public double getPercentY() {
+		return yProperty.getFloatValue();
+	}
+
+	@Override
+	public double getPercentW() {
+		return wProperty.getFloatValue();
+	}
+
+	@Override
+	public double getPercentH() {
+		return hProperty.getFloatValue();
+	}
+
+	@Override
+	public final int calcScreenX(double percentX) {
 		return PositionCalculator.getScreenX(resolution, percentX);
 	}
 
-	protected final int calcScreenY(double percentY) {
+	@Override
+	public final int calcScreenY(double percentY) {
 		return PositionCalculator.getScreenY(resolution, percentY);
 	}
 
-	protected final int calcScreenWidth(double percentWidth) {
+	@Override
+	public final int calcScreenWidth(double percentWidth) {
 		return PositionCalculator.getScreenWidth(resolution, percentWidth);
 	}
 
-	protected final int calcScreenHeight(double percentHeight) {
+	@Override
+	public final int calcScreenHeight(double percentHeight) {
 		return PositionCalculator.getScreenHeight(resolution, percentHeight);
 	}
 
-	/** Set the x,y,w,h properties. This will also update the renderer's position. If x, y, w, or h are null, this method will do nothing. This will not update the value observers. */
-	protected final void setPositionWHSilent(Expression x, Expression y, Expression w, Expression h) {
-		//do not use @NotNull annotations for parameters because this method is called from updateProperties. updateProperties is only invoked when a ControlProperty is edited.
-		//when a ControlProperty is edited, required (like x,y,w,h), and has no input, the user should not be allowed to exit editing until valid input is entered
-		if (x == null || y == null || w == null || h == null) {
-			return;
-		}
-		setPositionWHSilent(calcScreenX(x.getNumVal()), calcScreenY(y.getNumVal()), calcScreenWidth(w.getNumVal()), calcScreenHeight(h.getNumVal()));
-	}
 
 	/** Set the x and y values (and width and height) based upon the renderer's position */
 	protected final void recalcPosition() {
+		if (disableRecalc) {
+			return;
+		}
 		final Expression x = new Expression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
 		final Expression y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
 		final Expression w = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
 		final Expression h = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
-		this.recalcingPosition = true;
+		this.disablePositionPropertyListener = true;
 		xProperty.setValue(x);
 		yProperty.setValue(y);
 
 		wProperty.setValue(w);
 		hProperty.setValue(h);
-		this.recalcingPosition = false;
-		render();
+		this.disablePositionPropertyListener = false;
+		requestRender();
 	}
 
 	@Override
@@ -322,11 +374,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 		recalcPosition();
 	}
 
-	/** Set the position without telling the control */
-	public void setPositionWHSilent(int x1, int y1, int width, int height) {
-		super.setPositionWH(x1, y1, width, height);
-	}
-
 	@Override
 	public void setX1(int x1) {
 		super.setX1(x1);
@@ -353,22 +400,30 @@ public class ArmaControlRenderer extends SimpleCanvasComponent {
 
 	/** Set x1 without recalculating position */
 	public void setX1Silent(int x1) {
-		super.setX1(x1);
+		disableRecalc = true;
+		setX1(x1);
+		disableRecalc = false;
 	}
 
 	/** Set y1 without recalculating position */
 	public void setY1Silent(int y1) {
-		super.setY1(y1);
+		disableRecalc = true;
+		setY1(y1);
+		disableRecalc = false;
 	}
 
 	/** Set x2 without recalculating position */
 	public void setX2Silent(int x2) {
-		super.setX2(x2);
+		disableRecalc = true;
+		setX2(x2);
+		disableRecalc = false;
 	}
 
 	/** Set y2 without recalculating position */
 	public void setY2Silent(int y2) {
-		super.setY2(y2);
+		disableRecalc = true;
+		setY2(y2);
+		disableRecalc = false;
 	}
 
 	@Override

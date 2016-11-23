@@ -50,6 +50,8 @@ public abstract class UICanvas extends AnchorPane {
 	/** The timer that handles repainting */
 	protected final AnimationTimer timer;
 
+	protected final Resolution resolution;
+
 	protected @NotNull CanvasDisplay<CanvasControl> display;
 
 	/** Background image of the canvas */
@@ -96,6 +98,7 @@ public abstract class UICanvas extends AnchorPane {
 	private boolean needPaint;
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
+		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {

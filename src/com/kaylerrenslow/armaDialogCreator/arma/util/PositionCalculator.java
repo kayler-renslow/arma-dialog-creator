@@ -58,10 +58,10 @@ public class PositionCalculator {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.########");
 	
 	static {
-		DECIMAL_FORMAT.setRoundingMode(RoundingMode.CEILING);
+		DECIMAL_FORMAT.setRoundingMode(RoundingMode.DOWN);
 	}
-	
-	private static String format(double d) {
+
+	public static String format(double d) {
 		return DECIMAL_FORMAT.format(d);
 	}
 	

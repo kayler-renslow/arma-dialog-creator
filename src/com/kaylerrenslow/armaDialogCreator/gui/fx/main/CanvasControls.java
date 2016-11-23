@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.SnapConfiguration;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -33,15 +33,17 @@ import javafx.scene.layout.VBox;
 
  @author Kayler
  @since 05/15/2016. */
-class CanvasControls extends VBox implements SnapConfiguration {
+class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	private final ADCCanvasView canvasView;
 	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain;
 	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg;
-	private final ChoiceBox<Percentage> cbAltStep = new ChoiceBox<>();
-	private final ChoiceBox<Percentage> cbStep = new ChoiceBox<>();
+	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
+	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
+	private final CheckBox checkBoxViewportSnapping = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.viewport_snapping"));
 
 	public static final double PREFERRED_WIDTH = 250d;
+	private boolean showGrid = true;
 
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
@@ -54,8 +56,9 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	private void initializeUI() {
 		initializeStepChoiceboxes();
 		FlowPane flowPaneStep = new FlowPane(5, 5,
-				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.step")), cbStep),
-				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.alt_step")), cbAltStep)
+				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.step")), choiceBoxStep),
+				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.alt_step")), choiceBoxAltStep),
+				checkBoxViewportSnapping
 		);
 
 		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.show"));
@@ -100,24 +103,39 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	}
 
 	private void initializeStepChoiceboxes() {
-		cbStep.getItems().addAll(new Percentage(1), new Percentage(2.50), new Percentage(5), new Percentage(10));
-		cbAltStep.getItems().addAll(new Percentage(0.5));
+		choiceBoxStep.getItems().addAll(new Percentage(1), new Percentage(2.50), new Percentage(5), new Percentage(10));
+		choiceBoxAltStep.getItems().addAll(new Percentage(0.5));
 		for (int i = 1; i <= 10; i++) {
-			cbAltStep.getItems().add(new Percentage(i));
+			choiceBoxAltStep.getItems().add(new Percentage(i));
 		}
-		cbStep.getSelectionModel().select(1);
-		cbAltStep.getSelectionModel().selectLast();
+		choiceBoxStep.getSelectionModel().select(1);
+		choiceBoxAltStep.getSelectionModel().selectLast();
 	}
 
 
 	@Override
 	public double alternateSnapPercentage() {
-		return cbAltStep.getSelectionModel().getSelectedItem().percentDecimal;
+		return choiceBoxAltStep.getSelectionModel().getSelectedItem().percentDecimal;
 	}
 
 	@Override
 	public double snapPercentage() {
-		return cbStep.getSelectionModel().getSelectedItem().percentDecimal;
+		return choiceBoxStep.getSelectionModel().getSelectedItem().percentDecimal;
+	}
+
+	@Override
+	public boolean viewportSnapEnabled() {
+		return checkBoxViewportSnapping.isSelected();
+	}
+
+	@Override
+	public boolean isSafeMovement() {
+		return false;
+	}
+
+	@Override
+	public boolean showGrid() {
+		return showGrid;
 	}
 
 	/** Get the tree view used for storing controls that is meant for non-background controls */
@@ -128,6 +146,10 @@ class CanvasControls extends VBox implements SnapConfiguration {
 	/** Get the tree view used for storing controls that is meant <b>for</b> background controls */
 	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewBackground() {
 		return treeViewBg;
+	}
+
+	public void showGrid(boolean showGrid) {
+		this.showGrid = showGrid;
 	}
 
 	private static class Percentage {

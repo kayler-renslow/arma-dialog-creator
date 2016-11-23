@@ -88,8 +88,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private static class ControlPropertyInputDescriptor {
 		private final ControlPropertyEditorContainer container;
 		private boolean optional;
-		private boolean nameFound;
-		private boolean hideIfInherited;
+		private boolean nameFound = true;
+		private boolean hideIfInherited = false;
 
 
 		public ControlPropertyInputDescriptor(@NotNull ControlPropertyEditorContainer container) {

@@ -69,7 +69,12 @@ public class ControlMove<C extends CanvasControl> {
 		return newList;
 	}
 
-	/** Return true if this update was triggered inside {@link ControlListChange#getModifiedList()} by {@link ControlList#move(int, ControlList, int)} */
+	/**
+	 Return true if this update comes from the moved control being moved into it's new list via {@link ControlList#move(int, ControlList, int)}, or false if this update captures the moved
+	 control leaving the old list.
+
+	 @see ControlList#move(int, ControlList, int)
+	 */
 	public boolean isOriginalUpdate() {
 		return isOriginalUpdate;
 	}

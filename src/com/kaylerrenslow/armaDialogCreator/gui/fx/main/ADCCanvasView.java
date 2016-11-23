@@ -156,7 +156,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	@Override
 	public void showGrid(boolean showGrid) {
-		uiCanvasEditor.showGrid(showGrid);
+		canvasControls.showGrid(showGrid);
 	}
 
 	@Override

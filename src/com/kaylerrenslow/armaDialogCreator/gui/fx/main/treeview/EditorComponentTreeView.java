@@ -443,6 +443,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			group.getControlGroup().getControls().move(controlEntry.getMyArmaControl(), correctedIndex);
 			setControlGroupListener(true, group.getControlGroup());
 		}
+
 	}
 
 	@Override

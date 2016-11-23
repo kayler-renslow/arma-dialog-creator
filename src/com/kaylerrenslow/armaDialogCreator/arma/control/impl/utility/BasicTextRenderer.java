@@ -65,7 +65,7 @@ public class BasicTextRenderer {
 				} else {
 					setText(newValue.toString().replaceAll("\"\"", "\""));
 				}
-				renderer.render();
+				renderer.requestRender();
 			}
 		});
 		control.findProperty(colorText).getValueObserver().addListener(new ValueListener<SerializableValue>() {
@@ -74,7 +74,7 @@ public class BasicTextRenderer {
 				if (newValue instanceof AColor) {
 					setTextColor(((AColor) newValue).toJavaFXColor());
 				}
-				renderer.render();
+				renderer.requestRender();
 			}
 		});
 		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
@@ -94,7 +94,7 @@ public class BasicTextRenderer {
 							break;
 						}
 					}
-					renderer.render();
+					renderer.requestRender();
 				}
 			}
 		});

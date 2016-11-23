@@ -1,5 +1,5 @@
 **Added:**
-* hide inherited properties in editor pane
+* viewport snapping is baaaaaaack
 
 **Changed:**
 * none

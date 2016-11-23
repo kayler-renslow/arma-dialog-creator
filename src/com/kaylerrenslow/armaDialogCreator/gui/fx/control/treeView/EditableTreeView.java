@@ -181,7 +181,11 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		//move into children
 		if (newParent == getRoot() || newParent.getValue().canHaveChildren()) {
 			toMove.getParent().getChildren().remove(toMove);
-			newParent.getChildren().add(index, toMove); //add before remove to preserve index. Don't use addToParent so that a move and addition can be easily detected on their own
+			if (newParent.getChildren().size() == 0) {
+				newParent.getChildren().add(toMove);
+			} else {
+				newParent.getChildren().add(index, toMove); //Don't use addToParent so that a move and addition can be detected disjointly
+			}
 			return;
 		}
 

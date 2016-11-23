@@ -40,9 +40,9 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 				case MOVE: {
 					ControlMove<C> moved = change.getMoved();
 					if (moved.isOriginalUpdate()) {
-						addChangeListenerToChild(change.getMoved().getMovedControl(), false);
+						addChangeListenerToChild(moved.getMovedControl(), true);
 					} else {
-						addChangeListenerToChild(change.getMoved().getMovedControl(), true);
+						addChangeListenerToChild(moved.getMovedControl(), false);
 					}
 
 					break;
@@ -65,23 +65,29 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 			@SuppressWarnings("unchecked")
 			public void onChanged(ControlList<C> controlList, ControlListChange<C> change) {
 				if (change.wasAdded()) {
-					if (change.getAdded().getControl() instanceof CanvasControlGroup) {
-						((CanvasControlGroup) change.getAdded().getControl()).setDisplayForGroup(display);
+					ControlAdd<C> added = change.getAdded();
+					if (added.getControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) added.getControl()).setDisplayForGroup(display);
 					}
-					change.getAdded().getControl().getHolderObserver().updateValue(controlList.getHolder());
-					change.getAdded().getControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					added.getControl().getHolderObserver().updateValue(controlList.getHolder());
+					added.getControl().getDisplayObserver().updateValue((CanvasDisplay) display);
 				} else if (change.wasSet()) {
-					if (change.getSet().getNewControl() instanceof CanvasControlGroup) {
-						((CanvasControlGroup) change.getSet().getNewControl()).setDisplayForGroup(display);
+					ControlSet<C> set = change.getSet();
+					if (set.getNewControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) set.getNewControl()).setDisplayForGroup(display);
 					}
-					change.getSet().getNewControl().getHolderObserver().updateValue(controlList.getHolder());
-					change.getSet().getNewControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					set.getNewControl().getHolderObserver().updateValue(controlList.getHolder());
+					set.getNewControl().getDisplayObserver().updateValue((CanvasDisplay) display);
 				} else if (change.wasMoved() && (change.getMoved().getDestinationHolder() == display)) {
-					if (change.getMoved().getMovedControl() instanceof CanvasControlGroup) {
-						((CanvasControlGroup) change.getMoved().getMovedControl()).setDisplayForGroup(display);
+					ControlMove<C> moved = change.getMoved();
+					if (moved.getMovedControl() instanceof CanvasControlGroup) {
+						((CanvasControlGroup) moved.getMovedControl()).setDisplayForGroup(display);
 					}
-					change.getMoved().getMovedControl().getHolderObserver().updateValue(controlList.getHolder());
-					change.getMoved().getMovedControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					moved.getMovedControl().getHolderObserver().updateValue(controlList.getHolder());
+					moved.getMovedControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+				} else if (change.wasRemoved()) {
+					change.getRemoved().getControl().getHolderObserver().updateValue(null);
+					change.getRemoved().getControl().getDisplayObserver().updateValue(null);
 				}
 			}
 		});

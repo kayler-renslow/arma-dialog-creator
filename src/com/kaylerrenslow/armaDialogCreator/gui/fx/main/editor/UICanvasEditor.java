@@ -38,32 +38,30 @@ import java.util.Iterator;
  @author Kayler
  @since 05/11/2016. */
 public class UICanvasEditor extends UICanvas {
-	
+
 	/*** How many pixels the cursor can be off on a component's edge when choosing an edge for scaling */
 	private static final int COMPONENT_EDGE_LEEWAY = 5;
 	private static final long DOUBLE_CLICK_WAIT_TIME_MILLIS = 300;
-	
+
 	/** Color of the mouse selection box */
 	private Color selectionColor = CanvasViewColors.SELECTION;
-	
+
 	/** Color of the grid */
 	private Color gridColor = CanvasViewColors.GRID;
-	
-	/** True if grid is being shown, false otherwise */
-	private boolean showGrid = true;
-	
+
+
 	private CanvasSelection selection = new CanvasSelection();
-	
+
 	/** Mouse button that is currently down */
 	private MouseButton mouseButtonDown = MouseButton.NONE;
 	private long lastMousePressTime;
 	private boolean hasDoubleClicked;
-	
+
 	/** amount of change that has happened since last snap */
 	private int dxAmount, dyAmount = 0;
-	
+
 	private KeyMap keyMap = new KeyMap();
-	
+
 	/** Component that is ready to be scaled, null if none is ready to be scaled */
 	private CanvasControl scaleControl;
 	/** Edge that the scaling will be conducted, or Edge.NONE is no scaling is being done */
@@ -72,9 +70,9 @@ public class UICanvasEditor extends UICanvas {
 	private CanvasControl mouseOverControl;
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
 	private CanvasControl contextMenuControl;
-	
-	private SnapConfiguration calc;
-	
+
+	private UICanvasConfiguration calc;
+
 	/** Class that generates context menus for the controls */
 	private ComponentContextMenuCreator menuCreator;
 	/** Context menu to show when user right clicks and no component is selected */
@@ -82,22 +80,19 @@ public class UICanvasEditor extends UICanvas {
 	/** The context menu that wants to be shown */
 	private ContextMenu contextMenu;
 	private final Point contextMenuPosition = new Point(-1, -1);
-	
-	/** If true, scaling and translating controls will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
-	private boolean safeMovement = false;
-	
+
 	private final ArmaAbsoluteBoxComponent absRegionComponent;
-	
+
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
 
 	private ValueObserver<CanvasControl> doubleClickObserver = new ValueObserver<>(null);
 
-	public UICanvasEditor(Resolution resolution, SnapConfiguration calculator, @NotNull CanvasDisplay<? extends CanvasControl> display) {
+	public UICanvasEditor(Resolution resolution, UICanvasConfiguration calculator, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
-		
-		setSnapConfig(calculator);
-		
+
+		setConfig(calculator);
+
 		gc.setTextBaseline(VPos.CENTER);
 		this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
 			@Override
@@ -123,58 +118,43 @@ public class UICanvasEditor extends UICanvas {
 			}
 		});
 	}
-	
+
 	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */
 	public ValueObserver<CanvasControl> getDoubleClickObserver() {
 		return doubleClickObserver;
 	}
-	
-	public void setSnapConfig(@NotNull SnapConfiguration snapConfig) {
+
+	public void setConfig(@NotNull UICanvasConfiguration snapConfig) {
 		this.calc = snapConfig;
 	}
-	
+
 	@NotNull
-	public SnapConfiguration getSnapConfig() {
+	public UICanvasConfiguration getConfig() {
 		return this.calc;
 	}
-	
+
 	@NotNull
 	public Selection getSelection() {
 		return selection;
 	}
-	
+
 	/**
 	 @param ccm the context menu creator that is used to give controls context menus
 	 */
 	public void setComponentMenuCreator(@Nullable ComponentContextMenuCreator ccm) {
 		this.menuCreator = ccm;
 	}
-	
+
 	public void setCanvasContextMenu(@Nullable ContextMenu contextMenu) {
 		this.canvasContextMenu = contextMenu;
 	}
-	
-	/** see getSafeMovement for more information */
-	public void setSafeMovement(boolean safe) {
-		this.safeMovement = safe;
-	}
-	
-	/** If true, scaling and translating controls will only work when the actions don't put their bounds outside the canvas. If false, all scaling and translating is allowed. */
-	public boolean getSafeMovement() {
-		return this.safeMovement;
-	}
+
 
 	public CanvasControl getMouseOverControl() {
 		return mouseOverControl;
 	}
-	
-	/**
-	 Sets whether or not the grid should be shown. When this method is invoked, the canvas is repainted.
-	 */
-	public void showGrid(boolean showGrid) {
-		this.showGrid = showGrid;
-	}
-	
+
+
 	/** Updates the UI colors like selection color, grid color, and bg color */
 	public void updateColors() {
 		this.gridColor = CanvasViewColors.GRID;
@@ -182,10 +162,10 @@ public class UICanvasEditor extends UICanvas {
 		this.absRegionComponent.setBackgroundColor(CanvasViewColors.ABS_REGION);
 		this.setCanvasBackgroundColor(CanvasViewColors.EDITOR_BG);
 	}
-	
+
 	/**
 	 Update the Absolute region box. For each parameter: -1 to leave unchanged, 0 for false, 1 for true
-	 
+
 	 @param alwaysFront true if the region should always be rendered last, false if it should be rendered first
 	 @param showing true the region is showing, false if not
 	 */
@@ -197,7 +177,7 @@ public class UICanvasEditor extends UICanvas {
 			absRegionComponent.setGhost(!(showing == 1));
 		}
 	}
-	
+
 	/** Paint the canvas */
 	protected void paint() {
 		super.paint();
@@ -212,7 +192,7 @@ public class UICanvasEditor extends UICanvas {
 			paintAbsRegionComponent();
 		}
 	}
-	
+
 	@Override
 	protected void paintControls() {
 		if (!absRegionComponent.alwaysRenderAtFront()) {
@@ -226,15 +206,15 @@ public class UICanvasEditor extends UICanvas {
 		}
 		gc.restore();
 	}
-	
+
 	@Override
 	protected void paintBackground() {
 		super.paintBackground();
-		if (showGrid) {
+		if (getConfig().showGrid()) {
 			drawGrid();
 		}
 	}
-	
+
 	@Override
 	protected void paintControl(CanvasControl control) {
 		if (isSelectingArea() && !control.getRenderer().isEnabled()) {
@@ -267,17 +247,17 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintControl(control);
 	}
-	
+
 	private boolean isSelectingArea() {
 		return selection.isSelecting() && selection.getArea() > 10;
 	}
-	
+
 	protected void paintAbsRegionComponent() {
 		if (!absRegionComponent.isGhost() && !isSelectingArea()) {
 			absRegionComponent.paint(gc, dataContext);
 		}
 	}
-	
+
 	private void drawGrid() {
 		if (keys.isShiftDown()) {
 			double snap = calc.snapPercentage();
@@ -295,9 +275,9 @@ public class UICanvasEditor extends UICanvas {
 		} else {
 			drawGrid(calc.snapPercentage(), false);
 		}
-		
+
 	}
-	
+
 	private void drawGrid(double snap, boolean light) {
 		double spacingX = getSnapPixelsWidthF(snap);
 		double spacingY = getSnapPixelsHeightF(snap);
@@ -317,6 +297,11 @@ public class UICanvasEditor extends UICanvas {
 			gc.setGlobalAlpha(0.2);
 		}
 		gc.setStroke(gridColor);
+		if (getConfig().viewportSnapEnabled()) {
+			offsetx = (int) (resolution.getViewportX() % spacingX);
+			offsety = (int) (resolution.getViewportY() % spacingY);
+			gc.translate(offsetx, offsety);
+		}
 		for (int y = 0; y <= numY; y++) {
 			ys = Math.floor(y * spacingY);
 			gc.strokeLine(0 + antiAlias - offsetx, ys + antiAlias, w - antiAlias + offsetx, ys + antiAlias);
@@ -327,11 +312,11 @@ public class UICanvasEditor extends UICanvas {
 		}
 		gc.restore();
 	}
-	
+
 	/**
 	 This is called when the mouse listener is invoked and a mouse press was the event.
 	 This method should be the only one dealing with adding and removing controls from the selection, other than mouseMove which adds to the selection via the selection box
-	 
+
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was pressed
@@ -345,7 +330,7 @@ public class UICanvasEditor extends UICanvas {
 		lastMousePressTime = System.currentTimeMillis();
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
-		
+
 		if (scaleControl != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
 			selection.removeAllAndAdd(scaleControl);
 			return;
@@ -408,15 +393,15 @@ public class UICanvasEditor extends UICanvas {
 				return;
 			}
 		}
-		
+
 		selection.clearSelected();
 		selection.beginSelecting(mousex, mousey);
 	}
-	
-	
+
+
 	/**
 	 This is called when the mouse listener is invoked and a mouse release was the event
-	 
+
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 @param mb mouse button that was released
@@ -439,10 +424,10 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-	
+
 	/**
 	 This is called when the mouse is moved and/or dragged inside the canvas
-	 
+
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 */
@@ -463,14 +448,14 @@ public class UICanvasEditor extends UICanvas {
 		int dy1 = 0; //change in y that will be used for translation or scaling
 		int dirx = dx < 0 ? -1 : 1; //change in direction for x
 		int diry = dy < 0 ? -1 : 1; //change in direction for y
-		
-		int xSnapCount; //how many snaps occurred for x
-		int ySnapCount; //how many snaps occurred for y
+
+		int xSnapCount = 0; //how many snaps occurred for x
+		int ySnapCount = 0; //how many snaps occurred for y
 		double snapPercentage = keys.isShiftDown() ? calc.alternateSnapPercentage() : calc.snapPercentage();
 		if (!keys.isAltDown()) {
 			int snapX = getSnapPixelsWidth(snapPercentage);
 			int snapY = getSnapPixelsHeight(snapPercentage);
-			
+
 			dxAmount += dx;
 			dyAmount += dy;
 			int dxAmountAbs = Math.abs(dxAmount);
@@ -489,22 +474,45 @@ public class UICanvasEditor extends UICanvas {
 			dx1 = dx;
 			dy1 = dy;
 		}
+		boolean canSnapViewport = !keys.isAltDown() && getConfig().viewportSnapEnabled();
+		double vdx = snapPercentage * xSnapCount * dirx;
+		double vdy = snapPercentage * ySnapCount * diry;
 		if (scaleControl != null) { //scaling
 			boolean squareScale = keys.keyIsDown(keyMap.SCALE_SQUARE);
 			boolean symmetricScale = keys.isCtrlDown() || squareScale;
-			doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
+			if (canSnapViewport && scaleControl.getRenderer() instanceof ViewportCanvasComponent) {
+				doScaleOnViewportComponent(symmetricScale, squareScale, vdx, vdy);
+			} else {
+				doScaleOnComponent(symmetricScale, squareScale, dx1, dy1);
+			}
 			return;
 		}
 		//not scaling and simply translating (moving)
 
 		for (CanvasControl control : selection.getSelected()) {
 			//only move-able controls should be inside selection
-			if (!safeMovement || boundUpdateSafe(control.getRenderer(), dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't move component out of bounds
+			if (canSnapViewport && control.getRenderer() instanceof ViewportCanvasComponent) {
+				ViewportCanvasComponent viewportComponent = ((ViewportCanvasComponent) control.getRenderer());
+				double px = viewportComponent.getPercentX() + vdx;
+				double py = viewportComponent.getPercentY() + vdy;
+				double pw = viewportComponent.getPercentW();
+				double ph = viewportComponent.getPercentH();
+				if (getConfig().isSafeMovement()) {
+					int vx = viewportComponent.calcScreenX(px);
+					int vy = viewportComponent.calcScreenY(py);
+					if (!boundSetSafe(control.getRenderer(), vx, vx + viewportComponent.calcScreenWidth(pw), vy, vy + viewportComponent.calcScreenHeight(ph))) {
+						continue;
+					}
+				}
+
+				viewportComponent.setPositionPercent(px, py, pw, ph);
+			} else if (!getConfig().isSafeMovement() || boundUpdateSafe(control.getRenderer(), dx, dx, dy, dy)) { //translate if safeMovement is off or safeMovement is on and the translation doesn't
+				// move component out of bounds
 				control.getRenderer().translate(dx1, dy1);
 			}
 		}
 	}
-	
+
 	private void doScaleOnComponent(boolean symmetricScale, boolean squareScale, int dx, int dy) {
 		int dxl = 0; //change in x left
 		int dxr = 0; //change in x right
@@ -567,15 +575,104 @@ public class UICanvasEditor extends UICanvas {
 				dxr = -dx;
 			}
 		}
-		if (!safeMovement || boundUpdateSafe(scaleControl.getRenderer(), dxl, dxr, dyt, dyb)) {
+		if (!getConfig().isSafeMovement() || boundUpdateSafe(scaleControl.getRenderer(), dxl, dxr, dyt, dyb)) {
 			if (!scaleIsNegative(scaleControl.getRenderer(), dxl, dxr, dyt, dyb)) {
 				scaleControl.getRenderer().scale(dxl, dxr, dyt, dyb);
 			}
 		}
 	}
-	
+
+	private void doScaleOnViewportComponent(boolean symmetricScale, boolean squareScale, double vdx, double vdy) {
+		ViewportCanvasComponent viewportComponent = (ViewportCanvasComponent) scaleControl.getRenderer();
+
+		double dxl = 0; //change in x percent left
+		double dxr = 0; //change in x percent right
+		double dyt = 0; //change in y percent top
+		double dyb = 0; //change in y percent bottom
+
+		if (squareScale) {//scale only as a square (all changes are equal)
+			//set them equal to the biggest value
+			if (Math.abs(vdx) > Math.abs(vdy)) {
+				vdy = vdx;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					vdy = -vdy;
+				}
+			} else {
+				vdx = vdy;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					vdx = -vdx;
+				}
+			}
+		}
+		if (scaleEdge == Edge.TOP_LEFT) {
+			dyt = vdy;
+			dxl = vdx;
+			if (symmetricScale) {
+				dyb = -vdy;
+				dxr = -vdx;
+			}
+		} else if (scaleEdge == Edge.TOP_RIGHT) {
+			dyt = vdy;
+			dxr = vdx;
+			if (symmetricScale) {
+				dyb = -vdy;
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM_LEFT) {
+			dyb = vdy;
+			dxl = vdx;
+			if (symmetricScale) {
+				dyt = -vdy;
+				dxr = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM_RIGHT) {
+			dyb = vdy;
+			dxr = vdx;
+			if (symmetricScale) {
+				dyt = -vdy;
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.TOP) {
+			dyt = vdy;
+			if (symmetricScale) {
+				dyb = -vdy;
+			}
+		} else if (scaleEdge == Edge.RIGHT) {
+			dxr = vdx;
+			if (symmetricScale) {
+				dxl = -vdx;
+			}
+		} else if (scaleEdge == Edge.BOTTOM) {
+			dyb = vdy;
+			if (symmetricScale) {
+				dyt = -vdy;
+			}
+		} else if (scaleEdge == Edge.LEFT) {
+			dxl = vdx;
+			if (symmetricScale) {
+				dxr = -vdx;
+			}
+		}
+		double px = viewportComponent.getPercentX() + dxl;
+		double pw = viewportComponent.getPercentW() + dxr - dxl;
+		double py = viewportComponent.getPercentY() + dyt;
+		double ph = viewportComponent.getPercentH() + dyb - dyt;
+
+		int screenX = viewportComponent.calcScreenX(px);
+		int screenY = viewportComponent.calcScreenY(py);
+		int screenW = viewportComponent.calcScreenWidth(pw);
+		int screenH = viewportComponent.calcScreenHeight(ph);
+
+		if (!getConfig().isSafeMovement() || boundSetSafe(scaleControl.getRenderer(), screenX, screenX + screenW, screenY, screenY + screenH)) {
+			if (screenH < 0 || screenW < 0) { //negative scale
+				return;
+			}
+			viewportComponent.setPositionPercent(px, py, pw, ph);
+		}
+	}
+
 	private boolean basicMouseMovement(int mousex, int mousey) {
-		
+
 		updateContextMenu();
 		mouseOverControl = null;
 
@@ -590,7 +687,7 @@ public class UICanvasEditor extends UICanvas {
 				}
 			}
 		}
-		
+
 		if (scaleControl == null) {
 			if (!selection.isSelecting() && mouseOverControl != null) {
 				changeCursorToMove();
@@ -623,10 +720,10 @@ public class UICanvasEditor extends UICanvas {
 		}
 		return true;
 	}
-	
+
 	private void updateContextMenu() {
 		ContextMenu cm = getContextMenu();
-		
+
 		if (cm != null && cm.isShowing()) {
 			if (mouseOverControl != contextMenuControl && cm != canvasContextMenu) {
 				cm.hide();
@@ -635,7 +732,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-	
+
 	/** Called from mouseMove. Checks to see if the given mouse position is near a component edge. If it is, it will store the component as well as the edge. */
 	private void checkForScaling(int mousex, int mousey) {
 		Edge edge;
@@ -660,40 +757,40 @@ public class UICanvasEditor extends UICanvas {
 		this.scaleControl = toScale;
 		this.scaleEdge = scaleEdge;
 	}
-	
+
 	private double getSnapPixelsWidthF(double percentageDecimal) {
-		int width = getCanvasWidth();
+		int width = getConfig().viewportSnapEnabled() ? resolution.getViewportWidth() : getCanvasWidth();
 		return (width * percentageDecimal);
 	}
-	
+
 	private double getSnapPixelsHeightF(double percentageDecimal) {
-		int height = getCanvasHeight();
+		int height = getConfig().viewportSnapEnabled() ? resolution.getViewportHeight() : getCanvasHeight();
 		return (height * percentageDecimal);
 	}
-	
+
 	private int getSnapPixelsWidth(double percentageDecimal) {
 		return (int) getSnapPixelsWidthF(percentageDecimal);
 	}
-	
+
 	private int getSnapPixelsHeight(double percentageDecimal) {
 		return (int) getSnapPixelsHeightF(percentageDecimal);
 	}
-	
+
 	/** Set the context menu that should be shown */
 	private void setContextMenu(@Nullable ContextMenu contextMenu, int xpos, int ypos) {
 		this.contextMenu = contextMenu;
 		contextMenuPosition.set(xpos, ypos);
 	}
-	
+
 	/** Get the context menu to be shown */
 	private ContextMenu getContextMenu() {
 		return contextMenu;
 	}
-	
-	
+
+
 	/**
 	 Check if the bound update to the region will keep the boundaries inside the canvas
-	 
+
 	 @param r region to check bounds of
 	 @param dxLeft change in x on the left side
 	 @param dxRight change in x on the right side
@@ -704,10 +801,10 @@ public class UICanvasEditor extends UICanvas {
 	private boolean boundUpdateSafe(Region r, int dxLeft, int dxRight, int dyTop, int dyBottom) {
 		return boundSetSafe(r, r.getLeftX() + dxLeft, r.getRightX() + dxRight, r.getTopY() + dyTop, r.getBottomY() + dyBottom);
 	}
-	
+
 	/**
 	 Check if the bounds set to the region will keep the boundaries inside the canvas
-	 
+
 	 @param r region to check bounds of
 	 @param x1 new x1 position
 	 @param x2 new x2 position
@@ -725,10 +822,10 @@ public class UICanvasEditor extends UICanvas {
 		}
 		return false;
 	}
-	
+
 	/**
 	 Check if scaling the given region will give it negative area (right most side is behind left side)
-	 
+
 	 @param r region to check bounds of
 	 @param dxl change in x on the left side
 	 @param dxr change in x on the right side
@@ -743,15 +840,15 @@ public class UICanvasEditor extends UICanvas {
 		int yb = r.getBottomY() + dyb;
 		return xr < xl || yt > yb;
 	}
-	
+
 	private void changeCursorToMove() {
 		canvas.setCursor(Cursor.MOVE);
 	}
-	
+
 	private void changeCursorToDefault() {
 		canvas.setCursor(Cursor.DEFAULT);
 	}
-	
+
 	private void changeCursorToScale(Edge edge) {
 		if (edge == Edge.NONE) {
 			changeCursorToDefault();
@@ -775,8 +872,8 @@ public class UICanvasEditor extends UICanvas {
 		}
 		throw new IllegalStateException("couldn't find correct cursor for edge:" + edge.name());
 	}
-	
-	
+
+
 	private void keyUpdate(boolean keyIsDown) {
 		if (keyIsDown) {
 			if (keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
@@ -797,8 +894,8 @@ public class UICanvasEditor extends UICanvas {
 			}
 		}
 	}
-	
-	
+
+
 	/**
 	 @author Kayler
 	 Created on 05/13/2016.
@@ -806,12 +903,12 @@ public class UICanvasEditor extends UICanvas {
 	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
 		private ObservableList<CanvasControl> selected = FXCollections.observableArrayList(new ArrayList<>());
 		private boolean isSelecting;
-		
+
 		@Override
 		public @NotNull ObservableList<CanvasControl> getSelected() {
 			return selected;
 		}
-		
+
 		@Nullable
 		@Override
 		public CanvasControl getFirst() {
@@ -820,7 +917,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 			return selected.get(0);
 		}
-		
+
 		@Override
 		public void toggleFromSelection(CanvasControl control) {
 			if (isSelected(control)) {
@@ -829,14 +926,14 @@ public class UICanvasEditor extends UICanvas {
 				this.selected.add(control);
 			}
 		}
-		
+
 		@Override
 		public void addToSelection(CanvasControl control) {
 			if (!isSelected(control)) {
 				this.selected.add(control);
 			}
 		}
-		
+
 		@Override
 		public boolean isSelected(@Nullable CanvasControl control) {
 			if (control == null) {
@@ -849,26 +946,26 @@ public class UICanvasEditor extends UICanvas {
 			}
 			return false;
 		}
-		
+
 		@Override
 		public boolean removeFromSelection(CanvasControl control) {
 			return this.selected.remove(control);
 		}
-		
+
 		@Override
 		public void clearSelected() {
 			this.selected.clear();
 		}
-		
+
 		@Override
 		public int numSelected() {
 			return this.selected.size();
 		}
-		
+
 		boolean isSelecting() {
 			return this.isSelecting;
 		}
-		
+
 		void setSelecting(boolean selecting) {
 			this.isSelecting = selecting;
 		}
@@ -877,23 +974,23 @@ public class UICanvasEditor extends UICanvas {
 			clearSelected();
 			this.selected.add(toAdd);
 		}
-		
+
 		CanvasSelection() {
 			super(0, 0, 0, 0);
 		}
-		
+
 		void beginSelecting(int x, int y) {
 			setPosition(x, y, x, y);
 			this.isSelecting = true;
 		}
-		
+
 		void selectTo(int x, int y) {
 			setX2(x);
 			setY2(y);
 		}
 	}
-	
-	
+
+
 	private static class KeyMap {
 		String SCALE_SQUARE = "s";
 		String PREVENT_VERTICAL_MOVEMENT = "x";
