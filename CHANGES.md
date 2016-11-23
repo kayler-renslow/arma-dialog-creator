@@ -1,8 +1,8 @@
 **Added:**
-* viewport snapping is baaaaaaack
+* none
 
 **Changed:**
-* none
+* made xml writer create a copy before writing
 
 **Fixed:**
 * none

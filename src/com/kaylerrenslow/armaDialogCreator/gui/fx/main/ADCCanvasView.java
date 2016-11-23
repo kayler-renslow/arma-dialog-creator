@@ -172,6 +172,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public void updateCanvas() {
 		uiCanvasEditor.updateColors();
+		uiCanvasEditor.requestPaint();
 	}
 
 	@Override
@@ -227,6 +228,10 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	public ArmaDisplay getEditingDisplay() {
 		return this.display;
+	}
+
+	public void repaintCanvas() {
+		uiCanvasEditor.requestPaint();
 	}
 
 

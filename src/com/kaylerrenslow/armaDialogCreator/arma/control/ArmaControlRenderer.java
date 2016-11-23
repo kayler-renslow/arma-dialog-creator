@@ -129,18 +129,25 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		});
 
-
 		if (xProperty.getValue() == null) {
 			defineX(new Expression("0", env));
+		} else {
+			setXSilent((Expression) xProperty.getValue());
 		}
 		if (yProperty.getValue() == null) {
 			defineY(new Expression("0", env));
+		} else {
+			setYSilent((Expression) yProperty.getValue());
 		}
 		if (wProperty.getValue() == null) {
 			defineW(new Expression("1", env));
+		} else {
+			setWSilent((Expression) wProperty.getValue());
 		}
 		if (hProperty.getValue() == null) {
 			defineH(new Expression("1", env));
+		} else {
+			setHSilent((Expression) hProperty.getValue());
 		}
 
 	}

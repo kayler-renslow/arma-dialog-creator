@@ -15,7 +15,6 @@ import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
@@ -34,7 +33,7 @@ public class ResourceRegistryXmlWriter {
 		}
 
 		@NotNull
-		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws FileNotFoundException {
+		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws IOException {
 			return new XmlWriterOutputStream(registry.getGlobalResourcesXmlFile());
 		}
 

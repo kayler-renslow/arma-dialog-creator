@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <value-provider-sheet version="1">
+	<property lookup-id='0'>
+		<v>-1</v>
+	</property>
+	<property lookup-id='1'>
+		<v>0</v>
+	</property>
+	<property lookup-id='2'>
+		<v>0</v>
+	</property>
+	<property lookup-id='3'>
+		<v>1</v>
+	</property>
+	<property lookup-id='4'>
+		<v>1</v>
+	</property>
 	<property lookup-id='8'>
 		<v>false</v>
 	</property>

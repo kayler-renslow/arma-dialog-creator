@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 11/21/2016 */
 public class BasicTextRenderer {
-	protected static final Font DEFAULT_FX_FONT = Font.font(20d);
+	protected static final Font DEFAULT_FX_FONT = Font.font(16);
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 

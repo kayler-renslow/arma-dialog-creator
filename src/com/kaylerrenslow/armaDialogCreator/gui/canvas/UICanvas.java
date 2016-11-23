@@ -205,8 +205,8 @@ public abstract class UICanvas extends AnchorPane {
 		gc.restore();
 	}
 
-	/** Request a repaint. The paint operation will be done by {@link #getTimer()} */
-	protected void requestPaint() {
+	/** Request a repaint. The paint operation won't happen until {@link #getTimer()} discovers the paint request. */
+	public void requestPaint() {
 		needPaint = true;
 	}
 

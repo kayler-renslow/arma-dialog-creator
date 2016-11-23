@@ -14,9 +14,10 @@ import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 /**
  A wrapper class for a {@link FileOutputStream} that writes XML files.
@@ -25,17 +26,19 @@ import java.io.IOException;
  @since 11/12/2016. */
 public class XmlWriterOutputStream {
 	private final FileOutputStream fos;
-	private boolean hasProlog = false;
 	public static final String UTF_8 = "UTF-8";
 
-	public XmlWriterOutputStream(@NotNull File writeXmlFile) throws FileNotFoundException {
+	public XmlWriterOutputStream(@NotNull File writeXmlFile) throws IOException {
+		if (writeXmlFile.exists()) {
+			//create backup
+			Files.copy(writeXmlFile.toPath(), new File(writeXmlFile.getPath() + ".backup").toPath(), StandardCopyOption.REPLACE_EXISTING);
+		}
 		fos = new FileOutputStream(writeXmlFile);
 	}
 
 	/** Write the XML's prolog tag */
 	public void writeProlog(@NotNull String xmlVersion, @NotNull String encoding) throws IOException {
 		write("<?xml version='" + xmlVersion + "' encoding='" + encoding + "' ?>");
-		hasProlog = true;
 	}
 
 	public void writeDefaultProlog() throws IOException {

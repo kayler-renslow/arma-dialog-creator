@@ -42,7 +42,6 @@ public class Expression extends SerializableValue {
 	};
 	
 	private final Env env;
-	private Value cacheValue;
 
 	public Expression(String exp, Env env) throws ExpressionEvaluationException {
 		super(exp);
@@ -52,7 +51,6 @@ public class Expression extends SerializableValue {
 	
 	public void setExpression(String exp) throws ExpressionEvaluationException {
 		valuesAsArray[0] = exp;
-		cacheValue = null;
 	}
 	
 	public String getExpression() {
@@ -60,10 +58,7 @@ public class Expression extends SerializableValue {
 	}
 	
 	public Value getValue() {
-		if (cacheValue == null) {
-			cacheValue = ExpressionInterpreter.getInstance().evaluate(valuesAsArray[0], env);
-		}
-		return cacheValue;
+		return ExpressionInterpreter.getInstance().evaluate(valuesAsArray[0], env); //do not cache because the environment may change
 	}
 	
 	public Env getEnv() {

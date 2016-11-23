@@ -61,6 +61,13 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				checkBoxViewportSnapping
 		);
 
+		checkBoxViewportSnapping.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				canvasView.repaintCanvas();
+			}
+		});
+
 		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.show"));
 		cbShowBackgroundControls.setSelected(true);
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -110,6 +117,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		}
 		choiceBoxStep.getSelectionModel().select(1);
 		choiceBoxAltStep.getSelectionModel().selectLast();
+		ChangeListener<? super Percentage> selectUpdate = new ChangeListener<Percentage>() {
+			@Override
+			public void changed(ObservableValue<? extends Percentage> observable, Percentage oldValue, Percentage newValue) {
+				canvasView.repaintCanvas();
+			}
+		};
+		choiceBoxStep.getSelectionModel().selectedItemProperty().addListener(selectUpdate);
+		choiceBoxAltStep.getSelectionModel().selectedItemProperty().addListener(selectUpdate);
 	}
 
 
