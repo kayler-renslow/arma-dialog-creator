@@ -42,7 +42,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 
 	public ButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
-		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.STYLE);
+		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX);
 
 		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override

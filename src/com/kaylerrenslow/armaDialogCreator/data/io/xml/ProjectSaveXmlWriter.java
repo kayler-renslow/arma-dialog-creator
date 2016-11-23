@@ -24,7 +24,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -178,13 +177,7 @@ public class ProjectSaveXmlWriter {
 		);
 
 		//write control properties
-		if (control.getFirstMissingProperty() != null) {
-			throw new XmlWriteException(String.format(Lang.ApplicationBundle().getString("XmlWrite.ProjectSave.control_properties_missing_f"), control.getClassName()));
-		}
 		for (ControlProperty cprop : control.getDefinedProperties()) {
-			if (cprop.getValue() == null) {
-				throw new IllegalStateException("control property value is not allowed to be null if it is defined (ArmaControl.getDefinedProperties())");
-			}
 			ProjectXmlUtil.writeControlProperty(stm, cprop);
 		}
 

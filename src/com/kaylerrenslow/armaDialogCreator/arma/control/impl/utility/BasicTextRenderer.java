@@ -12,17 +12,23 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
+import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -35,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 11/21/2016 */
 public class BasicTextRenderer {
-	protected static final Font DEFAULT_FX_FONT = Font.font(16);
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 
@@ -47,16 +52,17 @@ public class BasicTextRenderer {
 	protected Color textColor;
 
 	private Text textObj = new Text();
+	private ControlProperty sizeExProperty;
 
-	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style) {
+	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style,
+							 ControlPropertyLookupConstant sizeEx) {
 		this.control = control;
 		this.renderer = renderer;
 		textColor = renderer.getBackgroundColor().invert();
-		init(text, colorText, style);
+		init(text, colorText, style, sizeEx);
 	}
 
-	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style) {
-		textObj.setFont(DEFAULT_FX_FONT);
+	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx) {
 		control.findProperty(text).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
@@ -84,12 +90,15 @@ public class BasicTextRenderer {
 					ControlStyleGroup group = (ControlStyleGroup) newValue;
 					for (ControlStyle style : group.getValues()) {
 						if (style == ControlStyle.LEFT) {
+							textObj.setTextAlignment(TextAlignment.LEFT);
 							alignment = ALIGN_LEFT;
 							break;
 						} else if (style == ControlStyle.CENTER) {
+							textObj.setTextAlignment(TextAlignment.CENTER);
 							alignment = ALIGN_CENTER;
 							break;
 						} else if (style == ControlStyle.RIGHT) {
+							textObj.setTextAlignment(TextAlignment.RIGHT);
 							alignment = ALIGN_RIGHT;
 							break;
 						}
@@ -98,19 +107,40 @@ public class BasicTextRenderer {
 				}
 			}
 		});
+		sizeExProperty = control.findProperty(sizeEx);
+		sizeExProperty.getValueObserver().addListener(new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				if (newValue instanceof Expression) {
+					Expression ex = (Expression) newValue;
+					updateFont(ex);
+				}
+			}
+		});
+
+		if (sizeExProperty.getValue() instanceof Expression) {
+			updateFont((Expression) sizeExProperty.getValue());
+		}
+
+		renderer.getResolutionUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
+			@Override
+			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution data) {
+				resolutionUpdate();
+			}
+		});
 	}
 
 	private int getTextX() {
 		int textWidth = (int) textObj.getLayoutBounds().getWidth();
-		switch (alignment) {
-			case ALIGN_LEFT: {
-				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.01);
+		switch (textObj.getTextAlignment()) {
+			case LEFT: {
+				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.02);
 			}
-			case ALIGN_RIGHT: {
-				return renderer.getRightX() - textWidth - (int) (renderer.getWidth() * 0.01);
+			case RIGHT: {
+				return renderer.getRightX() - textWidth - (int) (renderer.getWidth() * 0.02);
 			}
 			default:
-			case ALIGN_CENTER: {
+			case CENTER: {
 				return renderer.getLeftX() + (renderer.getWidth() - textWidth) / 2;
 			}
 		}
@@ -149,5 +179,27 @@ public class BasicTextRenderer {
 
 	public Color getTextColor() {
 		return textColor;
+	}
+
+	public void updateFont(@NotNull Expression sizeEx) {
+		textObj.setFont(Font.font(fontSize(sizeEx.getNumVal())));
+		renderer.requestRender();
+	}
+
+	public double fontSize(double percent) {
+		double maxPixels = renderer.getResolution().getViewportHeight();
+		return toPoints(maxPixels * percent);
+	}
+
+	public double toPoints(double pixels) {
+		final double pointsPerInch = 72;
+		final double pixelsPerInch = 96;
+		return pixels * pointsPerInch / pixelsPerInch;
+	}
+
+	public void resolutionUpdate() {
+		if (sizeExProperty.getValue() instanceof Expression) {
+			updateFont((Expression) sizeExProperty.getValue());
+		}
 	}
 }

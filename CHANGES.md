@@ -1,8 +1,8 @@
 **Added:**
-* none
+* font sizes mostly work in preview
 
 **Changed:**
-* made xml writer create a copy before writing
+* none
 
 **Fixed:**
-* none
+* export directory being wrong

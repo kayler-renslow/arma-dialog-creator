@@ -24,10 +24,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ViewportCanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
-import com.kaylerrenslow.armaDialogCreator.util.Key;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -54,6 +51,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			requestRender();
 		}
 	};
+
+	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
 
 	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
@@ -157,6 +156,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 this whenever a new render needs to happen.
 	 */
 	public final void requestRender() {
+		System.out.println(resolution.getViewportHeight());
 		myControl.getRenderUpdateGroup().update(null);
 	}
 
@@ -444,5 +444,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		setYSilent((Expression) yProperty.getValue());
 		setWSilent((Expression) wProperty.getValue());
 		setHSilent((Expression) hProperty.getValue());
+
+		resolutionUpdateGroup.update(newResolution);
+	}
+
+	@NotNull
+	public ArmaResolution getResolution() {
+		return resolution;
+	}
+
+	@NotNull
+	public UpdateListenerGroup<Resolution> getResolutionUpdateGroup() {
+		return resolutionUpdateGroup;
 	}
 }
