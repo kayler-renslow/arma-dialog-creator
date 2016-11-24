@@ -231,6 +231,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		}
 
 		@Override
+		protected void stepLeft() {
+			projectInitWindow.getFooter().getBtnOk().setDisable(false);
+		}
+
+		@Override
 		protected boolean stepIsComplete() {
 			for (ProjectInitTab initTab : initTabs) {
 				if (initTab.getTab() == tabPane.getSelectionModel().getSelectedItem()) {

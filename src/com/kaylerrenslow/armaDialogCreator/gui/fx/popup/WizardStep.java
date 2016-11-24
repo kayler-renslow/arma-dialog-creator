@@ -29,10 +29,16 @@ public abstract class WizardStep<V extends Node> {
 		return content;
 	}
 
+	/** Invoked when step has been presented to user */
 	protected void stepPresented() {
 
 	}
 
+	/** Invoked when the step is no longer being presented to user */
+	protected void stepLeft() {
 
+	}
+
+	/** Return true if the wizard can progress, false if the step isn't complete yet */
 	abstract protected boolean stepIsComplete();
 }

@@ -24,6 +24,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
+ A simple wizard interface
+
  @author Kayler
  @since 11/23/2016 */
 public class WizardStageDialog extends StageDialog<StackPane> {
@@ -89,14 +91,13 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 			beepFocus();
 			return;
 		}
-
+		getCurrentStep().stepLeft();
 		wizardStepInd++;
 		if (wizardStepInd >= wizardSteps.size() - 1) {
 			wizardStepInd = wizardSteps.size() - 1;
 		}
 		updateButtons();
 
-		btnPrevious.setDisable(false);
 		updateContent();
 		getCurrentStep().stepPresented();
 	}
@@ -107,14 +108,11 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 		} else {
 			footer.btnOk.setText(Lang.ApplicationBundle().getString("Wizards.next"));
 		}
-		if (wizardStepInd <= 0) {
-			btnPrevious.setDisable(true);
-		} else {
-			btnPrevious.setDisable(false);
-		}
+		btnPrevious.setDisable(wizardStepInd <= 0);
 	}
 
 	protected void goBackwardStep() {
+		getCurrentStep().stepLeft();
 		wizardStepInd--;
 		if (wizardStepInd <= 0) {
 			wizardStepInd = 0;
@@ -130,6 +128,7 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 
 	}
 
+	/** Invoked when wizard has reached last step and dialog is closing */
 	public void stepsComplete() {
 
 	}

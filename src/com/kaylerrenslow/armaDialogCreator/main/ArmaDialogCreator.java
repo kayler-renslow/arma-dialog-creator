@@ -80,13 +80,6 @@ public final class ArmaDialogCreator extends Application {
 		applicationDataManager = new ApplicationDataManager();
 		initializeCurrentLocale();
 
-		/*
-		* File lastWorkspace = ApplicationProperty.LAST_WORKSPACE.get(propertyManager.getApplicationProperties());
-		if(lastWorkspace != null && lastWorkspace.exists() && lastWorkspace.isDirectory()){
-			workspace.setWorkspaceDirectory(lastWorkspace);
-		}
-		* */
-
 		//todo have actual progress be displayed (sum of file sizes and when file is loaded, subtract file size)
 
 		for (; progress < 100; progress++) {

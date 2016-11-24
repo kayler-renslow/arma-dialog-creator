@@ -58,7 +58,7 @@ public class Project implements SpecificationRegistry {
 		resourceRegistry = new ResourceRegistry(this);
 		controlRegistry = new CustomControlClassRegistry();
 
-		projectSaveFile = getFileForName(PROJECT_SAVE_FILE_NAME);
+		projectSaveFile = info.getProjectXmlFile();
 	}
 
 	@NotNull
