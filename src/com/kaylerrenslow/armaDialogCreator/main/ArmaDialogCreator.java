@@ -10,14 +10,15 @@
 
 package com.kaylerrenslow.armaDialogCreator.main;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
-import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.data.*;
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit.CouldNotLoadProjectDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit.ProjectImproperResultDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -79,14 +80,19 @@ public final class ArmaDialogCreator extends Application {
 		applicationDataManager = new ApplicationDataManager();
 		initializeCurrentLocale();
 
-		new ResourceRegistryXmlLoader(ResourceRegistry.getGlobalRegistry().getGlobalResourcesXmlFile(), null).load(ResourceRegistry.getGlobalRegistry());
+		/*
+		* File lastWorkspace = ApplicationProperty.LAST_WORKSPACE.get(propertyManager.getApplicationProperties());
+		if(lastWorkspace != null && lastWorkspace.exists() && lastWorkspace.isDirectory()){
+			workspace.setWorkspaceDirectory(lastWorkspace);
+		}
+		* */
 
 		//todo have actual progress be displayed (sum of file sizes and when file is loaded, subtract file size)
 
-		for (; progress < 100; progress++) {
-			Thread.sleep(40);
-			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
-		}
+		//		for (; progress < 100; progress++) {
+		//			Thread.sleep(40);
+		//			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
+		//		}
 
 	}
 
@@ -123,6 +129,8 @@ public final class ArmaDialogCreator extends Application {
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
 
 		loadNewProject(false);
+
+		getApplicationDataManager().initializeChangeRegistrars();
 	}
 
 	@NotNull
@@ -194,12 +202,45 @@ public final class ArmaDialogCreator extends Application {
 		}
 
 		getPrimaryStage().close();
-		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getLoadConfig();
-		getApplicationDataManager().setApplicationData(config.getApplicationData());
+		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
+
+		try {
+			new ResourceRegistryXmlLoader(GlobalResourceRegistry.getInstance().getResourcesFile(), null).load(GlobalResourceRegistry.getInstance());
+		} catch (XmlParseException e) {
+			ExceptionHandler.error(e);
+		}
+
+		getApplicationDataManager().initializeApplicationData();
+
+		ProjectXmlLoader.ProjectParseResult result = null;
+		if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
+			try {
+				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), ApplicationData.getInstance());
+
+				ApplicationData.getInstance().setCurrentProject(result.getProject());
+
+				getMainWindow().getCanvasView().setTreeStructure(false, result.getTreeStructureMain());
+				getMainWindow().getCanvasView().setTreeStructure(true, result.getTreeStructureBg());
+			} catch (Exception e) {
+				ApplicationData.getInstance().setCurrentProject(new Project(config.getProjectInfo()));
+				INSTANCE.showLater.add(new Runnable() {
+					@Override
+					public void run() {
+						new CouldNotLoadProjectDialog(e).show();
+					}
+				});
+			}
+		} else {
+			ApplicationData.getInstance().setCurrentProject(new Project(config.getProjectInfo()));
+		}
+
+
 		getMainWindow().initialize();
 		getMainWindow().show();
-		getMainWindow().getCanvasView().setTreeStructure(false, config.getNewTreeStructureMain());
-		getMainWindow().getCanvasView().setTreeStructure(true, config.getNewTreeStructureBg());
+
+		if (result != null && result.getErrors().size() > 0) {
+			new ProjectImproperResultDialog(result).showAndWait();
+		}
 
 		for (Runnable run : INSTANCE.showLater) {
 			run.run();
@@ -243,6 +284,7 @@ public final class ArmaDialogCreator extends Application {
 		getApplicationDataManager().saveApplicationProperties();
 	}
 
+	@NotNull
 	public static ApplicationDataManager getApplicationDataManager() {
 		return INSTANCE.applicationDataManager;
 	}

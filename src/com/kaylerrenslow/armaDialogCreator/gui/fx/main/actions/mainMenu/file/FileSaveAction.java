@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -30,7 +31,7 @@ public class FileSaveAction implements EventHandler<ActionEvent> {
 
 		try {
 			ApplicationDataManager.getInstance().saveProject();
-			File saveFile = ApplicationDataManager.getInstance().getCurrentProject().getProjectSaveDirectory();
+			File saveFile = Project.getCurrentProject().getProjectSaveDirectory();
 			resultNotification = new Notification(
 					Lang.ApplicationBundle().getString("Notifications.ProjectSave.Success.notification_title"),
 					String.format(Lang.ApplicationBundle().getString("Notifications.ProjectSave.Success.notification_body_f"), saveFile.getAbsolutePath())

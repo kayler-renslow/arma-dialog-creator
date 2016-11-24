@@ -13,8 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.create;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl.NewControlDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
@@ -36,12 +36,12 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		boolean backgroundControl = dialog.isBackgroundControl();
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
 		ArmaControl control = ArmaControl.createControl(controlType, className, lookup, DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()),
-				DataKeys.ENV.get(ArmaDialogCreator.getApplicationData()), ApplicationDataManager.getInstance().getCurrentProject()
+				DataKeys.ENV.get(ArmaDialogCreator.getApplicationData()), Project.getCurrentProject()
 		);
 		if (backgroundControl) {
-			ApplicationDataManager.getInstance().getCurrentProject().getEditingDisplay().getBackgroundControls().add(control);
+			Project.getCurrentProject().getEditingDisplay().getBackgroundControls().add(control);
 		} else {
-			ApplicationDataManager.getInstance().getCurrentProject().getEditingDisplay().getControls().add(control);
+			Project.getCurrentProject().getEditingDisplay().getControls().add(control);
 		}
 	}
 }

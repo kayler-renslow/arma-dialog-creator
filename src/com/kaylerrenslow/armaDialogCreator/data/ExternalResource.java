@@ -18,7 +18,7 @@ import java.io.File;
 import java.util.Arrays;
 
 /**
- Used to create a link to a resource outside the Project path (APP_SAVE_DIRECTORY/projectname) in the .resources folder (APP_SAVE_DIRECTORY/.resources).
+ Used to create a link to a resource outside the Project path ({@link Project#getProjectSaveDirectory()}) in the .resources folder.
  <br>
  <b>Do not check if a class is instanceof a sub-class of this class. When a resource is loaded from file, {@link ExternalResource} is only used for instantiation.</b>
 
@@ -35,7 +35,7 @@ public class ExternalResource {
 	 @param properties other data to save in the resource
 	 */
 	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueString[] properties) {
-		this(ResourceRegistry.getResourcesFilePathForName(resourceFileName), properties);
+		this(Project.getCurrentProject().getResourceRegistry().getResourcesFilePathForName(resourceFileName), properties);
 	}
 
 	/**

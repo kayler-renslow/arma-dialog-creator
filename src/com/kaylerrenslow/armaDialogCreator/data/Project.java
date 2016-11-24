@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -33,41 +32,44 @@ import java.util.List;
  @author Kayler
  @since 07/19/2016. */
 public class Project implements SpecificationRegistry {
+	public static final String PROJECT_SAVE_FILE_NAME = "project.xml";
+
 	private String projectName;
 	private String projectDescription;
-	private final File appSaveDirectory;
 	private final File projectSaveDirectory;
+	private File projectSaveFile;
 
-	private final ValueObserver<ArmaDisplay> editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
-	private final ProjectMacroRegistry macroRegistry = new ProjectMacroRegistry();
-	private final ResourceRegistry resourceRegistry = new ResourceRegistry();
-	private final CustomControlClassRegistry controlRegistry = new CustomControlClassRegistry();
+	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
+	private final ProjectMacroRegistry macroRegistry;
+	private final ResourceRegistry resourceRegistry;
+	private final CustomControlClassRegistry controlRegistry;
 	private ProjectExportConfiguration exportConfiguration;
 
 	private ProjectDefaultValueProvider defaultValueProvider;
 
-	public Project(@Nullable String projectName, @NotNull File appSaveDirectory) {
-		if (projectName == null || projectName.trim().length() == 0) {
-			int year = Calendar.getInstance().get(Calendar.YEAR);
-			int month = Calendar.getInstance().get(Calendar.MONTH);
-			int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
-			int hour = Calendar.getInstance().get(Calendar.HOUR);
-			int minute = Calendar.getInstance().get(Calendar.MINUTE);
-			int am_pm = Calendar.getInstance().get(Calendar.AM_PM);
-			String date = String.format("%d-%d-%d %d-%d%s", year, month, day, hour, minute, am_pm == Calendar.AM ? "am" : "pm");
-			projectName = "untitled " + date;
-		}
-
-		this.projectName = projectName;
-		this.appSaveDirectory = appSaveDirectory;
-
-		this.projectSaveDirectory = getProjectFile(projectName, appSaveDirectory);
+	public Project(@NotNull ProjectInfo info) {
+		this.projectName = info.getProjectName();
+		this.projectSaveDirectory = info.getProjectXmlFile();
 
 		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);
+
+		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
+		macroRegistry = new ProjectMacroRegistry();
+		resourceRegistry = new ResourceRegistry(this);
+		controlRegistry = new CustomControlClassRegistry();
+
+		projectSaveFile = getFileForName(PROJECT_SAVE_FILE_NAME);
 	}
 
-	private File getProjectFile(String projectName, File appSaveDirectory) {
-		return new File(appSaveDirectory.getPath() + "\\" + projectName);
+	@NotNull
+	public static Project getCurrentProject() {
+		return ApplicationDataManager.getInstance().getCurrentProject();
+	}
+
+	/** Get the .xml file for the project */
+	@NotNull
+	public File getProjectSaveFile() {
+		return projectSaveFile;
 	}
 
 	/**

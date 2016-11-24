@@ -12,7 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.IdentifierChecker;
@@ -92,7 +92,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem toSelect = null;
 		for (int i = 0; i < controlTypeControlClasses.length; i++) {
 			ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
-			ControlClass controlClass = new ControlClass(lookup.controlType.getDisplayName(), lookup.specProvider, ApplicationDataManager.getInstance().getCurrentProject());
+			ControlClass controlClass = new ControlClass(lookup.controlType.getDisplayName(), lookup.specProvider, Project.getCurrentProject());
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.getTypeId());
 			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.getIcon()));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
@@ -166,11 +166,11 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 	}
 
 	private ControlClassMenuItem[] getCustomControlsItems() {
-		ReadOnlyList<CustomControlClass> customControlClasses = ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList();
+		ReadOnlyList<CustomControlClass> customControlClasses = Project.getCurrentProject().getCustomControlClassRegistry().getControlClassList();
 		ControlClassMenuItem[] items = new ControlClassMenuItem[customControlClasses.size()];
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
-			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass(ApplicationDataManager.getInstance().getCurrentProject()));
+			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass(Project.getCurrentProject()));
 			i++;
 		}
 		return items;
@@ -229,9 +229,9 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 	@Override
 	protected void ok() {
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), ApplicationDataManager.getInstance().getCurrentProject());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), Project.getCurrentProject());
 		customControlClass.setComment(taComment.getText());
-		ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().addControlClass(customControlClass);
+		Project.getCurrentProject().getCustomControlClassRegistry().addControlClass(customControlClass);
 
 		super.ok();
 	}
@@ -253,7 +253,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 				stream.write(getTaComment().getText().getBytes());
 				stream.write("\n*/\n".getBytes());
 			}
-			ProjectExporter.exportControlClass(ApplicationDataManager.getInstance().getCurrentProject().getExportConfiguration(), editorPane.getControlClass(), stream);
+			ProjectExporter.exportControlClass(Project.getCurrentProject().getExportConfiguration(), editorPane.getControlClass(), stream);
 			stream.close();
 		} catch (IOException e) {
 			ExceptionHandler.error(e);

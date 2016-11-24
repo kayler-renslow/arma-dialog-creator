@@ -8,20 +8,29 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.VBox;
 
 /**
- Created by Kayler on 05/26/2016.
- */
-public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
-
-	@Override
-	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+ @author Kayler
+ @since 11/23/2016 */
+public class CouldNotLoadProjectDialog extends StageDialog<VBox> {
+	public CouldNotLoadProjectDialog(Exception e) {
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project"), false, true, false);
+		final TextArea taError = new TextArea(e.getMessage());
+		taError.setEditable(false);
+		myStage.setResizable(false);
+		myRootElement.getChildren().addAll(
+				new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")),
+				new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.reason")),
+				taError
+		);
 	}
 }
+

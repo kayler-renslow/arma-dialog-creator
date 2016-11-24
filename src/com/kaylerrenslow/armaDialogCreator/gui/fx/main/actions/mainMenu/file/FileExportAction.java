@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu.file;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.export.EditExportConfigurationDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.notification.Notification;
@@ -37,7 +37,7 @@ import java.io.IOException;
 public class FileExportAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(ApplicationDataManager.getInstance().getCurrentProject().getExportConfiguration());
+		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration());
 		dialog.show();
 		if (dialog.getConfiguration() == null) {
 			return;

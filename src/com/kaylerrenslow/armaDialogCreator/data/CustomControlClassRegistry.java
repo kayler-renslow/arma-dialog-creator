@@ -41,7 +41,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClassSpecification controlClass) {
-		controlClassList.add(new CustomControlClass(controlClass, ApplicationDataManager.getInstance().getCurrentProject()));
+		controlClassList.add(new CustomControlClass(controlClass, Project.getCurrentProject()));
 	}
 
 	public void addControlClass(@NotNull CustomControlClass controlClass) {
@@ -75,7 +75,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClass controlClass) {
-		addControlClass(new CustomControlClass(controlClass, ApplicationDataManager.getInstance().getCurrentProject()));
+		addControlClass(new CustomControlClass(controlClass, Project.getCurrentProject()));
 	}
 
 	public void removeControlClass(@NotNull CustomControlClass controlClass) {

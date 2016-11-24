@@ -27,6 +27,9 @@ import org.jetbrains.annotations.NotNull;
  @since 10/07/2016. */
 public class GenericResponseFooter extends BorderPane {
 
+	public static final double PREFFERED_BUTTON_OK_WIDTH = 100d;
+	public static final double PREFFERED_BUTTON_CANCEL_WIDTH = 75d;
+
 	private final HBox rightContainer;
 
 	/** The buttons used for the footer */
@@ -47,7 +50,7 @@ public class GenericResponseFooter extends BorderPane {
 		if (addCancel) {
 			btnCancel = new Button(Lang.ApplicationBundle().getString("Popups.btn_cancel"));
 			btnCancel.setOnAction(cancelEvent);
-			btnCancel.setPrefWidth(75d);
+			btnCancel.setPrefWidth(PREFFERED_BUTTON_CANCEL_WIDTH);
 			rightContainer.getChildren().add(btnCancel);
 		} else {
 			btnCancel = null;
@@ -55,7 +58,7 @@ public class GenericResponseFooter extends BorderPane {
 		if (addOk) {
 			btnOk = new Button(Lang.ApplicationBundle().getString("Popups.btn_ok"));
 			btnOk.setOnAction(okEvent);
-			btnOk.setPrefWidth(100d);
+			btnOk.setPrefWidth(PREFFERED_BUTTON_OK_WIDTH);
 			rightContainer.getChildren().add(btnOk);
 		} else {
 			btnOk = null;

@@ -21,6 +21,7 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -29,7 +30,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlGroupTree
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
@@ -49,11 +49,13 @@ import java.util.List;
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+	private final ProjectInfo info;
 	private ArmaResolution resolution;
 	private Env env;
 
-	protected ProjectLoaderVersion1(ProjectXmlLoader loader) throws XmlParseException {
+	protected ProjectLoaderVersion1(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
+		this.info = info;
 	}
 
 	@Override
@@ -70,7 +72,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
 			env = DataKeys.ENV.get(dataContext);
 			String projectName = document.getDocumentElement().getAttribute("name");
-			project = new Project(projectName, ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+			project = new Project(info);
 			loadMacroRegistry();
 			loadCustomControlClassRegistry();
 

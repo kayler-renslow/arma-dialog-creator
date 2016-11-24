@@ -8,20 +8,54 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+package com.kaylerrenslow.armaDialogCreator.data;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
- Created by Kayler on 05/26/2016.
- */
-public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
+ @author Kayler
+ @since 11/23/2016 */
+public class ProjectInfo {
+	private final String projectName;
+	private final File projectXmlFile;
+
+	public ProjectInfo(@NotNull String projectName, @NotNull File projectXmlFile) {
+		this.projectName = projectName;
+		this.projectXmlFile = projectXmlFile;
+	}
+
+	@NotNull
+	public String getProjectName() {
+		return projectName;
+	}
+
+	@NotNull
+	public File getProjectXmlFile() {
+		return projectXmlFile;
+	}
 
 	@Override
-	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+
+		ProjectInfo that = (ProjectInfo) o;
+
+		if (!projectName.equals(that.projectName)) {
+			return false;
+		}
+		return projectXmlFile.equals(that.projectXmlFile);
 	}
+
+	public String toString() {
+		return projectName;
+	}
+
 }

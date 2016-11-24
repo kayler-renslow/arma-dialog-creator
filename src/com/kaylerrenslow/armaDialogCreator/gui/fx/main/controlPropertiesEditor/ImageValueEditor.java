@@ -12,10 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
-import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.PaaImageExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
@@ -82,7 +79,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 				FileChooser fc = new FileChooser();
 				fc.setTitle(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.locate_image"));
 				fc.getExtensionFilters().addAll(ADCStatic.IMAGE_FILE_EXTENSIONS);
-				fc.setInitialDirectory(ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory());
+				fc.setInitialDirectory(Workspace.getWorkspace().getWorkspaceDirectory());
 				File chosenFile = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
 				if (chosenFile == null) {
 					return;
@@ -187,7 +184,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		}
 
 		private void initTask(ImageValueEditor imageValueEditor, File chosenFile, File a3Tools) {
-			File convertDest = ResourceRegistry.getResourcesFilePathForName(chosenFile.getName() + ".png");
+			File convertDest = GlobalResourceRegistry.getInstance().getResourcesFilePathForName(chosenFile.getName() + ".png");
 
 			if (convertDest.exists()) {
 				ImageAlreadyExistsDialog dialog = new ImageAlreadyExistsDialog(convertDest);
@@ -305,8 +302,8 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
 
 			ExternalResource resource = new PaaImageExternalResource(toConvert, convertDest);
-			ResourceRegistry.getGlobalRegistry().getExternalResourceList().add(resource);
-			ApplicationDataManager.getInstance().getApplicationData().getCurrentProject().getResourceRegistry().getExternalResourceList().add(resource);
+			GlobalResourceRegistry.getInstance().getExternalResourceList().add(resource);
+			Project.getCurrentProject().getResourceRegistry().getExternalResourceList().add(resource);
 
 			return new SVImage(convertDest);
 		}
@@ -328,7 +325,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			btnLocate.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getAppSaveDataDirectory(), ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
+					new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
 					close();
 				}
 			});

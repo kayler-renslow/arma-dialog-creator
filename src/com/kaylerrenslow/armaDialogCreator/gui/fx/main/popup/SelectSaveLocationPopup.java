@@ -26,23 +26,18 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
-import javafx.stage.Modality;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 /**
- Used for setting application save directory {@link ApplicationDataManager#getAppSaveDataDirectory()} and Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}<br>
- The application save directory is not allowed to be empty/not set, however, the Arma 3 Tools directory can be not set. All changes will be set inside the popup.
+ Used for setting Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}. All changes will be set once popup is closed.
 
  @author Kayler
  @since 05/26/2016. */
 public class SelectSaveLocationPopup extends StageDialog<VBox> {
 
-	private final TextField tfAppDataSaveDir = new TextField();
 	private final TextField tfA3ToolsDir = new TextField();
 
 	private BadArma3ToolsDirectoryPopup badArma3ToolsDirectoryPopup;
@@ -50,47 +45,24 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 	/**
 	 Creates the "change directories" popup
 	 */
-	public SelectSaveLocationPopup(@Nullable File initialDirectoryAppDataSave, @Nullable File a3ToolsDir) {
+	public SelectSaveLocationPopup(@Nullable File a3ToolsDir) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.popup_title"), true, true, true);
-		initialize(initialDirectoryAppDataSave, a3ToolsDir);
+		initialize(a3ToolsDir);
 		myStage.setMinWidth(600d);
-		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
 	}
 
-	private void initialize(@Nullable File initialAppSaveDirectory, @Nullable File a3ToolsDir) {
+	private void initialize(@Nullable File a3ToolsDir) {
 		tfA3ToolsDir.setEditable(false);
-		tfAppDataSaveDir.setEditable(false);
 
 		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
-		if (initialAppSaveDirectory != null) {
-			tfAppDataSaveDir.setText(initialAppSaveDirectory.getPath());
-		}
 
-		Label lblAppDataSaveDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_app_data_save_dir"));
-		Label lblA3ToolsDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
-
-
-		final Button btnChangeAppData = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_change"));
+		final Label lblA3ToolsDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
 		final Button btnChangeA3Tools = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_change"));
 		final Button btnClearA3ToolsDir = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_clear"));
 		
-		/*set events*/
-		btnChangeAppData.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				DirectoryChooser dc = new DirectoryChooser();
-				dc.setInitialDirectory(initialAppSaveDirectory);
-				dc.setTitle(lblAppDataSaveDir.getText());
-				File f = dc.showDialog(myStage);
-				if (f == null) {
-					return;
-				}
-				chooseAppDataSaveDir(f);
-			}
-		});
 		btnChangeA3Tools.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -119,16 +91,11 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 		});
 
 
-		HBox hbTop = new HBox(5);
-		hbTop.getChildren().addAll(tfAppDataSaveDir, btnChangeAppData);
-		HBox.setHgrow(tfAppDataSaveDir, Priority.ALWAYS);
-
-		HBox hbMid = new HBox(5);
-		hbMid.getChildren().addAll(tfA3ToolsDir, btnChangeA3Tools, btnClearA3ToolsDir);
+		HBox hbA3Tools = new HBox(5);
+		hbA3Tools.getChildren().addAll(tfA3ToolsDir, btnChangeA3Tools, btnClearA3ToolsDir);
 		HBox.setHgrow(tfA3ToolsDir, Priority.ALWAYS);
 
-
-		myRootElement.getChildren().addAll(lblAppDataSaveDir, hbTop, lblA3ToolsDir, hbMid);
+		myRootElement.getChildren().addAll(lblA3ToolsDir, hbA3Tools);
 		myStage.setResizable(false);
 	}
 
@@ -136,18 +103,6 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 		tfA3ToolsDir.setText(f != null ? f.getPath() : "");
 	}
 
-	private void chooseAppDataSaveDir(@NotNull File f) {
-		tfAppDataSaveDir.setText(f.getPath());
-	}
-
-	@Nullable
-	public String getApplicationDataSaveLocationPath() {
-		String s = tfAppDataSaveDir.getText();
-		if (s.length() == 0) {
-			return null;
-		}
-		return tfAppDataSaveDir.getText();
-	}
 
 	@Nullable
 	public String getArma3ToolsDirectoryPath() {
@@ -160,12 +115,7 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 
 	@Override
 	protected void ok() {
-		String appSaveDataLocation = appSaveDataLocation();
-		if (appSaveDataLocation == null) {
-			return;
-		}
 		String a3tools = getArma3ToolsDirectoryPath();
-		ArmaDialogCreator.getApplicationDataManager().setAppSaveDataLocation(new File(appSaveDataLocation));
 		if (a3tools != null) {
 			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(new File(a3tools));
 		} else {
@@ -177,36 +127,10 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 	}
 
 	@Override
-	protected void cancel() {
-		if (appSaveDataLocation() == null) {
-			return;
-		}
-		super.cancel();
-	}
-
-	@Override
 	protected void help() {
 		BrowserUtil.browse(HelpUrls.CONFIGURE_DIRECTORIES_POPUP);
 	}
 
-	@Nullable
-	private String appSaveDataLocation() {
-		String appSaveDataLocation = getApplicationDataSaveLocationPath();
-		if (appSaveDataLocation == null) {
-			beepFocus();
-			tfAppDataSaveDir.requestFocus();
-			return null;
-		}
-		return appSaveDataLocation;
-	}
-
-
-	@Override
-	protected void onCloseRequest(WindowEvent event) {
-		if (appSaveDataLocation() == null) {
-			event.consume();
-		}
-	}
 
 	private static class BadArma3ToolsDirectoryPopup extends StageDialog<VBox> {
 

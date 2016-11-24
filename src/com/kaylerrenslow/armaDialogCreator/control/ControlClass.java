@@ -10,7 +10,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -135,7 +135,7 @@ public class ControlClass {
 			optionalNestedClasses.add(s.constructNewControlClass(registry));
 		}
 		if (specification.getExtendClassName() != null) {
-			extendControlClass(ApplicationDataManager.getInstance().getCurrentProject().findControlClassByName(specification.getExtendClassName()));
+			extendControlClass(Project.getCurrentProject().findControlClassByName(specification.getExtendClassName()));
 		}
 		afterConstructor();
 	}

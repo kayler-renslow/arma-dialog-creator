@@ -13,8 +13,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.dataCreator;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ButtonControl;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
@@ -40,7 +40,7 @@ public class ButtonDataCreator implements TreeItemDataCreator<TreeItemEntry> {
 		}
 
 		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
-		ButtonControl control = new ButtonControl(dialog.getClassName(), 0, resolution, getEnv(), ApplicationDataManager.getInstance().getCurrentProject());
+		ButtonControl control = new ButtonControl(dialog.getClassName(), 0, resolution, getEnv(), Project.getCurrentProject());
 		return new ControlTreeItemEntry(control);
 	}
 

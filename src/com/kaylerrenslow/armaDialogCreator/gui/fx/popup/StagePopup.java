@@ -281,6 +281,11 @@ public class StagePopup<E extends Parent> {
 		return myLoader;
 	}
 
+	@NotNull
+	protected GenericResponseFooter getFooter() {
+		return footer;
+	}
+
 	public void setStageSize(double w, double h) {
 		myStage.setWidth(w);
 		myStage.setHeight(h);

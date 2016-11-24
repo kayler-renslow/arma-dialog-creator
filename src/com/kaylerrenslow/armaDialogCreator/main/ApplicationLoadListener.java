@@ -10,6 +10,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationLoader;
+
 /**
  Created by Kayler on 08/07/2016.
  */

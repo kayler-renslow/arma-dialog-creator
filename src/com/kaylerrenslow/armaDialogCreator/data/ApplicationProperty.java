@@ -18,7 +18,6 @@ import com.kaylerrenslow.armaDialogCreator.util.Key;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.Nullable;
 
-import javax.swing.filechooser.FileSystemView;
 import java.io.File;
 import java.util.Locale;
 
@@ -28,9 +27,9 @@ import java.util.Locale;
  @author Kayler
  @since 07/12/2016. */
 public class ApplicationProperty<T> extends Key<T> {
-	/** Location path to folder where application save data should be stored. */
-	public static final ApplicationProperty<File> APP_SAVE_DATA_DIR = new ApplicationProperty<>(
-			"app_save_data_dir", new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/Arma Dialog Creator"), FileConverter.INSTANCE
+	/** File of last used workspace. */
+	public static final ApplicationProperty<File> LAST_WORKSPACE = new ApplicationProperty<>(
+			"last_workspace_folder", Workspace.DEFAULT_WORKSPACE_DIRECTORY, FileConverter.INSTANCE
 	);
 	/** Directory for where Arma 3 tools is. Can be empty (not set) */
 	public static final ApplicationProperty<File> A3_TOOLS_DIR = new ApplicationProperty<>("a3_tools_dir", (File) null, FileConverter.INSTANCE);
@@ -38,7 +37,7 @@ public class ApplicationProperty<T> extends Key<T> {
 
 	public static final ApplicationProperty<Locale> LOCALE = new ApplicationProperty<>("locale", Locale.US, Lang.LOCALE_CONVERTER, Lang.LOCALE_CONVERTER);
 
-	private static final ApplicationProperty[] values = {APP_SAVE_DATA_DIR, A3_TOOLS_DIR, DARK_THEME, LOCALE};
+	private static final ApplicationProperty[] values = {LAST_WORKSPACE, A3_TOOLS_DIR, DARK_THEME, LOCALE};
 
 
 	public final ValueConverter converter;

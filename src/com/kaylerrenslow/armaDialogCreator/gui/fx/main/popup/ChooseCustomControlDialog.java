@@ -11,7 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls.ChooseItemPopup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Pos;
@@ -33,7 +33,7 @@ public class ChooseCustomControlDialog extends ChooseItemPopup<CustomControlClas
 	private static final ItemCategory<CustomControlClass>[] categories = new ControlClassCategory[]{new ControlClassCategory()};
 
 	public ChooseCustomControlDialog() {
-		super(categories, ApplicationDataManager.getInstance().getCurrentProject().getCustomControlClassRegistry().getControlClassList(),
+		super(categories, Project.getCurrentProject().getCustomControlClassRegistry().getControlClassList(),
 				Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.dialog_title"),
 				Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.header_title")
 		);

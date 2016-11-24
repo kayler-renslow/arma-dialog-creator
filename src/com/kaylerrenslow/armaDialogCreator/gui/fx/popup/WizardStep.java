@@ -8,20 +8,31 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+package com.kaylerrenslow.armaDialogCreator.gui.fx.popup;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import javafx.scene.Node;
+import org.jetbrains.annotations.NotNull;
+
 
 /**
- Created by Kayler on 05/26/2016.
- */
-public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
+ @author Kayler
+ @since 11/23/2016 */
+public abstract class WizardStep<V extends Node> {
+	protected final V content;
 
-	@Override
-	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+	public WizardStep(@NotNull V content) {
+		this.content = content;
 	}
+
+	@NotNull
+	public V getContent() {
+		return content;
+	}
+
+	protected void stepPresented() {
+
+	}
+
+
+	abstract protected boolean stepIsComplete();
 }

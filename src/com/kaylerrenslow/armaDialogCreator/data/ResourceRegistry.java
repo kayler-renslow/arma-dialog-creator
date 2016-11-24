@@ -10,11 +10,9 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
-import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,62 +25,30 @@ public class ResourceRegistry {
 	private final List<ExternalResource> externalResourceList = new ArrayList<>();
 
 	public static final String RESOURCES_FILE_NAME = ".resources";
-	private static final File resourcesFile = new File(ApplicationDataManager.getInstance().getAppSaveDataDirectory() + "/" + RESOURCES_FILE_NAME);
 
-	public static GlobalResourceRegistry getGlobalRegistry() {
-		return GlobalResourceRegistry.getInstance();
+	private final File resourcesFile;
+
+	protected ResourceRegistry(@NotNull Project project) {
+		resourcesFile = project.getFileForName(RESOURCES_FILE_NAME);
 	}
 
-	static {
-		if (!resourcesFile.exists()) {
-			resourcesFile.mkdirs();
-		} else {
-			if (!resourcesFile.isDirectory()) {
-				throw new IllegalStateException("resourcesFile is not a directory");
-			}
-		}
+	protected ResourceRegistry(@NotNull File resourcesFile) {
+		this.resourcesFile = resourcesFile;
 	}
 
-	public static File getResourcesFile() {
+
+	@NotNull
+	public File getResourcesFile() {
 		return resourcesFile;
 	}
 
-	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path ({@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/fileName). */
-	public static File getResourcesFilePathForName(String fileName) {
+	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path. */
+	public File getResourcesFilePathForName(@NotNull String fileName) {
 		return new File(resourcesFile + "/" + fileName);
-	}
-
-	ResourceRegistry() {
 	}
 
 	public List<ExternalResource> getExternalResourceList() {
 		return externalResourceList;
 	}
 
-	public static class GlobalResourceRegistry extends ResourceRegistry {
-		private static final GlobalResourceRegistry instance = new GlobalResourceRegistry();
-
-		public static GlobalResourceRegistry getInstance() {
-			return instance;
-		}
-
-		private final File globalResourcesXmlFile = getResourcesFilePathForName("global-resources.xml");
-
-		private GlobalResourceRegistry() {
-			if (!globalResourcesXmlFile.exists()) {
-				globalResourcesXmlFile.getParentFile().mkdirs();
-				try {
-					globalResourcesXmlFile.createNewFile();
-					ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter.writeAndClose(this);
-				} catch (IOException e) {
-					ExceptionHandler.error(e);
-				}
-			}
-		}
-
-		/** {@link ApplicationDataManager#getAppSaveDataDirectory()}/.resources/global-resources.xml */
-		public File getGlobalResourcesXmlFile() {
-			return globalResourcesXmlFile;
-		}
-	}
 }

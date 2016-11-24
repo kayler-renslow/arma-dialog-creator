@@ -12,8 +12,6 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.ApplicationPropertyXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
@@ -53,10 +51,8 @@ class ApplicationPropertyManager {
 
 	private final File appPropertiesFile = new File(appdataFolder.getPath() + "/config.xml");
 
-	/** Location for application save data. This is where all projects and their data are saved to. */
-	private File appSaveDataDir,
 	/** Location of Arma 3 tools. Arma 3 tools has some executables valuable to Arma Dialog Creator, such as .paa converter */
-	a3ToolsDir;
+	private File a3ToolsDir;
 
 	/** Loads the AppData properties file and stores properties in application properties. */
 	public ApplicationPropertyManager() {
@@ -78,17 +74,7 @@ class ApplicationPropertyManager {
 			a3ToolsDir = f;
 		}
 
-		appSaveDataDir = ApplicationProperty.APP_SAVE_DATA_DIR.get(applicationProperties);
-		if (appSaveDataDir == null || !appSaveDataDir.exists()) {
-			ArmaDialogCreator.runAfterMainWindowLoaded(new Runnable() {
-				@Override
-				public void run() {
-					new SelectSaveLocationPopup(null, a3ToolsDir).show();
-				}
-			});
-		} else if (!appSaveDataDir.isDirectory()) {
-			ExceptionHandler.fatal(new IllegalStateException("appSaveDataDir exists and is not a directory"));
-		}
+
 	}
 
 	private void loadApplicationProperties() {
@@ -153,13 +139,6 @@ class ApplicationPropertyManager {
 		fos.close();
 	}
 
-	/**
-	 Get where application save files should be saved to.
-	 */
-	@NotNull
-	public File getAppSaveDataDirectory() {
-		return appSaveDataDir;
-	}
 
 	/**
 	 Get the directory for where Arma 3 tools is saved. If the directory hasn't been set or doesn't exist or the file that is set isn't a directory, will return null.
@@ -167,17 +146,6 @@ class ApplicationPropertyManager {
 	@Nullable
 	public File getArma3ToolsDirectory() {
 		return a3ToolsDir;
-	}
-
-	/**
-	 Set the application save data directory to a new one. Automatically updates application properties.
-	 */
-	public void setAppSaveDataLocation(@NotNull File saveLocation) {
-		if (!saveLocation.exists()) {
-			throw new IllegalStateException("Save location should exist");
-		}
-		this.appSaveDataDir = saveLocation;
-		applicationProperties.put(ApplicationProperty.APP_SAVE_DATA_DIR, saveLocation);
 	}
 
 	/**

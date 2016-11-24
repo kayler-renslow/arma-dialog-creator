@@ -27,29 +27,44 @@ import java.io.IOException;
 
 /**
  Manages save data
+
  @author Kayler
  @since 05/26/2016. */
 public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
+	private Workspace workspace;
 	private ApplicationData applicationData;
 
+	public void loadWorkspace(@NotNull File workspaceFile) {
+		workspace = new Workspace(workspaceFile);
+		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceFile);
+	}
+
+	@NotNull
 	public static ApplicationDataManager getInstance() {
 		return ArmaDialogCreator.getApplicationDataManager();
 	}
 
 	/** Get application properties, which stores all {@link ApplicationProperty} instances */
-	public static @NotNull DataContext getApplicationProperties() {
+	@NotNull
+	public static DataContext getApplicationProperties() {
 		return getInstance().propertyManager.getApplicationProperties();
 	}
 
-	public void setApplicationData(@NotNull ApplicationData applicationData) {
-		this.applicationData = applicationData;
+	public void initializeApplicationData() {
+		this.applicationData = new ApplicationData();
+	}
+
+	public void initializeChangeRegistrars() {
 		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);
 	}
 
 	/** Calls {@code getApplicationData().getCurrentProject()} */
 	@NotNull
 	public Project getCurrentProject() {
+		if (applicationData == null) {
+			throw new IllegalStateException("can't get current project when ApplicationData hasn't been initialized");
+		}
 		return getApplicationData().getCurrentProject();
 	}
 
@@ -61,20 +76,9 @@ public class ApplicationDataManager {
 		return applicationData;
 	}
 
-	/** Set the application save data directory to a new one. Automatically updates application properties. */
-	public void setAppSaveDataLocation(@NotNull File file) {
-		propertyManager.setAppSaveDataLocation(file);
-	}
-
 	/** Set the arma 3 tools directory to a new one (can be null). Automatically updates application properties. */
 	public void setArma3ToolsLocation(@Nullable File file) {
 		propertyManager.setArma3ToolsLocation(file);
-	}
-
-	/** Get where application save files should be saved to. */
-	@NotNull
-	public File getAppSaveDataDirectory() {
-		return propertyManager.getAppSaveDataDirectory();
 	}
 
 	/** Get the directory for where Arma 3 tools is saved. If the directory hasn't been set or doesn't exist or the file that is set isn't a directory, will return null. */
@@ -103,9 +107,12 @@ public class ApplicationDataManager {
 		if (!project.getProjectSaveDirectory().exists()) {
 			project.getProjectSaveDirectory().mkdir();
 		}
-		File projectSaveXml = project.getFileForName("project.xml");
-		new ProjectSaveXmlWriter(project, ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(), ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure(),
-				projectSaveXml).write();
+		new ProjectSaveXmlWriter(
+				project,
+				ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(),
+				ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure(),
+				project.getProjectSaveFile()
+		).write();
 	}
 
 	/**
@@ -150,6 +157,11 @@ public class ApplicationDataManager {
 	/** Get an {@link ApplicationProperty} from {@link #getApplicationProperties()} */
 	public Object getApplicationProperty(@NotNull ApplicationProperty property) {
 		return property.get(propertyManager.getApplicationProperties());
+	}
+
+	@NotNull
+	public Workspace getWorkspace() {
+		return workspace;
 	}
 
 	private static class SaveProjectDialog extends StageDialog<VBox> {

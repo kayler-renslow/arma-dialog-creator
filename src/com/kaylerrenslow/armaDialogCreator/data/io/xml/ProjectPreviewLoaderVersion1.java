@@ -8,20 +8,39 @@
  * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
  */
 
-package com.kaylerrenslow.armaDialogCreator.gui.fx.main.actions.mainMenu;
+package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.SelectSaveLocationPopup;
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
 
 /**
- Created by Kayler on 05/26/2016.
- */
-public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
+ A project loader for save-version='1'
 
-	@Override
-	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+ @author Kayler
+ @since 08/07/2016. */
+public class ProjectPreviewLoaderVersion1 extends XmlLoader {
+
+	private String projectName;
+
+
+	protected ProjectPreviewLoaderVersion1(@NotNull File xmlFile) throws XmlParseException {
+		super(xmlFile, null);
+	}
+
+
+	public void parseDocument() throws XmlParseException {
+		try {
+			projectName = document.getDocumentElement().getAttribute("name");
+
+		} catch (Exception e) {
+			e.printStackTrace(System.out);
+			throw new XmlParseException(e.getMessage());
+		}
+	}
+
+	@NotNull
+	public String getProjectName() {
+		return projectName;
 	}
 }

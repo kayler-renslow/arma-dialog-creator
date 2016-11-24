@@ -18,8 +18,6 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
-import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoadListener;
-import com.kaylerrenslow.armaDialogCreator.main.ApplicationLoader;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,13 +33,7 @@ public class ApplicationData extends DataContext {
 	private Project currentProject;
 	private final Changelog changelog = new Changelog(20);
 
-	public ApplicationData(@NotNull ApplicationLoader.ApplicationLoadRequest request) {
-		request.addOnComplete(new ApplicationLoadListener() {
-			@Override
-			public void loaded(ApplicationLoader.ApplicationLoadConfig config) {
-				setCurrentProject(config.getNewProject());
-			}
-		});
+	protected ApplicationData() {
 		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT));
 		put(DataKeys.ENV, globalEnv);
 	}
@@ -101,7 +93,12 @@ public class ApplicationData extends DataContext {
 		return changelog;
 	}
 
-	private void setCurrentProject(Project currentProject) {
+	public void setCurrentProject(@NotNull Project currentProject) {
 		this.currentProject = currentProject;
+	}
+
+	@NotNull
+	public static ApplicationData getInstance() {
+		return ApplicationDataManager.getInstance().getApplicationData();
 	}
 }

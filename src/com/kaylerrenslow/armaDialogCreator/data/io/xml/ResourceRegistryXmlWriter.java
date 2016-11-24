@@ -11,6 +11,7 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.GlobalResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +26,7 @@ public class ResourceRegistryXmlWriter {
 
 	public static class GlobalResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 		public GlobalResourceRegistryXmlWriter() {
-			super(ResourceRegistry.getGlobalRegistry());
+			super(GlobalResourceRegistry.getInstance());
 		}
 
 		private GlobalResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
@@ -33,8 +34,14 @@ public class ResourceRegistryXmlWriter {
 		}
 
 		@NotNull
-		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws IOException {
-			return new XmlWriterOutputStream(registry.getGlobalResourcesXmlFile());
+		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull GlobalResourceRegistry registry) throws IOException {
+			if (!registry.getResourcesFile().exists()) {
+				registry.getResourcesFile().createNewFile();
+			}
+			if (registry.getResourcesFile().isDirectory()) {
+				throw new IOException("registry xml file is a directory");
+			}
+			return new XmlWriterOutputStream(registry.getResourcesFile());
 		}
 
 
@@ -45,16 +52,16 @@ public class ResourceRegistryXmlWriter {
 		}
 
 		public static void writeAndClose() throws IOException {
-			writeAndClose(ResourceRegistry.getGlobalRegistry());
+			writeAndClose(GlobalResourceRegistry.getInstance());
 		}
 
 
-		public static void writeAndClose(@NotNull ResourceRegistry.GlobalResourceRegistry registry) throws IOException {
+		public static void writeAndClose(@NotNull GlobalResourceRegistry registry) throws IOException {
 			new GlobalResourceRegistryXmlWriter(registry).doWriteAndClose();
 		}
 
 		public void doWriteAndClose() throws IOException {
-			XmlWriterOutputStream fos = getXmlWriterOutputStream((ResourceRegistry.GlobalResourceRegistry) this.resourceRegistry);
+			XmlWriterOutputStream fos = getXmlWriterOutputStream((GlobalResourceRegistry) this.resourceRegistry);
 			write(fos);
 			fos.flush();
 			fos.close();
