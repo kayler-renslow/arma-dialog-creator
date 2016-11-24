@@ -15,7 +15,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
@@ -104,12 +103,6 @@ public class UICanvasEditor extends UICanvas {
 			}
 		});
 
-		keys.getKeyStateObserver().addListener(new ValueListener<Boolean>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
-				keyUpdate(newValue);
-			}
-		});
 		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
 		selection.selected.addListener(new ListChangeListener<CanvasControl>() {
 			@Override
@@ -352,7 +345,7 @@ public class UICanvasEditor extends UICanvas {
 					return;
 				}
 			}
-			Iterator<? extends CanvasControl> controlIterator = display.iteratorForAllControls(true);
+			Iterator<? extends CanvasControl> controlIterator = display.iteratorForAllControls(false);
 			while (controlIterator.hasNext()) {
 				control = controlIterator.next();
 				if (!control.getRenderer().isEnabled()) {
@@ -677,7 +670,7 @@ public class UICanvasEditor extends UICanvas {
 		mouseOverControl = null;
 
 		CanvasControl control;
-		Iterator<? extends CanvasControl> iteratorControl = display.iteratorForAllControls(true);
+		Iterator<? extends CanvasControl> iteratorControl = display.iteratorForAllControls(false);
 		while (iteratorControl.hasNext()) {
 			control = iteratorControl.next();
 			if (control.getRenderer().isEnabled()) {
@@ -707,7 +700,7 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			iteratorControl = display.iteratorForAllControls(false);
+			iteratorControl = display.iteratorForAllControls(true);
 			while (iteratorControl.hasNext()) {
 				control = iteratorControl.next();
 				if (control.getRenderer().isEnabled()) {
@@ -874,14 +867,16 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 
-	private void keyUpdate(boolean keyIsDown) {
-		if (keyIsDown) {
-			if (keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+	@Override
+	public void keyEvent(String key, boolean keyIsDown, boolean shiftDown, boolean ctrlDown, boolean altDown) {
+		super.keyEvent(key, keyIsDown, shiftDown, ctrlDown, altDown);
+
+		if (selection.getFirst() != null) {
+			boolean movementStop = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT);
+			if (!waitingForZXRelease && movementStop) {
 				zxPressStartTimeMillis = System.currentTimeMillis();
 				waitingForZXRelease = true;
-			}
-		} else {
-			if (waitingForZXRelease && !keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT) && !keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {
+			} else if (waitingForZXRelease && movementStop) {
 				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
 					for (CanvasControl control : selection.getSelected()) {
 						control.getRenderer().setEnabled(false);

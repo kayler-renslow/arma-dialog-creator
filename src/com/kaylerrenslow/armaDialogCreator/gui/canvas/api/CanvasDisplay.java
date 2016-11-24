@@ -27,8 +27,8 @@ public interface CanvasDisplay<C extends CanvasControl> extends ControlHolder<C>
 	/**
 	 Get an iterator that will cycle through the background controls ({@link #getBackgroundControls()}) and then main controls ({@link #getControls()}). This will not iterate through controls
 	 within possible control groups in either controls list or background controls list.
-	 
-	 @param backwards if true, the iterator will iterate through the other controls from size-1 to 0 and then the background controls in reverse (starting from size-1 to 0).<br>
+
+	 @param backwards if true, the iterator will iterate through the controls from size-1 to 0 and then the background controls in reverse (starting from size-1 to 0).<br>
 	 if false, will iterate through the background controls from 0 to size-1 and then other controls from 0 to size-1
 	 */
 	Iterator<C> iteratorForAllControls(boolean backwards);
