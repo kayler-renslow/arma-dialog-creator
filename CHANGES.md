@@ -1,8 +1,8 @@
 **Added:**
-* font sizes mostly work in preview
+* none
 
 **Changed:**
 * none
 
 **Fixed:**
-* export directory being wrong
+* text vertical align was off 

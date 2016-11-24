@@ -24,6 +24,7 @@ import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -44,11 +45,6 @@ public class BasicTextRenderer {
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 
-	private static final int ALIGN_LEFT = 0;
-	private static final int ALIGN_CENTER = 1;
-	private static final int ALIGN_RIGHT = 2;
-
-	private int alignment = ALIGN_CENTER;
 	protected Color textColor;
 
 	private Text textObj = new Text();
@@ -63,6 +59,8 @@ public class BasicTextRenderer {
 	}
 
 	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx) {
+		textObj.setTextOrigin(VPos.BASELINE);
+
 		control.findProperty(text).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
@@ -91,15 +89,12 @@ public class BasicTextRenderer {
 					for (ControlStyle style : group.getValues()) {
 						if (style == ControlStyle.LEFT) {
 							textObj.setTextAlignment(TextAlignment.LEFT);
-							alignment = ALIGN_LEFT;
 							break;
 						} else if (style == ControlStyle.CENTER) {
 							textObj.setTextAlignment(TextAlignment.CENTER);
-							alignment = ALIGN_CENTER;
 							break;
 						} else if (style == ControlStyle.RIGHT) {
 							textObj.setTextAlignment(TextAlignment.RIGHT);
-							alignment = ALIGN_RIGHT;
 							break;
 						}
 					}
@@ -147,8 +142,8 @@ public class BasicTextRenderer {
 	}
 
 	private int getTextY() {
-		int textHeight = (int) (textObj.getLayoutBounds().getHeight() * 0.25);
-		return renderer.getTopY() + (renderer.getHeight() - textHeight) / 2;
+		int textHeight = (int) (textObj.getLayoutBounds().getHeight());
+		return renderer.getTopY() + renderer.getHeight() / 2 + textHeight / 4;
 	}
 
 	public void paint(GraphicsContext gc) {

@@ -113,7 +113,6 @@ public abstract class UICanvas extends AnchorPane {
 
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.gc = this.canvas.getGraphicsContext2D();
-		gc.setTextBaseline(VPos.CENTER);
 
 		this.getChildren().add(this.canvas);
 		UICanvas.CanvasMouseEvent mouseEvent = new UICanvas.CanvasMouseEvent(this);
@@ -198,6 +197,7 @@ public abstract class UICanvas extends AnchorPane {
 	 </ol>
 	 */
 	protected void paint() {
+		gc.setTextBaseline(VPos.BASELINE); //we actually need to run this with each call for some reason
 		gc.save();
 		paintBackground();
 		paintControls();

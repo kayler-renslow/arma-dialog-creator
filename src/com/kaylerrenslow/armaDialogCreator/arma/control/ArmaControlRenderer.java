@@ -156,7 +156,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 this whenever a new render needs to happen.
 	 */
 	public final void requestRender() {
-		System.out.println(resolution.getViewportHeight());
 		myControl.getRenderUpdateGroup().update(null);
 	}
 
