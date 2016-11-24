@@ -39,4 +39,28 @@ public interface UICanvasConfiguration {
 	 @return true if grid is being shown, false otherwise
 	 */
 	boolean showGrid();
+
+
+	/**
+	 Set or disable viewport snapping
+
+	 @param set true to enable, false to disable
+	 @see #viewportSnapEnabled()
+	 */
+	void setViewportSnapEnabled(boolean set);
+
+	/**
+	 set safe movement
+
+	 @param safeMovement true to set, false to disable
+	 @see #isSafeMovement()
+	 */
+	void setSafeMovement(boolean safeMovement);
+
+	/**
+	 Sets whether or not the grid should be shown.
+
+	 @param set true if set grid, false otherwise
+	 */
+	void setShowGrid(boolean set);
 }

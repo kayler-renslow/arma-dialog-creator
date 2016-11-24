@@ -154,10 +154,6 @@ class ADCCanvasView extends HBox implements CanvasView {
 		}
 	}
 
-	@Override
-	public void showGrid(boolean showGrid) {
-		canvasControls.showGrid(showGrid);
-	}
 
 	@Override
 	public void setCanvasBackgroundToImage(@Nullable String imgPath) {
@@ -211,6 +207,12 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public EditableTreeView<? extends TreeItemEntry> getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
+	}
+
+	@NotNull
+	@Override
+	public UICanvasConfiguration getConfiguration() {
+		return canvasControls;
 	}
 
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {

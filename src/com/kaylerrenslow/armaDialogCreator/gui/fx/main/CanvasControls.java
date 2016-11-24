@@ -153,6 +153,22 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		return showGrid;
 	}
 
+	@Override
+	public void setViewportSnapEnabled(boolean set) {
+		checkBoxViewportSnapping.setSelected(set);
+	}
+
+	@Override
+	public void setSafeMovement(boolean safeMovement) {
+
+	}
+
+	@Override
+	public void setShowGrid(boolean set) {
+		this.showGrid = set;
+		canvasView.repaintCanvas();
+	}
+
 	/** Get the tree view used for storing controls that is meant for non-background controls */
 	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewMain() {
 		return treeViewMain;
@@ -163,9 +179,6 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		return treeViewBg;
 	}
 
-	public void showGrid(boolean showGrid) {
-		this.showGrid = showGrid;
-	}
 
 	private static class Percentage {
 		private final double percentDecimal;

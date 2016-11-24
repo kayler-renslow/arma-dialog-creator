@@ -12,6 +12,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.TreeItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -21,8 +22,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface CanvasView {
 
-	/** Set whether or not the grid is showing */
-	void showGrid(boolean showGrid);
+	@NotNull
+	UICanvasConfiguration getConfiguration();
 
 	/**
 	 Set the background image of the canvas

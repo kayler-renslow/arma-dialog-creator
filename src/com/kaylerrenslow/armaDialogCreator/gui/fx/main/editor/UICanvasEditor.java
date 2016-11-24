@@ -88,10 +88,10 @@ public class UICanvasEditor extends UICanvas {
 
 	private ValueObserver<CanvasControl> doubleClickObserver = new ValueObserver<>(null);
 
-	public UICanvasEditor(Resolution resolution, UICanvasConfiguration calculator, @NotNull CanvasDisplay<? extends CanvasControl> display) {
+	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
 
-		setConfig(calculator);
+		setConfig(configuration);
 
 		gc.setTextBaseline(VPos.CENTER);
 		this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {

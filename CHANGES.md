@@ -1,8 +1,8 @@
 **Added:**
-* none
+* canvas context menu actually has stuff now
 
 **Changed:**
 * none
 
 **Fixed:**
-* project not loading/saving correctly
+* none

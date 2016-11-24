@@ -180,17 +180,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					}
 				}
 			});
-			//			footer.getRightContainer().getChildren().add(0, comboBoxLanguage);
-			//			footer.getBtnOk().setPrefWidth(-1);//keep at -1 to auto compute width to prevent btn size not being big enough for text (... may occure otherwise)
 
-
-			//			myStage.initModality(Modality.APPLICATION_MODAL);
-			//
-			//			footer.getBtnOk().setMinWidth(150);
-
-			//update ok button's text
-			tabPane.getSelectionModel().selectLast();
-			tabPane.getSelectionModel().selectFirst();
 		}
 
 
@@ -219,8 +209,13 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				tabPane.getTabs().add(initTab.getTab());
 				initTab.getTab().setClosable(false);
 				initTab.projectConfigSet.addListener(enabledListener);
-
 			}
+			tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
+				@Override
+				public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab selected) {
+					stepPresented();
+				}
+			});
 		}
 
 		private static VBox getTabVbox(double spacing) {
@@ -228,6 +223,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			vBox.setPadding(new Insets(10));
 			vBox.setMinHeight(200d);
 			return vBox;
+		}
+
+		@Override
+		protected void stepPresented() {
+			projectInitWindow.getFooter().getBtnOk().setDisable(!stepIsComplete());
 		}
 
 		@Override
