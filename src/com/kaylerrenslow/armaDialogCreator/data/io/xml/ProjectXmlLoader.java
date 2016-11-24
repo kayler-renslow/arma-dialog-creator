@@ -26,18 +26,19 @@ import java.util.ArrayList;
 
 /**
  Loads a project from a .xml save file. When the xml is loaded, a {@link ProjectVersionLoader} is designated to do the rest of the xml loading.
+
  @author Kayler
  @since 07/28/2016. */
 public class ProjectXmlLoader extends XmlLoader {
-	
+
 	private final String saveVersion;
-	
-	
+
+
 	protected ProjectXmlLoader(@NotNull File xmlFile, @Nullable DataContext context, Key<?>... keys) throws XmlParseException {
 		super(xmlFile, context, keys);
 		saveVersion = document.getDocumentElement().getAttribute("save-version").trim();
 	}
-	
+
 	/**
 	 Parses the given file and returns the result with the Project instance.
 
@@ -65,7 +66,7 @@ public class ProjectXmlLoader extends XmlLoader {
 	public static ProjectPreviewParseResult previewParseProjectXmlFile(@NotNull File projectSaveXml) throws XmlParseException {
 		ProjectPreviewLoaderVersion1 versionLoader = new ProjectPreviewLoaderVersion1(projectSaveXml);
 		versionLoader.parseDocument();
-		return new ProjectPreviewParseResult(new ProjectInfo(versionLoader.getProjectName(), projectSaveXml), versionLoader.getErrors());
+		return new ProjectPreviewParseResult(new ProjectInfo(versionLoader.getProjectName(), projectSaveXml, projectSaveXml.getParentFile()), versionLoader.getErrors());
 	}
 
 
@@ -77,13 +78,13 @@ public class ProjectXmlLoader extends XmlLoader {
 				throw new XmlParseException(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.not_a_project_save"));
 		}
 	}
-	
+
 	public static class ProjectParseResult extends XmlLoader.ParseResult {
 
 		private final Project project;
 		private final TreeStructure<TreeItemEntry> treeStructureMain;
 		private final TreeStructure<TreeItemEntry> treeStructureBg;
-		
+
 		private ProjectParseResult(Project project, TreeStructure<TreeItemEntry> treeStructureMain, TreeStructure<TreeItemEntry> treeStructureBg, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;

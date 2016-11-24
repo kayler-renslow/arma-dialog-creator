@@ -219,8 +219,6 @@ public final class ArmaDialogCreator extends Application {
 
 				ApplicationData.getInstance().setCurrentProject(result.getProject());
 
-				getMainWindow().getCanvasView().setTreeStructure(false, result.getTreeStructureMain());
-				getMainWindow().getCanvasView().setTreeStructure(true, result.getTreeStructureBg());
 			} catch (Exception e) {
 				ApplicationData.getInstance().setCurrentProject(new Project(config.getProjectInfo()));
 				INSTANCE.showLater.add(new Runnable() {
@@ -238,8 +236,12 @@ public final class ArmaDialogCreator extends Application {
 		getMainWindow().initialize();
 		getMainWindow().show();
 
-		if (result != null && result.getErrors().size() > 0) {
-			new ProjectImproperResultDialog(result).showAndWait();
+		if (result != null) {
+			getMainWindow().getCanvasView().setTreeStructure(false, result.getTreeStructureMain());
+			getMainWindow().getCanvasView().setTreeStructure(true, result.getTreeStructureBg());
+			if (result.getErrors().size() > 0) {
+				new ProjectImproperResultDialog(result).showAndWait();
+			}
 		}
 
 		for (Runnable run : INSTANCE.showLater) {

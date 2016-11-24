@@ -21,10 +21,21 @@ import java.io.File;
 public class ProjectInfo {
 	private final String projectName;
 	private final File projectXmlFile;
+	private final File projectDirectory;
 
-	public ProjectInfo(@NotNull String projectName, @NotNull File projectXmlFile) {
+	public ProjectInfo(@NotNull String projectName, @NotNull File projectDirectory) {
+		this(projectName, new File(projectDirectory.getPath() + "/" + Project.PROJECT_SAVE_FILE_NAME), projectDirectory);
+	}
+
+	public ProjectInfo(@NotNull String projectName, @NotNull File projectXmlFile, @NotNull File projectDirectory) {
 		this.projectName = projectName;
 		this.projectXmlFile = projectXmlFile;
+		this.projectDirectory = projectDirectory;
+	}
+
+	@NotNull
+	public File getProjectXmlFile() {
+		return projectXmlFile;
 	}
 
 	@NotNull
@@ -33,8 +44,8 @@ public class ProjectInfo {
 	}
 
 	@NotNull
-	public File getProjectXmlFile() {
-		return projectXmlFile;
+	public File getProjectDirectry() {
+		return projectDirectory;
 	}
 
 	@Override
@@ -51,7 +62,7 @@ public class ProjectInfo {
 		if (!projectName.equals(that.projectName)) {
 			return false;
 		}
-		return projectXmlFile.equals(that.projectXmlFile);
+		return projectDirectory.equals(that.projectDirectory);
 	}
 
 	public String toString() {

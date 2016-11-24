@@ -49,7 +49,7 @@ public class Project implements SpecificationRegistry {
 
 	public Project(@NotNull ProjectInfo info) {
 		this.projectName = info.getProjectName();
-		this.projectSaveDirectory = info.getProjectXmlFile();
+		this.projectSaveDirectory = info.getProjectDirectry();
 
 		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);
 

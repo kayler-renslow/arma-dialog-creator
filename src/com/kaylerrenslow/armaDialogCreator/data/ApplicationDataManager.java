@@ -38,6 +38,7 @@ public class ApplicationDataManager {
 	public void loadWorkspace(@NotNull File workspaceFile) {
 		workspace = new Workspace(workspaceFile);
 		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceFile);
+		saveApplicationProperties();
 	}
 
 	@NotNull
@@ -105,7 +106,7 @@ public class ApplicationDataManager {
 		}
 		Project project = applicationData.getCurrentProject();
 		if (!project.getProjectSaveDirectory().exists()) {
-			project.getProjectSaveDirectory().mkdir();
+			project.getProjectSaveDirectory().mkdirs();
 		}
 		new ProjectSaveXmlWriter(
 				project,

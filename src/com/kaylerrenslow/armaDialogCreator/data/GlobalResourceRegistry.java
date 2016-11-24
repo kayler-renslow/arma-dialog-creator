@@ -23,7 +23,6 @@ public class GlobalResourceRegistry extends ResourceRegistry {
 
 	protected GlobalResourceRegistry(@NotNull Workspace workspace) {
 		super(workspace.getFileForName(ResourceRegistry.RESOURCES_FILE_NAME + "/global-resources.xml"));
-		System.out.println(this.getResourcesFile());
 		if (!getResourcesFile().exists()) {
 			getResourcesFile().getParentFile().mkdirs();
 			try {
