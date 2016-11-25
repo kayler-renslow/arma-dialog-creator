@@ -24,6 +24,8 @@ import javafx.scene.control.MenuItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ResourceBundle;
+
 import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorComponentTreeView.createFolderIcon;
 
 /**
@@ -33,19 +35,19 @@ import static com.kaylerrenslow.armaDialogCreator.gui.fx.main.treeview.EditorCom
  @since 06/20/2016. */
 public class ControlCreationContextMenu extends ContextMenu {
 
-	public ControlCreationContextMenu(EditorComponentTreeView treeView, boolean showNewFolderOption) {
-		if (showNewFolderOption) {
-			MenuItem newFolder = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
-			getItems().add(newFolder);
-			TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<TreeItemEntry>() {
-				@Nullable
-				@Override
-				public TreeItemEntry createNew(@NotNull CellType cellType, @NotNull EditableTreeView<TreeItemEntry> treeView) {
-					return new FolderTreeItemEntry(newFolder.getText());
-				}
+	public ControlCreationContextMenu(EditorComponentTreeView treeView) {
+		ResourceBundle bundle = Lang.ApplicationBundle();
+		MenuItem newFolder = new MenuItem(bundle.getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
+		getItems().add(newFolder);
+		TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<TreeItemEntry>() {
+			@Nullable
+			@Override
+			public TreeItemEntry createNew(@NotNull CellType cellType, @NotNull EditableTreeView<TreeItemEntry> treeView) {
+				return new FolderTreeItemEntry(newFolder.getText());
+			}
 
-			}, newFolder);
-		}
+		}, newFolder);
+
 		Menu groupMenu;
 		MenuItem menuItemType;
 		for (ControlTypeGroup group : ControlTypeGroup.values()) {
@@ -74,7 +76,7 @@ public class ControlCreationContextMenu extends ContextMenu {
 				getItems().add(groupMenu);
 			}
 			//			if (groupMenu.getItems().size() == 0) {
-			//				MenuItem miNone = new MenuItem(Lang.ApplicationBundle().getString("Misc.no_items_available"));
+			//				MenuItem miNone = new MenuItem(bundle.getString("Misc.no_items_available"));
 			//				miNone.setDisable(true);
 			//				groupMenu.getItems().add(miNone);
 			//			}

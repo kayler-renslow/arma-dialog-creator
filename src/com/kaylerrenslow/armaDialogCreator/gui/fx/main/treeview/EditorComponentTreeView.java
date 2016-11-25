@@ -43,7 +43,7 @@ import java.util.List;
  @since 06/08/2016. */
 public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
 
-	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this, true);
+	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
 	private final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
