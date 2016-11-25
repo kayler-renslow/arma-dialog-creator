@@ -670,7 +670,7 @@ public class UICanvasEditor extends UICanvas {
 		mouseOverControl = null;
 
 		CanvasControl control;
-		Iterator<? extends CanvasControl> iteratorControl = display.iteratorForAllControls(false);
+		Iterator<? extends CanvasControl> iteratorControl = display.iteratorForAllControls(true);
 		while (iteratorControl.hasNext()) {
 			control = iteratorControl.next();
 			if (control.getRenderer().isEnabled()) {

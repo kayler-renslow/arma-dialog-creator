@@ -5,4 +5,4 @@
 * none
 
 **Fixed:**
-* minor derps
+* list merge iterator - false implementation

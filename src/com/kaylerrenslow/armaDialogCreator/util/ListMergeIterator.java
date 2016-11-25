@@ -40,13 +40,13 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 		this.lists = lists;
 		if (backwards) {
 			for (int i = lists.size() - 1; i >= 0; i--) {
-				stack.push(lists.get(i));
+				stack.add(lists.get(i));
 			}
 
 			ind = stack.peek().size() - 1;
 		} else {
 			for (L list : lists) {
-				stack.push(list);
+				stack.add(list);
 			}
 			ind = 0;
 		}
@@ -90,13 +90,13 @@ public class ListMergeIterator<E, L extends List<E>> implements Iterator<E>, Ite
 		}
 		if (backwards) {
 			while (ind < 0 && stack.size() > 0) {
-				current = stack.pop();
+				current = stack.removeLast();
 				ind = current.size() - 1;
 			}
 			return current.get(ind--);
 		}
 		while (ind >= current.size()) {
-			current = stack.pop();
+			current = stack.removeFirst();
 			ind = 0;
 		}
 		return current.get(ind++);
