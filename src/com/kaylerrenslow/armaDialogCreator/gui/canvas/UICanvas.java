@@ -68,33 +68,16 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new LinkedList<>());
 
+	/** Get listener that is attached to both {@link CanvasDisplay#getBackgroundControls()} and {@link CanvasDisplay#getControls()} */
+	protected final DisplayControlListUpdateGroupListener controlListListener = new DisplayControlListUpdateGroupListener(this);
+
 	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<Object> group, Object data) {
 			requestPaint();
 		}
 	};
-	private UpdateGroupListener<ControlListChange<CanvasControl>> controlListListener = new UpdateGroupListener<ControlListChange<CanvasControl>>() {
-		@Override
-		@SuppressWarnings("unchecked")
-		public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
-			if (data.wasRemoved()) {
-				data.getRemoved().getControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
-			} else if (data.wasSet()) {
-				data.getSet().getOldControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
-				data.getSet().getNewControl().getRenderUpdateGroup().addListener(controlUpdateListener);
-			} else if (data.wasAdded()) {
-				data.getAdded().getControl().getRenderUpdateGroup().addListener(controlUpdateListener);
-			} else if (data.wasMoved()) {
-				if (data.getMoved().isOriginalUpdate()) {
-					data.getMoved().getMovedControl().getRenderUpdateGroup().removeListener(controlUpdateListener);
-				} else {
-					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(controlUpdateListener);
-				}
-			}
-			requestPaint();
-		}
-	};
+
 	private boolean needPaint;
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
@@ -397,6 +380,38 @@ public abstract class UICanvas extends AnchorPane {
 			this.canvas.requestPaint();
 		}
 
+	}
+
+	public static class DisplayControlListUpdateGroupListener implements UpdateGroupListener<ControlListChange<CanvasControl>> {
+
+		private final UICanvas canvas;
+
+		public final UpdateListenerGroup<ControlListChange<CanvasControl>> updateGroup = new UpdateListenerGroup<>();
+
+		public DisplayControlListUpdateGroupListener(@NotNull UICanvas canvas) {
+			this.canvas = canvas;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
+			if (data.wasRemoved()) {
+				data.getRemoved().getControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
+			} else if (data.wasSet()) {
+				data.getSet().getOldControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
+				data.getSet().getNewControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
+			} else if (data.wasAdded()) {
+				data.getAdded().getControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
+			} else if (data.wasMoved()) {
+				if (data.getMoved().isOriginalUpdate()) {
+					data.getMoved().getMovedControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
+				} else {
+					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
+				}
+			}
+			updateGroup.update(data);
+			canvas.requestPaint();
+		}
 	}
 
 }

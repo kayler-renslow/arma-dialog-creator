@@ -1,8 +1,8 @@
 **Added:**
-* control removal (NOTE: we need to update UICanvasEditor such that when a control is removed, all references to removed control are set to null)
+* none
 
 **Changed:**
 * none
 
 **Fixed:**
-* none
+* update UICanvasEditor such that when a control is removed, all references to removed control are set to null

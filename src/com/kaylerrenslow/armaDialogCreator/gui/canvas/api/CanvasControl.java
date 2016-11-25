@@ -52,7 +52,7 @@ public interface CanvasControl<C extends CanvasControl> {
 	ValueObserver<ControlHolder<C>> getHolderObserver();
 
 	/** Get the update group that will update anytime the control needs to be re-rendered */
-	UpdateListenerGroup<Object> getRenderUpdateGroup();
+	UpdateListenerGroup<C> getRenderUpdateGroup();
 
 	/**
 	 Return true if the control is a background control (inside {@link CanvasDisplay#getBackgroundControls()}), false otherwise.<br>

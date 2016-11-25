@@ -13,9 +13,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
-import com.kaylerrenslow.armaDialogCreator.util.Point;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -89,6 +87,21 @@ public class UICanvasEditor extends UICanvas {
 
 	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
+
+		this.controlListListener.updateGroup.addListener(new UpdateGroupListener<ControlListChange<CanvasControl>>() {
+			@Override
+			public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
+				if (data.wasRemoved() || data.wasSet()) {
+					scaleControl = null;
+					mouseOverControl = null;
+					if (data.wasRemoved()) {
+						selection.removeFromSelection(data.getRemoved().getControl());
+					} else {
+						selection.removeFromSelection(data.getSet().getOldControl());
+					}
+				}
+			}
+		});
 
 		setConfig(configuration);
 

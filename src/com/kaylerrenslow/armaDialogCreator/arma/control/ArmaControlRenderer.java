@@ -156,7 +156,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 this whenever a new render needs to happen.
 	 */
 	public final void requestRender() {
-		myControl.getRenderUpdateGroup().update(null);
+		myControl.getRenderUpdateGroup().update(this.getMyControl());
 	}
 
 	/**

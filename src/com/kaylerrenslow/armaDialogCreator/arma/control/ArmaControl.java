@@ -47,7 +47,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	private int idc = -1;
 
 	private ControlProperty idcProperty, accessProperty;
-	private UpdateListenerGroup<Object> rerenderUpdateGroup = new UpdateListenerGroup<>();
+	private UpdateListenerGroup<ArmaControl> rerenderUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<CanvasDisplay<ArmaControl>> displayObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
 
@@ -208,7 +208,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	@Override
-	public UpdateListenerGroup<Object> getRenderUpdateGroup() {
+	public UpdateListenerGroup<ArmaControl> getRenderUpdateGroup() {
 		return rerenderUpdateGroup;
 	}
 

@@ -95,6 +95,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				if (data.getMoved().getMovedControl() == control) {
 					checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
 				}
+			} else if (data.wasRemoved()) {
+				if (data.getRemoved().getControl() == control) {
+					close();
+				}
+			} else if (data.wasSet()) {
+				if (data.getSet().getOldControl() == control) {
+					close();
+				}
 			}
 		}
 	};
@@ -279,13 +287,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			control.getClassNameObserver().addListener(classNameListener);
 			control.getExtendClassObserver().addListener(controlClassExtendListener);
 			control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
-
 			editorPane.relink();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);
 			control.getExtendClassObserver().removeListener(controlClassExtendListener);
-			control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
+			if (control.getDisplay() != null) { //might have been removed from display
+				control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
+			}
 
 			editorPane.unlink();
 		}
