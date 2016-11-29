@@ -53,11 +53,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	};
 
 	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
-
-	private ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
+	private final ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
 	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
-	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private final Env env;
+	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
 
