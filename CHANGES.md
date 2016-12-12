@@ -1,5 +1,5 @@
 **Added:**
-* none
+* stringtable.xml loading support
 
 **Changed:**
 * none

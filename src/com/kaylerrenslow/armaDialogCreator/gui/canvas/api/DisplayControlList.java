@@ -60,21 +60,21 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 						((CanvasControlGroup) added.getControl()).setDisplayForGroup(display);
 					}
 					added.getControl().getHolderObserver().updateValue(controlList.getHolder());
-					added.getControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					added.getControl().getDisplayObserver().updateValue(display);
 				} else if (change.wasSet()) {
 					ControlSet<C> set = change.getSet();
 					if (set.getNewControl() instanceof CanvasControlGroup) {
 						((CanvasControlGroup) set.getNewControl()).setDisplayForGroup(display);
 					}
 					set.getNewControl().getHolderObserver().updateValue(controlList.getHolder());
-					set.getNewControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					set.getNewControl().getDisplayObserver().updateValue(display);
 				} else if (change.wasMoved() && (change.getMoved().getDestinationHolder() == display)) {
 					ControlMove<C> moved = change.getMoved();
 					if (moved.getMovedControl() instanceof CanvasControlGroup) {
 						((CanvasControlGroup) moved.getMovedControl()).setDisplayForGroup(display);
 					}
 					moved.getMovedControl().getHolderObserver().updateValue(controlList.getHolder());
-					moved.getMovedControl().getDisplayObserver().updateValue((CanvasDisplay) display);
+					moved.getMovedControl().getDisplayObserver().updateValue(display);
 				} else if (change.wasRemoved()) {
 					change.getRemoved().getControl().getHolderObserver().updateValue(null);
 					change.getRemoved().getControl().getDisplayObserver().updateValue(null);
