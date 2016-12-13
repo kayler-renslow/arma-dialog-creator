@@ -1,5 +1,5 @@
 **Added:**
-* stringtable.xml test case
+* added more stringtable test cases
 
 **Changed:**
 * none

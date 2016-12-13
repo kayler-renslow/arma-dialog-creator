@@ -16,9 +16,7 @@ import java.util.Map;
  @since 12/12/2016 */
 public class DefaultStringTableXmlParserTest {
 
-
-	@Test
-	public void createStringTableInstance() throws Exception {
+	private static TestStringTableKey[] getTestKeys() {
 		TestStringTableKey k1 = new TestStringTableKey(
 				"str_myTag_another_key",
 				null, null,
@@ -74,12 +72,64 @@ public class DefaultStringTableXmlParserTest {
 				}
 		);
 
+		return new TestStringTableKey[]{k1, k2, k3, k4, k5};
+	}
 
-		TestStringTableKey[] testKeys = {k1, k2, k3, k4, k5};
+	@NotNull
+	private static DefaultStringTableXmlParser getParser() throws XmlParseException {
+		return new DefaultStringTableXmlParser(new File("./tests/com/kaylerrenslow/armaDialogCreator/data/io/xml/stringtable.xml"));
+	}
 
-		DefaultStringTableXmlParser parser = new DefaultStringTableXmlParser(new File("./tests/com/kaylerrenslow/armaDialogCreator/data/io/xml/stringtable.xml"));
+	@Test
+	public void createStringTableInstance() throws Exception {
+		TestStringTableKey[] testKeys = getTestKeys();
+		DefaultStringTableXmlParser parser = getParser();
 		StringTable tableInstance = parser.createStringTableInstance();
 
+		testTable(testKeys, tableInstance, false);
+	}
+
+	@Test
+	public void createStringTableInstanceExpectErrorId() throws Exception {
+		TestStringTableKey[] testKeys = getTestKeys();
+		testKeys[0].setId("error");
+		DefaultStringTableXmlParser parser = getParser();
+		StringTable tableInstance = parser.createStringTableInstance();
+
+		testTable(testKeys, tableInstance, true);
+	}
+
+	@Test
+	public void createStringTableInstanceExpectErrorContainer() throws Exception {
+		TestStringTableKey[] testKeys = getTestKeys();
+		testKeys[0].setContainerName("error");
+		DefaultStringTableXmlParser parser = getParser();
+		StringTable tableInstance = parser.createStringTableInstance();
+
+		testTable(testKeys, tableInstance, true);
+	}
+
+	@Test
+	public void createStringTableInstanceExpectErrorPackage() throws Exception {
+		TestStringTableKey[] testKeys = getTestKeys();
+		testKeys[0].setPackageName("error");
+		DefaultStringTableXmlParser parser = getParser();
+		StringTable tableInstance = parser.createStringTableInstance();
+
+		testTable(testKeys, tableInstance, true);
+	}
+
+	@Test
+	public void createStringTableInstanceExpectErrorValue() throws Exception {
+		TestStringTableKey[] testKeys = getTestKeys();
+		testKeys[0].setValue(testKeys[1].getValue());
+		DefaultStringTableXmlParser parser = getParser();
+		StringTable tableInstance = parser.createStringTableInstance();
+
+		testTable(testKeys, tableInstance, true);
+	}
+
+	private void testTable(TestStringTableKey[] testKeys, StringTable tableInstance, boolean expectError) {
 		List<StringTableKey> keys = tableInstance.getKeys();
 		String errMsg = "";
 		boolean hasError = false;
@@ -96,13 +146,13 @@ public class DefaultStringTableXmlParserTest {
 				hasError = true;
 			}
 		}
-		org.junit.Assert.assertEquals(errMsg, hasError, false);
+		org.junit.Assert.assertEquals(errMsg, hasError, expectError);
 	}
 
 	private static class TestStringTableKey implements StringTableKey {
-		private final String id;
-		private final String packageName;
-		private final String containerName;
+		private String id;
+		private String packageName;
+		private String containerName;
 		private StringTableValue value;
 
 		public TestStringTableKey(String id, String packageName, String containerName, Language[] langs, String[] vals) {
@@ -115,6 +165,22 @@ public class DefaultStringTableXmlParserTest {
 			for (Language language : langs) {
 				map.put(language, vals[i++]);
 			}
+		}
+
+		public void setId(String id) {
+			this.id = id;
+		}
+
+		public void setPackageName(String packageName) {
+			this.packageName = packageName;
+		}
+
+		public void setContainerName(String containerName) {
+			this.containerName = containerName;
+		}
+
+		public void setValue(StringTableValue value) {
+			this.value = value;
 		}
 
 		@Override
