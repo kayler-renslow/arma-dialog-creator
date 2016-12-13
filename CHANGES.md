@@ -1,5 +1,5 @@
 **Added:**
-* stringtable.xml loading support
+* stringtable.xml test case
 
 **Changed:**
 * none

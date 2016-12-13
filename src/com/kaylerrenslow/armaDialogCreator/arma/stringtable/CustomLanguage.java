@@ -16,4 +16,21 @@ public class CustomLanguage implements Language {
 	public String getName() {
 		return name;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof CustomLanguage) {
+			CustomLanguage other = (CustomLanguage) o;
+			return equalsLanguage(other);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

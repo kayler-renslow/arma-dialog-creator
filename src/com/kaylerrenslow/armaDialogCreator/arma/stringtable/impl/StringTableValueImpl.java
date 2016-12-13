@@ -14,7 +14,7 @@ public class StringTableValueImpl implements StringTableValue {
 	private final StringTableKey key;
 	private final Map<Language, String> values;
 
-	protected StringTableValueImpl(@NotNull StringTableKey key, @NotNull Map<Language, String> values) {
+	public StringTableValueImpl(@NotNull StringTableKey key, @NotNull Map<Language, String> values) {
 		this.key = key;
 		this.values = values;
 	}
@@ -29,5 +29,17 @@ public class StringTableValueImpl implements StringTableValue {
 	@NotNull
 	public Map<Language, String> getValues() {
 		return values;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof StringTableValue) {
+			StringTableValue other = (StringTableValue) o;
+			return equalsValue(other);
+		}
+		return false;
 	}
 }

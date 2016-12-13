@@ -10,4 +10,9 @@ public interface Language {
 	/** Get name of language */
 	@NotNull
 	String getName();
+
+	default boolean equalsLanguage(Language l) {
+		return l != null && getName().equals(l.getName());
+	}
+
 }

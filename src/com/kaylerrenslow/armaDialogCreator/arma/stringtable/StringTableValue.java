@@ -15,4 +15,28 @@ public interface StringTableValue {
 	@NotNull
 	Map<Language, String> getValues();
 
+	default boolean equalsValue(StringTableValue other) {
+		if (other == null) {
+			return false;
+		}
+		if (other == this) {
+			return true;
+		}
+		for (Map.Entry<Language, String> myEntry : getValues().entrySet()) {
+			boolean match = false;
+			for (Map.Entry<Language, String> otherEntry : other.getValues().entrySet()) {
+				if (myEntry.getKey().equals(otherEntry.getKey())) {
+					if (myEntry.getValue().equals(otherEntry.getValue())) {
+						match = true;
+						break;
+					}
+				}
+			}
+			if (!match) {
+				return false;
+			}
+		}
+
+		return true;
+	}
 }

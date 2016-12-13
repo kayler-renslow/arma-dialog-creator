@@ -43,8 +43,8 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 		Element rootElement = document.getDocumentElement();
 
 		List<StringTableKey> tableKeys = new ArrayList<>();
-
 		fetchKeys(rootElement, null, null, tableKeys);
+
 		loadPackageElements(rootElement, tableKeys);
 		loadContainerElements(rootElement, null, tableKeys);
 
@@ -74,8 +74,9 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 
 		for (Element keyElement : keyElements) {
 			String id = keyElement.getAttribute(ID);
+
 			if (id.length() > 0) {
-				List<Element> valueElements = XmlUtil.getChildElementsWithTagName(element, null);
+				List<Element> valueElements = XmlUtil.getChildElementsWithTagName(keyElement, null);
 				Map<Language, String> map = new HashMap<>(valueElements.size());
 				for (Element valueElement : valueElements) {
 					Language language;
