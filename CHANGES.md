@@ -1,5 +1,5 @@
 **Added:**
-* libraries to git
+* libraries used to about dialog
 
 **Changed:**
 * none
