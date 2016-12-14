@@ -25,8 +25,8 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 	private static final String PACKAGE = "Package";
 	private static final String CONTAINER = "Container";
 	private static final String NAME = "name";
-	private final File xmlFile;
 
+	private final File xmlFile;
 
 	/**
 	 @param xmlFile the .xml file that contains the {@link StringTable} entries
@@ -69,7 +69,6 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 	}
 
 	private void fetchKeys(Element element, String packageName, String containerName, List<StringTableKey> tableKeys) {
-
 		List<Element> keyElements = XmlUtil.getChildElementsWithTagName(element, KEY);
 
 		for (Element keyElement : keyElements) {

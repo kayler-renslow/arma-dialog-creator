@@ -135,7 +135,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		super.onCloseRequest(event);
 	}
 
-	/** Return the item chosen. If null, no macro was chosen. */
+	/** Return the item chosen. If null, no item was chosen. */
 	@Nullable
 	public V getChosenItem() {
 		return selectedItem;

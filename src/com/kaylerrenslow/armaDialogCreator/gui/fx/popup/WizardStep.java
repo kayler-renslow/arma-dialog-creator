@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
  @since 11/23/2016 */
 public abstract class WizardStep<V extends Node> {
 	protected final V content;
+	private boolean hasBeenShown = false;
 
 	public WizardStep(@NotNull V content) {
 		this.content = content;
@@ -19,9 +20,14 @@ public abstract class WizardStep<V extends Node> {
 		return content;
 	}
 
-	/** Invoked when step has been presented to user */
+	/** Invoked when step has been presented to user. */
 	protected void stepPresented() {
+		hasBeenShown = true;
+	}
 
+	/** @return true if the step has been presented at least 1 time. Set to true via {@link #stepPresented()} */
+	protected boolean hasBeenPresented() {
+		return hasBeenShown;
 	}
 
 	/** Invoked when the step is no longer being presented to user */

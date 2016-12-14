@@ -1,0 +1,18 @@
+<component name="libraryTable">
+  <library name="org.fxmisc.richtext:richtextfx:0.7-M2" type="repository">
+    <properties maven-id="org.fxmisc.richtext:richtextfx:0.7-M2" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.7-M2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/wellbehavedfx-0.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/undofx-1.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/reactfx-2.0-M5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/flowless-0.5.1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.7-M2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.7-M2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

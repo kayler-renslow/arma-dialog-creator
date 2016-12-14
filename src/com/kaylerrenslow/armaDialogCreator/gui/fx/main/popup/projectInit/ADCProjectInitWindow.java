@@ -11,6 +11,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.WizardStageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.WizardStep;
 import com.kaylerrenslow.armaDialogCreator.main.*;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -137,6 +138,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		private final LinkedList<ProjectInitTab> initTabs = new LinkedList<>();
 		private final TabPane tabPane = new TabPane();
 		private final ADCProjectInitWindow projectInitWindow;
+		private TabOpen tabOpen;
+		private NewProjectTab tabNew;
 
 		public ProjectInitWizardStep(@NotNull ADCProjectInitWindow projectInitWindow) {
 			super(new VBox(5));
@@ -185,8 +188,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		}
 
 		private void initTabPane() {
-			initTabs.add(new NewProjectTab());
-			initTabs.add(new TabOpen(projectInitWindow));
+			tabNew = new NewProjectTab();
+			initTabs.add(tabNew);
+			tabOpen = new TabOpen(projectInitWindow);
+			initTabs.add(tabOpen);
 			//				initTabs.add(new ImportTab(this));
 
 			final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
@@ -217,6 +222,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		@Override
 		protected void stepPresented() {
+			if (!hasBeenPresented()) {
+				super.stepPresented();
+				if (tabOpen.getParsedKnownProjects().size() > 0) {
+					tabPane.getSelectionModel().select(tabOpen.getTab());
+				}
+			}
 			projectInitWindow.getFooter().getBtnOk().setDisable(!stepIsComplete());
 		}
 
@@ -289,6 +300,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			private final ADCProjectInitWindow projectInitWindow;
 			private LinkedList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
 			private ProjectXmlLoader.ProjectPreviewParseResult selectedParsedProject;
+			private ReadOnlyList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjectsRo = new ReadOnlyList<>(parsedKnownProjects);
 
 			public TabOpen(ADCProjectInitWindow projectInitWindow) {
 				this.projectInitWindow = projectInitWindow;
@@ -392,6 +404,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				return tabOpen;
 			}
 
+			@NotNull
+			public ReadOnlyList<ProjectXmlLoader.ProjectPreviewParseResult> getParsedKnownProjects() {
+				return parsedKnownProjectsRo;
+			}
 		}
 
 		public class ImportTab extends ProjectInitTab {

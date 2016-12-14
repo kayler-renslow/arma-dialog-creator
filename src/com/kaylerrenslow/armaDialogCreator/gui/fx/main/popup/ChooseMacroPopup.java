@@ -109,7 +109,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 
 		public MacroItemCategory() {
 			final double height = 100;
-			VBox vbRight = new VBox(10);
+			VBox vb = new VBox(10);
 			taComment.setPrefHeight(height);
 			taComment.setEditable(false);
 			Label lblComment = new Label(Lang.ApplicationBundle().getString("Macros.comment"), taComment);
@@ -119,9 +119,10 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 			Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
 			lblValue.setContentDisplay(ContentDisplay.BOTTOM);
 
-			vbRight.getChildren().addAll(lblValue, lblComment);
-			categoryNode = vbRight;
+			vb.getChildren().addAll(lblValue, lblComment);
+			categoryNode = vb;
 		}
+
 
 		@NotNull
 		@Override

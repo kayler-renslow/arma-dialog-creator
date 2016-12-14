@@ -47,7 +47,7 @@ public interface ValueEditor<V extends SerializableValue> {
 		return false;
 	}
 
-	/** Get the observer that observes to the value. */
+	/** Get the observer that observes the value. */
 	ReadOnlyValueObserver<V> getReadOnlyObserver();
 
 	/**

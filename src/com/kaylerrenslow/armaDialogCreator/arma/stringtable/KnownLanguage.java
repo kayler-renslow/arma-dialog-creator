@@ -53,7 +53,7 @@ public class KnownLanguage implements Language {
 	}
 
 	@NotNull
-	public static Language valueOf(String langName) {
+	public static Language valueOf(@NotNull String langName) {
 		for (KnownLanguage language : values) {
 			if (language.getName().equals(langName)) {
 				return language;
