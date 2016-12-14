@@ -27,6 +27,8 @@ public class SyntaxTextArea extends CodeArea {
 	}
 
 	private void init() {
+		getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/richfx.css");
+		getStyleClass().add("syntax-text-area");
 		caretPositionProperty().addListener(new ChangeListener<Integer>() {
 			@Override
 			public void changed(ObservableValue<? extends Integer> observable, Integer oldValue, Integer newValue) {

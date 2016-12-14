@@ -1,0 +1,30 @@
+.caret {/*set caret color equal to text color*/
+    -fx-fill:-fx-text-inner-color;
+    -fx-stroke:-fx-text-inner-color;
+}
+.syntax-text-area{
+    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+}
+.syntax-text-area:focused {
+    -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
+}
+
+.syntax-text-area .paragraph-box:last-paragraph .paragraph-text{
+    -fx-padding: 0px 5px 3px 5px;
+}
+/*for some reason, the first paragraph needs to be styled after the last one. what evs. https://github.com/TomasMikula/RichTextFX/issues/394*/
+.syntax-text-area .paragraph-box:first-paragraph .paragraph-text{
+    -fx-padding: 3px 5px 0px 5px;
+}
+
+.syntax-text-area .paragraph-box .paragraph-text .text {
+    /*from text-input from base javafx css*/
+    -fx-fill: -fx-text-inner-color; /*text fill*/
+    -fx-highlight-fill: derive(-fx-control-inner-background,-20%);
+    -fx-highlight-text-fill: -fx-text-inner-color;
+}
+.syntax-text-area:focused .paragraph-box .paragraph-text .text{
+    /*from text-input from base javafx css*/
+    -fx-highlight-fill: -fx-accent;
+    -fx-highlight-text-fill: white;
+}

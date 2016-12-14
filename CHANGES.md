@@ -1,8 +1,8 @@
 **Added:**
-* libraries used to about dialog
+* none
 
 **Changed:**
-* none
+* made syntax text area text look better
 
 **Fixed:**
 * none
