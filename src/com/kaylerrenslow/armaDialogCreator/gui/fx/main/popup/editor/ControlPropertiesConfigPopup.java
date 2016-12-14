@@ -9,10 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlListChange;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.BorderedImageView;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ImageContainer;
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -29,7 +26,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -230,7 +226,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		final HBox hboxLeft = new HBox(5, lblClassName, new Label(":"), menuButtonExtendControls);
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 
-		final TextField tfSearch = new TextField();
+		final SearchTextField tfSearch = new SearchTextField();
 		tfSearch.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -238,7 +234,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				editorPane.showPropertiesWithNameContaining(newValue);
 			}
 		});
-		final HBox hboxRight = new HBox(10, new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.search")), tfSearch, btnClose);
+		final HBox hboxRight = new HBox(10, tfSearch, btnClose);
 		hboxRight.setAlignment(Pos.CENTER_RIGHT);
 		myRootElement.getChildren().add(
 				new BorderPane(

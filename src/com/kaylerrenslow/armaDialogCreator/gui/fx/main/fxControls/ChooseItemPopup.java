@@ -1,13 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fx.main.fxControls;
 
+import com.kaylerrenslow.armaDialogCreator.gui.fx.control.SearchTextField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
@@ -56,8 +55,8 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		final Label lblChooseMacro = new Label(headerTitle);
 		lblChooseMacro.setFont(Font.font(15d));
 
-		HBox hbSearch = initializeSearchBox();
-		myRootElement.getChildren().add(new BorderPane(null, null, hbSearch, null, lblChooseMacro));
+		SearchTextField searchField = initializeSearchBox();
+		myRootElement.getChildren().add(new BorderPane(null, null, searchField, null, lblChooseMacro));
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
 		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {
@@ -93,15 +92,8 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 	}
 
 	@NotNull
-	private HBox initializeSearchBox() {
-		TextField tfSearch = new TextField("");
-		HBox.setHgrow(tfSearch, Priority.ALWAYS);
-		HBox hbSearch = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ChooseItem.search_text_box")), tfSearch);
-		hbSearch.setAlignment(Pos.CENTER_LEFT);
-		tfSearch.setPrefColumnCount(20);
-		hbSearch.setMaxWidth(Double.MAX_VALUE);
-		hbSearch.setFillHeight(true);
-
+	private SearchTextField initializeSearchBox() {
+		SearchTextField tfSearch = new SearchTextField();
 		tfSearch.textProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -110,7 +102,7 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 			}
 		});
 
-		return hbSearch;
+		return tfSearch;
 	}
 
 	/** A new category tab was selected. Default implementation is nothing. */

@@ -118,7 +118,6 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 			taValue.setPrefHeight(height);
 			Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
 			lblValue.setContentDisplay(ContentDisplay.BOTTOM);
-
 			vb.getChildren().addAll(lblValue, lblComment);
 			categoryNode = vb;
 		}

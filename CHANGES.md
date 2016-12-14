@@ -1,8 +1,8 @@
 **Added:**
-* none
+* search text field
 
 **Changed:**
-* made syntax text area text look better
+* none
 
 **Fixed:**
 * none

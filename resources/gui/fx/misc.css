@@ -36,3 +36,11 @@
     -fx-border-color:#b3b3b3;
     -fx-border-width:1px
 }
+
+.search-text-field{
+    -fx-background-color: -fx-shadow-highlight-color, -fx-text-box-border, -fx-control-inner-background;
+    -fx-background-insets: 0, 1, 2;
+}
+.search-text-field-focused{
+    -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
+}
