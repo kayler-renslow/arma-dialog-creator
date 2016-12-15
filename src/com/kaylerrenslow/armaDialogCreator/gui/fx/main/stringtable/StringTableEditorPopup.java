@@ -64,12 +64,12 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	}
 
 	private static class SearchTab extends Tab {
-		private final ObservableList<StringTableKeyDescriptor> listViewItems = FXCollections.observableList(new LinkedList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
+		private final ObservableList<StringTableKeyDescriptor> listViewItems = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
 
 			public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
 				return new javafx.beans.Observable[]{param.getKey().getValue().getLanguageTokenMap()};
 			}
-		});
+		}); //for some reason, can't have a LinkedList as the underlying list implementation
 
 		private final List<StringTableKeyDescriptor> allItems = new LinkedList<>();
 		private final ListView<StringTableKeyDescriptor> lvMatch = new ListView<>(listViewItems);
@@ -90,13 +90,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				StringTableKeyDescriptor descriptor = new StringTableKeyDescriptor(key, noPackageName, noContainerName);
 				allItems.add(descriptor);
 				listViewItems.add(descriptor);
-				key.getValue().getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
-					@Override
-					public void onChanged(Change<? extends Language, ? extends String> change) {
-						System.out.println("SearchTab.onChanged change=" + change);
-					}
-				});
 			}
+			lvMatch.setItems(listViewItems);
 
 			SearchTextField tfSearch = new SearchTextField(new ChangeListener<String>() {
 				@Override

@@ -1,8 +1,8 @@
 **Added:**
-* string table editor start
-
-**Changed:**
 * none
 
+**Changed:**
+* string table editor now updates list view whenever update occurs
+
 **Fixed:**
-* control properties config popup becoming way to tall
+* none
