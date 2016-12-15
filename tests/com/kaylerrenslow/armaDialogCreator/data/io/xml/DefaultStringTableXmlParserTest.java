@@ -2,14 +2,15 @@ package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableValueImpl;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  @author Kayler
@@ -151,16 +152,14 @@ public class DefaultStringTableXmlParserTest {
 
 	private static class TestStringTableKey implements StringTableKey {
 		private String id;
-		private String packageName;
-		private String containerName;
 		private StringTableValue value;
+		private ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
+		private ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
 
 		public TestStringTableKey(String id, String packageName, String containerName, Language[] langs, String[] vals) {
 			this.id = id;
-			this.packageName = packageName;
-			this.containerName = containerName;
 			int i = 0;
-			Map<Language, String> map = new HashMap<>();
+			ObservableMap<Language, String> map = FXCollections.observableMap(new HashMap<>());
 			value = new StringTableValueImpl(this, map);
 			for (Language language : langs) {
 				map.put(language, vals[i++]);
@@ -172,11 +171,11 @@ public class DefaultStringTableXmlParserTest {
 		}
 
 		public void setPackageName(String packageName) {
-			this.packageName = packageName;
+			packageNameObserver().updateValue(packageName);
 		}
 
 		public void setContainerName(String containerName) {
-			this.containerName = containerName;
+			containerNameObserver().updateValue(containerName);
 		}
 
 		public void setValue(StringTableValue value) {
@@ -195,16 +194,17 @@ public class DefaultStringTableXmlParserTest {
 			return value;
 		}
 
+
+		@NotNull
 		@Override
-		@Nullable
-		public String getPackageName() {
-			return packageName;
+		public ValueObserver<String> packageNameObserver() {
+			return packageNameObserver;
 		}
 
+		@NotNull
 		@Override
-		@Nullable
-		public String getContainerName() {
-			return containerName;
+		public ValueObserver<String> containerNameObserver() {
+			return containerNameObserver;
 		}
 
 		@Override

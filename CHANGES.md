@@ -1,8 +1,8 @@
 **Added:**
-* search text field
+* string table editor start
 
 **Changed:**
 * none
 
 **Fixed:**
-* none
+* control properties config popup becoming way to tall

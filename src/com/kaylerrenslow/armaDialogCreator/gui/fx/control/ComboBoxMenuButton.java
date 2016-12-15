@@ -19,11 +19,13 @@ import org.jetbrains.annotations.Nullable;
 public class ComboBoxMenuButton<V> extends StackPane {
 
 	private final MenuButton menuButton = new MenuButton();
-	private final ValueObserver<V> selectedItemObserver = new ValueObserver<>(null);
+	private final ValueObserver<V> selectedValueObserver = new ValueObserver<>(null);
+	private final ValueObserver<CBMBMenuItem<V>> selectedItemObserver = new ValueObserver<>(null);
 	private final String placeholderText;
 	private final Node placeholderGraphic;
 	private final boolean allowClear;
 	private boolean separatorAdded = false;
+	private SeparatorMenuItem separatorMenuItem;
 
 	@SafeVarargs
 	public ComboBoxMenuButton(String placeholderText, Node placeholderGraphic, CBMBMenuItem<V>... items) {
@@ -53,13 +55,21 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			addSeparator();
 		}
 		for (CBMBGroupMenu<V> group : classGroups) {
-			addItem(group);
+			addGroup(group);
 		}
 	}
 
 	private void addSeparator() {
-		menuButton.getItems().add(new SeparatorMenuItem());
+		separatorMenuItem = new SeparatorMenuItem();
+		menuButton.getItems().add(separatorMenuItem);
 		separatorAdded = true;
+	}
+
+	private void removeSeparator() {
+		if (separatorMenuItem != null) {
+			menuButton.getItems().remove(separatorMenuItem);
+		}
+		separatorAdded = false;
 	}
 
 	public ComboBoxMenuButton(String placeholderText, Node placeholderGraphic) {
@@ -111,7 +121,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		setupMenuItem(item);
 	}
 
-	public void addItem(@NotNull CBMBGroupMenu<V> group) {
+	public void addGroup(@NotNull CBMBGroupMenu<V> group) {
 		if (allowClear && !separatorAdded) {
 			addSeparator();
 		}
@@ -121,8 +131,51 @@ public class ComboBoxMenuButton<V> extends StackPane {
 		}
 	}
 
+	public void removeItem(@NotNull CBMBMenuItem<V> remove) {
+		for (MenuItem menuItem : menuButton.getItems()) {
+			if (menuItem instanceof CBMBMenuItem) {
+				CBMBMenuItem<V> item = (CBMBMenuItem<V>) menuItem;
+				if (item == remove) {
+					menuButton.getItems().remove(remove);
+					break;
+				}
+				continue;
+			}
+			if (menuItem instanceof CBMBGroupMenu) {
+				CBMBGroupMenu<V> groupMenu = (CBMBGroupMenu<V>) menuItem;
+				for (CBMBMenuItem<V> item : groupMenu.getCbmbMenuItems()) {
+					if (item == remove) {
+						groupMenu.getItems().remove(remove);
+						break;
+					}
+				}
+			}
+		}
+		if (getSelectedValueObserver().getValue() == remove.getValue()) {
+			clearSelectedValue();
+		}
+		if (allowClear && separatorAdded && menuButton.getItems().size() == 1) {
+			removeSeparator();
+		}
+	}
+
+	public void removeGroup(@NotNull CBMBGroupMenu<V> remove) {
+		menuButton.getItems().remove(remove);
+		if (allowClear && separatorAdded && menuButton.getItems().size() == 1) {
+			removeSeparator();
+		}
+		if (remove.getItems().contains(getSelectedItemObserver().getValue())) {
+			clearSelectedValue();
+		}
+	}
+
+	public void clearMenu() {
+		menuButton.getItems().clear();
+		clearSelectedValue();
+	}
 
 	public void clearSelectedValue() {
+		selectedValueObserver.updateValue(null);
 		selectedItemObserver.updateValue(null);
 		menuButton.setText(placeholderText);
 		menuButton.setGraphic(placeholderGraphic);
@@ -133,7 +186,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			clearSelectedValue();
 			return;
 		}
-		if (value == selectedItemObserver.getValue()) {
+		if (value == selectedValueObserver.getValue()) {
 			return;
 		}
 		for (MenuItem menuItem : menuButton.getItems()) {
@@ -169,11 +222,17 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			menuButton.setGraphic(null);
 		}
 		menuButton.setText(menuItem.getText());
-		selectedItemObserver.updateValue(menuItem.getValue());
+		selectedValueObserver.updateValue(menuItem.getValue());
+		selectedItemObserver.updateValue(menuItem);
 	}
 
 	@NotNull
-	public ReadOnlyValueObserver<V> getSelectedItemObserver() {
+	public ReadOnlyValueObserver<V> getSelectedValueObserver() {
+		return selectedValueObserver.getReadOnlyValueObserver();
+	}
+
+	@NotNull
+	public ReadOnlyValueObserver<CBMBMenuItem<V>> getSelectedItemObserver() {
 		return selectedItemObserver.getReadOnlyValueObserver();
 	}
 

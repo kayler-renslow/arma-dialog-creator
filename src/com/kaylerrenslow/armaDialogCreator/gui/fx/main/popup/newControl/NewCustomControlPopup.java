@@ -98,7 +98,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 						getCustomControlsItems()
 				)
 		);
-		baseControlMenuButton.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
+		baseControlMenuButton.getSelectedValueObserver().addValueListener(new ReadOnlyValueListener<ControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 				setToControlClass(newValue);

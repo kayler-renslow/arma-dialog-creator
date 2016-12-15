@@ -4,6 +4,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableImpl;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
@@ -12,7 +14,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  Parsers an Arma 3 formatter stringtable.xml file. <a href="https://community.bistudio.com/wiki/Stringtable.xml">See this for more information</a>.
@@ -32,7 +33,7 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 	 @param xmlFile the .xml file that contains the {@link StringTable} entries
 	 @throws XmlParseException
 	 */
-	protected DefaultStringTableXmlParser(@NotNull File xmlFile) throws XmlParseException {
+	public DefaultStringTableXmlParser(@NotNull File xmlFile) throws XmlParseException {
 		super(xmlFile, null);
 		this.xmlFile = xmlFile;
 	}
@@ -76,7 +77,7 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 
 			if (id.length() > 0) {
 				List<Element> valueElements = XmlUtil.getChildElementsWithTagName(keyElement, null);
-				Map<Language, String> map = new HashMap<>(valueElements.size());
+				ObservableMap<Language, String> map = FXCollections.observableMap(new HashMap<>(valueElements.size()));
 				for (Element valueElement : valueElements) {
 					Language language;
 					String langName = valueElement.getTagName();

@@ -49,7 +49,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 				groupMenu.getCbmbMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.getIcon())));
 			}
 			if (groupMenu.getItems().size() > 0) {
-				menuButtonControlType.addItem(groupMenu);
+				menuButtonControlType.addGroup(groupMenu);
 			}
 		}
 
@@ -84,7 +84,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 			beep();
 			return;
 		}
-		if (menuButtonControlType.getSelectedItemObserver().getValue() == null) {
+		if (menuButtonControlType.getSelectedValueObserver().getValue() == null) {
 			menuButtonControlType.requestFocus();
 			beep();
 			return;
@@ -99,7 +99,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 
 	@NotNull
 	public ControlType getControlType() {
-		return menuButtonControlType.getSelectedItemObserver().getValue();
+		return menuButtonControlType.getSelectedValueObserver().getValue();
 	}
 
 	public boolean isBackgroundControl() {

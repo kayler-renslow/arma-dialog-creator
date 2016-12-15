@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.stringtable;
 
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,11 +16,20 @@ public interface StringTableKey {
 	StringTableValue getValue();
 
 	@Nullable
-	String getPackageName();
+	default String getPackageName() {
+		return packageNameObserver().getValue();
+	}
+
+	@NotNull
+	ValueObserver<String> packageNameObserver();
 
 	@Nullable
-	String getContainerName();
+	default String getContainerName() {
+		return containerNameObserver().getValue();
+	}
 
+	@NotNull
+	ValueObserver<String> containerNameObserver();
 
 	default boolean equalsKey(StringTableKey key) {
 		if (key == null) {

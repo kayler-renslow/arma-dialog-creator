@@ -9,6 +9,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
@@ -18,15 +19,17 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- A simple search text field with a an search icon
+ A simple search text field with a search icon
 
  @author Kayler
  @since 12/14/2016 */
 public class SearchTextField extends StackPane {
-	private final TextField tf;
-
 	private static final String STYLE_CLASS = "search-text-field";
 	private static final String STYLE_CLASS_FOCUSED = "search-text-field-focused";
+
+	public static final Image SEARCH_ICON = new Image("/com/kaylerrenslow/armaDialogCreator/gui/img/icons/search.png");
+
+	private final TextField tf;
 
 	/**
 	 Create a search text field with a provided {@link #textProperty()} change listener
@@ -41,7 +44,7 @@ public class SearchTextField extends StackPane {
 		tf.setPadding(new Insets(5));
 
 		tf.setPromptText(Lang.FxControlBundle().getString("SearchTextField.search"));
-		ImageView imageView = new ImageView("/com/kaylerrenslow/armaDialogCreator/gui/img/icons/search.png");
+		ImageView imageView = new ImageView(SEARCH_ICON);
 		StackPane stackPane = new StackPane(imageView);
 		stackPane.setPadding(new Insets(5, 0, 5, 5));
 		HBox hBox = new HBox(0, stackPane, tf);

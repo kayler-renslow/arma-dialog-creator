@@ -3,28 +3,28 @@ package com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableValue;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Map;
 
 /**
  @author Kayler
  @since 12/12/2016 */
 public class StringTableKeyImpl implements StringTableKey {
 	private final String key;
-	private String packageName;
-	private String containerName;
 	private final StringTableValue value;
+	private final ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
+	private final ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
 
-	public StringTableKeyImpl(@NotNull String key, @NotNull Map<Language, String> values) {
+	public StringTableKeyImpl(@NotNull String key, @NotNull ObservableMap<Language, String> values) {
 		this(key, null, null, values);
 	}
 
-	public StringTableKeyImpl(@NotNull String key, @Nullable String packageName, @Nullable String containerName, @NotNull Map<Language, String> values) {
+	public StringTableKeyImpl(@NotNull String key, @Nullable String packageName, @Nullable String containerName, @NotNull ObservableMap<Language, String> values) {
 		this.key = key;
-		this.packageName = packageName != null && packageName.trim().length() == 0 ? null : packageName;
-		this.containerName = containerName != null && containerName.trim().length() == 0 ? null : containerName;
+		packageNameObserver().updateValue(packageName != null && packageName.trim().length() == 0 ? null : packageName);
+		containerNameObserver().updateValue(containerName != null && containerName.trim().length() == 0 ? null : containerName);
 		this.value = new StringTableValueImpl(this, values);
 	}
 
@@ -40,16 +40,16 @@ public class StringTableKeyImpl implements StringTableKey {
 		return value;
 	}
 
+	@NotNull
 	@Override
-	@Nullable
-	public String getPackageName() {
-		return packageName;
+	public ValueObserver<String> packageNameObserver() {
+		return packageNameObserver;
 	}
 
+	@NotNull
 	@Override
-	@Nullable
-	public String getContainerName() {
-		return containerName;
+	public ValueObserver<String> containerNameObserver() {
+		return containerNameObserver;
 	}
 
 	@Override
@@ -62,5 +62,10 @@ public class StringTableKeyImpl implements StringTableKey {
 			return equalsKey(other);
 		}
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getId();
 	}
 }

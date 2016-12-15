@@ -107,6 +107,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		myScene.setFill(Color.TRANSPARENT);
 		myRootElement.setPadding(new Insets(20.0));
+		myRootElement.setMaxHeight(720d); //prevent the element from being godly large
 	}
 
 	private void initializeToControl() {
@@ -213,7 +214,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass, imageContainer));
 		}
-		menuButtonExtendControls.getSelectedItemObserver().addValueListener(new ReadOnlyValueListener<CustomControlClass>() {
+		menuButtonExtendControls.getSelectedValueObserver().addValueListener(new ReadOnlyValueListener<CustomControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<CustomControlClass> observer, CustomControlClass oldValue, CustomControlClass selected) {
 				if (selected != null) {

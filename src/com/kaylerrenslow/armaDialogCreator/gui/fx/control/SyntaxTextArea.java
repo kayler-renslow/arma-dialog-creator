@@ -27,6 +27,7 @@ public class SyntaxTextArea extends CodeArea {
 	}
 
 	private void init() {
+		setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/fx/richfx.css");
 		getStyleClass().add("syntax-text-area");
 		caretPositionProperty().addListener(new ChangeListener<Integer>() {
