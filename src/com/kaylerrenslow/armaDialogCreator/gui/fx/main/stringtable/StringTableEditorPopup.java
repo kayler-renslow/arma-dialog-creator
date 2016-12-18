@@ -69,7 +69,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
 				return new javafx.beans.Observable[]{param.getKey().getValue().getLanguageTokenMap()};
 			}
-		}); //for some reason, can't have a LinkedList as the underlying list implementation
+		}); //for some reason, can't have a LinkedList as the underlying list implementation if we want the list view to update the displayed cell text automatically
 
 		private final List<StringTableKeyDescriptor> allItems = new LinkedList<>();
 		private final ListView<StringTableKeyDescriptor> lvMatch = new ListView<>(listViewItems);
@@ -84,7 +84,6 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			lvMatch.setStyle("-fx-font-family:monospace");
 			final String noPackageName = bundle.getString("Popups.StringTable.no_package");
 			final String noContainerName = bundle.getString("Popups.StringTable.no_container");
-
 
 			for (StringTableKey key : table.getKeys()) {
 				StringTableKeyDescriptor descriptor = new StringTableKeyDescriptor(key, noPackageName, noContainerName);
@@ -198,11 +197,10 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		}
 	}
 
-
+	private static final Pattern PATTERN = Pattern.compile("(%[0-9]+)");
 	private static StyleSpans<Collection<String>> computeHighlighting(String text) {
-		final Pattern pattern = Pattern.compile("(%[0-9]+)");
 		text = text.replaceAll("%%", "__");//prevent matching %%1 or %%%%1. We can't remove the %% however because that would mess with the indexes
-		Matcher matcher = pattern.matcher(text);
+		Matcher matcher = PATTERN.matcher(text);
 		int lastKwEnd = 0;
 		StyleSpansBuilder<Collection<String>> spansBuilder = new StyleSpansBuilder<>();
 		while (matcher.find()) {

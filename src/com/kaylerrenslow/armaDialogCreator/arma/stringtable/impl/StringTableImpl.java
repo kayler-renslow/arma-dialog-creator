@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,5 +30,15 @@ public class StringTableImpl implements StringTable {
 	@Override
 	public List<StringTableKey> getKeys() {
 		return keys;
+	}
+
+	@Override
+	@NotNull
+	public StringTable deepCopy() {
+		List<StringTableKey> keys = new ArrayList<>(this.keys.size());
+		for (StringTableKey key : this.keys) {
+			keys.add(key.deepCopy());
+		}
+		return new StringTableImpl(file, keys);
 	}
 }

@@ -31,6 +31,16 @@ public interface StringTable {
 	}
 
 	/**
+	 Create a new {@link StringTable} instance as a deep copy.
+
+	 @return new instance
+	 @see StringTableKey#deepCopy()
+	 @see StringTableValue#deepCopy()
+	 */
+	@NotNull
+	StringTable deepCopy();
+
+	/**
 	 Get a map that pairs each of the keys in <code>keyList</code>. If {@link StringTableKey#getPackageName()} == null, keys will be placed in {@link StringTableKeyMatchMap#getNullItems()}.
 
 	 @param keyList list of keys

@@ -1,8 +1,8 @@
 **Added:**
-* none
+* deep copy of stringtable instances
 
 **Changed:**
-* string table editor now updates list view whenever update occurs
+* none
 
 **Fixed:**
 * none

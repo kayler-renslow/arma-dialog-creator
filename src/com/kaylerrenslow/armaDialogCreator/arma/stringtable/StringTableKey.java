@@ -12,6 +12,8 @@ public interface StringTableKey {
 	@NotNull
 	String getId();
 
+	void setId(@NotNull String id);
+
 	@NotNull
 	StringTableValue getValue();
 
@@ -23,13 +25,31 @@ public interface StringTableKey {
 	@NotNull
 	ValueObserver<String> packageNameObserver();
 
+	default void setPackageName(@Nullable String packageName) {
+		packageNameObserver().updateValue(packageName);
+	}
+
 	@Nullable
 	default String getContainerName() {
 		return containerNameObserver().getValue();
 	}
 
+	default void setContainerName(@Nullable String containerName) {
+		containerNameObserver().updateValue(containerName);
+	}
+
 	@NotNull
 	ValueObserver<String> containerNameObserver();
+
+	/**
+	 Get a new deep copied instance of this key.
+
+	 @return new instance
+	 @see StringTableValue#deepCopy()
+	 @see StringTable#deepCopy()
+	 */
+	@NotNull
+	StringTableKey deepCopy();
 
 	default boolean equalsKey(StringTableKey key) {
 		if (key == null) {

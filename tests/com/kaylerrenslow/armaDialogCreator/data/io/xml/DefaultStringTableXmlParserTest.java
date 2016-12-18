@@ -1,8 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data.io.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableValueImpl;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
@@ -150,74 +149,24 @@ public class DefaultStringTableXmlParserTest {
 		org.junit.Assert.assertEquals(errMsg, hasError, expectError);
 	}
 
-	private static class TestStringTableKey implements StringTableKey {
-		private String id;
-		private StringTableValue value;
-		private ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
-		private ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
-
+	private static class TestStringTableKey extends StringTableKeyImpl {
 		public TestStringTableKey(String id, String packageName, String containerName, Language[] langs, String[] vals) {
-			this.id = id;
-			int i = 0;
+			super(id, packageName, containerName, getMap(langs, vals));
+		}
+
+		private static ObservableMap<Language, String> getMap(Language[] langs, String[] vals) {
 			ObservableMap<Language, String> map = FXCollections.observableMap(new HashMap<>());
-			value = new StringTableValueImpl(this, map);
+			int i = 0;
 			for (Language language : langs) {
 				map.put(language, vals[i++]);
 			}
-		}
-
-		public void setId(String id) {
-			this.id = id;
-		}
-
-		public void setPackageName(String packageName) {
-			packageNameObserver().updateValue(packageName);
-		}
-
-		public void setContainerName(String containerName) {
-			containerNameObserver().updateValue(containerName);
+			return map;
 		}
 
 		public void setValue(StringTableValue value) {
 			this.value = value;
 		}
 
-		@Override
-		@NotNull
-		public String getId() {
-			return id;
-		}
-
-		@Override
-		@NotNull
-		public StringTableValue getValue() {
-			return value;
-		}
-
-
-		@NotNull
-		@Override
-		public ValueObserver<String> packageNameObserver() {
-			return packageNameObserver;
-		}
-
-		@NotNull
-		@Override
-		public ValueObserver<String> containerNameObserver() {
-			return containerNameObserver;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-			if (o == this) {
-				return true;
-			}
-			if (o instanceof StringTableKey) {
-				StringTableKey other = (StringTableKey) o;
-				return equalsKey(other);
-			}
-			return false;
-		}
 	}
 
 }

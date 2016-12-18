@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import javafx.stage.FileChooser;
 
 /**
@@ -7,6 +8,6 @@ import javafx.stage.FileChooser;
  */
 public interface ADCStatic {
 	FileChooser.ExtensionFilter IMAGE_FILE_EXTENSIONS = new FileChooser.ExtensionFilter(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.image_files"), "*.jpg", "*.png", "*.paa");
-	FileChooser.ExtensionFilter PROJECT_XML_FC_FILTER = new FileChooser.ExtensionFilter("project.xml", "*.xml");
+	FileChooser.ExtensionFilter PROJECT_XML_FC_FILTER = new FileChooser.ExtensionFilter(Project.PROJECT_SAVE_FILE_NAME, "*.xml");
 
 }

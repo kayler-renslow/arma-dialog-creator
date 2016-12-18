@@ -10,9 +10,14 @@ import java.util.Map;
  @since 12/12/2016 */
 public interface StringTableValue {
 
-	@NotNull
-	StringTableKey getKey();
+	/**
+	 Get a deep copied instance of this value. Everything is deep copied, except the {@link Language} instances in the {@link #getLanguageTokenMap()}
 
+	 @return new instance
+	 @see StringTable#deepCopy()
+	 */
+	@NotNull
+	StringTableValue deepCopy();
 
 	@NotNull
 	ObservableMap<Language, String> getLanguageTokenMap();

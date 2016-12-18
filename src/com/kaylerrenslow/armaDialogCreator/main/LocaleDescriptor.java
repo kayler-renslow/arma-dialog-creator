@@ -10,7 +10,7 @@ import java.util.Locale;
 public class LocaleDescriptor {
 	private Locale locale;
 
-	public LocaleDescriptor(Locale locale) {
+	public LocaleDescriptor(@NotNull Locale locale) {
 		this.locale = locale;
 	}
 

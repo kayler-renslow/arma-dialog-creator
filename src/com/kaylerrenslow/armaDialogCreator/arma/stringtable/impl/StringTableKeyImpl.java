@@ -12,32 +12,53 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 12/12/2016 */
 public class StringTableKeyImpl implements StringTableKey {
-	private final String key;
-	private final StringTableValue value;
+	protected String id;
+	protected StringTableValue value;
 	private final ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
 	private final ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
 
-	public StringTableKeyImpl(@NotNull String key, @NotNull ObservableMap<Language, String> values) {
-		this(key, null, null, values);
+	public StringTableKeyImpl(@NotNull String id, @NotNull ObservableMap<Language, String> values) {
+		this(id, null, null, values);
 	}
 
-	public StringTableKeyImpl(@NotNull String key, @Nullable String packageName, @Nullable String containerName, @NotNull ObservableMap<Language, String> values) {
-		this.key = key;
+	public StringTableKeyImpl(@NotNull String id, @Nullable String packageName, @Nullable String containerName, @NotNull ObservableMap<Language, String> values) {
+		this.id = id;
+		initNames(packageName, containerName);
+		this.value = new StringTableValueImpl(values);
+	}
+
+	protected StringTableKeyImpl(@NotNull String id, @Nullable String packageName, @Nullable String containerName, @NotNull StringTableValue value) {
+		this.id = id;
+		this.value = value;
+		initNames(packageName, containerName);
+	}
+
+	private void initNames(@Nullable String packageName, @Nullable String containerName) {
 		packageNameObserver().updateValue(packageName != null && packageName.trim().length() == 0 ? null : packageName);
 		containerNameObserver().updateValue(containerName != null && containerName.trim().length() == 0 ? null : containerName);
-		this.value = new StringTableValueImpl(this, values);
 	}
 
 	@NotNull
 	@Override
 	public String getId() {
-		return key;
+		return id;
+	}
+
+	@Override
+	public void setId(@NotNull String id) {
+		this.id = id;
 	}
 
 	@NotNull
 	@Override
 	public StringTableValue getValue() {
 		return value;
+	}
+
+	@Override
+	@NotNull
+	public StringTableKey deepCopy() {
+		return new StringTableKeyImpl(id, getPackageName(), getContainerName(), this.value.deepCopy());
 	}
 
 	@NotNull
