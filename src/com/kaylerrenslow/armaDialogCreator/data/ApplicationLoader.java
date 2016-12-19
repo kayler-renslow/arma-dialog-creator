@@ -1,7 +1,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit.ADCProjectInitWindow;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.ADCProjectInitWindow;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 

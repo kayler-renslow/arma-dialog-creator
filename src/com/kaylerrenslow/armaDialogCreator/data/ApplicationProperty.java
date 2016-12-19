@@ -1,7 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.BooleanConverter;
-import com.kaylerrenslow.armaDialogCreator.data.io.FileConverter;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.CustomToString;
 import com.kaylerrenslow.armaDialogCreator.util.Key;

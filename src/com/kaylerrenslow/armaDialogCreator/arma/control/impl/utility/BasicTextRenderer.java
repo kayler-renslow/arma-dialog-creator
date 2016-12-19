@@ -9,7 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;

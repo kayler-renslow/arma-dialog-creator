@@ -7,10 +7,10 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasControl;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ControlHolder;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlHolder;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -18,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  The base class for all controls.<br>
  <b>NOTE: any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instanceof some extended class because when the project is loaded from .xml
- via {@link com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
+ via {@link com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
  <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
 
  @author Kayler

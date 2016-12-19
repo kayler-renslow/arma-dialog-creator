@@ -7,7 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.ScreenDimension;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

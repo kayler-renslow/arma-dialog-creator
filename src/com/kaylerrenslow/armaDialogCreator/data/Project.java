@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.data.io.export.ProjectExportConfiguration;
+import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 
 /**
- A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.fx.main.editor.UICanvasEditor} is editing,
+ A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasEditor} is editing,
  the {@link ProjectMacroRegistry} instance, as well as all ExternalResources.
 
  @author Kayler

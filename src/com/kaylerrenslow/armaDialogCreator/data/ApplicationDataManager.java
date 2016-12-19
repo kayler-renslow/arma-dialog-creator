@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectSaveXmlWriter;
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StageDialog;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;

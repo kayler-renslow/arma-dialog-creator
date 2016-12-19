@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ApplicationPropertyXmlLoader;
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ApplicationPropertyXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;

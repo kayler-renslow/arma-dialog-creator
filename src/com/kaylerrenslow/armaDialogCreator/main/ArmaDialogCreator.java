@@ -1,15 +1,15 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.*;
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ProjectXmlLoader;
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlLoader;
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.XmlParseException;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.ADCWindow;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasView;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit.CouldNotLoadProjectDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.main.popup.projectInit.ProjectImproperResultDialog;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.main.ADCWindow;
+import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
+import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.CouldNotLoadProjectDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.ProjectImproperResultDialog;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -252,7 +252,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	public static void setToDarkTheme(boolean set) {
-		final String darkTheme = "/com/kaylerrenslow/armaDialogCreator/gui/fx/dark.css";
+		final String darkTheme = "/com/kaylerrenslow/armaDialogCreator/gui/dark.css";
 		if (set) {
 			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
 			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;

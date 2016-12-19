@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.UIScale;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.UIScale;
 
 /**
  Constant values for Arma 3's UI scale

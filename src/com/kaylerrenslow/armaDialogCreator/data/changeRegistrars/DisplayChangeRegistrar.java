@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.data.changeRegistrars;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.*;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.*;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;

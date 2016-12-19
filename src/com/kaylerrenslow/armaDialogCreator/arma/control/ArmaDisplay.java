@@ -2,9 +2,9 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.DisplayProperty;
 import com.kaylerrenslow.armaDialogCreator.control.DisplayPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.CanvasDisplay;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.DisplayControlList;
-import com.kaylerrenslow.armaDialogCreator.gui.canvas.api.Resolution;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.DisplayControlList;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
 import javafx.collections.FXCollections;

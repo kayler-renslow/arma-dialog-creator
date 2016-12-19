@@ -1,0 +1,15 @@
+package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.view;
+
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+
+/**
+ Created by Kayler on 06/01/2016.
+ */
+public class ViewFullScreenAction implements EventHandler<ActionEvent> {
+	@Override
+	public void handle(ActionEvent event) {
+		ArmaDialogCreator.getMainWindow().setToFullScreen(true);
+	}
+}

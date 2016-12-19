@@ -1,9 +1,10 @@
 **Added:**
-* string table editor search: can search by text value
-* redid language selection for string table editor (wanted a way to show what languages are available quickly)
+* none
 
 **Changed:**
-* none
+* moved dirs export and xml out of data.io
+* moved gui.fx to just gui
+* renamed gui.canvas to gui.uicanvas
 
 **Fixed:**
 * none

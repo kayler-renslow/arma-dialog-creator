@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.io.xml.ResourceRegistryXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
 

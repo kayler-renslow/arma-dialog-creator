@@ -5,14 +5,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 05/23/2016.
- */
+ @author Kayler
+ @see StringTable
+ @since 05/23/2016. */
 public interface StringTableKey {
 	/** Get key id (e.g. str_tag_key) */
 	@NotNull
-	String getId();
+	default String getId() {
+		return idObserver().getValue();
+	}
 
-	void setId(@NotNull String id);
+	default void setId(@NotNull String id) {
+		idObserver().updateValue(id);
+	}
+
+	ValueObserver<String> idObserver();
+
+	@NotNull
+	default String getTag() {
+		return getId().substring(getId().indexOf('_'), getId().lastIndexOf('_'));
+	}
 
 	@NotNull
 	StringTableValue getValue();

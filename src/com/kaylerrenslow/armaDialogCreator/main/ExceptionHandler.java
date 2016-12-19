@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
-import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
 import javafx.stage.Modality;
