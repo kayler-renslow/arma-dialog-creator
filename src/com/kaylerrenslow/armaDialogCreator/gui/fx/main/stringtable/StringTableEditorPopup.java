@@ -4,8 +4,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableValue;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.CBMBMenuItem;
-import com.kaylerrenslow.armaDialogCreator.gui.fx.control.ComboBoxMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.SearchTextField;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.control.SyntaxTextArea;
 import com.kaylerrenslow.armaDialogCreator.gui.fx.popup.StagePopup;
@@ -13,21 +11,19 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
 import org.fxmisc.richtext.model.StyleSpans;
@@ -94,19 +90,37 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			SearchTextField tfSearch = new SearchTextField(new ChangeListener<String>() {
 				@Override
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String searchText) {
 					lvMatch.getItems().clear();
-
-					newValue = newValue.trim().toLowerCase();
-					if (newValue.length() == 0) {
-						lvMatch.getItems().addAll(allItems);
+					searchText = searchText.trim().toLowerCase();
+					if (searchText.length() == 0) {
+						addAllKeys();
 					} else {
-						for (StringTableKeyDescriptor key : allItems) {
-							if (key.getKey().getId().toLowerCase().contains(newValue)) {
-								lvMatch.getItems().add(key);
+						if (searchText.charAt(0) == '"' || searchText.charAt(0) == '\'') { //search by text value
+							if (searchText.length() == 1) {
+								addAllKeys();
+								return;
+							}
+							searchText = searchText.substring(1);
+							for (StringTableKeyDescriptor key : allItems) {
+								for (Map.Entry<Language, String> entry : key.getKey().getValue().getLanguageTokenMap().entrySet()) {
+									if (entry.getValue().contains(searchText)) {
+										lvMatch.getItems().add(key);
+									}
+								}
+							}
+						} else {
+							for (StringTableKeyDescriptor key : allItems) {
+								if (key.getKey().getId().toLowerCase().contains(searchText)) {
+									lvMatch.getItems().add(key);
+								}
 							}
 						}
 					}
+				}
+
+				private void addAllKeys() {
+					lvMatch.getItems().addAll(allItems);
 				}
 			});
 			lvMatch.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StringTableKeyDescriptor>() {
@@ -133,7 +147,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	private static class StringTableKeyEditorPane extends StackPane {
 		private static final Font FONT_KEY_ID = Font.font(15);
 
-		private final LanguageComboBoxMenuButton langButton = new LanguageComboBoxMenuButton();
+		private final LanguageSelectionPane languagePane = new LanguageSelectionPane();
 		private final String noKeySelected = Lang.ApplicationBundle().getString("Popups.StringTable.Editor.no_selected_key");
 		private final Label lblKeyId = new Label(noKeySelected);
 		private StringTableKey key;
@@ -144,7 +158,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			getChildren().add(paneContent);
 
 			lblKeyId.setFont(FONT_KEY_ID);
-			VBox vboxLeft = new VBox(10, lblKeyId, langButton);
+			VBox vboxLeft = new VBox(10, lblKeyId, languagePane);
 			vboxLeft.setFillWidth(true);
 
 			SyntaxTextArea textArea = new SyntaxTextArea();
@@ -159,14 +173,15 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 					if (key != null) {
 						newValue = newValue != null ? newValue : "";
-						Language language = langButton.getSelectedValueObserver().getValue();
+						Language language = languagePane.getValueObserver().getValue();
 						if (language != null) {
 							key.getValue().getLanguageTokenMap().replace(language, newValue);
 						}
 					}
 				}
 			});
-			langButton.getSelectedValueObserver().addValueListener(new ReadOnlyValueListener<Language>() {
+			textArea.getStyleClass().add("bordered-syntax-text-area");
+			languagePane.getValueObserver().addValueListener(new ReadOnlyValueListener<Language>() {
 				@Override
 				public void valueUpdated(@NotNull ReadOnlyValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language selected) {
 					if (key == null || selected == null) {
@@ -184,20 +199,18 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 		public void setKey(@Nullable StringTableKey key) {
 			this.key = key;
-			langButton.setToKey(key);
+			languagePane.setToKey(key);
 			if (key == null) {
 				lblKeyId.setText(noKeySelected);
 			} else {
 				lblKeyId.setText(key.getId());
-				if (!key.getValue().getLanguageTokenMap().keySet().isEmpty()) {
-					langButton.chooseItem(key.getValue().getLanguageTokenMap().keySet().iterator().next());
-				}
 			}
 			setDisable(key == null);
 		}
 	}
 
 	private static final Pattern PATTERN = Pattern.compile("(%[0-9]+)");
+
 	private static StyleSpans<Collection<String>> computeHighlighting(String text) {
 		text = text.replaceAll("%%", "__");//prevent matching %%1 or %%%%1. We can't remove the %% however because that would mess with the indexes
 		Matcher matcher = PATTERN.matcher(text);
@@ -212,50 +225,110 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		return spansBuilder.create();
 	}
 
-	private static class LanguageComboBoxMenuButton extends ComboBoxMenuButton<Language> {
+	private static class LanguageSelectionPane extends FlowPane {
 
-		private final LinkedList<CBMBMenuItem<Language>> items = new LinkedList<>();
+		private static final String SELECTED_LINK_STYLE = "-fx-text-fill:darkgreen;-fx-font-weight:bold;";
 
-		public LanguageComboBoxMenuButton() {
-			super(false, Lang.ApplicationBundle().getString("Popups.StringTable.language_placeholder"), null);
-			setDisable(true);
+		private final ValueObserver<Language> valueObserver = new ValueObserver<>(null);
+		private final List<Hyperlink> links = new LinkedList<>();
+
+		public LanguageSelectionPane() {
+			super(10, 10);
+			setToKey(null);
+			valueObserver.addListener(new ValueListener<Language>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language newValue) {
+					for (Hyperlink hyperlink : links) {
+						if (hyperlink.getUserData().equals(newValue)) {
+							hyperlink.setStyle(LanguageSelectionPane.SELECTED_LINK_STYLE);
+						} else {
+							hyperlink.setStyle("");
+						}
+					}
+				}
+			});
 		}
 
 		public void setToKey(@Nullable StringTableKey key) {
-			clearMenu();
-			items.clear();
+			getChildren().clear();
+			links.clear();
 			setDisable(key == null);
+
+			//force an update to null so that if the Language is the same as the previous in this observer, the listeners will get notified below at comment marked with: ****
+			valueObserver.updateValue(null);
+
 			if (key == null) {
 				return;
 			}
+
 			StringTableValue tableValue = key.getValue();
 			tableValue.getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
 				@Override
 				public void onChanged(Change<? extends Language, ? extends String> change) {
 					if (change.wasAdded()) {
-						items.add(new CBMBMenuItem<>(change.getKey()));
-						addItem(items.getLast());
+						addLanguage(change.getKey());
 					} else if (change.wasRemoved()) {
-						CBMBMenuItem<Language> toRemove = null;
-						for (CBMBMenuItem<Language> item : items) {
-							if (item.getValue() == change.getKey()) {
-								toRemove = item;
-								removeItem(item);
-								break;
-							}
-						}
-						if (toRemove != null) {
-							items.remove(toRemove);
-						}
+						removeLanguage(change.getKey());
 					} else {
 						throw new IllegalStateException("unexpected change type:" + change);
 					}
 				}
 			});
+			Language setToMe = null;
 			for (Map.Entry<Language, String> token : tableValue.getLanguageTokenMap().entrySet()) {
-				items.add(new CBMBMenuItem<>(token.getKey()));
-				addItem(items.getLast());
+				addLanguage(token.getKey());
+				if (setToMe == null) {
+					setToMe = token.getKey();
+				}
 			}
+
+			valueObserver.updateValue(setToMe); //**** (see above comment with valueObserver.updateValue(null))
+		}
+
+		private void addLanguage(@NotNull Language language) {
+			if (containsLanguage(language)) {
+				return;
+			}
+			Hyperlink hyperlinkLanguage = new Hyperlink(language.getName());
+			links.add(hyperlinkLanguage);
+			hyperlinkLanguage.setUserData(language);
+			hyperlinkLanguage.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					hyperlinkLanguage.setVisited(false);
+					valueObserver.updateValue(language);
+				}
+			});
+
+			getChildren().add(hyperlinkLanguage);
+		}
+
+		private void removeLanguage(@NotNull Language language) {
+			Hyperlink remove = null;
+			for (Hyperlink hyperlink : links) {
+				if (hyperlink.getUserData() == language) {
+					remove = hyperlink;
+					break;
+				}
+			}
+			if (remove != null) {
+				links.remove(remove);
+				getChildren().remove(remove);
+			}
+		}
+
+		private boolean containsLanguage(@NotNull Language language) {
+			for (Hyperlink hyperlink : links) {
+				if (hyperlink.getUserData().equals(language)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		@NotNull
+		public ReadOnlyValueObserver<Language> getValueObserver() {
+			return valueObserver.getReadOnlyValueObserver();
 		}
 	}
 

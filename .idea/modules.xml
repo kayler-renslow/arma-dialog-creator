@@ -4,7 +4,6 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ADC Launcher/ADC Launcher.iml" filepath="$PROJECT_DIR$/ADC Launcher/ADC Launcher.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" filepath="$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ADC Test Jar/ADC Test Jar.iml" filepath="$PROJECT_DIR$/ADC Test Jar/ADC Test Jar.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Updater/ADC Updater.iml" filepath="$PROJECT_DIR$/ADC Updater/ADC Updater.iml" />
       <module fileurl="file://$PROJECT_DIR$/Arma Dialog Creator.iml" filepath="$PROJECT_DIR$/Arma Dialog Creator.iml" />
     </modules>
