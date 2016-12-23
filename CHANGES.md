@@ -1,10 +1,9 @@
 **Added:**
-* none
+* editing of stringtable key
+* more stringtable search functionality (search by container name and package name)
 
 **Changed:**
-* moved dirs export and xml out of data.io
-* moved gui.fx to just gui
-* renamed gui.canvas to gui.uicanvas
+* made ValueObserver implement Observable
 
 **Fixed:**
 * none

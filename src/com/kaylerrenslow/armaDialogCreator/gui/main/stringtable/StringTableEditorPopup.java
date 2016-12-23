@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SearchTextField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SyntaxTextArea;
+import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -21,8 +22,10 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Callback;
@@ -53,76 +56,57 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 	private static class StringTableEditorTabPane extends TabPane {
 		public StringTableEditorTabPane(@NotNull StringTable table) {
-
-			getTabs().add(new SearchTab(table));
-
+			getTabs().add(new EditTab(table));
+			getTabs().add(new ConfigTab(table));
 		}
 	}
 
-	private static class SearchTab extends Tab {
-		private final ObservableList<StringTableKeyDescriptor> listViewItems = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
+	private static class ConfigTab extends Tab { //set xml things like project name attribute (project=root tag of stringtable.xml)
+		public ConfigTab(@NotNull StringTable table) {
+			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Config.tab_title"));
+			setGraphic(new ImageView(Images.ICON_GEAR));
+			setClosable(false);
+
+			ResourceBundle bundle = Lang.ApplicationBundle();
+		}
+	}
+
+	private static class EditTab extends Tab {
+		private final ObservableList<StringTableKeyDescriptor> listViewItems = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans
+				.Observable[]>() {
 
 			public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
-				return new javafx.beans.Observable[]{param.getKey().getValue().getLanguageTokenMap()};
+				return new javafx.beans.Observable[]{param.getKey().getValue().getLanguageTokenMap(), param.getKey().idObserver()};
 			}
 		}); //for some reason, can't have a LinkedList as the underlying list implementation if we want the list view to update the displayed cell text automatically
 
 		private final List<StringTableKeyDescriptor> allItems = new LinkedList<>();
-		private final ListView<StringTableKeyDescriptor> lvMatch = new ListView<>(listViewItems);
+		private final ListView<StringTableKeyDescriptor> lvMatch = new ListView<>();
 		private final StringTableKeyEditorPane editorPane = new StringTableKeyEditorPane();
 
-		public SearchTab(@NotNull StringTable table) {
-			super(Lang.ApplicationBundle().getString("Popups.StringTable.Search.tab_title"));
-			setGraphic(new ImageView(SearchTextField.SEARCH_ICON));
+		public EditTab(@NotNull StringTable table) {
+			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.tab_title"));
+			setClosable(false);
 			ResourceBundle bundle = Lang.ApplicationBundle();
 
-			lvMatch.setPlaceholder(new Label(bundle.getString("Popups.StringTable.Search.no_match")));
+			lvMatch.setPlaceholder(new Label(bundle.getString("Popups.StringTable.Tab.Edit.Search.no_match")));
 			lvMatch.setStyle("-fx-font-family:monospace");
 			final String noPackageName = bundle.getString("Popups.StringTable.no_package");
 			final String noContainerName = bundle.getString("Popups.StringTable.no_container");
-
 			for (StringTableKey key : table.getKeys()) {
 				StringTableKeyDescriptor descriptor = new StringTableKeyDescriptor(key, noPackageName, noContainerName);
 				allItems.add(descriptor);
 				listViewItems.add(descriptor);
 			}
-			lvMatch.setItems(listViewItems);
-
-			SearchTextField tfSearch = new SearchTextField(new ChangeListener<String>() {
+			final Comparator<StringTableKeyDescriptor> comparator = new Comparator<StringTableKeyDescriptor>() {
 				@Override
-				public void changed(ObservableValue<? extends String> observable, String oldValue, String searchText) {
-					lvMatch.getItems().clear();
-					searchText = searchText.trim().toLowerCase();
-					if (searchText.length() == 0) {
-						addAllKeys();
-					} else {
-						if (searchText.charAt(0) == '"' || searchText.charAt(0) == '\'') { //search by text value
-							if (searchText.length() == 1) {
-								addAllKeys();
-								return;
-							}
-							searchText = searchText.substring(1);
-							for (StringTableKeyDescriptor key : allItems) {
-								for (Map.Entry<Language, String> entry : key.getKey().getValue().getLanguageTokenMap().entrySet()) {
-									if (entry.getValue().contains(searchText)) {
-										lvMatch.getItems().add(key);
-									}
-								}
-							}
-						} else {
-							for (StringTableKeyDescriptor key : allItems) {
-								if (key.getKey().getId().toLowerCase().contains(searchText)) {
-									lvMatch.getItems().add(key);
-								}
-							}
-						}
-					}
+				public int compare(StringTableKeyDescriptor o1, StringTableKeyDescriptor o2) {
+					return o1.getKey().getId().compareToIgnoreCase(o2.getKey().getId());
 				}
-
-				private void addAllKeys() {
-					lvMatch.getItems().addAll(allItems);
-				}
-			});
+			};
+			listViewItems.sort(comparator);
+			allItems.sort(comparator);
+			lvMatch.setItems(listViewItems);
 			lvMatch.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StringTableKeyDescriptor>() {
 				@Override
 				public void changed(ObservableValue<? extends StringTableKeyDescriptor> observable, StringTableKeyDescriptor oldValue, StringTableKeyDescriptor selected) {
@@ -133,32 +117,141 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 					}
 				}
 			});
+
+			SearchTextField tfSearch = new SearchTextField(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String searchText) {
+					lvMatch.getItems().clear();
+					searchText = searchText.trim();
+					if (searchText.length() == 0) {
+						addAllKeys();
+					} else {
+						if (searchText.length() == 1) {
+							addAllKeys();
+							return;
+						}
+						String searchTextAfter = searchText.substring(1);
+						switch (searchText.charAt(0)) {
+							case '\'': //intentional fall through
+							case '"': {
+								searchTextAfter = searchTextAfter.toLowerCase();
+								for (StringTableKeyDescriptor key : allItems) {
+									for (Map.Entry<Language, String> entry : key.getKey().getValue().getLanguageTokenMap().entrySet()) {
+										if (entry.getValue().toLowerCase().contains(searchTextAfter)) {
+											lvMatch.getItems().add(key);
+										}
+									}
+								}
+								break;
+							}
+							case '!': {
+								String searchPackageName;
+								String searchContainerName = "";
+								if (searchTextAfter.contains("/")) {
+									int slashIndex = searchTextAfter.indexOf('/');
+									searchPackageName = searchTextAfter.substring(0, slashIndex);
+									searchContainerName = searchTextAfter.substring(slashIndex + 1);
+								} else {
+									searchPackageName = searchTextAfter;
+								}
+								final boolean matchNullPackage = searchPackageName.equals(".");
+								final boolean matchNullContainer = searchContainerName.equals(".");
+								final boolean matchBothNull = matchNullContainer && matchNullPackage;
+								final boolean ignoreContainer = searchContainerName.length() == 0;
+								final boolean ignorePackage = searchPackageName.length() == 0;
+
+								for (StringTableKeyDescriptor descriptor : allItems) {
+									String keyContainerName = descriptor.getKey().getContainerName();
+									String keyPackageName = descriptor.getKey().getPackageName();
+
+									if (matchBothNull) {
+										if (keyContainerName == null && keyPackageName == null) {
+											lvMatch.getItems().add(descriptor);
+										}
+									} else {
+										keyContainerName = keyContainerName != null ? keyContainerName.toLowerCase() : null;
+										keyPackageName = keyPackageName != null ? keyPackageName.toLowerCase() : null;
+										final boolean containsContainer = ignoreContainer || (keyContainerName == null ?
+												matchNullContainer : keyContainerName.contains(searchContainerName.toLowerCase()));
+										final boolean containsPackage = ignorePackage || (keyPackageName == null ?
+												matchNullPackage : keyPackageName.contains(searchPackageName.toLowerCase()));
+										if (containsContainer && containsPackage) {
+											lvMatch.getItems().add(descriptor);
+										}
+									}
+								}
+
+								break;
+							}
+							default: {
+								searchText = searchText.toLowerCase();
+								for (StringTableKeyDescriptor descriptor : allItems) {
+									if (descriptor.getKey().getId().toLowerCase().contains(searchText)) {
+										lvMatch.getItems().add(descriptor);
+									}
+								}
+								break;
+							}
+						}
+					}
+				}
+
+				private void addAllKeys() {
+					lvMatch.getItems().addAll(allItems);
+				}
+			});
+
 			VBox vbRoot = new VBox(10, tfSearch, editorPane, lvMatch);
 			VBox.setVgrow(lvMatch, Priority.ALWAYS);
 			vbRoot.setFillWidth(true);
 			vbRoot.setPadding(new Insets(10));
 			setContent(vbRoot);
 
-			setClosable(false);
 		}
 	}
 
 
 	private static class StringTableKeyEditorPane extends StackPane {
 		private static final Font FONT_KEY_ID = Font.font(15);
+		private static final String STR_ = "str_";
 
 		private final LanguageSelectionPane languagePane = new LanguageSelectionPane();
 		private final String noKeySelected = Lang.ApplicationBundle().getString("Popups.StringTable.Editor.no_selected_key");
-		private final Label lblKeyId = new Label(noKeySelected);
+		private final TextField tfKeyId = new TextField();
+		private final Label lblStr_ = new Label();
 		private StringTableKey key;
 
 		public StringTableKeyEditorPane() {
-			setDisable(true);
 			HBox paneContent = new HBox(10);
 			getChildren().add(paneContent);
 
-			lblKeyId.setFont(FONT_KEY_ID);
-			VBox vboxLeft = new VBox(10, lblKeyId, languagePane);
+			tfKeyId.setFont(FONT_KEY_ID);
+			tfKeyId.getStyleClass().removeAll("text-field", "text-input");
+			tfKeyId.setStyle("-fx-text-fill:-fx-text-inner-color;");
+			tfKeyId.setCursor(Cursor.TEXT);
+			tfKeyId.textProperty().addListener(new ChangeListener<String>() {
+				@Override
+				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+					if (key == null) {
+						return;
+					}
+					newValue = newValue != null ? newValue : "";
+					key.setId(STR_ + newValue);
+				}
+			});
+
+			lblStr_.setFont(FONT_KEY_ID);
+			lblStr_.setCursor(Cursor.TEXT);
+			lblStr_.setOnMousePressed(new EventHandler<MouseEvent>() {
+				@Override
+				public void handle(MouseEvent event) {
+					event.consume();
+					tfKeyId.positionCaret(0);
+					tfKeyId.requestFocus();
+					tfKeyId.deselect();
+				}
+			});
+			VBox vboxLeft = new VBox(10, new HBox(lblStr_, tfKeyId), languagePane);
 			vboxLeft.setFillWidth(true);
 
 			SyntaxTextArea textArea = new SyntaxTextArea();
@@ -195,15 +288,19 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			paneContent.getChildren().addAll(vboxLeft, textArea);
 			vboxLeft.setPrefWidth(300);
 			HBox.setHgrow(textArea, Priority.ALWAYS);
+
+			setKey(null);
 		}
 
 		public void setKey(@Nullable StringTableKey key) {
 			this.key = key;
 			languagePane.setToKey(key);
 			if (key == null) {
-				lblKeyId.setText(noKeySelected);
+				lblStr_.setText(noKeySelected);
+				tfKeyId.setText("");
 			} else {
-				lblKeyId.setText(key.getId());
+				lblStr_.setText(STR_);
+				tfKeyId.setText(key.getIdWithoutStr_());
 			}
 			setDisable(key == null);
 		}

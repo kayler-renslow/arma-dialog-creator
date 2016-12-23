@@ -2,8 +2,6 @@ Features
 -----------------------------------
 * for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
     * There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and value(s)
-* for extend classes in controls, check if x and y and things were inherited. do not cache the old values. possible have the renderer have a listener on the control properties for x and y
-    * think about how these data structures are going to be created from description.ext and how they will be saved. this could be an issue
 * check access property for controls and see if properties can be inherited and such https://community.bistudio.com/wiki/Dialog_Control#Dialogs
 * have a color theme maker so that you don't need to constantly have to set colors to a macro. Maybe even have a big default archive for all attributes? Maybe just place them inside the lookup thingy?
 * go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls
@@ -24,8 +22,6 @@ General
 * preview's resolution should be independent from the editor.
 * preview should have background image
 
-* for ControlClass.getInheritedProperties(), we should detect if they are explicitly redefined in a class, or just inherited. There should probably be two methods
-
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
@@ -33,6 +29,9 @@ General
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
 * doesn't save nested classes in control xml writing and also doesn't load them
+* when loading keys from stringtable, check for improper key ids (missing str_ or duplicate ids) 
+* save last used workspace stringtable so that it can be loaded for project creation
+* save enabled and visible states for control saving to xml, and load them back!
 
 Bugs
 -----------------------------------

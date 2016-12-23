@@ -18,4 +18,12 @@ while scaling component:
     holding ctrl: mirror the scale
     holding s: scale as a square
 
-string table search: type " in search box to search for key value
+string table search at index 0:
+    type " or ' to search for key value
+    type !package name/container name to search for package name and container name
+        !package = search for keys with package name contains "package"
+        !/container = search for keys with container name contains "container" (ignores package name)
+        !package/container = search for keys with package name contains "package" and container name contains "container"
+        !. = search for keys with no package name
+        !/. search for keys with no container name
+        !./. search for keys with no package name and no container name

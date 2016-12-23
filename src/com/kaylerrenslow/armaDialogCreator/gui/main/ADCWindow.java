@@ -17,7 +17,9 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 05/11/2016.
+ The main window of Arma Dialog Creator
+ @author Kayler
+ @since 05/11/2016
  */
 public class ADCWindow {
 	private final Stage primaryStage;

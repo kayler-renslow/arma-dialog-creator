@@ -1,19 +1,24 @@
 package com.kaylerrenslow.armaDialogCreator.util;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  Simple value observer implementation
 
  @author Kayler
  @since 05/31/2016. */
-public class ValueObserver<V> {
+public class ValueObserver<V> implements Observable {
 	private V value;
-	private final LinkedList<ValueListener<V>> listeners = new LinkedList<>();
+	private final LinkedList<ValueListener<V>> valueListeners = new LinkedList<>();
 	private ReadOnlyValueObserver<V> readOnlyValueObserver;
+
+	private final List<InvalidationListener> invalidationListeners = new LinkedList<>();
 
 	public ValueObserver(@Nullable V value) {
 		this.value = value;
@@ -38,22 +43,36 @@ public class ValueObserver<V> {
 		}
 		V oldValue = this.value;
 		this.value = newValue;
-		for (ValueListener<V> listener : listeners) {
+		for (ValueListener<V> listener : valueListeners) {
 			listener.valueUpdated(this, oldValue, this.value);
+		}
+
+		for (InvalidationListener listener : invalidationListeners) {
+			listener.invalidated(this);
 		}
 	}
 
 	/** Set the listener that listens to the state of the value */
 	public void addListener(@NotNull ValueListener<V> listener) {
-		if (listeners.contains(listener)) {
+		if (valueListeners.contains(listener)) {
 			return;
 		}
-		this.listeners.add(listener);
+		this.valueListeners.add(listener);
 	}
 
-	/** Remove the listener from the list. Returns true if the listener was inside the list */
-	public boolean removeListener(@NotNull ValueListener<V> listener) {
-		return listeners.remove(listener);
+	/** Remove the listener from the list */
+	public void removeListener(@NotNull ValueListener<V> listener) {
+		valueListeners.remove(listener);
+	}
+
+	@Override
+	public void addListener(@NotNull InvalidationListener listener) {
+		invalidationListeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(@NotNull InvalidationListener listener) {
+		invalidationListeners.remove(listener);
 	}
 
 	@Nullable

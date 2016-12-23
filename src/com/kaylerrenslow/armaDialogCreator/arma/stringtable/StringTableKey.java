@@ -15,6 +15,15 @@ public interface StringTableKey {
 		return idObserver().getValue();
 	}
 
+	/** Get the key id without str_ (e.g. if key= str_myTag_name, would return myTag_name) */
+	@NotNull
+	default String getIdWithoutStr_() {
+		if (!getId().toLowerCase().startsWith("str_")) {
+			return getId();
+		}
+		return getId().substring(getId().indexOf('_') + 1);
+	}
+
 	default void setId(@NotNull String id) {
 		idObserver().updateValue(id);
 	}

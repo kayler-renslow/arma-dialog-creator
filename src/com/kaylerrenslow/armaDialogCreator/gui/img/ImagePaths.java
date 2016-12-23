@@ -15,7 +15,9 @@ public abstract class ImagePaths {
 	public static final String ICON_UNDO = pathPrefix + "icons/undo.png";
 	public static final String ICON_REDO = pathPrefix + "icons/redo.png";
 	public static final String ICON_HEART = pathPrefix + "icons/heart.png";
+	public static final String ICON_GEAR = pathPrefix + "icons/gear.png";
 
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
 	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";
+
 }

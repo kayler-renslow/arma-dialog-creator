@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.LinkedList;
 import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  Used for setting up the initial {@link Project}. This window is shown before {@link ADCWindow}.
@@ -58,8 +59,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		addWizardStep(initWizardStep);
 
 		btnCancel.setText(Lang.ApplicationBundle().getString("Popups.btn_exit"));
-		myStage.setWidth(720d);
-		myStage.setHeight(400d);
+		myStage.setWidth(STAGE_WIDTH);
+		myStage.setHeight(STAGE_HEIGHT);
 		myStage.setResizable(false);
 	}
 
@@ -92,8 +93,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		private File workspaceDirectory;
 
 		public WorkspaceSelectionStep() {
-			super(new VBox(5));
-
+			super(new VBox(20));
+			ResourceBundle bundle = Lang.ApplicationBundle();
 			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.get(ApplicationDataManager.getApplicationProperties());
 			if (workspaceDirectory == null) {
 				workspaceDirectory = Workspace.DEFAULT_WORKSPACE_DIRECTORY;
@@ -101,9 +102,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 			content.setAlignment(Pos.CENTER);
 			content.setMaxWidth(STAGE_WIDTH / 4 * 3);
-			final Label lblChooseWorkspace = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.choose_workspace"));
+			final Label lblChooseWorkspace = new Label(bundle.getString("ProjectInitWindow.choose_workspace"));
 			lblChooseWorkspace.setFont(Font.font(20));
-			content.getChildren().add(lblChooseWorkspace);
+			content.getChildren().add(new VBox(5, lblChooseWorkspace, new Label(bundle.getString("ProjectInitWindow.workspace_about"))));
 
 			final FileChooserPane chooserPane = new FileChooserPane(
 					ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,

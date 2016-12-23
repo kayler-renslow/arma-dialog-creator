@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.data.xml.DefaultStringTableXmlParser;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableEditorPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
@@ -15,8 +16,8 @@ import javafx.scene.layout.VBox;
 import java.io.File;
 
 /**
-
  Implementation varies. Used for debugging/testing specific features
+
  @author Kayler
  @since 09/14/2016. */
 public class TestAction implements EventHandler<ActionEvent> {
@@ -31,9 +32,23 @@ public class TestAction implements EventHandler<ActionEvent> {
 						new ButtonWithAction("String Table Test", new EventHandler<ActionEvent>() {
 							@Override
 							public void handle(ActionEvent event) {
+								SimpleResponseDialog dialog = new SimpleResponseDialog(ArmaDialogCreator.getPrimaryStage(), "Choose String Table", "Choose String Table", true, true, false) {
+									@Override
+									public void show() {
+										getFooter().getBtnCancel().setText("Altis Life");
+										getFooter().getBtnOk().setText("ADC Test");
+										super.show();
+									}
+								};
+								dialog.show();
+								File f;
+								if (dialog.wasCancelled()) {
+									f = new File("D:\\My Documents\\Arma 3 - Other Profiles\\K-Town\\missions\\altisLife.Altis\\stringtable.xml");
+								} else {
+									f = new File("tests/com/kaylerrenslow/armaDialogCreator/data/xml/stringtable.xml");
+								}
 								try {
-									StringTable table = new DefaultStringTableXmlParser(
-											new File("D:\\Archive\\Intellij Files\\Arma Tools\\Arma Dialog Creator\\tests\\com\\kaylerrenslow\\armaDialogCreator\\data\\xml\\stringtable.xml"))
+									StringTable table = new DefaultStringTableXmlParser(f)
 											.createStringTableInstance();
 									new StringTableEditorPopup(table).show();
 								} catch (Exception e) {
