@@ -1,8 +1,8 @@
 **Added:**
-* none
+* edit package and container for StringTable editor
 
 **Changed:**
-* readme update
+* moved inner classes out of StringTableEditorPopup
 
 **Fixed:**
 * none

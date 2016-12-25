@@ -47,6 +47,12 @@ public interface StringTableKey {
 	ValueObserver<String> packageNameObserver();
 
 	default void setPackageName(@Nullable String packageName) {
+		if (packageName != null) {
+			packageName = packageName.trim();
+			if (packageName.length() == 0) {
+				packageName = null;
+			}
+		}
 		packageNameObserver().updateValue(packageName);
 	}
 
@@ -56,6 +62,12 @@ public interface StringTableKey {
 	}
 
 	default void setContainerName(@Nullable String containerName) {
+		if (containerName != null) {
+			containerName = containerName.trim();
+			if (containerName.length() == 0) {
+				containerName = null;
+			}
+		}
 		containerNameObserver().updateValue(containerName);
 	}
 

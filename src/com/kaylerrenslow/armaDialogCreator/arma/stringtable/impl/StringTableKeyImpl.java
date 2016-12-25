@@ -34,8 +34,8 @@ public class StringTableKeyImpl implements StringTableKey {
 	}
 
 	private void initNames(@Nullable String packageName, @Nullable String containerName) {
-		packageNameObserver().updateValue(packageName != null && packageName.trim().length() == 0 ? null : packageName);
-		containerNameObserver().updateValue(containerName != null && containerName.trim().length() == 0 ? null : containerName);
+		packageNameObserver().updateValue(packageName);
+		containerNameObserver().updateValue(containerName);
 	}
 
 
