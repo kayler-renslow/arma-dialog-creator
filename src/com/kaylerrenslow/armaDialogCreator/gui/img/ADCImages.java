@@ -11,4 +11,7 @@ public class ADCImages {
 	public static final Image ICON_UNDO = new Image(ADCImagePaths.ICON_UNDO);
 	public static final Image ICON_REDO = new Image(ADCImagePaths.ICON_REDO);
 	public static final Image ICON_GEAR = new Image(ADCImagePaths.ICON_GEAR);
+	public static final Image ICON_REFRESH = new Image(ADCImagePaths.ICON_REFRESH);
+	public static final Image ICON_SAVE = new Image(ADCImagePaths.ICON_SAVE);
+	public static final Image ICON_EXPORT = new Image(ADCImagePaths.ICON_EXPORT);
 }

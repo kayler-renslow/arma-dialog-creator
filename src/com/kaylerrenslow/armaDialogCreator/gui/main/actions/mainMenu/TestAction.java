@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.data.xml.DefaultStringTableXmlParser;
+import com.kaylerrenslow.armaDialogCreator.data.xml.StringTableXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableEditorPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
@@ -50,7 +51,7 @@ public class TestAction implements EventHandler<ActionEvent> {
 								try {
 									StringTable table = new DefaultStringTableXmlParser(f)
 											.createStringTableInstance();
-									new StringTableEditorPopup(table).show();
+									new StringTableEditorPopup(table, new StringTableXmlWriter(), new DefaultStringTableXmlParser(f)).show();
 								} catch (Exception e) {
 									e.printStackTrace();
 								}

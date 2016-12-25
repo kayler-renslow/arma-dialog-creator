@@ -33,8 +33,8 @@ class ADCMenuBar extends MenuBar {
 
 	/*File*/
 	final MenuItem file_open = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_open")), new FileOpenAction());
-	final MenuItem file_save = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_save")), new FileSaveAction());
-	final MenuItem file_export = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_export")), new FileExportAction());
+	final MenuItem file_save = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_save"), new ImageView(ADCImages.ICON_SAVE)), new FileSaveAction());
+	final MenuItem file_export = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_export"), new ImageView(ADCImages.ICON_EXPORT)), new FileExportAction());
 	final MenuItem file_closeProject = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_close_project")), new FileCloseProjectAction());
 	final MenuItem file_exit = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_exit")), new FileExitAction());
 	final MenuItem file_restart = addOnAction(new MenuItem(ApplicationBundle().getString("MainMenuBar.file_restart")), new FileRestartAction());
@@ -43,6 +43,7 @@ class ADCMenuBar extends MenuBar {
 	/*Edit*/
 	final MenuItem edit_undo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_undo"), new ImageView(ADCImages.ICON_UNDO));
 	final MenuItem edit_redo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_redo"), new ImageView(ADCImages.ICON_REDO));
+
 	{
 		edit_redo.setOnAction(new EditRedoAction(edit_redo));
 		edit_undo.setOnAction(new EditUndoAction(edit_undo));
@@ -60,6 +61,7 @@ class ADCMenuBar extends MenuBar {
 
 	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(ApplicationBundle().getString("MainMenuBar.view_dark_theme")), new
 			ViewDarkThemeAction(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties())));
+
 	{
 		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties()));
 	}
@@ -172,6 +174,8 @@ class ADCMenuBar extends MenuBar {
 				view_showGrid.setSelected(ArmaDialogCreator.getCanvasView().getConfiguration().showGrid());
 			}
 		});
+
 	}
+
 
 }

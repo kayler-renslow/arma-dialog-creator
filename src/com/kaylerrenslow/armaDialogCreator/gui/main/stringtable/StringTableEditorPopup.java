@@ -1,11 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SearchTextField;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -15,6 +13,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -24,6 +24,7 @@ import javafx.util.Callback;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -31,10 +32,49 @@ import java.util.*;
  @since 12/14/2016 */
 public class StringTableEditorPopup extends StagePopup<VBox> {
 
-	public StringTableEditorPopup(@NotNull StringTable table) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.StringTable.popup_title"));
+	public StringTableEditorPopup(@NotNull StringTable table, @NotNull StringTableWriter writer, @NotNull StringTableParser parser) {
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), Lang.ApplicationBundle().getString("Popups.StringTable.popup_title"));
+		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		StringTableEditorTabPane tabPane = new StringTableEditorTabPane(table);
+
+		Button btnRefresh = new Button("", new ImageView(ADCImages.ICON_REFRESH));
+		btnRefresh.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.ToolBar.reload_tooltip")));
+		btnRefresh.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				SimpleResponseDialog dialog = new SimpleResponseDialog(
+						ArmaDialogCreator.getPrimaryStage(),
+						bundle.getString("Popups.StringTable.ToolBar.reload_popup_title"),
+						bundle.getString("Popups.StringTable.ToolBar.reload_popup_body"),
+						true, true, false
+				);
+				dialog.show();
+				if (dialog.wasCancelled()) {
+					return;
+				}
+				try {
+					tabPane.setToTable(parser.createStringTableInstance());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		});
+		Button btnSave = new Button("", new ImageView(ADCImages.ICON_SAVE));
+		btnSave.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.ToolBar.save_tooltip")));
+		btnSave.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				try {
+					writer.writeTable(table);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		myRootElement.getChildren().add(new ToolBar(btnRefresh, btnSave));
 		myRootElement.getChildren().add(tabPane);
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
@@ -46,6 +86,11 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		private final ValueObserver<Language> previewLanguageObserver = new ValueObserver<>(KnownLanguage.Original);
 
 		public StringTableEditorTabPane(@NotNull StringTable table) {
+			setToTable(table);
+		}
+
+		public void setToTable(@NotNull StringTable table) {
+			getTabs().clear();
 			getTabs().add(new EditTab(table, previewLanguageObserver));
 			getTabs().add(new ConfigTab(table, previewLanguageObserver));
 		}
@@ -80,7 +125,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	}
 
 	private static class EditTab extends Tab {
-		private final ObservableList<StringTableKeyDescriptor> listViewItems;
+		private final ObservableList<StringTableKeyDescriptor> listViewItemList;
 
 		private final List<StringTableKeyDescriptor> allItems = new LinkedList<>();
 		private final ListView<StringTableKeyDescriptor> lvMatch = new ListView<>();
@@ -90,9 +135,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		public EditTab(@NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver) {
 			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.tab_title"));
 
-			listViewItems = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans
-					.Observable[]>() {
-
+			listViewItemList = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
 				public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
 					return new javafx.beans.Observable[]{
 							param.getKey().getValue().getLanguageTokenMap(),
@@ -126,7 +169,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				StringTableKeyDescriptor descriptor = new StringTableKeyDescriptor(key, noPackageName, noContainerName);
 				descriptor.setPreviewLanguage(previewLanguageObserver.getValue());
 				allItems.add(descriptor);
-				listViewItems.add(descriptor);
+				listViewItemList.add(descriptor);
 			}
 			final Comparator<StringTableKeyDescriptor> comparator = new Comparator<StringTableKeyDescriptor>() {
 				@Override
@@ -134,9 +177,9 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 					return o1.getKey().getId().compareToIgnoreCase(o2.getKey().getId());
 				}
 			};
-			listViewItems.sort(comparator);
+			listViewItemList.sort(comparator);
 			allItems.sort(comparator);
-			lvMatch.setItems(listViewItems);
+			lvMatch.setItems(listViewItemList);
 			lvMatch.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StringTableKeyDescriptor>() {
 				@Override
 				public void changed(ObservableValue<? extends StringTableKeyDescriptor> observable, StringTableKeyDescriptor oldValue, StringTableKeyDescriptor selected) {

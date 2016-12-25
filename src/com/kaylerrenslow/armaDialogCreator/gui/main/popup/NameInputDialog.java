@@ -17,12 +17,18 @@ public class NameInputDialog extends StageDialog<VBox> {
 	protected final TextField tf = new TextField();
 
 	public NameInputDialog(@NotNull String title, @NotNull String message) {
+		this(title, message, null);
+	}
+
+	public NameInputDialog(@NotNull String title, @NotNull String message, @Nullable String promptText) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), title, true, true, false);
 		myRootElement.setFillWidth(true);
 		myRootElement.getChildren().add(new Label(message));
 		myRootElement.getChildren().add(tf);
 		myRootElement.setPrefWidth(320);
 		myStage.setResizable(false);
+		tf.setPromptText(promptText);
+		tf.setFocusTraversable(false);
 	}
 
 	@Nullable

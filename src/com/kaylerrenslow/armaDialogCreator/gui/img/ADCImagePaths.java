@@ -16,9 +16,11 @@ public abstract class ADCImagePaths {
 	public static final String ICON_REDO = pathPrefix + "icons/redo.png";
 	public static final String ICON_HEART = pathPrefix + "icons/heart.png";
 	public static final String ICON_GEAR = pathPrefix + "icons/gear.png";
+	public static final String ICON_REFRESH = pathPrefix + "icons/refresh.png";
+	public static final String ICON_SAVE = pathPrefix + "icons/save.png";
+	public static final String ICON_EXPORT = pathPrefix + "icons/export.png";
 
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
 	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";
-
 
 }

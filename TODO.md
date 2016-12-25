@@ -32,6 +32,7 @@ General
 * when loading keys from stringtable, check for improper key ids (missing str_ or duplicate ids) 
 * save last used workspace stringtable so that it can be loaded for project creation
 * save enabled and visible states for control saving to xml, and load them back!
+* stringtable editor: reload and save to file need error dialogs
 
 Bugs
 -----------------------------------

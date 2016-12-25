@@ -5,6 +5,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.DownArrowMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
@@ -78,7 +80,8 @@ class StringTableKeyEditorPane extends StackPane {
 				}
 				NameInputDialog dialog = new NameInputDialog(
 						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_package_popup_title_f"), key.getId()),
-						bundle.getString("Popups.StringTable.Tab.Edit.new_package_name")
+						bundle.getString("Popups.StringTable.Tab.Edit.new_package_name"),
+						bundle.getString("Popups.StringTable.no_package")
 				);
 				dialog.show();
 				if (dialog.wasCancelled()) {
@@ -96,7 +99,8 @@ class StringTableKeyEditorPane extends StackPane {
 				}
 				NameInputDialog dialog = new NameInputDialog(
 						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_container_popup_title_f"), key.getId()),
-						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name")
+						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name"),
+						bundle.getString("Popups.StringTable.no_container")
 				);
 				dialog.show();
 				if (dialog.wasCancelled()) {
@@ -118,12 +122,14 @@ class StringTableKeyEditorPane extends StackPane {
 				if (key == null || selected == null) {
 					taValue.replaceText("");
 				} else {
-					Map.Entry<Language, String> entry = key.getValue().getFirstLanguageTokenEntry();
-					String s;
-					if (entry == null || entry.getValue() == null) {
-						s = "";
-					} else {
-						s = entry.getValue();
+					String s = key.getValue().getLanguageTokenMap().get(selected);
+					if (s == null) {
+						Map.Entry<Language, String> entry = key.getValue().getFirstLanguageTokenEntry();
+						if (entry == null || entry.getValue() == null) {
+							s = "";
+						} else {
+							s = entry.getValue();
+						}
 					}
 
 					taValue.replaceText(s);
@@ -207,16 +213,29 @@ class StringTableKeyEditorPane extends StackPane {
 
 		@Override
 		public void handle(ActionEvent event) {
-			added = !added;
+			boolean added = !this.added;
+			ResourceBundle bundle = Lang.ApplicationBundle();
 			if (added) {
 				menuAddLanguage.getItems().remove(miLanguage);
 				menuRemoveLanguage.getItems().add(miLanguage);
 				key.getValue().getLanguageTokenMap().put(language, "");
 			} else {
+				SimpleResponseDialog dialog = new SimpleResponseDialog(
+						ArmaDialogCreator.getPrimaryStage(),
+						bundle.getString("Popups.StringTable.Tab.Edit.remove_language"),
+						String.format(bundle.getString("Popups.StringTable.Tab.Edit.remove_language_confirmation_f"), language.getName()),
+						true, true, false
+				);
+				dialog.show();
+				if (dialog.wasCancelled()) {
+					return;
+				}
 				menuRemoveLanguage.getItems().remove(miLanguage);
 				menuAddLanguage.getItems().add(miLanguage);
 				key.getValue().getLanguageTokenMap().remove(language);
 			}
+
+			this.added = added;
 
 		}
 	}

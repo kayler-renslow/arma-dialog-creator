@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 
 /**
- A project loader for save-version='1'
+ A project preview loader for save-version='1'. This loader will only get the name of the project.
 
  @author Kayler
  @since 08/07/2016. */

@@ -1,8 +1,11 @@
 **Added:**
-* edit package and container for StringTable editor
+* save and export icons
+* for stringtable editor, added refresh and save icons
+    * refreshing stringtable from file
+    * force save to file (actual saving not implemented)
 
 **Changed:**
-* moved inner classes out of StringTableEditorPopup
+* none
 
 **Fixed:**
 * none
