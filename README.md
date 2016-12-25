@@ -10,8 +10,16 @@ Arma Dialog Creator is a tool for creating dialogs for Arma 3. The tool was desi
 * Custom control creation
 * SafeZone and Absolute coordinate positioning support ([more info here](https://community.bistudio.com/wiki/SafeZone)).
 * Preview of Controls that have a .paa image file (must have Arma 3 Tools installed).
+* A nice StringTable editor
+
+### Preview Video
+Arma Dialog Creator isn't out yet, but there is a video showcasing what has been accomplished (as of November 24 2016). Please note that nothing in the video is final and already things have been improved.
+
+You can watch the video [here](https://www.youtube.com/watch?v=ytqxZvdEDjk).
+
 
 ### License
 Arma games are created by and owned Bohemia Interactive. Arma Dialog Creator was created by Kayler Renslow. Arma Dialog Creator and it's author aren't affiliated with Bohemia Interactive. This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). You don't need to contact me if you want to create derivatives or publish the project elsewhere.
 
 ### More info coming soon...
+

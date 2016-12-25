@@ -1,12 +1,8 @@
 **Added:**
-* StringTable editor: 
-    * support for adding and removing language for string table
-    * find keys that have language
-    * find keys that don't have language
-* down arrow menu (user hovers arrow and menu automatically drops)
+* none
 
 **Changed:**
-* none
+* readme update
 
 **Fixed:**
 * none
