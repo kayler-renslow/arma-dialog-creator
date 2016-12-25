@@ -20,6 +20,12 @@ public interface StringTable {
 	@NotNull
 	List<StringTableKey> getKeys();
 
+	/**
+	 Get a key id ({@link StringTableKey#getId()}) equal to the given id
+
+	 @param id id to match
+	 @return null if no key with given id exists, or the key matched
+	 */
 	@Nullable
 	default StringTableKey getKeyById(@NotNull String id) {
 		for (StringTableKey key : getKeys()) {

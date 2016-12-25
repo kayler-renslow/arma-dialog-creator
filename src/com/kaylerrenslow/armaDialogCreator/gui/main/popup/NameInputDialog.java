@@ -31,6 +31,10 @@ public class NameInputDialog extends StageDialog<VBox> {
 		tf.setFocusTraversable(false);
 	}
 
+	public void setInputText(@Nullable String text) {
+		tf.setText(text);
+	}
+
 	@Nullable
 	public String getInputText() {
 		return tf.getText();

@@ -83,6 +83,7 @@ class StringTableKeyEditorPane extends StackPane {
 						bundle.getString("Popups.StringTable.Tab.Edit.new_package_name"),
 						bundle.getString("Popups.StringTable.no_package")
 				);
+				dialog.setInputText(key.getPackageName());
 				dialog.show();
 				if (dialog.wasCancelled()) {
 					return;
@@ -102,6 +103,7 @@ class StringTableKeyEditorPane extends StackPane {
 						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name"),
 						bundle.getString("Popups.StringTable.no_container")
 				);
+				dialog.setInputText(key.getContainerName());
 				dialog.show();
 				if (dialog.wasCancelled()) {
 					return;
