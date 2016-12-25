@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.data.ChangeDescriptor;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
-import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.HistoryListItem;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.HistoryListItemSubInfo;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.HistoryListPopup;
@@ -60,12 +60,12 @@ public class ViewChangesPopup extends HistoryListPopup {
 			String subInfoLabel;
 			switch (descriptor.getChangeType()) {
 				case UNDO: {
-					graphic = new ImageView(Images.ICON_UNDO);
+					graphic = new ImageView(ADCImages.ICON_UNDO);
 					subInfoLabel = Lang.ApplicationBundle().getString("Popups.ViewChanges.SubInfo.change_type_undo");
 					break;
 				}
 				case REDO: {
-					graphic = new ImageView(Images.ICON_REDO);
+					graphic = new ImageView(ADCImages.ICON_REDO);
 					subInfoLabel = Lang.ApplicationBundle().getString("Popups.ViewChanges.SubInfo.change_type_redo");
 					break;
 				}

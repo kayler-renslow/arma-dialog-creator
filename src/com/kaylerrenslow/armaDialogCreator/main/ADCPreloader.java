@@ -2,8 +2,8 @@
 
 package com.kaylerrenslow.armaDialogCreator.main;
 
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
-import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import javafx.application.Preloader;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -70,7 +70,7 @@ public class ADCPreloader extends Preloader {
 		});
 
 		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		preloaderStage.getIcons().add(Images.ICON_ADC);
+		preloaderStage.getIcons().add(ADCImages.ICON_ADC);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 
@@ -83,7 +83,7 @@ public class ADCPreloader extends Preloader {
 		borderPane.setPadding(new Insets(5));
 
 		StackPane.setMargin(borderPane, new Insets(248, 0, 0, 0));
-		StackPane stackpane = new StackPane(new ImageView(ImagePaths.PRELOAD_SCREEN), borderPane);
+		StackPane stackpane = new StackPane(new ImageView(ADCImagePaths.PRELOAD_SCREEN), borderPane);
 		Scene scene = new Scene(stackpane);
 		preloaderStage.initStyle(StageStyle.UNDECORATED);
 		preloaderStage.setScene(scene);

@@ -7,7 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.FoundChild;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeUtil;
-import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlListChange;
@@ -581,7 +581,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 
 	static ImageView createFolderIcon() {
-		return new ImageView(Images.ICON_FOLDER);
+		return new ImageView(ADCImages.ICON_FOLDER);
 	}
 
 	private static class BooleanEdit {

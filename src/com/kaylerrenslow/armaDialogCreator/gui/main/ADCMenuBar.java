@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.PresetCheckMenuItem;
-import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateMacroAction;
@@ -41,8 +41,8 @@ class ADCMenuBar extends MenuBar {
 
 
 	/*Edit*/
-	final MenuItem edit_undo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_undo"), new ImageView(Images.ICON_UNDO));
-	final MenuItem edit_redo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_redo"), new ImageView(Images.ICON_REDO));
+	final MenuItem edit_undo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_undo"), new ImageView(ADCImages.ICON_UNDO));
+	final MenuItem edit_redo = new MenuItem(ApplicationBundle().getString("MainMenuBar.edit_redo"), new ImageView(ADCImages.ICON_REDO));
 	{
 		edit_redo.setOnAction(new EditRedoAction(edit_redo));
 		edit_undo.setOnAction(new EditUndoAction(edit_undo));

@@ -1,9 +1,12 @@
 **Added:**
-* editing of stringtable key
-* more stringtable search functionality (search by container name and package name)
+* StringTable editor: 
+    * support for adding and removing language for string table
+    * find keys that have language
+    * find keys that don't have language
+* down arrow menu (user hovers arrow and menu automatically drops)
 
 **Changed:**
-* made ValueObserver implement Observable
+* none
 
 **Fixed:**
 * none

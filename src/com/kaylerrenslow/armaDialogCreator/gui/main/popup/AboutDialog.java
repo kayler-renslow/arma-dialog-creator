@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImagePaths;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -26,7 +26,7 @@ public class AboutDialog extends StageDialog<VBox> {
 		myStage.setResizable(false);
 		lblRepoUrl.setContentDisplay(ContentDisplay.RIGHT);
 		myRootElement.getChildren().addAll(
-				new ImageView(ImagePaths.ABOUT_HEADER),
+				new ImageView(ADCImagePaths.ABOUT_HEADER),
 				new Label(Lang.ApplicationBundle().getString("Popups.About.author") + ": " + "Kayler \"K-Town\" Renslow"),
 				new Label(Lang.ApplicationBundle().getString("Popups.About.version") + ": " + Lang.Application.VERSION),
 				new Label(Lang.ApplicationBundle().getString("Popups.About.build") + ": " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number")),

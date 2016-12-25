@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
-import com.kaylerrenslow.armaDialogCreator.gui.img.Images;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
@@ -103,7 +103,7 @@ public final class ArmaDialogCreator extends Application {
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
-		primaryStage.getIcons().add(Images.ICON_ADC);
+		primaryStage.getIcons().add(ADCImages.ICON_ADC);
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
 
 		//load main window

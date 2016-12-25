@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.FileChooserPane;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImagePaths;
 import com.kaylerrenslow.armaDialogCreator.gui.main.displayPropertiesEditor.DisplayPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -172,7 +172,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				configuration.setPlaceAdcNotice(newValue);
 			}
 		});
-		tabRoot.getChildren().add(new HBox(2, checkBoxPlaceAdcNotice, new ImageView(ImagePaths.ICON_HEART)));
+		tabRoot.getChildren().add(new HBox(2, checkBoxPlaceAdcNotice, new ImageView(ADCImagePaths.ICON_HEART)));
 	}
 
 	/*

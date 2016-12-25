@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.img;
 /**
  Created by Kayler on 05/17/2016.
  */
-public abstract class ImagePaths {
+public abstract class ADCImagePaths {
 	private static final String pathPrefix = "/com/kaylerrenslow/armaDialogCreator/gui/img/";
 
 	public static final String BG_1 = pathPrefix + "backgroundImages/image1.jpg";
@@ -19,5 +19,6 @@ public abstract class ImagePaths {
 
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
 	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";
+
 
 }

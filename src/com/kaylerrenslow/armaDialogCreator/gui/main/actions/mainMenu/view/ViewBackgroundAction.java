@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.view;
 
-import com.kaylerrenslow.armaDialogCreator.gui.img.ImagePaths;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImagePaths;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.event.ActionEvent;
@@ -35,11 +35,11 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 
 	private void chooseBackground(int background, ActionEvent event) {
 		if (background == IMAGE_1) {
-			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ImagePaths.BG_1);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_1);
 		} else if (background == IMAGE_2) {
-			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ImagePaths.BG_2);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_2);
 		} else if (background == IMAGE_3) {
-			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ImagePaths.BG_3);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_3);
 		} else if (background == NO_IMAGE) {
 			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(null);
 		} else if (background == IMAGE_CUSTOM) {

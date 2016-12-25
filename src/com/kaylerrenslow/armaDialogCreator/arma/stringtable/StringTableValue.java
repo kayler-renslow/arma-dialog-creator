@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.stringtable;
 
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 
@@ -21,6 +22,15 @@ public interface StringTableValue {
 
 	@NotNull
 	ObservableMap<Language, String> getLanguageTokenMap();
+
+	@Nullable
+	default Map.Entry<Language, String> getFirstLanguageTokenEntry() {
+		if (getLanguageTokenMap().entrySet().isEmpty()) {
+			return null;
+		}
+		return getLanguageTokenMap().entrySet().iterator().next();
+
+	}
 
 	default boolean equalsValue(StringTableValue other) {
 		if (other == null) {
