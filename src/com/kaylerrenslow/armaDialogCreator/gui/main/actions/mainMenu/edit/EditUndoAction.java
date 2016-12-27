@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.edit;
 import com.kaylerrenslow.armaDialogCreator.data.ChangeUpdateFailedException;
 import com.kaylerrenslow.armaDialogCreator.data.Changelog;
 import com.kaylerrenslow.armaDialogCreator.data.ChangelogUpdate;
+import com.kaylerrenslow.armaDialogCreator.gui.notification.BoxNotification;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.Notification;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -58,7 +59,7 @@ public class EditUndoAction implements EventHandler<ActionEvent> {
 			changelog.undo();
 		} catch (Exception e) {
 			if (e instanceof ChangeUpdateFailedException) {
-				Notifications.showNotification(new Notification(
+				Notifications.showNotification(new BoxNotification(
 								Lang.ApplicationBundle().getString("Notifications.UndoOperation.notification_title"),
 								String.format(Lang.ApplicationBundle().getString("Notifications.UndoOperation.notification_body_f"), e.getMessage()),
 								Notification.DEFAULT_DURATION,

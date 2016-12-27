@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.file;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.export.EditExportConfigurationDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.notification.Notification;
+import com.kaylerrenslow.armaDialogCreator.gui.notification.BoxNotification;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -37,7 +37,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			File exportDir = dialog.getConfiguration().getExportLocation();
 
 			Notifications.showNotification(
-					new Notification(
+					new BoxNotification(
 							Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"),
 							String.format(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
 							8 * 1000

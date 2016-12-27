@@ -303,4 +303,9 @@ public class StagePopup<E extends Parent> {
 	public ReadOnlyBooleanProperty getShowingProperty() {
 		return myStage.showingProperty();
 	}
+
+	/** Invokes {@link Stage#setResizable(boolean)} */
+	public void setResizable(boolean resizable) {
+		myStage.setResizable(resizable);
+	}
 }

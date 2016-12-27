@@ -11,7 +11,7 @@ import java.util.Map;
  @author Kayler
  @since 12/24/2016 */
 class StringTableKeyDescriptor {
-	private static final String FORMAT = "%-40s (%20s / %-20s) %1s %s";
+	private static final String FORMAT = "%-45s (%30s / %-30s) %1s %s";
 
 	private StringTableKey key;
 	private final String noPackageName;

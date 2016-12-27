@@ -394,7 +394,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		private final InputField inputField;
 		private Label lblMsg = new Label();
 
-		public ErrorMsgPopup(InputField inputField) {
+		public ErrorMsgPopup(@NotNull InputField inputField) {
 			this.inputField = inputField;
 			StackPane stackPane = new StackPane(lblMsg);
 			stackPane.setPadding(new Insets(5));

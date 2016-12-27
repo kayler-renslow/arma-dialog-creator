@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.DownArrowMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
@@ -10,17 +11,17 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
+import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -39,34 +40,24 @@ class StringTableKeyEditorPane extends StackPane {
 	private static final Font FONT_KEY_ID = Font.font(15);
 
 	private final LanguageSelectionPane languagePane;
-	private final String noKeySelected = Lang.ApplicationBundle().getString("Popups.StringTable.Editor.no_selected_key");
-	private final TextField tfKeyId = new TextField();
+	private final String noKeySelected = Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.no_selected_key");
+	private final Label lblKeyId = new Label();
 	private final Menu menuAddLanguage;
 	private final Menu menuRemoveLanguage;
+	private StringTable table;
 	private StringTableKey key;
 
-	public StringTableKeyEditorPane(@NotNull ValueObserver<Language> previewLanguageObserver) {
+	public StringTableKeyEditorPane(@NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver) {
+		this.table = table;
 		languagePane = new LanguageSelectionPane(previewLanguageObserver);
 		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		HBox paneContent = new HBox(10);
 		getChildren().add(paneContent);
 
-		tfKeyId.setFont(FONT_KEY_ID);
-		tfKeyId.getStyleClass().removeAll("text-field", "text-input");
-		tfKeyId.setStyle("-fx-text-fill:-fx-text-inner-color;");
-		tfKeyId.setCursor(Cursor.TEXT);
-		tfKeyId.textProperty().addListener(new ChangeListener<String>() {
-			@Override
-			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				if (key == null) {
-					return;
-				}
-				newValue = newValue != null ? newValue : "";
-				key.setId(newValue);
-			}
-		});
-		HBox.setHgrow(tfKeyId, Priority.ALWAYS);
+		lblKeyId.setFont(FONT_KEY_ID);
+
+		HBox.setHgrow(lblKeyId, Priority.ALWAYS);
 
 		menuAddLanguage = new Menu(bundle.getString("Popups.StringTable.Tab.Edit.add_language"));
 		menuRemoveLanguage = new Menu(bundle.getString("Popups.StringTable.Tab.Edit.remove_language"));
@@ -111,13 +102,59 @@ class StringTableKeyEditorPane extends StackPane {
 				key.setContainerName(dialog.getInputText());
 			}
 		});
+		MenuItem miRenameId = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.rename"));
+		miRenameId.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				if (key == null) {
+					return;
+				}
+				NameInputDialog dialog = new NameInputDialog(
+						miRenameId.getText(),
+						bundle.getString("Popups.StringTable.Tab.Edit.new_id")
+				);
+				dialog.setInputText(key.getId());
+				dialog.inputTextProperty().addListener(new ChangeListener<String>() {
+					boolean added;
+					final String badInput = "bad-input-text-field";
 
-		HBox hboxKey = new HBox(5, new DownArrowMenu(menuAddLanguage, menuRemoveLanguage, new SeparatorMenuItem(), miEditPackage, miEditContainer), tfKeyId);
+					@Override
+					public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+						newValue = newValue != null ? newValue : "";
+						if (!StringTableKey.idIsProper(newValue)) {
+							if (!added) {
+								added = true;
+								dialog.getTextField().getStyleClass().add(badInput);
+							}
+						} else {
+							added = false;
+							dialog.getTextField().getStyleClass().remove(badInput);
+						}
+					}
+				});
+				dialog.show();
+				if (dialog.wasCancelled() || dialog.getInputText() == null || dialog.getInputText().equals(key.getId())) {
+					return;
+				}
+				StringTableKey existing = table.getKeyById(dialog.getInputText());
+				if (existing != null) {
+					new KeyAlreadyExistsDialog(key).show();
+					dialog.show();
+					return;
+				}
+				key.setId(dialog.getInputText());
+			}
+		});
+
+		HBox hboxKey = new HBox(5, new DownArrowMenu(menuAddLanguage, menuRemoveLanguage, new SeparatorMenuItem(), miEditPackage, miEditContainer, miRenameId), lblKeyId);
 		hboxKey.setAlignment(Pos.CENTER_LEFT);
 		VBox vboxLeft = new VBox(10, hboxKey, languagePane);
 		vboxLeft.setFillWidth(true);
 
 		StringTableValueEditor taValue = new StringTableValueEditor(this);
+		taValue.setWrapText(true);
+
+
 		languagePane.getChosenLanguageObserver().addValueListener(new ReadOnlyValueListener<Language>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language selected) {
@@ -144,16 +181,38 @@ class StringTableKeyEditorPane extends StackPane {
 		vboxLeft.setPrefWidth(300);
 		HBox.setHgrow(taValue, Priority.ALWAYS);
 
-		setKey(null);
+		setKey(null, null);
 	}
 
-	public void setKey(@Nullable StringTableKey key) {
+	/**
+	 Set the key that is being edited
+
+	 @param key key to edit
+	 @param table table that owns the <code>key</code> (or null if <code>key</code> is null)
+	 @throws NullPointerException     if <code>key</code> is not null but table is
+	 @throws IllegalArgumentException if <code>key</code> doesn't exist in <code>table</code>
+	 */
+	public void setKey(@Nullable StringTableKey key, @Nullable StringTable table) {
 		this.key = key;
+		this.table = table;
 		languagePane.setToKey(key);
 		if (key == null) {
-			tfKeyId.setText(noKeySelected);
+			lblKeyId.setText(noKeySelected);
 		} else {
-			tfKeyId.setText(key.getId());
+			if (table == null) {
+				throw new NullPointerException("table is null when key isn't");
+			}
+			if (!table.getKeys().contains(key)) {
+				throw new IllegalArgumentException("key doesn't exist in table");
+			}
+
+			lblKeyId.setText(key.getId());
+			key.idObserver().addListener(new ValueListener<String>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<String> observer, @Nullable String oldValue, @Nullable String newValue) {
+					lblKeyId.setText(newValue);
+				}
+			});
 		}
 		handleKeyDownMenus();
 		setDisable(key == null);

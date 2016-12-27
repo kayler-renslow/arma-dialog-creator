@@ -33,6 +33,7 @@ General
 * save last used workspace stringtable so that it can be loaded for project creation
 * save enabled and visible states for control saving to xml, and load them back!
 * stringtable editor: reload and save to file need error dialogs
+* stringtable editor: keys can have multiple containers (nested containers)
 
 Bugs
 -----------------------------------

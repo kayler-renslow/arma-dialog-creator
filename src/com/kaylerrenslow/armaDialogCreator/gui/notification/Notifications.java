@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.LinkedList;
 
 /**
- Handles all {@link Notification} instances that are to be displayed. When a {@link Notification} is shown via {@link #showNotification(Notification)}, {@link #getPastNotifications()} will have
- that notification appended and the notification will be displayed.
+ Handles all {@link Notification} instances that are to be displayed. When a {@link Notification} is shown via {@link #showNotification(Notification)} or {@link #showNotification(Notification, NotificationPane)},
+ {@link #getPastNotifications()} will have that notification appended (if {@link Notification#saveToHistory()}) and the notification will be displayed.
 
  @author Kayler
  @since 11/16/2016 */
@@ -17,9 +17,18 @@ public class Notifications {
 	private static final Notifications INSTANCE = new Notifications();
 	private static final int MAX_HISTORY_NOTIFICATIONS = 15;
 
-
 	/**
 	 Shows the specified {@link Notification}
+
+	 @param notification notification to show
+	 @param pane pane to place the notification on
+	 */
+	public static void showNotification(@NotNull Notification notification, @NotNull NotificationPane pane) {
+		INSTANCE.doShowNotification(notification, pane);
+	}
+
+	/**
+	 Shows the specified {@link Notification} on {@link #getNotificationPane()}
 
 	 @param notification notification to show
 	 @throws IllegalStateException when {@link #setNotificationPane(NotificationPane)} is not invoked prior to this call
@@ -28,7 +37,7 @@ public class Notifications {
 		if (INSTANCE.notificationPane == null) {
 			throw new IllegalStateException("notificationPane is not set from setNotificationPane()");
 		}
-		INSTANCE.doShowNotification(notification);
+		INSTANCE.doShowNotification(notification, INSTANCE.notificationPane);
 	}
 
 	/** Return a list of past notifications that were displayed. */
@@ -38,12 +47,17 @@ public class Notifications {
 	}
 
 	/**
-	 Set the {@link NotificationPane} to display the notifications on. This must be invoked before {@link #showNotification(Notification)}.
+	 Set the {@link NotificationPane} to display the notifications that are invoked from {@link #showNotification(Notification)}. This must be invoked before {@link #showNotification(Notification)}.
 
 	 @param notificationPane the pane
 	 */
 	public static void setNotificationPane(@NotNull NotificationPane notificationPane) {
 		INSTANCE.notificationPane = notificationPane;
+	}
+
+	/** {@link #setNotificationPane(NotificationPane)} */
+	public static NotificationPane getNotificationPane() {
+		return INSTANCE.notificationPane;
 	}
 
 	private Notifications() {
@@ -56,10 +70,10 @@ public class Notifications {
 	private final ReadOnlyList<NotificationDescriptor> pastNotificationsReadOnly = new ReadOnlyList<>(pastNotifications);
 	private NotificationPane notificationPane;
 
-	private void doShowNotification(@NotNull Notification notification) {
+	private void doShowNotification(@NotNull Notification notification, @NotNull NotificationPane notificationPane) {
 		NotificationDescriptor descriptor = new NotificationDescriptor(notification, System.currentTimeMillis());
-		pastNotifications.add(descriptor);
-		if (pastNotifications.size() >= MAX_HISTORY_NOTIFICATIONS) {
+		if (notification.saveToHistory()) {
+			pastNotifications.add(descriptor);
 			while (pastNotifications.size() >= MAX_HISTORY_NOTIFICATIONS) {
 				pastNotifications.removeFirst();
 			}
@@ -77,7 +91,7 @@ public class Notifications {
 
 		private final Notifications notifications;
 
-		public NotificationsVisibilityTask(Notifications notifications) {
+		public NotificationsVisibilityTask(@NotNull Notifications notifications) {
 			this.notifications = notifications;
 		}
 

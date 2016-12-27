@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
  @see StringTable
  @since 05/23/2016. */
 public interface StringTableKey {
+
+	String ID_REGEX = "[sS][tT][rR]_([a-zA-Z_0-9]+)_([a-zA-Z_0-9]+)";
+
 	/** Get key id (e.g. str_tag_key) */
 	@NotNull
 	default String getId() {
@@ -117,5 +120,20 @@ public interface StringTableKey {
 		}
 		return true;
 
+	}
+
+	/** @return {@link #idIsProper(String)} with {@link #getId()} as the parameter */
+	default boolean idIsProper() {
+		return idIsProper(getId());
+	}
+
+	/**
+	 Check if the given id is properly formatted (str_tag_name), false if it isn't. If <code>id==null</code>, will return false.
+
+	 @param id id to check
+	 @return true if formatted properly, false otherwise
+	 */
+	static boolean idIsProper(@Nullable String id) {
+		return id != null && id.matches(ID_REGEX);
 	}
 }

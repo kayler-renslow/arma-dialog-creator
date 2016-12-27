@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.data.xml.DefaultStringTableXmlParser;
 import com.kaylerrenslow.armaDialogCreator.data.xml.StringTableXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableEditorPopup;
-import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.layout.VBox;
 
 import java.io.File;
@@ -33,24 +34,24 @@ public class TestAction implements EventHandler<ActionEvent> {
 						new ButtonWithAction("String Table Test", new EventHandler<ActionEvent>() {
 							@Override
 							public void handle(ActionEvent event) {
-								SimpleResponseDialog dialog = new SimpleResponseDialog(ArmaDialogCreator.getPrimaryStage(), "Choose String Table", "Choose String Table", true, true, false) {
+								ListView<File> listView = new ListView<>();
+								StageDialog<VBox> dialog = new StageDialog<VBox>(null, new VBox(5), "", false, true, false) {
 									@Override
 									public void show() {
-										getFooter().getBtnCancel().setText("Altis Life");
-										getFooter().getBtnOk().setText("ADC Test");
+										myRootElement.getChildren().add(listView);
+										listView.getItems().add(new File("D:\\My Documents\\Arma 3 - Other Profiles\\K-Town\\missions\\altisLife.Altis\\stringtable.xml"));
+										listView.getItems().add(new File("tests/com/kaylerrenslow/armaDialogCreator/data/xml/stringtable.xml"));
+										listView.getItems().add(new File("D:\\DATA\\Steam\\steamapps\\common\\Arma 3\\Addons\\languagemissions_f_epa\\stringtable.xml"));
 										super.show();
 									}
 								};
 								dialog.show();
-								File f;
-								if (dialog.wasCancelled()) {
-									f = new File("D:\\My Documents\\Arma 3 - Other Profiles\\K-Town\\missions\\altisLife.Altis\\stringtable.xml");
-								} else {
-									f = new File("tests/com/kaylerrenslow/armaDialogCreator/data/xml/stringtable.xml");
+								File f = listView.getSelectionModel().getSelectedItem();
+								if (f == null) {
+									return;
 								}
 								try {
-									StringTable table = new DefaultStringTableXmlParser(f)
-											.createStringTableInstance();
+									StringTable table = new DefaultStringTableXmlParser(f).createStringTableInstance();
 									new StringTableEditorPopup(table, new StringTableXmlWriter(), new DefaultStringTableXmlParser(f)).show();
 								} catch (Exception e) {
 									e.printStackTrace();

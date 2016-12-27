@@ -75,6 +75,10 @@ class LanguageSelectionPane extends FlowPane {
 			public void onChanged(Change<? extends Language, ? extends String> change) {
 				if (change.wasAdded()) {
 					addLanguage(change.getKey());
+					if (links.size() == 1) {
+						chosenLanguageObserver.updateValue(null);
+						chosenLanguageObserver.updateValue(change.getKey());
+					}
 				} else if (change.wasRemoved()) {
 					removeLanguage(change.getKey());
 				} else {
@@ -107,6 +111,7 @@ class LanguageSelectionPane extends FlowPane {
 
 		getChildren().clear();
 		getChildren().addAll(links);
+
 	}
 
 	private void removeLanguage(@NotNull Language language) {
