@@ -1,8 +1,5 @@
 **Added:**
-* String table editor:
-    * remove selected key
-    * insert new key
-    * redid id renaming (went from inline text field to menu item->popup)
+* none
 
 **Changed:**
 * none
