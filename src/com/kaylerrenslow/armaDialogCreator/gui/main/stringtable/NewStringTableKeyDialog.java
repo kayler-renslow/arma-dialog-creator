@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  @since 12/26/2016 */
 class NewStringTableKeyDialog extends NameInputDialog {
 
-	private final StringTableKey key = new StringTableKeyImpl("str_", FXCollections.observableHashMap());
+	private final StringTableKey key = new StringTableKeyImpl("str_tag_name", FXCollections.observableHashMap());
 	private final StringTable table;
 
 	public NewStringTableKeyDialog(@NotNull StringTable table) {
@@ -70,7 +70,8 @@ class NewStringTableKeyDialog extends NameInputDialog {
 		});
 
 		textField.requestFocus();
-		textField.positionCaret(textField.getText().length());
+		textField.positionCaret(textField.getText().indexOf('_'));
+		textField.selectEnd();
 
 	}
 

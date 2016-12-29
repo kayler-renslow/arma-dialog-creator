@@ -1,8 +1,8 @@
 **Added:**
-* string table keys are available in macro chooser now
+* stringtable key editing from macro getter button (inside control properties config popup)
 
 **Changed:**
-* removed (getValue()) from StringTableKey because it was conflicting with Macro.getValue() and in general didn't make any sense
+* none
 
 **Fixed:**
 * none

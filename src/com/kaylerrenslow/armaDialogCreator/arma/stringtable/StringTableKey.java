@@ -203,6 +203,7 @@ public interface StringTableKey extends Macro<SVString> {
 
 	@NotNull
 	default String getHeaderMacroId() {
+		System.out.println("StringTableKey.getHeaderMacroId getHeaderMacroId(this)=" + getHeaderMacroId(this));
 		return getHeaderMacroId(this);
 	}
 

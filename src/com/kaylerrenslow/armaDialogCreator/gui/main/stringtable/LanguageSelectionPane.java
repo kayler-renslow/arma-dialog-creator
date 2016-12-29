@@ -36,11 +36,11 @@ class LanguageSelectionPane extends FlowPane {
 
 	private final ValueObserver<Language> chosenLanguageObserver = new ValueObserver<>(null);
 	private final List<Hyperlink> links = new LinkedList<>();
-	private ValueObserver<Language> previewLanguageObserver;
+	private final Language defaultLanguage;
 
-	public LanguageSelectionPane(ValueObserver<Language> previewLanguageObserver) {
+	public LanguageSelectionPane(@Nullable Language defaultPreviewLanguage) {
 		super(10, 10);
-		this.previewLanguageObserver = previewLanguageObserver;
+		this.defaultLanguage = defaultPreviewLanguage;
 		setToKey(null);
 		chosenLanguageObserver.addListener(new ValueListener<Language>() {
 			@Override
@@ -88,7 +88,7 @@ class LanguageSelectionPane extends FlowPane {
 			addLanguage(token.getKey());
 		}
 
-		chosenLanguageObserver.updateValue(previewLanguageObserver.getValue()); //**** (see above comment with valueObserver.updateValue(null))
+		chosenLanguageObserver.updateValue(defaultLanguage); //**** (see above comment with valueObserver.updateValue(null))
 	}
 
 	private void addLanguage(@NotNull Language language) {

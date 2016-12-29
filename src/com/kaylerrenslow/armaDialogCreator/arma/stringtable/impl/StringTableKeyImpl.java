@@ -10,6 +10,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,7 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 		this.values = values;
 		updateMacroValue();
 		setId(id);
-		setKey(getHeaderMacroId());
+		setKey(id);
 
 		packageNameObserver().updateValue(packageName);
 		containerNameObserver().updateValue(containerName);
@@ -50,7 +51,15 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 		getIdObserver().addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, @Nullable String oldValue, @Nullable String newValue) {
-				setKey(getHeaderMacroId());
+				setKey(newValue);
+			}
+		});
+		getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
+			@Override
+			public void onChanged(Change<? extends Language, ? extends String> change) {
+				if (change.getKey().equals(getDefaultLanguage())) {
+					updateMacroValue();
+				}
 			}
 		});
 
@@ -67,6 +76,7 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 
 		setValue(new SVString(defaultToken));
 	}
+
 
 	@NotNull
 	@Override

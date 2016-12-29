@@ -261,7 +261,7 @@ public class StagePopup<E extends Parent> {
 	}
 
 	/** Emit a beeping noise */
-	protected void beep() {
+	public void beep() {
 		Toolkit.getDefaultToolkit().beep();
 	}
 

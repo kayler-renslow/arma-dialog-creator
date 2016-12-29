@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.data.export;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
@@ -185,7 +186,11 @@ public class ProjectExporter {
 				continue;
 			}
 			if (property.getMacro() != null) {
-				body += String.format(itemFormatString, property.getName(), property.getMacro().getKey());
+				StringTableKey stringKey = null;
+				if (property.getMacro() instanceof StringTableKey) {
+					stringKey = (StringTableKey) property.getMacro();
+				}
+				body += String.format(itemFormatString, property.getName(), stringKey != null ? stringKey.getHeaderMacroId() : property.getMacro().getKey());
 			} else {
 				if (property.getValue().getAsStringArray().length == 1) {
 					body += String.format(itemFormatString, property.getName(), getExportValueString(property.getValue(), property.getPropertyType()));

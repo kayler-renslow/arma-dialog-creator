@@ -2,6 +2,8 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.StringProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
  @since 12/24/2016 */
 public class NameInputDialog extends StageDialog<VBox> {
 	protected final TextField textField = new TextField();
+	private final BooleanProperty canOkProperty = new SimpleBooleanProperty(true);
 
 	public NameInputDialog(@NotNull String title, @NotNull String message) {
 		this(title, message, null);
@@ -49,5 +52,17 @@ public class NameInputDialog extends StageDialog<VBox> {
 	@NotNull
 	public StringProperty inputTextProperty() {
 		return textField.textProperty();
+	}
+
+	@NotNull
+	public BooleanProperty getCanOkProperty() {
+		return canOkProperty;
+	}
+
+	@Override
+	protected void ok() {
+		if (canOkProperty.get()) {
+			super.ok();
+		}
 	}
 }

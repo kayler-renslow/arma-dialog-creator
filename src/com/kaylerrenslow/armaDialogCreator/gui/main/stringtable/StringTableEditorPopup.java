@@ -215,7 +215,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				return o1.getKey().getId().compareToIgnoreCase(o2.getKey().getId());
 			}
 		};
-		;
+
 		private final ObservableList<StringTableKeyDescriptor> listViewItemList;
 		private ValueObserver<Language> previewLanguageObserver;
 		private StringTableEditorPopup editorPopup;
@@ -251,7 +251,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				}
 			});
 
-			editorPane = new StringTableKeyEditorPane(table, previewLanguageObserver);
+			editorPane = new StringTableKeyEditorPane(KnownLanguage.Original);
 
 			ResourceBundle bundle = Lang.ApplicationBundle();
 
@@ -266,9 +266,9 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				@Override
 				public void changed(ObservableValue<? extends StringTableKeyDescriptor> observable, StringTableKeyDescriptor oldValue, StringTableKeyDescriptor selected) {
 					if (selected != null) {
-						editorPane.setKey(selected.getKey(), table);
+						editorPane.setKey(selected.getKey(), table.getKeys());
 					} else {
-						editorPane.setKey(null, table);
+						editorPane.setKey(null, table.getKeys());
 					}
 				}
 			});

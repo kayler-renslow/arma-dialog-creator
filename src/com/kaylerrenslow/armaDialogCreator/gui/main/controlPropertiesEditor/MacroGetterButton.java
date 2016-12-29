@@ -1,9 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseMacroPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.EditMacroPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableKeyEditorDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
@@ -46,8 +49,15 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 				if (macroValueObserver.getValue() == null) {
 					return;
 				}
-				EditMacroPopup editMacroPopup = new EditMacroPopup(macroValueObserver.getValue());
-				editMacroPopup.show();
+				if (macroValueObserver.getValue() instanceof StringTableKey) {
+					StringTableKey key = (StringTableKey) macroValueObserver.getValue();
+					StringTableKeyEditorDialog dialog = new StringTableKeyEditorDialog(Project.getCurrentProject().getStringTable(), key);
+					dialog.show();
+
+				} else {
+					EditMacroPopup editMacroPopup = new EditMacroPopup(macroValueObserver.getValue());
+					editMacroPopup.show();
+				}
 				hyplinkChosenMacro.setVisited(false);
 			}
 		});
