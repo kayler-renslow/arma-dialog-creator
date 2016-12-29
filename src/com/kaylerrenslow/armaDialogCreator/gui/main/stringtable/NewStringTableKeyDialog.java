@@ -39,10 +39,10 @@ class NewStringTableKeyDialog extends NameInputDialog {
 			public void onChanged(Change<? extends Language> c) {
 				while (c.next()) {
 					if (c.wasRemoved()) {
-						key.getValue().getLanguageTokenMap().remove(c.getRemoved());
+						key.getLanguageTokenMap().remove(c.getRemoved());
 					} else if (c.wasAdded()) {
 						for (int i = c.getFrom(); i < c.getTo(); i++) {
-							key.getValue().getLanguageTokenMap().put(c.getList().get(i), "");
+							key.getLanguageTokenMap().put(c.getList().get(i), "");
 						}
 					}
 				}

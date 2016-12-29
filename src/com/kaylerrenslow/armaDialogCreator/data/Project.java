@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
@@ -36,6 +37,7 @@ public class Project implements SpecificationRegistry {
 	private ProjectExportConfiguration exportConfiguration;
 
 	private ProjectDefaultValueProvider defaultValueProvider;
+	private StringTable stringTable;
 
 	public Project(@NotNull ProjectInfo info) {
 		this.projectName = info.getProjectName();
@@ -60,6 +62,15 @@ public class Project implements SpecificationRegistry {
 	@NotNull
 	public File getProjectSaveFile() {
 		return projectSaveFile;
+	}
+
+	@Nullable
+	public StringTable getStringTable() {
+		return stringTable;
+	}
+
+	public void setStringTable(@Nullable StringTable stringTable) {
+		this.stringTable = stringTable;
 	}
 
 	/**

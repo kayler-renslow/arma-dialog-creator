@@ -33,6 +33,11 @@ public class StringTableImpl implements StringTable {
 	}
 
 	@Override
+	public void setKeys(@NotNull List<StringTableKey> keys) {
+		this.keys = keys;
+	}
+
+	@Override
 	@NotNull
 	public StringTable deepCopy() {
 		List<StringTableKey> keys = new ArrayList<>(this.keys.size());

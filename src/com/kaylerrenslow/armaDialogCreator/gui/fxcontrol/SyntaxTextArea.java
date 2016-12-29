@@ -51,5 +51,16 @@ public class SyntaxTextArea extends CodeArea {
 				}
 			}
 		});
+		//prevent caret from showing if not editable
+		showCaretProperty().addListener(new ChangeListener<CaretVisibility>() {
+			@Override
+			public void changed(ObservableValue<? extends CaretVisibility> observable, CaretVisibility oldValue, CaretVisibility newValue) {
+				if (!isEditable()) {
+					setShowCaret(CaretVisibility.OFF);
+				} else {
+					setShowCaret(newValue);
+				}
+			}
+		});
 	}
 }

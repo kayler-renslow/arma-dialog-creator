@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.xml.DefaultStringTableXmlParser;
 import com.kaylerrenslow.armaDialogCreator.data.xml.StringTableXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableEditorPopup;
@@ -34,25 +35,28 @@ public class TestAction implements EventHandler<ActionEvent> {
 						new ButtonWithAction("String Table Test", new EventHandler<ActionEvent>() {
 							@Override
 							public void handle(ActionEvent event) {
-								ListView<File> listView = new ListView<>();
-								StageDialog<VBox> dialog = new StageDialog<VBox>(null, new VBox(5), "", false, true, false) {
-									@Override
-									public void show() {
-										myRootElement.getChildren().add(listView);
-										listView.getItems().add(new File("D:\\My Documents\\Arma 3 - Other Profiles\\K-Town\\missions\\altisLife.Altis\\stringtable.xml"));
-										listView.getItems().add(new File("tests/com/kaylerrenslow/armaDialogCreator/data/xml/stringtable.xml"));
-										listView.getItems().add(new File("D:\\DATA\\Steam\\steamapps\\common\\Arma 3\\Addons\\languagemissions_f_epa\\stringtable.xml"));
-										super.show();
-									}
-								};
-								dialog.show();
-								File f = listView.getSelectionModel().getSelectedItem();
+								File f = new StringTableSelector().chosen;
 								if (f == null) {
 									return;
 								}
 								try {
 									StringTable table = new DefaultStringTableXmlParser(f).createStringTableInstance();
 									new StringTableEditorPopup(table, new StringTableXmlWriter(), new DefaultStringTableXmlParser(f)).show();
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
+							}
+						}),
+						new ButtonWithAction("Set Project String Table", new EventHandler<ActionEvent>() {
+							@Override
+							public void handle(ActionEvent event) {
+								File f = new StringTableSelector().chosen;
+								if (f == null) {
+									return;
+								}
+								try {
+									StringTable table = new DefaultStringTableXmlParser(f).createStringTableInstance();
+									Project.getCurrentProject().setStringTable(table);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
@@ -65,6 +69,26 @@ public class TestAction implements EventHandler<ActionEvent> {
 		}.show();
 
 
+	}
+
+	private static class StringTableSelector {
+		private File chosen;
+
+		public StringTableSelector() {
+			ListView<File> listView = new ListView<>();
+			StageDialog<VBox> dialog = new StageDialog<VBox>(null, new VBox(5), "", false, true, false) {
+				@Override
+				public void show() {
+					myRootElement.getChildren().add(listView);
+					listView.getItems().add(new File("D:\\My Documents\\Arma 3 - Other Profiles\\K-Town\\missions\\altisLife.Altis\\stringtable.xml"));
+					listView.getItems().add(new File("tests/com/kaylerrenslow/armaDialogCreator/data/xml/stringtable.xml"));
+					listView.getItems().add(new File("D:\\DATA\\Steam\\steamapps\\common\\Arma 3\\Addons\\languagemissions_f_epa\\stringtable.xml"));
+					super.show();
+				}
+			};
+			dialog.show();
+			chosen = listView.getSelectionModel().getSelectedItem();
+		}
 	}
 
 	private static class ButtonWithAction extends Button {

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.control.sv;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** A generic wrapper implementation for a String. */
 public final class SVString extends SerializableValue {
@@ -13,9 +14,15 @@ public final class SVString extends SerializableValue {
 			return new SVString(values[0]);
 		}
 	};
-	
-	public SVString(String s) {
-		super(s);
+
+	/** If s==null, "" (empty string) will be used */
+	public SVString(@Nullable String s) {
+		super(s == null ? "" : s);
+	}
+
+	/** Involes {@link #SVString(String)} with "" (empty String) */
+	public SVString() {
+		this("");
 	}
 
 	public String getString() {
@@ -35,13 +42,13 @@ public final class SVString extends SerializableValue {
 	public String toString() {
 		return valuesAsArray[0];
 	}
-	
+
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
-		if(o instanceof SVString){
+		if (o instanceof SVString) {
 			SVString other = (SVString) o;
 			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
 		}

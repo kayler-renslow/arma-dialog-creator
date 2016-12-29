@@ -1,59 +1,97 @@
 package com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl;
 
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableValue;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.MacroType;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+
 /**
  @author Kayler
  @since 12/12/2016 */
-public class StringTableKeyImpl implements StringTableKey {
-	protected StringTableValue value;
+public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements StringTableKey {
+	protected final ValueObserver<Language> defaultLanguageObserver = new ValueObserver<>(KnownLanguage.Original);
 	protected final ValueObserver<String> idObserver = new ValueObserver<>("str_no_id");
 	protected final ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
 	protected final ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
+	protected ObservableMap<Language, String> values;
 
 	public StringTableKeyImpl(@NotNull String id, @NotNull ObservableMap<Language, String> values) {
 		this(id, null, null, values);
 	}
 
 	public StringTableKeyImpl(@NotNull String id, @Nullable String packageName, @Nullable String containerName, @NotNull ObservableMap<Language, String> values) {
+		super(id, new SVString(), PropertyType.STRING);
+		setMacroType(MacroType.STRING_TABLE);
+		this.values = values;
+		updateMacroValue();
 		setId(id);
-		initNames(packageName, containerName);
-		this.value = new StringTableValueImpl(values);
-	}
+		setKey(getHeaderMacroId());
 
-	protected StringTableKeyImpl(@NotNull String id, @Nullable String packageName, @Nullable String containerName, @NotNull StringTableValue value) {
-		setId(id);
-		this.value = value;
-		initNames(packageName, containerName);
-	}
-
-	private void initNames(@Nullable String packageName, @Nullable String containerName) {
 		packageNameObserver().updateValue(packageName);
 		containerNameObserver().updateValue(containerName);
+
+		getDefaultLanguageObserver().addListener(new ValueListener<Language>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language newValue) {
+				updateMacroValue();
+			}
+		});
+		getIdObserver().addListener(new ValueListener<String>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<String> observer, @Nullable String oldValue, @Nullable String newValue) {
+				setKey(getHeaderMacroId());
+			}
+		});
+
 	}
 
+	private void updateMacroValue() {
+		String defaultToken = getDefaultLanguageToken();
+		if (defaultToken == null) {
+			Map.Entry<Language, String> firstEntry = getFirstLanguageTokenEntry();
+			if (firstEntry != null) {
+				defaultToken = firstEntry.getValue();
+			}
+		}
 
+		setValue(new SVString(defaultToken));
+	}
+
+	@NotNull
 	@Override
-	public ValueObserver<String> idObserver() {
+	public ValueObserver<String> getIdObserver() {
 		return idObserver;
 	}
 
 	@NotNull
 	@Override
-	public StringTableValue getValue() {
-		return value;
+	public ObservableMap<Language, String> getLanguageTokenMap() {
+		return values;
+	}
+
+	@NotNull
+	@Override
+	public ValueObserver<Language> getDefaultLanguageObserver() {
+		return defaultLanguageObserver;
 	}
 
 	@Override
 	@NotNull
 	public StringTableKey deepCopy() {
-		return new StringTableKeyImpl(getId(), getPackageName(), getContainerName(), this.value.deepCopy());
+		ObservableMap<Language, String> map = FXCollections.observableHashMap();
+		map.putAll(this.getLanguageTokenMap());
+		return new StringTableKeyImpl(getId(), getPackageName(), getContainerName(), map);
 	}
 
 	@NotNull

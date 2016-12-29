@@ -20,6 +20,9 @@ public interface StringTable {
 	@NotNull
 	List<StringTableKey> getKeys();
 
+	/** set all keys */
+	void setKeys(@NotNull List<StringTableKey> keys);
+
 	/**
 	 Get a key id ({@link StringTableKey#getId()}) equal to the given id
 
@@ -36,12 +39,18 @@ public interface StringTable {
 		return null;
 	}
 
+	/** Invokes {@link StringTableKey#setDefaultLanguage(Language)} for each key in {@link #getKeys()} */
+	default void setDefaultLanguage(@Nullable Language language) {
+		for (StringTableKey key : getKeys()) {
+			key.setDefaultLanguage(language);
+		}
+	}
+
 	/**
 	 Create a new {@link StringTable} instance as a deep copy.
 
 	 @return new instance
 	 @see StringTableKey#deepCopy()
-	 @see StringTableValue#deepCopy()
 	 */
 	@NotNull
 	StringTable deepCopy();

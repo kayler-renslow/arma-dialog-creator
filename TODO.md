@@ -34,6 +34,7 @@ General
 * save enabled and visible states for control saving to xml, and load them back!
 * stringtable editor: reload and save to file need error dialogs
 * stringtable editor: keys can have multiple containers (nested containers)
+* when renaming stringtable key in macro edit popup, setting the key name may throw an exception because new macro key isn't proper (see StringTableKey.setKey(String))
 
 Bugs
 -----------------------------------

@@ -33,7 +33,7 @@ class StringTableSearchField extends SearchTextField {
 						case '"': { //search by text content
 							searchTextAfter = searchTextAfter.toLowerCase();
 							for (StringTableKeyDescriptor descriptor : allItems) {
-								for (Map.Entry<Language, String> entry : descriptor.getKey().getValue().getLanguageTokenMap().entrySet()) {
+								for (Map.Entry<Language, String> entry : descriptor.getKey().getLanguageTokenMap().entrySet()) {
 									if (entry.getValue().toLowerCase().contains(searchTextAfter)) {
 										lvMatch.getItems().add(descriptor);
 										break;
@@ -46,7 +46,7 @@ class StringTableSearchField extends SearchTextField {
 							searchTextAfter = searchTextAfter.toLowerCase();
 							for (StringTableKeyDescriptor descriptor : allItems) {
 								boolean matched = false;
-								for (Language lang : descriptor.getKey().getValue().getLanguageTokenMap().keySet()) {
+								for (Language lang : descriptor.getKey().getLanguageTokenMap().keySet()) {
 									if (lang.getName().toLowerCase().contains(searchTextAfter)) {
 										matched = true;
 										break;
@@ -61,7 +61,7 @@ class StringTableSearchField extends SearchTextField {
 						case '+': { //check if key **has** a language
 							searchTextAfter = searchTextAfter.toLowerCase();
 							for (StringTableKeyDescriptor descriptor : allItems) {
-								for (Language lang : descriptor.getKey().getValue().getLanguageTokenMap().keySet()) {
+								for (Language lang : descriptor.getKey().getLanguageTokenMap().keySet()) {
 									if (lang.getName().toLowerCase().contains(searchTextAfter)) {
 										lvMatch.getItems().add(descriptor);
 										break;

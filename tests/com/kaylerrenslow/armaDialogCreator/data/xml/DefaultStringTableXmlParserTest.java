@@ -1,6 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -92,11 +95,12 @@ public class DefaultStringTableXmlParserTest {
 	@Test
 	public void createStringTableInstanceExpectErrorId() throws Exception {
 		TestStringTableKey[] testKeys = getTestKeys();
-		testKeys[0].setId("error");
-		DefaultStringTableXmlParser parser = getParser();
-		StringTable tableInstance = parser.createStringTableInstance();
-
-		testTable(testKeys, tableInstance, true);
+		try {
+			testKeys[0].setId("error");
+			org.junit.Assert.assertEquals("Didn't throw an exception", true, false);
+		} catch (IllegalArgumentException e) {
+			org.junit.Assert.assertEquals(true, true);
+		}
 	}
 
 	@Test
@@ -120,9 +124,9 @@ public class DefaultStringTableXmlParserTest {
 	}
 
 	@Test
-	public void createStringTableInstanceExpectErrorValue() throws Exception {
+	public void createStringTableInstanceExpectErrorTokens() throws Exception {
 		TestStringTableKey[] testKeys = getTestKeys();
-		testKeys[0].setValue(testKeys[1].getValue());
+		testKeys[0].setTokens(testKeys[1].getLanguageTokenMap());
 		DefaultStringTableXmlParser parser = getParser();
 		StringTable tableInstance = parser.createStringTableInstance();
 
@@ -163,8 +167,8 @@ public class DefaultStringTableXmlParserTest {
 			return map;
 		}
 
-		public void setValue(StringTableValue value) {
-			this.value = value;
+		public void setTokens(ObservableMap<Language, String> map) {
+			this.values = map;
 		}
 
 	}

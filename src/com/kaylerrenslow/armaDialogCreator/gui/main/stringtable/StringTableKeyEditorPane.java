@@ -161,9 +161,9 @@ class StringTableKeyEditorPane extends StackPane {
 				if (key == null || selected == null) {
 					taValue.replaceText("");
 				} else {
-					String s = key.getValue().getLanguageTokenMap().get(selected);
+					String s = key.getLanguageTokenMap().get(selected);
 					if (s == null) {
-						Map.Entry<Language, String> entry = key.getValue().getFirstLanguageTokenEntry();
+						Map.Entry<Language, String> entry = key.getFirstLanguageTokenEntry();
 						if (entry == null || entry.getValue() == null) {
 							s = "";
 						} else {
@@ -207,7 +207,7 @@ class StringTableKeyEditorPane extends StackPane {
 			}
 
 			lblKeyId.setText(key.getId());
-			key.idObserver().addListener(new ValueListener<String>() {
+			key.getIdObserver().addListener(new ValueListener<String>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<String> observer, @Nullable String oldValue, @Nullable String newValue) {
 					lblKeyId.setText(newValue);
@@ -239,7 +239,7 @@ class StringTableKeyEditorPane extends StackPane {
 			MenuItem miLanguage = new MenuItem(language.getName());
 			miLanguage.setUserData(language);
 
-			for (Map.Entry<Language, String> entry : key.getValue().getLanguageTokenMap().entrySet()) {
+			for (Map.Entry<Language, String> entry : key.getLanguageTokenMap().entrySet()) {
 				if (entry.getKey().equals(language)) {
 					found = true;
 					menuRemoveLanguage.getItems().add(miLanguage);
@@ -279,7 +279,7 @@ class StringTableKeyEditorPane extends StackPane {
 			if (added) {
 				menuAddLanguage.getItems().remove(miLanguage);
 				menuRemoveLanguage.getItems().add(miLanguage);
-				key.getValue().getLanguageTokenMap().put(language, "");
+				key.getLanguageTokenMap().put(language, "");
 			} else {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
@@ -293,7 +293,7 @@ class StringTableKeyEditorPane extends StackPane {
 				}
 				menuRemoveLanguage.getItems().remove(miLanguage);
 				menuAddLanguage.getItems().add(miLanguage);
-				key.getValue().getLanguageTokenMap().remove(language);
+				key.getLanguageTokenMap().remove(language);
 			}
 
 			this.added = added;

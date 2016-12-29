@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableValue;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -69,8 +68,7 @@ class LanguageSelectionPane extends FlowPane {
 			return;
 		}
 
-		StringTableValue tableValue = key.getValue();
-		tableValue.getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
+		key.getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
 			@Override
 			public void onChanged(Change<? extends Language, ? extends String> change) {
 				if (change.wasAdded()) {
@@ -86,7 +84,7 @@ class LanguageSelectionPane extends FlowPane {
 				}
 			}
 		});
-		for (Map.Entry<Language, String> token : tableValue.getLanguageTokenMap().entrySet()) {
+		for (Map.Entry<Language, String> token : key.getLanguageTokenMap().entrySet()) {
 			addLanguage(token.getKey());
 		}
 

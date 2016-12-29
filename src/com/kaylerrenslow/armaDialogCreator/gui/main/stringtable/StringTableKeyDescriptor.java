@@ -22,8 +22,8 @@ class StringTableKeyDescriptor {
 		this.key = key;
 		this.noPackageName = noPackageName;
 		this.noContainerName = noContainerName;
-		if (!key.getValue().getLanguageTokenMap().keySet().isEmpty()) {
-			language = key.getValue().getLanguageTokenMap().keySet().iterator().next();
+		if (!key.getLanguageTokenMap().keySet().isEmpty()) {
+			language = key.getLanguageTokenMap().keySet().iterator().next();
 		}
 	}
 
@@ -36,10 +36,10 @@ class StringTableKeyDescriptor {
 		String text = "";
 		boolean defaultMatch = true;
 		if (language != null) {
-			text = key.getValue().getLanguageTokenMap().get(language);
+			text = key.getLanguageTokenMap().get(language);
 			if (text == null) {
 				defaultMatch = false;
-				Map.Entry<Language, String> entry = key.getValue().getFirstLanguageTokenEntry();
+				Map.Entry<Language, String> entry = key.getFirstLanguageTokenEntry();
 				if (entry == null || entry.getValue() == null) {
 					text = "";
 				} else {

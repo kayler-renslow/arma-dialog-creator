@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,110 +10,142 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/05/2016. */
-public class Macro<T extends SerializableValue> {
-
-	public enum MacroType {
-		USER_DEFINED(Lang.ApplicationBundle().getString("Macros.Type.user_defined")),
-		SYSTEM(Lang.ApplicationBundle().getString("Macros.Type.system")),
-		GLOBAL(Lang.ApplicationBundle().getString("Macros.Type.global"));
-
-		private final String displayText;
-
-		MacroType(String displayText) {
-			this.displayText = displayText;
-		}
-
-		@NotNull
-		public String getDisplayText() {
-			return displayText;
-		}
-	}
-
-	private String key;
-	private final PropertyType propertyType;
-	protected ValueObserver<T> valueObserver;
-	protected String comment;
-	protected MacroType myType = MacroType.USER_DEFINED;
-
-	/**
-	 A macro is referenced by a key and the result is text that is appended into the ending .h file.
-
-	 @param key the key (prefered to be all caps)
-	 @param value the value (Object.toString() will be used to get end result)
-	 */
-	public Macro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
-		this.key = key;
-		this.valueObserver = new ValueObserver<>(value);
-		this.propertyType = propertyType;
-	}
+public interface Macro<T extends SerializableValue> {
 
 	/** Get the key */
 	@NotNull
-	public String getKey() {
-		return key;
+	default String getKey() {
+		return getKeyObserver().getValue();
 	}
+
+	/** Set the key */
+	default void setKey(@NotNull String key) {
+		getKeyObserver().updateValue(key);
+	}
+
+	@NotNull
+	ValueObserver<String> getKeyObserver();
 
 	/** Get the value */
 	@NotNull
-	public T getValue() {
-		return valueObserver.getValue();
+	default T getValue() {
+		return getValueObserver().getValue();
 	}
 
 	/** Set the value */
-	public void setValue(@NotNull T value) {
-		this.valueObserver.updateValue(value);
+	default void setValue(@NotNull T value) {
+		getValueObserver().updateValue(value);
 	}
 
+	/** Get the {@link ValueObserver} */
 	@NotNull
-	public ValueObserver<T> getValueObserver() {
-		return valueObserver;
-	}
+	ValueObserver<T> getValueObserver();
 
+	/** Get the comment that describes the macro. Is user defined. */
 	@Nullable
-	public String getComment() {
-		return comment;
-	}
+	String getComment();
 
-	public void setComment(@Nullable String comment) {
-		this.comment = comment;
-	}
+	/** Set the comment */
+	void setComment(@Nullable String comment);
 
-	@Override
-	public String toString() {
-		return key;
-	}
-
-	public PropertyType getPropertyType() {
-		return propertyType;
-	}
-
-	public void setKey(@NotNull String key) {
-		this.key = key;
-	}
-
+	/** Get the {@link PropertyType} of the macro */
 	@NotNull
-	public MacroType getMacroType() {
-		return myType;
+	PropertyType getPropertyType();
+
+	/** Get the macro type */
+	@NotNull
+	MacroType getMacroType();
+
+	/** Set the macro type */
+	void setMacroType(@NotNull MacroType myType);
+
+	static <T extends SerializableValue> Macro<T> newMacro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
+		return new BasicMacro<>(key, value, propertyType);
 	}
 
-	public void setMacroType(@NotNull MacroType myType) {
-		this.myType = myType;
-	}
+	class BasicMacro<T extends SerializableValue> implements Macro<T> {
 
-	/**
-	 Checks if key and value are equal
+		private ValueObserver<String> keyObserver = new ValueObserver<>(null);
+		private final PropertyType propertyType;
+		protected ValueObserver<T> valueObserver;
+		protected String comment;
+		protected MacroType myType = MacroType.USER_DEFINED;
 
-	 @param o to check
-	 @return true if equal, false otherwise
-	 */
-	public boolean equals(Object o) {
-		if (o == this) {
-			return true;
+		/**
+		 A macro is referenced by a key and the result is text that is appended into the ending .h file.
+
+		 @param key the key (prefered to be all caps)
+		 @param value the value (Object.toString() will be used to get end result)
+		 */
+		public BasicMacro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
+			getKeyObserver().updateValue(key); //do not change to setKey
+			this.valueObserver = new ValueObserver<>(value);
+			this.propertyType = propertyType;
 		}
-		if (o instanceof Macro) {
-			Macro other = (Macro) o;
-			return this.getKey().equals(other.getKey()) && this.getValue().equals(other.getValue());
+
+		@Override
+		@NotNull
+		public ValueObserver<T> getValueObserver() {
+			return valueObserver;
 		}
-		return false;
+
+		@Override
+		@Nullable
+		public String getComment() {
+			return comment;
+		}
+
+		@Override
+		public void setComment(@Nullable String comment) {
+			this.comment = comment;
+		}
+
+		@Override
+		public String toString() {
+			return getKey();
+		}
+
+		@Override
+		@NotNull
+		public PropertyType getPropertyType() {
+			return propertyType;
+		}
+
+		@NotNull
+		@Override
+		public ValueObserver<String> getKeyObserver() {
+			return keyObserver;
+		}
+
+		@Override
+		@NotNull
+		public MacroType getMacroType() {
+			return myType;
+		}
+
+		@Override
+		public void setMacroType(@NotNull MacroType myType) {
+			this.myType = myType;
+		}
+
+		/**
+		 Checks if key and value are equal
+
+		 @param o to check
+		 @return true if equal, false otherwise
+		 */
+		@Override
+		public boolean equals(Object o) {
+			if (o == this) {
+				return true;
+			}
+			if (o instanceof Macro) {
+				Macro other = (Macro) o;
+				return this.getKey().equals(other.getKey()) && this.getValue().equals(other.getValue());
+			}
+			return false;
+		}
 	}
+
+
 }

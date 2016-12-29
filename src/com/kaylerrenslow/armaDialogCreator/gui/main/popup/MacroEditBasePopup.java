@@ -181,7 +181,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 		if (!checkFields()) {
 			return null;
 		}
-		Macro<? extends SerializableValue> m = new Macro<>(inMacroKey.getValue(), editor.getValue(), cbMacroType.getValue());
+		Macro<? extends SerializableValue> m = Macro.newMacro(inMacroKey.getValue(), editor.getValue(), cbMacroType.getValue());
 		m.setComment(tfMacroDescription.getText());
 		return m;
 	}

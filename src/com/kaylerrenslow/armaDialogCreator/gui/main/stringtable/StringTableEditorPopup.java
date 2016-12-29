@@ -231,8 +231,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			listViewItemList = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
 				public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
 					return new javafx.beans.Observable[]{
-							param.getKey().getValue().getLanguageTokenMap(),
-							param.getKey().idObserver(),
+							param.getKey().getLanguageTokenMap(),
+							param.getKey().getIdObserver(),
 							previewLanguageObserver,
 							param.getKey().containerNameObserver(),
 							param.getKey().packageNameObserver()
