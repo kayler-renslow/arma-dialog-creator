@@ -1,5 +1,5 @@
 **Added:**
-* stringtable key editing from macro getter button (inside control properties config popup)
+* stringtable default/preview language selection in adc menu bar 
 
 **Changed:**
 * none

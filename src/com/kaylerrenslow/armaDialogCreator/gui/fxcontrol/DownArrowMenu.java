@@ -22,8 +22,8 @@ public class DownArrowMenu extends StackPane {
 
 	private final ContextMenu popupMenu = new ContextMenu();
 
-	public DownArrowMenu(@NotNull MenuItem... items) {
-		ImageView img = new ImageView(ICON_DOWN_ARROW);
+	public DownArrowMenu(@NotNull Image arrowImg, @NotNull MenuItem... items) {
+		ImageView img = new ImageView(arrowImg);
 		img.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -38,6 +38,10 @@ public class DownArrowMenu extends StackPane {
 
 		setAlignment(Pos.CENTER_LEFT);
 		getChildren().add(img);
+	}
+
+	public DownArrowMenu(@NotNull MenuItem... items) {
+		this(ICON_DOWN_ARROW, items);
 	}
 
 	@NotNull

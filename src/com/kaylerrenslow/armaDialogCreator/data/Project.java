@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
@@ -38,6 +39,7 @@ public class Project implements SpecificationRegistry {
 
 	private ProjectDefaultValueProvider defaultValueProvider;
 	private StringTable stringTable;
+	private Language defaultLanguage;
 
 	public Project(@NotNull ProjectInfo info) {
 		this.projectName = info.getProjectName();
@@ -71,6 +73,9 @@ public class Project implements SpecificationRegistry {
 
 	public void setStringTable(@Nullable StringTable stringTable) {
 		this.stringTable = stringTable;
+		if (stringTable != null) {
+			stringTable.setDefaultLanguage(defaultLanguage);
+		}
 	}
 
 	/**
@@ -180,5 +185,18 @@ public class Project implements SpecificationRegistry {
 	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
 		defaultValueProvider = new ProjectDefaultValueProvider();
 		defaultValueProvider.prefetchValues(tofetch);
+	}
+
+	/**
+	 Set the default language for {@link #getStringTable()}. If {@link #getStringTable()} is null, the value will be cached and when {@link #setStringTable(StringTable)} is invoked,
+	 {@link StringTable#setDefaultLanguage(Language)} will automatically be invoked.
+
+	 @param language default language
+	 */
+	public void setDefaultLanguage(@Nullable Language language) {
+		this.defaultLanguage = language;
+		if (stringTable != null) {
+			stringTable.setDefaultLanguage(defaultLanguage);
+		}
 	}
 }

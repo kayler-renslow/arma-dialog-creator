@@ -193,7 +193,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			ResourceBundle bundle = Lang.ApplicationBundle();
 
-			ComboBox<Language> comboBoxLanguage = new ComboBox<>(FXCollections.observableArrayList(KnownLanguage.values()));
+			ComboBox<Language> comboBoxLanguage = new ComboBox<>();
+			comboBoxLanguage.getItems().addAll(KnownLanguage.values());
 			comboBoxLanguage.getSelectionModel().select(previewLanguageObserver.getValue());
 			comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Language>() {
 				@Override

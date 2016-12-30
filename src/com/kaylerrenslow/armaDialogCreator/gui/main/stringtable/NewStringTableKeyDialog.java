@@ -60,12 +60,14 @@ class NewStringTableKeyDialog extends NameInputDialog {
 					if (!added) {
 						added = true;
 						textField.getStyleClass().add(badInput);
+						getCanOkProperty().setValue(false);
 					}
 				} else {
 					added = false;
 					textField.getStyleClass().remove(badInput);
+					getCanOkProperty().setValue(true);
+					key.setId(newValue);
 				}
-				key.setId(newValue);
 			}
 		});
 

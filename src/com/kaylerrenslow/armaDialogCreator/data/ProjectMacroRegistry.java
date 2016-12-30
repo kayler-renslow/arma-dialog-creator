@@ -22,6 +22,7 @@ public class ProjectMacroRegistry implements MacroRegistry {
 	ProjectMacroRegistry() {
 	}
 
+	@NotNull
 	public List<Macro> getMacros() {
 		return macros;
 	}

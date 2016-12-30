@@ -34,6 +34,7 @@ General
 * save enabled and visible states for control saving to xml, and load them back!
 * stringtable editor: reload and save to file need error dialogs
 * stringtable editor: keys can have multiple containers (nested containers)
+* save stringtable langauge (adc menu bar) to project.xml file
 
 Bugs
 -----------------------------------
@@ -42,3 +43,4 @@ Bugs
 * moving control group in display throws exception
 * square scaling: doesn't scale up and back down with same snap amount
 * editing control: setting macro, then switching to default editor and editing value will result in macro being overridden/not used
+* in StringTableEditorPopup, going to configuration tab and clicking on preview language combobox will freeze application
