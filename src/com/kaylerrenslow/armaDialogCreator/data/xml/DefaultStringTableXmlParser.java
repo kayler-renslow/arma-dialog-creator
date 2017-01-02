@@ -5,13 +5,13 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableImpl
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,11 +21,6 @@ import java.util.List;
  @author Kayler
  @since 12/12/2016 */
 public class DefaultStringTableXmlParser extends XmlLoader implements StringTableParser {
-	private static final String ID = "ID";
-	private static final String KEY = "Key";
-	private static final String PACKAGE = "Package";
-	private static final String CONTAINER = "Container";
-	private static final String NAME = "name";
 
 	private final File xmlFile;
 
@@ -43,37 +38,44 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 	public StringTable createStringTableInstance() throws IOException {
 		Element rootElement = document.getDocumentElement();
 
-		List<StringTableKey> tableKeys = new ArrayList<>();
-		fetchKeys(rootElement, null, null, tableKeys);
+		ObservableList<StringTableKey> tableKeys = FXCollections.observableArrayList();
+		fetchKeys(rootElement, new StringTableKeyPath(null), tableKeys);
 
 		loadPackageElements(rootElement, tableKeys);
-		loadContainerElements(rootElement, null, tableKeys);
+		loadContainerElements(rootElement, new StringTableKeyPath(null), tableKeys);
 
-		return new StringTableImpl(this.xmlFile, tableKeys);
+		return new StringTableImpl(this.xmlFile, tableKeys, rootElement.getAttribute(StringTableXmlConstants.PROJECT_NAME));
 	}
 
 	private void loadPackageElements(Element element, List<StringTableKey> tableKeys) {
-		List<Element> packageElements = XmlUtil.getChildElementsWithTagName(element, PACKAGE);
+		List<Element> packageElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.PACKAGE);
 		for (Element packageElement : packageElements) {
-			String packageName = packageElement.getAttribute(NAME);
-			fetchKeys(packageElement, packageName, null, tableKeys); //may not be in a container
-			loadContainerElements(packageElement, packageName, tableKeys);
+			String packageName = packageElement.getAttribute(StringTableXmlConstants.NAME);
+			StringTableKeyPath path = new StringTableKeyPath(packageName);
+
+			fetchKeys(packageElement, path, tableKeys); //may not be in a container
+			loadContainerElements(packageElement, path, tableKeys);
 		}
 	}
 
-	private void loadContainerElements(Element element, String packageName, List<StringTableKey> tableKeys) {
-		List<Element> containerElements = XmlUtil.getChildElementsWithTagName(element, CONTAINER);
+	private void loadContainerElements(Element element, StringTableKeyPath path, List<StringTableKey> tableKeys) {
+		List<Element> containerElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.CONTAINER);
 		for (Element containerElement : containerElements) {
-			fetchKeys(containerElement, packageName, containerElement.getAttribute(NAME), tableKeys);
+			String containerName = containerElement.getAttribute(StringTableXmlConstants.NAME);
+			path.getContainers().add(containerName);
+
+			fetchKeys(containerElement, path, tableKeys);
+			loadContainerElements(containerElement, path.deepCopy(), tableKeys);
+			path.getContainers().remove(containerName);
 		}
 
 	}
 
-	private void fetchKeys(Element element, String packageName, String containerName, List<StringTableKey> tableKeys) {
-		List<Element> keyElements = XmlUtil.getChildElementsWithTagName(element, KEY);
+	private void fetchKeys(Element element, StringTableKeyPath path, List<StringTableKey> tableKeys) {
+		List<Element> keyElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.KEY);
 
 		for (Element keyElement : keyElements) {
-			String id = keyElement.getAttribute(ID);
+			String id = keyElement.getAttribute(StringTableXmlConstants.ID).trim();
 
 			if (id.length() > 0) {
 				List<Element> valueElements = XmlUtil.getChildElementsWithTagName(keyElement, null);
@@ -88,7 +90,7 @@ public class DefaultStringTableXmlParser extends XmlLoader implements StringTabl
 					}
 					map.put(language, XmlUtil.getImmediateTextContent(valueElement));
 				}
-				tableKeys.add(new StringTableKeyImpl(id, packageName, containerName, map));
+				tableKeys.add(new StringTableKeyImpl(id, path.deepCopy(), map));
 			}
 		}
 	}

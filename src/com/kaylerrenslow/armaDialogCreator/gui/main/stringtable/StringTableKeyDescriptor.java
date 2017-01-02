@@ -55,8 +55,8 @@ class StringTableKeyDescriptor {
 		return String.format(
 				FORMAT,
 				key.getId(),
-				key.getPackageName() != null ? key.getPackageName() : noPackageName,
-				key.getContainerName() != null ? key.getContainerName() : noContainerName,
+				key.getPath().noPackageName() ? noPackageName : key.getPath().getPackageName(),
+				key.getPath().noContainer() ? noContainerName : key.getPath().getContainers(),
 				defaultMatch ? "" : "!",
 				"\"" + text + "\""
 		);

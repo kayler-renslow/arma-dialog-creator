@@ -13,8 +13,8 @@ public class KeyAlreadyExistsDialog extends SimpleResponseDialog {
 	public KeyAlreadyExistsDialog(@NotNull StringTableKey key) {
 		super(
 				ArmaDialogCreator.getPrimaryStage(),
-				Lang.ApplicationBundle().getString("Popups.StringTable.key_exists"),
-				String.format(Lang.ApplicationBundle().getString("Popups.StringTable.key_exists_f"), key.getId()),
+				Lang.ApplicationBundle().getString("StringTable.key_exists"),
+				String.format(Lang.ApplicationBundle().getString("StringTable.key_exists_f"), key.getId()),
 				false, true, false
 		);
 		setStageSize(320, 180);

@@ -1,12 +1,14 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKeyPath;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SearchTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListView;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -70,41 +72,7 @@ class StringTableSearchField extends SearchTextField {
 							}
 						}
 						case '/': { //search by package name and container name
-							String searchPackageName;
-							String searchContainerName = "";
-							if (searchTextAfter.contains("/")) {
-								int slashIndex = searchTextAfter.indexOf('/');
-								searchPackageName = searchTextAfter.substring(0, slashIndex);
-								searchContainerName = searchTextAfter.substring(slashIndex + 1);
-							} else {
-								searchPackageName = searchTextAfter;
-							}
-							final boolean matchNullPackage = searchPackageName.equals(".");
-							final boolean matchNullContainer = searchContainerName.equals(".");
-							final boolean matchBothNull = matchNullContainer && matchNullPackage;
-							final boolean ignoreContainer = searchContainerName.length() == 0;
-							final boolean ignorePackage = searchPackageName.length() == 0;
-
-							for (StringTableKeyDescriptor descriptor : allItems) {
-								String keyContainerName = descriptor.getKey().getContainerName();
-								String keyPackageName = descriptor.getKey().getPackageName();
-
-								if (matchBothNull) {
-									if (keyContainerName == null && keyPackageName == null) {
-										lvMatch.getItems().add(descriptor);
-									}
-								} else {
-									keyContainerName = keyContainerName != null ? keyContainerName.toLowerCase() : null;
-									keyPackageName = keyPackageName != null ? keyPackageName.toLowerCase() : null;
-									final boolean containsContainer = ignoreContainer || (keyContainerName == null ?
-											matchNullContainer : keyContainerName.contains(searchContainerName.toLowerCase()));
-									final boolean containsPackage = ignorePackage || (keyPackageName == null ?
-											matchNullPackage : keyPackageName.contains(searchPackageName.toLowerCase()));
-									if (containsContainer && containsPackage) {
-										lvMatch.getItems().add(descriptor);
-									}
-								}
-							}
+							handleSearchSlash(searchTextAfter);
 
 							break;
 						}
@@ -119,6 +87,65 @@ class StringTableSearchField extends SearchTextField {
 						}
 					}
 				}
+			}
+
+			private void handleSearchSlash(String searchTextAfter) {
+				String[] tokens;
+				if (searchTextAfter.contains("/")) {
+					searchTextAfter = searchTextAfter.replaceAll("//", "/ /");
+					tokens = searchTextAfter.split("/");
+					if (tokens.length == 0) {
+						tokens = new String[]{""};
+					}
+				} else {
+					tokens = new String[]{searchTextAfter};
+				}
+				for (int i = 0; i < tokens.length; i++) {
+					tokens[i] = tokens[i].toLowerCase().trim();
+				}
+				String searchPackageName = tokens[0];
+
+				final boolean matchNullPackage = tokens[0].equals(".");
+				final boolean ignorePackage = tokens[0].length() == 0;
+
+				LinkedList<StringTableKeyDescriptor> match = new LinkedList<>();
+				match.addAll(allItems);
+				for (int i = 1; i < tokens.length; i++) {
+					String searchContainerName = tokens[i];
+					final boolean ignoreContainer = searchContainerName.length() == 0;
+					final int containerInd = i - 1;
+					for (StringTableKeyDescriptor descriptor : allItems) {
+						final StringTableKeyPath path = descriptor.getKey().getPath();
+						if (containerInd >= path.getContainers().size()) {
+							match.remove(descriptor);
+							continue;
+						}
+						String keyContainerName = path.getContainers().get(containerInd).toLowerCase();
+						String keyPackageName = path.getPackageName().toLowerCase();
+
+						final boolean containsContainer = ignoreContainer || keyContainerName.contains(searchContainerName);
+						final boolean containsPackage = ignorePackage || keyPackageName.contains(searchPackageName);
+						if (containsContainer && containsPackage) {
+							//do nothing
+						} else {
+							match.remove(descriptor);
+						}
+					}
+				}
+				if (tokens.length == 1) {
+					for (StringTableKeyDescriptor descriptor : allItems) {
+						final StringTableKeyPath path = descriptor.getKey().getPath();
+						if (path.noPackageName() && matchNullPackage) {
+							//do nothing
+						} else if (ignorePackage || path.getPackageName().toLowerCase().contains(searchPackageName)) {
+							//do nothing
+						} else {
+							match.remove(descriptor);
+						}
+					}
+				}
+				lvMatch.getItems().addAll(match);
+
 			}
 
 			private void addAllKeys() {

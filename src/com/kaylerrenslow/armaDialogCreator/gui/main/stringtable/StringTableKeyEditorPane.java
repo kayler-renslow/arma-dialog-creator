@@ -92,34 +92,34 @@ class StringTableKeyEditorPane extends StackPane {
 				NameInputDialog dialog = new NameInputDialog(
 						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_package_popup_title_f"), key.getId()),
 						bundle.getString("Popups.StringTable.Tab.Edit.new_package_name"),
-						bundle.getString("Popups.StringTable.no_package")
+						bundle.getString("StringTable.no_package")
 				);
-				dialog.setInputText(key.getPackageName());
+				dialog.setInputText(key.getPath().getPackageName());
 				dialog.show();
 				if (dialog.wasCancelled()) {
 					return;
 				}
-				key.setPackageName(dialog.getInputText());
+				key.getPath().setPackageName(dialog.getInputText());
 			}
 		});
 		MenuItem miEditContainer = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.edit_container"));
 		miEditContainer.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				if (key == null) {
-					return;
-				}
-				NameInputDialog dialog = new NameInputDialog(
-						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_container_popup_title_f"), key.getId()),
-						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name"),
-						bundle.getString("Popups.StringTable.no_container")
-				);
-				dialog.setInputText(key.getContainerName());
-				dialog.show();
-				if (dialog.wasCancelled()) {
-					return;
-				}
-				key.setContainerName(dialog.getInputText());
+				//				if (key == null) {
+				//					return;
+				//				}
+				//				NameInputDialog dialog = new NameInputDialog(
+				//						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_container_popup_title_f"), key.getId()),
+				//						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name"),
+				//						bundle.getString("StringTable.no_container")
+				//				);
+				//				dialog.setInputText(key.getPath().getContainerName());
+				//				dialog.show();
+				//				if (dialog.wasCancelled()) {
+				//					return;
+				//				}
+				//				key.setContainerName(dialog.getInputText() != null ? dialog.getInputText() : "");
 			}
 		});
 		MenuItem miRenameId = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.rename"));

@@ -13,6 +13,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -36,9 +37,9 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 	private final StringTableEditorTabPane tabPane;
 
-	/** String to be used for when {@link StringTableKey#getPackageName()}==null */
+	/** String to be used for when {@link StringTableKeyPath#noPackageName()} is true */
 	private final String noPackageName,
-	/** String to be used for when {@link StringTableKey#getContainerName()}==null */
+	/** String to be used for when {@link StringTableKeyPath#noContainer()} is true */
 	noContainerName;
 
 	private StringTable table;
@@ -48,8 +49,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		this.table = table;
 		ResourceBundle bundle = Lang.ApplicationBundle();
 
-		noPackageName = bundle.getString("Popups.StringTable.no_package");
-		noContainerName = bundle.getString("Popups.StringTable.no_container");
+		noPackageName = bundle.getString("StringTable.no_package");
+		noContainerName = bundle.getString("StringTable.no_container");
 
 		Button btnInsert = new Button("", new ImageView(ADCImages.ICON_PLUS));
 		btnInsert.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.Tab.Edit.insert_key_tooltip")));
@@ -111,7 +112,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 					return;
 				}
 				try {
-					setTable(parser.createStringTableInstance());
+					getTable().setTo(parser.createStringTableInstance());
 					tabPane.setToTable(getTable());
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -145,7 +146,9 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		this.table = table;
 	}
 
-	private StringTable getTable() {
+	/** Get the table that is being edited */
+	@NotNull
+	public StringTable getTable() {
 		return table;
 	}
 
@@ -206,7 +209,18 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			lblPreviewLanguage.setContentDisplay(ContentDisplay.RIGHT);
 			root.getChildren().add(lblPreviewLanguage);
 
+			Label lblSize = new Label(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
+			root.getChildren().add(lblSize);
+			table.getKeys().addListener(new ListChangeListener<StringTableKey>() {
+				@Override
+				public void onChanged(Change<? extends StringTableKey> c) {
+					lblSize.setText(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
+				}
+			});
+
 		}
+
+
 	}
 
 	private static class EditTab extends Tab {
@@ -235,8 +249,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 							param.getKey().getLanguageTokenMap(),
 							param.getKey().getIdObserver(),
 							previewLanguageObserver,
-							param.getKey().containerNameObserver(),
-							param.getKey().packageNameObserver()
+							param.getKey().getPath()
 					};
 				}
 			}); //for some reason, can't have a LinkedList as the underlying list implementation if we want the list view to update the displayed cell text automatically

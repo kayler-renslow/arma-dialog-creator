@@ -15,7 +15,20 @@ import java.util.Map;
  @since 05/23/2016. */
 public interface StringTableKey extends Macro<SVString> {
 
-	String ID_REGEX = "[sS][tT][rR]_([a-zA-Z_0-9]+)_([a-zA-Z_0-9]+)";
+	String ID_REGEX = "[sS][tT][rR]_([a-zA-Z_0-9.]+)_([a-zA-Z_0-9.]+)";
+
+	/**
+	 Make this StringTableKey equal to <code>key</code>
+
+	 @see StringTable#setTo(StringTable)
+	 */
+	default void setTo(@NotNull StringTableKey key) {
+		setId(key.getId());
+		getPath().setPackageName(key.getPath().getPackageName());
+		getPath().getContainers().setAll(key.getPath().getContainers());
+		setDefaultLanguage(key.getDefaultLanguage());
+		getLanguageTokenMap().putAll(key.getLanguageTokenMap());
+	}
 
 	/** Get key id (e.g. str_tag_key) */
 	@NotNull
@@ -64,41 +77,8 @@ public interface StringTableKey extends Macro<SVString> {
 		return getId().substring(getId().indexOf('_'), getId().lastIndexOf('_'));
 	}
 
-	@Nullable
-	default String getPackageName() {
-		return packageNameObserver().getValue();
-	}
-
 	@NotNull
-	ValueObserver<String> packageNameObserver();
-
-	default void setPackageName(@Nullable String packageName) {
-		if (packageName != null) {
-			packageName = packageName.trim();
-			if (packageName.length() == 0) {
-				packageName = null;
-			}
-		}
-		packageNameObserver().updateValue(packageName);
-	}
-
-	@Nullable
-	default String getContainerName() {
-		return containerNameObserver().getValue();
-	}
-
-	default void setContainerName(@Nullable String containerName) {
-		if (containerName != null) {
-			containerName = containerName.trim();
-			if (containerName.length() == 0) {
-				containerName = null;
-			}
-		}
-		containerNameObserver().updateValue(containerName);
-	}
-
-	@NotNull
-	ValueObserver<String> containerNameObserver();
+	StringTableKeyPath getPath();
 
 	/**
 	 Get a new deep copied instance of this key. Everything is deep copied, except the {@link Language} instances in the {@link #getLanguageTokenMap()}
@@ -174,25 +154,7 @@ public interface StringTableKey extends Macro<SVString> {
 				return false;
 			}
 		}
-		if (getPackageName() == null) {
-			if (key.getPackageName() != null) {
-				return false;
-			}
-		} else {
-			if (!getPackageName().equals(key.getPackageName())) {
-				return false;
-			}
-		}
-		if (getContainerName() == null) {
-			if (key.getContainerName() != null) {
-				return false;
-			}
-		} else {
-			if (!getContainerName().equals(key.getContainerName())) {
-				return false;
-			}
-		}
-		return true;
+		return getPath().equals(key.getPath());
 
 	}
 

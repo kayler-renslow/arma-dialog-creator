@@ -1,8 +1,8 @@
 **Added:**
-* stringtable default/preview language selection in adc menu bar 
+* stringtable xml writer implementation 
 
 **Changed:**
-* none
+* stringtable keys can now have more than one container
 
 **Fixed:**
 * none

@@ -15,8 +15,10 @@ import java.nio.file.StandardCopyOption;
  @author Kayler
  @since 11/12/2016. */
 public class XmlWriterOutputStream {
-	private final FileOutputStream fos;
 	public static final String UTF_8 = "UTF-8";
+	protected static final byte[] NEW_LINE = "\n".getBytes();
+
+	private final FileOutputStream fos;
 
 	public XmlWriterOutputStream(@NotNull File writeXmlFile) throws IOException {
 		if (writeXmlFile.exists()) {
@@ -31,28 +33,36 @@ public class XmlWriterOutputStream {
 		write("<?xml version='" + xmlVersion + "' encoding='" + encoding + "' ?>");
 	}
 
+	/** Invokes {@link #writeProlog(String, String)} with xmlVersion='1.0' and encoding='{@link #UTF_8}' */
 	public void writeDefaultProlog() throws IOException {
 		writeProlog("1.0", UTF_8);
 	}
 
+	/** Writes a byte[] to stream */
+	public void write(@NotNull byte[] bytes) throws IOException {
+		fos.write(bytes);
+	}
+
+	/** Writes a byte[] to stream */
+	public void writeln(@NotNull byte[] bytes) throws IOException {
+		fos.write(bytes);
+		fos.write(NEW_LINE);
+	}
+
 	/** Writes a string to stream */
 	public void write(@NotNull String s) throws IOException {
-		fos.write(s.getBytes());
+		write(s.getBytes());
+	}
+
+	/** Writes a string to stream and then a \n character */
+	public void writeln(@NotNull String s) throws IOException {
+		write(s);
+		fos.write(NEW_LINE);
 	}
 
 	/** Writes a comment to stream */
 	public void writeComment(@NotNull String comment) throws IOException {
 		write("<!-- " + comment + " -->");
-	}
-
-	/** {@link FileOutputStream#flush()} */
-	public void flush() throws IOException {
-		fos.flush();
-	}
-
-	/** {@link FileOutputStream#close()} */
-	public void close() throws IOException {
-		fos.close();
 	}
 
 	/** Writes just a basic tag. Example: "&lt;tagName&gt;" */
@@ -84,6 +94,15 @@ public class XmlWriterOutputStream {
 		return s;
 	}
 
+	/** {@link FileOutputStream#flush()} */
+	public void flush() throws IOException {
+		fos.flush();
+	}
+
+	/** {@link FileOutputStream#close()} */
+	public void close() throws IOException {
+		fos.close();
+	}
 	public static String esc(String value) {
 		return value.replaceAll("'", "&#39;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}

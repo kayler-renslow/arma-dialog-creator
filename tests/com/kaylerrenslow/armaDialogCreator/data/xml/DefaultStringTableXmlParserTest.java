@@ -1,9 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
-import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
@@ -106,7 +103,7 @@ public class DefaultStringTableXmlParserTest {
 	@Test
 	public void createStringTableInstanceExpectErrorContainer() throws Exception {
 		TestStringTableKey[] testKeys = getTestKeys();
-		testKeys[0].setContainerName("error");
+		testKeys[0].getPath().getContainers().add("error");
 		DefaultStringTableXmlParser parser = getParser();
 		StringTable tableInstance = parser.createStringTableInstance();
 
@@ -116,7 +113,7 @@ public class DefaultStringTableXmlParserTest {
 	@Test
 	public void createStringTableInstanceExpectErrorPackage() throws Exception {
 		TestStringTableKey[] testKeys = getTestKeys();
-		testKeys[0].setPackageName("error");
+		testKeys[0].getPath().setPackageName("error");
 		DefaultStringTableXmlParser parser = getParser();
 		StringTable tableInstance = parser.createStringTableInstance();
 
@@ -155,7 +152,10 @@ public class DefaultStringTableXmlParserTest {
 
 	private static class TestStringTableKey extends StringTableKeyImpl {
 		public TestStringTableKey(String id, String packageName, String containerName, Language[] langs, String[] vals) {
-			super(id, packageName, containerName, getMap(langs, vals));
+			super(id, new StringTableKeyPath(packageName), getMap(langs, vals));
+			if (containerName != null) {
+				getPath().getContainers().add(containerName);
+			}
 		}
 
 		private static ObservableMap<Language, String> getMap(Language[] langs, String[] vals) {

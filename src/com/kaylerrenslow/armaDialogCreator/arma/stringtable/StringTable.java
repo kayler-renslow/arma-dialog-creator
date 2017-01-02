@@ -1,12 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.arma.stringtable;
 
+import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  @author Kayler
@@ -16,12 +16,42 @@ public interface StringTable {
 	@NotNull
 	File getFile();
 
+	void setFile(@NotNull File file);
+
 	/** @return all keys */
 	@NotNull
-	List<StringTableKey> getKeys();
+	ObservableList<StringTableKey> getKeys();
+
+	/**
+	 Get the project name for the string table (for Arma 3, the root xml tag is &lt;project&gt;&lt;/project name="test"&gt; and this method returns the attribute value of 'name', which in this
+	 scenario is "test").
+	 */
+	@NotNull
+	String getStringTableProjectName();
 
 	/** set all keys */
-	void setKeys(@NotNull List<StringTableKey> keys);
+	void setKeys(@NotNull ObservableList<StringTableKey> keys);
+
+	/**
+	 Set this StringTable equal to <code>table</code> (copies over {@link #getFile()} and invokes {@link StringTableKey#setTo(StringTableKey)} for each {@link #getKeys()}). If the given table
+	 has a key that this table doesn't, this table will copy it into its keys
+	 */
+	default void setTo(@NotNull StringTable table) {
+		setFile(table.getFile());
+		for (StringTableKey key : table.getKeys()) {
+			boolean found = false;
+			for (StringTableKey myKey : getKeys()) {
+				if (myKey.getId().equals(key.getId())) {
+					myKey.setTo(key);
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				getKeys().add(key);
+			}
+		}
+	}
 
 	/**
 	 Get a key id ({@link StringTableKey#getId()}) equal to the given id
@@ -54,99 +84,6 @@ public interface StringTable {
 	 */
 	@NotNull
 	StringTable deepCopy();
-
-	/**
-	 Get a map that pairs each of the keys in <code>keyList</code>. If {@link StringTableKey#getPackageName()} == null, keys will be placed in {@link StringTableKeyMatchMap#getNullItems()}.
-
-	 @param keyList list of keys
-	 @return map
-	 */
-	static StringTableKeyMatchMap combineKeysByPackageName(@NotNull List<StringTableKey> keyList) {
-		StringTableKeyMatchMap map = new StringTableKeyMatchMap(keyList.size());
-		for (StringTableKey key : keyList) {
-			if (key.getPackageName() == null) {
-				if (map.hasNullItems()) {
-					continue;
-				}
-				map.setNullItems(getKeysByPackageName(keyList, null));
-			} else {
-				if (map.keySet().contains(key.getPackageName())) {
-					continue;
-				}
-				map.put(key.getPackageName(), getKeysByPackageName(keyList, key.getPackageName()));
-			}
-		}
-
-		return map;
-	}
-
-	/**
-	 Get a map that pairs each of the keys in <code>keyList</code>. If {@link StringTableKey#getContainerName()} == null, keys will be placed in {@link StringTableKeyMatchMap#getNullItems()}.
-
-	 @param keyList list of keys
-	 @return map
-	 */
-	static StringTableKeyMatchMap combineKeysByContainerName(@NotNull List<StringTableKey> keyList) {
-		StringTableKeyMatchMap map = new StringTableKeyMatchMap(keyList.size());
-		for (StringTableKey key : keyList) {
-			if (key.getContainerName() == null) {
-				if (map.hasNullItems()) {
-					continue;
-				}
-				map.setNullItems(getKeysByContainerName(keyList, null));
-			} else {
-				if (map.keySet().contains(key.getContainerName())) {
-					continue;
-				}
-				map.put(key.getContainerName(), getKeysByContainerName(keyList, key.getContainerName()));
-			}
-		}
-
-		return map;
-	}
-
-
-	/**
-	 Get all {@link StringTableKey} instances that match the given <code>packageName</code>.
-
-	 @param keyList list of keys
-	 @param packageName if null, will match all keys that have {@link StringTableKey#getPackageName()} == null. If not null, will match all keys with equal package name
-	 @return iterable of all matched keys
-	 */
-	static LinkedList<StringTableKey> getKeysByPackageName(@NotNull List<StringTableKey> keyList, @Nullable String packageName) {
-		LinkedList<StringTableKey> matchKeys = new LinkedList<>();
-		for (StringTableKey key : keyList) {
-			if (packageName == null && key.getPackageName() == null) {
-				matchKeys.add(key);
-			} else if (packageName != null && key.getPackageName() != null) {
-				if (key.getPackageName().equals(packageName)) {
-					matchKeys.add(key);
-				}
-			}
-		}
-		return matchKeys;
-	}
-
-	/**
-	 Get all {@link StringTableKey} instances that match the given <code>containerName</code>.
-
-	 @param keyList list of keys
-	 @param containerName if null, will match all keys that have {@link StringTableKey#getContainerName()} == null. If not null, will match all keys with equal container name
-	 @return iterable of all matched keys
-	 */
-	static LinkedList<StringTableKey> getKeysByContainerName(@NotNull List<StringTableKey> keyList, @Nullable String containerName) {
-		LinkedList<StringTableKey> keys = new LinkedList<>();
-		for (StringTableKey key : keyList) {
-			if (containerName == null && key.getContainerName() == null) {
-				keys.add(key);
-			} else if (containerName != null && key.getContainerName() != null) {
-				if (key.getContainerName().equals(containerName)) {
-					keys.add(key);
-				}
-			}
-		}
-		return keys;
-	}
 
 	class StringTableKeyMatchMap extends HashMap<String, LinkedList<StringTableKey>> {
 		private LinkedList<StringTableKey> nullItems;

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKeyPath;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.MacroType;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
@@ -23,24 +24,22 @@ import java.util.Map;
 public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements StringTableKey {
 	protected final ValueObserver<Language> defaultLanguageObserver = new ValueObserver<>(KnownLanguage.Original);
 	protected final ValueObserver<String> idObserver = new ValueObserver<>("str_no_id");
-	protected final ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
-	protected final ValueObserver<String> containerNameObserver = new ValueObserver<>(null);
+	protected final StringTableKeyPath path;
 	protected ObservableMap<Language, String> values;
 
 	public StringTableKeyImpl(@NotNull String id, @NotNull ObservableMap<Language, String> values) {
-		this(id, null, null, values);
+		this(id, new StringTableKeyPath(""), values);
 	}
 
-	public StringTableKeyImpl(@NotNull String id, @Nullable String packageName, @Nullable String containerName, @NotNull ObservableMap<Language, String> values) {
+	public StringTableKeyImpl(@NotNull String id, @NotNull StringTableKeyPath path, @NotNull ObservableMap<Language, String> values) {
 		super(id, new SVString(), PropertyType.STRING);
+		this.path = path;
 		setMacroType(MacroType.STRING_TABLE);
 		this.values = values;
 		updateMacroValue();
 		setId(id);
 		setKey(id);
 
-		packageNameObserver().updateValue(packageName);
-		containerNameObserver().updateValue(containerName);
 
 		getDefaultLanguageObserver().addListener(new ValueListener<Language>() {
 			@Override
@@ -86,6 +85,12 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 
 	@NotNull
 	@Override
+	public StringTableKeyPath getPath() {
+		return path;
+	}
+
+	@NotNull
+	@Override
 	public ObservableMap<Language, String> getLanguageTokenMap() {
 		return values;
 	}
@@ -101,19 +106,7 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 	public StringTableKey deepCopy() {
 		ObservableMap<Language, String> map = FXCollections.observableHashMap();
 		map.putAll(this.getLanguageTokenMap());
-		return new StringTableKeyImpl(getId(), getPackageName(), getContainerName(), map);
-	}
-
-	@NotNull
-	@Override
-	public ValueObserver<String> packageNameObserver() {
-		return packageNameObserver;
-	}
-
-	@NotNull
-	@Override
-	public ValueObserver<String> containerNameObserver() {
-		return containerNameObserver;
+		return new StringTableKeyImpl(getId(), getPath(), map);
 	}
 
 	@Override

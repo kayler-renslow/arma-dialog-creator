@@ -22,10 +22,10 @@ string table search at index 0:
     type " or ' to search for key value
     type ! to find all keys that don't have a particular language
     type + to find all keys that do have a particular language
-    type /package name/container name to search for package name and container name
+    type /package name/container name to search for package name and container name (can have more than one container name. in this case, just keep doing /a_container_name)
         /package = search for keys with package name contains "package"
         //container = search for keys with container name contains "container" (ignores package name)
         /package/container = search for keys with package name contains "package" and container name contains "container"
         /. = search for keys with no package name
         //. search for keys with no container name
-        /./. search for keys with no package name and no container name
+        /./ search for keys with no package name and any container name

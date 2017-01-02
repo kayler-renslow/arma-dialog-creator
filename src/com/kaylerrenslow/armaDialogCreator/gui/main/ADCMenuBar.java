@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.data.ApplicationDataManager;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
+import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.EditStringTableAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateMacroAction;
@@ -58,6 +59,7 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem edit_viewChanges = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_changes")), new EditViewChangesAction());
 	final MenuItem edit_macros = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_macros")), new EditMacrosAction());
 	final MenuItem edit_custom_control = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_custom_control")), new EditCustomControlAction());
+	final MenuItem edit_string_table = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_string_table")), new EditStringTableAction());
 	final MenuItem edit_exportConfig = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_export_config")), new EditExportConfigAction());
 
 
@@ -151,7 +153,8 @@ class ADCMenuBar extends MenuBar {
 			edit_viewChanges,
 			new SeparatorMenuItem(),
 			edit_macros,
-			edit_custom_control/*,
+			edit_custom_control,
+			edit_string_table/*,
 			edit_exportConfig*/ //todo
 	);
 	final Menu menuView = new Menu(

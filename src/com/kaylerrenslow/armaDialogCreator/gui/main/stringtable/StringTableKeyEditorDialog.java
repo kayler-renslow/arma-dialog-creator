@@ -36,11 +36,7 @@ public class StringTableKeyEditorDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void ok() {
-		editKey.setId(copyKey.getId());
-		editKey.getLanguageTokenMap().clear();
-		editKey.getLanguageTokenMap().putAll(copyKey.getLanguageTokenMap());
-		editKey.setContainerName(copyKey.getContainerName());
-		editKey.setPackageName(copyKey.getPackageName());
+		editKey.setTo(copyKey);
 		super.ok();
 	}
 }
