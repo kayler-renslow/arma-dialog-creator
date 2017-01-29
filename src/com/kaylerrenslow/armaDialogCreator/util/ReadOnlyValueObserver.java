@@ -25,8 +25,8 @@ public class ReadOnlyValueObserver<V> {
 		});
 	}
 
-	/** Set the listener that listens to the state of the value */
-	public void addValueListener(@NotNull ReadOnlyValueListener<V> listener) {
+	/** Set the listener that listens to the state of the value. The listener will only be added once. If it exists in the listeners list, nothing will happen. */
+	public void addListener(@NotNull ReadOnlyValueListener<V> listener) {
 		if (listeners.contains(listener)) {
 			return;
 		}

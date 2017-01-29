@@ -52,7 +52,7 @@ public class ValueObserver<V> implements Observable {
 		}
 	}
 
-	/** Set the listener that listens to the state of the value */
+	/** Set the listener that listens to the state of the value. The listener will only be added once. If it exists in the listeners list, nothing will happen. */
 	public void addListener(@NotNull ValueListener<V> listener) {
 		if (valueListeners.contains(listener)) {
 			return;

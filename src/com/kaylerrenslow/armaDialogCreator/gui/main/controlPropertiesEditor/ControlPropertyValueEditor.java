@@ -26,9 +26,7 @@ interface ControlPropertyValueEditor extends ControlPropertyEditor {
 		 Uses a raw input field in which the user can enter anything they want. When this scenario happens, must be careful with casting after this is turned off.
 		 It is recommended to just clear the user's entered data to prevent exceptions from occurring.
 
-		 @deprecated This is broken. Maybe fix it later.
 		 */
-		@Deprecated
 		CUSTOM_DATA,
 		/** The control property's value is set to a macro */
 		MACRO

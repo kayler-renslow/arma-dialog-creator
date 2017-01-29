@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseMacroPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseMacroDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.EditMacroPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableKeyEditorDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -72,7 +72,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				ChooseMacroPopup<V> popup = new ChooseMacroPopup<>(clazz);
+				ChooseMacroDialog<V> popup = new ChooseMacroDialog<>(clazz);
 				popup.showAndWait();
 				Macro<V> chosenMacro = popup.getChosenItem();
 				if (chosenMacro == null) {

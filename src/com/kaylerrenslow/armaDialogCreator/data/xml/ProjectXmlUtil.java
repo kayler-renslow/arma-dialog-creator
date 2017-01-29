@@ -328,7 +328,7 @@ public class ProjectXmlUtil {
 		}
 		SerializableValue value;
 		try {
-			value = propertyType.getConverter().convert(dataContext, values);
+			value = SerializableValue.constructNew(dataContext, propertyType, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			recorder.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_values_f"), Arrays.toString(values))));

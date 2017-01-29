@@ -1,8 +1,8 @@
 **Added:**
-* stringtable xml writer implementation 
+* control property converting to each other 
 
 **Changed:**
-* stringtable keys can now have more than one container
+* moved control properties editors into separate class for readability
 
 **Fixed:**
 * none

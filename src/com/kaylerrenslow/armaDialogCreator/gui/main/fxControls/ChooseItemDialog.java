@@ -14,7 +14,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
-import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -29,17 +28,17 @@ import java.util.List;
 
  @author Kayler
  @since 11/13/2016. */
-public class ChooseItemPopup<V> extends StageDialog<VBox> {
+public class ChooseItemDialog<V> extends StageDialog<VBox> {
 
 	private final List<ItemCategoryTab<V>> itemCategoryTabs;
 	private final TabPane tabPane = new TabPane();
 	private V selectedItem;
 	private String searchText;
 
-	public ChooseItemPopup(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
+	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
-		myStage.initStyle(StageStyle.UTILITY);
 		myRootElement.setMinWidth(720d);
+		myStage.setResizable(false);
 
 		itemCategoryTabs = new ArrayList<>(categories.length);
 		for (ItemCategory<V> category : categories) {
@@ -47,7 +46,6 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		}
 
 		initRootElement(headerTitle);
-		myStage.setResizable(false);
 	}
 
 	private void initRootElement(@NotNull String headerTitle) {
@@ -62,8 +60,8 @@ public class ChooseItemPopup<V> extends StageDialog<VBox> {
 		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {
 			@Override
 			public void changed(ObservableValue<? extends V> observable, V oldValue, V newValue) {
-				ChooseItemPopup.this.btnOk.setDisable(newValue == null);
-				ChooseItemPopup.this.selectedItem = newValue;
+				ChooseItemDialog.this.btnOk.setDisable(newValue == null);
+				ChooseItemDialog.this.selectedItem = newValue;
 				getSelectedTab().getCategory().newItemSelected(selectedItem);
 			}
 		};

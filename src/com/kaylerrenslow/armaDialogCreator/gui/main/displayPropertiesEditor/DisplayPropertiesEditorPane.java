@@ -149,7 +149,7 @@ public class DisplayPropertiesEditorPane extends StackPane {
 			this.displayProperty = property;
 			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 			editor.setValue(property.getValue());
-			editor.getReadOnlyObserver().addValueListener(new ReadOnlyValueListener() {
+			editor.getReadOnlyObserver().addListener(new ReadOnlyValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ReadOnlyValueObserver observer, Object oldValue, Object newValue) {
 					property.setValue((SerializableValue) newValue);

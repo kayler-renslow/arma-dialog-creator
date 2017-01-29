@@ -5,37 +5,42 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertyValueEditors.*;
 
 /**
  @author Kayler
  @since 11/20/2016 */
 class ControlPropertyEditorContainer extends HBox {
-	private final ControlPropertyValueEditor propertyInput;
+	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
+
+	private final ControlPropertyValueEditorPane valueEditorPane;
 	private final ControlClass controlClass;
+	private final ControlProperty controlProperty;
 	private ControlPropertyUpdateListener controlPropertyUpdateListener;
 	private ControlClassUpdateListener controlClassUpdateListener;
 	private StackPane stackPanePropertyInput;
 	private MenuItem miInheritanceButton;
 	private boolean hideIfInherited;
 
-	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlPropertyValueEditor input) {
+	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, ControlProperty property) {
 		super(5);
 		this.controlClass = controlClass;
-		this.propertyInput = input;
+		this.controlProperty = property;
+		this.valueEditorPane = new ControlPropertyValueEditorPane(controlClass, property);
 		setAlignment(Pos.TOP_LEFT);
 
 		init();
@@ -43,11 +48,10 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private void init() {
 		stackPanePropertyInput = new StackPane();
-		final ControlProperty property = propertyInput.getControlProperty();
 
-		propertyInput.disableEditing(property.getPropertyLookup() == ControlPropertyLookup.TYPE);
+		currentValueEditor().disableEditing(controlProperty.getPropertyLookup() == ControlPropertyLookup.TYPE);
 
-		if (propertyInput.displayFullWidth()) {
+		if (currentValueEditor().displayFullWidth()) {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 
@@ -57,12 +61,12 @@ class ControlPropertyEditorContainer extends HBox {
 		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
 		final MenuItem miCustomData = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
 		miInheritanceButton = new MenuItem(
-				property.isInherited() ? Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.override") :
+				controlProperty.isInherited() ? Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.override") :
 						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.inherit")
 		);
 		final MenuItem miClearValue = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.clear_value"));
-		final MenuButton menuButton = new MenuButton(property.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro, miInheritanceButton, miClearValue/*,miCustomData*/);
-		ControlPropertiesEditorPane.placeTooltip(menuButton, propertyInput.getControlProperty().getPropertyLookup());
+		final MenuButton menuButton = new MenuButton(controlProperty.getName(), null, miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro, miInheritanceButton, miClearValue/*,miCustomData*/);
+		placeTooltip(menuButton, currentValueEditor().getControlProperty().getPropertyLookup());
 
 		controlClassUpdateListener = new ControlClassUpdateListener(controlClass) {
 			@Override
@@ -75,8 +79,8 @@ class ControlPropertyEditorContainer extends HBox {
 		};
 		controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateListener);
 
-		if (property.getPropertyLookup() instanceof ControlPropertyLookup) {
-			switch ((ControlPropertyLookup) property.getPropertyLookup()) {
+		if (controlProperty.getPropertyLookup() instanceof ControlPropertyLookup) {
+			switch ((ControlPropertyLookup) controlProperty.getPropertyLookup()) {
 				case TYPE: {
 					for (MenuItem item : menuButton.getItems()) {
 						item.setDisable(true);
@@ -95,7 +99,7 @@ class ControlPropertyEditorContainer extends HBox {
 			}
 		}
 
-		controlPropertyUpdateListener = new ControlPropertyUpdateListener(property) {
+		controlPropertyUpdateListener = new ControlPropertyUpdateListener(controlProperty) {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 				if (data instanceof ControlPropertyInheritUpdate) {
@@ -119,10 +123,10 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 			}
 		};
-		property.getControlPropertyUpdateGroup().addListener(controlPropertyUpdateListener);
+		controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyUpdateListener);
 
 
-		stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
+		stackPanePropertyInput.getChildren().add(currentValueEditor().getRootNode());
 		getChildren().addAll(menuButton, new Label("="), stackPanePropertyInput);
 
 		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
@@ -205,7 +209,7 @@ class ControlPropertyEditorContainer extends HBox {
 		if (mode == ControlPropertyValueEditor.EditMode.MACRO) {
 			stackPanePropertyInput.getChildren().clear();
 
-			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(propertyInput.getMacroClass(), propertyInput.getControlProperty().getMacro());
+			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(currentValueEditor().getMacroClass(), currentValueEditor().getControlProperty().getMacro());
 
 			macroGetterButton.getChosenMacroValueObserver().updateValue(getControlProperty().getMacro());
 
@@ -214,20 +218,20 @@ class ControlPropertyEditorContainer extends HBox {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 					Macro m = (Macro) newValue;
-					propertyInput.getControlProperty().setValueToMacro(m);
+					currentValueEditor().getControlProperty().setValueToMacro(m);
 				}
 			});
 		} else {
-			if (propertyInput.getControlProperty().getMacro() != null) {
+			if (currentValueEditor().getControlProperty().getMacro() != null) {
 				if (!askClearMacro()) {
 					return;
 				}
-				propertyInput.getControlProperty().setValueToMacro(null);
+				currentValueEditor().getControlProperty().setValueToMacro(null);
 			}
 			stackPanePropertyInput.getChildren().clear();
-			stackPanePropertyInput.getChildren().add(propertyInput.getRootNode());
-			propertyInput.setToMode(mode);
-			propertyInput.getControlProperty().setUsingCustomData(mode == ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
+			stackPanePropertyInput.getChildren().add(currentValueEditor().getRootNode());
+			currentValueEditor().setToMode(mode);
+			currentValueEditor().getControlProperty().setUsingCustomData(mode == ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 		}
 	}
 
@@ -245,27 +249,26 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	public void unlink() {
-		propertyInput.clearListeners();
+		valueEditorPane.unlink();
 		controlClass.getControlClassUpdateGroup().removeListener(this.controlClassUpdateListener);
 		getControlProperty().getControlPropertyUpdateGroup().removeListener(this.controlPropertyUpdateListener);
 	}
 
 	public void link() {
-		propertyInput.initListeners();
-		propertyInput.refresh();
+		valueEditorPane.link();
 		controlClass.getControlClassUpdateGroup().addListener(this.controlClassUpdateListener);
 		getControlProperty().getControlPropertyUpdateGroup().addListener(this.controlPropertyUpdateListener);
 		updateContainer();
 	}
 
 	@NotNull
-	public ControlPropertyValueEditor getPropertyInput() {
-		return propertyInput;
+	public ControlPropertyValueEditor currentValueEditor() {
+		return valueEditorPane.getCurrentPropertyValueEditor();
 	}
 
 	@NotNull
 	public ControlProperty getControlProperty() {
-		return getPropertyInput().getControlProperty();
+		return controlProperty;
 	}
 
 	public void hideIfInherited(boolean hide) {
@@ -274,4 +277,127 @@ class ControlPropertyEditorContainer extends HBox {
 		setVisible(visible);
 		setManaged(visible);
 	}
+
+	static Tooltip getTooltip(ControlPropertyLookupConstant lookup) {
+		Tooltip tp = new Tooltip(lookup.getAbout());
+		tp.setFont(TOOLTIP_FONT);
+		return tp;
+	}
+
+	/**
+	 Places tooltip on n
+
+	 @param n Node to place tooltip on
+	 @param lookup constant to create tooltip of
+	 @return tooltip placed inside n
+	 */
+	static Tooltip placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
+		Tooltip tip = getTooltip(lookup);
+		Tooltip.install(n, tip);
+		return tip;
+	}
+
+	private static class ControlPropertyValueEditorPane {
+
+		private final ControlClass controlClass;
+		private final ControlProperty controlProperty;
+		private final PropertyTypeListener propertyTypeListener;
+		private ControlPropertyValueEditor propertyValueEditor;
+
+		public ControlPropertyValueEditorPane(@NotNull ControlClass controlClass, @NotNull ControlProperty controlProperty) {
+			this.controlClass = controlClass;
+			this.controlProperty = controlProperty;
+			this.propertyValueEditor = constructNewPropertyValueEditor(controlProperty.getPropertyType());
+			this.propertyTypeListener = new PropertyTypeListener(controlProperty, this);
+
+			controlProperty.getReadOnlyPropertyTypeObserver().addListener(propertyTypeListener);
+		}
+
+		public void unlink() {
+			propertyValueEditor.clearListeners();
+			propertyTypeListener.unlink();
+		}
+
+		public void link() {
+			propertyValueEditor.initListeners();
+			propertyTypeListener.link();
+			propertyValueEditor.refresh();
+		}
+
+		@NotNull
+		public ControlPropertyValueEditor getCurrentPropertyValueEditor() {
+			return propertyValueEditor;
+		}
+
+		protected void setCurrentPropertyValueEditor(@NotNull PropertyType propertyType) {
+			if (propertyValueEditor != null) {
+				propertyValueEditor.clearListeners();
+			}
+			propertyValueEditor = constructNewPropertyValueEditor(propertyType);
+		}
+
+		/** Get node that holds the controls to input data. */
+		private ControlPropertyValueEditor constructNewPropertyValueEditor(@NotNull PropertyType propertyType) {
+			ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
+			if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
+				return new ControlPropertyInputOption(controlClass, controlProperty);
+			}
+			switch (propertyType) {
+				case INT:
+					return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
+				case FLOAT:
+					return new ControlPropertyInputFieldDouble(controlClass, controlProperty);
+				case CONTROL_STYLE:
+					return new ControlStylePropertyInput(controlClass, controlProperty);
+				case BOOLEAN:
+					return new ControlPropertyBooleanChoiceBox(controlClass, controlProperty);
+				case STRING:
+					return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				case ARRAY:
+					return new ControlPropertyArrayInput(controlClass, controlProperty, 2);
+				case COLOR:
+					return new ControlPropertyColorPicker(controlClass, controlProperty);
+				case SOUND:
+					return new ControlPropertySoundInput(controlClass, controlProperty);
+				case FONT:
+					return new ControlPropertyFontChoiceBox(controlClass, controlProperty);
+				case FILE_NAME:
+					return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				case IMAGE:
+					return new ControlPropertyInputFieldString(controlClass, controlProperty); //todo use proper value editor
+				case HEX_COLOR_STRING:
+					return new ControlPropertyColorPicker(controlClass, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
+				case TEXTURE:
+					return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				case SQF:
+					return new ControlPropertyInputFieldString(controlClass, controlProperty);
+			}
+			throw new IllegalStateException("Should have made a match");
+		}
+	}
+
+	private static class PropertyTypeListener implements ReadOnlyValueListener<PropertyType> {
+
+		private final ControlProperty property;
+		private final ControlPropertyValueEditorPane valueEditorPane;
+
+		public PropertyTypeListener(@NotNull ControlProperty property, ControlPropertyValueEditorPane valueEditorPane) {
+			this.property = property;
+			this.valueEditorPane = valueEditorPane;
+		}
+
+		public void link() {
+			property.getReadOnlyPropertyTypeObserver().addListener(this);
+		}
+
+		public void unlink() {
+			property.getReadOnlyPropertyTypeObserver().removeListener(this);
+		}
+
+		@Override
+		public void valueUpdated(@NotNull ReadOnlyValueObserver<PropertyType> observer, @Nullable PropertyType oldValue, @Nullable PropertyType newValue) {
+
+		}
+	}
+
 }

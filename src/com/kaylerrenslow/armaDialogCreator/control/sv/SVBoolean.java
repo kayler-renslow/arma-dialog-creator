@@ -13,14 +13,14 @@ public final class SVBoolean extends SerializableValue {
 	public static final ValueConverter<SVBoolean> CONVERTER = new ValueConverter<SVBoolean>() {
 		@Override
 		public SVBoolean convert(DataContext context, @NotNull String... values) throws Exception {
-			return values[0].trim().equalsIgnoreCase(S_TRUE) ? TRUE : FALSE;
+			return valueOf(values[0]);
 		}
 	};
 	
 	private boolean b;
-	
-	public static SVBoolean TRUE = new SVBoolean(true);
-	public static SVBoolean FALSE = new SVBoolean(false);
+
+	public static final SVBoolean TRUE = new SVBoolean(true);
+	public static final SVBoolean FALSE = new SVBoolean(false);
 	
 	private SVBoolean(boolean b) {
 		super(b + "");
@@ -49,5 +49,11 @@ public final class SVBoolean extends SerializableValue {
 	@Override
 	public boolean equals(Object o){
 		return o == this;
+	}
+
+	/** Return a boolean of the given String value */
+	@NotNull
+	public static SVBoolean valueOf(@NotNull String value) {
+		return value.trim().equalsIgnoreCase(S_TRUE) ? TRUE : FALSE;
 	}
 }

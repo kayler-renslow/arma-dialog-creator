@@ -21,11 +21,11 @@ General
     * [https://resources.bisimulations.com/wiki/Dialogs_Static#Images](https://resources.bisimulations.com/wiki/Dialogs_Static#Images)
 * preview's resolution should be independent from the editor.
 * preview should have background image
-
+* ............................................
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
-
+* ............................................
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
 * doesn't save nested classes in control xml writing and also doesn't load them
@@ -35,6 +35,8 @@ General
 * stringtable editor: reload and save to file need error dialogs
 * save stringtable langauge (adc menu bar) to project.xml file
 * string table editor: edit containers
+* ............................................
+* use proper value editor for Image and Hex Color
 
 Bugs
 -----------------------------------

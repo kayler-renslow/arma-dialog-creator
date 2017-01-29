@@ -52,7 +52,7 @@ class StringTableKeyEditorPane extends StackPane {
 		taValue.setWrapText(true);
 
 		languagePane = new LanguageSelectionPane(defaultPreviewLanguage);
-		languagePane.getChosenLanguageObserver().addValueListener(new ReadOnlyValueListener<Language>() {
+		languagePane.getChosenLanguageObserver().addListener(new ReadOnlyValueListener<Language>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language selected) {
 				if (key == null || selected == null) {

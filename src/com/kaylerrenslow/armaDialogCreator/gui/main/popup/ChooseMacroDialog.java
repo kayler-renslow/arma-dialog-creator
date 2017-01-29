@@ -7,7 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.control.MacroType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableLanguageTokenEditor;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -25,17 +25,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 /**
  Used for displaying known macros of a given type and allowing the user to choose which macro they want.
 
  @author Kayler
  @since 08/09/2016. */
-public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPopup<Macro<V>> {
+public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDialog<Macro<V>> {
 
-	private static final MacroItemCategory[] categories = new MacroItemCategory[MacroType.values().length + 1];
-
-	static {
+	private static MacroItemCategory[] getCategories() {
+		MacroItemCategory[] categories = new MacroItemCategory[MacroType.values().length + 1];
 		categories[0] = new AllMacrosCategory();
 		int i = 1;
 		for (MacroType type : MacroType.values()) {
@@ -45,6 +45,7 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 				categories[i++] = new StringTableKeyMacroCategory();
 			}
 		}
+		return categories;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -66,8 +67,8 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 	}
 
 	@SuppressWarnings("unchecked")
-	public ChooseMacroPopup(@NotNull Class<V> macroClassType) {
-		super(categories, getMacrosOfType(macroClassType),
+	public ChooseMacroDialog(@NotNull Class<V> macroClassType) {
+		super(getCategories(), getMacrosOfType(macroClassType),
 				Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"),
 				Lang.ApplicationBundle().getString("Popups.ChooseMacro.choose_macro_title")
 		);
@@ -124,20 +125,26 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 		private final Node categoryNode;
 		private final TextArea taComment = new TextArea();
 		private final TextArea taValue = new TextArea();
+		private final Label lblMacroPropertyType;
 
 		public BasicMacroItemCategory() {
 			final double height = 100;
 			VBox vb = new VBox(10);
+			categoryNode = vb;
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
 			taComment.setPrefHeight(height);
 			taComment.setEditable(false);
-			Label lblComment = new Label(Lang.ApplicationBundle().getString("Macros.comment"), taComment);
+			Label lblComment = new Label(bundle.getString("Macros.comment"), taComment);
 			lblComment.setContentDisplay(ContentDisplay.BOTTOM);
 			taValue.setEditable(false);
 			taValue.setPrefHeight(height);
-			Label lblValue = new Label(Lang.ApplicationBundle().getString("Macros.value"), taValue);
+			Label lblValue = new Label(bundle.getString("Macros.value"), taValue);
 			lblValue.setContentDisplay(ContentDisplay.BOTTOM);
-			vb.getChildren().addAll(lblValue, lblComment);
-			categoryNode = vb;
+
+			lblMacroPropertyType = new Label(String.format(bundle.getString("Popups.ChooseMacro.property_type"), "?"));
+
+			vb.getChildren().addAll(lblValue, lblComment, lblMacroPropertyType);
 		}
 
 		@Nullable
@@ -151,6 +158,9 @@ public class ChooseMacroPopup<V extends SerializableValue> extends ChooseItemPop
 			if (selected != null) {
 				taComment.setText(selected.getComment());
 				taValue.setText(selected.getValue().toString());
+				lblMacroPropertyType.setText(String.format(Lang.ApplicationBundle().getString("Popups.ChooseMacro.property_type"), selected.getPropertyType().getDisplayName()));
+			} else {
+				lblMacroPropertyType.setText(String.format(Lang.ApplicationBundle().getString("Popups.ChooseMacro.property_type"), "?"));
 			}
 		}
 	}

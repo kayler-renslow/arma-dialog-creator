@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 11/13/2016 */
-public class ChooseCustomControlDialog extends ChooseItemPopup<CustomControlClass> {
+public class ChooseCustomControlDialog extends ChooseItemDialog<CustomControlClass> {
 	private static final ItemCategory<CustomControlClass>[] categories = new ControlClassCategory[]{new ControlClassCategory()};
 
 	public ChooseCustomControlDialog() {

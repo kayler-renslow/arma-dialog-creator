@@ -12,9 +12,9 @@ import java.util.Arrays;
  */
 public class ControlStyleGroup extends SerializableValue {
 	private ControlStyle[] values;
-	
+
 	public static final String DEFAULT_DELIMITER = "+";
-	
+
 	public static final ValueConverter<ControlStyleGroup> CONVERTER = new ValueConverter<ControlStyleGroup>() {
 		@Override
 		public ControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
@@ -32,42 +32,52 @@ public class ControlStyleGroup extends SerializableValue {
 			return new ControlStyleGroup(styles);
 		}
 	};
-	
+
+	public ControlStyleGroup(@NotNull String[] values) {
+		super(values);
+		try {
+			this.values = CONVERTER.convert(null, values).values;
+		} catch (Exception e) {
+			throw new RuntimeException("conversion failed when it shouldn't have");
+		}
+	}
+
 	public ControlStyleGroup(@NotNull ControlStyle[] values) {
 		super(toString(values));
 		this.values = values;
 	}
-	
+
 	@NotNull
 	public ControlStyle[] getValues() {
 		return values;
 	}
-	
+
 	public void setValues(@NotNull ControlStyle[] values) {
 		this.values = values;
 		valuesAsArray[0] = toString(values);
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		ControlStyle[] copy = new ControlStyle[values.length];
 		System.arraycopy(values, 0, copy, 0, copy.length);
 		return new ControlStyleGroup(copy);
 	}
-	
-	public static String toString(ControlStyle[] values) {
+
+	public static String toString(@NotNull ControlStyle[] values) {
 		String s = "";
 		for (int i = 0; i < values.length; i++) {
-			s += values[i].styleValue + (i != values.length - 1 ? "+" : "");
+			s += values[i].styleValue + (i != values.length - 1 ? DEFAULT_DELIMITER : "");
 		}
 		return s;
 	}
-	
+
 	@Override
 	public String toString() {
 		return toString(values);
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {

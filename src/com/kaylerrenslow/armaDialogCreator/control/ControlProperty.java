@@ -31,6 +31,7 @@ public class ControlProperty {
 	private final ControlPropertyLookupConstant propertyLookup;
 	private final ControlPropertyValueObserver valueObserver;
 	private SerializableValue defaultValue;
+	private final ValueObserver<PropertyType> propertyTypeObserver = new ValueObserver<>(null);
 
 	/** The custom data instance for when {@link #setCustomDataValue(Object)} is invoked */
 	private Object customData;
@@ -54,11 +55,6 @@ public class ControlProperty {
 	};
 
 
-	protected ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
-		this(specification.getPropertyLookup(), specification.getValue());
-		setTo(specification, registry);
-	}
-
 	/**
 	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
 
@@ -71,6 +67,13 @@ public class ControlProperty {
 		defaultValue = null;
 		beforeMacroValue = value;
 
+		propertyTypeObserver.updateValue(propertyLookup.getPropertyType());
+
+	}
+
+	protected ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
+		this(specification.getPropertyLookup(), specification.getValue());
+		setTo(specification, registry);
 	}
 
 	/**
@@ -242,7 +245,16 @@ public class ControlProperty {
 
 	@NotNull
 	public PropertyType getPropertyType() {
-		return propertyLookup.getPropertyType();
+		return propertyTypeObserver.getValue();
+	}
+
+	public void setPropertyType(@NotNull PropertyType newType) {
+		propertyTypeObserver.updateValue(newType);
+	}
+
+	@NotNull
+	public ReadOnlyValueObserver<PropertyType> getReadOnlyPropertyTypeObserver() {
+		return propertyTypeObserver.getReadOnlyValueObserver();
 	}
 
 	@Nullable

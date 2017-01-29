@@ -214,7 +214,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass, imageContainer));
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addValueListener(new ReadOnlyValueListener<CustomControlClass>() {
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ReadOnlyValueListener<CustomControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<CustomControlClass> observer, CustomControlClass oldValue, CustomControlClass selected) {
 				if (selected != null) {
