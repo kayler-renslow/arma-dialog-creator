@@ -1,10 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
@@ -22,11 +19,7 @@ interface ControlPropertyValueEditor extends ControlPropertyEditor {
 	enum EditMode {
 		/** Using default editor */
 		DEFAULT,
-		/**
-		 Uses a raw input field in which the user can enter anything they want. When this scenario happens, must be careful with casting after this is turned off.
-		 It is recommended to just clear the user's entered data to prevent exceptions from occurring.
-
-		 */
+		/** Uses a raw input field in which the user can enter anything they want. */
 		CUSTOM_DATA,
 		/** The control property's value is set to a macro */
 		MACRO
@@ -55,15 +48,11 @@ interface ControlPropertyValueEditor extends ControlPropertyEditor {
 		return false;
 	}
 
-	/** DO NOT USE THIS FOR ARRAY INPUT */
-	static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlClass control, ControlProperty controlProperty) {
-		if (controlProperty.isPropertyType(PropertyType.ARRAY)) {
-			throw new IllegalArgumentException("don't use this method for ARRAY property type");
-		}
+	static InputField<StringChecker, String> modifyRawInput(InputField<StringChecker, String> rawInput, ControlProperty controlProperty) {
 		rawInput.getValueObserver().addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-				controlProperty.setValue(new SVString(newValue));
+				controlProperty.setCustomDataValue(newValue);
 			}
 		});
 		return rawInput;

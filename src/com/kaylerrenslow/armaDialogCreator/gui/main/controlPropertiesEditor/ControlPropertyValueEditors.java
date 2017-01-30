@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
+/**All editors for {@link ControlPropertiesEditorPane}
  @author Kayler
  @since 01/29/2017 */
 class ControlPropertyValueEditors {
@@ -59,7 +59,7 @@ class ControlPropertyValueEditors {
 		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(rawInput, control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(rawInput, controlProperty);
 			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
@@ -182,7 +182,7 @@ class ControlPropertyValueEditors {
 		};
 
 		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
@@ -278,7 +278,7 @@ class ControlPropertyValueEditors {
 			this.macroTypeClass = macroTypeClass;
 
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			inputField.setValue((C) controlProperty.getValue());
 			if (promptText != null) {
@@ -383,7 +383,7 @@ class ControlPropertyValueEditors {
 
 		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				AColor value = (AColor) controlProperty.getValue();
@@ -462,7 +462,7 @@ class ControlPropertyValueEditors {
 
 		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -544,7 +544,7 @@ class ControlPropertyValueEditors {
 				throw new RuntimeException("review this code to check for correctness");
 			}
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			setValue((SVStringArray) controlProperty.getValue());
 			initListeners();
@@ -622,7 +622,7 @@ class ControlPropertyValueEditors {
 
 		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			setValue((AFont) controlProperty.getValue());
 			initListeners();
@@ -694,7 +694,7 @@ class ControlPropertyValueEditors {
 		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), control, controlProperty);
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			initListeners();
 

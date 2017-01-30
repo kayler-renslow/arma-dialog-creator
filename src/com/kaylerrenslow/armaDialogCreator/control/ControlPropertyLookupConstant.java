@@ -23,7 +23,10 @@ public interface ControlPropertyLookupConstant {
 	/** Get the name associated with the property. Is not guaranteed to be unique. */
 	String getPropertyName();
 
-	/** Get the {@link PropertyType} associated with the property. */
+	/**
+	 Get the {@link PropertyType} associated with the property. This is the <b>initial</b> {@link PropertyType} and for each {@link ControlProperty}, the {@link PropertyType} can change via
+	 {@link ControlProperty#setPropertyType(PropertyType)}.
+	 */
 	@NotNull
 	PropertyType getPropertyType();
 

@@ -1,8 +1,8 @@
 **Added:**
-* control property converting to each other 
+* none 
 
 **Changed:**
-* moved control properties editors into separate class for readability
+* how property value editor change works
 
 **Fixed:**
 * none

@@ -4,6 +4,9 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 /** A generic wrapper implementation for a double. */
 public class SVDouble extends SVNumber {
 	public static final ValueConverter<SVDouble> CONVERTER = new ValueConverter<SVDouble>() {
@@ -12,6 +15,15 @@ public class SVDouble extends SVNumber {
 			return new SVDouble(Double.parseDouble(values[0]));
 		}
 	};
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.########");
+
+	static {
+		DECIMAL_FORMAT.setRoundingMode(RoundingMode.CEILING);
+	}
+
+	public static String format(double d) {
+		return DECIMAL_FORMAT.format(d);
+	}
 	
 	private double d;
 	
@@ -22,7 +34,7 @@ public class SVDouble extends SVNumber {
 	
 	public void setDouble(double d) {
 		this.d = d;
-		valuesAsArray[0] = d + "";
+		valuesAsArray[0] = format(d);
 	}
 	
 	public double getDouble() {
