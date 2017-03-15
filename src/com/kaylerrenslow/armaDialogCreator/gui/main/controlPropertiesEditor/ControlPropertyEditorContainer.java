@@ -2,8 +2,12 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConversionException;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.event.ActionEvent;
@@ -14,10 +18,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ResourceBundle;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertyValueEditors.*;
 
@@ -26,6 +33,8 @@ import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEdit
  @since 11/20/2016 */
 class ControlPropertyEditorContainer extends HBox {
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
+
+	private static final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	private final ControlClass controlClass;
 	private final ControlProperty controlProperty;
@@ -40,12 +49,12 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private boolean hideIfInherited;
 
-	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, ControlProperty property) {
+	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlProperty property) {
 		super(5);
 		this.controlClass = controlClass;
 		this.controlProperty = property;
 
-		setCurrentPropertyValueEditor(controlProperty.getPropertyType());
+		setCurrentPropertyValueEditor(controlProperty.getPropertyType(), false);
 
 		this.propertyTypeListener = new PropertyTypeListener(controlProperty, this);
 		controlProperty.getReadOnlyPropertyTypeObserver().addListener(propertyTypeListener);
@@ -59,17 +68,27 @@ class ControlPropertyEditorContainer extends HBox {
 
 		placeTooltip(menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
 
-		final MenuItem miDefaultEditor = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.use_default_editor"));
-		final MenuItem miResetToInitial = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.reset_to_initial"));
-		final MenuItem miMacro = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.set_to_macro"));
-		final MenuItem miCustomData = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
+		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("ControlPropertiesEditorPane.use_default_editor"));
+		final MenuItem miResetToInitial = new MenuItem(bundle.getString("ControlPropertiesEditorPane.reset_to_initial"));
+		final MenuItem miConvert = new MenuItem(bundle.getString("ControlPropertiesEditorPane.convert_value"));
+		final MenuItem miMacro = new MenuItem(bundle.getString("ControlPropertiesEditorPane.set_to_macro"));
+		final MenuItem miCustomData = new MenuItem(bundle.getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
 		miInheritanceButton = new MenuItem(
-				controlProperty.isInherited() ? Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.override") :
-						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.inherit")
+				controlProperty.isInherited() ? bundle.getString("ControlPropertiesEditorPane.override") :
+						bundle.getString("ControlPropertiesEditorPane.inherit")
 		);
-		final MenuItem miClearValue = new MenuItem(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.clear_value"));
+		final MenuItem miClearValue = new MenuItem(bundle.getString("ControlPropertiesEditorPane.clear_value"));
 		menuButtonOptions.setText(controlProperty.getName());
-		menuButtonOptions.getItems().setAll(miDefaultEditor, new SeparatorMenuItem(), miResetToInitial, miMacro, miInheritanceButton, miClearValue/*,miCustomData*/);
+		menuButtonOptions.getItems().setAll(
+				miDefaultEditor,
+				miConvert,
+				new SeparatorMenuItem(),
+				miResetToInitial,
+				miMacro,
+				miInheritanceButton,
+				miClearValue
+				/*,miCustomData*/
+		);
 
 
 		controlClassUpdateListener = new ControlClassUpdateListener(controlClass) {
@@ -108,6 +127,7 @@ class ControlPropertyEditorContainer extends HBox {
 			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 				if (data instanceof ControlPropertyInheritUpdate) {
 					ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
+
 					boolean disable = update.wasInherited();
 					stackPanePropertyInput.setDisable(disable);
 					miCustomData.setDisable(disable);
@@ -115,10 +135,12 @@ class ControlPropertyEditorContainer extends HBox {
 					miResetToInitial.setDisable(disable);
 					miMacro.setDisable(disable);
 					miClearValue.setDisable(disable);
+					miConvert.setDisable(disable);
+
 					if (update.wasInherited()) {
-						miInheritanceButton.setText(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.override"));
+						miInheritanceButton.setText(bundle.getString("ControlPropertiesEditorPane.override"));
 					} else {
-						miInheritanceButton.setText(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.inherit"));
+						miInheritanceButton.setText(bundle.getString("ControlPropertiesEditorPane.inherit"));
 					}
 					hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
@@ -147,7 +169,18 @@ class ControlPropertyEditorContainer extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
-
+			}
+		});
+		miConvert.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				ChooseNewPropertyTypeDialog dialog = new ChooseNewPropertyTypeDialog(controlProperty);
+				dialog.show();
+				PropertyType type = dialog.getSelectedType();
+				if (type == null) {
+					return;
+				}
+				controlProperty.setPropertyType(type);
 			}
 		});
 		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
@@ -180,11 +213,11 @@ class ControlPropertyEditorContainer extends HBox {
 
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
-						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.ClearValuePopup.popup_title"),
-						Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.ClearValuePopup.body"), true, true, false
+						bundle.getString("ControlPropertiesEditorPane.ClearValuePopup.popup_title"),
+						bundle.getString("ControlPropertiesEditorPane.ClearValuePopup.body"), true, true, false
 				);
-				dialog.getFooter().getBtnCancel().setText(Lang.ApplicationBundle().getString("Confirmation.no"));
-				dialog.getFooter().getBtnOk().setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
+				dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
+				dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
 				dialog.setStageSize(300, 120);
 				dialog.show();
 				if (dialog.wasCancelled()) {
@@ -240,12 +273,12 @@ class ControlPropertyEditorContainer extends HBox {
 	private boolean askClearMacro() {
 		SimpleResponseDialog dialog = new SimpleResponseDialog(
 				ArmaDialogCreator.getPrimaryStage(),
-				Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.dialog_title"),
-				Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.RemoveMacroDialog.body"),
+				bundle.getString("ControlPropertiesEditorPane.RemoveMacroDialog.dialog_title"),
+				bundle.getString("ControlPropertiesEditorPane.RemoveMacroDialog.body"),
 				true, true, false
 		);
-		dialog.getFooter().getBtnCancel().setText(Lang.ApplicationBundle().getString("Confirmation.no"));
-		dialog.getFooter().getBtnOk().setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
+		dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
+		dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
 		dialog.show();
 		return !dialog.wasCancelled();
 	}
@@ -271,19 +304,26 @@ class ControlPropertyEditorContainer extends HBox {
 		return propertyValueEditor;
 	}
 
-	protected void setCurrentPropertyValueEditor(@NotNull PropertyType propertyType) {
-		if (true) {
-			throw new RuntimeException("need to update control property value (convert it to proper type for the new editor)");
-		}
+	protected void setCurrentPropertyValueEditor(@NotNull PropertyType propertyType, boolean convertType) {
 		if (propertyValueEditor != null) {
 			propertyValueEditor.clearListeners();
 			stackPanePropertyInput.getChildren().clear();
 		}
+
+		if (controlProperty.getValue() != null && convertType) {
+			try {
+				controlProperty.setValue(SerializableValue.convert(ApplicationData.getInstance(), controlProperty.getValue(), propertyType));
+			} catch (SerializableValueConversionException e) {
+				ExceptionHandler.error(e);
+			}
+		}
+
 		propertyValueEditor = constructNewPropertyValueEditor(propertyType);
 		if (propertyValueEditor.displayFullWidth()) {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 		stackPanePropertyInput.getChildren().add(propertyValueEditor.getRootNode());
+
 	}
 
 	/** Get node that holds the controls to input data. */
@@ -376,7 +416,43 @@ class ControlPropertyEditorContainer extends HBox {
 
 		@Override
 		public void valueUpdated(@NotNull ReadOnlyValueObserver<PropertyType> observer, @Nullable PropertyType oldValue, @Nullable PropertyType newValue) {
-			editorContainer.setCurrentPropertyValueEditor(newValue);
+			editorContainer.setCurrentPropertyValueEditor(newValue, true);
+		}
+	}
+
+	private static class ChooseNewPropertyTypeDialog extends StageDialog<VBox> {
+
+		private final ComboBox<PropertyType> comboBoxType = new ComboBox<>();
+
+		public ChooseNewPropertyTypeDialog(@NotNull ControlProperty property) {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.popup_title"), true, true, true);
+
+			Label lbl = new Label(String.format(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.body"), property.getName()));
+			lbl.setWrapText(true);
+			myRootElement.getChildren().add(lbl);
+
+			myRootElement.getChildren().add(comboBoxType);
+
+			for (PropertyType type : PropertyType.values()) {
+				if (SerializableValue.isConvertible(type, property.getPropertyType())) {
+					comboBoxType.getItems().add(type);
+				}
+			}
+			comboBoxType.getSelectionModel().select(property.getPropertyType());
+
+			Button btnUseInitial = new Button(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.use_initial"));
+			btnUseInitial.setOnAction((e) -> comboBoxType.getSelectionModel().select(property.getInitialPropertyType()));
+			myRootElement.getChildren().add(btnUseInitial);
+			btnUseInitial.setTooltip(new Tooltip(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.use_initial_tooltip")));
+
+
+			setStageSize(420, 180);
+			setResizable(false);
+		}
+
+		@Nullable
+		public PropertyType getSelectedType() {
+			return wasCancelled() ? null : comboBoxType.getValue();
 		}
 	}
 

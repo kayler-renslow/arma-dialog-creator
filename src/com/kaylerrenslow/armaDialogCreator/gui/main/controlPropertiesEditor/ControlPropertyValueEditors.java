@@ -273,7 +273,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyInputField(Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
+		ControlPropertyInputField(@NotNull Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
 			this.macroTypeClass = macroTypeClass;
 

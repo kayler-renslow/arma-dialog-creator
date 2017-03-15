@@ -29,6 +29,7 @@ public class ControlProperty {
 	};
 
 	private final ControlPropertyLookupConstant propertyLookup;
+	private final PropertyType initialPropertyType;
 	private final ControlPropertyValueObserver valueObserver;
 	private SerializableValue defaultValue;
 	private final ValueObserver<PropertyType> propertyTypeObserver = new ValueObserver<>(null);
@@ -61,13 +62,14 @@ public class ControlProperty {
 	 @param propertyLookup unique lookup for the property.
 	 @param value current value of the property
 	 */
-	protected ControlProperty(ControlPropertyLookupConstant propertyLookup, @Nullable SerializableValue value) {
+	protected ControlProperty(@NotNull ControlPropertyLookupConstant propertyLookup, @Nullable SerializableValue value) {
 		this.propertyLookup = propertyLookup;
 		valueObserver = new ControlPropertyValueObserver(this, value);
 		defaultValue = null;
 		beforeMacroValue = value;
 
 		propertyTypeObserver.updateValue(propertyLookup.getPropertyType());
+		initialPropertyType = propertyTypeObserver.getValue();
 
 	}
 
@@ -246,6 +248,11 @@ public class ControlProperty {
 	@NotNull
 	public PropertyType getPropertyType() {
 		return propertyTypeObserver.getValue();
+	}
+
+	@NotNull
+	public PropertyType getInitialPropertyType() {
+		return initialPropertyType;
 	}
 
 	public void setPropertyType(@NotNull PropertyType newType) {

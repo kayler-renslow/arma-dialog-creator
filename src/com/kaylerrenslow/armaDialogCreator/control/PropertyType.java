@@ -60,7 +60,7 @@ public enum PropertyType {
 		this.propertyValuesSize = 1;
 		this.displayName = displayName;
 		if (exportHasQuotes) {
-			this.quoteIndexes = new int[]{0};
+			this.quoteIndexes = PropertyTypeHelper.FIRST_INDEX;
 		} else {
 			this.quoteIndexes = PropertyTypeHelper.EMPTY;
 		}
@@ -137,5 +137,6 @@ public enum PropertyType {
 	private static class PropertyTypeHelper {
 		static final LinkedList<Integer> usedIds = new LinkedList<>();
 		static final int[] EMPTY = {};
+		public static final int[] FIRST_INDEX = {0};
 	}
 }

@@ -1,8 +1,8 @@
 **Added:**
-* none 
+* support to change editor type while editing control properties 
 
 **Changed:**
-* how property value editor change works
+* none
 
 **Fixed:**
 * none

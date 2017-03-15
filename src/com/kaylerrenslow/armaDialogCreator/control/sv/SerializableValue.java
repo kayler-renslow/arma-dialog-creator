@@ -33,6 +33,10 @@ public abstract class SerializableValue {
 		}
 	}
 
+	public static boolean isConvertible(@NotNull PropertyType from, @NotNull PropertyType to) {
+		return from.getPropertyValuesSize() == to.getPropertyValuesSize() && Arrays.equals(from.getIndexesWithQuotes(), to.getIndexesWithQuotes());
+	}
+
 	/**
 	 Get the appropriate {@link SerializableValue} instance for the given {@link PropertyType}
 
@@ -96,7 +100,15 @@ public abstract class SerializableValue {
 		}
 		if (o instanceof SerializableValue) {
 			SerializableValue other = (SerializableValue) o;
-			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+			if (this.getClass() == other.getClass()) {
+				 /*
+				 We DO NOT want different SerializableValue classes saying they are equal just because their values are equal.
+				 There can be more to a SerializableValue than just the values in the array.
+				 Some SerializableValue instances may be exported with quotes and we don't want those to be equal to those without quotes, even if the values are the same.
+				 Example: 1 != "1"
+				 */
+				return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+			}
 		}
 		return false;
 	}

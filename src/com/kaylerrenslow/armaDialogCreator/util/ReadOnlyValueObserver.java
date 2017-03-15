@@ -34,8 +34,8 @@ public class ReadOnlyValueObserver<V> {
 	}
 
 	/** Remove the listener from the list. Returns true if the listener was inside the list */
-	public boolean removeListener(@NotNull ReadOnlyValueListener<V> listener) {
-		return listeners.remove(listener);
+	public void removeListener(@NotNull ReadOnlyValueListener<V> listener) {
+		listeners.remove(listener);
 	}
 
 	public V getValue() {

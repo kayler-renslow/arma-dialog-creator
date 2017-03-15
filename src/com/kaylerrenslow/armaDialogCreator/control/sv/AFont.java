@@ -65,5 +65,16 @@ public class AFont extends SerializableValue {
 		}
 		return null;
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof AFont) {
+			AFont other = (AFont) o;
+			return this.name.equals(other.name);
+		}
+		return false;
+	}
 }
