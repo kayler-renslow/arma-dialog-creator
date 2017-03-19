@@ -35,25 +35,84 @@ public class HeaderParser {
 
 	@NotNull
 	public HeaderFile parse() throws HeaderParseException, FileNotFoundException {
-
-		FileInputStream fis = new FileInputStream(headerFile);
-
 		try {
-			return doParse(fis);
+			return doParse();
 		} catch (Exception e) {
 			if (e instanceof HeaderParseException) {
 				throw (HeaderParseException) e;
+			}
+			if (e instanceof FileNotFoundException) {
+				throw (FileNotFoundException) e;
 			}
 			throw new HeaderParseException(e);
 		}
 	}
 
-	private HeaderFile doParse(@NotNull FileInputStream fis) throws Exception {
+	private HeaderFile doParse() throws Exception {
+		parseMacros();
+
+
+		FileInputStream fis = new FileInputStream(headerFile);
+
 		List<HeaderAssignment> assignments = new ArrayList<>();
 		List<HeaderClass> classes = new ArrayList<>();
 
 		return new HeaderFile(headerFile, assignments, classes);
 	}
+
+	private void parseMacros() throws IOException {
+		FileInputStream fis = new FileInputStream(headerFile);
+		int in;
+		char c;
+		StringBuilder macroNameBuilder = new StringBuilder(10);
+		StringBuilder macroContent = new StringBuilder(10);
+		boolean readingMacro = false;
+		boolean readingMacroName = false;
+		boolean backslash = false;
+		/*
+		* todo:
+		* we need to handle # and ## macro things
+		* handle parameter defines
+		* handle ifdef and ifndef
+		* */
+		while ((in = fis.read()) >= 0) {
+			c = (char) in;
+			if (readingMacro) {
+				if (readingMacroName) {
+					if (isWhitespace(c)) {
+						readingMacroName = false;
+						continue;
+					} else {
+						macroNameBuilder.append(c);
+					}
+				} else {
+					if (c == '\\') {
+						backslash = true;
+						continue;
+					}
+					if (c == '\n') {
+						if (!backslash) {
+							//todo handle parameter defines: #define THING(ARG, ARG2) ARG=ARG2
+							parserContext.getMacroMap().put(macroNameBuilder.toString(), macroContent.toString());
+							macroNameBuilder = new StringBuilder(10);
+							macroContent = new StringBuilder(10);
+							readingMacro = false;
+							throw new RuntimeException("todo handle parameter defines: #define THING(ARG, ARG2) ARG=ARG2");
+						} else {
+							backslash = false;
+							skipWhiteSpace(fis);
+						}
+					}
+					macroContent.append(c);
+				}
+			}
+			if (c == '#') {
+				readingMacro = true;
+				readingMacroName = true;
+			}
+		}
+	}
+
 
 	private void skipComment(@NotNull FileInputStream fis, boolean isBlock) throws IOException {
 		int in;
@@ -73,6 +132,13 @@ public class HeaderParser {
 			lastChar = c;
 		}
 
+	}
+
+	private void skipWhiteSpace(@NotNull FileInputStream fis) throws IOException {
+		int in;
+		while ((in = fis.read()) >= 0 && isWhitespace((char) in)) {
+			//do nothing
+		}
 	}
 
 	private static boolean isWhitespace(char c) {
