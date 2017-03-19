@@ -87,6 +87,7 @@ public enum PropertyType {
 	}
 
 	/** @throws IllegalArgumentException when id couldn't be matched */
+	@NotNull
 	public static PropertyType findById(int id) {
 		for (PropertyType propertyType : values()) {
 			if (propertyType.getId() == id) {
