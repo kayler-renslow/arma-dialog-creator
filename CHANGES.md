@@ -1,8 +1,8 @@
 **Added:**
-* support to change editor type while editing control properties 
+* none 
 
 **Changed:**
-* none
+* header parser can now parse macros. Isn't strongly tested.
 
 **Fixed:**
 * none
