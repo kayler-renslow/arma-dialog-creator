@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 /**
  @author Kayler
@@ -61,60 +62,76 @@ public class HeaderParser {
 	}
 
 	private void parseMacros() throws IOException {
-		FileInputStream fis = new FileInputStream(headerFile);
-		int in;
-		char c;
-		StringBuilder macroNameBuilder = new StringBuilder(10);
-		StringBuilder macroContent = new StringBuilder(10);
-		boolean readingMacro = false;
-		boolean readingMacroName = false;
-		boolean backslash = false;
-		/*
-		* todo:
-		* we need to handle # and ## macro things
-		* handle parameter defines
-		* handle ifdef and ifndef
-		* */
-		while ((in = fis.read()) >= 0) {
-			c = (char) in;
-			if (readingMacro) {
-				if (readingMacroName) {
-					if (isWhitespace(c)) {
-						readingMacroName = false;
-						continue;
-					} else {
-						macroNameBuilder.append(c);
-					}
-				} else {
-					if (c == '\\') {
-						backslash = true;
-						continue;
-					}
-					if (c == '\n') {
-						if (!backslash) {
-							//todo handle parameter defines: #define THING(ARG, ARG2) ARG=ARG2
-							parserContext.getMacroMap().put(macroNameBuilder.toString(), macroContent.toString());
-							macroNameBuilder = new StringBuilder(10);
-							macroContent = new StringBuilder(10);
-							readingMacro = false;
-							throw new RuntimeException("todo handle parameter defines: #define THING(ARG, ARG2) ARG=ARG2");
-						} else {
-							backslash = false;
-							skipWhiteSpace(fis);
-						}
-					}
-					macroContent.append(c);
+		Scanner scan = new Scanner(headerFile);
+		String line;
+
+		while (scan.hasNextLine()) {
+			line = scan.nextLine().trim();
+			if (!line.startsWith("#")) {
+				continue;
+			}
+			StringBuilder macroBuilder = new StringBuilder(line.length() * 2);
+			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
+				while (scan.hasNextLine() && line.endsWith("\\")) {
+					line = scan.nextLine().trim();
+					macroBuilder.append(line);
 				}
 			}
-			if (c == '#') {
-				readingMacro = true;
-				readingMacroName = true;
+			String macroText = macroBuilder.toString();
+			int spaceInd = macroText.indexOf(' ');
+			if (spaceInd < 0) {
+				continue;
+			}
+			if (spaceInd + 1 >= macroText.length()) { //nothing in body
+				continue;
+			}
+			String macroName = macroText.substring(0, spaceInd);
+			String macroContent = macroText.substring(spaceInd + 1);
+			boolean ifndef = false;
+			switch (macroName) {
+				case "include": {
+					//do nothing
+					break;
+				}
+				case "define": {
+					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.StringContent(macroContent)));
+					break;
+				}
+				case "undef": {
+					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new HeaderMacroContent.StringContent(macroContent)));
+					break;
+				}
+				case "ifndef": { //intentional fall through
+					ifndef = true;
+				}
+				case "ifdef": {
+					StringBuilder ifBody = new StringBuilder(10);
+					StringBuilder elseBody = new StringBuilder(10);
+					StringBuilder append = ifBody;
+					while (scan.hasNextLine() && !line.equals("#endif")) {
+						line = scan.nextLine().trim();
+						if (line.equals("#else")) {
+							append = elseBody;
+							continue;
+						}
+						append.append(line);
+					}
+					HeaderMacroContent content = new HeaderMacroContent.Conditional(ifBody.toString(), elseBody.toString());
+					if (ifndef) {
+						parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.IfNDef, content));
+					} else {
+						parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.IfDef, content));
+					}
+					break;
+				}
 			}
 		}
+		scan.close();
+
 	}
 
 
-	private void skipComment(@NotNull FileInputStream fis, boolean isBlock) throws IOException {
+	private static void skipComment(@NotNull FileInputStream fis, boolean isBlock) throws IOException {
 		int in;
 		char c;
 		char lastChar = ' '; //set to something that will initially fail for the first read
@@ -134,9 +151,16 @@ public class HeaderParser {
 
 	}
 
-	private void skipWhiteSpace(@NotNull FileInputStream fis) throws IOException {
+	private static void skipWhitespace(@NotNull FileInputStream fis) throws IOException {
 		int in;
 		while ((in = fis.read()) >= 0 && isWhitespace((char) in)) {
+			//do nothing
+		}
+	}
+
+	private static void readTillAfter(@NotNull FileInputStream fis, char c) throws IOException {
+		int in;
+		while ((in = fis.read()) >= 0 && ((char) in) != c) {
 			//do nothing
 		}
 	}

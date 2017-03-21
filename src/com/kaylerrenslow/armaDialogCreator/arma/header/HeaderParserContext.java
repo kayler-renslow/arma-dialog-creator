@@ -3,19 +3,20 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author Kayler
  @since 03/19/2017 */
 public class HeaderParserContext extends DataContext {
-	private final HashMap<String, String> macroMap = new HashMap<>();
+	private final List<HeaderMacro> macroMap = new ArrayList<>();
 
 	public HeaderParserContext() {
 	}
 
 	@NotNull
-	public HashMap<String, String> getMacroMap() {
+	public List<HeaderMacro> getMacros() {
 		return macroMap;
 	}
 }
