@@ -27,4 +27,24 @@ public class HeaderMacro {
 	public HeaderMacroContent getContent() {
 		return content;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof HeaderMacro) {
+			HeaderMacro other = (HeaderMacro) o;
+			return this.macroType == other.macroType && this.content.equals(other.content);
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		return "HeaderMacro{" +
+				"macroType=" + macroType +
+				", content=" + content +
+				'}';
+	}
 }

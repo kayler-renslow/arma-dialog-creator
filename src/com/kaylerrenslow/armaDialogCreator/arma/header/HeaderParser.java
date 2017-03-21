@@ -58,10 +58,12 @@ public class HeaderParser {
 		List<HeaderAssignment> assignments = new ArrayList<>();
 		List<HeaderClass> classes = new ArrayList<>();
 
+		fis.close();
+
 		return new HeaderFile(headerFile, assignments, classes);
 	}
 
-	private void parseMacros() throws IOException {
+	private void parseMacros() throws Exception {
 		Scanner scan = new Scanner(headerFile);
 		String line;
 
@@ -71,6 +73,7 @@ public class HeaderParser {
 				continue;
 			}
 			StringBuilder macroBuilder = new StringBuilder(line.length() * 2);
+			macroBuilder.append(line);
 			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
 				while (scan.hasNextLine() && line.endsWith("\\")) {
 					line = scan.nextLine().trim();
@@ -80,43 +83,56 @@ public class HeaderParser {
 			String macroText = macroBuilder.toString();
 			int spaceInd = macroText.indexOf(' ');
 			if (spaceInd < 0) {
-				continue;
+				spaceInd = macroText.length();
 			}
-			if (spaceInd + 1 >= macroText.length()) { //nothing in body
-				continue;
-			}
+
 			String macroName = macroText.substring(0, spaceInd);
-			String macroContent = macroText.substring(spaceInd + 1);
+			String macroContent = null;
+			if (spaceInd + 1 < macroText.length()) { //nothing in body
+				macroContent = macroText.substring(spaceInd + 1);
+			}
 			boolean ifndef = false;
 			switch (macroName) {
-				case "include": {
+				case "#include": {
 					//do nothing
 					break;
 				}
-				case "define": {
-					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.StringContent(macroContent)));
+				case "#define": {
+					if (macroContent == null) {
+						throw new HeaderParseException("no body for #define");
+					}
+					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw(macroContent)));
 					break;
 				}
-				case "undef": {
-					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new HeaderMacroContent.StringContent(macroContent)));
+				case "#undef": {
+					if (macroContent == null) {
+						throw new HeaderParseException("no body for #undef");
+					}
+					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new HeaderMacroContent.Raw(macroContent)));
 					break;
 				}
-				case "ifndef": { //intentional fall through
+				case "#ifndef": { //intentional fall through
 					ifndef = true;
 				}
-				case "ifdef": {
+				case "#ifdef": {
 					StringBuilder ifBody = new StringBuilder(10);
 					StringBuilder elseBody = new StringBuilder(10);
 					StringBuilder append = ifBody;
-					while (scan.hasNextLine() && !line.equals("#endif")) {
+					while (scan.hasNextLine()) {
 						line = scan.nextLine().trim();
+						if (line.equals("#endif")) {
+							break;
+						}
 						if (line.equals("#else")) {
 							append = elseBody;
 							continue;
 						}
 						append.append(line);
 					}
-					HeaderMacroContent content = new HeaderMacroContent.Conditional(ifBody.toString(), elseBody.toString());
+					if (macroContent == null) {
+						throw new HeaderParseException("no condition for #" + (ifndef ? "ifndef" : "ifdef"));
+					}
+					HeaderMacroContent content = new HeaderMacroContent.Conditional(macroContent, ifBody.toString(), elseBody.toString());
 					if (ifndef) {
 						parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.IfNDef, content));
 					} else {
