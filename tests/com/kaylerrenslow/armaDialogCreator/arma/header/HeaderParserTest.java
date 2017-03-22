@@ -3,8 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
-import java.io.File;
-
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -14,7 +12,7 @@ public class HeaderParserTest {
 
 	@Test
 	public void parseHeaderTest1() throws Exception {
-		HeaderParser p = new HeaderParser(getFile("headerTest1.h"), null);
+		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"), null);
 		HeaderParserContext c = p.getParserContext();
 		p.parse();
 
@@ -32,10 +30,6 @@ public class HeaderParserTest {
 				assertTrue("missing macro: " + toMatch, false);
 			}
 		}
-	}
-
-	private static File getFile(String fileName) {
-		return new File("tests/com/kaylerrenslow/armaDialogCreator/arma/header/" + fileName);
 	}
 
 	private static HeaderMacro If(boolean ifdef, @NotNull String v) {

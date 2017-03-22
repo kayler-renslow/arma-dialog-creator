@@ -49,24 +49,22 @@ public class HeaderParser {
 	}
 
 	private HeaderFile doParse() throws Exception {
-		Preprocessor pre = new Preprocessor(headerFile, parserContext);
-
-		List<HeaderAssignment> assignments = new ArrayList<>();
-		List<HeaderClass> classes = new ArrayList<>();
-
-
-		pre.preprocess(new PreprocessCallback() {
+		PreprocessCallback callback = new PreprocessCallback() {
 			@Override
 			public void fileProcessed(@NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) {
 
 			}
-		});
+		};
+
+		Preprocessor pre = new Preprocessor(headerFile, parserContext, callback);
+
+		List<HeaderAssignment> assignments = new ArrayList<>();
+		List<HeaderClass> classes = new ArrayList<>();
+
+		pre.preprocess();
 
 		return new HeaderFile(headerFile, assignments, classes);
 	}
-
-
-
 
 	private static void skipComment(@NotNull FileInputStream fis, boolean isBlock) throws IOException {
 		int in;
@@ -107,26 +105,26 @@ public class HeaderParser {
 	}
 
 	private enum Token {
-		Eq("="),
-		Class("class"),
-		Comma(","),
-		Colon(":"),
-		Semicolon(";"),
-		//		Plus("+"),
-		//		Minus("-"),
-		//		Star("*"),
-		//		FSlash("/"),
-		Equal("="),
-		//		LParen("("),
-		//		RParen(")"),
-		LBrace("{"),
-		RBrace("}"),
-		BracketPair("[]"),;
+		Eq('='),
+		Comma(','),
+		Colon(':'),
+		Semicolon(';'),
+		//		Plus('+'),
+		//		Minus('-'),
+		//		Star('*'),
+		//		FSlash('/'),
+		Equal('='),
+		//		LParen('('),
+		//		RParen(')'),
+		LBrace('{'),
+		RBrace('}'),
+		LBracket('['),
+		RBracket(']'),;
 
-		final String s;
+		final char c;
 
-		Token(String s) {
-			this.s = s;
+		Token(char c) {
+			this.c = c;
 		}
 	}
 

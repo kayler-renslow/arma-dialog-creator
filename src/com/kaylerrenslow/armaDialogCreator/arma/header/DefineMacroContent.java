@@ -56,15 +56,14 @@ public class DefineMacroContent implements HeaderMacroContent {
 			this.output = output;
 		}
 
-		@Override
 		@NotNull
-		public String getValue(@NotNull String[] paramVals) {
-			String value = output;
-			int i = 0;
-			for (String param : params) {
-				value = value.replaceAll(param, paramVals[i++]);
-			}
-			return value;
+		public String[] getParams() {
+			return params;
+		}
+
+		@NotNull
+		public String getOutput() {
+			return output;
 		}
 
 		@Override
@@ -96,9 +95,8 @@ public class DefineMacroContent implements HeaderMacroContent {
 			this.v = v;
 		}
 
-		@Override
 		@NotNull
-		public String getValue(@NotNull String[] paramVals) {
+		public String getValue() {
 			return v;
 		}
 
@@ -123,6 +121,6 @@ public class DefineMacroContent implements HeaderMacroContent {
 	}
 
 	public interface DefineValue {
-		@NotNull String getValue(@NotNull String[] paramVals);
+
 	}
 }

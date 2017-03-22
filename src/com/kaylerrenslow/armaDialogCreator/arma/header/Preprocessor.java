@@ -1,13 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.ResourceBundle;
-import java.util.Scanner;
+import java.util.*;
 
 /**
  @author Kayler
@@ -15,52 +14,51 @@ import java.util.Scanner;
 public class Preprocessor {
 	private File processFile;
 	private HeaderParserContext parserContext;
+	private PreprocessCallback callback;
 	private boolean preprocessed = false;
 
-	private int lineNum = -1;
+	private final LinkedList<File> processedFiles = new LinkedList<>();
+	private final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<>();
 
 	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
-	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) {
+	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext, @NotNull PreprocessCallback callback) {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
+		this.callback = callback;
 	}
 
 
-	public void preprocess(@NotNull PreprocessCallback callback) throws Exception {
+	public void preprocess() throws Exception {
 		if (preprocessed) {
 			throw new IllegalStateException("preprocessor already run");
 		}
 		preprocessed = true;
 
-		LinkedList<File> processedFiles = new LinkedList<>();
-		processedFiles.add(processFile);
-
-		StringBuilder textContent = new StringBuilder((int) processFile.length());
-		parseMacros(processFile, textContent, new ProcessorHandler() {
-			@Override
-			public void processNow(@NotNull String filePath, @NotNull File parentFile) throws Exception {
-				File f = FilePath.findFileByPath(filePath, parentFile);
-				if (f == null) {
-					error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
-				}
-				if (processedFiles.contains(f)) {
-					error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), f.getName(), parentFile.getName()));
-				}
-				processedFiles.add(f);
-
-				StringBuilder textContent = new StringBuilder((int) processFile.length());
-				parseMacros(f, textContent, this);
-				callback.fileProcessed(f, parentFile, textContent);
-			}
-		});
-
-		callback.fileProcessed(processFile, null, textContent);
-
+		processNow(processFile, null);
 	}
 
-	private void parseMacros(@NotNull File processFile, @NotNull StringBuilder fileContent, @NotNull ProcessorHandler handler) throws Exception {
+	private void processNow(@NotNull File toProcess, @Nullable File parentFile) throws Exception {
+		if (processedFiles.contains(toProcess)) {
+			if (parentFile == null) {
+				throw new IllegalStateException("parentFile shouldn't be null here");
+			}
+			error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), toProcess.getName(), parentFile.getName()));
+		}
+		processedFiles.add(toProcess);
+		preprocessStack.push(new PreprocessState(toProcess));
+
+		StringBuilder textContent = new StringBuilder((int) processFile.length());
+		doProcess(toProcess, textContent);
+
+		preprocessStack.pop();
+
+		callback.fileProcessed(processFile, parentFile, textContent);
+	}
+
+	private void doProcess(@NotNull File processFile, @NotNull StringBuilder fileContent) throws Exception {
+
 		Scanner scan = new Scanner(processFile);
 		String line;
 
@@ -73,17 +71,18 @@ public class Preprocessor {
 		int ifType = IF_UNSET;
 
 		while (scan.hasNextLine()) {
-			lineNum++;
+			incrementLineNumber();
 			line = scan.nextLine().trim();
 			if (!line.startsWith("#")) {
+				String preprocessedLine = preprocessLine(line);
 				if (ifCount > 0) {
 					if (useIfTrueCond && !discoveredElse) {
-						fileContent.append(line);
+						fileContent.append(preprocessedLine);
 					} else if (!useIfTrueCond && discoveredElse) {
-						fileContent.append(line);
+						fileContent.append(preprocessedLine);
 					}
 				} else {
-					fileContent.append(line);
+					fileContent.append(preprocessedLine);
 				}
 				continue;
 			}
@@ -92,7 +91,7 @@ public class Preprocessor {
 			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
 				while (scan.hasNextLine() && line.endsWith("\\")) {
 					line = scan.nextLine().trim();
-					lineNum++;
+					incrementLineNumber();
 					macroBuilder.append(line);
 				}
 			}
@@ -135,8 +134,15 @@ public class Preprocessor {
 					if (badFormat) {
 						error(bundle.getString("Error.Preprocessor.Parse.bad_include_format"));
 					}
+
 					String filePath = macroContent.substring(1, macroContent.length() - 1);
-					handler.processNow(filePath, processFile);
+
+					File f = FilePath.findFileByPath(filePath, processFile);
+					if (f == null) {
+						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
+					}
+
+					processNow(f, processFile);
 					break;
 				}
 				case "#define": {
@@ -241,11 +247,105 @@ public class Preprocessor {
 
 	}
 
+	private void incrementLineNumber() {
+		currentState().lineNumber++;
+	}
+
+	@NotNull
+	private PreprocessState currentState() {
+		return preprocessStack.peek();
+	}
+
+	@NotNull
+	private String preprocessLine(@NotNull String line) {
+		if (true) {
+			throw new RuntimeException("todo");
+		}
+		for (Map.Entry<String, DefineMacroContent.DefineValue> entry : defined.entrySet()) {
+			if (line.contains(entry.getKey())) {
+
+			}
+			//todo #g1 makes "g1"
+			if (line.contains("##")) {
+
+			}
+		}
+		return line;
+	}
+
+	@NotNull
+	public static String replace(@NotNull String base, @NotNull String[] toMatch, @NotNull String[] replace) {
+		if (toMatch.length != replace.length) {
+			throw new IllegalArgumentException("toMatch.length != replace.length");
+		}
+		StringBuilder ret = new StringBuilder(base.length());
+		StringBuilder readChars = new StringBuilder(base.length());
+		ArrayList<KeyValue<String, Integer>> matched = new ArrayList<>(toMatch.length);
+
+		final int NO_MATCH = 0;
+
+		for (String s : toMatch) {
+			if (s.length() == 0) {
+				throw new IllegalArgumentException("attempting to match empty string");
+			}
+			matched.add(new KeyValue<>(s, NO_MATCH));
+		}
+
+		int numMatched = matched.size();
+
+		for (int i = 0; i < base.length(); i++) {
+			char c = base.charAt(i);
+			readChars.append(c);
+			int matchInd = 0;
+			boolean replaced = false;
+			for (KeyValue<String, Integer> match : matched) {
+				String s = match.getKey();
+				int mi = match.getValue();
+				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
+				if (mi == s.length() - 1 && charMatch) {
+					ret.append(replace[matchInd]);
+					readChars = new StringBuilder(base.length() - i); //reset
+					replaced = true;
+					break;
+				}
+				if (charMatch) {
+					match.setValue(mi + 1);
+				} else {
+					numMatched--;
+				}
+				matchInd++;
+			}
+
+			final boolean noMoreMatches = numMatched <= 0;
+			if (noMoreMatches) {
+				ret.append(readChars);
+				readChars = new StringBuilder(base.length() - i);
+				numMatched = matched.size();
+			}
+			if (noMoreMatches || replaced) {
+				for (KeyValue<String, Integer> match : matched) {
+					match.setValue(NO_MATCH);
+				}
+			}
+		}
+
+		return ret.toString();
+	}
+
 	private void error(String string) throws HeaderParseException {
-		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), lineNum, string));
+		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), currentState().lineNumber, string));
 	}
 
 	private interface ProcessorHandler {
 		void processNow(@NotNull String filePath, @NotNull File parentFile) throws Exception;
+	}
+
+	private static class PreprocessState {
+		private int lineNumber = 0;
+		private final File processingFile;
+
+		public PreprocessState(@NotNull File processingFile) {
+			this.processingFile = processingFile;
+		}
 	}
 }

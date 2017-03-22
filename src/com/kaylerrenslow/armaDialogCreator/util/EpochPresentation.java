@@ -21,6 +21,7 @@ public class EpochPresentation {
 		}
 	}
 
+	@NotNull
 	public static String format(@NotNull EpochPresentation.Format format, long time) {
 		final Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(time);
