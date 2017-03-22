@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,19 +14,17 @@ public class HeaderParserTest {
 
 	@Test
 	public void parseHeaderTest1() throws Exception {
-		HeaderParser p = new HeaderParser(new File("tests/com/kaylerrenslow/armaDialogCreator/arma/header/headerTest1.h"), null);
+		HeaderParser p = new HeaderParser(getFile("headerTest1.h"), null);
 		HeaderParserContext c = p.getParserContext();
 		p.parse();
 
 		HeaderMacro[] macros = {
-				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("defined", new DefineMacroContent.StringDefineValue("100"))),
-				new HeaderMacro(HeaderMacro.MacroType.Undefine, new UndefineMacroContent("undefined")),
-				new HeaderMacro(HeaderMacro.MacroType.IfDef, new ConditionalMacroContent("ifdef")),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("GLUE", new DefineMacroContent.ParameterDefineValue(
-						new String[]{"g1", "g2"}, "g1##g2"
-				))),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("FOO", new DefineMacroContent.StringDefineValue("123"))),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("BAR", new DefineMacroContent.StringDefineValue("456")))
+				Define("defined", "100"),
+				Undefine("undefined"),
+				If(true, "ifdef"),
+				ParamDefine("GLUE", new String[]{"g1", "g2"}, "g1##g2"),
+				Define("FOO", "123"),
+				Define("BAR", "456")
 		};
 		for (HeaderMacro toMatch : macros) {
 			if (!c.getMacros().contains(toMatch)) {
@@ -33,6 +32,26 @@ public class HeaderParserTest {
 				assertTrue("missing macro: " + toMatch, false);
 			}
 		}
+	}
+
+	private static File getFile(String fileName) {
+		return new File("tests/com/kaylerrenslow/armaDialogCreator/arma/header/" + fileName);
+	}
+
+	private static HeaderMacro If(boolean ifdef, @NotNull String v) {
+		return new HeaderMacro(ifdef ? HeaderMacro.MacroType.IfDef : HeaderMacro.MacroType.IfNDef, new ConditionalMacroContent(v));
+	}
+
+	private static HeaderMacro Undefine(@NotNull String v) {
+		return new HeaderMacro(HeaderMacro.MacroType.Undefine, new UndefineMacroContent(v));
+	}
+
+	private static HeaderMacro Define(@NotNull String defineName, @NotNull String value) {
+		return new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(defineName, new DefineMacroContent.StringDefineValue(value)));
+	}
+
+	private static HeaderMacro ParamDefine(@NotNull String defineName, @NotNull String[] params, @NotNull String output) {
+		return new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(defineName, new DefineMacroContent.ParameterDefineValue(params, output)));
 	}
 
 }

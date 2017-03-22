@@ -17,7 +17,8 @@ public class Preprocessor {
 	private HeaderParserContext parserContext;
 	private boolean preprocessed = false;
 
-	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<String, DefineMacroContent.DefineValue>();
+	private int lineNum = -1;
+	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<>();
 
 	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
@@ -42,10 +43,10 @@ public class Preprocessor {
 			public void processNow(@NotNull String filePath, @NotNull File parentFile) throws Exception {
 				File f = FilePath.findFileByPath(filePath, parentFile);
 				if (f == null) {
-					throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
+					error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 				}
 				if (processedFiles.contains(f)) {
-					throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), f.getName(), parentFile.getName()));
+					error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), f.getName(), parentFile.getName()));
 				}
 				processedFiles.add(f);
 
@@ -72,6 +73,7 @@ public class Preprocessor {
 		int ifType = IF_UNSET;
 
 		while (scan.hasNextLine()) {
+			lineNum++;
 			line = scan.nextLine().trim();
 			if (!line.startsWith("#")) {
 				if (ifCount > 0) {
@@ -90,6 +92,7 @@ public class Preprocessor {
 			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
 				while (scan.hasNextLine() && line.endsWith("\\")) {
 					line = scan.nextLine().trim();
+					lineNum++;
 					macroBuilder.append(line);
 				}
 			}
@@ -108,7 +111,8 @@ public class Preprocessor {
 			switch (macroName) {
 				case "#include": {
 					if (macroContent == null || macroContent.length() <= 2) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.no_included_file"));
+						error(bundle.getString("Error.Preprocessor.Parse.no_included_file"));
+						return;
 					}
 					char left = macroContent.charAt(0);
 					char right = macroContent.charAt(macroContent.length() - 1);
@@ -129,7 +133,7 @@ public class Preprocessor {
 						}
 					}
 					if (badFormat) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.bad_include_format"));
+						error(bundle.getString("Error.Preprocessor.Parse.bad_include_format"));
 					}
 					String filePath = macroContent.substring(1, macroContent.length() - 1);
 					handler.processNow(filePath, processFile);
@@ -137,7 +141,7 @@ public class Preprocessor {
 				}
 				case "#define": {
 					if (macroContent == null) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.no_content_define"));
+						error(bundle.getString("Error.Preprocessor.Parse.no_content_define"));
 					}
 
 					String definedVar = null;
@@ -149,12 +153,12 @@ public class Preprocessor {
 							definedVar = macroContent.substring(0, i);
 							if (c != ' ') {
 								if (i >= macroContent.length()) {
-									throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
+									error(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
 								}
 								String afterVar = macroContent.substring(i + 1);
 								int lastParen = afterVar.indexOf(')');
 								if (lastParen < 0 || lastParen + 2 >= afterVar.length()) {
-									throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
+									error(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
 								}
 
 								String[] params = afterVar.substring(0, lastParen).split(",");
@@ -167,7 +171,7 @@ public class Preprocessor {
 						}
 					}
 					if (definedVar == null) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.no_variable_define"));
+						error(bundle.getString("Error.Preprocessor.Parse.no_variable_define"));
 					}
 
 					defined.put(definedVar, value);
@@ -177,7 +181,7 @@ public class Preprocessor {
 				}
 				case "#undef": {
 					if (macroContent == null) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.no_content_undef"));
+						error(bundle.getString("Error.Preprocessor.Parse.no_content_undef"));
 					}
 
 					defined.remove(macroContent);
@@ -198,7 +202,7 @@ public class Preprocessor {
 					String condition = macroContent;
 					if (condition == null) {
 						String error = String.format(bundle.getString("Error.Preprocessor.Parse.no_condition_f"), (ifType == IF_DEF ? "#ifdef" : "#ifndef"));
-						throw new HeaderParseException(error);
+						error(error);
 					}
 
 					if (defined.containsKey(condition)) {
@@ -224,8 +228,8 @@ public class Preprocessor {
 				}
 				case "#endif": {
 					discoveredElse = false;
-					if (ifCount == 0) {
-						throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.unexpected_endif"));
+					if (ifCount <= 0) {
+						error(bundle.getString("Error.Preprocessor.Parse.unexpected_endif"));
 					}
 					ifCount--;
 					ifType = IF_UNSET;
@@ -235,6 +239,10 @@ public class Preprocessor {
 		}
 		scan.close();
 
+	}
+
+	private void error(String string) throws HeaderParseException {
+		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), lineNum, string));
 	}
 
 	private interface ProcessorHandler {

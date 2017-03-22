@@ -1,8 +1,8 @@
 **Added:**
-* none
+* line number included for preprocess errors
 
 **Changed:**
 * none
 
 **Fixed:**
-* preprocessor
+* none
