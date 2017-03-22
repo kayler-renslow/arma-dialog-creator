@@ -1,8 +1,8 @@
 **Added:**
-* none 
+* FilePath class
 
 **Changed:**
-* header parser can now parse macros. Isn't strongly tested.
+* preprocessor fully implemented. in testing phase
 
 **Fixed:**
 * none

@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 /**
  @author Kayler
@@ -50,7 +49,7 @@ public class HeaderParser {
 	}
 
 	private HeaderFile doParse() throws Exception {
-		parseMacros();
+		Preprocessor pre = new Preprocessor(headerFile, parserContext);
 
 
 		FileInputStream fis = new FileInputStream(headerFile);
@@ -63,88 +62,7 @@ public class HeaderParser {
 		return new HeaderFile(headerFile, assignments, classes);
 	}
 
-	private void parseMacros() throws Exception {
-		Scanner scan = new Scanner(headerFile);
-		String line;
 
-		while (scan.hasNextLine()) {
-			line = scan.nextLine().trim();
-			if (!line.startsWith("#")) {
-				continue;
-			}
-			StringBuilder macroBuilder = new StringBuilder(line.length() * 2);
-			macroBuilder.append(line);
-			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
-				while (scan.hasNextLine() && line.endsWith("\\")) {
-					line = scan.nextLine().trim();
-					macroBuilder.append(line);
-				}
-			}
-			String macroText = macroBuilder.toString();
-			int spaceInd = macroText.indexOf(' ');
-			if (spaceInd < 0) {
-				spaceInd = macroText.length();
-			}
-
-			String macroName = macroText.substring(0, spaceInd);
-			String macroContent = null;
-			if (spaceInd + 1 < macroText.length()) { //nothing in body
-				macroContent = macroText.substring(spaceInd + 1);
-			}
-			boolean ifndef = false;
-			switch (macroName) {
-				case "#include": {
-					//do nothing
-					break;
-				}
-				case "#define": {
-					if (macroContent == null) {
-						throw new HeaderParseException("no body for #define");
-					}
-					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw(macroContent)));
-					break;
-				}
-				case "#undef": {
-					if (macroContent == null) {
-						throw new HeaderParseException("no body for #undef");
-					}
-					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new HeaderMacroContent.Raw(macroContent)));
-					break;
-				}
-				case "#ifndef": { //intentional fall through
-					ifndef = true;
-				}
-				case "#ifdef": {
-					StringBuilder ifBody = new StringBuilder(10);
-					StringBuilder elseBody = new StringBuilder(10);
-					StringBuilder append = ifBody;
-					while (scan.hasNextLine()) {
-						line = scan.nextLine().trim();
-						if (line.equals("#endif")) {
-							break;
-						}
-						if (line.equals("#else")) {
-							append = elseBody;
-							continue;
-						}
-						append.append(line);
-					}
-					if (macroContent == null) {
-						throw new HeaderParseException("no condition for #" + (ifndef ? "ifndef" : "ifdef"));
-					}
-					HeaderMacroContent content = new HeaderMacroContent.Conditional(macroContent, ifBody.toString(), elseBody.toString());
-					if (ifndef) {
-						parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.IfNDef, content));
-					} else {
-						parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.IfDef, content));
-					}
-					break;
-				}
-			}
-		}
-		scan.close();
-
-	}
 
 
 	private static void skipComment(@NotNull FileInputStream fis, boolean isBlock) throws IOException {

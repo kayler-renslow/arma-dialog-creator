@@ -427,7 +427,7 @@ class ControlPropertyEditorContainer extends HBox {
 		public ChooseNewPropertyTypeDialog(@NotNull ControlProperty property) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.popup_title"), true, true, true);
 
-			Label lbl = new Label(String.format(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.body"), property.getName()));
+			Label lbl = new Label(String.format(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.body_f"), property.getName()));
 			lbl.setWrapText(true);
 			myRootElement.getChildren().add(lbl);
 

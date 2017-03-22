@@ -10,13 +10,14 @@ import java.util.List;
  @author Kayler
  @since 03/19/2017 */
 public class HeaderParserContext extends DataContext {
-	private final List<HeaderMacro> macroMap = new ArrayList<>();
+	private final List<HeaderMacro> macroList = new ArrayList<>();
 
 	public HeaderParserContext() {
 	}
 
+
 	@NotNull
 	public List<HeaderMacro> getMacros() {
-		return macroMap;
+		return macroList;
 	}
 }

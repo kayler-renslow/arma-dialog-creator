@@ -18,12 +18,14 @@ public class HeaderParserTest {
 		p.parse();
 
 		HeaderMacro[] macros = {
-				new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw("defined 100")),
-				new HeaderMacro(HeaderMacro.MacroType.Undefine, new HeaderMacroContent.Raw("undefined")),
-				new HeaderMacro(HeaderMacro.MacroType.IfDef, new HeaderMacroContent.Conditional("ifdef", "#undef ifdef_undef", "")),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw("GLUE(g1,g2) g1##g2")),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw("FOO 123")),
-				new HeaderMacro(HeaderMacro.MacroType.Define, new HeaderMacroContent.Raw("BAR 456"))
+				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("defined", new DefineMacroContent.StringDefineValue("100"))),
+				new HeaderMacro(HeaderMacro.MacroType.Undefine, new UndefineMacroContent("undefined")),
+				new HeaderMacro(HeaderMacro.MacroType.IfDef, new ConditionalMacroContent("ifdef")),
+				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("GLUE", new DefineMacroContent.ParameterDefineValue(
+						new String[]{"g1", "g2"}, "g1##g2"
+				))),
+				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("FOO", new DefineMacroContent.StringDefineValue("123"))),
+				new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent("BAR", new DefineMacroContent.StringDefineValue("456")))
 		};
 		for (HeaderMacro toMatch : macros) {
 			if (!c.getMacros().contains(toMatch)) {
