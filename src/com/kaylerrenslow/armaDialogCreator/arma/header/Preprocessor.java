@@ -153,13 +153,13 @@ public class Preprocessor {
 								}
 								String afterVar = macroContent.substring(i + 1);
 								int lastParen = afterVar.indexOf(')');
-								if (lastParen < 0 || lastParen >= afterVar.length()) {
+								if (lastParen < 0 || lastParen + 2 >= afterVar.length()) {
 									throw new HeaderParseException(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
 								}
 
 								String[] params = afterVar.substring(0, lastParen).split(",");
 
-								value = new DefineMacroContent.ParameterDefineValue(params, afterVar.substring(lastParen + 1));
+								value = new DefineMacroContent.ParameterDefineValue(params, afterVar.substring(lastParen + 2));
 							} else {
 								value = new DefineMacroContent.StringDefineValue(macroContent.substring(i + 1));
 							}

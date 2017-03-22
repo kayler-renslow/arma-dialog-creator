@@ -9,11 +9,11 @@ import java.util.Arrays;
  @since 03/21/2017 */
 public class DefineMacroContent implements HeaderMacroContent {
 	private final String definedVar;
-	private final DefineValue defineValue;
+	private final DefineValue definedValue;
 
-	public DefineMacroContent(@NotNull String definedVar, @NotNull DefineValue defineValue) {
+	public DefineMacroContent(@NotNull String definedVar, @NotNull DefineValue definedValue) {
 		this.definedVar = definedVar;
-		this.defineValue = defineValue;
+		this.definedValue = definedValue;
 	}
 
 	@NotNull
@@ -22,16 +22,28 @@ public class DefineMacroContent implements HeaderMacroContent {
 	}
 
 	@NotNull
-	public DefineValue getDefineValue() {
-		return defineValue;
+	public DefineValue getDefinedValue() {
+		return definedValue;
 	}
 
 	@Override
 	public String toString() {
 		return "DefineMacroContent{" +
 				"definedVar='" + definedVar + '\'' +
-				", defineValue=" + defineValue +
+				", definedValue=" + definedValue +
 				'}';
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof DefineMacroContent) {
+			DefineMacroContent other = (DefineMacroContent) o;
+			return this.definedVar.equals(other.definedVar) && this.definedValue.equals(other.definedValue);
+		}
+		return false;
 	}
 
 	public static class ParameterDefineValue implements DefineValue {

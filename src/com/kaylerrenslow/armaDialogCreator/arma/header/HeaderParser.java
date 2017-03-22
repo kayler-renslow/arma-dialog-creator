@@ -51,13 +51,16 @@ public class HeaderParser {
 	private HeaderFile doParse() throws Exception {
 		Preprocessor pre = new Preprocessor(headerFile, parserContext);
 
-
-		FileInputStream fis = new FileInputStream(headerFile);
-
 		List<HeaderAssignment> assignments = new ArrayList<>();
 		List<HeaderClass> classes = new ArrayList<>();
 
-		fis.close();
+
+		pre.preprocess(new PreprocessCallback() {
+			@Override
+			public void fileProcessed(@NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) {
+
+			}
+		});
 
 		return new HeaderFile(headerFile, assignments, classes);
 	}

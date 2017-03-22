@@ -30,4 +30,10 @@ public class UndefineMacroContent implements HeaderMacroContent {
 		return false;
 	}
 
+	@Override
+	public String toString() {
+		return "UndefineMacroContent{" +
+				"value='" + value + '\'' +
+				'}';
+	}
 }
