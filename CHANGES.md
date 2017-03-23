@@ -1,5 +1,5 @@
 **Added:**
-* preprocessor text replacing method (along with tests)
+* preprocessor progress
 
 **Changed:**
 * none

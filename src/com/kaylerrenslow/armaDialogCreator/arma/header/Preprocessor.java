@@ -20,6 +20,9 @@ public class Preprocessor {
 	private final LinkedList<File> processedFiles = new LinkedList<>();
 	private final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<>();
+	private int definedMod = 0;
+	private int lastDefinedMod = 0;
+	private String[][] defineReplacements = null;
 
 	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
@@ -181,6 +184,7 @@ public class Preprocessor {
 					}
 
 					defined.put(definedVar, value);
+					definedMod++;
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(definedVar, value)));
 					break;
@@ -191,6 +195,7 @@ public class Preprocessor {
 					}
 
 					defined.remove(macroContent);
+					definedMod++;
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new UndefineMacroContent(macroContent)));
 					break;
@@ -261,22 +266,21 @@ public class Preprocessor {
 		if (true) {
 			throw new RuntimeException("todo");
 		}
-		for (Map.Entry<String, DefineMacroContent.DefineValue> entry : defined.entrySet()) {
-			if (line.contains(entry.getKey())) {
+		if (lastDefinedMod != definedMod || defineReplacements == null) {
+			for (Map.Entry<String, DefineMacroContent.DefineValue> entry : defined.entrySet()) {
 
 			}
-			//todo #g1 makes "g1"
-			if (line.contains("##")) {
-
-			}
+			lastDefinedMod = definedMod;
 		}
+		line = replace(line, defineReplacements[0], defineReplacements[1]);
+
 		return line;
 	}
 
 	@NotNull
-	public static String replace(@NotNull String base, @NotNull String[] toMatch, @NotNull String[] replace) {
-		if (toMatch.length != replace.length) {
-			throw new IllegalArgumentException("toMatch.length != replace.length");
+	static String replace(@NotNull String base, @NotNull String[] toMatch, @NotNull String[] replacements) {
+		if (toMatch.length != replacements.length) {
+			throw new IllegalArgumentException("toMatch.length != replacements.length");
 		}
 		StringBuilder ret = new StringBuilder(base.length());
 		StringBuilder readChars = new StringBuilder(base.length());
@@ -293,7 +297,8 @@ public class Preprocessor {
 
 		int numMatched = matched.size();
 
-		for (int i = 0; i < base.length(); i++) {
+		int i = 0;
+		for (; i < base.length(); i++) {
 			char c = base.charAt(i);
 			readChars.append(c);
 			int matchInd = 0;
@@ -303,10 +308,25 @@ public class Preprocessor {
 				int mi = match.getValue();
 				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
 				if (mi == s.length() - 1 && charMatch) {
-					ret.append(replace[matchInd]);
-					readChars = new StringBuilder(base.length() - i); //reset
-					replaced = true;
-					break;
+					boolean allow = false;
+					//can only replace parts of words of ## is used
+					if (i + 1 < base.length()) {
+						if (Character.isWhitespace(base.charAt(i + 1))) {
+							allow = true;
+						}
+					}
+					if (!allow && i + 2 < base.length()) {
+						if (base.charAt(i + 1) == '#' && base.charAt(i + 2) == '#') {
+							allow = true;
+							i += 2;
+						}
+					}
+					if (allow) {
+						ret.append(replacements[matchInd]);
+						readChars = new StringBuilder(base.length() - i); //reset
+						replaced = true;
+						break;
+					}
 				}
 				if (charMatch) {
 					match.setValue(mi + 1);
