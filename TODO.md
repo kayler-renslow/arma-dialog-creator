@@ -1,7 +1,7 @@
 Features
 -----------------------------------
 * for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
-    * There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and value(s)
+    * There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and text(s)
 * check access property for controls and see if properties can be inherited and such https://community.bistudio.com/wiki/Dialog_Control#Dialogs
 * have a color theme maker so that you don't need to constantly have to set colors to a macro. Maybe even have a big default archive for all attributes? Maybe just place them inside the lookup thingy?
 * go back through the lookup table and remove redundant entries after you figure out the requirements and options for controls
@@ -36,7 +36,7 @@ General
 * save stringtable langauge (adc menu bar) to project.xml file
 * string table editor: edit containers
 * ............................................
-* use proper value editor for Image and Hex Color
+* use proper text editor for Image and Hex Color
 
 Bugs
 -----------------------------------

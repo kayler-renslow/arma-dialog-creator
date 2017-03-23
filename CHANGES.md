@@ -1,8 +1,10 @@
 **Added:**
-* preprocessor progress
+* none
 
 **Changed:**
 * none
 
 **Fixed:**
-* none
+* preprocessor replace
+    * can't discover ##, macro functions (i.e. #define F(ARG, ARG2))
+    * more efficient way than before

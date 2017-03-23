@@ -19,7 +19,7 @@ while scaling component:
     holding s: scale as a square
 
 string table search at index 0:
-    type " or ' to search for key value
+    type " or ' to search for key text
     type ! to find all keys that don't have a particular language
     type + to find all keys that do have a particular language
     type /package name/container name to search for package name and container name (can have more than one container name. in this case, just keep doing /a_container_name)

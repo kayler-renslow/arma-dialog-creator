@@ -20,9 +20,6 @@ public class Preprocessor {
 	private final LinkedList<File> processedFiles = new LinkedList<>();
 	private final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<>();
-	private int definedMod = 0;
-	private int lastDefinedMod = 0;
-	private String[][] defineReplacements = null;
 
 	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
@@ -184,7 +181,6 @@ public class Preprocessor {
 					}
 
 					defined.put(definedVar, value);
-					definedMod++;
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(definedVar, value)));
 					break;
@@ -195,7 +191,6 @@ public class Preprocessor {
 					}
 
 					defined.remove(macroContent);
-					definedMod++;
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Undefine, new UndefineMacroContent(macroContent)));
 					break;
@@ -246,6 +241,9 @@ public class Preprocessor {
 					ifType = IF_UNSET;
 					break;
 				}
+				default: {
+					error(String.format(bundle.getString("Error.Preprocessor.Parse.unknown_macro_f"), macroName));
+				}
 			}
 		}
 		scan.close();
@@ -262,37 +260,30 @@ public class Preprocessor {
 	}
 
 	@NotNull
-	private String preprocessLine(@NotNull String line) {
-		if (true) {
-			throw new RuntimeException("todo");
-		}
-		if (lastDefinedMod != definedMod || defineReplacements == null) {
-			for (Map.Entry<String, DefineMacroContent.DefineValue> entry : defined.entrySet()) {
+	private String preprocessLine(@NotNull String line) throws HeaderParseException {
 
-			}
-			lastDefinedMod = definedMod;
+		try {
+			line = replace(line, defined);
+		} catch (HeaderParseException e) {
+			error(bundle.getString("Error.Preprocessor.Parse.preprocess_line_fail_f"));
 		}
-		line = replace(line, defineReplacements[0], defineReplacements[1]);
 
 		return line;
 	}
 
-	@NotNull
-	static String replace(@NotNull String base, @NotNull String[] toMatch, @NotNull String[] replacements) {
-		if (toMatch.length != replacements.length) {
-			throw new IllegalArgumentException("toMatch.length != replacements.length");
+	//todo when preprocessor is fully implemented, just make this non-static and have better error messages
+	static String replace(@NotNull String base, @NotNull HashMap<String, DefineMacroContent.DefineValue> map) throws HeaderParseException {
+		if (map.size() == 0) {
+			return base;
 		}
 		StringBuilder ret = new StringBuilder(base.length());
 		StringBuilder readChars = new StringBuilder(base.length());
-		ArrayList<KeyValue<String, Integer>> matched = new ArrayList<>(toMatch.length);
+		ArrayList<KeyValue<String, Integer>> matched = new ArrayList<>(map.size());
 
 		final int NO_MATCH = 0;
 
-		for (String s : toMatch) {
-			if (s.length() == 0) {
-				throw new IllegalArgumentException("attempting to match empty string");
-			}
-			matched.add(new KeyValue<>(s, NO_MATCH));
+		for (Map.Entry<String, DefineMacroContent.DefineValue> entry : map.entrySet()) {
+			matched.add(new KeyValue<>(entry.getKey(), NO_MATCH));
 		}
 
 		int numMatched = matched.size();
@@ -301,20 +292,83 @@ public class Preprocessor {
 		for (; i < base.length(); i++) {
 			char c = base.charAt(i);
 			readChars.append(c);
-			int matchInd = 0;
+
 			boolean replaced = false;
-			for (KeyValue<String, Integer> match : matched) {
-				String s = match.getKey();
-				int mi = match.getValue();
+			for (KeyValue<String, Integer> matchKv : matched) {
+				String s = matchKv.getKey();
+				int mi = matchKv.getValue();
 				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
 				if (mi == s.length() - 1 && charMatch) {
+
+					final int macroStartInd = i - matchKv.getValue() - 1;
+
+					DefineMacroContent.DefineValue defineValue = map.get(s);
+					String replacement;
+
+					if (defineValue instanceof DefineMacroContent.ParameterDefineValue) {
+						DefineMacroContent.ParameterDefineValue paramValue = (DefineMacroContent.ParameterDefineValue) defineValue;
+						String macroValueText = paramValue.getText();
+						StringBuilder replacementBuilder = new StringBuilder();
+
+						int macroValueTextInd = 0;
+						if (i + 1 < base.length() && base.charAt(i + 1) == '(') {
+							readChars.append('(');
+							i += 2;//advance past (
+
+							for (String param : paramValue.getParams()) {
+								int paramInd = macroValueText.indexOf(param, macroValueTextInd);
+								if (paramInd < 0) {
+									throw new HeaderParseException();
+								}
+								while (paramInd >= 0) {
+									//write everything up till the param index
+									while (macroValueTextInd < paramInd) {
+										replacementBuilder.append(macroValueText.charAt(macroValueTextInd));
+										macroValueTextInd++;
+									}
+
+									macroValueTextInd += param.length(); //skip past param
+
+									//write the actual parameter value defined in the preprocessed file
+									while (i < base.length() && base.charAt(i) != ',' && base.charAt(i) != ')') {
+										char c1 = base.charAt(i);
+										readChars.append(c1);
+										replacementBuilder.append(c1);
+										i++;
+									}
+									readChars.append(base.charAt(i)); //append , or )
+
+									paramInd = macroValueText.indexOf(param, i);
+								}
+							}
+
+							//write remainder of macro value text
+							while (macroValueTextInd < macroValueText.length()) {
+								replacementBuilder.append(macroValueText.charAt(macroValueTextInd));
+								macroValueTextInd++;
+							}
+						} else {
+							throw new HeaderParseException();
+						}
+						replacement = replacementBuilder.toString();
+
+					} else {
+						replacement = defineValue.getText();
+					}
+
 					boolean allow = false;
-					//can only replace parts of words of ## is used
-					if (i + 1 < base.length()) {
-						if (Character.isWhitespace(base.charAt(i + 1))) {
+					//check if there is whitespace following and preceeding the macro, or if end of line
+					if (macroStartInd == -1 || Character.isWhitespace(base.charAt(macroStartInd))) {
+						if (i + 1 < base.length()) {
+							if (Character.isWhitespace(base.charAt(i + 1))) {
+								allow = true;
+							}
+						} else if (i + 1 == base.length()) {
 							allow = true;
 						}
 					}
+
+					//can only replace parts of words of ## is used
 					if (!allow && i + 2 < base.length()) {
 						if (base.charAt(i + 1) == '#' && base.charAt(i + 2) == '#') {
 							allow = true;
@@ -322,18 +376,20 @@ public class Preprocessor {
 						}
 					}
 					if (allow) {
-						ret.append(replacements[matchInd]);
-						readChars = new StringBuilder(base.length() - i); //reset
+						ret.append(replacement);
+						readChars = new StringBuilder(); //reset
 						replaced = true;
 						break;
+					} else {
+						numMatched--;
 					}
 				}
 				if (charMatch) {
-					match.setValue(mi + 1);
+					matchKv.setValue(mi + 1);
 				} else {
 					numMatched--;
 				}
-				matchInd++;
+
 			}
 
 			final boolean noMoreMatches = numMatched <= 0;
@@ -359,6 +415,7 @@ public class Preprocessor {
 	private interface ProcessorHandler {
 		void processNow(@NotNull String filePath, @NotNull File parentFile) throws Exception;
 	}
+
 
 	private static class PreprocessState {
 		private int lineNumber = 0;

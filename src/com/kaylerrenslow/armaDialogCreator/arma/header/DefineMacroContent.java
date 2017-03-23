@@ -49,11 +49,11 @@ public class DefineMacroContent implements HeaderMacroContent {
 	public static class ParameterDefineValue implements DefineValue {
 
 		private final @NotNull String[] params;
-		private final String output;
+		private final String text;
 
-		public ParameterDefineValue(@NotNull String[] params, @NotNull String output) {
+		public ParameterDefineValue(@NotNull String[] params, @NotNull String text) {
 			this.params = params;
-			this.output = output;
+			this.text = text;
 		}
 
 		@NotNull
@@ -62,8 +62,8 @@ public class DefineMacroContent implements HeaderMacroContent {
 		}
 
 		@NotNull
-		public String getOutput() {
-			return output;
+		public String getText() {
+			return text;
 		}
 
 		@Override
@@ -73,7 +73,7 @@ public class DefineMacroContent implements HeaderMacroContent {
 			}
 			if (o instanceof ParameterDefineValue) {
 				ParameterDefineValue other = (ParameterDefineValue) o;
-				return Arrays.equals(this.params, other.params) && this.output.equals(other.output);
+				return Arrays.equals(this.params, other.params) && this.text.equals(other.text);
 			}
 			return false;
 		}
@@ -82,22 +82,23 @@ public class DefineMacroContent implements HeaderMacroContent {
 		public String toString() {
 			return "ParameterDefineValue{" +
 					"params=" + Arrays.toString(params) +
-					", output='" + output + '\'' +
+					", text='" + text + '\'' +
 					'}';
 		}
 	}
 
 	public static class StringDefineValue implements DefineValue {
 
-		private String v;
+		private String text;
 
-		public StringDefineValue(@NotNull String v) {
-			this.v = v;
+		public StringDefineValue(@NotNull String text) {
+			this.text = text;
 		}
 
+		@Override
 		@NotNull
-		public String getValue() {
-			return v;
+		public String getText() {
+			return text;
 		}
 
 		@Override
@@ -107,7 +108,7 @@ public class DefineMacroContent implements HeaderMacroContent {
 			}
 			if (o instanceof StringDefineValue) {
 				StringDefineValue other = (StringDefineValue) o;
-				return this.v.equals(other.v);
+				return this.text.equals(other.text);
 			}
 			return false;
 		}
@@ -115,12 +116,12 @@ public class DefineMacroContent implements HeaderMacroContent {
 		@Override
 		public String toString() {
 			return "StringDefineValue{" +
-					"v='" + v + '\'' +
+					"text='" + text + '\'' +
 					'}';
 		}
 	}
 
 	public interface DefineValue {
-
+		@NotNull String getText();
 	}
 }
