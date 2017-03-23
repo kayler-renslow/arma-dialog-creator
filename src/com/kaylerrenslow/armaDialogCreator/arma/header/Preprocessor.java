@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
-import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,7 +18,7 @@ public class Preprocessor {
 
 	private final LinkedList<File> processedFiles = new LinkedList<>();
 	private final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
-	private final HashMap<String, DefineMacroContent.DefineValue> defined = new HashMap<>();
+	private final HashMap<String, DefinedValueWrapper> defined = new HashMap<>();
 
 	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
@@ -180,7 +179,7 @@ public class Preprocessor {
 						error(bundle.getString("Error.Preprocessor.Parse.no_variable_define"));
 					}
 
-					defined.put(definedVar, value);
+					defined.put(definedVar, new DefinedValueWrapper(value));
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(definedVar, value)));
 					break;
@@ -229,7 +228,10 @@ public class Preprocessor {
 					break;
 				}
 				case "#else": {
-					discoveredElse = true;
+					if (ifCount <= 0) {
+						error(bundle.getString("Error.Preprocessor.Parse.unexpected_else"));
+					}
+					discoveredElse = true; //only mark as true if there was a preceding if
 					break;
 				}
 				case "#endif": {
@@ -263,7 +265,7 @@ public class Preprocessor {
 	private String preprocessLine(@NotNull String line) throws HeaderParseException {
 
 		try {
-			line = replace(line, defined);
+			line = replace(line);
 		} catch (HeaderParseException e) {
 			error(bundle.getString("Error.Preprocessor.Parse.preprocess_line_fail_f"));
 		}
@@ -272,21 +274,21 @@ public class Preprocessor {
 	}
 
 	//todo when preprocessor is fully implemented, just make this non-static and have better error messages
-	static String replace(@NotNull String base, @NotNull HashMap<String, DefineMacroContent.DefineValue> map) throws HeaderParseException {
-		if (map.size() == 0) {
+	protected String replace(@NotNull String base) throws HeaderParseException {
+		if (defined.size() == 0) {
 			return base;
 		}
 		StringBuilder ret = new StringBuilder(base.length());
 		StringBuilder readChars = new StringBuilder(base.length());
-		ArrayList<KeyValue<String, Integer>> matched = new ArrayList<>(map.size());
 
 		final int NO_MATCH = 0;
 
-		for (Map.Entry<String, DefineMacroContent.DefineValue> entry : map.entrySet()) {
-			matched.add(new KeyValue<>(entry.getKey(), NO_MATCH));
+		for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+			wrapperEntry.getValue().setMatchedLength(NO_MATCH);
 		}
 
-		int numMatched = matched.size();
+
+		int numMatched = defined.size();
 
 		int i = 0;
 		for (; i < base.length(); i++) {
@@ -294,15 +296,15 @@ public class Preprocessor {
 			readChars.append(c);
 
 			boolean replaced = false;
-			for (KeyValue<String, Integer> matchKv : matched) {
-				String s = matchKv.getKey();
-				int mi = matchKv.getValue();
+			for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+				String s = wrapperEntry.getKey();
+				int mi = wrapperEntry.getValue().getMatchedLength();
 				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
 				if (mi == s.length() - 1 && charMatch) {
 
-					final int macroStartInd = i - matchKv.getValue() - 1;
+					final int macroStartInd = i - mi - 1;
 
-					DefineMacroContent.DefineValue defineValue = map.get(s);
+					DefineMacroContent.DefineValue defineValue = wrapperEntry.getValue().getDefineValue();
 					String replacement;
 
 					if (defineValue instanceof DefineMacroContent.ParameterDefineValue) {
@@ -332,6 +334,11 @@ public class Preprocessor {
 									//write the actual parameter value defined in the preprocessed file
 									while (i < base.length() && base.charAt(i) != ',' && base.charAt(i) != ')') {
 										char c1 = base.charAt(i);
+										/* don't do the following because [] is perfectly valid:
+										if(c1 == '[') {
+											throw new HeaderParseException();
+										}
+										*/
 										readChars.append(c1);
 										replacementBuilder.append(c1);
 										i++;
@@ -357,7 +364,7 @@ public class Preprocessor {
 					}
 
 					boolean allow = false;
-					//check if there is whitespace following and preceeding the macro, or if end of line
+					//check if there is whitespace following and preceding the macro, or if end of line
 					if (macroStartInd == -1 || Character.isWhitespace(base.charAt(macroStartInd))) {
 						if (i + 1 < base.length()) {
 							if (Character.isWhitespace(base.charAt(i + 1))) {
@@ -385,7 +392,7 @@ public class Preprocessor {
 					}
 				}
 				if (charMatch) {
-					matchKv.setValue(mi + 1);
+					wrapperEntry.getValue().incrementMatchedLength();
 				} else {
 					numMatched--;
 				}
@@ -396,11 +403,11 @@ public class Preprocessor {
 			if (noMoreMatches) {
 				ret.append(readChars);
 				readChars = new StringBuilder(base.length() - i);
-				numMatched = matched.size();
+				numMatched = defined.size();
 			}
 			if (noMoreMatches || replaced) {
-				for (KeyValue<String, Integer> match : matched) {
-					match.setValue(NO_MATCH);
+				for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+					wrapperEntry.getValue().setMatchedLength(NO_MATCH);
 				}
 			}
 		}
@@ -412,10 +419,31 @@ public class Preprocessor {
 		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), currentState().lineNumber, string));
 	}
 
-	private interface ProcessorHandler {
-		void processNow(@NotNull String filePath, @NotNull File parentFile) throws Exception;
-	}
+	private static class DefinedValueWrapper {
+		private DefineMacroContent.DefineValue value;
+		private int matchedLength;
 
+		public DefinedValueWrapper(@NotNull DefineMacroContent.DefineValue value) {
+			this.value = value;
+		}
+
+		@NotNull
+		public DefineMacroContent.DefineValue getDefineValue() {
+			return value;
+		}
+
+		public void incrementMatchedLength() {
+			matchedLength++;
+		}
+
+		public void setMatchedLength(int l) {
+			this.matchedLength = l;
+		}
+
+		public int getMatchedLength() {
+			return matchedLength;
+		}
+	}
 
 	private static class PreprocessState {
 		private int lineNumber = 0;

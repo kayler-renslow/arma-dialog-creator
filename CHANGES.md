@@ -2,9 +2,8 @@
 * none
 
 **Changed:**
-* none
+* made Notifications thread safe
+* optimized the replace method in preprocessor
 
 **Fixed:**
-* preprocessor replace
-    * can't discover ##, macro functions (i.e. #define F(ARG, ARG2))
-    * more efficient way than before
+* none

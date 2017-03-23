@@ -5,7 +5,9 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  Handles all {@link Notification} instances that are to be displayed. When a {@link Notification} is shown via {@link #showNotification(Notification)} or {@link #showNotification(Notification, NotificationPane)},
@@ -64,9 +66,9 @@ public class Notifications {
 	}
 
 
-	private final LinkedList<NotificationDescriptor> showingNotifications = new LinkedList<>();
+	private final List<NotificationDescriptor> showingNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final NotificationsVisibilityTask visibilityTask = new NotificationsVisibilityTask(this);
-	private final LinkedList<NotificationDescriptor> pastNotifications = new LinkedList<>();
+	private final List<NotificationDescriptor> pastNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final ReadOnlyList<NotificationDescriptor> pastNotificationsReadOnly = new ReadOnlyList<>(pastNotifications);
 	private NotificationPane notificationPane;
 
@@ -75,7 +77,7 @@ public class Notifications {
 		if (notification.saveToHistory()) {
 			pastNotifications.add(descriptor);
 			while (pastNotifications.size() >= MAX_HISTORY_NOTIFICATIONS) {
-				pastNotifications.removeFirst();
+				pastNotifications.remove(0);
 			}
 		}
 		showingNotifications.add(descriptor);
@@ -97,7 +99,7 @@ public class Notifications {
 
 		@Override
 		protected Boolean call() throws Exception {
-			LinkedList<NotificationDescriptor> tohide = new LinkedList<>();
+			List<NotificationDescriptor> tohide = Collections.synchronizedList(new LinkedList<>());
 			while (true) {
 				long now = System.currentTimeMillis();
 				for (int i = 0; i < notifications.showingNotifications.size(); ) {
@@ -114,7 +116,7 @@ public class Notifications {
 						@Override
 						public void run() {
 							while (tohide.size() > 0) {
-								tohide.removeFirst().getNotification().setShowing(false);
+								tohide.remove(0).getNotification().setShowing(false);
 							}
 						}
 					});
