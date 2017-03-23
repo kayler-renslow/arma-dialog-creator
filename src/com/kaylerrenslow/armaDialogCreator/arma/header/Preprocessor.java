@@ -5,22 +5,26 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.Scanner;
 
 /**
  @author Kayler
  @since 03/21/2017 */
 public class Preprocessor {
-	private File processFile;
-	private HeaderParserContext parserContext;
-	private PreprocessCallback callback;
+	private final File processFile;
+	private final HeaderParserContext parserContext;
+	private final PreprocessCallback callback;
 	private boolean preprocessed = false;
 
-	private final LinkedList<File> processedFiles = new LinkedList<>();
-	private final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
-	private final HashMap<String, DefinedValueWrapper> defined = new HashMap<>();
+	protected final LinkedList<File> processedFiles = new LinkedList<>();
+	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
+	protected final HashMap<String, DefinedValueWrapper> defined = new HashMap<>();
 
-	private final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
+	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
 	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext, @NotNull PreprocessCallback callback) {
 		this.processFile = processFile;
@@ -56,9 +60,12 @@ public class Preprocessor {
 		callback.fileProcessed(processFile, parentFile, textContent);
 	}
 
-	private void doProcess(@NotNull File processFile, @NotNull StringBuilder fileContent) throws Exception {
-
+	protected void doProcess(@NotNull File processFile, @NotNull StringBuilder fileContent) throws Exception {
 		Scanner scan = new Scanner(processFile);
+		doProcess(scan, fileContent);
+	}
+
+	protected void doProcess(@NotNull Scanner scan, @NotNull StringBuilder fileContent) throws Exception {
 		String line;
 
 		int ifCount = 0; //>0 if current line is inside (#ifdef or #ifndef) and before #endif
@@ -249,7 +256,6 @@ public class Preprocessor {
 			}
 		}
 		scan.close();
-
 	}
 
 	private void incrementLineNumber() {
@@ -273,7 +279,6 @@ public class Preprocessor {
 		return line;
 	}
 
-	//todo when preprocessor is fully implemented, just make this non-static and have better error messages
 	protected String replace(@NotNull String base) throws HeaderParseException {
 		if (defined.size() == 0) {
 			return base;
@@ -283,10 +288,9 @@ public class Preprocessor {
 
 		final int NO_MATCH = 0;
 
-		for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+		for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
 			wrapperEntry.getValue().setMatchedLength(NO_MATCH);
 		}
-
 
 		int numMatched = defined.size();
 
@@ -296,7 +300,7 @@ public class Preprocessor {
 			readChars.append(c);
 
 			boolean replaced = false;
-			for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+			for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
 				String s = wrapperEntry.getKey();
 				int mi = wrapperEntry.getValue().getMatchedLength();
 				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
@@ -320,7 +324,7 @@ public class Preprocessor {
 							for (String param : paramValue.getParams()) {
 								int paramInd = macroValueText.indexOf(param, macroValueTextInd);
 								if (paramInd < 0) {
-									throw new HeaderParseException();
+									error(String.format(bundle.getString("Error.Preprocessor.Parse.parameter_not_in_output_f"), param));
 								}
 								while (paramInd >= 0) {
 									//write everything up till the param index
@@ -355,7 +359,7 @@ public class Preprocessor {
 								macroValueTextInd++;
 							}
 						} else {
-							throw new HeaderParseException();
+							error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_paren"));
 						}
 						replacement = replacementBuilder.toString();
 
@@ -406,7 +410,7 @@ public class Preprocessor {
 				numMatched = defined.size();
 			}
 			if (noMoreMatches || replaced) {
-				for (Map.Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
+				for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
 					wrapperEntry.getValue().setMatchedLength(NO_MATCH);
 				}
 			}
@@ -415,11 +419,11 @@ public class Preprocessor {
 		return ret.toString();
 	}
 
-	private void error(String string) throws HeaderParseException {
+	protected void error(String string) throws HeaderParseException {
 		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), currentState().lineNumber, string));
 	}
 
-	private static class DefinedValueWrapper {
+	protected static class DefinedValueWrapper {
 		private DefineMacroContent.DefineValue value;
 		private int matchedLength;
 
@@ -445,7 +449,7 @@ public class Preprocessor {
 		}
 	}
 
-	private static class PreprocessState {
+	protected static class PreprocessState {
 		private int lineNumber = 0;
 		private final File processingFile;
 

@@ -2,8 +2,8 @@
 * none
 
 **Changed:**
-* made Notifications thread safe
-* optimized the replace method in preprocessor
+* modified the preprocessor test cases to conform to replace signature change
+* better error reporting for Preprocessor.replace
 
 **Fixed:**
 * none
