@@ -2,8 +2,8 @@
 * none
 
 **Changed:**
-* modified the preprocessor test cases to conform to replace signature change
-* better error reporting for Preprocessor.replace
+* optimized replace yet again (uses less string buffers)
+* added version info to preload screen
 
 **Fixed:**
 * none

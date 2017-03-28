@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Character.isWhitespace;
+
 /**
  @author Kayler
  @since 03/19/2017 */
@@ -61,7 +63,7 @@ public class HeaderParser {
 		List<HeaderAssignment> assignments = new ArrayList<>();
 		List<HeaderClass> classes = new ArrayList<>();
 
-		pre.preprocess();
+		pre.run();
 
 		return new HeaderFile(headerFile, assignments, classes);
 	}
@@ -98,10 +100,6 @@ public class HeaderParser {
 		while ((in = fis.read()) >= 0 && ((char) in) != c) {
 			//do nothing
 		}
-	}
-
-	private static boolean isWhitespace(char c) {
-		return Character.isWhitespace(c);
 	}
 
 	private enum Token {

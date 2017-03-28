@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
+import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -10,6 +12,8 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Scanner;
+
+import static java.lang.Character.isWhitespace;
 
 /**
  @author Kayler
@@ -22,7 +26,7 @@ public class Preprocessor {
 
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
-	protected final HashMap<String, DefinedValueWrapper> defined = new HashMap<>();
+	protected final HashMap<String, DefineValue> defined = new HashMap<>();
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
@@ -33,7 +37,7 @@ public class Preprocessor {
 	}
 
 
-	public void preprocess() throws Exception {
+	public void run() throws Exception {
 		if (preprocessed) {
 			throw new IllegalStateException("preprocessor already run");
 		}
@@ -80,15 +84,18 @@ public class Preprocessor {
 			incrementLineNumber();
 			line = scan.nextLine().trim();
 			if (!line.startsWith("#")) {
-				String preprocessedLine = preprocessLine(line);
+				boolean write = false;
 				if (ifCount > 0) {
 					if (useIfTrueCond && !discoveredElse) {
-						fileContent.append(preprocessedLine);
+						write = true;
 					} else if (!useIfTrueCond && discoveredElse) {
-						fileContent.append(preprocessedLine);
+						write = true;
 					}
 				} else {
-					fileContent.append(preprocessedLine);
+					write = true;
+				}
+				if (write) {
+					preprocessLine(line, fileContent);
 				}
 				continue;
 			}
@@ -157,7 +164,11 @@ public class Preprocessor {
 					}
 
 					String definedVar = null;
-					DefineMacroContent.DefineValue value = null;
+					DefineValue value = null;
+
+					if (macroContent.length() == 0) {
+						throw new HeaderParseException("Error.Preprocessor.Parse.macro_key_length_0");
+					}
 
 					for (int i = 0; i < macroContent.length(); i++) {
 						char c = macroContent.charAt(i);
@@ -175,7 +186,7 @@ public class Preprocessor {
 
 								String[] params = afterVar.substring(0, lastParen).split(",");
 
-								value = new DefineMacroContent.ParameterDefineValue(params, afterVar.substring(lastParen + 2));
+								value = new ParameterDefineValue(params, afterVar.substring(lastParen + 2));
 							} else {
 								value = new DefineMacroContent.StringDefineValue(macroContent.substring(i + 1));
 							}
@@ -186,7 +197,7 @@ public class Preprocessor {
 						error(bundle.getString("Error.Preprocessor.Parse.no_variable_define"));
 					}
 
-					defined.put(definedVar, new DefinedValueWrapper(value));
+					defined.put(definedVar, value);
 
 					parserContext.getMacros().add(new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(definedVar, value)));
 					break;
@@ -258,6 +269,142 @@ public class Preprocessor {
 		scan.close();
 	}
 
+	protected void preprocessLine(@NotNull String base, @NotNull StringBuilder writeTo) throws HeaderParseException {
+		if (defined.size() == 0) {
+			writeTo.append(base);
+			return;
+		}
+		for (Entry<String, DefineValue> entry : defined.entrySet()) {
+			String key = entry.getKey();
+			if (key.length() == 0) {
+				throw new HeaderParseException("Error.Preprocessor.Parse.macro_key_length_0");
+			}
+		}
+
+		int i = 0;
+		final char NONE = '\0';
+		boolean mergeMacros = false;//case of macro1##macro2
+
+		baseLoop:
+		for (; i < base.length(); ) {
+			int resetIndex = i;
+			int unmatchedLength = 1;
+
+			for (Entry<String, DefineValue> entry : defined.entrySet()) {
+				int matchInd = 0;
+				String key = entry.getKey();
+
+				while (matchInd < key.length() && i < base.length()) {
+					if (key.charAt(matchInd) != base.charAt(i)) {
+						break;
+					}
+					matchInd++;
+					i++;
+					unmatchedLength = Math.max(unmatchedLength, matchInd);
+				}
+				if (matchInd != key.length()) {
+					i = resetIndex;
+					continue;
+				}
+
+				final char nextChar = i < base.length() ? base.charAt(i) : NONE;
+				final char nextNextChar = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
+				final char beforeResetChar = resetIndex - 1 >= 0 ? base.charAt(resetIndex - 1) : NONE;
+
+				boolean writeReplacement = false;
+
+				if (nextChar == '#' && nextNextChar == '#') {
+					mergeMacros = true;
+					writeReplacement = true;
+				} else if ((nextChar == NONE || isWhitespace(nextChar)) && (mergeMacros || beforeResetChar == NONE || isWhitespace(beforeResetChar))) {
+					writeReplacement = true;
+					mergeMacros = false;
+				}
+
+				if (!writeReplacement) {
+					i = resetIndex;
+					continue;
+				}
+				if (mergeMacros) {
+					//advance past ##
+					//note: it should not be the case that mergeMacros==true and entry.getValue() is a parameter
+					i += 2;
+				}
+				if (entry.getValue() instanceof ParameterDefineValue) {
+					if ((i < base.length() && base.charAt(i) != '(')) {
+						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_lparen"));
+					}
+					int beforeParenI = i;
+					i++;//move past (
+					int lastParenInd = base.indexOf(')', i);
+					if (lastParenInd < 0) {
+						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_rparen"));
+					}
+					i = lastParenInd;
+					appendParameterValue(base, i, entry, writeTo);
+					final char afterParenC = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
+					final char afterAfterParenC = i + 2 < base.length() ? base.charAt(i + 2) : NONE;
+					if (afterParenC == '#' && afterAfterParenC == '#') {
+						mergeMacros = true;
+						i += 2;
+					} else if (afterParenC != NONE && !isWhitespace(base.charAt(i + 1))) {
+						unmatchedLength += Math.max(0, i - beforeParenI);
+						i = beforeParenI;
+						break;
+					}
+				} else {
+					writeTo.append(entry.getValue().getText());
+				}
+				break;
+			}
+
+			while (i < base.length() && isWhitespace(base.charAt(i))) {
+				unmatchedLength++;
+				i++;
+			}
+
+			final int end = resetIndex + unmatchedLength;
+			writeTo.append(base, resetIndex, end);
+			i = end;
+		}
+	}
+
+	private void appendParameterValue(@NotNull String base, int baseInd, @NotNull Entry<String, DefineValue> entry, @NotNull StringBuilder writeTo) throws HeaderParseException {
+		ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
+
+		final int numParams = parameterValue.getParams().length;
+		int paramValuesInd = 0;
+		final char NONE = '\0';
+		int[][] paramValuesPositions = new int[numParams][2];
+		final int START_POS = 0;
+		final int END_POS = 1;
+
+		for (; baseInd < base.length(); ) {
+
+			paramValuesPositions[paramValuesInd][START_POS] = baseInd;
+			int paramValueLen = 0;
+			while (baseInd < base.length() && (base.charAt(baseInd) != ',' || base.charAt(baseInd) != ')')) {
+				paramValueLen++;
+				baseInd++;
+			}
+
+			if (paramValueLen == 0) {
+				error(bundle.getString("Error.Preprocessor.Parse.no_param_value"));
+			}
+
+			paramValuesPositions[paramValuesInd][END_POS] = baseInd - 1;
+			paramValuesInd++;
+		}
+
+		//todo iterate through params
+		int paramValueInd = 0;
+		String paramValueText = parameterValue.getText();
+		for (; paramValueInd < paramValueText.length(); ) {
+			
+		}
+
+	}
+
 	private void incrementLineNumber() {
 		currentState().lineNumber++;
 	}
@@ -267,187 +414,11 @@ public class Preprocessor {
 		return preprocessStack.peek();
 	}
 
-	@NotNull
-	private String preprocessLine(@NotNull String line) throws HeaderParseException {
-
-		try {
-			line = replace(line);
-		} catch (HeaderParseException e) {
-			error(bundle.getString("Error.Preprocessor.Parse.preprocess_line_fail_f"));
-		}
-
-		return line;
-	}
-
-	protected String replace(@NotNull String base) throws HeaderParseException {
-		if (defined.size() == 0) {
-			return base;
-		}
-		StringBuilder ret = new StringBuilder(base.length());
-		StringBuilder readChars = new StringBuilder(base.length());
-
-		final int NO_MATCH = 0;
-
-		for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
-			wrapperEntry.getValue().setMatchedLength(NO_MATCH);
-		}
-
-		int numMatched = defined.size();
-
-		int i = 0;
-		for (; i < base.length(); i++) {
-			char c = base.charAt(i);
-			readChars.append(c);
-
-			boolean replaced = false;
-			for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
-				String s = wrapperEntry.getKey();
-				int mi = wrapperEntry.getValue().getMatchedLength();
-				boolean charMatch = mi < s.length() && s.charAt(mi) == c;
-				if (mi == s.length() - 1 && charMatch) {
-
-					final int macroStartInd = i - mi - 1;
-
-					DefineMacroContent.DefineValue defineValue = wrapperEntry.getValue().getDefineValue();
-					String replacement;
-
-					if (defineValue instanceof DefineMacroContent.ParameterDefineValue) {
-						DefineMacroContent.ParameterDefineValue paramValue = (DefineMacroContent.ParameterDefineValue) defineValue;
-						String macroValueText = paramValue.getText();
-						StringBuilder replacementBuilder = new StringBuilder();
-
-						int macroValueTextInd = 0;
-						if (i + 1 < base.length() && base.charAt(i + 1) == '(') {
-							readChars.append('(');
-							i += 2;//advance past (
-
-							for (String param : paramValue.getParams()) {
-								int paramInd = macroValueText.indexOf(param, macroValueTextInd);
-								if (paramInd < 0) {
-									error(String.format(bundle.getString("Error.Preprocessor.Parse.parameter_not_in_output_f"), param));
-								}
-								while (paramInd >= 0) {
-									//write everything up till the param index
-									while (macroValueTextInd < paramInd) {
-										replacementBuilder.append(macroValueText.charAt(macroValueTextInd));
-										macroValueTextInd++;
-									}
-
-									macroValueTextInd += param.length(); //skip past param
-
-									//write the actual parameter value defined in the preprocessed file
-									while (i < base.length() && base.charAt(i) != ',' && base.charAt(i) != ')') {
-										char c1 = base.charAt(i);
-										/* don't do the following because [] is perfectly valid:
-										if(c1 == '[') {
-											throw new HeaderParseException();
-										}
-										*/
-										readChars.append(c1);
-										replacementBuilder.append(c1);
-										i++;
-									}
-									readChars.append(base.charAt(i)); //append , or )
-
-									paramInd = macroValueText.indexOf(param, i);
-								}
-							}
-
-							//write remainder of macro value text
-							while (macroValueTextInd < macroValueText.length()) {
-								replacementBuilder.append(macroValueText.charAt(macroValueTextInd));
-								macroValueTextInd++;
-							}
-						} else {
-							error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_paren"));
-						}
-						replacement = replacementBuilder.toString();
-
-					} else {
-						replacement = defineValue.getText();
-					}
-
-					boolean allow = false;
-					//check if there is whitespace following and preceding the macro, or if end of line
-					if (macroStartInd == -1 || Character.isWhitespace(base.charAt(macroStartInd))) {
-						if (i + 1 < base.length()) {
-							if (Character.isWhitespace(base.charAt(i + 1))) {
-								allow = true;
-							}
-						} else if (i + 1 == base.length()) {
-							allow = true;
-						}
-					}
-
-					//can only replace parts of words of ## is used
-					if (!allow && i + 2 < base.length()) {
-						if (base.charAt(i + 1) == '#' && base.charAt(i + 2) == '#') {
-							allow = true;
-							i += 2;
-						}
-					}
-					if (allow) {
-						ret.append(replacement);
-						readChars = new StringBuilder(); //reset
-						replaced = true;
-						break;
-					} else {
-						numMatched--;
-					}
-				}
-				if (charMatch) {
-					wrapperEntry.getValue().incrementMatchedLength();
-				} else {
-					numMatched--;
-				}
-
-			}
-
-			final boolean noMoreMatches = numMatched <= 0;
-			if (noMoreMatches) {
-				ret.append(readChars);
-				readChars = new StringBuilder(base.length() - i);
-				numMatched = defined.size();
-			}
-			if (noMoreMatches || replaced) {
-				for (Entry<String, DefinedValueWrapper> wrapperEntry : defined.entrySet()) {
-					wrapperEntry.getValue().setMatchedLength(NO_MATCH);
-				}
-			}
-		}
-
-		return ret.toString();
-	}
 
 	protected void error(String string) throws HeaderParseException {
 		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), currentState().lineNumber, string));
 	}
 
-	protected static class DefinedValueWrapper {
-		private DefineMacroContent.DefineValue value;
-		private int matchedLength;
-
-		public DefinedValueWrapper(@NotNull DefineMacroContent.DefineValue value) {
-			this.value = value;
-		}
-
-		@NotNull
-		public DefineMacroContent.DefineValue getDefineValue() {
-			return value;
-		}
-
-		public void incrementMatchedLength() {
-			matchedLength++;
-		}
-
-		public void setMatchedLength(int l) {
-			this.matchedLength = l;
-		}
-
-		public int getMatchedLength() {
-			return matchedLength;
-		}
-	}
 
 	protected static class PreprocessState {
 		private int lineNumber = 0;

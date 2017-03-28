@@ -12,10 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
@@ -78,8 +75,9 @@ public class ADCPreloader extends Preloader {
 		vBox.setAlignment(Pos.CENTER);
 		VBox.setVgrow(progressIndicator, Priority.ALWAYS);
 
-		final Label lblBuild = new Label("Build: " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number"));
-		final BorderPane borderPane = new BorderPane(vBox, null, null, lblBuild, null);
+		Label lblBuild = new Label("Build: " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number"));
+		Label lblVersion = new Label("Version: " + ArmaDialogCreator.getManifest().getMainAttributes().getValue("Specification-Version"));
+		BorderPane borderPane = new BorderPane(vBox, null, null, new HBox(10, lblBuild, lblVersion), null);
 		borderPane.setPadding(new Insets(5));
 
 		StackPane.setMargin(borderPane, new Insets(248, 0, 0, 0));
