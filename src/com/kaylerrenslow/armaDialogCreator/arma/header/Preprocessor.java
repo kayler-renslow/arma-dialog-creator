@@ -290,7 +290,10 @@ public class Preprocessor {
 			int resetIndex = i;
 			int unmatchedLength = 1;
 
+			entryLoop:
 			for (Entry<String, DefineValue> entry : defined.entrySet()) {
+
+
 				int matchInd = 0;
 				String key = entry.getKey();
 
@@ -304,8 +307,10 @@ public class Preprocessor {
 				}
 				if (matchInd != key.length()) {
 					i = resetIndex;
-					continue;
+					continue entryLoop;
 				}
+
+				final boolean entryIsParam = entry.getValue() instanceof ParameterDefineValue;
 
 				final char nextChar = i < base.length() ? base.charAt(i) : NONE;
 				final char nextNextChar = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
@@ -316,21 +321,21 @@ public class Preprocessor {
 				if (nextChar == '#' && nextNextChar == '#') {
 					mergeMacros = true;
 					writeReplacement = true;
-				} else if ((nextChar == NONE || isWhitespace(nextChar)) && (mergeMacros || beforeResetChar == NONE || isWhitespace(beforeResetChar))) {
+				} else if ((nextChar == NONE || isWhitespace(nextChar) || (entryIsParam && nextChar == '(')) && (mergeMacros || beforeResetChar == NONE || isWhitespace(beforeResetChar))) {
 					writeReplacement = true;
 					mergeMacros = false;
 				}
 
 				if (!writeReplacement) {
 					i = resetIndex;
-					continue;
+					continue entryLoop;
 				}
 				if (mergeMacros) {
 					//advance past ##
 					//note: it should not be the case that mergeMacros==true and entry.getValue() is a parameter
 					i += 2;
 				}
-				if (entry.getValue() instanceof ParameterDefineValue) {
+				if (entryIsParam) {
 					if ((i < base.length() && base.charAt(i) != '(')) {
 						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_lparen"));
 					}
@@ -340,8 +345,8 @@ public class Preprocessor {
 					if (lastParenInd < 0) {
 						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_rparen"));
 					}
-					i = lastParenInd;
-					appendParameterValue(base, i, entry, writeTo);
+
+					i = lastParenInd + 1;
 					final char afterParenC = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
 					final char afterAfterParenC = i + 2 < base.length() ? base.charAt(i + 2) : NONE;
 					if (afterParenC == '#' && afterAfterParenC == '#') {
@@ -349,18 +354,17 @@ public class Preprocessor {
 						i += 2;
 					} else if (afterParenC != NONE && !isWhitespace(base.charAt(i + 1))) {
 						unmatchedLength += Math.max(0, i - beforeParenI);
-						i = beforeParenI;
 						break;
 					}
+
+					//ok to write
+					appendParameterValue(base, beforeParenI + 1, entry, writeTo);
 				} else {
 					writeTo.append(entry.getValue().getText());
 				}
-				break;
-			}
-
-			while (i < base.length() && isWhitespace(base.charAt(i))) {
-				unmatchedLength++;
-				i++;
+				if (writeReplacement) {
+					continue baseLoop;
+				}
 			}
 
 			final int end = resetIndex + unmatchedLength;
@@ -373,15 +377,15 @@ public class Preprocessor {
 		ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
 
 		final int numParams = parameterValue.getParams().length;
-		int paramValuesInd = 0;
+		int paramInd = 0;
 		final char NONE = '\0';
-		int[][] paramValuesPositions = new int[numParams][2];
+		int[][] paramValuesPosInBase = new int[numParams][2];
 		final int START_POS = 0;
 		final int END_POS = 1;
 
 		for (; baseInd < base.length(); ) {
 
-			paramValuesPositions[paramValuesInd][START_POS] = baseInd;
+			paramValuesPosInBase[paramInd][START_POS] = baseInd;
 			int paramValueLen = 0;
 			while (baseInd < base.length() && (base.charAt(baseInd) != ',' || base.charAt(baseInd) != ')')) {
 				paramValueLen++;
@@ -392,16 +396,14 @@ public class Preprocessor {
 				error(bundle.getString("Error.Preprocessor.Parse.no_param_value"));
 			}
 
-			paramValuesPositions[paramValuesInd][END_POS] = baseInd - 1;
-			paramValuesInd++;
+			paramValuesPosInBase[paramInd][END_POS] = baseInd - 1;
+			paramInd++;
 		}
 
-		//todo iterate through params
-		int paramValueInd = 0;
-		String paramValueText = parameterValue.getText();
-		for (; paramValueInd < paramValueText.length(); ) {
-			
+		if (numParams != paramInd) {
+			error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, paramInd));
 		}
+
 
 	}
 

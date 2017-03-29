@@ -8,6 +8,8 @@ import org.junit.Test;
 import java.io.File;
 import java.util.HashMap;
 
+import static junit.framework.Assert.assertEquals;
+
 /**
  @author Kayler
  @since 03/22/2017 */
@@ -51,6 +53,12 @@ public class PreprocessorTest {
 		return p;
 	}
 
+	private void assertPreprocessLine(String base, String expect, Preprocessor p) throws HeaderParseException {
+		StringBuilder actual = new StringBuilder();
+		p.preprocessLine(base, actual);
+		assertEquals(expect, actual.toString());
+	}
+
 	@Test
 	public void fullTest() {
 		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null);
@@ -66,7 +74,7 @@ public class PreprocessorTest {
 				array("ARG", "ARG2", "ARG3"),
 				array("a", "b", "c")
 		));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 	@Test
@@ -78,7 +86,7 @@ public class PreprocessorTest {
 				array("ARG", "ARG2", "ARG3"),
 				array("a", "b", "c")
 		));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 	@Test
@@ -90,7 +98,7 @@ public class PreprocessorTest {
 		String expect = "The cow jumped over the moon!";
 
 		Preprocessor p = getPreprocessor(map(toMatch, replace));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 
@@ -101,7 +109,7 @@ public class PreprocessorTest {
 		String expect = base; //can't insert before . without ##
 
 		Preprocessor p = getPreprocessor(mapParams("N", new String[]{"NUMBER"}, "number NUMBER"));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 	@Test
@@ -111,7 +119,7 @@ public class PreprocessorTest {
 		String expect = "Hello number 0";
 
 		Preprocessor p = getPreprocessor(mapParams("N", new String[]{"NUMBER"}, "number NUMBER"));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 	@Test
@@ -121,7 +129,7 @@ public class PreprocessorTest {
 		String expect = "Hello number 0.";
 
 		Preprocessor p = getPreprocessor(mapParams("N", new String[]{"NUMBER"}, "number NUMBER"));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 	@Test
@@ -131,7 +139,7 @@ public class PreprocessorTest {
 		String expect = "123456";
 
 		Preprocessor p = getPreprocessor(mapParams("GLUE", new String[]{"g1", "g2"}, "g1##g2"));
-		assertEquals(expect, p.preprocessLine(base, fileContent));
+		assertPreprocessLine(base, expect, p);
 	}
 
 }
