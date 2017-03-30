@@ -22,22 +22,24 @@ public class Preprocessor {
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
+	private static final String beforeMacro = "^|##|[^#a-zA-Z_0-9$]";
+	private static final String afterMacro = "$|##|[^#a-zA-Z_0-9$]";
 	private static final Pattern macroReferencePattern = Pattern.compile(
 			String.format(
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
-					"^|\\s+|##|;", //before
+					beforeMacro,
 					"[a-zA-Z_0-9$]+", //identifier
 					"\\([a-zA-Z_0-9$,]+\\)", //parameters
-					"$|\\s+|##|;" //after
+					afterMacro
 			)
 	);
 
 	private static final Pattern macroParamOutputTextPattern = Pattern.compile(
 			String.format(
 					"(?<BEFORE>%s)(?<PARAM>%s)(?=%s)",
-					"^|\\s+|##|;", //before
+					beforeMacro, //before
 					"[a-zA-Z_0-9$]+", //identifier
-					"$|\\s+|##|;" //after
+					afterMacro //after
 			)
 	);
 
@@ -325,9 +327,16 @@ public class Preprocessor {
 			String before = m.group("BEFORE");
 			String parameterText = m.group("PARAMS");
 
+			if (matchedEntry.getValue() instanceof ParameterDefineValue) {
+				if (parameterText == null) {
+					continue;
+				}
+			}
+
 			if (!before.equals("##")) {
 				writeTo.append(before);
 			}
+
 
 			//write replacement
 			writeDefineValue(matchedEntry, parameterText, writeTo);
@@ -352,13 +361,16 @@ public class Preprocessor {
 		String text = entry.getValue().getText();
 
 		if (entry.getValue() instanceof ParameterDefineValue) {
+			if (parameterText == null) {
+				throw new IllegalArgumentException("parameterText should not be null if entry is a ParameterDefineValue");
+			}
 			ParameterDefineValue paramDefineValue = (ParameterDefineValue) entry.getValue();
 
 			ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
-			String[] args = parameterText != null ? parameterText.substring(1, parameterText.length() - 1).split(",") : null;
+			String[] args = parameterText.substring(1, parameterText.length() - 1).split(",");
 			final int numParams = parameterValue.getParams().length;
-			if (args == null || args.length != numParams) {
-				error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, (args != null ? args.length : 0)));
+			if (args.length != numParams) {
+				error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, args.length));
 			}
 
 			Matcher m = macroParamOutputTextPattern.matcher(text);
@@ -386,7 +398,17 @@ public class Preprocessor {
 				if (!found) {
 					continue;
 				}
-				writeTo.append(args[paramInd]);
+				String paramReplacement = args[paramInd];
+				for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
+					if (entry1 instanceof ParameterDefineValue) {
+						continue;
+					}
+					if (entry1.getKey().equals(paramReplacement)) {
+						paramReplacement = entry1.getValue().getText();
+						break;
+					}
+				}
+				writeTo.append(paramReplacement);
 				ind = m.end("PARAM");
 				if (ind + 1 < text.length() && text.charAt(ind) == '#' && text.charAt(ind + 1) == '#') {
 					ind += 2;

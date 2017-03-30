@@ -38,6 +38,15 @@ public class PreprocessorTest {
 	}
 
 	@NotNull
+	@SafeVarargs
+	private static HashMap<String, DefineValue> mergeIntoFirst(@NotNull HashMap<String, DefineValue> first, @NotNull HashMap<String, DefineValue>... others) {
+		for (HashMap<String, DefineValue> map : others) {
+			first.putAll(map);
+		}
+		return first;
+	}
+
+	@NotNull
 	private static Preprocessor getPreprocessor(@Nullable HashMap<String, DefineValue> toInsert) {
 		return getPreprocessor(new File(""), toInsert);
 	}
@@ -105,8 +114,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameter() throws Exception {
 		//#define N(NUMBER) number NUMBER
-		String base = "Hello N(0).";
-		String expect = base; //can't insert before . without ##
+		String base = "Hello N(0)word";
+		String expect = base; //can't insert before word without ##
 
 		Preprocessor p = getPreprocessor(mapParams("N", new String[]{"NUMBER"}, "number NUMBER"));
 		assertPreprocessLine(base, expect, p);
@@ -125,12 +134,23 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameter3() throws Exception {
 		//#define N(NUMBER) number NUMBER
-		String base = "Hello N(0)##.";
-		String expect = "Hello number 0.";
+		String base = "Hello N(0)##word";
+		String expect = "Hello number 0word";
 
 		Preprocessor p = getPreprocessor(mapParams("N", new String[]{"NUMBER"}, "number NUMBER"));
 		assertPreprocessLine(base, expect, p);
 	}
+
+	@Test
+	public void replaceParameter4() throws Exception {
+		//#define BLASTOFF(UNIT,RATE) UNIT setVelocity [0,0,RATE];
+		String base = "disableSerialization; BLASTOFF(car,5)";
+		String expect = "disableSerialization; car setVelocity [0,0,5];";
+
+		Preprocessor p = getPreprocessor(mapParams("BLASTOFF", new String[]{"UNIT", "RATE"}, "UNIT setVelocity [0,0,RATE];"));
+		assertPreprocessLine(base, expect, p);
+	}
+
 
 	@Test
 	public void replaceParameterGlue() throws Exception {
@@ -141,5 +161,37 @@ public class PreprocessorTest {
 		Preprocessor p = getPreprocessor(mapParams("GLUE", new String[]{"g1", "g2"}, "g1##g2"));
 		assertPreprocessLine(base, expect, p);
 	}
+
+	@Test
+	public void replaceParameterGlue2() throws Exception {
+		//#define GLUE(g1,g2) g1##g2
+		String base = "model = \\OFP2\\Structures\\Various\\##FOLDER##\\##FOLDER;";
+		String expect = "model = \\OFP2\\Structures\\Various\\myFolder\\myFolder;";
+
+		Preprocessor p = getPreprocessor(map(array("FOLDER"), array("myFolder")));
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterGlueQuote() throws Exception {
+		/*
+		* #define STRINGIFY(s) #s;
+		* #define FOO 456
+		* test1 = STRINGIFY(123); //test1 = "123";
+		* test2 = STRINGIFY(FOO); //test2 = "456";
+		*/
+		String base = "test1 = STRINGIFY(123);test2 = STRINGIFY(FOO);";
+		String expect = "test1 = \"123\";test2 = \"456\";";
+
+		Preprocessor p = getPreprocessor(
+				mergeIntoFirst(
+						map(array("FOO"), array("456")),
+						mapParams("STRINGIFY", array("s"), "#s")
+				)
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+
 
 }
