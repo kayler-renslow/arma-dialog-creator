@@ -2,8 +2,8 @@
 * none
 
 **Changed:**
-* optimized replace yet again (uses less string buffers)
-* added version info to preload screen
+* optimized MacroIdentifierChecker for checking if data is valid
+* preprocessLine is now clean and works 100$ (except for #s thingy)
 
 **Fixed:**
 * none

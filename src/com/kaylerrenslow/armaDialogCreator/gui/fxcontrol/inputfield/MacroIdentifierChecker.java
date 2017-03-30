@@ -3,15 +3,20 @@ package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Pattern;
+
 /**
  A data checker for macro identifiers (regex: [a-zA-Z_$][$a-zA-Z_0-9]*). The input also can not be empty
 
  @author Kayler
  @since 07/08/2016. */
 public class MacroIdentifierChecker implements InputFieldDataChecker<String> {
+
+	private static final Pattern p = Pattern.compile("[$a-zA-Z_0-9]+");
+
 	@Override
 	public String validData(@NotNull String data) {
-		boolean match = data.length() > 0 && data.matches("[a-zA-Z_$][$a-zA-Z_0-9]*");
+		boolean match = data.length() > 0 && p.matcher(data).matches();
 		if (match) {
 			return null;
 		}

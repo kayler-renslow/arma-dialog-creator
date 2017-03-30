@@ -12,23 +12,45 @@ import java.util.LinkedList;
 import java.util.Map.Entry;
 import java.util.ResourceBundle;
 import java.util.Scanner;
-
-import static java.lang.Character.isWhitespace;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  @author Kayler
  @since 03/21/2017 */
 public class Preprocessor {
+
+	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
+
+	private static final Pattern macroReferencePattern = Pattern.compile(
+			String.format(
+					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
+					"^|\\s+|##|;", //before
+					"[a-zA-Z_0-9$]+", //identifier
+					"\\([a-zA-Z_0-9$,]+\\)", //parameters
+					"$|\\s+|##|;" //after
+			)
+	);
+
+	private static final Pattern macroParamOutputTextPattern = Pattern.compile(
+			String.format(
+					"(?<BEFORE>%s)(?<PARAM>%s)(?=%s)",
+					"^|\\s+|##|;", //before
+					"[a-zA-Z_0-9$]+", //identifier
+					"$|\\s+|##|;" //after
+			)
+	);
+
+
 	private final File processFile;
 	private final HeaderParserContext parserContext;
 	private final PreprocessCallback callback;
 	private boolean preprocessed = false;
 
+	protected final LinkedList<File> processingFiles = new LinkedList<>();
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
-
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
 	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext, @NotNull PreprocessCallback callback) {
 		this.processFile = processFile;
@@ -47,19 +69,20 @@ public class Preprocessor {
 	}
 
 	private void processNow(@NotNull File toProcess, @Nullable File parentFile) throws Exception {
-		if (processedFiles.contains(toProcess)) {
+		if (processingFiles.contains(toProcess)) {
 			if (parentFile == null) {
 				throw new IllegalStateException("parentFile shouldn't be null here");
 			}
 			error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), toProcess.getName(), parentFile.getName()));
 		}
-		processedFiles.add(toProcess);
+		processingFiles.add(toProcess);
 		preprocessStack.push(new PreprocessState(toProcess));
 
 		StringBuilder textContent = new StringBuilder((int) processFile.length());
 		doProcess(toProcess, textContent);
 
 		preprocessStack.pop();
+		processedFiles.add(processingFiles.pop()); //don't worry about duplicates. The header parser should report relevant errors to duplicate information
 
 		callback.fileProcessed(processFile, parentFile, textContent);
 	}
@@ -274,136 +297,112 @@ public class Preprocessor {
 			writeTo.append(base);
 			return;
 		}
-		for (Entry<String, DefineValue> entry : defined.entrySet()) {
-			String key = entry.getKey();
-			if (key.length() == 0) {
-				throw new HeaderParseException("Error.Preprocessor.Parse.macro_key_length_0");
+
+		Matcher m = macroReferencePattern.matcher(base);
+
+		int baseInd = 0;
+		while (m.find()) {
+
+			//write everything that precedes the matched input
+			if (baseInd < m.start()) {
+				writeTo.append(base, baseInd, m.start());
+				baseInd = m.start();
+			}
+
+			String macroName = m.group("MACRO");
+			Entry<String, DefineValue> matchedEntry = null;
+			for (Entry<String, DefineValue> entry : defined.entrySet()) {
+				if (entry.getKey().equals(macroName)) {
+					matchedEntry = entry;
+					break;
+				}
+			}
+
+			if (matchedEntry == null) {
+				continue;
+			}
+
+			String before = m.group("BEFORE");
+			String parameterText = m.group("PARAMS");
+
+			if (!before.equals("##")) {
+				writeTo.append(before);
+			}
+
+			//write replacement
+			writeDefineValue(matchedEntry, parameterText, writeTo);
+			if (parameterText != null) {
+				baseInd = m.end("PARAMS");
+			} else {
+				baseInd = m.end("MACRO");
+			}
+
+			//skip past ## if it exists
+			if (baseInd + 1 < base.length() && base.charAt(baseInd) == '#' && base.charAt(baseInd + 1) == '#') {
+				baseInd += 2;
 			}
 		}
 
-		int i = 0;
-		final char NONE = '\0';
-		boolean mergeMacros = false;//case of macro1##macro2
-
-		baseLoop:
-		for (; i < base.length(); ) {
-			int resetIndex = i;
-			int unmatchedLength = 1;
-
-			entryLoop:
-			for (Entry<String, DefineValue> entry : defined.entrySet()) {
-
-
-				int matchInd = 0;
-				String key = entry.getKey();
-
-				while (matchInd < key.length() && i < base.length()) {
-					if (key.charAt(matchInd) != base.charAt(i)) {
-						break;
-					}
-					matchInd++;
-					i++;
-					unmatchedLength = Math.max(unmatchedLength, matchInd);
-				}
-				if (matchInd != key.length()) {
-					i = resetIndex;
-					continue entryLoop;
-				}
-
-				final boolean entryIsParam = entry.getValue() instanceof ParameterDefineValue;
-
-				final char nextChar = i < base.length() ? base.charAt(i) : NONE;
-				final char nextNextChar = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
-				final char beforeResetChar = resetIndex - 1 >= 0 ? base.charAt(resetIndex - 1) : NONE;
-
-				boolean writeReplacement = false;
-
-				if (nextChar == '#' && nextNextChar == '#') {
-					mergeMacros = true;
-					writeReplacement = true;
-				} else if ((nextChar == NONE || isWhitespace(nextChar) || (entryIsParam && nextChar == '(')) && (mergeMacros || beforeResetChar == NONE || isWhitespace(beforeResetChar))) {
-					writeReplacement = true;
-					mergeMacros = false;
-				}
-
-				if (!writeReplacement) {
-					i = resetIndex;
-					continue entryLoop;
-				}
-				if (mergeMacros) {
-					//advance past ##
-					//note: it should not be the case that mergeMacros==true and entry.getValue() is a parameter
-					i += 2;
-				}
-				if (entryIsParam) {
-					if ((i < base.length() && base.charAt(i) != '(')) {
-						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_lparen"));
-					}
-					int beforeParenI = i;
-					i++;//move past (
-					int lastParenInd = base.indexOf(')', i);
-					if (lastParenInd < 0) {
-						error(bundle.getString("Error.Preprocessor.Parse.define_function_missing_rparen"));
-					}
-
-					i = lastParenInd + 1;
-					final char afterParenC = i + 1 < base.length() ? base.charAt(i + 1) : NONE;
-					final char afterAfterParenC = i + 2 < base.length() ? base.charAt(i + 2) : NONE;
-					if (afterParenC == '#' && afterAfterParenC == '#') {
-						mergeMacros = true;
-						i += 2;
-					} else if (afterParenC != NONE && !isWhitespace(base.charAt(i + 1))) {
-						unmatchedLength += Math.max(0, i - beforeParenI);
-						break;
-					}
-
-					//ok to write
-					appendParameterValue(base, beforeParenI + 1, entry, writeTo);
-				} else {
-					writeTo.append(entry.getValue().getText());
-				}
-				if (writeReplacement) {
-					continue baseLoop;
-				}
-			}
-
-			final int end = resetIndex + unmatchedLength;
-			writeTo.append(base, resetIndex, end);
-			i = end;
+		if (baseInd < base.length()) {
+			writeTo.append(base, baseInd, base.length());
 		}
 	}
 
-	private void appendParameterValue(@NotNull String base, int baseInd, @NotNull Entry<String, DefineValue> entry, @NotNull StringBuilder writeTo) throws HeaderParseException {
-		ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
+	private void writeDefineValue(@NotNull Entry<String, DefineValue> entry, @Nullable String parameterText, @NotNull StringBuilder writeTo) throws HeaderParseException {
+		String text = entry.getValue().getText();
 
-		final int numParams = parameterValue.getParams().length;
-		int paramInd = 0;
-		final char NONE = '\0';
-		int[][] paramValuesPosInBase = new int[numParams][2];
-		final int START_POS = 0;
-		final int END_POS = 1;
+		if (entry.getValue() instanceof ParameterDefineValue) {
+			ParameterDefineValue paramDefineValue = (ParameterDefineValue) entry.getValue();
 
-		for (; baseInd < base.length(); ) {
-
-			paramValuesPosInBase[paramInd][START_POS] = baseInd;
-			int paramValueLen = 0;
-			while (baseInd < base.length() && (base.charAt(baseInd) != ',' || base.charAt(baseInd) != ')')) {
-				paramValueLen++;
-				baseInd++;
+			ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
+			String[] args = parameterText != null ? parameterText.substring(1, parameterText.length() - 1).split(",") : null;
+			final int numParams = parameterValue.getParams().length;
+			if (args == null || args.length != numParams) {
+				error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, (args != null ? args.length : 0)));
 			}
 
-			if (paramValueLen == 0) {
-				error(bundle.getString("Error.Preprocessor.Parse.no_param_value"));
+			Matcher m = macroParamOutputTextPattern.matcher(text);
+
+			int ind = 0;
+			while (m.find()) {
+				String param = m.group("PARAM");
+				{
+					int start = m.start("PARAM");
+					if (ind < start) {
+						writeTo.append(text, ind, start);
+						ind = start;
+					}
+				}
+
+				int paramInd = 0;
+				boolean found = false;
+				for (String paramDefined : paramDefineValue.getParams()) {
+					if (param.equals(paramDefined)) {
+						found = true;
+						break;
+					}
+					paramInd++;
+				}
+				if (!found) {
+					continue;
+				}
+				writeTo.append(args[paramInd]);
+				ind = m.end("PARAM");
+				if (ind + 1 < text.length() && text.charAt(ind) == '#' && text.charAt(ind + 1) == '#') {
+					ind += 2;
+				}
+			}
+			if (ind < text.length()) {
+				writeTo.append(text, ind, text.length());
 			}
 
-			paramValuesPosInBase[paramInd][END_POS] = baseInd - 1;
-			paramInd++;
-		}
+		} else {
+			if (parameterText != null) {
+				error(bundle.getString("Error.Preprocessor.Parse.unexp_lparen"));
+			}
 
-		if (numParams != paramInd) {
-			error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, paramInd));
+			writeTo.append(text);
 		}
-
 
 	}
 
