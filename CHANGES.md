@@ -1,8 +1,8 @@
 **Added:**
-* none
+* graph for stringtable editor that shows completion of keys
 
 **Changed:**
-* fixed bug where preprocessor wasn't writing spaces, tabs, or newlines
+* none
 
 **Fixed:**
 * none

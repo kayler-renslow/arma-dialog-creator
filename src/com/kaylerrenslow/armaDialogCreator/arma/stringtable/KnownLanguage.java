@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
  All known languages in Arma 3
 
  @author Kayler
- @see StringTableValue
  @since 12/12/2016 */
 public class KnownLanguage implements Language {
 	public static final KnownLanguage Original = new KnownLanguage("Original");

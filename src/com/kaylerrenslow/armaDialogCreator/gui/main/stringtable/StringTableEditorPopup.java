@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.property.BooleanProperty;
@@ -19,6 +20,10 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Priority;
@@ -43,6 +48,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	noContainerName;
 
 	private StringTable table;
+
+	private final LinkedList<ListChangeListener<StringTableKey>> listenersToRemoveFromTable = new LinkedList<>();
 
 	public StringTableEditorPopup(@NotNull StringTable table, @NotNull StringTableWriter writer, @NotNull StringTableParser parser) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), Lang.ApplicationBundle().getString("Popups.StringTable.popup_title"));
@@ -93,7 +100,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			}
 		});
 
-		tabPane = new StringTableEditorTabPane(table, btnRemove.disableProperty(), this);
+		tabPane = new StringTableEditorTabPane(this, table, btnRemove.disableProperty(), this);
 
 		btnRemove.setDisable(tabPane.getEditTab().getListView().getSelectionModel().isEmpty());
 		Button btnRefresh = new Button("", new ImageView(ADCImages.ICON_REFRESH));
@@ -152,13 +159,28 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		return table;
 	}
 
+	@Override
+	protected void closing() {
+		clearListeners();
+		super.closing();
+	}
+
+	private void clearListeners() {
+		for (ListChangeListener<StringTableKey> listener : listenersToRemoveFromTable) {
+			table.getKeys().removeListener(listener);
+		}
+		listenersToRemoveFromTable.clear();
+	}
+
 	private static class StringTableEditorTabPane extends TabPane {
 		private final ValueObserver<Language> previewLanguageObserver = new ValueObserver<>(KnownLanguage.Original);
+		private final StringTableEditorPopup popup;
 		private final BooleanProperty disableRemove;
 		private final StringTableEditorPopup editorPopup;
 		private EditTab editTab;
 
-		public StringTableEditorTabPane(@NotNull StringTable table, @NotNull BooleanProperty disableRemove, @NotNull StringTableEditorPopup editorPopup) {
+		public StringTableEditorTabPane(@NotNull StringTableEditorPopup popup, @NotNull StringTable table, @NotNull BooleanProperty disableRemove, @NotNull StringTableEditorPopup editorPopup) {
+			this.popup = popup;
 			this.disableRemove = disableRemove;
 			this.editorPopup = editorPopup;
 			setToTable(table);
@@ -166,6 +188,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 		public void setToTable(@NotNull StringTable table) {
 			getTabs().clear();
+			popup.clearListeners();
+
 			editTab = new EditTab(table, previewLanguageObserver, editorPopup);
 			editTab.getListView().getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StringTableKeyDescriptor>() {
 				@Override
@@ -174,7 +198,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				}
 			});
 			getTabs().add(editTab);
-			getTabs().add(new ConfigTab(table, previewLanguageObserver));
+			getTabs().add(new ConfigTab(popup, table, previewLanguageObserver));
+			getTabs().add(new GraphsTab(popup, table));
 		}
 
 		@NotNull
@@ -185,7 +210,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 	private static class ConfigTab extends Tab { //set xml things like project name attribute (project=root tag of stringtable.xml)
 
-		public ConfigTab(@NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver) {
+		public ConfigTab(@NotNull StringTableEditorPopup popup, @NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver) {
 			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Config.tab_title"));
 			VBox root = new VBox(10);
 			root.setPadding(new Insets(10));
@@ -211,13 +236,15 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			Label lblSize = new Label(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 			root.getChildren().add(lblSize);
-			table.getKeys().addListener(new ListChangeListener<StringTableKey>() {
+
+			ListChangeListener<StringTableKey> keysListener = new ListChangeListener<StringTableKey>() {
 				@Override
 				public void onChanged(Change<? extends StringTableKey> c) {
 					lblSize.setText(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 				}
-			});
-
+			};
+			popup.listenersToRemoveFromTable.add(keysListener);
+			table.getKeys().addListener(keysListener);
 		}
 
 
@@ -336,6 +363,96 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		public void removeKey(@NotNull StringTableKeyDescriptor key) {
 			allItems.remove(key);
 			listViewItemList.remove(key);
+		}
+	}
+
+	private static class GraphsTab extends Tab {
+		private final StringTable table;
+
+		private final CategoryAxis xAxis = new CategoryAxis();
+		private final NumberAxis yAxis = new NumberAxis(0, 0, 0);
+		private final BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+
+		public GraphsTab(@NotNull StringTableEditorPopup popup, @NotNull StringTable table) {
+			this.table = table;
+
+			ListChangeListener<StringTableKey> keyListener = new ListChangeListener<StringTableKey>() {
+				@Override
+				public void onChanged(Change<? extends StringTableKey> c) {
+					updateGraph();
+				}
+			};
+			popup.listenersToRemoveFromTable.add(keyListener);
+			table.getKeys().addListener(keyListener);
+
+			setText(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Graph.tab_title"));
+
+			initContent();
+
+			updateGraph();
+		}
+
+		private void initContent() {
+			VBox root = new VBox(10);
+			setContent(root);
+
+			root.getChildren().add(chart);
+
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
+			chart.setTitle(bundle.getString("Popups.StringTable.Tab.Graph.graph_label"));
+
+			xAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.x_axis"));
+			yAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.y_axis"));
+		}
+
+		private void updateGraph() {
+			chart.getData().clear();
+
+			ArrayList<KeyValue<String, Integer>> usedLanguages = new ArrayList<>();
+
+			for (StringTableKey key : table.getKeys()) {
+				for (Map.Entry<Language, String> entry : key.getLanguageTokenMap().entrySet()) {
+					String langName = entry.getKey().getName();
+					boolean found = false;
+					for (KeyValue<String, Integer> usedLanguage : usedLanguages) {
+						if (usedLanguage.getKey().equals(langName)) {
+							found = true;
+							usedLanguage.setValue(usedLanguage.getValue() + 1);
+							break;
+						}
+					}
+					if (!found) {
+						usedLanguages.add(new KeyValue<>(langName, 0));
+					}
+				}
+			}
+
+			XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+			ObservableList<String> languages = FXCollections.observableArrayList();
+			double min = 0;
+			double max = 0;
+
+			for (KeyValue<String, Integer> usedLanguage : usedLanguages) {
+				String langName = usedLanguage.getKey();
+				languages.add(langName);
+				int v = usedLanguage.getValue();
+				min = Math.min(min, v);
+				max = Math.max(max, v);
+
+				series.getData().add(new XYChart.Data<>(langName, v));
+
+			}
+
+			xAxis.setCategories(languages);
+
+			yAxis.setTickUnit(max / 4);
+			yAxis.setUpperBound(max);
+			yAxis.setLowerBound(min);
+
+			chart.getData().add(series);
+
 		}
 	}
 

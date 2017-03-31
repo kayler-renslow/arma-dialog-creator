@@ -5,8 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
 
 /**
  @author Kayler
@@ -85,28 +83,4 @@ public interface StringTable {
 	@NotNull
 	StringTable deepCopy();
 
-	class StringTableKeyMatchMap extends HashMap<String, LinkedList<StringTableKey>> {
-		private LinkedList<StringTableKey> nullItems;
-
-		public StringTableKeyMatchMap(int size) {
-			super(size);
-		}
-
-
-		void setNullItems(@NotNull LinkedList<StringTableKey> nullItems) {
-			this.nullItems = nullItems;
-		}
-
-		/** Get items that have a null name match. Could be {@link StringTableKey#getPackageName()}==null or something else */
-		@Nullable
-		public LinkedList<StringTableKey> getNullItems() {
-			return nullItems;
-		}
-
-		/** @return true if {@link #getNullItems()}!= null, false if is null */
-		public boolean hasNullItems() {
-			return getNullItems() != null;
-		}
-
-	}
 }

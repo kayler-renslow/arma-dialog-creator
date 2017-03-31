@@ -7,7 +7,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.nio.channels.FileChannel;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
@@ -238,9 +237,10 @@ public class PreprocessorTest {
 	@Test
 	public void fullTest() throws Exception {
 		FileInputStream fis = new FileInputStream(HeaderTestUtil.getFile("preprocessTestExpected.h"));
-		FileChannel channel = fis.getChannel();
 		byte[] arr = new byte[fis.available()];
 		int read = fis.read(arr);
+		fis.close();
+
 		String expected = new String(arr).replaceAll("\r\n", "\n");
 
 		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null, new PreprocessCallback() {
