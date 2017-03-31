@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.channels.FileChannel;
 import java.util.HashMap;
 
 import static junit.framework.Assert.assertEquals;
@@ -53,8 +55,13 @@ public class PreprocessorTest {
 
 	@NotNull
 	private static Preprocessor getPreprocessor(@Nullable File processFile, @Nullable HashMap<String, DefineValue> toInsert) {
-		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext(), (a, b, c) -> {
+		return getPreprocessor(processFile, toInsert, (a, b, c) -> {
 		});
+	}
+
+	@NotNull
+	private static Preprocessor getPreprocessor(@Nullable File processFile, @Nullable HashMap<String, DefineValue> toInsert, @NotNull PreprocessCallback callback) {
+		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext(), callback);
 		if (toInsert != null) {
 			p.defined.putAll(toInsert);
 		}
@@ -66,12 +73,6 @@ public class PreprocessorTest {
 		StringBuilder actual = new StringBuilder();
 		p.preprocessLine(base, actual);
 		assertEquals(expect, actual.toString());
-	}
-
-	@Test
-	public void fullTest() {
-		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null);
-		//todo, be sure to include #include case
 	}
 
 	@Test
@@ -234,5 +235,22 @@ public class PreprocessorTest {
 		assertPreprocessLine(base, expect, p);
 	}
 
+	@Test
+	public void fullTest() throws Exception {
+		FileInputStream fis = new FileInputStream(HeaderTestUtil.getFile("preprocessTestExpected.h"));
+		FileChannel channel = fis.getChannel();
+		byte[] arr = new byte[fis.available()];
+		int read = fis.read(arr);
+		String expected = new String(arr).replaceAll("\r\n", "\n");
+
+		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null, new PreprocessCallback() {
+			@Override
+			public void fileProcessed(@NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) {
+				assertEquals(expected, textContent.toString());
+			}
+		});
+		p.run();
+
+	}
 
 }

@@ -2,7 +2,7 @@
 * none
 
 **Changed:**
-* preprocessor is now feature complete and tested. (Not tested with HeaderParser)
+* fixed bug where preprocessor wasn't writing spaces, tabs, or newlines
 
 **Fixed:**
 * none

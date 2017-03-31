@@ -107,8 +107,9 @@ public class Preprocessor {
 
 		while (scan.hasNextLine()) {
 			incrementLineNumber();
-			line = scan.nextLine().trim();
-			if (!line.startsWith("#")) {
+			line = scan.nextLine();
+
+			if (!startsWithIgnoreSpace(line, "#")) {
 				boolean write = false;
 				if (ifCount > 0) {
 					if (useIfTrueCond && !discoveredElse) {
@@ -121,14 +122,15 @@ public class Preprocessor {
 				}
 				if (write) {
 					preprocessLine(line, fileContent);
+					fileContent.append('\n');
 				}
 				continue;
 			}
 			StringBuilder macroBuilder = new StringBuilder(line.length());
 			macroBuilder.append(line);
-			if (!line.startsWith("#ifdef") && !line.startsWith("#ifndef")) {
+			if (!startsWithIgnoreSpace(line, "#ifdef") && !startsWithIgnoreSpace(line, "#ifndef")) {
 				while (scan.hasNextLine() && line.endsWith("\\")) {
-					line = scan.nextLine().trim();
+					line = scan.nextLine();
 					incrementLineNumber();
 					macroBuilder.append(line);
 				}
@@ -481,5 +483,20 @@ public class Preprocessor {
 		public PreprocessState(@NotNull File processingFile) {
 			this.processingFile = processingFile;
 		}
+	}
+
+	private static boolean startsWithIgnoreSpace(@NotNull String s, @NotNull String prefix) {
+		int spaceInd = 0;
+		boolean found = false;
+		for (; spaceInd < s.length(); spaceInd++) {
+			if (!Character.isWhitespace(s.charAt(spaceInd))) {
+				found = true;
+				break;
+			}
+		}
+		if (found) {
+			return s.startsWith(prefix, spaceInd);
+		}
+		return s.startsWith(prefix);
 	}
 }
