@@ -11,7 +11,7 @@ import java.io.IOException;
  @since 12/12/2016 */
 public interface StringTableParser {
 	/**
-	 Get a new {@link StringTable} instance for the given file
+	 Get a new {@link StringTable} instance
 
 	 @return the new instance
 	 @throws IOException when the table couldn't be parsed

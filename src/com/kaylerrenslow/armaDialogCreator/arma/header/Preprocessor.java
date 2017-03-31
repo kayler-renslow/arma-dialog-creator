@@ -22,8 +22,8 @@ public class Preprocessor {
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
-	private static final String beforeMacro = "^|##|[^#a-zA-Z_0-9$]";
-	private static final String afterMacro = "$|##|[^#a-zA-Z_0-9$]";
+	private static final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
+	private static final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
 	private static final Pattern macroReferencePattern = Pattern.compile(
 			String.format(
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
@@ -333,13 +333,22 @@ public class Preprocessor {
 				}
 			}
 
-			if (!before.equals("##")) {
+			boolean quote = false;
+
+			if (before.equals("#")) {
+				quote = true;
+				writeTo.append('"');
+			} else if (!before.equals("##")) {
 				writeTo.append(before);
 			}
 
-
 			//write replacement
 			writeDefineValue(matchedEntry, parameterText, writeTo);
+
+			if (quote) {
+				writeTo.append('"');
+			}
+
 			if (parameterText != null) {
 				baseInd = m.end("PARAMS");
 			} else {
@@ -378,10 +387,23 @@ public class Preprocessor {
 			int ind = 0;
 			while (m.find()) {
 				String param = m.group("PARAM");
+				String before = m.group("BEFORE");
+
+				boolean quote = false;
+				if (before.equals("#")) {
+					quote = true;
+				}
+
 				{
 					int start = m.start("PARAM");
+
 					if (ind < start) {
-						writeTo.append(text, ind, start);
+						if (quote || before.equals("##")) {
+							int startBefore = m.start("BEFORE");
+							writeTo.append(text, ind, startBefore);
+						} else {
+							writeTo.append(text, ind, start);
+						}
 						ind = start;
 					}
 				}
@@ -408,7 +430,16 @@ public class Preprocessor {
 						break;
 					}
 				}
+
+				if (quote) {
+					writeTo.append('"');
+				}
+
 				writeTo.append(paramReplacement);
+				if (quote) {
+					writeTo.append('"');
+				}
+
 				ind = m.end("PARAM");
 				if (ind + 1 < text.length() && text.charAt(ind) == '#' && text.charAt(ind + 1) == '#') {
 					ind += 2;

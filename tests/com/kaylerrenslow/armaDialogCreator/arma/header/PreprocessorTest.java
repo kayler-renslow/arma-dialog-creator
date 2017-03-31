@@ -173,7 +173,7 @@ public class PreprocessorTest {
 	}
 
 	@Test
-	public void replaceParameterGlueQuote() throws Exception {
+	public void replaceParameterQuote() throws Exception {
 		/*
 		* #define STRINGIFY(s) #s;
 		* #define FOO 456
@@ -192,6 +192,47 @@ public class PreprocessorTest {
 		assertPreprocessLine(base, expect, p);
 	}
 
+	@Test
+	public void replaceParameterQuote2() throws Exception {
+		/*
+		* #define STRINGIFY(s) #s;
+		*/
+		String base = "STRINGIFY(quote)";
+		String expect = "\"quote\"";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("STRINGIFY", array("s"), "#s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterQuote3() throws Exception {
+		/*
+		* #define STRINGIFY(s) #s;
+		*/
+		String base = "STRINGIFY(quote);";
+		String expect = "\"quote\";";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("STRINGIFY", array("s"), "#s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterQuote4() throws Exception {
+		/*
+		* #define STRINGIFY(s) #s;
+		*/
+		String base = "STRINGIFY(quote)fail";
+		String expect = base;
+
+		Preprocessor p = getPreprocessor(
+				mapParams("STRINGIFY", array("s"), "#s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
 
 
 }
