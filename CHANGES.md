@@ -1,5 +1,5 @@
 **Added:**
-* graph for stringtable editor that shows completion of keys
+* none
 
 **Changed:**
 * none

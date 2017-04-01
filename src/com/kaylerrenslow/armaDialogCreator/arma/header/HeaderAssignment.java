@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 03/19/2017 */
 public interface HeaderAssignment {
-	@NotNull String getAssigmentName();
+	@NotNull String getVariableName();
 
 	@NotNull HeaderValue getValue();
 }

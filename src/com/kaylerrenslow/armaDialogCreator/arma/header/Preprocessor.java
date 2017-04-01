@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 /**
  @author Kayler
  @since 03/21/2017 */
-public class Preprocessor {
+class Preprocessor {
 
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 

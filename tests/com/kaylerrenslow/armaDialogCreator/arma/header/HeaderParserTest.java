@@ -12,8 +12,7 @@ public class HeaderParserTest {
 
 	@Test
 	public void parseHeaderTest1() throws Exception {
-		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"), null);
-		HeaderParserContext c = p.getParserContext();
+		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"));
 		p.parse();
 
 		HeaderMacro[] macros = {
@@ -25,8 +24,8 @@ public class HeaderParserTest {
 				Define("BAR", "456")
 		};
 		for (HeaderMacro toMatch : macros) {
-			if (!c.getMacros().contains(toMatch)) {
-				System.out.println("parsed macros: " + c.getMacros());
+			if (!p.getMacros().contains(toMatch)) {
+				System.out.println("parsed macros: " + p.getMacros());
 				assertTrue("missing macro: " + toMatch, false);
 			}
 		}
