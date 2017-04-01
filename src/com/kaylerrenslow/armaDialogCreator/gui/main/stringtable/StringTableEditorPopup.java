@@ -372,6 +372,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		private final CategoryAxis xAxis = new CategoryAxis();
 		private final NumberAxis yAxis = new NumberAxis(0, 0, 0);
 		private final BarChart<String, Number> chart = new BarChart<>(xAxis, yAxis);
+		private final XYChart.Series<String, Number> series = new XYChart.Series<>();
 
 		public GraphsTab(@NotNull StringTableEditorPopup popup, @NotNull StringTable table) {
 			this.table = table;
@@ -386,6 +387,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			table.getKeys().addListener(keyListener);
 
 			setText(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Graph.tab_title"));
+
+			setClosable(false);
 
 			initContent();
 
@@ -404,12 +407,16 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			xAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.x_axis"));
 			yAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.y_axis"));
+
+			series.setName(bundle.getString("Popups.StringTable.Tab.Graph.series_label"));
 		}
 
 		private void updateGraph() {
 			chart.getData().clear();
 
 			ArrayList<KeyValue<String, Integer>> usedLanguages = new ArrayList<>();
+
+			final int numKeys = table.getKeys().size();
 
 			for (StringTableKey key : table.getKeys()) {
 				for (Map.Entry<Language, String> entry : key.getLanguageTokenMap().entrySet()) {
@@ -423,22 +430,21 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 						}
 					}
 					if (!found) {
-						usedLanguages.add(new KeyValue<>(langName, 0));
+						usedLanguages.add(new KeyValue<>(langName, 1));
 					}
 				}
 			}
 
-			XYChart.Series<String, Number> series = new XYChart.Series<>();
 
 			ObservableList<String> languages = FXCollections.observableArrayList();
-			double min = 0;
 			double max = 0;
+
+			series.getData().clear();
 
 			for (KeyValue<String, Integer> usedLanguage : usedLanguages) {
 				String langName = usedLanguage.getKey();
 				languages.add(langName);
 				int v = usedLanguage.getValue();
-				min = Math.min(min, v);
 				max = Math.max(max, v);
 
 				series.getData().add(new XYChart.Data<>(langName, v));
@@ -447,9 +453,9 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			xAxis.setCategories(languages);
 
-			yAxis.setTickUnit(max / 4);
-			yAxis.setUpperBound(max);
-			yAxis.setLowerBound(min);
+			yAxis.setTickUnit(Math.floor(max / 4));
+			yAxis.setUpperBound(numKeys);
+			yAxis.setLowerBound(0);
 
 			chart.getData().add(series);
 

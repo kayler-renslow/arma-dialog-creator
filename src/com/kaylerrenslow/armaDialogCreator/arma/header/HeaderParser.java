@@ -97,6 +97,7 @@ public class HeaderParser {
 		while (r.hasAvailable()) {
 			char c = r.read();
 			switch (c) {
+				//todo handle += for array assignments
 				case Equal: {
 					if (state == ParseState.Identifier) {//assignment
 						assignment = new HeaderAssignmentImpl(sb.toString());
@@ -256,7 +257,7 @@ public class HeaderParser {
 				throw new IllegalStateException("can't read when nothing left to read.");
 			}
 			char c = cs.charAt(pos++);
-			if (c == 'n') {
+			if (c == '\n') {
 				lineCount++;
 				posInLine = 0;
 			} else {
