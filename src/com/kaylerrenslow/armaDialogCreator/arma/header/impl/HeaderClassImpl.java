@@ -18,6 +18,13 @@ public class HeaderClassImpl implements HeaderClass {
 	private String className = "~~No class name~~";
 	private String extendClassName = null;
 
+	public HeaderClassImpl(@NotNull String className) {
+		this.className = className;
+	}
+
+	public HeaderClassImpl() {
+	}
+
 	public void setClassName(@NotNull String className) {
 		this.className = className;
 	}

@@ -12,7 +12,6 @@ import java.util.List;
  @since 03/19/2017 */
 class HeaderParserContext extends DataContext {
 	private final List<HeaderMacro> macroList = new ArrayList<>();
-
 	private final LinkedList<HeaderClass> classStack = new LinkedList<>();
 
 
@@ -25,4 +24,5 @@ class HeaderParserContext extends DataContext {
 	public LinkedList<HeaderClass> getClassStack() {
 		return classStack;
 	}
+
 }

@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import static java.lang.Character.isJavaIdentifierPart;
 import static java.lang.Character.isWhitespace;
 
 /**
@@ -74,10 +75,10 @@ public class HeaderParser {
 		Preprocessor pre = new Preprocessor(parsingFile, parserContext, callback);
 		pre.run();
 
-		HeaderClass c = parserContext.getClassStack().removeFirst();
+		HeaderClass root = parserContext.getClassStack().removeFirst();
 
-		headerFile.getAssignments().addAll(c.getAssignments());
-		headerFile.getClasses().addAll(c.getNestedClasses());
+		headerFile.getAssignments().addAll(root.getAssignments());
+		headerFile.getClasses().addAll(root.getNestedClasses());
 
 		return headerFile;
 	}
@@ -138,13 +139,19 @@ public class HeaderParser {
 				}
 				case LBrace: {
 					curlyBraceBalance++;
+					parserContext.getClassStack().push(new HeaderClassImpl(sb.toString()));
+					sb = new StringBuilder();
+					state = ParseState.Identifier;
+
 					break;
 				}
 				case RBrace: {
 					if (curlyBraceBalance <= 0) {
 						error(unexpected(RBrace), r);
 					}
+					parserContext.getClassStack().pop();
 					curlyBraceBalance--;
+
 					char ahead = r.canPeekAhead(1) ? r.peekAhead(1) : EOF;
 					if (ahead == Semicolon) {
 						r.read();
@@ -213,16 +220,20 @@ public class HeaderParser {
 									state = ParseState.Class_Stub;
 									continue;
 								}
-
 							}
-
 							skipWhitespace(r);
 						} else {
-							state = ParseState.Identifier;
-							sb.append(c);
+							if (!isJavaIdentifierPart(c)) {
+								error(unexpected(c), r);
+							}
+							if (state == ParseState.Class_Stub) {
+								sb.append(c);
+							} else {
+								state = ParseState.Identifier;
+								sb.append(c);
+							}
 						}
 					}
-					continue;
 				}
 			}
 		}
