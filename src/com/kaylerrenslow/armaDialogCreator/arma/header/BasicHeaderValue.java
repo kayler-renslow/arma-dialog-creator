@@ -12,6 +12,7 @@ public class BasicHeaderValue implements HeaderValue {
 		this.content = content;
 	}
 
+	@NotNull
 	@Override
 	public String getContent() {
 		return content;

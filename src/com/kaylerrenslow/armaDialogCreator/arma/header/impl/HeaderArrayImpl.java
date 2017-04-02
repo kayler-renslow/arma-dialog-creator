@@ -11,6 +11,7 @@ import java.util.List;
  @since 03/19/2017 */
 public class HeaderArrayImpl implements HeaderArray {
 
+	@NotNull
 	@Override
 	public String getContent() {
 		return null;
