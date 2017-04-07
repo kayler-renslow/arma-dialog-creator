@@ -25,9 +25,12 @@ public class ApplicationDataManager {
 	private Workspace workspace;
 	private ApplicationData applicationData;
 
-	public void loadWorkspace(@NotNull File workspaceFile) {
-		workspace = new Workspace(workspaceFile);
-		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceFile);
+	public void loadWorkspace(@NotNull File workspaceDir) {
+		if(!workspaceDir.exists()){
+			workspaceDir.mkdirs();
+		}
+		workspace = new Workspace(workspaceDir);
+		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceDir);
 		saveApplicationProperties();
 	}
 
