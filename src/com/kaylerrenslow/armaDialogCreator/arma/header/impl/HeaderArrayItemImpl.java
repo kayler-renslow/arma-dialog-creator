@@ -9,9 +9,15 @@ import org.jetbrains.annotations.NotNull;
  @since 03/19/2017 */
 public class HeaderArrayItemImpl implements HeaderArrayItem {
 
+	private HeaderValue value;
+
+	public HeaderArrayItemImpl(@NotNull HeaderValue value) {
+		this.value = value;
+	}
+
 	@NotNull
 	@Override
 	public HeaderValue getValue() {
-		return null;
+		return value;
 	}
 }
