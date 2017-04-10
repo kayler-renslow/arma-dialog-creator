@@ -1,14 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
-import com.kaylerrenslow.armaDialogCreator.arma.header.impl.HeaderArrayAssignmentImpl;
-import com.kaylerrenslow.armaDialogCreator.arma.header.impl.HeaderAssignmentImpl;
-import com.kaylerrenslow.armaDialogCreator.arma.header.impl.HeaderClassImpl;
+import com.kaylerrenslow.armaDialogCreator.arma.header.impl.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -96,32 +95,18 @@ public class HeaderParser {
 		StringBuilder sb = new StringBuilder();
 
 		while (r.hasAvailable()) {
-			char c = r.read();
+			final char c = r.read();
 			switch (c) {
-				case Plus: {
-					//todo handle += for array assignments
-					break;
-				}
+				//				case Plus: {
+				//					//todo handle += for array assignments
+				//					break;
+				//				}
 				case Equal: {
 					if (state == ParseState.Identifier) {//assignment
 						HeaderAssignmentImpl assignment = new HeaderAssignmentImpl(sb.toString());
 						sb = new StringBuilder();
 
-						boolean semicolon = false;
-						char ca = EOF;
-						char last = ca;
-						while (r.hasAvailable()) {
-							last = ca;
-							ca = r.read();
-							if (ca == Semicolon) {
-								semicolon = true;
-								break;
-							}
-							sb.append(ca);
-						}
-						if (!semicolon) {
-							error(expected(Semicolon, last), r);
-						}
+						readUpToSemicolon(r, sb);
 
 						assignment.setHeaderValue(new BasicHeaderValue(sb.toString()));
 
@@ -132,6 +117,62 @@ public class HeaderParser {
 					} else if (state == ParseState.Bracket_Pair) {//array assignment
 						HeaderArrayAssignmentImpl arrayAssignment = new HeaderArrayAssignmentImpl(sb.toString());
 						sb = new StringBuilder();
+
+						readUpToSemicolon(r, sb);
+
+						LinkedList<HeaderArray> arrayStack = new LinkedList<>();
+						int lbraceCount = 0;
+						int rbraceCount = 0;
+						boolean rootArraySet = false;
+						boolean itemRead = false;
+
+						CharSequenceReader arrayTextReader = new CharSequenceReader(sb);
+						while (arrayTextReader.hasAvailable()) {
+							final char ac = arrayTextReader.read();
+							if (arrayStack.size() == 0 && ac != LBrace && !isWhitespace(ac)) {
+								if (rootArraySet) {
+									error(unexpected(ac), r);
+								}
+								error(expected(LBracket, ac), r);
+							}
+							if (ac == LBrace) {
+								if (itemRead) {
+									error(expected(Comma, LBrace), r);
+								}
+								lbraceCount++;
+								if (!arrayStack.isEmpty()) {
+									sb = new StringBuilder();
+								}
+								arrayStack.push(new HeaderArrayImpl());
+							} else if (ac == RBrace) {
+								rbraceCount++;
+								if (rbraceCount != lbraceCount) {
+									error(unexpected(RBrace), r);
+								}
+								HeaderArray array = arrayStack.pop();
+								if (arrayStack.isEmpty()) {//ended root
+									arrayAssignment.setHeaderArray(array);
+									rootArraySet = true;
+								} else { //nested in array
+									arrayStack.peek().getItems().add(new HeaderArrayItemImpl(array));
+								}
+							} else if (ac == Comma) {
+								if (arrayStack.isEmpty()) {
+									error(unexpected(Comma), r);
+								} else {
+									if (sb.length() == 0) {
+										error(bundle.getString("Error.HeaderParser.array_item_length_zero"), r);
+									}
+									arrayStack.peek().getItems().add(new HeaderArrayItemImpl(new BasicHeaderValue(sb.toString())));
+									sb = new StringBuilder();
+									itemRead = false;
+								}
+							} else {
+								sb.append(ac);
+								itemRead = itemRead || !isWhitespace(ac);
+							}
+
+						}
 
 					} else {
 						error(unexpected(Equal), r);
@@ -238,6 +279,24 @@ public class HeaderParser {
 			}
 		}
 
+	}
+
+	private void readUpToSemicolon(CharSequenceReader r, StringBuilder sb) throws HeaderParseException {
+		boolean semicolon = false;
+		char ca = EOF;
+		char last = ca;
+		while (r.hasAvailable()) {
+			last = ca;
+			ca = r.read();
+			if (ca == Semicolon) {
+				semicolon = true;
+				break;
+			}
+			sb.append(ca);
+		}
+		if (!semicolon) {
+			error(expected(Semicolon, last), r);
+		}
 	}
 
 	@NotNull
