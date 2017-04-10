@@ -4,12 +4,9 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" relativeOutputPath="com.kaylerrenslow.armaDialogCreator.updater" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="annotations-java8" level="project" />
-    <orderEntry type="module" module-name="ADC Standalone Progress Window" />
   </component>
 </module>

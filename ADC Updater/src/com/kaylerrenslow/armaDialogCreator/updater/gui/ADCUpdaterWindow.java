@@ -11,6 +11,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.updater.gui;
 
+import com.kaylerrenslow.armaDialogCreator.pwindow.ADCStandaloneProgressWindow;
 import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -32,71 +33,10 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 10/22/2016.
  */
-public class ADCUpdaterWindow {
-	private final Stage primaryStage;
+public class ADCUpdaterWindow extends ADCStandaloneProgressWindow{
 
-	private final ProgressBar progressBar = new ProgressBar(-1);
-	private final Label lblStatus = new Label();
-	private final Label lblError = new Label();
-	private final VBox root;
-	private boolean exitButtonAdded = false;
-
-	public ADCUpdaterWindow(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-
-		primaryStage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/updater/app.png"));
+	public ADCUpdaterWindow(@NotNull Stage primaryStage) {
+		super(primaryStage);
 		primaryStage.setTitle(ADCUpdater.bundle.getString("Updater.title"));
-
-		root = new VBox(5);
-		primaryStage.setScene(new Scene(new StackPane(root)));
-		primaryStage.setResizable(false);
-
-		root.setPrefSize(720, 360);
-		root.setAlignment(Pos.CENTER);
-		root.setPadding(new Insets(10));
-
-		root.getChildren().add(new ImageView("/com/kaylerrenslow/armaDialogCreator/updater/adc_title.png"));
-
-		progressBar.setMaxWidth(Double.MAX_VALUE);
-		root.getChildren().add(progressBar);
-		root.getChildren().add(lblStatus);
-		lblError.setTextFill(Color.RED);
-		root.getChildren().add(lblError);
-	}
-
-	@NotNull
-	public Stage getPrimaryStage() {
-		return primaryStage;
-	}
-
-	@NotNull
-	public ProgressBar getProgressBar() {
-		return progressBar;
-	}
-
-	@NotNull
-	public Label getLblError() {
-		return lblError;
-	}
-
-	@NotNull
-	public Label getLblStatus() {
-		return lblStatus;
-	}
-
-	public void addExitButton() {
-		if (exitButtonAdded) {
-			return;
-		}
-		exitButtonAdded = true;
-		final Button btnExit = new Button(ADCUpdater.bundle.getString("Updater.exit"));
-		btnExit.setPrefWidth(120d);
-		btnExit.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				Platform.exit();
-			}
-		});
-		root.getChildren().add(btnExit);
 	}
 }

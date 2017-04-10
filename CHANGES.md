@@ -1,8 +1,8 @@
 **Added:**
-* none
+* basic installer functionality
 
 **Changed:**
-* none
+* moved a part of adc updater gui into separate intellij module for use in both updater and installer
 
 **Fixed:**
 * none
