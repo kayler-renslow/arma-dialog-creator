@@ -88,13 +88,13 @@ public class ADCUpdater extends Application {
 			window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
 			error = true;
 		}
-//		try {
-//			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//			window.getLblError().setText("ERROR: " + e.getMessage());
-//			error = true;
-//		}
+		try {
+			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+			window.getLblError().setText("ERROR: " + e.getMessage());
+			error = true;
+		}
 		final boolean finalError = error;
 		new Thread(new Runnable() {
 			@Override

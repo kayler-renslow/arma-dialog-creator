@@ -1,8 +1,9 @@
 **Added:**
-* basic installer functionality
+* installer bundle text
+* beginning for installer window
 
 **Changed:**
-* moved a part of adc updater gui into separate intellij module for use in both updater and installer
+* 
 
 **Fixed:**
 * none
