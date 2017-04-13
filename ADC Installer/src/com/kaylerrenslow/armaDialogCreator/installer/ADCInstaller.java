@@ -2,10 +2,14 @@ package com.kaylerrenslow.armaDialogCreator.installer;
 
 import com.kaylerrenslow.armaDialogCreator.pwindow.ADCStandaloneProgressWindow;
 import javafx.application.Application;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.image.Image;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -53,6 +57,25 @@ public class ADCInstaller extends Application {
 
 			VBox vboxCenter = new VBox();
 
+			/*Header stuff*/
+			StackPane stackPaneHeader = new StackPane();
+			HBox hboxHeader = new HBox(5);
+			ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc256.png"));
+			imageViewAdc.setFitHeight(64);
+			imageViewAdc.setFitWidth(64);
+			hboxHeader.getChildren().add(imageViewAdc);
+
+			VBox vboxHeaderTitle = new VBox();
+			HBox.setHgrow(vboxHeaderTitle, Priority.ALWAYS);
+			Label lblHeaderTitle = new Label(bundle.getString("InstallerWindow.title"));
+			lblHeaderTitle.setFont(Font.font(24));
+			vboxHeaderTitle.getChildren().add(lblHeaderTitle);
+
+
+			vboxCenter.getChildren().add(stackPaneHeader);
+			vboxCenter.getChildren().add(new Separator(Orientation.HORIZONTAL));
+
+			/*stuff after header*/
 		}
 	}
 

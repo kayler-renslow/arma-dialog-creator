@@ -1,9 +1,8 @@
 **Added:**
-* installer bundle text
-* beginning for installer window
+* untested backup for installer
 
 **Changed:**
-* 
+* more of the gui for installer window implemented
 
 **Fixed:**
 * none

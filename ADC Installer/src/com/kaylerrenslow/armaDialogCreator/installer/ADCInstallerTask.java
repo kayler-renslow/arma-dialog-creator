@@ -7,7 +7,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.PrintStream;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+
+import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
 
 /**
  Task that unzips the downloaded adc.zip. The task returns the directory to which the contents were extracted too
@@ -15,7 +18,6 @@ import java.util.ResourceBundle;
  @author kayler
  @since 4/10/17 */
 public class ADCInstallerTask extends Task<File> {
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.installer.InstallBundle");
 	private final File zipFile;
 	private final File unzipDirectory;
 
@@ -30,14 +32,13 @@ public class ADCInstallerTask extends Task<File> {
 	 Create an installer task that will unzip a .zip file into a directory.
 
 	 @param zipFile zip file to unzip
-	 @param unzipDirectory directory to place unzipped contents to. If null, will zip n directory containing {@code zipFile}
+	 @param unzipDirectory directory to place unzipped contents to. If null, will zip in directory containing {@code zipFile}
 	 */
 	public ADCInstallerTask(@NotNull File zipFile, @Nullable File unzipDirectory, @NotNull PrintStream ps) {
-		this.ps = ps;
+		if (zipFile.isDirectory()) {
+			throw new IllegalArgumentException("zipFile is directory");
+		}
 		if (unzipDirectory == null) {
-			if (zipFile.isDirectory()) {
-				throw new IllegalArgumentException("zipFile is directory");
-			}
 			unzipDirectory = zipFile.getParentFile();
 		} else {
 			if (!unzipDirectory.isDirectory()) {
@@ -45,6 +46,7 @@ public class ADCInstallerTask extends Task<File> {
 			}
 		}
 
+		this.ps = ps;
 		this.zipFile = zipFile;
 		this.unzipDirectory = unzipDirectory;
 	}
@@ -56,11 +58,67 @@ public class ADCInstallerTask extends Task<File> {
 
 	@Override
 	protected File call() throws Exception {
+		updateProgress(-1, 1);
+		updateMessage(bundle.getString("Installer.backing_up"));
+		File backupFile = new File(unzipDirectory.getAbsolutePath() + ".backup");
+		Files.copy(unzipDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		updateProgress(1, 1);
+
+		updateMessage(bundle.getString("Installer.backup_finished"));
+
+		Thread.sleep(1000);//sleep to show user files have been backed up
+
+		updateProgress(-1, 1);
+		updateMessage(bundle.getString("Installer.extracting"));
+
 		ZipFile zipFileO = new ZipFile(zipFile);
+		updateProgress(0, toExtract.length);
+		int numExtract = toExtract.length;
+		int p = 0;
 		for (String f : toExtract) {
 			zipFileO.extractFile(f, getDestPath(f));
+			updateProgress(++p, numExtract);
 			ps.println("ex:" + f);
 		}
+
+		updateMessage(bundle.getString("Installer.verifying"));
+		p = 0;
+		updateProgress(0, numExtract);
+
+		for (String f : toExtract) {
+			updateProgress(++p, numExtract);
+			if (!new File(getDestPath(f)).exists()) {
+				String e = String.format(
+						bundle.getString("Installer.verify_fail_f"),
+						String.format(bundle.getString("Installer.file_didnt_extract_f"), f)
+				);
+				updateMessage(
+						e
+				);
+				ps.println(e);
+				Thread.sleep(1000);
+				try {
+					restoreOld(backupFile);
+				} catch (Exception ex) {
+					String e1 = String.format(bundle.getString("Installer.backup_restore_failed_f"), ex.getMessage());
+					updateMessage(e1);
+					ps.println(e1);
+				}
+				return null;
+			}
+		}
+
+		updateMessage(bundle.getString("Installer.finished"));
+
+		updateProgress(1, 1);
+
 		return unzipDirectory;
+	}
+
+	private void restoreOld(File backupFile) throws Exception {
+		updateProgress(-1, 0);
+		updateMessage(bundle.getString("Installer.restoring_backup"));
+		Files.copy(backupFile.toPath(), unzipDirectory.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		updateMessage(bundle.getString("Installer.backup_restored"));
 	}
 }
