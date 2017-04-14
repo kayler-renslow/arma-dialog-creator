@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.installer;
 
 import com.kaylerrenslow.armaDialogCreator.pwindow.ADCStandaloneProgressWindow;
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -45,8 +46,12 @@ public class ADCInstaller extends Application {
 		private File installDir = new File("");
 
 		public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
-			stage.setTitle(bundle.getString("InstallerWindow.title"));
+			stage.setTitle(bundle.getString("InstallerWindow.window_title"));
 			stage.getIcons().addAll(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
+
+			stage.setWidth(700);
+			stage.setHeight(400);
+			stage.setResizable(false);
 
 			initPane(stage);
 		}
@@ -56,26 +61,57 @@ public class ADCInstaller extends Application {
 			stage.setScene(new Scene(root));
 
 			VBox vboxCenter = new VBox();
+			root.setCenter(vboxCenter);
 
-			/*Header stuff*/
-			StackPane stackPaneHeader = new StackPane();
-			HBox hboxHeader = new HBox(5);
-			ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc256.png"));
-			imageViewAdc.setFitHeight(64);
-			imageViewAdc.setFitWidth(64);
-			hboxHeader.getChildren().add(imageViewAdc);
+			//header stuff
+			{
 
-			VBox vboxHeaderTitle = new VBox();
-			HBox.setHgrow(vboxHeaderTitle, Priority.ALWAYS);
-			Label lblHeaderTitle = new Label(bundle.getString("InstallerWindow.title"));
-			lblHeaderTitle.setFont(Font.font(24));
-			vboxHeaderTitle.getChildren().add(lblHeaderTitle);
+				StackPane stackPaneHeaderContainer = new StackPane(); //contains hbox that contains header title/subtitle and icon
+				stackPaneHeaderContainer.setPadding(new Insets(15));
+				stackPaneHeaderContainer.setStyle("-fx-background-color:linear-gradient(from 50% 30% to 100% 100%, #ffffff, #e7e7e7)");
+				HBox hboxHeaderIconAndTitle = new HBox(5);//contains adc icon and title and subtitle
+				stackPaneHeaderContainer.getChildren().add(hboxHeaderIconAndTitle);
+
+				//add adc icon
+				ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc256.png"));
+				imageViewAdc.setFitHeight(64);
+				imageViewAdc.setFitWidth(64);
+				hboxHeaderIconAndTitle.getChildren().add(imageViewAdc);
+
+				//title and sub title stuff
+				{
+					VBox vboxHeaderTitles = new VBox(); //contains title and sub title
+
+					//adc installer title
+					HBox.setHgrow(vboxHeaderTitles, Priority.ALWAYS);
+					Label lblHeaderTitle = new Label(bundle.getString("InstallerWindow.title"));
+					lblHeaderTitle.setFont(Font.font(24));
+					vboxHeaderTitles.getChildren().add(lblHeaderTitle);
+
+					//adc installer subtitle (created with <3 ...)
+					HBox hboxSubtitle = new HBox(2);
+					Label lblCreatedWith = new Label(bundle.getString("InstallerWindow.created_with"));
+					Label lblByK = new Label(bundle.getString("InstallerWindow.by_k"));
+					ImageView imageViewHeart = new ImageView("/com/kaylerrenslow/armaDialogCreator/installer/heart.png");
+					imageViewHeart.setFitHeight(16);
+					imageViewHeart.setFitWidth(16);
+					hboxSubtitle.getChildren().addAll(lblCreatedWith, imageViewHeart, lblByK);
+					vboxHeaderTitles.getChildren().add(hboxSubtitle);
+
+					hboxHeaderIconAndTitle.getChildren().add(vboxHeaderTitles);
+				}
+
+				vboxCenter.getChildren().add(stackPaneHeaderContainer);
+			}
 
 
-			vboxCenter.getChildren().add(stackPaneHeader);
 			vboxCenter.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-			/*stuff after header*/
+			//options for install
+			{
+
+			}
+
 		}
 	}
 
