@@ -5,12 +5,15 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,6 +52,8 @@ public class ADCInstaller extends Application {
 			stage.setTitle(bundle.getString("InstallerWindow.window_title"));
 			stage.getIcons().addAll(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
 
+			this.installDir = initInstallDir;
+
 			stage.setWidth(700);
 			stage.setHeight(400);
 			stage.setResizable(false);
@@ -60,14 +65,15 @@ public class ADCInstaller extends Application {
 			BorderPane root = new BorderPane();
 			stage.setScene(new Scene(root));
 
-			VBox vboxCenter = new VBox();
-			root.setCenter(vboxCenter);
+			final Insets padding = new Insets(15);
+
+			VBox vboxBpCenter = new VBox();
+			root.setCenter(vboxBpCenter);
 
 			//header stuff
 			{
-
 				StackPane stackPaneHeaderContainer = new StackPane(); //contains hbox that contains header title/subtitle and icon
-				stackPaneHeaderContainer.setPadding(new Insets(15));
+				stackPaneHeaderContainer.setPadding(padding);
 				stackPaneHeaderContainer.setStyle("-fx-background-color:linear-gradient(from 50% 30% to 100% 100%, #ffffff, #e7e7e7)");
 				HBox hboxHeaderIconAndTitle = new HBox(5);//contains adc icon and title and subtitle
 				stackPaneHeaderContainer.getChildren().add(hboxHeaderIconAndTitle);
@@ -100,16 +106,35 @@ public class ADCInstaller extends Application {
 
 					hboxHeaderIconAndTitle.getChildren().add(vboxHeaderTitles);
 				}
-
-				vboxCenter.getChildren().add(stackPaneHeaderContainer);
+				vboxBpCenter.getChildren().add(stackPaneHeaderContainer);
 			}
 
+			vboxBpCenter.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-			vboxCenter.getChildren().add(new Separator(Orientation.HORIZONTAL));
+			VBox vboxAfterHeader = new VBox(5);
+			vboxBpCenter.getChildren().add(vboxAfterHeader);
+			vboxAfterHeader.setPadding(padding);
 
 			//options for install
 			{
+				TextField tfDir = new TextField(installDir.getAbsolutePath());
+				tfDir.setEditable(false);
+				HBox.setHgrow(tfDir, Priority.ALWAYS);
 
+				Button btnChange = new Button(bundle.getString("InstallerWindow.choose_install_loc"));
+				btnChange.setOnAction((e) -> {
+					DirectoryChooser dc = new DirectoryChooser();
+					dc.setInitialDirectory(installDir);
+					dc.setTitle(btnChange.getText());
+					File chosen = dc.showDialog(stage);
+					if (chosen == null) {
+						return;
+					}
+					tfDir.setText(chosen.getAbsolutePath());
+				});
+
+				vboxAfterHeader.getChildren().add(new Label(bundle.getString("InstallerWindow.change_dir_if_needed")));
+				vboxAfterHeader.getChildren().add(new HBox(5, tfDir, btnChange));
 			}
 
 		}
