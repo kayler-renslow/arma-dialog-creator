@@ -1,8 +1,8 @@
 **Added:**
-* 
+* option to change install directory in InstallerConfigWindow
 
 **Changed:**
-* finished (?) header for installer window
+* progress on the no-setting installer. untested
 
 **Fixed:**
 * none

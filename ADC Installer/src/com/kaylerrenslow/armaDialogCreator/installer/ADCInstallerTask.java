@@ -35,9 +35,6 @@ public class ADCInstallerTask extends Task<File> {
 	 @param unzipDirectory directory to place unzipped contents to. If null, will zip in directory containing {@code zipFile}
 	 */
 	public ADCInstallerTask(@NotNull File zipFile, @Nullable File unzipDirectory, @NotNull PrintStream ps) {
-		if (zipFile.isDirectory()) {
-			throw new IllegalArgumentException("zipFile is directory");
-		}
 		if (unzipDirectory == null) {
 			unzipDirectory = zipFile.getParentFile();
 		} else {
@@ -59,6 +56,19 @@ public class ADCInstallerTask extends Task<File> {
 	@Override
 	protected File call() throws Exception {
 		updateProgress(-1, 1);
+
+		if (!zipFile.exists()) {
+			updateMessage(bundle.getString("Installer.zipfile_dne"));
+			cancel();
+			return null;
+		}
+
+		if (zipFile.isDirectory()) {
+			updateMessage(bundle.getString("Installer.zipfile_not_zip"));
+			cancel();
+			return null;
+		}
+
 		updateMessage(bundle.getString("Installer.backing_up"));
 		File backupFile = new File(unzipDirectory.getAbsolutePath() + ".backup");
 		Files.copy(unzipDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -104,6 +114,8 @@ public class ADCInstallerTask extends Task<File> {
 					updateMessage(e1);
 					ps.println(e1);
 				}
+
+				cancel();
 				return null;
 			}
 		}
