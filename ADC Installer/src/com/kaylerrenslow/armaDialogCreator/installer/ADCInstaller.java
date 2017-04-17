@@ -79,7 +79,7 @@ public class ADCInstaller extends Application {
 				stackPaneHeaderContainer.getChildren().add(hboxHeaderIconAndTitle);
 
 				//add adc icon
-				ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc256.png"));
+				ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc64.png"));
 				imageViewAdc.setFitHeight(64);
 				imageViewAdc.setFitWidth(64);
 				hboxHeaderIconAndTitle.getChildren().add(imageViewAdc);
