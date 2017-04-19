@@ -26,7 +26,7 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 
 		PrintStream ps = System.out;
 
-		ADCInstallerTask task = new ADCInstallerTask(zipFile, installDir, ps);
+		ADCInstallerTask task = new ADCInstallerTask(new InstallPackage.ZipInstallPackage(zipFile), installDir, ps);
 		this.getProgressBar().progressProperty().bind(task.progressProperty());
 		task.messageProperty().addListener((observable, oldValue, newValue) -> {
 			this.getLblStatus().setText(newValue);
@@ -47,7 +47,7 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 		task.setOnSucceeded(task.getOnCancelled());
 
 		try {
-			task.call();
+			new Thread(task).start();
 		} catch (Exception e) {
 			e.printStackTrace(ps);
 		}

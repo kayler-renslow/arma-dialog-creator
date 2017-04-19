@@ -1,9 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.installer;
 
 import javafx.concurrent.Task;
-import net.lingala.zip4j.core.ZipFile;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.PrintStream;
@@ -18,60 +16,52 @@ import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
  @author kayler
  @since 4/10/17 */
 public class ADCInstallerTask extends Task<File> {
-	private final File zipFile;
-	private final File unzipDirectory;
-
 	/** Extract only what we need */
 	private static final String[] toExtract = {
 			"adc_updater.jar",
-			"adc.jar"
+			"adc.jar",
+			"Arma Dialog Creator.exe"
 	};
+
+	private final File extractDirectory;
 	private PrintStream ps;
+	private InstallPackage installPackage;
 
 	/**
-	 Create an installer task that will unzip a .zip file into a directory.
+	 Create an installer task that will extract an InstallPackage
 
-	 @param zipFile zip file to unzip
-	 @param unzipDirectory directory to place unzipped contents to. If null, will zip in directory containing {@code zipFile}
+	 @param installPackage package to extract
+	 @param ps stream to print messages to
 	 */
-	public ADCInstallerTask(@NotNull File zipFile, @Nullable File unzipDirectory, @NotNull PrintStream ps) {
-		if (unzipDirectory == null) {
-			unzipDirectory = zipFile.getParentFile();
-		} else {
-			if (!unzipDirectory.isDirectory()) {
-				throw new IllegalArgumentException("unzipDirectory is not a directory");
-			}
+	public ADCInstallerTask(@NotNull InstallPackage installPackage, @NotNull File extractDir, @NotNull PrintStream ps) {
+		this.installPackage = installPackage;
+		this.ps = ps;
+
+		if (!extractDir.isDirectory()) {
+			throw new IllegalArgumentException("extractDir is not a directory");
 		}
 
-		this.ps = ps;
-		this.zipFile = zipFile;
-		this.unzipDirectory = unzipDirectory;
+		this.extractDirectory = extractDir;
 	}
 
 	@NotNull
 	private String getDestPath(@NotNull String fileName) {
-		return unzipDirectory.getAbsolutePath() + "/" + fileName;
+		return extractDirectory.getAbsolutePath() + "/" + fileName;
 	}
 
 	@Override
 	protected File call() throws Exception {
 		updateProgress(-1, 1);
 
-		if (!zipFile.exists()) {
-			updateMessage(bundle.getString("Installer.zipfile_dne"));
-			cancel();
-			return null;
-		}
-
-		if (zipFile.isDirectory()) {
-			updateMessage(bundle.getString("Installer.zipfile_not_zip"));
+		if (!installPackage.packageExists()) {
+			updateMessage(bundle.getString("Installer.extract_package_dne"));
 			cancel();
 			return null;
 		}
 
 		updateMessage(bundle.getString("Installer.backing_up"));
-		File backupFile = new File(unzipDirectory.getAbsolutePath() + ".backup");
-		Files.copy(unzipDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		File backupFile = new File(extractDirectory.getAbsolutePath() + ".backup");
+		Files.copy(extractDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		updateProgress(1, 1);
 
 		updateMessage(bundle.getString("Installer.backup_finished"));
@@ -81,12 +71,11 @@ public class ADCInstallerTask extends Task<File> {
 		updateProgress(-1, 1);
 		updateMessage(bundle.getString("Installer.extracting"));
 
-		ZipFile zipFileO = new ZipFile(zipFile);
 		updateProgress(0, toExtract.length);
 		int numExtract = toExtract.length;
 		int p = 0;
 		for (String f : toExtract) {
-			zipFileO.extractFile(f, getDestPath(f));
+			installPackage.extract(f, getDestPath(f));
 			updateProgress(++p, numExtract);
 			ps.println("ex:" + f);
 		}
@@ -124,13 +113,13 @@ public class ADCInstallerTask extends Task<File> {
 
 		updateProgress(1, 1);
 
-		return unzipDirectory;
+		return extractDirectory;
 	}
 
 	private void restoreOld(File backupFile) throws Exception {
 		updateProgress(-1, 0);
 		updateMessage(bundle.getString("Installer.restoring_backup"));
-		Files.copy(backupFile.toPath(), unzipDirectory.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		Files.copy(backupFile.toPath(), extractDirectory.toPath(), StandardCopyOption.REPLACE_EXISTING);
 		updateMessage(bundle.getString("Installer.backup_restored"));
 	}
 }

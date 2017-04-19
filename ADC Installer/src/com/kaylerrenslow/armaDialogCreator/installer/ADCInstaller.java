@@ -19,7 +19,7 @@ public class ADCInstaller extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		File f = new File(".");
+		File f = new File("");
 		if (this.getParameters().getUnnamed().contains("-z")) {
 			String zipFilePath = this.getParameters().getNamed().get("f");
 			if (zipFilePath == null) {

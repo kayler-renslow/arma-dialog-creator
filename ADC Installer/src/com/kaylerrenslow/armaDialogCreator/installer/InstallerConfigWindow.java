@@ -1,12 +1,16 @@
 package com.kaylerrenslow.armaDialogCreator.installer;
 
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -16,6 +20,9 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.PrintStream;
+
+import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
 
 /**
  This installer window is used for when the user downloaded the installer.
@@ -27,9 +34,11 @@ import java.io.File;
 class InstallerConfigWindow {
 
 	private File installDir = new File("");
+	private BooleanProperty closeInstallerBtnDisable;
+	private final VBox vboxAfterHeader = new VBox(5);
 
 	public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
-		stage.setTitle(ADCInstaller.bundle.getString("InstallerWindow.window_title"));
+		stage.setTitle(bundle.getString("InstallerWindow.window_title"));
 		stage.getIcons().addAll(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
 
 		this.installDir = initInstallDir;
@@ -59,7 +68,7 @@ class InstallerConfigWindow {
 			stackPaneHeaderContainer.getChildren().add(hboxHeaderIconAndTitle);
 
 			//add adc icon
-			ImageView imageViewAdc = new ImageView(new Image("/adc64.png"));
+			ImageView imageViewAdc = new ImageView(new Image("/com/kaylerrenslow/armaDialogCreator/installer/adc64.png"));
 			imageViewAdc.setFitHeight(64);
 			imageViewAdc.setFitWidth(64);
 			hboxHeaderIconAndTitle.getChildren().add(imageViewAdc);
@@ -70,15 +79,15 @@ class InstallerConfigWindow {
 
 				//adc installer title
 				HBox.setHgrow(vboxHeaderTitles, Priority.ALWAYS);
-				Label lblHeaderTitle = new Label(ADCInstaller.bundle.getString("InstallerWindow.title"));
+				Label lblHeaderTitle = new Label(bundle.getString("InstallerWindow.title"));
 				lblHeaderTitle.setFont(Font.font(24));
 				vboxHeaderTitles.getChildren().add(lblHeaderTitle);
 
 				//adc installer subtitle (created with <3 ...)
 				HBox hboxSubtitle = new HBox(2);
-				Label lblCreatedWith = new Label(ADCInstaller.bundle.getString("InstallerWindow.created_with"));
-				Label lblByK = new Label(ADCInstaller.bundle.getString("InstallerWindow.by_k"));
-				ImageView imageViewHeart = new ImageView("/heart.png");
+				Label lblCreatedWith = new Label(bundle.getString("InstallerWindow.created_with"));
+				Label lblByK = new Label(bundle.getString("InstallerWindow.by_k"));
+				ImageView imageViewHeart = new ImageView("/com/kaylerrenslow/armaDialogCreator/installer/heart.png");
 				imageViewHeart.setFitHeight(16);
 				imageViewHeart.setFitWidth(16);
 				hboxSubtitle.getChildren().addAll(lblCreatedWith, imageViewHeart, lblByK);
@@ -91,7 +100,6 @@ class InstallerConfigWindow {
 
 		vboxBpCenter.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
-		VBox vboxAfterHeader = new VBox(5);
 		vboxBpCenter.getChildren().add(vboxAfterHeader);
 		vboxAfterHeader.setPadding(padding);
 
@@ -101,7 +109,7 @@ class InstallerConfigWindow {
 			tfDir.setEditable(false);
 			HBox.setHgrow(tfDir, Priority.ALWAYS);
 
-			Button btnChange = new Button(ADCInstaller.bundle.getString("InstallerWindow.choose_install_loc"));
+			Button btnChange = new Button(bundle.getString("InstallerWindow.choose_install_loc"));
 			btnChange.setOnAction((e) -> {
 				DirectoryChooser dc = new DirectoryChooser();
 				dc.setInitialDirectory(installDir);
@@ -113,8 +121,79 @@ class InstallerConfigWindow {
 				tfDir.setText(chosen.getAbsolutePath());
 			});
 
-			vboxAfterHeader.getChildren().add(new Label(ADCInstaller.bundle.getString("InstallerWindow.change_dir_if_needed")));
+			vboxAfterHeader.getChildren().add(new Label(bundle.getString("InstallerWindow.change_dir_if_needed")));
 			vboxAfterHeader.getChildren().add(new HBox(5, tfDir, btnChange));
+		}
+
+		//footer of borderpane
+		{
+			Button btnClose = new Button(bundle.getString("InstallerWindow.close_installer"));
+			btnClose.setOnAction((e) -> Platform.exit());
+			closeInstallerBtnDisable = btnClose.disableProperty();
+
+			Button btnInstall = new Button(bundle.getString("InstallerWindow.install"));
+			btnInstall.setOnAction((e) -> {
+				install();
+				btnInstall.setDisable(true);
+			});
+
+			HBox hboxFooter = new HBox(10, btnClose, btnInstall);
+			hboxFooter.setAlignment(Pos.CENTER_RIGHT);
+			hboxFooter.setPadding(new Insets(5));
+
+			root.setBottom(hboxFooter);
+		}
+	}
+
+	private void setupInstallPane(@NotNull ADCInstallerTask task) {
+		vboxAfterHeader.getChildren().clear();
+
+		ProgressBar progress = new ProgressBar();
+		vboxAfterHeader.getChildren().add(progress);
+		progress.progressProperty().bind(task.progressProperty());
+
+		VBox vboxDetails = new VBox();
+		TextArea taDetails = new TextArea();
+		ToggleButton btnShowDetails = new ToggleButton(bundle.getString("InstallerWindow.show_details"));
+		btnShowDetails.setOnAction((e) -> {
+			vboxDetails.getChildren().clear();
+			if (btnShowDetails.isSelected()) {
+				vboxDetails.getChildren().add(taDetails);
+			}
+		});
+		task.messageProperty().addListener(new ChangeListener<String>() {
+			@Override
+			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+				newValue = newValue == null ? "" : newValue;
+				taDetails.appendText("\n" + newValue);
+			}
+		});
+		vboxAfterHeader.getChildren().add(btnShowDetails);
+		vboxAfterHeader.getChildren().add(vboxDetails);
+	}
+
+	private void install() {
+		PrintStream ps = System.out;
+		ADCInstallerTask installTask = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir, ps);
+
+		setupInstallPane(installTask);
+
+		closeInstallerBtnDisable.setValue(true);
+
+		installTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				closeInstallerBtnDisable.setValue(false);
+			}
+		});
+		installTask.setOnSucceeded(installTask.getOnCancelled());
+		installTask.setOnFailed(installTask.getOnCancelled());
+
+
+		try {
+			new Thread(installTask).start();
+		} catch (Exception e) {
+			e.printStackTrace(ps);
 		}
 	}
 
