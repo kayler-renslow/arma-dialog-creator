@@ -5,8 +5,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -21,7 +19,6 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.PrintStream;
 
 import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
 
@@ -38,7 +35,7 @@ class InstallerConfigWindow {
 	private BooleanProperty closeInstallerBtnDisable;
 	private final BooleanProperty installFailedProperty = new SimpleBooleanProperty(false);
 	private final VBox vboxAfterHeader = new VBox(5);
-	private final TextArea taDetails = new TextArea();
+	private final TextArea taDetails = new TextArea("");
 
 	public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
 		stage.setTitle(bundle.getString("InstallerWindow.window_title"));
@@ -180,46 +177,41 @@ class InstallerConfigWindow {
 
 	private void updateDetails(String msg) {
 		msg = msg == null ? "" : msg;
-		if (taDetails.getText().length() == 0) {
-			taDetails.setText(msg);
-		} else {
-			taDetails.appendText("\n" + msg);
-		}
+		taDetails.appendText(msg + "\n");
 	}
 
 	private void install() {
-		PrintStream ps = System.out;
-		ADCInstallerTask installTask = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir, ps);
+		ADCInstallerTask installTask = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir);
 
 		setupInstallPane(installTask);
 
 		closeInstallerBtnDisable.setValue(true);
 
-		installTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				enableCloseInstallButton();
-			}
+		installTask.setOnCancelled((e) -> {
+			installFail();
 		});
 		installTask.setOnSucceeded(installTask.getOnCancelled());
 		installTask.setOnFailed((e) -> {
-			enableCloseInstallButton();
-			installFailedProperty.setValue(true);
+			installFail();
 		});
 		installTask.exceptionProperty().addListener(new ChangeListener<Throwable>() {
 			@Override
 			public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
-				updateDetails(ADCInstaller.getExceptionString(newValue));
-				enableCloseInstallButton();
-				installFailedProperty.setValue(true);
+				updateDetails("!!!! " + ADCInstaller.getExceptionString(newValue));
+				installFail();
 			}
 		});
 
 		try {
 			new Thread(installTask).start();
 		} catch (Exception e) {
-			e.printStackTrace(ps);
+			e.printStackTrace();
 		}
+	}
+
+	private void installFail() {
+		enableCloseInstallButton();
+		installFailedProperty.setValue(true);
 	}
 
 	private void enableCloseInstallButton() {

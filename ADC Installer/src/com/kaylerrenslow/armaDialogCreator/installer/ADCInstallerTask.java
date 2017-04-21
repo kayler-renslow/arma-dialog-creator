@@ -4,7 +4,6 @@ import javafx.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
@@ -24,18 +23,16 @@ public class ADCInstallerTask extends Task<File> {
 	};
 
 	private final File extractDirectory;
-	private PrintStream ps;
 	private InstallPackage installPackage;
 
 	/**
 	 Create an installer task that will extract an InstallPackage
 
 	 @param installPackage package to extract
-	 @param ps stream to print messages to
+	 @param extractDir where to extract files to
 	 */
-	public ADCInstallerTask(@NotNull InstallPackage installPackage, @NotNull File extractDir, @NotNull PrintStream ps) {
+	public ADCInstallerTask(@NotNull InstallPackage installPackage, @NotNull File extractDir) {
 		this.installPackage = installPackage;
-		this.ps = ps;
 
 		if (!extractDir.isDirectory()) {
 			throw new IllegalArgumentException("extractDir is not a directory");
@@ -54,72 +51,96 @@ public class ADCInstallerTask extends Task<File> {
 		updateProgress(-1, 1);
 
 		if (!installPackage.packageExists()) {
-			updateMessage(bundle.getString("Installer.extract_package_dne"));
+			message(bundle.getString("Installer.extract_package_dne"));
 			cancel();
 			return null;
 		}
+		final int MAX_PROGRESS = 1 /*backup*/ + toExtract.length * 2 /*extract and verify*/ + 1 /*delete backup*/ + 1/*done*/;
+		updateProgress(0, MAX_PROGRESS);
 
-		updateMessage(bundle.getString("Installer.backing_up"));
+		int progress = 0;
+
+		message(bundle.getString("Installer.backing_up"));
 		File backupFile = new File(extractDirectory.getAbsolutePath() + ".backup");
 		Files.copy(extractDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		updateProgress(1, 1);
+		updateProgress(++progress, MAX_PROGRESS);
 
-		updateMessage(bundle.getString("Installer.backup_finished"));
+		message(bundle.getString("Installer.backup_finished"));
 
-		Thread.sleep(1000);//sleep to show user files have been backed up
-
-		updateProgress(-1, 1);
-		updateMessage(bundle.getString("Installer.extracting"));
-
-		updateProgress(0, toExtract.length);
-		int numExtract = toExtract.length;
-		int p = 0;
-		for (String f : toExtract) {
-			installPackage.extract(f, getDestPath(f));
-			updateProgress(++p, numExtract);
-			ps.println("ex:" + f);
-		}
-
-		updateMessage(bundle.getString("Installer.verifying"));
-		p = 0;
-		updateProgress(0, numExtract);
+		updateProgress(++progress, MAX_PROGRESS);
+		message(bundle.getString("Installer.extracting"));
 
 		for (String f : toExtract) {
-			updateProgress(++p, numExtract);
-			if (!new File(getDestPath(f)).exists()) {
-				String e = String.format(
-						bundle.getString("Installer.verify_fail_f"),
-						String.format(bundle.getString("Installer.file_didnt_extract_f"), f)
-				);
-				updateMessage(
-						e
-				);
-				ps.println(e);
-				Thread.sleep(1000);
-				try {
-					restoreOld(backupFile);
-				} catch (Exception ex) {
-					String e1 = String.format(bundle.getString("Installer.backup_restore_failed_f"), ex.getMessage());
-					updateMessage(e1);
-					ps.println(e1);
-				}
-
-				cancel();
-				return null;
+			message("extract:" + f);
+			boolean s = installPackage.extract(f, getDestPath(f));
+			if (!s) {
+				break;
 			}
+			updateProgress(++progress, MAX_PROGRESS);
 		}
 
-		updateMessage(bundle.getString("Installer.finished"));
+		message(bundle.getString("Installer.verifying"));
 
-		updateProgress(1, 1);
+		for (String f : toExtract) {
+			updateProgress(++progress, MAX_PROGRESS);
+			if (new File(getDestPath(f)).exists()) {
+				continue;
+			}
+
+			String e = String.format(
+					bundle.getString("Installer.verify_fail_f"),
+					String.format(bundle.getString("Installer.file_didnt_extract_f"), f)
+			);
+			message(
+					e
+			);
+
+			try {
+				restoreOld(backupFile);
+			} catch (Exception ex) {
+				String e1 = String.format(bundle.getString("Installer.backup_restore_failed_f"), ex.getMessage());
+				message(e1);
+			}
+
+			return null;
+		}
+
+		message(bundle.getString("Installer.deleting_backup"));
+		try {
+			backupFile.delete();
+			updateProgress(++progress, MAX_PROGRESS);
+		} catch (SecurityException ignore) {
+
+		}
+
+		message(bundle.getString("Installer.finished"));
+
+		updateProgress(++progress, MAX_PROGRESS);
 
 		return extractDirectory;
 	}
 
 	private void restoreOld(File backupFile) throws Exception {
 		updateProgress(-1, 0);
-		updateMessage(bundle.getString("Installer.restoring_backup"));
+		message(bundle.getString("Installer.restoring_backup"));
 		Files.copy(backupFile.toPath(), extractDirectory.toPath(), StandardCopyOption.REPLACE_EXISTING);
-		updateMessage(bundle.getString("Installer.backup_restored"));
+
+		message(bundle.getString("Installer.backup_restored"));
+		updateProgress(1, 2);
+
+		message(bundle.getString("Installer.deleting_backup"));
+		backupFile.delete();
+
+		updateProgress(2, 2);
+	}
+
+	private void message(String msg) {
+		updateMessage(msg);
+		System.out.println(msg);
+		try {
+			Thread.sleep(500); //give javafx time to see each new message
+		} catch (InterruptedException ignore) {
+
+		}
 	}
 }

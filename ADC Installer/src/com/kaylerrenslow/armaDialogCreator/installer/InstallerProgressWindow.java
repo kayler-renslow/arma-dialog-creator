@@ -9,7 +9,6 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.PrintStream;
 
 /** This installer window is used when the install directory is set and the contents to install are in a zipfile */
 class InstallerProgressWindow extends ADCStandaloneProgressWindow {
@@ -24,9 +23,7 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 			throw new IllegalArgumentException("installDir is not a directory");
 		}
 
-		PrintStream ps = System.out;
-
-		ADCInstallerTask task = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir, ps);
+		ADCInstallerTask task = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir);
 		this.getProgressBar().progressProperty().bind(task.progressProperty());
 		task.messageProperty().addListener((observable, oldValue, newValue) -> {
 			this.getLblStatus().setText(newValue);
@@ -49,7 +46,7 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 		try {
 			new Thread(task).start();
 		} catch (Exception e) {
-			e.printStackTrace(ps);
+			e.printStackTrace();
 		}
 	}
 }

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.installer;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
@@ -16,8 +17,9 @@ public abstract class InstallPackage {
 
 	 @param path file to extract
 	 @param extractTo path to extract to
+	 @return true if extract finished sucessfully, false if didn't succeed
 	 */
-	public abstract void extract(@NotNull String path, @NotNull String extractTo) throws Exception;
+	public abstract boolean extract(@NotNull String path, @NotNull String extractTo);
 
 	/** Return true if the package to extract exists, false otherwise */
 	public abstract boolean packageExists();
@@ -31,8 +33,20 @@ public abstract class InstallPackage {
 	static class JarInstallPackage extends InstallPackage {
 
 		@Override
-		public void extract(@NotNull String path, @NotNull String extractTo) throws Exception {
+		public boolean extract(@NotNull String path, @NotNull String extractTo) {
+			try {
+				doExtract(path, extractTo);
+			} catch (Throwable ignore) {
+				return false;
+			}
+			return true;
+		}
+
+		private void doExtract(@NotNull String path, @NotNull String extractTo) throws Exception {
 			InputStream stream = getClass().getResourceAsStream("/install/" + path);
+			if (stream == null) {
+				throw new FileNotFoundException("/install/" + path);
+			}
 			File extractToFile = new File(extractTo);
 			if (!extractToFile.exists()) {
 				extractToFile.createNewFile();

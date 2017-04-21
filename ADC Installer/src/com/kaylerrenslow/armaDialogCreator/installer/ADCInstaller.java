@@ -27,7 +27,7 @@ public class ADCInstaller extends Application {
 		} else if (f.exists() && !f.isDirectory()) {
 			f = new File(System.getProperty("user.home"));
 		}
-		if (this.getParameters().getUnnamed().contains("-noui")) {
+		if (this.getParameters().getUnnamed().contains("-nocfg")) { //install where installer is and dont use config window
 			InstallerProgressWindow pw = new InstallerProgressWindow(primaryStage);
 			primaryStage.show();
 			pw.runInstall(f);
