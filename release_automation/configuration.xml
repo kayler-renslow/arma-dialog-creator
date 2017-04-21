@@ -2,10 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-	<jar>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator\adc_launcher.jar
-	</jar>
-	<outfile>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\Arma_Dialog_Creator\Arma Dialog
-		Creator.exe
+	<jar>/home/kayler/IdeaProjects/arma-dialog-creator\out\artifacts\Arma_Dialog_Creator\adc_launcher.jar</jar>
+	<outfile>/home/kayler/IdeaProjects/arma-dialog-creator\out\artifacts\Arma_Dialog_Creator\Arma Dialog Creator.exe
 	</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>

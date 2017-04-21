@@ -19,14 +19,14 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 		stage.setTitle(ADCInstaller.bundle.getString("InstallerWindow.window_title"));
 	}
 
-	public void runInstall(@NotNull File zipFile, @NotNull File installDir) {
+	public void runInstall(@NotNull File installDir) {
 		if (!installDir.isDirectory()) {
 			throw new IllegalArgumentException("installDir is not a directory");
 		}
 
 		PrintStream ps = System.out;
 
-		ADCInstallerTask task = new ADCInstallerTask(new InstallPackage.ZipInstallPackage(zipFile), installDir, ps);
+		ADCInstallerTask task = new ADCInstallerTask(new InstallPackage.JarInstallPackage(), installDir, ps);
 		this.getProgressBar().progressProperty().bind(task.progressProperty());
 		task.messageProperty().addListener((observable, oldValue, newValue) -> {
 			this.getLblStatus().setText(newValue);

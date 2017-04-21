@@ -1,30 +1,43 @@
 package com.kaylerrenslow.armaDialogCreator.installer;
 
-import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
-
 /**
  @author kayler
  @since 4/19/17 */
 public abstract class InstallPackage {
 
+	/**
+	 Extract the given file path to the given file path
+
+	 @param path file to extract
+	 @param extractTo path to extract to
+	 */
 	public abstract void extract(@NotNull String path, @NotNull String extractTo) throws Exception;
 
+	/** Return true if the package to extract exists, false otherwise */
 	public abstract boolean packageExists();
 
+	/**
+	 Used for extracting out of implicit .jar (uses getClass().getResourceAsStream())
+
+	 @author kayler
+	 @since 4/20/2017
+	 */
 	static class JarInstallPackage extends InstallPackage {
 
 		@Override
 		public void extract(@NotNull String path, @NotNull String extractTo) throws Exception {
 			InputStream stream = getClass().getResourceAsStream("/install/" + path);
-			FileOutputStream fos = new FileOutputStream(new File(extractTo));
+			File extractToFile = new File(extractTo);
+			if (!extractToFile.exists()) {
+				extractToFile.createNewFile();
+			}
+			FileOutputStream fos = new FileOutputStream(extractToFile);
 
 			int i = 0;
 			while ((i = stream.read()) >= 0) {
@@ -41,34 +54,4 @@ public abstract class InstallPackage {
 		}
 	}
 
-	static class ZipInstallPackage extends InstallPackage {
-		private ZipFile zipFileO;
-		private File zipFile;
-
-		public ZipInstallPackage(@NotNull File zipFile) {
-			if (zipFile.isDirectory()) {
-				throw new IllegalArgumentException("zipFile is a directory");
-			}
-			this.zipFile = zipFile;
-
-			try {
-				this.zipFileO = new ZipFile(zipFile);
-			} catch (ZipException ignore) {
-
-			}
-		}
-
-		@Override
-		public void extract(@NotNull String path, @NotNull String extractTo) throws Exception {
-			if (zipFileO == null) {
-				throw new Exception(bundle.getString("Installer.extract_package_dne"));
-			}
-			zipFileO.extractFile(path, extractTo);
-		}
-
-		@Override
-		public boolean packageExists() {
-			return zipFile.exists();
-		}
-	}
 }

@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.installer;
 
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.WorkerStateEvent;
@@ -35,7 +36,9 @@ class InstallerConfigWindow {
 
 	private File installDir = new File("");
 	private BooleanProperty closeInstallerBtnDisable;
+	private final BooleanProperty installFailedProperty = new SimpleBooleanProperty(false);
 	private final VBox vboxAfterHeader = new VBox(5);
+	private final TextArea taDetails = new TextArea();
 
 	public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
 		stage.setTitle(bundle.getString("InstallerWindow.window_title"));
@@ -102,6 +105,7 @@ class InstallerConfigWindow {
 
 		vboxBpCenter.getChildren().add(vboxAfterHeader);
 		vboxAfterHeader.setPadding(padding);
+		vboxAfterHeader.setFillWidth(true);
 
 		//options for install
 		{
@@ -149,11 +153,13 @@ class InstallerConfigWindow {
 		vboxAfterHeader.getChildren().clear();
 
 		ProgressBar progress = new ProgressBar();
-		vboxAfterHeader.getChildren().add(progress);
+		Label lblError = new Label();
+		vboxAfterHeader.getChildren().add(new HBox(5, progress, lblError));
 		progress.progressProperty().bind(task.progressProperty());
 
+		//Installer.install_failed_notify
+
 		VBox vboxDetails = new VBox();
-		TextArea taDetails = new TextArea();
 		ToggleButton btnShowDetails = new ToggleButton(bundle.getString("InstallerWindow.show_details"));
 		btnShowDetails.setOnAction((e) -> {
 			vboxDetails.getChildren().clear();
@@ -161,15 +167,24 @@ class InstallerConfigWindow {
 				vboxDetails.getChildren().add(taDetails);
 			}
 		});
+		installFailedProperty.addListener((observable, oldValue, newValue) -> lblError.setText(bundle.getString("Installer.install_failed_notify")));
 		task.messageProperty().addListener(new ChangeListener<String>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-				newValue = newValue == null ? "" : newValue;
-				taDetails.appendText("\n" + newValue);
+				updateDetails(newValue);
 			}
 		});
 		vboxAfterHeader.getChildren().add(btnShowDetails);
 		vboxAfterHeader.getChildren().add(vboxDetails);
+	}
+
+	private void updateDetails(String msg) {
+		msg = msg == null ? "" : msg;
+		if (taDetails.getText().length() == 0) {
+			taDetails.setText(msg);
+		} else {
+			taDetails.appendText("\n" + msg);
+		}
 	}
 
 	private void install() {
@@ -183,18 +198,32 @@ class InstallerConfigWindow {
 		installTask.setOnCancelled(new EventHandler<WorkerStateEvent>() {
 			@Override
 			public void handle(WorkerStateEvent event) {
-				closeInstallerBtnDisable.setValue(false);
+				enableCloseInstallButton();
 			}
 		});
 		installTask.setOnSucceeded(installTask.getOnCancelled());
-		installTask.setOnFailed(installTask.getOnCancelled());
-
+		installTask.setOnFailed((e) -> {
+			enableCloseInstallButton();
+			installFailedProperty.setValue(true);
+		});
+		installTask.exceptionProperty().addListener(new ChangeListener<Throwable>() {
+			@Override
+			public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
+				updateDetails(ADCInstaller.getExceptionString(newValue));
+				enableCloseInstallButton();
+				installFailedProperty.setValue(true);
+			}
+		});
 
 		try {
 			new Thread(installTask).start();
 		} catch (Exception e) {
 			e.printStackTrace(ps);
 		}
+	}
+
+	private void enableCloseInstallButton() {
+		closeInstallerBtnDisable.setValue(false);
 	}
 
 	@NotNull

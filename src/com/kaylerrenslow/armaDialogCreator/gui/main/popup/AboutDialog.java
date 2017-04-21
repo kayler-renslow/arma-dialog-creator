@@ -37,8 +37,7 @@ public class AboutDialog extends StageDialog<VBox> {
 				new Label(Lang.ApplicationBundle().getString("Popups.About.libraries")),
 				new Link("ANTLR 4.5.3", "http://www.antlr.org/"),
 				new Link("RichTextFX 0.7-M2", "https://github.com/TomasMikula/RichTextFX"),
-				new Link("Json Simple 1.1.1", "https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple/1.1.1"),
-				new Link("Zip4j 1.3.2", "http://www.lingala.net/zip4j/index.php")
+				new Link("Json Simple 1.1.1", "https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple/1.1.1")
 		);
 		hboxLib.setAlignment(Pos.CENTER_LEFT);
 		myRootElement.getChildren().add(hboxLib);

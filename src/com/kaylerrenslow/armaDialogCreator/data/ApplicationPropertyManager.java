@@ -33,7 +33,7 @@ class ApplicationPropertyManager {
 	/**
 	 Appdata folder
 	 */
-	private final File appdataFolder = new File(defaultDirectory() + "/.Arma Dialog Creator");
+	private final File appdataFolder = new File(defaultDirectory() + "/Arma Dialog Creator");
 	/**
 	 DataContext holds all application properties
 	 */
