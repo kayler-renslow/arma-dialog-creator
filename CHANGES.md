@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* finished (?) functionality for installer
+* changed header parser implementation from hardcode to antlr (not done)
 
 **Fixed:**
 * 
