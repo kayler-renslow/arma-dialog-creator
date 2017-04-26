@@ -21,6 +21,8 @@ public class HeaderParser {
 	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 	private static final String S_EOF = bundle.getString("Error.HeaderParser.eof");
 	private static final char EOF = 26;
+	private static final char EOT = 3; //end of text
+	private static final String S_EOT = bundle.getString("Error.HeaderParser.eot");
 
 	private final File parsingFile;
 	private final HeaderParserContext parserContext;
@@ -248,9 +250,9 @@ public class HeaderParser {
 				default: {
 					if (c == '/') {
 						if (r.canPeekAhead(1) && r.peekAhead(1) == '/') {
-							skipComment(r, false);
+							skipRestOfComment(r, false);
 						} else if (r.canPeekAhead(1) && r.peekAhead(1) == '*') {
-							skipComment(r, true);
+							skipRestOfComment(r, true);
 						}
 					} else {
 						if (isWhitespace(c)) {
@@ -281,13 +283,18 @@ public class HeaderParser {
 
 	}
 
-	private void readUpToSemicolon(CharSequenceReader r, StringBuilder sb) throws HeaderParseException {
+	private void readUpToSemicolon(@NotNull CharSequenceReader r, @NotNull StringBuilder sb) throws HeaderParseException {
 		boolean semicolon = false;
 		char ca = EOF;
 		char last = ca;
 		while (r.hasAvailable()) {
 			last = ca;
 			ca = r.read();
+
+			//make sure we aren't reading up to a semicolon in a String
+			if (ca == DQuote || ca == Quote) {
+				readString(r, sb);
+			}
 			if (ca == Semicolon) {
 				semicolon = true;
 				break;
@@ -299,13 +306,45 @@ public class HeaderParser {
 		}
 	}
 
+	private void readString(@NotNull CharSequenceReader r, @Nullable StringBuilder writeTo) throws HeaderParseException {
+		boolean quote = true;
+		char quoteType = r.lookBehind(1);
+		if (quoteType != Quote && quoteType != DQuote) {
+			throw new IllegalStateException("can't read string which hasn't read a ' or \" prior to method call");
+		}
+		if (writeTo != null) {
+			writeTo.append(quoteType);
+		}
+		boolean flag = true;
+		while (r.hasAvailable() && flag) {
+			char c = r.read();
+			if (c == quoteType) {
+				quote = !quote;
+				if (!quote) {
+					//in Arma, "" is used instead of \"
+					flag = r.canPeekAhead(1) && r.peekAhead(1) == quoteType;
+				}
+			}
+			if (writeTo != null) {
+				writeTo.append(c);
+			}
+		}
+		if (quote) {
+			expected(quoteType, EOF);
+		}
+	}
+
 	@NotNull
 	protected HeaderClass getCurrentClass() {
 		return parserContext.getClassStack().getFirst();
 	}
 
 	protected String expected(char exp, char got) {
-		return String.format(bundle.getString("Error.HeaderParser.expected_got_f"), exp, got == EOF ? S_EOF : got);
+		return String.format(
+				bundle.getString("Error.HeaderParser.expected_got_f"),
+				exp,
+				got == EOF ? S_EOF : got == EOT ? S_EOT : got
+		);
 	}
 
 	protected String unexpected(char c) {
@@ -316,7 +355,7 @@ public class HeaderParser {
 		throw new HeaderParseException(String.format(bundle.getString("Error.HeaderParser.parse_error_wrapper_f"), r.getLineCount(), r.getPosInLine(), string));
 	}
 
-	private static void skipComment(@NotNull CharSequenceReader r, boolean isBlock) {
+	private static void skipRestOfComment(@NotNull CharSequenceReader r, boolean isBlock) {
 		char c = '\0'; //set to something that will initially fail for the first read
 		boolean quote = false;
 		char lastChar;
@@ -324,7 +363,7 @@ public class HeaderParser {
 			lastChar = c;
 			c = r.read();
 			if (isBlock) {
-				if (c == '"') {
+				if (c == DQuote) {
 					quote = !quote;
 				}
 				if (quote) {
@@ -361,6 +400,8 @@ public class HeaderParser {
 	static final char RBrace = '}';
 	static final char LBracket = '[';
 	static final char RBracket = ']';
+	static final char Quote = '\'';
+	static final char DQuote = '"';
 
 
 	private static class CharSequenceReader {
@@ -387,6 +428,14 @@ public class HeaderParser {
 
 		public char peekAhead(int amount) {
 			return cs.charAt(pos + amount);
+		}
+
+		public char lookBehind(int amount) {
+			return cs.charAt(pos - amount);
+		}
+
+		public boolean canLookBehind(int amount) {
+			return pos - amount >= 0;
 		}
 
 		public int getLineCount() {
