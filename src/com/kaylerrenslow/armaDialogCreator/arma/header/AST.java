@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -74,7 +73,11 @@ interface AST {
 
 	class HeaderArrayNode extends ASTNode implements HeaderArray {
 
-		private final List<HeaderArrayItem> items = new ArrayList<>();
+		private final List<HeaderArrayItem> items;
+
+		public HeaderArrayNode(List<HeaderArrayItem> items) {
+			this.items = items;
+		}
 
 		@Override
 		@NotNull
@@ -102,12 +105,14 @@ interface AST {
 
 		private final String className;
 		private final String extendClassName;
-		private final List<HeaderAssignment> assignments = new ArrayList<>();
-		private final List<HeaderClass> nestedClasses = new ArrayList<>();
+		private final List<HeaderAssignment> assignments;
+		private final List<HeaderClass> nestedClasses;
 
-		public HeaderClassNode(@NotNull String className, @Nullable String extendClassName) {
+		public HeaderClassNode(@NotNull String className, @Nullable String extendClassName, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
 			this.className = className;
 			this.extendClassName = extendClassName;
+			this.assignments = assignments;
+			this.nestedClasses = nestedClasses;
 		}
 
 		@NotNull
