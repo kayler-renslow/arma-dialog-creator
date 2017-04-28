@@ -8,7 +8,9 @@ root_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> neste
         $nested = new ArrayList<>();
         $assigns = new ArrayList<>();
     }:
+    (
     help=header_class_helper[$nested, $assigns] { $ast = new AST.HeaderClassNode("-root class", null, $assigns, $nested); }
+    )*
     ;
 
 header_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
@@ -51,8 +53,7 @@ arr_assignment returns [AST.HeaderArrayAssignmentNode ast]:
 array returns [AST.HeaderArrayNode ast] locals[ArrayList<HeaderArrayItem> items] @init{ $items = new ArrayList<>(); }:
     LBrace
     (
-        (array_helper[$items] Comma)+
-        | array_helper[$items]
+        array_helper[$items] (Comma array_helper[$items])*
     )?
     RBrace
     { $ast = new AST.HeaderArrayNode($items); }
@@ -64,12 +65,16 @@ array_helper [ArrayList<HeaderArrayItem> items]:
     ;
 
 value returns [AST.HeaderValueNode ast]:
-    v=everythingButSemicolon { $ast = new AST.HeaderValueNode($v.text); }
+    s=String { $ast = new AST.HeaderValueNode($s.text); }
+    | eq=equation { $ast = new AST.HeaderValueNode($eq.text); }
     ;
 
-everythingButSemicolon : String | NOT_SEMI ;
+//match as much as possible. Don't worry about correctness because it will be dealt with later.
+equation :
+    (Plus | Minus | Star | FSlash | LParen | RParen | Number | Identifier)+
+    ;
 
-String : (Quote [^']* Quote)+ | (DQuote [^"]* DQuote)+ ;
+String : (Quote ~('\'')* Quote)+ | (DQuote ~('"')* DQuote)+ ;
 Class : 'class';
 Comma : ',';
 Colon : ':';
@@ -81,10 +86,15 @@ RBrace : '}';
 BacketPair : '[]';
 Quote : '\'';
 DQuote : '"';
-
-fragment NOT_SEMI: [^;}]+ ;
+Plus : '+' ;
+Minus : '-' ;
+Star : '*' ;
+FSlash : '/' ;
+LParen : '(' ;
+RParen : ')' ;
 
 Identifier :  Letter LetterOrDigit*;
+Number : INTEGER_LITERAL | DEC_LITERAL | HEX_LITERAL;
 
 Letter :   [a-zA-Z$_]
     |   ~[\u0000-\u00FF\uD800-\uDBFF]
@@ -99,3 +109,14 @@ LetterOrDigit: [a-zA-Z0-9$_]
 
 WhiteSpace : (' '|'\t'|'\r'|'\n'|'\r\n') -> skip; //ignore whitespace
 Comment : ('//'[^\r\n]+ | '/*' .*? '*/') -> skip; //ignore comments
+
+INTEGER_LITERAL : DIGITS ;
+DEC_LITERAL : (DEC_SIGNIFICAND | DEC_EXPONENT) ;
+HEX_LITERAL : '0' ('x'|'X') '0'* HEX_DIGIT{1,8} ;
+
+fragment DIGITS : ('0'..'9')+ ;
+
+fragment DEC_SIGNIFICAND : '.' DIGITS | DIGITS '.' DIGITS ;
+fragment DEC_EXPONENT : (DEC_SIGNIFICAND | INTEGER_LITERAL) ('e'|'E') ('+'|'-')? DIGITS ;
+
+fragment HEX_DIGIT   : (DIGITS | 'a'..'f' | 'A'..'F');
