@@ -7,4 +7,6 @@ import org.jetbrains.annotations.NotNull;
  @since 03/19/2017 */
 public interface HeaderArrayAssignment extends HeaderAssignment {
 	@NotNull HeaderArray getArray();
+
+	boolean isConcatenated();
 }

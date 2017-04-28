@@ -9,4 +9,10 @@ import java.util.List;
  @since 03/19/2017 */
 public interface HeaderArray extends HeaderValue {
 	@NotNull List<HeaderArrayItem> getItems();
+
+	@NotNull
+	@Override
+	default String getContent() {
+		throw new UnsupportedOperationException("");
+	}
 }
