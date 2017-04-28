@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* finished (?) functionality for installer
+* 
 
 **Fixed:**
-* 
+* release automation

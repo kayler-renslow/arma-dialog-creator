@@ -17,25 +17,50 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 /**
- Created by Kayler on 10/10/2016.
+ This class is used for preparing a build for Arma Dialog Creator and building "Arma Dialog Creator.exe". In order to build the .exe, <a href='http://launch4j.sourceforge.net/'>Launch4J</a> will be
+ needed.
+ @author Kayler
+ @since 10/10/2016.
  */
 public class ADCReleaseAutomation {
 	private final String workingDirectoryPath = new File("").getAbsolutePath();
 
 	public static void main(String[] args) {
 		try {
-			new ADCReleaseAutomation().run();
+			new ADCReleaseAutomation().run(args);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void run() throws Exception {
-		createManifest();
-		createLaunch4jConfig();
-		removeOldExe();
+	private void run(String[] args) throws Exception {
+		if (args.length > 0 && args[0].equals("-buildExe")) {
+			createExe();
+		} else {
+			createManifest();
+			createLaunch4jConfig();
+			removeOldExe();
+		}
+
 	}
 
+	/** Ask Launch4j to build the .exe for us */
+	private void createExe() {
+		ProcessBuilder pb = new ProcessBuilder();
+		try {
+			pb.inheritIO();
+			Process p = Runtime.getRuntime().exec(
+					String.format("java -jar launch4j.jar \"%s\\release_automation\\configuration.xml\"", workingDirectoryPath),
+					null,
+					new File("D:\\DATA\\Launch4j")
+			);
+			p.waitFor();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** Create the Manifest file to be used for the adc.jar. The Manifest holds details like the build and Arma Dialog Creator version */
 	private void createManifest() {
 		exportNew(new File("release_automation/MANIFEST_template.mf"), new File("src/META-INF/MANIFEST.MF"));
 	}
@@ -65,17 +90,19 @@ public class ADCReleaseAutomation {
 			FileOutputStream fos = new FileOutputStream(out);
 			int in;
 			boolean startVariable = false;
-			String variable = "";
+			StringBuilder variable = new StringBuilder();
 			while ((in = fis.read()) >= 0) {
 				if (startVariable) {
 					if (in == '$') {
 						startVariable = false;
 					} else {
-						variable += (char) in;
+						variable.append((char)in);
 						continue;
 					}
 
-					switch (variable) {
+					String varName = variable.toString();
+
+					switch (varName) {
 						case "PROJECT_OUT_PATH": {
 							fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
 							break;
@@ -94,13 +121,13 @@ public class ADCReleaseAutomation {
 							break;
 						}
 						default: {
-							throw new IllegalStateException("unknown variable:" + variable);
+							throw new IllegalStateException("unknown variable:" + varName);
 						}
 					}
 				} else {
 					if (in == '$') {
 						startVariable = true;
-						variable = "";
+						variable = new StringBuilder();
 						continue;
 					}
 					fos.write(in);
