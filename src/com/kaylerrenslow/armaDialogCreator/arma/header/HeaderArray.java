@@ -7,8 +7,14 @@ import java.util.List;
 /**
  @author Kayler
  @since 03/19/2017 */
-public interface HeaderArray extends HeaderValue {
+public interface HeaderArray extends HeaderValue, HeaderArrayItem {
 	@NotNull List<HeaderArrayItem> getItems();
+
+	@Override
+	@NotNull
+	default HeaderValue getValue() {
+		return this;
+	}
 
 	@NotNull
 	@Override

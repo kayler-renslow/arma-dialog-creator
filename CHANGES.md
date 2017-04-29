@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* changed header parser implementation from hardcode to antlr (not done)
+* header parser works now. need to test it more
 
 **Fixed:**
 * 
