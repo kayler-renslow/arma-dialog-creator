@@ -9,8 +9,9 @@ root_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> neste
         $assigns = new ArrayList<>();
     }:
     (
-    help=header_class_helper[$nested, $assigns] { $ast = new AST.HeaderClassNode("-root class", null, $assigns, $nested); }
+    help=header_class_helper[$nested, $assigns]
     )*
+    { $ast = new AST.HeaderClassNode("-root class", null, $assigns, $nested); }
     ;
 
 header_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
@@ -108,11 +109,11 @@ LetterOrDigit: [a-zA-Z0-9$_]
     {Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?;
 
 WhiteSpace : (' '|'\t'|'\r'|'\n'|'\r\n') -> skip; //ignore whitespace
-Comment : ('//'[^\r\n]+ | '/*' .*? '*/') -> skip; //ignore comments
+Comment : ('//' ~('\r'|'\n')+ | '/*' .*? '*/') -> skip; //ignore comments
 
 INTEGER_LITERAL : DIGITS ;
 DEC_LITERAL : (DEC_SIGNIFICAND | DEC_EXPONENT) ;
-HEX_LITERAL : '0' ('x'|'X') '0'* HEX_DIGIT{1,8} ;
+HEX_LITERAL : '0' ('x'|'X') '0'* HEX_DIGIT (HEX_DIGIT? HEX_DIGIT? HEX_DIGIT? HEX_DIGIT? HEX_DIGIT? HEX_DIGIT? HEX_DIGIT? );
 
 fragment DIGITS : ('0'..'9')+ ;
 

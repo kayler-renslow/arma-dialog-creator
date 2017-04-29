@@ -16,4 +16,25 @@ public interface HeaderClass {
 	@NotNull String getClassName();
 
 	@Nullable String getExtendClassName();
+
+	default boolean equalsClass(@NotNull HeaderClass o) {
+		if (o == this) {
+			return true;
+		}
+		if (!getAssignments().equals(o.getAssignments())) {
+			return false;
+		}
+		if (!getNestedClasses().equals(o.getNestedClasses())) {
+			return false;
+		}
+		if (!getClassName().equals(o.getClassName())) {
+			return false;
+		}
+
+		if (getExtendClassName() == null) {
+			return o.getExtendClassName() == null;
+		}
+
+		return getExtendClassName().equals(o.getExtendClassName());
+	}
 }

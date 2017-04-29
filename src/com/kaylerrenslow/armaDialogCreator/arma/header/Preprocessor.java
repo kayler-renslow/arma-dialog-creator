@@ -47,6 +47,7 @@ class Preprocessor {
 	private final File processFile;
 	private final HeaderParserContext parserContext;
 	private final PreprocessCallback callback;
+	private final File workingDirectory;
 	private boolean preprocessed = false;
 
 	protected final LinkedList<File> processingFiles = new LinkedList<>();
@@ -58,6 +59,7 @@ class Preprocessor {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
 		this.callback = callback;
+		this.workingDirectory = processFile.getParentFile();
 	}
 
 
@@ -177,7 +179,7 @@ class Preprocessor {
 
 					String filePath = macroContent.substring(1, macroContent.length() - 1);
 
-					File f = FilePath.findFileByPath(filePath, processFile);
+					File f = FilePath.findFileByPath(filePath, workingDirectory);
 					if (f == null) {
 						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 					}

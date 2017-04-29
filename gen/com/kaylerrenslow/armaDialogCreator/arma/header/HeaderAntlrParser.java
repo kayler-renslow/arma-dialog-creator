@@ -1,4 +1,4 @@
-// Generated from /home/kayler/IdeaProjects/arma-dialog-creator/src/com/kaylerrenslow/armaDialogCreator/arma/header/HeaderAntlr.g4 by ANTLR 4.7
+// Generated from D:/Archive/Intellij Files/Arma Tools/Arma Dialog Creator/src/com/kaylerrenslow/armaDialogCreator/arma/header\HeaderAntlr.g4 by ANTLR 4.6
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class HeaderAntlrParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.6", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -115,6 +115,11 @@ public class HeaderAntlrParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitRoot_class(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitRoot_class(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Root_classContext root_class() throws RecognitionException {
@@ -128,7 +133,7 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(23);
+			setState(21);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			while (_la==Class || _la==Identifier) {
@@ -136,13 +141,13 @@ public class HeaderAntlrParser extends Parser {
 				{
 				setState(18);
 				((Root_classContext)_localctx).help = header_class_helper(_localctx.nested, _localctx.assigns);
-				 ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode("-root class", null, _localctx.assigns, _localctx.nested); 
 				}
 				}
-				setState(25);
+				setState(23);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
+			 ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode("-root class", null, _localctx.assigns, _localctx.nested); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -189,6 +194,11 @@ public class HeaderAntlrParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitHeader_class(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitHeader_class(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -295,6 +305,11 @@ public class HeaderAntlrParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitHeader_class_helper(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitHeader_class_helper(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Header_class_helperContext header_class_helper(ArrayList<HeaderClass> nested,ArrayList<HeaderAssignment> assigns) throws RecognitionException {
@@ -363,6 +378,11 @@ public class HeaderAntlrParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitAssignment(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitAssignment(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
@@ -417,6 +437,11 @@ public class HeaderAntlrParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArr_assignment(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitArr_assignment(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -486,6 +511,11 @@ public class HeaderAntlrParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArray(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitArray(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -565,6 +595,11 @@ public class HeaderAntlrParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArray_helper(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitArray_helper(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final Array_helperContext array_helper(ArrayList<HeaderArrayItem> items) throws RecognitionException {
@@ -632,6 +667,11 @@ public class HeaderAntlrParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitValue(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitValue(this);
+			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -725,6 +765,11 @@ public class HeaderAntlrParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitEquation(this);
 		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof HeaderAntlrVisitor ) return ((HeaderAntlrVisitor<? extends T>)visitor).visitEquation(this);
+			else return visitor.visitChildren(this);
+		}
 	}
 
 	public final EquationContext equation() throws RecognitionException {
@@ -770,32 +815,32 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35k\4\2\t\2\4\3\t"+
-		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\3\2\3\2"+
-		"\7\2\30\n\2\f\2\16\2\33\13\2\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\3\3\3\7\3"+
-		"&\n\3\f\3\16\3)\13\3\3\3\5\3,\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4"+
-		"\3\4\3\4\3\4\5\4:\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6"+
-		"\3\6\3\7\3\7\3\7\3\7\7\7M\n\7\f\7\16\7P\13\7\5\7R\n\7\3\7\3\7\3\7\3\b"+
-		"\3\b\3\b\3\b\3\b\3\b\5\b]\n\b\3\t\3\t\3\t\3\t\3\t\5\td\n\t\3\n\6\ng\n"+
-		"\n\r\n\16\nh\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\3\2\17\26\2l"+
-		"\2\31\3\2\2\2\4\34\3\2\2\2\69\3\2\2\2\b;\3\2\2\2\nA\3\2\2\2\fH\3\2\2\2"+
-		"\16\\\3\2\2\2\20c\3\2\2\2\22f\3\2\2\2\24\25\5\6\4\2\25\26\b\2\1\2\26\30"+
-		"\3\2\2\2\27\24\3\2\2\2\30\33\3\2\2\2\31\27\3\2\2\2\31\32\3\2\2\2\32\3"+
-		"\3\2\2\2\33\31\3\2\2\2\34\35\7\4\2\2\35!\7\25\2\2\36\37\7\6\2\2\37 \7"+
-		"\25\2\2 \"\b\3\1\2!\36\3\2\2\2!\"\3\2\2\2\"+\3\2\2\2#\'\7\n\2\2$&\5\6"+
-		"\4\2%$\3\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)\'\3\2\2\2*,"+
-		"\7\13\2\2+#\3\2\2\2+,\3\2\2\2,-\3\2\2\2-.\7\7\2\2./\b\3\1\2/\5\3\2\2\2"+
-		"\60\61\5\4\3\2\61\62\b\4\1\2\62:\3\2\2\2\63\64\5\b\5\2\64\65\b\4\1\2\65"+
-		":\3\2\2\2\66\67\5\n\6\2\678\b\4\1\28:\3\2\2\29\60\3\2\2\29\63\3\2\2\2"+
-		"9\66\3\2\2\2:\7\3\2\2\2;<\7\25\2\2<=\7\t\2\2=>\5\20\t\2>?\7\7\2\2?@\b"+
-		"\5\1\2@\t\3\2\2\2AB\7\25\2\2BC\7\f\2\2CD\t\2\2\2DE\5\f\7\2EF\7\7\2\2F"+
-		"G\b\6\1\2G\13\3\2\2\2HQ\7\n\2\2IN\5\16\b\2JK\7\5\2\2KM\5\16\b\2LJ\3\2"+
-		"\2\2MP\3\2\2\2NL\3\2\2\2NO\3\2\2\2OR\3\2\2\2PN\3\2\2\2QI\3\2\2\2QR\3\2"+
-		"\2\2RS\3\2\2\2ST\7\13\2\2TU\b\7\1\2U\r\3\2\2\2VW\5\20\t\2WX\b\b\1\2X]"+
-		"\3\2\2\2YZ\5\f\7\2Z[\b\b\1\2[]\3\2\2\2\\V\3\2\2\2\\Y\3\2\2\2]\17\3\2\2"+
-		"\2^_\7\3\2\2_d\b\t\1\2`a\5\22\n\2ab\b\t\1\2bd\3\2\2\2c^\3\2\2\2c`\3\2"+
-		"\2\2d\21\3\2\2\2eg\t\3\2\2fe\3\2\2\2gh\3\2\2\2hf\3\2\2\2hi\3\2\2\2i\23"+
-		"\3\2\2\2\f\31!\'+9NQ\\ch";
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\35k\4\2\t\2\4\3\t"+
+		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
+		"\n\2\f\2\16\2\31\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\3\3\3\7"+
+		"\3&\n\3\f\3\16\3)\13\3\3\3\5\3,\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3"+
+		"\4\3\4\3\4\3\4\5\4:\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3"+
+		"\6\3\6\3\7\3\7\3\7\3\7\7\7M\n\7\f\7\16\7P\13\7\5\7R\n\7\3\7\3\7\3\7\3"+
+		"\b\3\b\3\b\3\b\3\b\3\b\5\b]\n\b\3\t\3\t\3\t\3\t\3\t\5\td\n\t\3\n\6\ng"+
+		"\n\n\r\n\16\nh\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\3\2\17\26l"+
+		"\2\27\3\2\2\2\4\34\3\2\2\2\69\3\2\2\2\b;\3\2\2\2\nA\3\2\2\2\fH\3\2\2\2"+
+		"\16\\\3\2\2\2\20c\3\2\2\2\22f\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\31"+
+		"\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\32\3\2\2\2\31\27\3\2\2\2\32\33"+
+		"\b\2\1\2\33\3\3\2\2\2\34\35\7\4\2\2\35!\7\25\2\2\36\37\7\6\2\2\37 \7\25"+
+		"\2\2 \"\b\3\1\2!\36\3\2\2\2!\"\3\2\2\2\"+\3\2\2\2#\'\7\n\2\2$&\5\6\4\2"+
+		"%$\3\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)\'\3\2\2\2*,\7\13"+
+		"\2\2+#\3\2\2\2+,\3\2\2\2,-\3\2\2\2-.\7\7\2\2./\b\3\1\2/\5\3\2\2\2\60\61"+
+		"\5\4\3\2\61\62\b\4\1\2\62:\3\2\2\2\63\64\5\b\5\2\64\65\b\4\1\2\65:\3\2"+
+		"\2\2\66\67\5\n\6\2\678\b\4\1\28:\3\2\2\29\60\3\2\2\29\63\3\2\2\29\66\3"+
+		"\2\2\2:\7\3\2\2\2;<\7\25\2\2<=\7\t\2\2=>\5\20\t\2>?\7\7\2\2?@\b\5\1\2"+
+		"@\t\3\2\2\2AB\7\25\2\2BC\7\f\2\2CD\t\2\2\2DE\5\f\7\2EF\7\7\2\2FG\b\6\1"+
+		"\2G\13\3\2\2\2HQ\7\n\2\2IN\5\16\b\2JK\7\5\2\2KM\5\16\b\2LJ\3\2\2\2MP\3"+
+		"\2\2\2NL\3\2\2\2NO\3\2\2\2OR\3\2\2\2PN\3\2\2\2QI\3\2\2\2QR\3\2\2\2RS\3"+
+		"\2\2\2ST\7\13\2\2TU\b\7\1\2U\r\3\2\2\2VW\5\20\t\2WX\b\b\1\2X]\3\2\2\2"+
+		"YZ\5\f\7\2Z[\b\b\1\2[]\3\2\2\2\\V\3\2\2\2\\Y\3\2\2\2]\17\3\2\2\2^_\7\3"+
+		"\2\2_d\b\t\1\2`a\5\22\n\2ab\b\t\1\2bd\3\2\2\2c^\3\2\2\2c`\3\2\2\2d\21"+
+		"\3\2\2\2eg\t\3\2\2fe\3\2\2\2gh\3\2\2\2hf\3\2\2\2hi\3\2\2\2i\23\3\2\2\2"+
+		"\f\27!\'+9NQ\\ch";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

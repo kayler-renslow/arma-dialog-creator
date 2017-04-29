@@ -1,8 +1,11 @@
 **Added:**
-* 
+* header parser large test
 
 **Changed:**
-* header parser works now. need to test it more
+* header parser handles comments correctly now
 
 **Fixed:**
 * 
+
+**Notes:**
+* will need to redo preprocessor because parseText() fails to preserve order

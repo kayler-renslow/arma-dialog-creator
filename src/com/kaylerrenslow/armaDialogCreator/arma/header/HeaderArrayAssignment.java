@@ -9,4 +9,16 @@ public interface HeaderArrayAssignment extends HeaderAssignment {
 	@NotNull HeaderArray getArray();
 
 	boolean isConcatenated();
+
+	@Override
+	default boolean equalsAssignment(@NotNull HeaderAssignment o) {
+		if (o == this) {
+			return true;
+		}
+		if (o instanceof HeaderArrayAssignment) {
+			HeaderArrayAssignment obj = ((HeaderArrayAssignment) o);
+			return (isConcatenated() == obj.isConcatenated()) && getArray().equalsArray(obj.getArray());
+		}
+		return false;
+	}
 }

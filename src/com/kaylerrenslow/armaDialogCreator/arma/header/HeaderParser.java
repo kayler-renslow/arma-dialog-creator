@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -62,7 +61,7 @@ public class HeaderParser {
 	}
 
 	private HeaderFile doParse() throws Exception {
-		HeaderFile headerFile = new HeaderFile(getParsingFile(), new ArrayList<>(), new ArrayList<>());
+		HeaderFile headerFile = new HeaderFile(getParsingFile());
 
 		PreprocessCallback callback = new PreprocessCallback() {
 			@Override
@@ -74,25 +73,22 @@ public class HeaderParser {
 		Preprocessor pre = new Preprocessor(parsingFile, parserContext, callback);
 		pre.run();
 
-		HeaderClass root = parserContext.getClassStack().removeFirst();
-
-		headerFile.getAssignments().addAll(root.getAssignments());
-		headerFile.getClasses().addAll(root.getNestedClasses());
-
 		return headerFile;
 	}
 
 	private void parseText(@NotNull HeaderFile parsingFile, @NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) throws HeaderParseException {
 		HeaderAntlrLexer l = getLexer(textContent);
 		HeaderAntlrParser p = getParser(new CommonTokenStream(l));
+		l.getErrorListeners().clear();
+		p.getErrorListeners().clear();
 
+		System.out.println(textContent);
 
-	}
+		HeaderClass rootClass = p.root_class().ast;
 
+		parsingFile.getClasses().addAll(0, rootClass.getNestedClasses());
+		parsingFile.getAssignments().addAll(0, rootClass.getAssignments());
 
-	@NotNull
-	protected HeaderClass getCurrentClass() {
-		return parserContext.getClassStack().getFirst();
 	}
 
 	protected String expected(char exp, char got) {

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -10,13 +11,11 @@ import java.util.List;
  @since 03/19/2017 */
 public class HeaderFile {
 	private final File file;
-	private List<HeaderAssignment> assignments;
-	private List<HeaderClass> classes;
+	private List<HeaderAssignment> assignments = new LinkedList<>();
+	private List<HeaderClass> classes = new LinkedList<>();
 
-	protected HeaderFile(@NotNull File file, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> classes) {
+	protected HeaderFile(@NotNull File file) {
 		this.file = file;
-		this.assignments = assignments;
-		this.classes = classes;
 	}
 
 	@NotNull

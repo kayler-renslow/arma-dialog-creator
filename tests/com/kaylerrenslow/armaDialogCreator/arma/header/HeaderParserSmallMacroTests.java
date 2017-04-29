@@ -8,10 +8,10 @@ import static org.junit.Assert.assertTrue;
 /**
  @author Kayler
  @since 03/20/2017 */
-public class HeaderParserTest {
+public class HeaderParserSmallMacroTests {
 
 	@Test
-	public void parseHeaderTest1() throws Exception {
+	public void parseHeaderTest() throws Exception {
 		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"));
 		p.parse();
 
@@ -46,5 +46,6 @@ public class HeaderParserTest {
 	private static HeaderMacro ParamDefine(@NotNull String defineName, @NotNull String[] params, @NotNull String output) {
 		return new HeaderMacro(HeaderMacro.MacroType.Define, new DefineMacroContent(defineName, new DefineMacroContent.ParameterDefineValue(params, output)));
 	}
+
 
 }

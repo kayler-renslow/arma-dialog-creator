@@ -21,4 +21,8 @@ public interface HeaderArray extends HeaderValue, HeaderArrayItem {
 	default String getContent() {
 		throw new UnsupportedOperationException("");
 	}
+
+	default boolean equalsArray(@NotNull HeaderArray o) {
+		return getItems().equals(o.getItems());
+	}
 }

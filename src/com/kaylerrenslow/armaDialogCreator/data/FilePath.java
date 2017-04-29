@@ -97,7 +97,7 @@ public class FilePath {
 			return null;
 		}
 
-		File matched = files[1];
+		File matched = files[0];
 		if (matched.isDirectory()) {
 			if (filePath.getChild() == null) {
 				//no children left to traverse

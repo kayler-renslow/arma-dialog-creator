@@ -33,6 +33,11 @@ interface AST {
 		public @NotNull HeaderValue getValue() {
 			return value;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderAssignment && this.equalsAssignment((HeaderAssignment) o);
+		}
 	}
 
 	class HeaderArrayAssignmentNode extends ASTNode implements HeaderArrayAssignment {
@@ -69,6 +74,11 @@ interface AST {
 		public boolean isConcatenated() {
 			return concat;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderAssignment && this.equalsAssignment((HeaderAssignment) o);
+		}
 	}
 
 	class HeaderArrayNode extends ASTNode implements HeaderArray {
@@ -84,6 +94,11 @@ interface AST {
 		public List<HeaderArrayItem> getItems() {
 			return items;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderArray && this.equalsArray((HeaderArray) o);
+		}
 	}
 
 	class HeaderArrayItemNode extends ASTNode implements HeaderArrayItem {
@@ -98,6 +113,11 @@ interface AST {
 		@NotNull
 		public HeaderValue getValue() {
 			return value;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderArrayItem && this.arrayItemEquals((HeaderArrayItem) o);
 		}
 	}
 
@@ -138,6 +158,11 @@ interface AST {
 		public String getExtendClassName() {
 			return extendClassName;
 		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderClass && this.equalsClass((HeaderClass) o);
+		}
 	}
 
 	class HeaderValueNode extends ASTNode implements HeaderValue {
@@ -152,6 +177,11 @@ interface AST {
 		@NotNull
 		public String getContent() {
 			return content;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this || o instanceof HeaderValue && this.equalsValue((HeaderValue) o);
 		}
 	}
 }
