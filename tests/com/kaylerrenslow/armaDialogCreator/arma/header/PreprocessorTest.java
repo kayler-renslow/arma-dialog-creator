@@ -54,7 +54,7 @@ public class PreprocessorTest {
 
 	@NotNull
 	private static Preprocessor getPreprocessor(@Nullable File processFile, @Nullable HashMap<String, DefineValue> toInsert) {
-		return getPreprocessor(processFile, toInsert, (a, b, c) -> {
+		return getPreprocessor(processFile, toInsert, (a, c) -> {
 		});
 	}
 
@@ -70,7 +70,7 @@ public class PreprocessorTest {
 
 	private void assertPreprocessLine(String base, String expect, Preprocessor p) throws HeaderParseException {
 		StringBuilder actual = new StringBuilder();
-		p.preprocessLine(base, actual);
+		p.preprocessLine(base, new Preprocessor.StringBuilderReference(actual));
 		assertEquals(expect, actual.toString());
 	}
 
@@ -245,8 +245,10 @@ public class PreprocessorTest {
 
 		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null, new PreprocessCallback() {
 			@Override
-			public void fileProcessed(@NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) {
-				assertEquals(expected, textContent.toString());
+			public void fileProcessed(@NotNull File file, @NotNull Preprocessor.PreprocessorInputStream fileContentStream) throws HeaderParseException {
+				byte[] b = new byte[fileContentStream.available()];
+				fileContentStream.read(b);
+				assertEquals(expected, new String(b));
 			}
 		});
 		p.run();

@@ -11,7 +11,24 @@ import java.util.List;
 interface AST {
 
 	abstract class ASTNode implements AST {
+		private String s;
 
+		public ASTNode() {
+
+		}
+
+		@Override
+		public String toString() {
+			if (s == null) {
+				if (this instanceof HeaderItem) {
+					HeaderItem me = (HeaderItem) this;
+					s = me.getAsString();
+				} else {
+					s = super.toString();
+				}
+			}
+			return s;
+		}
 	}
 
 	class HeaderAssignmentNode extends ASTNode implements HeaderAssignment {
@@ -25,7 +42,8 @@ interface AST {
 		}
 
 		@Override
-		public @NotNull String getVariableName() {
+		@NotNull
+		public String getVariableName() {
 			return varName;
 		}
 
@@ -56,12 +74,6 @@ interface AST {
 		@NotNull
 		public String getVariableName() {
 			return varName;
-		}
-
-		@Override
-		@NotNull
-		public HeaderValue getValue() {
-			return getArray();
 		}
 
 		@Override

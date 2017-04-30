@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author Kayler
  @since 03/19/2017 */
-public interface HeaderArrayAssignment extends HeaderAssignment {
+public interface HeaderArrayAssignment extends HeaderAssignment, HeaderItem {
 	@NotNull HeaderArray getArray();
 
 	boolean isConcatenated();
@@ -20,5 +20,11 @@ public interface HeaderArrayAssignment extends HeaderAssignment {
 			return (isConcatenated() == obj.isConcatenated()) && getArray().equalsArray(obj.getArray());
 		}
 		return false;
+	}
+
+	@Override
+	@NotNull
+	default HeaderValue getValue() {
+		return getArray();
 	}
 }

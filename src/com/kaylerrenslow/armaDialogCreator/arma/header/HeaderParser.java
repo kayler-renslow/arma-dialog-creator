@@ -4,10 +4,10 @@ import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -65,8 +65,8 @@ public class HeaderParser {
 
 		PreprocessCallback callback = new PreprocessCallback() {
 			@Override
-			public void fileProcessed(@NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) throws HeaderParseException {
-				parseText(headerFile, file, includedFrom, textContent);
+			public void fileProcessed(@NotNull File file, @NotNull Preprocessor.PreprocessorInputStream fileContentStream) throws HeaderParseException {
+				parseText(headerFile, fileContentStream);
 			}
 		};
 
@@ -76,19 +76,17 @@ public class HeaderParser {
 		return headerFile;
 	}
 
-	private void parseText(@NotNull HeaderFile parsingFile, @NotNull File file, @Nullable File includedFrom, @NotNull StringBuilder textContent) throws HeaderParseException {
-		HeaderAntlrLexer l = getLexer(textContent);
+	private void parseText(@NotNull HeaderFile parsingFile, @NotNull Preprocessor.PreprocessorInputStream fileContentStream) throws HeaderParseException {
+		HeaderAntlrLexer l = getLexer(fileContentStream);
 		HeaderAntlrParser p = getParser(new CommonTokenStream(l));
 		l.getErrorListeners().clear();
 		p.getErrorListeners().clear();
 
-		System.out.println(textContent);
 
 		HeaderClass rootClass = p.root_class().ast;
 
-		parsingFile.getClasses().addAll(0, rootClass.getNestedClasses());
-		parsingFile.getAssignments().addAll(0, rootClass.getAssignments());
-
+		parsingFile.getClasses().addAll(rootClass.getNestedClasses());
+		parsingFile.getAssignments().addAll(rootClass.getAssignments());
 	}
 
 	protected String expected(char exp, char got) {
@@ -113,8 +111,12 @@ public class HeaderParser {
 	}
 
 	@NotNull
-	private HeaderAntlrLexer getLexer(StringBuilder s) {
-		return new HeaderAntlrLexer(new ANTLRInputStream(s.toString()));
+	private HeaderAntlrLexer getLexer(@NotNull Preprocessor.PreprocessorInputStream s) {
+		try {
+			return new HeaderAntlrLexer(new ANTLRInputStream(s));
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 
 

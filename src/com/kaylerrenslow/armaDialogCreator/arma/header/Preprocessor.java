@@ -3,15 +3,15 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
+import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.ResourceBundle;
-import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,6 +50,12 @@ class Preprocessor {
 	private final File workingDirectory;
 	private boolean preprocessed = false;
 
+	/**
+	 Place the builder's text on in this list for order preservation so that when the PreprocessCallback.fileProcessed method is invoked,
+	 the InputStream can read as if there was one large String. We are storing the Strings instead of StringBuilder instances so that there
+	 can be garbage collection on unnecessary large char[] inside StringBuilder instances
+	 */
+	protected final LinkedList<String> textParts = new LinkedList<>();
 	protected final LinkedList<File> processingFiles = new LinkedList<>();
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
@@ -69,34 +75,52 @@ class Preprocessor {
 		}
 		preprocessed = true;
 
-		processNow(processFile, null);
+		StringBuilderReference br = new StringBuilderReference(new StringBuilder(0));
+		processNow(processFile, null, br);
+		callback.fileProcessed(processFile, new PreprocessorInputStream(textParts));
 	}
 
-	private void processNow(@NotNull File toProcess, @Nullable File parentFile) throws Exception {
+	private void processNow(@NotNull File toProcess, @Nullable File parentFile, @NotNull StringBuilderReference builderReference) throws Exception {
 		if (processingFiles.contains(toProcess)) {
 			if (parentFile == null) {
 				throw new IllegalStateException("parentFile shouldn't be null here");
 			}
 			error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), toProcess.getName(), parentFile.getName()));
 		}
+		//store the old builder so that after processNow finishes on the requested file, the builderReference can be reset
+		StringBuilder oldBuilder = builderReference.getBuilder();
+
+		// Add the old builder's contents. This will be invoked at the start of preprocessing and when an #include has been discovered
+		textParts.add(oldBuilder.toString());
+
+		// Create a new builder for the new file.
+		StringBuilder textContent = new StringBuilder((int) toProcess.length());
+		builderReference.setBuilder(textContent);
+
+		//update state and place the toProcess file on the processing files stack
 		processingFiles.add(toProcess);
 		preprocessStack.push(new PreprocessState(toProcess));
 
-		StringBuilder textContent = new StringBuilder((int) processFile.length());
-		doProcess(toProcess, textContent);
+		//process the file given
+		doProcess(toProcess, builderReference);
 
+		textParts.add(builderReference.getBuilder().toString());
+
+		//reset the builder reference for reading a new part
+		builderReference.setBuilder(new StringBuilder(Math.max(10, oldBuilder.capacity() - oldBuilder.length())));
+
+		//no longer processing that file, so we can removed from preprocessStack
 		preprocessStack.pop();
-		processedFiles.add(processingFiles.pop()); //don't worry about duplicates. The header parser should report relevant errors to duplicate information
 
-		callback.fileProcessed(processFile, parentFile, textContent);
+		processedFiles.add(processingFiles.pop()); //don't worry about duplicate includes. That should be handled elsewhere
 	}
 
-	protected void doProcess(@NotNull File processFile, @NotNull StringBuilder fileContent) throws Exception {
+	protected void doProcess(@NotNull File processFile, @NotNull StringBuilderReference fileContent) throws Exception {
 		Scanner scan = new Scanner(processFile);
 		doProcess(scan, fileContent);
 	}
 
-	protected void doProcess(@NotNull Scanner scan, @NotNull StringBuilder fileContent) throws Exception {
+	protected void doProcess(@NotNull Scanner scan, @NotNull StringBuilderReference fileContent) throws Exception {
 		String line;
 
 		int ifCount = 0; //>0 if current line is inside (#ifdef or #ifndef) and before #endif
@@ -184,7 +208,7 @@ class Preprocessor {
 						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 					}
 
-					processNow(f, processFile);
+					processNow(f, processFile, fileContent);
 					break;
 				}
 				case "#define": {
@@ -298,7 +322,7 @@ class Preprocessor {
 		scan.close();
 	}
 
-	protected void preprocessLine(@NotNull String base, @NotNull StringBuilder writeTo) throws HeaderParseException {
+	protected void preprocessLine(@NotNull String base, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
 		if (defined.size() == 0) {
 			writeTo.append(base);
 			return;
@@ -370,7 +394,7 @@ class Preprocessor {
 		}
 	}
 
-	private void writeDefineValue(@NotNull Entry<String, DefineValue> entry, @Nullable String parameterText, @NotNull StringBuilder writeTo) throws HeaderParseException {
+	private void writeDefineValue(@NotNull Entry<String, DefineValue> entry, @Nullable String parameterText, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
 		String text = entry.getValue().getText();
 
 		if (entry.getValue() instanceof ParameterDefineValue) {
@@ -500,5 +524,103 @@ class Preprocessor {
 			return s.startsWith(prefix, spaceInd);
 		}
 		return s.startsWith(prefix);
+	}
+
+	static class StringBuilderReference {
+		private StringBuilder b;
+
+		public StringBuilderReference(@NotNull StringBuilder b) {
+			this.b = b;
+		}
+
+		public void setBuilder(@NotNull StringBuilder b) {
+			this.b = b;
+		}
+
+		@NotNull
+		public StringBuilder getBuilder() {
+			return b;
+		}
+
+		/** @see StringBuilder#append(char) */
+		public void append(char c) {
+			b.append(c);
+		}
+
+		/** @see StringBuilder#append(CharSequence) */
+		public void append(@NotNull String s) {
+			b.append(s);
+		}
+
+		/** @see StringBuilder#append(CharSequence, int, int) */
+		public void append(String s, int start, int end) {
+			b.append(s, start, end);
+		}
+	}
+
+	protected static class PreprocessorInputStream extends InputStream {
+
+		private final Iterator<String> partIterator;
+		private CharSequenceReader r;
+		private int avail = 0;
+
+		public PreprocessorInputStream(@NotNull List<String> textParts) {
+			partIterator = textParts.iterator();
+			if (partIterator.hasNext()) {
+				r = newReader();
+			}
+
+			int totalLen = 0;
+			for (String s : textParts) {
+				totalLen += s.length();
+			}
+			avail = totalLen;
+		}
+
+		private CharSequenceReader newReader() {
+			return new CharSequenceReader(partIterator.next());
+		}
+
+		@Override
+		public int available() {
+			return avail;
+		}
+
+		@Override
+		public int read(@NotNull byte[] b) {
+			try {
+				return super.read(b);
+			} catch (IOException e) {
+				throw new IllegalStateException("HOW?????", e);
+			}
+		}
+
+		@Override
+		public int read(@NotNull byte[] b, int off, int len) {
+			try {
+				return super.read(b, off, len);
+			} catch (IOException e) {
+				throw new IllegalStateException("HOW?????", e);
+			}
+		}
+
+		@Override
+		public int read() {
+			if (r == null) {
+				return -1;
+			}
+
+			while (!r.hasAvailable() && partIterator.hasNext()) {
+				r = newReader();
+			}
+
+			if (!r.hasAvailable()) {
+				return -1;
+			}
+
+			avail--;
+
+			return r.read();
+		}
 	}
 }
