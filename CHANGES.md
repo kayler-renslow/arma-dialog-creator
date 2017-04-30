@@ -1,11 +1,12 @@
 **Added:**
-* getAsString() method for Header related classes for debugging purposes
+* new ANTLR runtime (4.7)
+* new parser test
 
 **Changed:**
-* the preprocessor now results in an InputStream to read the preprocesed text
+* 
 
 **Fixed:**
-* preprocessor now preserves the order of text and text inserted via #include
+* preprocessor didn't consider quotes inside parameters
 
 **Notes:**
 * 

@@ -5,6 +5,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.function.Function;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -54,17 +55,47 @@ public class HeaderParserLargeTest {
 
 		);
 
-		HeaderClass actual = hClass(headerFile);
 		//		System.out.println("EXPECTED:");
 		//		System.out.println(expected.getAsString());
 		//		System.out.println("----------------------");
 		//		System.out.println("ACTUAL:");
 		//		System.out.println(actual.getAsString());
 
-		Iterator<HeaderAssignment> iterAssigns = actual.getAssignments().iterator();
+		testEquivalence(headerFile, expected);
+
+	}
+
+
+	@Test
+	public void parseHeaderTest1() throws Exception {
+		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("largeTest2.h"));
+		HeaderFile headerFile = p.parse();
+
+		Function<String, HeaderAssignment> f = new Function<String, HeaderAssignment>() {
+			@Override
+			public HeaderAssignment apply(String s) {
+				return assign("msg", s);
+			}
+		};
+
+		HeaderClass expected = hClass("-root class", null,
+				hClass("DevStuff", null,
+						hClass("Errors", null,
+								hClass("InvalidArgument", null, f.apply(w("Invalid Argument"))),
+								hClass("IllegalState", null, f.apply(w("Illegal State"))),
+								hClass("ClassNotFound", null, f.apply(w("Class Not Found")))
+						)
+				)
+		);
+
+		testEquivalence(headerFile, expected);
+	}
+
+	public static void testEquivalence(HeaderFile headerFile, HeaderClass expected) {
+		Iterator<HeaderAssignment> iterAssigns = headerFile.getAssignments().iterator();
 		for (HeaderAssignment expectedAssign : expected.getAssignments()) {
 			if (!iterAssigns.hasNext()) {
-				assertEquals("No more items in actual when there should be. Missing assignment: " + expectedAssign.getAsString(), expected.getAssignments().size(), actual.getAssignments().size());
+				assertEquals("No more items in actual when there should be. Missing assignment: " + expectedAssign.getAsString(), expected.getAssignments().size(), headerFile.getAssignments().size());
 			}
 			HeaderAssignment actualAssign = iterAssigns.next();
 			if (!expectedAssign.equalsAssignment(actualAssign)) {
@@ -72,17 +103,16 @@ public class HeaderParserLargeTest {
 			}
 		}
 
-		Iterator<HeaderClass> iterClass = actual.getNestedClasses().iterator();
+		Iterator<HeaderClass> iterClass = headerFile.getClasses().iterator();
 		for (HeaderClass expectedClass : expected.getNestedClasses()) {
 			if (!iterClass.hasNext()) {
-				assertEquals("No more items in actual when there should be.  Missing class: " + expectedClass.getAsString(), expected.getNestedClasses().size(), actual.getNestedClasses().size());
+				assertEquals("No more items in actual when there should be.  Missing class: " + expectedClass.getAsString(), expected.getNestedClasses().size(), headerFile.getClasses().size());
 			}
 			HeaderClass actualClass = iterClass.next();
 			if (!expectedClass.equalsClass(actualClass)) {
 				assertEquals(expectedClass, actualClass);
 			}
 		}
-
 	}
 
 	private HeaderClass hClass(HeaderFile headerFile) {

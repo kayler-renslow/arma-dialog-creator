@@ -54,13 +54,7 @@ public class PreprocessorTest {
 
 	@NotNull
 	private static Preprocessor getPreprocessor(@Nullable File processFile, @Nullable HashMap<String, DefineValue> toInsert) {
-		return getPreprocessor(processFile, toInsert, (a, c) -> {
-		});
-	}
-
-	@NotNull
-	private static Preprocessor getPreprocessor(@Nullable File processFile, @Nullable HashMap<String, DefineValue> toInsert, @NotNull PreprocessCallback callback) {
-		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext(), callback);
+		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext());
 		if (toInsert != null) {
 			p.defined.putAll(toInsert);
 		}
@@ -235,6 +229,62 @@ public class PreprocessorTest {
 	}
 
 	@Test
+	public void replaceParameterQuoteLiteral() throws Exception {
+		/*
+		* #define TEST(s) s;
+		*/
+		String base = "TEST(\"CAR\")";
+		String expect = "\"CAR\"";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("TEST", array("s"), "s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterQuoteLiteralSemicolon() throws Exception {
+		/*
+		* #define TEST(s) s;
+		*/
+		String base = "TEST(\"CAR\");";
+		String expect = "\"CAR\";";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("TEST", array("s"), "s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterQuoteLiteralAssignment() throws Exception {
+		/*
+		* #define TEST(s) s;
+		*/
+		String base = "msg=TEST(\"CAR\");";
+		String expect = "msg=\"CAR\";";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("TEST", array("s"), "s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
+	public void replaceParameterQuoteLiteralAssignment2() throws Exception {
+		/*
+		* #define TEST(s) s;
+		*/
+		String base = "msg=TEST(\"CAR VROOM VROOM\");";
+		String expect = "msg=\"CAR VROOM VROOM\";";
+
+		Preprocessor p = getPreprocessor(
+				mapParams("TEST", array("s"), "s")
+		);
+		assertPreprocessLine(base, expect, p);
+	}
+
+	@Test
 	public void fullTest() throws Exception {
 		FileInputStream fis = new FileInputStream(HeaderTestUtil.getFile("preprocessTestExpected.h"));
 		byte[] arr = new byte[fis.available()];
@@ -243,15 +293,11 @@ public class PreprocessorTest {
 
 		String expected = new String(arr).replaceAll("\r\n", "\n");
 
-		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null, new PreprocessCallback() {
-			@Override
-			public void fileProcessed(@NotNull File file, @NotNull Preprocessor.PreprocessorInputStream fileContentStream) throws HeaderParseException {
-				byte[] b = new byte[fileContentStream.available()];
-				fileContentStream.read(b);
-				assertEquals(expected, new String(b));
-			}
-		});
-		p.run();
+		Preprocessor p = getPreprocessor(HeaderTestUtil.getFile("preprocessTest.h"), null);
+		Preprocessor.PreprocessorInputStream fileContentStream = p.run();
+		byte[] b = new byte[fileContentStream.available()];
+		fileContentStream.read(b);
+		assertEquals(expected, new String(b));
 
 	}
 

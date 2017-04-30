@@ -1,4 +1,4 @@
-// Generated from D:/Archive/Intellij Files/Arma Tools/Arma Dialog Creator/src/com/kaylerrenslow/armaDialogCreator/arma/header\HeaderAntlr.g4 by ANTLR 4.6
+// Generated from D:/Archive/Intellij Files/Arma Tools/Arma Dialog Creator/src/com/kaylerrenslow/armaDialogCreator/arma/header\HeaderAntlr.g4 by ANTLR 4.7
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import org.antlr.v4.runtime.ParserRuleContext;

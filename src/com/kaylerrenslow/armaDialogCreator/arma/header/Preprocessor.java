@@ -29,7 +29,7 @@ class Preprocessor {
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
 					beforeMacro,
 					"[a-zA-Z_0-9$]+", //identifier
-					"\\([a-zA-Z_0-9$,]+\\)", //parameters
+					"\\([a-zA-Z_0-9$,\" ']+\\)", //parameters
 					afterMacro
 			)
 	);
@@ -46,7 +46,6 @@ class Preprocessor {
 
 	private final File processFile;
 	private final HeaderParserContext parserContext;
-	private final PreprocessCallback callback;
 	private final File workingDirectory;
 	private boolean preprocessed = false;
 
@@ -61,15 +60,15 @@ class Preprocessor {
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
 
-	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext, @NotNull PreprocessCallback callback) {
+	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
-		this.callback = callback;
 		this.workingDirectory = processFile.getParentFile();
 	}
 
 
-	public void run() throws Exception {
+	@NotNull
+	public PreprocessorInputStream run() throws Exception {
 		if (preprocessed) {
 			throw new IllegalStateException("preprocessor already run");
 		}
@@ -77,7 +76,8 @@ class Preprocessor {
 
 		StringBuilderReference br = new StringBuilderReference(new StringBuilder(0));
 		processNow(processFile, null, br);
-		callback.fileProcessed(processFile, new PreprocessorInputStream(textParts));
+
+		return new PreprocessorInputStream(textParts);
 	}
 
 	private void processNow(@NotNull File toProcess, @Nullable File parentFile, @NotNull StringBuilderReference builderReference) throws Exception {
