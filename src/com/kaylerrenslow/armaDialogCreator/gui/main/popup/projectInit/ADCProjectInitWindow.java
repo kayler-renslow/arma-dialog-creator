@@ -139,8 +139,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		private final LinkedList<ProjectInitTab> initTabs = new LinkedList<>();
 		private final TabPane tabPane = new TabPane();
 		private final ADCProjectInitWindow projectInitWindow;
-		private TabOpen tabOpen;
+		private OpenTab openTab;
 		private NewProjectTab tabNew;
+		private ImportTab tabImport;
 
 		public ProjectInitWizardStep(@NotNull ADCProjectInitWindow projectInitWindow) {
 			super(new VBox(5));
@@ -191,9 +192,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		private void initTabPane() {
 			tabNew = new NewProjectTab();
 			initTabs.add(tabNew);
-			tabOpen = new TabOpen(projectInitWindow);
-			initTabs.add(tabOpen);
-			//				initTabs.add(new ImportTab(this));
+			openTab = new OpenTab(projectInitWindow);
+			initTabs.add(openTab);
+			tabImport = new ImportTab();
+			initTabs.add(new ImportTab());
 
 			final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
 				@Override
@@ -225,8 +227,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		protected void stepPresented() {
 			if (!hasBeenPresented()) {
 				super.stepPresented();
-				if (tabOpen.getParsedKnownProjects().size() > 0) {
-					tabPane.getSelectionModel().select(tabOpen.getTab());
+				if (openTab.getParsedKnownProjects().size() > 0) {
+					tabPane.getSelectionModel().select(openTab.getTab());
 				}
 			}
 			projectInitWindow.getFooter().getBtnOk().setDisable(!stepIsComplete());
@@ -294,7 +296,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			}
 		}
 
-		public class TabOpen extends ProjectInitTab {
+		public class OpenTab extends ProjectInitTab {
 
 			private final Tab tabOpen = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_open"));
 			private final ListView<ProjectInfo> lvKnownProjects = new ListView<>();
@@ -303,7 +305,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			private ProjectXmlLoader.ProjectPreviewParseResult selectedParsedProject;
 			private ReadOnlyList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjectsRo = new ReadOnlyList<>(parsedKnownProjects);
 
-			public TabOpen(ADCProjectInitWindow projectInitWindow) {
+			public OpenTab(ADCProjectInitWindow projectInitWindow) {
 				this.projectInitWindow = projectInitWindow;
 				projectConfigSet.updateValue(false);
 				final VBox root = getTabVbox(10d);
@@ -415,8 +417,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 			private final Tab tabImport = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_import"));
 
-			public ImportTab(ADCProjectInitWindow adcProjectInitWindow) {
-				tabImport.setUserData(Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_ok"));
+			public ImportTab() {
 				final VBox root = getTabVbox(20);
 				final Label lblOpenProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_title"));
 

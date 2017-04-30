@@ -11,7 +11,7 @@ import java.util.List;
 public interface HeaderClass extends HeaderItem {
 	@NotNull List<HeaderAssignment> getAssignments();
 
-	@NotNull List<HeaderClass> getNestedClasses();
+	@NotNull HeaderClassList getNestedClasses();
 
 	@NotNull String getClassName();
 

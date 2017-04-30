@@ -35,7 +35,7 @@ public class AboutDialog extends StageDialog<VBox> {
 
 		HBox hboxLib = new HBox(5,
 				new Label(Lang.ApplicationBundle().getString("Popups.About.libraries")),
-				new Link("ANTLR 4.5.3", "http://www.antlr.org/"),
+				new Link("ANTLR 4.7", "http://www.antlr.org/"),
 				new Link("RichTextFX 0.7-M2", "https://github.com/TomasMikula/RichTextFX"),
 				new Link("Json Simple 1.1.1", "https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple/1.1.1")
 		);

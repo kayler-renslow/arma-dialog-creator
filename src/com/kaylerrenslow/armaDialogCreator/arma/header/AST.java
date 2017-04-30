@@ -138,13 +138,13 @@ interface AST {
 		private final String className;
 		private final String extendClassName;
 		private final List<HeaderAssignment> assignments;
-		private final List<HeaderClass> nestedClasses;
+		private final HeaderClassList nestedClasses;
 
 		public HeaderClassNode(@NotNull String className, @Nullable String extendClassName, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
 			this.className = className;
 			this.extendClassName = extendClassName;
 			this.assignments = assignments;
-			this.nestedClasses = nestedClasses;
+			this.nestedClasses = new HeaderClassList(nestedClasses);
 		}
 
 		@NotNull
@@ -155,7 +155,7 @@ interface AST {
 
 		@Override
 		@NotNull
-		public List<HeaderClass> getNestedClasses() {
+		public HeaderClassList getNestedClasses() {
 			return nestedClasses;
 		}
 

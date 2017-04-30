@@ -83,7 +83,10 @@ public class HeaderParser {
 
 		HeaderClass rootClass = p.root_class().ast;
 
-		parsingFile.getClasses().addAll(rootClass.getNestedClasses());
+		for (HeaderClass hc : rootClass.getNestedClasses()) {
+			parsingFile.getClassesMutable().add(hc);
+		}
+
 		parsingFile.getAssignments().addAll(rootClass.getAssignments());
 	}
 

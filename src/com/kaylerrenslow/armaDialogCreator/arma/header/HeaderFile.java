@@ -12,7 +12,8 @@ import java.util.List;
 public class HeaderFile {
 	private final File file;
 	private List<HeaderAssignment> assignments = new LinkedList<>();
-	private List<HeaderClass> classes = new LinkedList<>();
+	private List<HeaderClass> classesMutable = new LinkedList<>();
+	private HeaderClassList classes = new HeaderClassList(classesMutable);
 
 	protected HeaderFile(@NotNull File file) {
 		this.file = file;
@@ -24,12 +25,17 @@ public class HeaderFile {
 	}
 
 	@NotNull
+	protected List<HeaderClass> getClassesMutable() {
+		return classesMutable;
+	}
+
+	@NotNull
 	public List<HeaderAssignment> getAssignments() {
 		return assignments;
 	}
 
 	@NotNull
-	public List<HeaderClass> getClasses() {
+	public HeaderClassList getClasses() {
 		return classes;
 	}
 }

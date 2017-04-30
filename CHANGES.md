@@ -1,12 +1,11 @@
 **Added:**
-* new ANTLR runtime (4.7)
-* new parser test
+* beginning of converting description.ext to a bunch of adc projects
 
 **Changed:**
 * 
 
 **Fixed:**
-* preprocessor didn't consider quotes inside parameters
+* 
 
 **Notes:**
 * 
