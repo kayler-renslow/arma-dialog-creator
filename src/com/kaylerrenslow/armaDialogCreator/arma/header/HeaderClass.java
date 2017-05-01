@@ -3,13 +3,11 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
 /**
  @author Kayler
  @since 03/19/2017 */
 public interface HeaderClass extends HeaderItem {
-	@NotNull List<HeaderAssignment> getAssignments();
+	@NotNull HeaderAssignmentList getAssignments();
 
 	@NotNull HeaderClassList getNestedClasses();
 

@@ -137,19 +137,19 @@ interface AST {
 
 		private final String className;
 		private final String extendClassName;
-		private final List<HeaderAssignment> assignments;
+		private final HeaderAssignmentList assignments;
 		private final HeaderClassList nestedClasses;
 
 		public HeaderClassNode(@NotNull String className, @Nullable String extendClassName, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
 			this.className = className;
 			this.extendClassName = extendClassName;
-			this.assignments = assignments;
+			this.assignments = new HeaderAssignmentList(assignments);
 			this.nestedClasses = new HeaderClassList(nestedClasses);
 		}
 
 		@NotNull
 		@Override
-		public List<HeaderAssignment> getAssignments() {
+		public HeaderAssignmentList getAssignments() {
 			return assignments;
 		}
 

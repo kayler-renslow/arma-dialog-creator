@@ -17,24 +17,30 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 	}
 
 	@Nullable
-	public HeaderClass getClassByName(@NotNull String className) {
+	public HeaderClass getClassByName(@NotNull String className, boolean caseSensitive) {
 		for (HeaderClass hc : classList) {
-			if (hc.getClassName().equals(className)) {
-				return hc;
+			if (caseSensitive) {
+				if (hc.getClassName().equals(className)) {
+					return hc;
+				}
+			} else {
+				if (hc.getClassName().equalsIgnoreCase(className)) {
+					return hc;
+				}
 			}
 		}
 		return null;
 	}
 
 	@Nullable
-	public HeaderClass findClassByPath(@NotNull String... classNames) {
+	public HeaderClass findClassByPath(boolean caseSensitive, @NotNull String... classNames) {
 		if (classNames.length == 0) {
 			return null;
 		}
-		HeaderClass cursor = getClassByName(classNames[0]);
+		HeaderClass cursor = getClassByName(classNames[0], caseSensitive);
 		int cursorI = 1;
 		while (cursor != null && cursorI < classNames.length) {
-			cursor = cursor.getNestedClasses().getClassByName(classNames[cursorI++]);
+			cursor = cursor.getNestedClasses().getClassByName(classNames[cursorI++], caseSensitive);
 		}
 		return cursor;
 	}

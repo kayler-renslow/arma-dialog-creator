@@ -1,9 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderClass;
-import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderFile;
-import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParseException;
-import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParser;
+import com.kaylerrenslow.armaDialogCreator.arma.header.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -19,41 +16,99 @@ import java.util.ResourceBundle;
  @since 04/30/2017 */
 public class HeaderToProject {
 
-	private static final String CFG_DIALOGS = "CfgDialogs";
+	private static final String CONTROLS = "Controls";
+	private static final String BG_CONTROLS = "ControlsBackground";
+
+	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
+
 
 	@NotNull
 	public static List<String> convertAndSaveToWorkspace(@NotNull Workspace workspace, @NotNull File descriptionExt, @NotNull SelectClassesCallback callback)
-			throws FileNotFoundException, HeaderParseException, HeaderConversionException {
+			throws FileNotFoundException, HeaderConversionException {
 
-		ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
-
-		List<String> dialogsConverted = new ArrayList<>();
-		HeaderFile headerFile = HeaderParser.parse(descriptionExt);
-
-		HeaderClass cfgDialog = headerFile.getClasses().findClassByPath(CFG_DIALOGS);
-		if (cfgDialog == null) {
-			throw new HeaderConversionException(String.format(bundle.getString("Error.Error.no_class_f"), CFG_DIALOGS));
+		List<String> results = new ArrayList<>();
+		HeaderFile headerFile;
+		try {
+			headerFile = HeaderParser.parse(descriptionExt);
+		} catch (HeaderParseException e) {
+			throw new HeaderConversionException(e.getMessage());
 		}
 
-		List<String> discoveredClasses = new ArrayList<>();
-		for (HeaderClass hc : cfgDialog.getNestedClasses()) {
-			discoveredClasses.add(hc.getClassName());
+		List<String> discoveredDialogClassNames = new ArrayList<>();
+		for (HeaderClass hc : headerFile.getClasses()) {
+			if (hc.getAssignments().getAssignmentByVarName("idd", true) != null) {
+				discoveredDialogClassNames.add(hc.getClassName());
+			}
 		}
 
-		List<String> convertClasses = callback.selectClassesToSave(discoveredClasses);
+		List<String> convertClasses = callback.selectClassesToSave(discoveredDialogClassNames);
 		for (String className : convertClasses) {
-			for (HeaderClass hc : cfgDialog.getNestedClasses()) {
+			for (HeaderClass hc : headerFile.getClasses()) {
 				if (!className.equals(hc.getClassName())) {
 					continue;
 				}
 
 				//begin conversion
-
+				results.add(saveToWorkspace(workspace, hc));
 			}
 		}
 
 
-		return dialogsConverted;
+		return results;
+	}
+
+	public static void noClassError(String className) throws HeaderConversionException {
+		throw new HeaderConversionException(String.format(bundle.getString("Error.Error.no_class_f"), className));
+	}
+
+	@NotNull
+	private static String saveToWorkspace(@NotNull Workspace workspace, @NotNull HeaderClass dialogClass) {
+		//This is string to return. If null, there was success in converting.
+		// If not null, ret will be wrapped in another String saying there was a failure with the reason equal to old value of ret
+		String ret = null;
+
+		//list of controls for dialog
+		List<HeaderClass> controls = new ArrayList<>();
+		//list of bg controls for dialog
+		List<HeaderClass> bgControls = new ArrayList<>();
+
+		//first up, load controls and bgControls
+
+		HeaderClass controlsClass = dialogClass.getNestedClasses().getClassByName(CONTROLS, false);
+		if (controlsClass != null) {
+
+		} else {
+			HeaderAssignment controlsAssignment = dialogClass.getAssignments().getAssignmentByVarName(CONTROLS, false);
+			if (controlsAssignment instanceof HeaderArrayAssignment) {
+
+			} else {
+				ret = bundle.getString("Convert.FailReason.controls_assignment_not_array");
+			}
+		}
+
+		HeaderClass bgControlsClass = dialogClass.getNestedClasses().getClassByName(BG_CONTROLS, false);
+		if (bgControlsClass != null) {
+
+		} else {
+			HeaderAssignment bgControlsAssignment = dialogClass.getAssignments().getAssignmentByVarName(BG_CONTROLS, false);
+			if (bgControlsAssignment instanceof HeaderArrayAssignment) {
+				HeaderArray bgcArray = ((HeaderArrayAssignment) bgControlsAssignment).getArray();
+				bgcArray.getItems();
+			} else {
+				ret = bundle.getString("Convert.FailReason.bg_controls_assignment_not_array");
+			}
+		}
+
+
+		//we are done converting after this
+
+		if (ret == null) {
+			ret = String.format(bundle.getString("Convert.success_f"), dialogClass.getClassName());
+		} else {
+			ret = String.format(bundle.getString("Convert.fail_f"), ret);
+		}
+
+		return ret;
 	}
 
 	/**
