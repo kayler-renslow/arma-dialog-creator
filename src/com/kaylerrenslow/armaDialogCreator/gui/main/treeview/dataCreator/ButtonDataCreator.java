@@ -1,12 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.treeview.dataCreator;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ButtonControl;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.newControl.NewControlDialog;
@@ -18,11 +18,12 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 11/21/2016.
  */
-public class ButtonDataCreator implements TreeItemDataCreator<TreeItemEntry> {
+public class ButtonDataCreator implements TreeItemDataCreator<ArmaControl, TreeItemEntry> {
 	public static final ButtonDataCreator INSTANCE = new ButtonDataCreator();
 
+	@NotNull
 	@Override
-	public TreeItemEntry createNew(@NotNull CellType cellType, @NotNull EditableTreeView<TreeItemEntry> treeView) {
+	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
 		NewControlDialog dialog = new NewControlDialog(ControlType.BUTTON, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
 		dialog.show();
 		if (dialog.wasCancelled()) {

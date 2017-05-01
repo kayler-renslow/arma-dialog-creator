@@ -1,10 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
@@ -72,10 +72,10 @@ public class ProjectXmlLoader extends XmlLoader {
 	public static class ProjectParseResult extends XmlLoader.ParseResult {
 
 		private final Project project;
-		private final TreeStructure<TreeItemEntry> treeStructureMain;
-		private final TreeStructure<TreeItemEntry> treeStructureBg;
+		private final TreeStructure<ArmaControl> treeStructureMain;
+		private final TreeStructure<ArmaControl> treeStructureBg;
 
-		private ProjectParseResult(Project project, TreeStructure<TreeItemEntry> treeStructureMain, TreeStructure<TreeItemEntry> treeStructureBg, ArrayList<ParseError> errors) {
+		private ProjectParseResult(Project project, TreeStructure<ArmaControl> treeStructureMain, TreeStructure<ArmaControl> treeStructureBg, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;
 			this.treeStructureMain = treeStructureMain;
@@ -83,12 +83,12 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 
 		@NotNull
-		public TreeStructure<TreeItemEntry> getTreeStructureBg() {
+		public TreeStructure<ArmaControl> getTreeStructureBg() {
 			return treeStructureBg;
 		}
 
 		@NotNull
-		public TreeStructure<TreeItemEntry> getTreeStructureMain() {
+		public TreeStructure<ArmaControl> getTreeStructureMain() {
 			return treeStructureMain;
 		}
 

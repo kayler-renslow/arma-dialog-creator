@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
+class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> {
 	/** How long it takes for the current hovered tree item that is expandable for it to expand and show its children. Value is in milliseconds. */
 	private static final long WAIT_DURATION_TREE_VIEW_FOLDER = 500;
 	private static final Color COLOR_TREE_VIEW_DRAG = Color.ORANGE;
@@ -25,7 +25,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	private static final String HOVER_TREE_CELL = "hover-tree-cell";
 
 	private final TreeCellSelectionUpdate treeCellSelectionUpdate;
-	private final EditableTreeView<E> treeView;
+	private final EditableTreeView<Tv, Td> treeView;
 
 	private TextField textField;
 
@@ -46,12 +46,12 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 
 	private static MouseTreeCellLocation location = MouseTreeCellLocation.UNKNOWN;
 
-	EditableTreeCellFactory(@NotNull EditableTreeView<E> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
+	EditableTreeCellFactory(@NotNull EditableTreeView<Tv, Td> treeView, @Nullable TreeCellSelectionUpdate treeCellSelectionUpdate) {
 		this.treeCellSelectionUpdate = treeCellSelectionUpdate;
 		this.treeView = treeView;
 		this.setEditable(true);
 		// first method called when the user clicks and drags a tree item
-		TreeCell<E> myTreeCell = this;
+		TreeCell<Td> myTreeCell = this;
 		this.setOnMouseClicked(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
@@ -117,7 +117,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 			}
 
 			private void doHandle(DragEvent event) {
-				TreeItem<E> dragging = getDragging();
+				TreeItem<Td> dragging = getDragging();
 				// not dragging on the tree
 				if (getTreeItem() == null) {
 					return;
@@ -200,7 +200,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 			}
 
 			private void doHandle(DragEvent event) {
-				TreeItem<E> dragging = getDragging();
+				TreeItem<Td> dragging = getDragging();
 				event.acceptTransferModes(TransferMode.MOVE);
 				switch (location) {
 					case TOP: //intentional fall through
@@ -261,13 +261,13 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 		}
 	}
 
-	EditableTreeCellFactory<E> getNewInstance() {
+	EditableTreeCellFactory<Tv, Td> getNewInstance() {
 		return new EditableTreeCellFactory<>(this.treeView, this.treeCellSelectionUpdate);
 	}
 
 	@SuppressWarnings("unchecked")
-	private TreeItem<E> getDragging() {
-		return (TreeItem<E>) EditableTreeCellFactory.dragging;
+	private TreeItem<Td> getDragging() {
+		return (TreeItem<Td>) EditableTreeCellFactory.dragging;
 	}
 
 	@Override
@@ -297,7 +297,7 @@ class EditableTreeCellFactory<E extends TreeItemData> extends TreeCell<E> {
 	}
 
 	@Override
-	protected void updateItem(E node, boolean empty) {
+	protected void updateItem(Td node, boolean empty) {
 		super.updateItem(node, empty);
 		// this adds a textfield to the tree item to get a new name
 		if (empty) {

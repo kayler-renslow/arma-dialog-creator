@@ -29,7 +29,7 @@ class Preprocessor {
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
 					beforeMacro,
 					"[a-zA-Z_0-9$]+", //identifier
-					"\\([a-zA-Z_0-9$,\" '+-*/.]+\\)", //parameters
+					"\\([a-zA-Z_0-9$,\" '\\-+*/.]+\\)", //parameters
 					afterMacro
 			)
 	);

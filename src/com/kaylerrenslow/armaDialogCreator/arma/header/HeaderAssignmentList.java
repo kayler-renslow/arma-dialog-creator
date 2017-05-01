@@ -32,9 +32,18 @@ public class HeaderAssignmentList implements Iterable<HeaderAssignment> {
 		return null;
 	}
 
+	public int size() {
+		return assignList.size();
+	}
+
 	@NotNull
 	@Override
 	public Iterator<HeaderAssignment> iterator() {
 		return assignList.iterator();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this || o instanceof HeaderAssignmentList && this.assignList.equals(((HeaderAssignmentList) o).assignList);
 	}
 }

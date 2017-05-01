@@ -1,8 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.w3c.dom.Document;
 
@@ -17,8 +18,8 @@ public abstract class ProjectVersionLoader {
 	protected Project project;
 	protected Document document;
 	public final ProjectXmlLoader loader;
-	protected TreeStructure<TreeItemEntry> treeStructureMain = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
-	protected TreeStructure<TreeItemEntry> treeStructureBg = new TreeStructure<>(new TreeStructure.TreeNode<>(null));
+	protected TreeStructure<ArmaControl> treeStructureMain = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
+	protected TreeStructure<ArmaControl> treeStructureBg = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
 	
 	
 	protected ProjectVersionLoader(ProjectXmlLoader loader) throws XmlParseException {

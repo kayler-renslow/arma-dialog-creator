@@ -3,10 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.treeview;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.FoundChild;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeUtil;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.*;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlList;
@@ -31,7 +28,7 @@ import java.util.List;
 
  @author Kayler
  @since 06/08/2016. */
-public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<T> {
+public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTreeView<ArmaControl, T> {
 
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this);
 	private ArmaDisplay editingDisplay;
@@ -218,6 +215,38 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 	public EditorComponentTreeView(boolean backgroundControlEditor) {
 		super(null);
+
+		setConverter(new TreeDataToValueConverter<T, ArmaControl>() {
+
+			@Nullable
+			@Override
+			public ArmaControl convert(@NotNull T data) {
+				if (data instanceof ControlTreeItemEntry) {
+					return ((ControlTreeItemEntry) data).getMyArmaControl();
+				}
+				return null;
+			}
+
+			@NotNull
+			@Override
+			@SuppressWarnings("unchecked")
+			public T convert(@Nullable ArmaControl data, boolean asFolder, @NotNull String name) {
+				if (asFolder) {
+					return (T) new FolderTreeItemEntry(name);
+				}
+				if (data == null) {
+					throw new IllegalArgumentException("data is null and not a folder");
+				}
+
+				if (data instanceof ArmaControlGroup) {
+					return (T) new ControlGroupTreeItemEntry((ArmaControlGroup) data);
+				}
+
+				//if this returns null, let it exception
+				return (T) new ControlTreeItemEntry(data);
+			}
+		});
+
 		this.backgroundControlEditor = backgroundControlEditor;
 		setContextMenu(controlCreationContextMenu);
 		EditorComponentTreeView treeView = this;
@@ -233,7 +262,12 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		});
 	}
 
+	EditorComponentTreeView self() {
+		return this;
+	}
+
 	/** Get either the display's background controls ({@link #backgroundControlEditor} == true) or the display main controls ({@link #backgroundControlEditor} == false). */
+	@NotNull
 	private ControlList<ArmaControl> getTargetControlList() {
 		return backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 	}

@@ -7,7 +7,7 @@ public class TreeUtil {
 	
 	
 	/**
-	 Checks if the given start TreeItem contains the searchingFor TreeItem as a descendant. Checks are done recursively.
+	 Checks if the given start TreeItem contains the searching {@link TreeItem} as a descendant. Checks are done recursively.
 	 
 	 @param startItem where to start searching
 	 @param searchingFor TreeItem to look for

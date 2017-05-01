@@ -4,8 +4,9 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.GUITreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.main.editor.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.EditorComponentTreeView;
@@ -167,7 +168,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	@Override
-	public void setTreeStructure(boolean background, TreeStructure<TreeItemEntry> treeStructure) {
+	public void setTreeStructure(boolean background, TreeStructure<ArmaControl> treeStructure) {
 		if (background) {
 			canvasControls.getTreeViewBackground().loadStructure(treeStructure);
 		} else {
@@ -177,25 +178,25 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	@NotNull
 	@Override
-	public TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure() {
+	public GUITreeStructure<ArmaControl> getMainControlsTreeStructure() {
 		return canvasControls.getTreeViewMain().exportStructure();
 	}
 
 	@NotNull
 	@Override
-	public TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure() {
+	public GUITreeStructure<ArmaControl> getBackgroundControlsTreeStructure() {
 		return canvasControls.getTreeViewBackground().exportStructure();
 	}
 
 	@NotNull
 	@Override
-	public EditableTreeView<? extends TreeItemEntry> getMainControlTreeView() {
+	public EditableTreeView<ArmaControl, ? extends TreeItemEntry> getMainControlTreeView() {
 		return canvasControls.getTreeViewMain();
 	}
 
 	@NotNull
 	@Override
-	public EditableTreeView<? extends TreeItemEntry> getBackgroundControlTreeView() {
+	public EditableTreeView<ArmaControl, ? extends TreeItemEntry> getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
 	}
 

@@ -104,8 +104,7 @@ public class ApplicationDataManager {
 		new ProjectSaveXmlWriter(
 				project,
 				ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(),
-				ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure(),
-				project.getProjectSaveFile()
+				ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure()
 		).write();
 	}
 

@@ -115,10 +115,6 @@ public class HeaderParserLargeTest {
 		}
 	}
 
-	private HeaderClass hClass(HeaderFile headerFile) {
-		return new AST.HeaderClassNode("", "", headerFile.getAssignments(), headerFile.getClasses());
-	}
-
 	private static HeaderClass hClass(String name, String extend, Object... things) {
 		ArrayList<HeaderAssignment> assignments = new ArrayList<>();
 		ArrayList<HeaderClass> nestedClasses = new ArrayList<>();

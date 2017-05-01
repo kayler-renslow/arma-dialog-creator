@@ -144,7 +144,7 @@ interface AST {
 			this.className = className;
 			this.extendClassName = extendClassName;
 			this.assignments = new HeaderAssignmentList(assignments);
-			this.nestedClasses = new HeaderClassList(nestedClasses);
+			this.nestedClasses = new HeaderClassList(this, nestedClasses);
 		}
 
 		@NotNull

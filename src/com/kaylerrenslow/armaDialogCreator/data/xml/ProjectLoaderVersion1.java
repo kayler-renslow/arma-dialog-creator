@@ -14,12 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
 import com.kaylerrenslow.armaDialogCreator.data.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlGroupTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.FolderTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
@@ -267,11 +263,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return display;
 	}
 
-	private List<ArmaControl> buildStructureAndGetControls(TreeStructure.TreeNode<TreeItemEntry> parent, Element parentElement, List<Macro> macros) {
+	private List<ArmaControl> buildStructureAndGetControls(TreeNode<ArmaControl> parent, Element parentElement, List<Macro> macros) {
 		List<ArmaControl> controls = new LinkedList<>();
 		List<Element> tagElements = XmlUtil.getChildElementsWithTagName(parentElement, "*");
 		ArmaControl control;
-		TreeStructure.TreeNode<TreeItemEntry> treeNode;
+		TreeNode<ArmaControl> treeNode;
 		for (Element controlElement : tagElements) {
 			switch (controlElement.getTagName()) {
 				case "control": {
@@ -279,7 +275,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					if (control == null) {
 						return controls;
 					}
-					treeNode = new TreeStructure.TreeNode<>(new ControlTreeItemEntry(control));
+					treeNode = new TreeNode.Simple<>(control, control.getClassName(), false);
 					parent.getChildren().add(treeNode);
 					break;
 				}
@@ -289,7 +285,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 						return controls;
 					}
 					ArmaControlGroup group = (ArmaControlGroup) control;
-					treeNode = new TreeStructure.TreeNode<>(new ControlGroupTreeItemEntry(group));
+					treeNode = new TreeNode.Simple<>(group, group.getClassName(), false);
 					parent.getChildren().add(treeNode);
 					List<ArmaControl> controlsToAdd = buildStructureAndGetControls(treeNode, controlElement, macros);
 					for (ArmaControl add : controlsToAdd) {
@@ -298,7 +294,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					break;
 				}
 				case "folder": {
-					treeNode = new TreeStructure.TreeNode<>(new FolderTreeItemEntry(controlElement.getAttribute("name")));
+					treeNode = new TreeNode.Simple<>(null, controlElement.getAttribute("name"), true);
 					parent.getChildren().add(treeNode);
 					controls.addAll(buildStructureAndGetControls(treeNode, controlElement, macros));
 					continue;

@@ -1,7 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.GUITreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import org.jetbrains.annotations.NotNull;
@@ -32,18 +34,14 @@ public interface CanvasView {
 	 @param showing true the region is showing, false if not
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
-	
-	void setTreeStructure(boolean backgroundTree, TreeStructure<TreeItemEntry> treeStructure);
 
-	@NotNull
-	TreeStructure<? extends TreeItemEntry> getMainControlsTreeStructure();
+	void setTreeStructure(boolean backgroundTree, TreeStructure<ArmaControl> treeStructure);
 
-	@NotNull
-	TreeStructure<? extends TreeItemEntry> getBackgroundControlsTreeStructure();
+	@NotNull GUITreeStructure<ArmaControl> getMainControlsTreeStructure();
 
-	@NotNull
-	EditableTreeView<? extends TreeItemEntry> getMainControlTreeView();
+	@NotNull GUITreeStructure<ArmaControl> getBackgroundControlsTreeStructure();
 
-	@NotNull
-	EditableTreeView<? extends TreeItemEntry> getBackgroundControlTreeView();
+	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getMainControlTreeView();
+
+	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getBackgroundControlTreeView();
 }

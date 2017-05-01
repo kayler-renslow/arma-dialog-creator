@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.header.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -37,6 +38,7 @@ public class HeaderToProject {
 		List<String> discoveredDialogClassNames = new ArrayList<>();
 		for (HeaderClass hc : headerFile.getClasses()) {
 			if (hc.getAssignments().getAssignmentByVarName("idd", true) != null) {
+				//todo check inherited attributes
 				discoveredDialogClassNames.add(hc.getClassName());
 			}
 		}
@@ -49,7 +51,7 @@ public class HeaderToProject {
 				}
 
 				//begin conversion
-				results.add(saveToWorkspace(workspace, hc));
+				results.add(saveToWorkspace(headerFile, workspace, hc));
 			}
 		}
 
@@ -62,7 +64,7 @@ public class HeaderToProject {
 	}
 
 	@NotNull
-	private static String saveToWorkspace(@NotNull Workspace workspace, @NotNull HeaderClass dialogClass) {
+	private static String saveToWorkspace(@NotNull HeaderFile headerFile, @NotNull Workspace workspace, @NotNull HeaderClass displayClass) {
 		//This is string to return. If null, there was success in converting.
 		// If not null, ret will be wrapped in another String saying there was a failure with the reason equal to old value of ret
 		String ret = null;
@@ -72,13 +74,26 @@ public class HeaderToProject {
 		//list of bg controls for dialog
 		List<HeaderClass> bgControls = new ArrayList<>();
 
+
+		//create project instance
+		File dialogDir = workspace.getFileForName(displayClass.getClassName());
+		if (dialogDir.exists()) {
+			dialogDir = workspace.getFileForName(dialogDir.getName() + System.currentTimeMillis());
+			while (dialogDir.exists()) {
+				dialogDir = workspace.getFileForName(dialogDir.getName() + "_" + System.currentTimeMillis());
+			}
+			dialogDir.mkdirs();
+		}
+		Project project = new Project(new ProjectInfo(displayClass.getClassName(), dialogDir));
+
+
 		//first up, load controls and bgControls
 
-		HeaderClass controlsClass = dialogClass.getNestedClasses().getClassByName(CONTROLS, false);
+		HeaderClass controlsClass = displayClass.getNestedClasses().getClassByName(CONTROLS, false);
 		if (controlsClass != null) {
 
 		} else {
-			HeaderAssignment controlsAssignment = dialogClass.getAssignments().getAssignmentByVarName(CONTROLS, false);
+			HeaderAssignment controlsAssignment = displayClass.getAssignments().getAssignmentByVarName(CONTROLS, false);
 			if (controlsAssignment instanceof HeaderArrayAssignment) {
 
 			} else {
@@ -86,11 +101,11 @@ public class HeaderToProject {
 			}
 		}
 
-		HeaderClass bgControlsClass = dialogClass.getNestedClasses().getClassByName(BG_CONTROLS, false);
+		HeaderClass bgControlsClass = displayClass.getNestedClasses().getClassByName(BG_CONTROLS, false);
 		if (bgControlsClass != null) {
 
 		} else {
-			HeaderAssignment bgControlsAssignment = dialogClass.getAssignments().getAssignmentByVarName(BG_CONTROLS, false);
+			HeaderAssignment bgControlsAssignment = displayClass.getAssignments().getAssignmentByVarName(BG_CONTROLS, false);
 			if (bgControlsAssignment instanceof HeaderArrayAssignment) {
 				HeaderArray bgcArray = ((HeaderArrayAssignment) bgControlsAssignment).getArray();
 				bgcArray.getItems();
@@ -99,11 +114,17 @@ public class HeaderToProject {
 			}
 		}
 
+		//create display and attach properties
+		ArmaDisplay armaDisplay = new ArmaDisplay();
+		project.setEditingDisplay(armaDisplay);
+
+
+
 
 		//we are done converting after this
 
 		if (ret == null) {
-			ret = String.format(bundle.getString("Convert.success_f"), dialogClass.getClassName());
+			ret = String.format(bundle.getString("Convert.success_f"), displayClass.getClassName());
 		} else {
 			ret = String.format(bundle.getString("Convert.fail_f"), ret);
 		}

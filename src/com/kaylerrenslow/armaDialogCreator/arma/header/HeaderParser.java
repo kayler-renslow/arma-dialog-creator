@@ -87,7 +87,10 @@ public class HeaderParser {
 			parsingFile.getClassesMutable().add(hc);
 		}
 
-		parsingFile.getAssignments().addAll(rootClass.getAssignments());
+		for (HeaderAssignment ha : rootClass.getAssignments()) {
+			parsingFile.getAssignmentsMutable().add(ha);
+		}
+
 	}
 
 	protected String expected(char exp, char got) {

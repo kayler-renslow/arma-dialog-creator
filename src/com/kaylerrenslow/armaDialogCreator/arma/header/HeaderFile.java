@@ -14,7 +14,7 @@ public class HeaderFile {
 	private List<HeaderAssignment> assignmentsMutable = new LinkedList<>();
 	private HeaderAssignmentList assignments = new HeaderAssignmentList(assignmentsMutable);
 	private List<HeaderClass> classesMutable = new LinkedList<>();
-	private HeaderClassList classes = new HeaderClassList(classesMutable);
+	private HeaderClassList classes = new HeaderClassList(null, classesMutable);
 
 	protected HeaderFile(@NotNull File file) {
 		this.file = file;

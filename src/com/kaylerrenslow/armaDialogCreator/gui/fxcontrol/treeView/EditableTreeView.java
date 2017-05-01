@@ -1,12 +1,16 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView;
 
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Creates a new EditableTreeView with a root node already in place. This class extends javafx.scene.control.TreeView of type TreeItemData */
-public class EditableTreeView<E extends TreeItemData> extends javafx.scene.control.TreeView<E> {
+public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.control.TreeView<Td> {
+
+	private TreeDataToValueConverter<Td, Tv> converter;
 
 	public EditableTreeView(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		super(new TreeItem<>());
@@ -17,34 +21,51 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 		setCellSelectionUpdate(selectionUpdate);
 	}
 
+	public void setConverter(@NotNull TreeDataToValueConverter<Td, Tv> converter) {
+		this.converter = converter;
+	}
+
 	public void setCellSelectionUpdate(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
 
+	@NotNull
+	private TreeDataToValueConverter<Td, Tv> getConverter() {
+		if (converter == null) {
+			throw new IllegalStateException("must set converter before using it");
+		}
+		return converter;
+	}
+
 	/** Clears the TreeView and loads the given tree structure. If treeStructure is null, will just clear the tree */
-	public void loadStructure(@Nullable TreeStructure treeStructure) {
+	public void loadStructure(@Nullable TreeStructure<Tv> treeStructure) {
+		setRoot(new TreeItem<>());
 		if (treeStructure == null) {
-			setRoot(new TreeItem<>());
 			return;
 		}
-		setRoot(new TreeItem<>((E) treeStructure.getRoot().getData()));
-		TreeItem<E> parent = getRoot();
-		TreeStructure.TreeNode<E> parentNode = treeStructure.getRoot();
-		for (TreeStructure.TreeNode<E> node : parentNode.getChildren()) {
+		TreeItem<Td> parent = getRoot();
+		TreeNode<Tv> parentNode = treeStructure.getRoot();
+		for (TreeNode<Tv> node : parentNode.getChildren()) {
 			loadStructure(parent, node);
 		}
 	}
 
-	private void loadStructure(TreeItem<E> parent, TreeStructure.TreeNode<E> parentNode) {
-		TreeItem<E> newItem = new TreeItem<>(parentNode.getData());
+	private void loadStructure(TreeItem<Td> parent, TreeNode<Tv> parentNode) {
+		TreeItem<Td> newItem = new TreeItem<>(getConverter().convert(parentNode.getData(), parentNode.isFolder(), parentNode.getName()));
 		addChildToParent(parent, newItem);
-		for (TreeStructure.TreeNode<E> childNode : parentNode.getChildren()) {
+		for (TreeNode<Tv> childNode : parentNode.getChildren()) {
 			loadStructure(newItem, childNode);
 		}
 	}
 
-	public TreeStructure<E> exportStructure() {
-		return TreeStructure.getStructure(this);
+	/**
+	 Get a new representation of the {@link EditableTreeView} that can be modified without affecting it
+
+	 @return the new structure
+	 */
+	@NotNull
+	public GUITreeStructure<Tv> exportStructure() {
+		return GUITreeStructure.getStructure(this, getConverter());
 	}
 
 	/**
@@ -52,7 +73,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 
 	 @param data data inside tree node
 	 */
-	public void addChildDataToRoot(E data) {
+	public void addChildDataToRoot(Td data) {
 		addChildToRoot(new TreeItem<>(data));
 	}
 
@@ -62,7 +83,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param index where to add the child at
 	 @param data data inside node
 	 */
-	public void addChildDataToRoot(int index, E data) {
+	public void addChildDataToRoot(int index, Td data) {
 		if (index < 0) {
 			addChildDataToRoot(data);
 			return;
@@ -81,10 +102,10 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param parent what TreeItem the item is a child of
 	 @param toRemove item to remove
 	 */
-	protected void removeChild(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> toRemove) {
-		FoundChild<E> found = new FoundChild<E>() {
+	protected void removeChild(@NotNull TreeItem<Td> parent, @NotNull TreeItem<Td> toRemove) {
+		FoundChild<Td> found = new FoundChild<Td>() {
 			@Override
-			public boolean found(TreeItem<E> found) {
+			public boolean found(TreeItem<Td> found) {
 				found.getValue().delete();
 				return false;
 			}
@@ -96,12 +117,12 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 
 
 	/**
-	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<E> parent, TreeItem<E> child, int index) with index set to parent.getChildren().size()
+	 Adds a child to a designated parent. This simply calls addChildToParent(TreeItem<Td> parent, TreeItem<Td> child, int index) with index set to parent.getChildren().size()
 
 	 @param parent parent node
 	 @param child node to be made the child of parent
 	 */
-	protected void addChildToParent(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> child) {
+	protected void addChildToParent(@NotNull TreeItem<Td> parent, @NotNull TreeItem<Td> child) {
 		addChildToParent(parent, child, parent.getChildren().size());
 	}
 
@@ -112,7 +133,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param child node to be made the child of parent
 	 @param index index for where child is to be inserted (use child count to add to end)
 	 */
-	protected void addChildToParent(@NotNull TreeItem<E> parent, @NotNull TreeItem<E> child, int index) {
+	protected void addChildToParent(@NotNull TreeItem<Td> parent, @NotNull TreeItem<Td> child, int index) {
 		if (index >= parent.getChildren().size()) {
 			parent.getChildren().add(child);
 		} else {
@@ -126,7 +147,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param parent parent node
 	 @param childData node to be made the child of parent
 	 */
-	protected void addChildDataToParent(@NotNull TreeItem<E> parent, @NotNull E childData) {
+	protected void addChildDataToParent(@NotNull TreeItem<Td> parent, @NotNull Td childData) {
 		addChildToParent(parent, new TreeItem<>(childData));
 	}
 
@@ -135,7 +156,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 
 	 @param item item to be added
 	 */
-	protected void addChildToRoot(@NotNull TreeItem<E> item) {
+	protected void addChildToRoot(@NotNull TreeItem<Td> item) {
 		getRoot().getChildren().add(item);
 	}
 
@@ -145,7 +166,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param index where to add the child at
 	 @param item tree item to add
 	 */
-	protected void addChildToRoot(int index, @NotNull TreeItem<E> item) {
+	protected void addChildToRoot(int index, @NotNull TreeItem<Td> item) {
 		if (index < 0) {
 			addChildToRoot(item);
 			return;
@@ -154,7 +175,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	}
 
 	@Nullable
-	protected TreeItem<E> getSelectedItem() {
+	protected TreeItem<Td> getSelectedItem() {
 		return getSelectionModel().getSelectedItem();
 	}
 
@@ -167,7 +188,7 @@ public class EditableTreeView<E extends TreeItemData> extends javafx.scene.contr
 	 @param index where to place toMove
 	 @throws IllegalArgumentException If newParent can't have children ({@link TreeItemData#canHaveChildren()}==false)
 	 */
-	protected void moveTreeItem(@NotNull TreeItem<E> toMove, @NotNull TreeItem<E> newParent, int index) {
+	protected void moveTreeItem(@NotNull TreeItem<Td> toMove, @NotNull TreeItem<Td> newParent, int index) {
 		//move into children
 		if (newParent == getRoot() || newParent.getValue().canHaveChildren()) {
 			toMove.getParent().getChildren().remove(toMove);

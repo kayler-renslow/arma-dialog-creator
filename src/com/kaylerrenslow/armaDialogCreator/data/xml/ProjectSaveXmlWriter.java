@@ -10,10 +10,8 @@ import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeStructure;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.FolderTreeItemEntry;
-import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -30,16 +28,23 @@ public class ProjectSaveXmlWriter {
 	private static final int SAVE_VERSION = 1;
 
 	private final Project project;
-	private final TreeStructure<? extends TreeItemEntry> treeStructureMain;
-	private final TreeStructure<? extends TreeItemEntry> treeStructureBg;
+	private final TreeStructure<ArmaControl> treeStructureMain;
+	private final TreeStructure<ArmaControl> treeStructureBg;
 	private final File projectSaveXml;
 
-	public ProjectSaveXmlWriter(@NotNull Project project, @NotNull TreeStructure<? extends TreeItemEntry> treeStructureMain,
-								@NotNull TreeStructure<? extends TreeItemEntry> treeStructureBg, @NotNull File projectSaveXml) {
+	/**
+	 Creates a new writer.
+
+	 @param project project to write
+	 @param treeStructureMain the {@link TreeStructure} used for saving the controls and folders in the foreground
+	 @param treeStructureBg the {@link TreeStructure} used for saving the controls and folders in the background
+	 */
+	public ProjectSaveXmlWriter(@NotNull Project project, @NotNull TreeStructure<ArmaControl> treeStructureMain,
+								@NotNull TreeStructure<ArmaControl> treeStructureBg) {
 		this.project = project;
 		this.treeStructureMain = treeStructureMain;
 		this.treeStructureBg = treeStructureBg;
-		this.projectSaveXml = projectSaveXml;
+		this.projectSaveXml = project.getProjectSaveFile();
 	}
 
 	public void write() throws IOException {
@@ -131,28 +136,24 @@ public class ProjectSaveXmlWriter {
 		}
 	}
 
-	private void writeControls(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> parent) throws IOException {
-		for (TreeStructure.TreeNode<? extends TreeItemEntry> treeNode : parent.getChildren()) {
-			if (treeNode.getData() instanceof FolderTreeItemEntry) {
-				FolderTreeItemEntry folderTreeItemEntry = (FolderTreeItemEntry) treeNode.getData();
-				writeFolder(stm, treeNode, folderTreeItemEntry);
-			} else if (treeNode.getData() instanceof ControlTreeItemEntry) { //control group tree item entry should extend this class
-				ControlTreeItemEntry controlTreeItemEntry = (ControlTreeItemEntry) treeNode.getData();
-				writeControl(stm, treeNode, controlTreeItemEntry.getMyArmaControl());
+	private void writeControls(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> parent) throws IOException {
+		for (TreeNode<ArmaControl> treeNode : parent.getChildren()) {
+			if (treeNode.isFolder()) {
+				writeFolder(stm, treeNode);
 			} else {
-				throw new IllegalStateException("unknown tree node data class");
+				writeControl(stm, treeNode, treeNode.getData());
 			}
 		}
 
 	}
 
-	private void writeFolder(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull FolderTreeItemEntry folder) throws IOException {
-		stm.write(String.format("<folder name='%s'>", esc(folder.getText())));
+	private void writeFolder(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> treeNode) throws IOException {
+		stm.write(String.format("<folder name='%s'>", esc(treeNode.getName())));
 		writeControls(stm, treeNode);
 		stm.write("</folder>");
 	}
 
-	private void writeControl(@NotNull XmlWriterOutputStream stm, @NotNull TreeStructure.TreeNode<? extends TreeItemEntry> treeNode, @NotNull ArmaControl control) throws IOException {
+	private void writeControl(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> treeNode, @NotNull ArmaControl control) throws IOException {
 		final String controlGroupStr = "control-group";
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
