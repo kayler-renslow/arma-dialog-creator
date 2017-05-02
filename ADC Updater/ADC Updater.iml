@@ -11,5 +11,6 @@
     <orderEntry type="library" name="com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="annotations-java8" level="project" />
     <orderEntry type="module" module-name="ADC Standalone Progress Window" />
+    <orderEntry type="module" module-name="Arma Dialog Creator" scope="PROVIDED" />
   </component>
 </module>

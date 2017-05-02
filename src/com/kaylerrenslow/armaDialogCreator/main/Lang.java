@@ -30,20 +30,24 @@ public interface Lang {
 
 	}
 
+	static ResourceBundle getBundle(@NotNull String bundleName) {
+		return ResourceBundle.getBundle(bundleName, ArmaDialogCreator.getCurrentLocale());
+	}
+
 	static ResourceBundle ApplicationBundle() {
-		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle", ArmaDialogCreator.getCurrentLocale());
+		return getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle");
 	}
 
 	static ResourceBundle EditChangeBundle() {
-		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle", ArmaDialogCreator.getCurrentLocale());
+		return getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle");
 	}
 
 	static ResourceBundle FxControlBundle() {
-		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle", ArmaDialogCreator.getCurrentLocale());
+		return getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle");
 	}
 
 	static ResourceBundle LookupBundle() {
-		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle", ArmaDialogCreator.getCurrentLocale());
+		return getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle");
 	}
 
 	interface Application {

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +21,7 @@ import java.util.regex.Pattern;
  @since 03/21/2017 */
 class Preprocessor {
 
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
+	private static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
 
 	private static final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
 	private static final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";

@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* updated AboutDialog to have "copy to clipboard" button
+* 
 
 **Fixed:**
-* 
+* forgot to include the locale in getting resource bundles
 
 **Notes:**
 * 

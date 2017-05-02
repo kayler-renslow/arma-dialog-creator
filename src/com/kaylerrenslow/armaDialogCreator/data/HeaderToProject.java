@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.header.*;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,7 +29,7 @@ public class HeaderToProject {
 	private static final String CONTROLS = "Controls";
 	private static final String BG_CONTROLS = "ControlsBackground";
 
-	private static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
+	private static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
 
 
 	@NotNull
