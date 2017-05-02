@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* modified TreeStructure so that it is less dependent on the GUI code
+* updated AboutDialog to have "copy to clipboard" button
 
 **Fixed:**
 * 
