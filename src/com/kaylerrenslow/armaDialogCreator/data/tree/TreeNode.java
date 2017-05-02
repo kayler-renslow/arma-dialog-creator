@@ -24,8 +24,8 @@ public interface TreeNode<E> {
 	/** Return true if the node has no children (getChildren().length==0), or false if it has children */
 	boolean isLeaf();
 
-	class Simple<E> implements TreeNode {
-		private final List<Simple<E>> children = new ArrayList<>();
+	class Simple<E> implements TreeNode<E> {
+		private final List<TreeNode<E>> children = new ArrayList<>();
 		private final E data;
 		private final String name;
 		private boolean folder;
@@ -34,6 +34,11 @@ public interface TreeNode<E> {
 			this.data = data;
 			this.name = name;
 			this.folder = isFolder;
+		}
+
+		@NotNull
+		public static <E> TreeNode<E> newRoot() {
+			return new Simple<>(null, "", false);
 		}
 
 		@Override
@@ -55,7 +60,7 @@ public interface TreeNode<E> {
 
 		@Override
 		@NotNull
-		public List<Simple<E>> getChildren() {
+		public List<TreeNode<E>> getChildren() {
 			return children;
 		}
 

@@ -7,36 +7,38 @@ root_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> neste
     @init{
         $nested = new ArrayList<>();
         $assigns = new ArrayList<>();
+        $ast = new AST.HeaderClassNode($assigns, $nested);
     }:
     (
-    help=header_class_helper[$nested, $assigns]
+    help=header_class_helper[$ast, $nested, $assigns]
     )*
-    { $ast = new AST.HeaderClassNode("-root class", null, $assigns, $nested); }
     ;
 
-header_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
+header_class[HeaderClass parentClass] returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
     @init{
         $nested = new ArrayList<>();
         $assigns = new ArrayList<>();
         $extendText = null;
+        $ast = new AST.HeaderClassNode($parentClass, $assigns, $nested);
     }
     :
     Class cn=Identifier (Colon ex=Identifier {$extendText = $ex.text;})?
     (
         LBrace
         (
-            header_class_helper[$nested, $assigns]
+            header_class_helper[$ast, $nested, $assigns]
         )*
         RBrace
     )?
     Semicolon
     {
-        $ast = new AST.HeaderClassNode($cn.text, $extendText, $assigns, $nested);
+        $ast.setClassName($cn.text);
+        $ast.setExtendClassName($extendText);
     }
     ;
 
-header_class_helper[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns]:
-    c=header_class { $nested.add($c.ast); }
+header_class_helper[HeaderClass parentClass, ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns]:
+    c=header_class[$parentClass] { $nested.add($c.ast); }
     | a=assignment { $assigns.add($a.ast); }
     | aa=arr_assignment { $assigns.add($aa.ast); }
     ;

@@ -57,14 +57,8 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 	@Nullable
 	public HeaderClass getClassByName(@NotNull String className, boolean caseSensitive) {
 		for (HeaderClass hc : classList) {
-			if (caseSensitive) {
-				if (hc.getClassName().equals(className)) {
-					return hc;
-				}
-			} else {
-				if (hc.getClassName().equalsIgnoreCase(className)) {
-					return hc;
-				}
+			if (hc.classNameEquals(className, caseSensitive)) {
+				return hc;
 			}
 		}
 		return null;

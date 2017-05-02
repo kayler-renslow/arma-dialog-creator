@@ -123,6 +123,7 @@ public class HeaderAntlrParser extends Parser {
 
 		        ((Root_classContext)_localctx).nested =  new ArrayList<>();
 		        ((Root_classContext)_localctx).assigns =  new ArrayList<>();
+		        ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode(_localctx.assigns, _localctx.nested);
 		    
 		int _la;
 		try {
@@ -135,14 +136,13 @@ public class HeaderAntlrParser extends Parser {
 				{
 				{
 				setState(18);
-				((Root_classContext)_localctx).help = header_class_helper(_localctx.nested, _localctx.assigns);
+				((Root_classContext)_localctx).help = header_class_helper(_localctx.ast, _localctx.nested, _localctx.assigns);
 				}
 				}
 				setState(23);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			}
-			 ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode("-root class", null, _localctx.assigns, _localctx.nested); 
 			}
 		}
 		catch (RecognitionException re) {
@@ -157,6 +157,7 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static class Header_classContext extends ParserRuleContext {
+		public HeaderClass parentClass;
 		public AST.HeaderClassNode ast;
 		public ArrayList<HeaderClass> nested;
 		public ArrayList<HeaderAssignment> assigns;
@@ -178,8 +179,10 @@ public class HeaderAntlrParser extends Parser {
 		public Header_class_helperContext header_class_helper(int i) {
 			return getRuleContext(Header_class_helperContext.class,i);
 		}
-		public Header_classContext(ParserRuleContext parent, int invokingState) {
+		public Header_classContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Header_classContext(ParserRuleContext parent, int invokingState, HeaderClass parentClass) {
 			super(parent, invokingState);
+			this.parentClass = parentClass;
 		}
 		@Override public int getRuleIndex() { return RULE_header_class; }
 		@Override
@@ -192,65 +195,67 @@ public class HeaderAntlrParser extends Parser {
 		}
 	}
 
-	public final Header_classContext header_class() throws RecognitionException {
-		Header_classContext _localctx = new Header_classContext(_ctx, getState());
+	public final Header_classContext header_class(HeaderClass parentClass) throws RecognitionException {
+		Header_classContext _localctx = new Header_classContext(_ctx, getState(), parentClass);
 		enterRule(_localctx, 2, RULE_header_class);
 
 		        ((Header_classContext)_localctx).nested =  new ArrayList<>();
 		        ((Header_classContext)_localctx).assigns =  new ArrayList<>();
 		        ((Header_classContext)_localctx).extendText =  null;
+		        ((Header_classContext)_localctx).ast =  new AST.HeaderClassNode(_localctx.parentClass, _localctx.assigns, _localctx.nested);
 		    
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(26);
+			setState(24);
 			match(Class);
-			setState(27);
+			setState(25);
 			((Header_classContext)_localctx).cn = match(Identifier);
-			setState(31);
+			setState(29);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==Colon) {
 				{
-				setState(28);
+				setState(26);
 				match(Colon);
-				setState(29);
+				setState(27);
 				((Header_classContext)_localctx).ex = match(Identifier);
 				((Header_classContext)_localctx).extendText =  (((Header_classContext)_localctx).ex!=null?((Header_classContext)_localctx).ex.getText():null);
 				}
 			}
 
-			setState(41);
+			setState(39);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if (_la==LBrace) {
 				{
-				setState(33);
+				setState(31);
 				match(LBrace);
-				setState(37);
+				setState(35);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==Class || _la==Identifier) {
 					{
 					{
-					setState(34);
-					header_class_helper(_localctx.nested, _localctx.assigns);
+					setState(32);
+					header_class_helper(_localctx.ast, _localctx.nested, _localctx.assigns);
 					}
 					}
-					setState(39);
+					setState(37);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
-				setState(40);
+				setState(38);
 				match(RBrace);
 				}
 			}
 
-			setState(43);
+			setState(41);
 			match(Semicolon);
 
-			        ((Header_classContext)_localctx).ast =  new AST.HeaderClassNode((((Header_classContext)_localctx).cn!=null?((Header_classContext)_localctx).cn.getText():null), _localctx.extendText, _localctx.assigns, _localctx.nested);
+			        _localctx.ast.setClassName((((Header_classContext)_localctx).cn!=null?((Header_classContext)_localctx).cn.getText():null));
+			        _localctx.ast.setExtendClassName(_localctx.extendText);
 			    
 			}
 		}
@@ -266,6 +271,7 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static class Header_class_helperContext extends ParserRuleContext {
+		public HeaderClass parentClass;
 		public ArrayList<HeaderClass> nested;
 		public ArrayList<HeaderAssignment> assigns;
 		public Header_classContext c;
@@ -281,8 +287,9 @@ public class HeaderAntlrParser extends Parser {
 			return getRuleContext(Arr_assignmentContext.class,0);
 		}
 		public Header_class_helperContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
-		public Header_class_helperContext(ParserRuleContext parent, int invokingState, ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns) {
+		public Header_class_helperContext(ParserRuleContext parent, int invokingState, HeaderClass parentClass, ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns) {
 			super(parent, invokingState);
+			this.parentClass = parentClass;
 			this.nested = nested;
 			this.assigns = assigns;
 		}
@@ -297,25 +304,25 @@ public class HeaderAntlrParser extends Parser {
 		}
 	}
 
-	public final Header_class_helperContext header_class_helper(ArrayList<HeaderClass> nested,ArrayList<HeaderAssignment> assigns) throws RecognitionException {
-		Header_class_helperContext _localctx = new Header_class_helperContext(_ctx, getState(), nested, assigns);
+	public final Header_class_helperContext header_class_helper(HeaderClass parentClass,ArrayList<HeaderClass> nested,ArrayList<HeaderAssignment> assigns) throws RecognitionException {
+		Header_class_helperContext _localctx = new Header_class_helperContext(_ctx, getState(), parentClass, nested, assigns);
 		enterRule(_localctx, 4, RULE_header_class_helper);
 		try {
-			setState(55);
+			setState(53);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,4,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(46);
-				((Header_class_helperContext)_localctx).c = header_class();
+				setState(44);
+				((Header_class_helperContext)_localctx).c = header_class(_localctx.parentClass);
 				 _localctx.nested.add(((Header_class_helperContext)_localctx).c.ast); 
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(49);
+				setState(47);
 				((Header_class_helperContext)_localctx).a = assignment();
 				 _localctx.assigns.add(((Header_class_helperContext)_localctx).a.ast); 
 				}
@@ -323,7 +330,7 @@ public class HeaderAntlrParser extends Parser {
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(52);
+				setState(50);
 				((Header_class_helperContext)_localctx).aa = arr_assignment();
 				 _localctx.assigns.add(((Header_class_helperContext)_localctx).aa.ast); 
 				}
@@ -371,13 +378,13 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(57);
+			setState(55);
 			((AssignmentContext)_localctx).varName = match(Identifier);
-			setState(58);
+			setState(56);
 			match(Equal);
-			setState(59);
+			setState(57);
 			((AssignmentContext)_localctx).val = value();
-			setState(60);
+			setState(58);
 			match(Semicolon);
 			 ((AssignmentContext)_localctx).ast =  new AST.HeaderAssignmentNode((((AssignmentContext)_localctx).varName!=null?((AssignmentContext)_localctx).varName.getText():null), ((AssignmentContext)_localctx).val.ast); 
 			}
@@ -427,11 +434,11 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(63);
+			setState(61);
 			((Arr_assignmentContext)_localctx).varName = match(Identifier);
-			setState(64);
+			setState(62);
 			match(BacketPair);
-			setState(65);
+			setState(63);
 			((Arr_assignmentContext)_localctx).eq = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==PlusEqual || _la==Equal) ) {
@@ -442,9 +449,9 @@ public class HeaderAntlrParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(66);
+			setState(64);
 			((Arr_assignmentContext)_localctx).val = array();
-			setState(67);
+			setState(65);
 			match(Semicolon);
 			 ((Arr_assignmentContext)_localctx).ast =  new AST.HeaderArrayAssignmentNode((((Arr_assignmentContext)_localctx).varName!=null?((Arr_assignmentContext)_localctx).varName.getText():null), ((Arr_assignmentContext)_localctx).val.ast, (((Arr_assignmentContext)_localctx).eq!=null?((Arr_assignmentContext)_localctx).eq.getText():null).equals("+=")); 
 			}
@@ -497,35 +504,35 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(70);
+			setState(68);
 			match(LBrace);
-			setState(79);
+			setState(77);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << LBrace) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0)) {
 				{
-				setState(71);
+				setState(69);
 				array_helper(_localctx.items);
-				setState(76);
+				setState(74);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==Comma) {
 					{
 					{
-					setState(72);
+					setState(70);
 					match(Comma);
-					setState(73);
+					setState(71);
 					array_helper(_localctx.items);
 					}
 					}
-					setState(78);
+					setState(76);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
 				}
 			}
 
-			setState(81);
+			setState(79);
 			match(RBrace);
 			 ((ArrayContext)_localctx).ast =  new AST.HeaderArrayNode(_localctx.items); 
 			}
@@ -571,7 +578,7 @@ public class HeaderAntlrParser extends Parser {
 		Array_helperContext _localctx = new Array_helperContext(_ctx, getState(), items);
 		enterRule(_localctx, 12, RULE_array_helper);
 		try {
-			setState(90);
+			setState(88);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case String:
@@ -585,7 +592,7 @@ public class HeaderAntlrParser extends Parser {
 			case Number:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(84);
+				setState(82);
 				((Array_helperContext)_localctx).v = value();
 				 _localctx.items.add(new AST.HeaderArrayItemNode(((Array_helperContext)_localctx).v.ast)); 
 				}
@@ -593,7 +600,7 @@ public class HeaderAntlrParser extends Parser {
 			case LBrace:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(87);
+				setState(85);
 				((Array_helperContext)_localctx).a = array();
 				 _localctx.items.add(((Array_helperContext)_localctx).a.ast); 
 				}
@@ -639,13 +646,13 @@ public class HeaderAntlrParser extends Parser {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_value);
 		try {
-			setState(97);
+			setState(95);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case String:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(92);
+				setState(90);
 				((ValueContext)_localctx).s = match(String);
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).s!=null?((ValueContext)_localctx).s.getText():null)); 
 				}
@@ -660,7 +667,7 @@ public class HeaderAntlrParser extends Parser {
 			case Number:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(94);
+				setState(92);
 				((ValueContext)_localctx).eq = equation();
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).eq!=null?_input.getText(((ValueContext)_localctx).eq.start,((ValueContext)_localctx).eq.stop):null)); 
 				}
@@ -734,13 +741,13 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(100); 
+			setState(98); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(99);
+				setState(97);
 				_la = _input.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0)) ) {
 				_errHandler.recoverInline(this);
@@ -752,7 +759,7 @@ public class HeaderAntlrParser extends Parser {
 				}
 				}
 				}
-				setState(102); 
+				setState(100); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0) );
@@ -770,32 +777,32 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35k\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35i\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
-		"\n\2\f\2\16\2\31\13\2\3\2\3\2\3\3\3\3\3\3\3\3\3\3\5\3\"\n\3\3\3\3\3\7"+
-		"\3&\n\3\f\3\16\3)\13\3\3\3\5\3,\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3"+
-		"\4\3\4\3\4\3\4\5\4:\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3"+
-		"\6\3\6\3\7\3\7\3\7\3\7\7\7M\n\7\f\7\16\7P\13\7\5\7R\n\7\3\7\3\7\3\7\3"+
-		"\b\3\b\3\b\3\b\3\b\3\b\5\b]\n\b\3\t\3\t\3\t\3\t\3\t\5\td\n\t\3\n\6\ng"+
-		"\n\n\r\n\16\nh\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\3\2\17\26\2"+
-		"l\2\27\3\2\2\2\4\34\3\2\2\2\69\3\2\2\2\b;\3\2\2\2\nA\3\2\2\2\fH\3\2\2"+
-		"\2\16\\\3\2\2\2\20c\3\2\2\2\22f\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26"+
-		"\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\32\3\2\2\2\31\27\3\2\2\2\32"+
-		"\33\b\2\1\2\33\3\3\2\2\2\34\35\7\4\2\2\35!\7\25\2\2\36\37\7\6\2\2\37 "+
-		"\7\25\2\2 \"\b\3\1\2!\36\3\2\2\2!\"\3\2\2\2\"+\3\2\2\2#\'\7\n\2\2$&\5"+
-		"\6\4\2%$\3\2\2\2&)\3\2\2\2\'%\3\2\2\2\'(\3\2\2\2(*\3\2\2\2)\'\3\2\2\2"+
-		"*,\7\13\2\2+#\3\2\2\2+,\3\2\2\2,-\3\2\2\2-.\7\7\2\2./\b\3\1\2/\5\3\2\2"+
-		"\2\60\61\5\4\3\2\61\62\b\4\1\2\62:\3\2\2\2\63\64\5\b\5\2\64\65\b\4\1\2"+
-		"\65:\3\2\2\2\66\67\5\n\6\2\678\b\4\1\28:\3\2\2\29\60\3\2\2\29\63\3\2\2"+
-		"\29\66\3\2\2\2:\7\3\2\2\2;<\7\25\2\2<=\7\t\2\2=>\5\20\t\2>?\7\7\2\2?@"+
-		"\b\5\1\2@\t\3\2\2\2AB\7\25\2\2BC\7\f\2\2CD\t\2\2\2DE\5\f\7\2EF\7\7\2\2"+
-		"FG\b\6\1\2G\13\3\2\2\2HQ\7\n\2\2IN\5\16\b\2JK\7\5\2\2KM\5\16\b\2LJ\3\2"+
-		"\2\2MP\3\2\2\2NL\3\2\2\2NO\3\2\2\2OR\3\2\2\2PN\3\2\2\2QI\3\2\2\2QR\3\2"+
-		"\2\2RS\3\2\2\2ST\7\13\2\2TU\b\7\1\2U\r\3\2\2\2VW\5\20\t\2WX\b\b\1\2X]"+
-		"\3\2\2\2YZ\5\f\7\2Z[\b\b\1\2[]\3\2\2\2\\V\3\2\2\2\\Y\3\2\2\2]\17\3\2\2"+
-		"\2^_\7\3\2\2_d\b\t\1\2`a\5\22\n\2ab\b\t\1\2bd\3\2\2\2c^\3\2\2\2c`\3\2"+
-		"\2\2d\21\3\2\2\2eg\t\3\2\2fe\3\2\2\2gh\3\2\2\2hf\3\2\2\2hi\3\2\2\2i\23"+
-		"\3\2\2\2\f\27!\'+9NQ\\ch";
+		"\n\2\f\2\16\2\31\13\2\3\3\3\3\3\3\3\3\3\3\5\3 \n\3\3\3\3\3\7\3$\n\3\f"+
+		"\3\16\3\'\13\3\3\3\5\3*\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
+		"\4\3\4\5\48\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
+		"\7\3\7\3\7\3\7\7\7K\n\7\f\7\16\7N\13\7\5\7P\n\7\3\7\3\7\3\7\3\b\3\b\3"+
+		"\b\3\b\3\b\3\b\5\b[\n\b\3\t\3\t\3\t\3\t\3\t\5\tb\n\t\3\n\6\ne\n\n\r\n"+
+		"\16\nf\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\3\2\17\26\2j\2\27\3"+
+		"\2\2\2\4\32\3\2\2\2\6\67\3\2\2\2\b9\3\2\2\2\n?\3\2\2\2\fF\3\2\2\2\16Z"+
+		"\3\2\2\2\20a\3\2\2\2\22d\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\31\3\2"+
+		"\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2\2\2\31\27\3\2\2\2\32\33\7\4"+
+		"\2\2\33\37\7\25\2\2\34\35\7\6\2\2\35\36\7\25\2\2\36 \b\3\1\2\37\34\3\2"+
+		"\2\2\37 \3\2\2\2 )\3\2\2\2!%\7\n\2\2\"$\5\6\4\2#\"\3\2\2\2$\'\3\2\2\2"+
+		"%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2(*\7\13\2\2)!\3\2\2\2)*\3\2\2"+
+		"\2*+\3\2\2\2+,\7\7\2\2,-\b\3\1\2-\5\3\2\2\2./\5\4\3\2/\60\b\4\1\2\608"+
+		"\3\2\2\2\61\62\5\b\5\2\62\63\b\4\1\2\638\3\2\2\2\64\65\5\n\6\2\65\66\b"+
+		"\4\1\2\668\3\2\2\2\67.\3\2\2\2\67\61\3\2\2\2\67\64\3\2\2\28\7\3\2\2\2"+
+		"9:\7\25\2\2:;\7\t\2\2;<\5\20\t\2<=\7\7\2\2=>\b\5\1\2>\t\3\2\2\2?@\7\25"+
+		"\2\2@A\7\f\2\2AB\t\2\2\2BC\5\f\7\2CD\7\7\2\2DE\b\6\1\2E\13\3\2\2\2FO\7"+
+		"\n\2\2GL\5\16\b\2HI\7\5\2\2IK\5\16\b\2JH\3\2\2\2KN\3\2\2\2LJ\3\2\2\2L"+
+		"M\3\2\2\2MP\3\2\2\2NL\3\2\2\2OG\3\2\2\2OP\3\2\2\2PQ\3\2\2\2QR\7\13\2\2"+
+		"RS\b\7\1\2S\r\3\2\2\2TU\5\20\t\2UV\b\b\1\2V[\3\2\2\2WX\5\f\7\2XY\b\b\1"+
+		"\2Y[\3\2\2\2ZT\3\2\2\2ZW\3\2\2\2[\17\3\2\2\2\\]\7\3\2\2]b\b\t\1\2^_\5"+
+		"\22\n\2_`\b\t\1\2`b\3\2\2\2a\\\3\2\2\2a^\3\2\2\2b\21\3\2\2\2ce\t\3\2\2"+
+		"dc\3\2\2\2ef\3\2\2\2fd\3\2\2\2fg\3\2\2\2g\23\3\2\2\2\f\27\37%)\67LOZa"+
+		"f";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

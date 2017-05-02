@@ -135,16 +135,29 @@ interface AST {
 
 	class HeaderClassNode extends ASTNode implements HeaderClass {
 
-		private final String className;
-		private final String extendClassName;
+		private String className;
+		private String extendClassName;
 		private final HeaderAssignmentList assignments;
 		private final HeaderClassList nestedClasses;
+		private final HeaderClass parentClass;
 
-		public HeaderClassNode(@NotNull String className, @Nullable String extendClassName, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
-			this.className = className;
-			this.extendClassName = extendClassName;
+		public HeaderClassNode(@NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
+			this(null, assignments, nestedClasses);
+			this.className = "`ROOT CLASS`";
+		}
+
+		public HeaderClassNode(@Nullable HeaderClass parentClass, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
 			this.assignments = new HeaderAssignmentList(assignments);
 			this.nestedClasses = new HeaderClassList(this, nestedClasses);
+			this.parentClass = parentClass;
+		}
+
+		public void setClassName(@NotNull String className) {
+			this.className = className;
+		}
+
+		public void setExtendClassName(@Nullable String extendClassName) {
+			this.extendClassName = extendClassName;
 		}
 
 		@NotNull
@@ -169,6 +182,12 @@ interface AST {
 		@Nullable
 		public String getExtendClassName() {
 			return extendClassName;
+		}
+
+		@Override
+		@Nullable
+		public HeaderClass getParentClass() {
+			return parentClass;
 		}
 
 		@Override
