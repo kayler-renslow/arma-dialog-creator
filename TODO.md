@@ -39,6 +39,7 @@ General
 * use proper text editor for Image and Hex Color
 * instead of ValueObserver.removeListener(), create an expiration checker method such that when it returns true, the observer removes it
   * this will make garbage collection faster and and reduce risk of memory leaks. Also, its cleaner than storing the listeners
+* create JUnit tests for ControlClass and ControlProperty
 
 Bugs
 -----------------------------------
@@ -47,3 +48,4 @@ Bugs
 * moving control group in display throws exception
 * square scaling: doesn't scale up and back down with same snap amount
 * in StringTableEditorPopup, going to configuration tab and clicking on preview language combobox will freeze application
+* convert font to String type. Make font invalid. Convert back to font type

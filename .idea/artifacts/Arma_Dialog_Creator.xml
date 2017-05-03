@@ -3,12 +3,12 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator</output-path>
     <root id="archive" name="adc.jar">
       <element id="module-output" name="Arma Dialog Creator" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/antlr-runtime-4.5.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/richtextfx-0.7-M2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/wellbehavedfx-0.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/undofx-1.2.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/reactfx-2.0-M5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/flowless-0.5.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/antlr-runtime-4.7.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

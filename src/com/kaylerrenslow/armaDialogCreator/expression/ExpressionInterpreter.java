@@ -20,6 +20,7 @@ public class ExpressionInterpreter {
 	}
 
 	/** Get the only instance of the interpreter */
+	@NotNull
 	public static ExpressionInterpreter getInstance() {
 		return INSTANCE;
 	}

@@ -1,4 +1,4 @@
-// Generated from D:/Archive/Intellij Files/Arma Tools/Arma Dialog Creator/src/com/kaylerrenslow/armaDialogCreator/expression\Expression.g4 by ANTLR 4.5.3
+// Generated from D:/Archive/Intellij Files/Arma Tools/Arma Dialog Creator/src/com/kaylerrenslow/armaDialogCreator/expression\Expression.g4 by ANTLR 4.7
 package com.kaylerrenslow.armaDialogCreator.expression;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ExpressionParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.5.3", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -135,11 +135,6 @@ public class ExpressionParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitExpression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitExpression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -158,6 +153,7 @@ public class ExpressionParser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(22);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case Plus:
 			case Minus:
@@ -335,11 +331,6 @@ public class ExpressionParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitUnary_expression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitUnary_expression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Unary_expressionContext unary_expression() throws RecognitionException {
@@ -422,11 +413,6 @@ public class ExpressionParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitParen_expression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitParen_expression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Paren_expressionContext paren_expression() throws RecognitionException {
@@ -479,11 +465,6 @@ public class ExpressionParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitLiteral_expression(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitLiteral_expression(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Literal_expressionContext literal_expression() throws RecognitionException {
@@ -491,6 +472,7 @@ public class ExpressionParser extends Parser {
 		enterRule(_localctx, 6, RULE_literal_expression);
 		try {
 			setState(90);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case Identifier:
 				enterOuterAlt(_localctx, 1);
@@ -550,11 +532,6 @@ public class ExpressionParser extends Parser {
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitInt_value(this);
 		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitInt_value(this);
-			else return visitor.visitChildren(this);
-		}
 	}
 
 	public final Int_valueContext int_value() throws RecognitionException {
@@ -562,6 +539,7 @@ public class ExpressionParser extends Parser {
 		enterRule(_localctx, 8, RULE_int_value);
 		try {
 			setState(96);
+			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case IntegerLiteral:
 				enterOuterAlt(_localctx, 1);
@@ -609,11 +587,6 @@ public class ExpressionParser extends Parser {
 		@Override
 		public void exitRule(ParseTreeListener listener) {
 			if ( listener instanceof ExpressionListener ) ((ExpressionListener)listener).exitFloat_value(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof ExpressionVisitor ) return ((ExpressionVisitor<? extends T>)visitor).visitFloat_value(this);
-			else return visitor.visitChildren(this);
 		}
 	}
 
@@ -665,26 +638,26 @@ public class ExpressionParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\25h\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\25h\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
 		"\3\2\5\2\31\n\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3"+
 		"\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\7\2"+
 		"9\n\2\f\2\16\2<\13\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\5\3N\n\3\3\4\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\3\5\3\5\3"+
 		"\5\3\5\5\5]\n\5\3\6\3\6\3\6\3\6\5\6c\n\6\3\7\3\7\3\7\3\7\2\3\2\b\2\4\6"+
-		"\b\n\f\2\2o\2\30\3\2\2\2\4M\3\2\2\2\6O\3\2\2\2\b\\\3\2\2\2\nb\3\2\2\2"+
-		"\fd\3\2\2\2\16\17\b\2\1\2\17\20\5\4\3\2\20\21\b\2\1\2\21\31\3\2\2\2\22"+
-		"\23\5\6\4\2\23\24\b\2\1\2\24\31\3\2\2\2\25\26\5\b\5\2\26\27\b\2\1\2\27"+
-		"\31\3\2\2\2\30\16\3\2\2\2\30\22\3\2\2\2\30\25\3\2\2\2\31:\3\2\2\2\32\33"+
-		"\f\t\2\2\33\34\7\6\2\2\34\35\5\2\2\n\35\36\b\2\1\2\369\3\2\2\2\37 \f\b"+
-		"\2\2 !\7\5\2\2!\"\5\2\2\t\"#\b\2\1\2#9\3\2\2\2$%\f\7\2\2%&\7\3\2\2&\'"+
-		"\5\2\2\b\'(\b\2\1\2(9\3\2\2\2)*\f\6\2\2*+\7\4\2\2+,\5\2\2\7,-\b\2\1\2"+
-		"-9\3\2\2\2./\f\4\2\2/\60\7\n\2\2\60\61\5\2\2\5\61\62\b\2\1\2\629\3\2\2"+
-		"\2\63\64\f\3\2\2\64\65\7\t\2\2\65\66\5\2\2\4\66\67\b\2\1\2\679\3\2\2\2"+
-		"8\32\3\2\2\28\37\3\2\2\28$\3\2\2\28)\3\2\2\28.\3\2\2\28\63\3\2\2\29<\3"+
-		"\2\2\2:8\3\2\2\2:;\3\2\2\2;\3\3\2\2\2<:\3\2\2\2=>\7\3\2\2>?\5\6\4\2?@"+
-		"\b\3\1\2@N\3\2\2\2AB\7\3\2\2BC\5\b\5\2CD\b\3\1\2DN\3\2\2\2EF\7\4\2\2F"+
-		"G\5\6\4\2GH\b\3\1\2HN\3\2\2\2IJ\7\4\2\2JK\5\b\5\2KL\b\3\1\2LN\3\2\2\2"+
+		"\b\n\f\2\2\2o\2\30\3\2\2\2\4M\3\2\2\2\6O\3\2\2\2\b\\\3\2\2\2\nb\3\2\2"+
+		"\2\fd\3\2\2\2\16\17\b\2\1\2\17\20\5\4\3\2\20\21\b\2\1\2\21\31\3\2\2\2"+
+		"\22\23\5\6\4\2\23\24\b\2\1\2\24\31\3\2\2\2\25\26\5\b\5\2\26\27\b\2\1\2"+
+		"\27\31\3\2\2\2\30\16\3\2\2\2\30\22\3\2\2\2\30\25\3\2\2\2\31:\3\2\2\2\32"+
+		"\33\f\t\2\2\33\34\7\6\2\2\34\35\5\2\2\n\35\36\b\2\1\2\369\3\2\2\2\37 "+
+		"\f\b\2\2 !\7\5\2\2!\"\5\2\2\t\"#\b\2\1\2#9\3\2\2\2$%\f\7\2\2%&\7\3\2\2"+
+		"&\'\5\2\2\b\'(\b\2\1\2(9\3\2\2\2)*\f\6\2\2*+\7\4\2\2+,\5\2\2\7,-\b\2\1"+
+		"\2-9\3\2\2\2./\f\4\2\2/\60\7\n\2\2\60\61\5\2\2\5\61\62\b\2\1\2\629\3\2"+
+		"\2\2\63\64\f\3\2\2\64\65\7\t\2\2\65\66\5\2\2\4\66\67\b\2\1\2\679\3\2\2"+
+		"\28\32\3\2\2\28\37\3\2\2\28$\3\2\2\28)\3\2\2\28.\3\2\2\28\63\3\2\2\29"+
+		"<\3\2\2\2:8\3\2\2\2:;\3\2\2\2;\3\3\2\2\2<:\3\2\2\2=>\7\3\2\2>?\5\6\4\2"+
+		"?@\b\3\1\2@N\3\2\2\2AB\7\3\2\2BC\5\b\5\2CD\b\3\1\2DN\3\2\2\2EF\7\4\2\2"+
+		"FG\5\6\4\2GH\b\3\1\2HN\3\2\2\2IJ\7\4\2\2JK\5\b\5\2KL\b\3\1\2LN\3\2\2\2"+
 		"M=\3\2\2\2MA\3\2\2\2ME\3\2\2\2MI\3\2\2\2N\5\3\2\2\2OP\7\7\2\2PQ\5\2\2"+
 		"\2QR\7\b\2\2RS\b\4\1\2S\7\3\2\2\2TU\7\13\2\2U]\b\5\1\2VW\5\n\6\2WX\b\5"+
 		"\1\2X]\3\2\2\2YZ\5\f\7\2Z[\b\5\1\2[]\3\2\2\2\\T\3\2\2\2\\V\3\2\2\2\\Y"+

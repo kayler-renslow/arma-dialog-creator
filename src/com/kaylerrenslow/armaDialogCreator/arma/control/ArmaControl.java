@@ -17,9 +17,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  The base class for all controls.<br>
- <b>NOTE: any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instanceof some extended class because when the project is loaded from .xml
- via {@link com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader}, all controls are only {@link ArmaControl} or {@link ArmaControlGroup} and
- <b>not</b> something like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}</b>
+ <b>NOTE:</b> any classes that extend this class are SHORT-HAND ways of creating this class. Never check if an {@link ArmaControl} instance is an instance of some short hand class
+ (like {@link com.kaylerrenslow.armaDialogCreator.arma.control.impl.StaticControl}). Not all controls are created with those shorthand classes. All controls are either {@link ArmaControl} or
+ {@link ArmaControlGroup}.
 
  @author Kayler
  @since 05/20/2016. */

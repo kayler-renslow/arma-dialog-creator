@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- A immutable list of {@link HeaderClass} instances that provides extra functionality for searching
+ An immutable list (the underlying list is not copied) of {@link HeaderClass} instances that provides extra functionality for searching
 
  @author Kayler
  @since 04/30/2017 */
@@ -17,10 +17,10 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 	private final List<HeaderClass> classList;
 
 	/**
-	 Create a immutable list of {@link HeaderClass} instances
+	 Create a immutable list of {@link HeaderClass} instances (the underlying list is not copied)
 
 	 @param ownerClass the class that uses this list, or null if used with a {@link HeaderFile}
-	 @param classList the underlying list that actually holds that instances
+	 @param classList the underlying list that actually holds that instances. This list is not copied.
 	 */
 	public HeaderClassList(@Nullable HeaderClass ownerClass, @NotNull List<HeaderClass> classList) {
 		this.ownerClass = ownerClass;
