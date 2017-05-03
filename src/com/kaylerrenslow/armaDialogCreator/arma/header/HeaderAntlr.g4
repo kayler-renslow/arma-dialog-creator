@@ -3,11 +3,11 @@
 
 grammar HeaderAntlr;
 
-root_class returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
+root_class[HeaderFile file] returns [AST.HeaderClassNode ast] locals[ArrayList<HeaderClass> nested, ArrayList<HeaderAssignment> assigns, String extendText]
     @init{
         $nested = new ArrayList<>();
         $assigns = new ArrayList<>();
-        $ast = new AST.HeaderClassNode($assigns, $nested);
+        $ast = new AST.HeaderClassNode($file, $assigns, $nested);
     }:
     (
     help=header_class_helper[$ast, $nested, $assigns]

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
@@ -27,6 +28,10 @@ public interface HeaderClass extends HeaderItem {
 			return getClassName().equals(className);
 		}
 		return getClassName().equalsIgnoreCase(className);
+	}
+
+	default boolean hasExtendClass() {
+		return getExtendClassName() != null;
 	}
 
 	@Nullable String getExtendClassName();
@@ -56,6 +61,7 @@ public interface HeaderClass extends HeaderItem {
 	 */
 	@Nullable HeaderClass getParentClass();
 
+	@NotNull HeaderFile getOwnerFile();
 
 	/**
 	 An iterative way to traverse upwards the inheritance tree. This method will include the starting class in the callback
@@ -71,6 +77,27 @@ public interface HeaderClass extends HeaderItem {
 		while (cursor != null && contTraversal) {
 			discovered = cursor;
 			cursor = cursor.getParentClass();
+			contTraversal = classTraverseCallback.apply(discovered);
+		}
+		return discovered;
+	}
+
+	/**
+	 An iterative way to traverse downwards the inheritance tree. This method will include the starting class in the callback.
+	 The algorithm is iterative BFS
+
+	 @param classTraverseCallback function invoked on each descendant class. Return true if traversal should continue, false if it should stop
+	 @return the last traversed {@link HeaderClass}
+	 */
+	@NotNull
+	default HeaderClass traverseDownwards(@NotNull Function<HeaderClass, Boolean> classTraverseCallback) {
+		HeaderClass discovered = this;
+		boolean contTraversal = true;
+		LinkedList<HeaderClass> toVisit = new LinkedList<>();
+		toVisit.add(this);
+		while (contTraversal && !toVisit.isEmpty()) {
+			discovered = toVisit.pop();
+			discovered.getNestedClasses().addAllInto(toVisit);
 			contTraversal = classTraverseCallback.apply(discovered);
 		}
 		return discovered;

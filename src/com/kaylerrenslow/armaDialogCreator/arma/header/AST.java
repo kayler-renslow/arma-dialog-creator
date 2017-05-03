@@ -140,17 +140,21 @@ interface AST {
 		private final HeaderAssignmentList assignments;
 		private final HeaderClassList nestedClasses;
 		private final HeaderClass parentClass;
+		private HeaderFile headerFile;
 
-		public HeaderClassNode(@NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
-			this(null, assignments, nestedClasses);
+		public HeaderClassNode(@Nullable HeaderFile file, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
+			this((HeaderClass) null, assignments, nestedClasses);
 			this.className = "`ROOT CLASS`";
+			this.headerFile = file;
 		}
 
 		public HeaderClassNode(@Nullable HeaderClass parentClass, @NotNull List<HeaderAssignment> assignments, @NotNull List<HeaderClass> nestedClasses) {
 			this.assignments = new HeaderAssignmentList(assignments);
 			this.nestedClasses = new HeaderClassList(this, nestedClasses);
 			this.parentClass = parentClass;
+			this.headerFile = parentClass != null ? parentClass.getOwnerFile() : null;
 		}
+
 
 		public void setClassName(@NotNull String className) {
 			this.className = className;
@@ -188,6 +192,12 @@ interface AST {
 		@Nullable
 		public HeaderClass getParentClass() {
 			return parentClass;
+		}
+
+		@Override
+		@NotNull
+		public HeaderFile getOwnerFile() {
+			return headerFile;
 		}
 
 		@Override

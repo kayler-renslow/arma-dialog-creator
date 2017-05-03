@@ -82,7 +82,7 @@ public class HeaderParser {
 
 		p.addErrorListener(HeaderParserErrorListener.INSTANCE);
 
-		HeaderClass rootClass = p.root_class().ast;
+		AST.HeaderClassNode rootClass = p.root_class(parsingFile).ast;
 
 		for (HeaderClass hc : rootClass.getNestedClasses()) {
 			parsingFile.getClassesMutable().add(hc);

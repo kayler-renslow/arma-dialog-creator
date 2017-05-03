@@ -17,7 +17,7 @@ public class HeaderAssignmentList implements Iterable<HeaderAssignment> {
 	}
 
 	@Nullable
-	public HeaderAssignment getAssignmentByVarName(@NotNull String varName, boolean caseSensitive) {
+	public HeaderAssignment getByVarName(@NotNull String varName, boolean caseSensitive) {
 		for (HeaderAssignment ha : assignList) {
 			if (caseSensitive) {
 				if (ha.getVariableName().equals(varName)) {

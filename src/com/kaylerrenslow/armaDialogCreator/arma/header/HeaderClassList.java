@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 	 @return the {@link HeaderClass} instance that matches the class name, or null if no class was matched
 	 */
 	@Nullable
-	public HeaderClass getClassByName(@NotNull String className, boolean caseSensitive) {
+	public HeaderClass getByName(@NotNull String className, boolean caseSensitive) {
 		for (HeaderClass hc : classList) {
 			if (hc.classNameEquals(className, caseSensitive)) {
 				return hc;
@@ -66,7 +67,7 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 
 	/**
 	 Finds a {@link HeaderClass} by iteratively searching through descendant {@link HeaderClassList} instances.
-	 Searching is done iterative calls to {@link #getClassByName(String, boolean)}
+	 Searching is done iterative calls to {@link #getByName(String, boolean)}
 
 	 @param caseSensitive true if the class names are case sensitive, false if not case senstive
 	 @param classNames the array of class names. The last name is the class that will be returned (if it exists)
@@ -77,10 +78,10 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 		if (classNames.length == 0) {
 			return null;
 		}
-		HeaderClass cursor = getClassByName(classNames[0], caseSensitive);
+		HeaderClass cursor = getByName(classNames[0], caseSensitive);
 		int cursorI = 1;
 		while (cursor != null && cursorI < classNames.length) {
-			cursor = cursor.getNestedClasses().getClassByName(classNames[cursorI++], caseSensitive);
+			cursor = cursor.getNestedClasses().getByName(classNames[cursorI++], caseSensitive);
 		}
 		return cursor;
 	}
@@ -98,9 +99,23 @@ public class HeaderClassList implements Iterable<HeaderClass> {
 		return classList.iterator();
 	}
 
+	/**
+	 Adds all of this list into a collection
+
+	 @param addTo collection to add to
+	 */
+	public void addAllInto(@NotNull Collection<HeaderClass> addTo) {
+		for (HeaderClass hc : this) {
+			addTo.add(hc);
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		return o == this || o instanceof HeaderClassList && this.classList.equals(((HeaderClassList) o).classList);
 	}
 
+	public boolean isEmpty() {
+		return classList.isEmpty();
+	}
 }

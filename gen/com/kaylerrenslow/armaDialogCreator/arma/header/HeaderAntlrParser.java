@@ -92,6 +92,7 @@ public class HeaderAntlrParser extends Parser {
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
 	public static class Root_classContext extends ParserRuleContext {
+		public HeaderFile file;
 		public AST.HeaderClassNode ast;
 		public ArrayList<HeaderClass> nested;
 		public ArrayList<HeaderAssignment> assigns;
@@ -103,8 +104,10 @@ public class HeaderAntlrParser extends Parser {
 		public Header_class_helperContext header_class_helper(int i) {
 			return getRuleContext(Header_class_helperContext.class,i);
 		}
-		public Root_classContext(ParserRuleContext parent, int invokingState) {
+		public Root_classContext(ParserRuleContext parent, int invokingState) { super(parent, invokingState); }
+		public Root_classContext(ParserRuleContext parent, int invokingState, HeaderFile file) {
 			super(parent, invokingState);
+			this.file = file;
 		}
 		@Override public int getRuleIndex() { return RULE_root_class; }
 		@Override
@@ -117,13 +120,13 @@ public class HeaderAntlrParser extends Parser {
 		}
 	}
 
-	public final Root_classContext root_class() throws RecognitionException {
-		Root_classContext _localctx = new Root_classContext(_ctx, getState());
+	public final Root_classContext root_class(HeaderFile file) throws RecognitionException {
+		Root_classContext _localctx = new Root_classContext(_ctx, getState(), file);
 		enterRule(_localctx, 0, RULE_root_class);
 
 		        ((Root_classContext)_localctx).nested =  new ArrayList<>();
 		        ((Root_classContext)_localctx).assigns =  new ArrayList<>();
-		        ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode(_localctx.assigns, _localctx.nested);
+		        ((Root_classContext)_localctx).ast =  new AST.HeaderClassNode(_localctx.file, _localctx.assigns, _localctx.nested);
 		    
 		int _la;
 		try {

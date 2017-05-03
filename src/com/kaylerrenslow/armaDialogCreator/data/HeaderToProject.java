@@ -10,6 +10,7 @@ import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,15 +29,13 @@ public class HeaderToProject {
 
 	private static final String CONTROLS = "Controls";
 	private static final String BG_CONTROLS = "ControlsBackground";
+	private static final String IDD = "idd";
 
-	private static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
+	static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
 
-
-	@NotNull
-	public static List<String> convertAndSaveToWorkspace(@NotNull Workspace workspace, @NotNull File descriptionExt, @NotNull SelectClassesCallback callback)
+	public static void convertAndSaveToWorkspace(@NotNull Workspace workspace, @NotNull File descriptionExt, @NotNull SelectClassesCallback callback)
 			throws FileNotFoundException, HeaderConversionException {
 
-		List<String> results = new ArrayList<>();
 		HeaderFile headerFile;
 		try {
 			headerFile = HeaderParser.parse(descriptionExt);
@@ -48,11 +47,8 @@ public class HeaderToProject {
 
 		List<String> discoveredDialogClassNames = new ArrayList<>();
 		for (HeaderClass hc : headerFile.getClasses()) {
-			boolean hasIddAssign = hc.getAssignments().getAssignmentByVarName("idd", true) != null;
-			if (!hasIddAssign) {
-				setupInheritanceMap(inheritanceHelper, hc);
-			}
-			if (hasIddAssign || inheritanceHelper.get(hc) != null) {
+			boolean hasIddAssign = hc.getAssignments().getByVarName(IDD, true) != null;
+			if (hasIddAssign || headerFile.getAssignmentByVarName(hc, IDD, true) != null) {
 				discoveredDialogClassNames.add(hc.getClassName());
 			}
 		}
@@ -63,57 +59,17 @@ public class HeaderToProject {
 				if (!className.equals(hc.getClassName())) {
 					continue;
 				}
-				setupInheritanceMap(inheritanceHelper, hc);
 
 				//begin conversion
-				results.add(saveToWorkspace(headerFile, inheritanceHelper, workspace, hc));
+				saveToWorkspace(headerFile, inheritanceHelper, workspace, hc);
 			}
 		}
 
-
-		return results;
 	}
 
-	private static void setupInheritanceMap(@NotNull HashMap<HeaderClass, HeaderClass> inheritanceHelper, @NotNull HeaderClass hc) throws HeaderConversionException {
-		if (inheritanceHelper.get(hc) != null) {
-			return; //already done
-		}
-		if (hc.getExtendClassName() != null) {
-			Reference<HeaderClass> extendHeaderClassRef = new Reference<>();
 
-			HeaderClass last = hc.traverseUpwards((parent) -> {
-				if (parent.classNameEquals(hc.getExtendClassName(), true)) {
-					extendHeaderClassRef.setValue(parent);
-					return false;
-				}
-				HeaderClass c = parent.getNestedClasses().getClassByName(hc.getExtendClassName(), true);
-				if (c != null) {
-					extendHeaderClassRef.setValue(c);
-					return false;
-				}
-				return true;
-			});
-
-			if (extendHeaderClassRef.getValue() == null) {
-				throw new HeaderConversionException(String.format(bundle.getString("Error.extend_class_dne_f"), hc.getClassName(), hc.getExtendClassName()));
-			}
-
-			inheritanceHelper.put(hc, last);
-
-			//build the inheritance tree for the extended class as well
-			setupInheritanceMap(inheritanceHelper, extendHeaderClassRef.getValue());
-		}
-	}
-
-	public static void noClassError(String className) throws HeaderConversionException {
-		throw new HeaderConversionException(String.format(bundle.getString("Error.Error.no_class_f"), className));
-	}
-
-	@NotNull
-	private static String saveToWorkspace(@NotNull HeaderFile headerFile, @NotNull HashMap<HeaderClass, HeaderClass> inheritanceHelper, @NotNull Workspace workspace, @NotNull HeaderClass displayClass) {
-		//This is string to return. If length is 0, there was success in converting.
-		// If length is not 0, ret will be wrapped in another String saying there was a failure with the reason equal to old value of ret
-		String ret = "";
+	private static void saveToWorkspace(@NotNull HeaderFile headerFile, @NotNull HashMap<HeaderClass, HeaderClass> inheritanceHelper, @NotNull Workspace workspace,
+										@NotNull HeaderClass displayClass) throws HeaderConversionException {
 
 		//list of controls for dialog
 		List<ArmaControl> controls = new ArrayList<>();
@@ -132,32 +88,30 @@ public class HeaderToProject {
 		}
 		Project project = new Project(new ProjectInfo(displayClass.getClassName(), dialogDir));
 
+		//todo add macros to macro registry
 
 		//first up, load controls and bgControls
 
-		HeaderClass controlsClass = displayClass.getNestedClasses().getClassByName(CONTROLS, false);
+		//load controls from nested classes or array of classes
+		HeaderClass controlsClass = displayClass.getNestedClasses().getByName(CONTROLS, false);
 		if (controlsClass != null) {
-
-		} else {
-			HeaderAssignment controlsAssignment = displayClass.getAssignments().getAssignmentByVarName(CONTROLS, false);
-			if (controlsAssignment instanceof HeaderArrayAssignment) {
-
-			} else {
-				ret = appendError(ret, bundle.getString("Convert.FailReason.controls_assignment_not_array"));
+			for (HeaderClass hc : controlsClass.getNestedClasses()) {
+				bgControls.add(getControl(hc));
 			}
+		} else {
+			HeaderAssignment controlsAssignment = displayClass.getAssignments().getByVarName(CONTROLS, false);
+			addArrayControls(headerFile, controlsAssignment, bgControls, CONTROLS);
 		}
 
-		HeaderClass bgControlsClass = displayClass.getNestedClasses().getClassByName(BG_CONTROLS, false);
+		//load background controls from nested classes or array of classes
+		HeaderClass bgControlsClass = displayClass.getNestedClasses().getByName(BG_CONTROLS, false);
 		if (bgControlsClass != null) {
-
-		} else {
-			HeaderAssignment bgControlsAssignment = displayClass.getAssignments().getAssignmentByVarName(BG_CONTROLS, false);
-			if (bgControlsAssignment instanceof HeaderArrayAssignment) {
-				HeaderArray bgcArray = ((HeaderArrayAssignment) bgControlsAssignment).getArray();
-				bgcArray.getItems();
-			} else {
-				ret = appendError(ret, bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
+			for (HeaderClass hc : bgControlsClass.getNestedClasses()) {
+				bgControls.add(getControl(hc));
 			}
+		} else {
+			HeaderAssignment bgControlsAssignment = displayClass.getAssignments().getByVarName(BG_CONTROLS, false);
+			addArrayControls(headerFile, bgControlsAssignment, bgControls, BG_CONTROLS);
 		}
 
 		//create display and attach properties
@@ -165,6 +119,7 @@ public class HeaderToProject {
 		project.setEditingDisplay(armaDisplay);
 
 
+		//build the structure for the controls and bg controls
 		TreeStructure<ArmaControl> structureMain = new TreeStructure.Simple<>(TreeNode.Simple.newRoot());
 		TreeStructure<ArmaControl> structureBg = new TreeStructure.Simple<>(TreeNode.Simple.newRoot());
 		buildStructure(controls, structureMain);
@@ -177,18 +132,43 @@ public class HeaderToProject {
 		try {
 			writer.write();
 		} catch (IOException e) {
-			ret = appendError(ret, bundle.getString("Convert.FailReason.write_file_fail"));
+			convertError(bundle.getString("Convert.FailReason.write_file_fail"));
 		}
 
 		//done converting and conversion is written to file by here.
+	}
 
-		if (ret.length() == 0) {
-			ret = String.format(bundle.getString("Convert.success_f"), displayClass.getClassName());
+	private static void addArrayControls(@NotNull HeaderFile headerFile, @Nullable HeaderAssignment arrayOfControlsAssignment, @NotNull List<ArmaControl> controls, @NotNull String sourceName)
+			throws HeaderConversionException {
+
+		HeaderArray arrayOfControls = null;
+		if (arrayOfControlsAssignment instanceof HeaderArrayAssignment) {
+			arrayOfControls = ((HeaderArrayAssignment) arrayOfControlsAssignment).getArray();
 		} else {
-			ret = String.format(bundle.getString("Convert.fail_f"), ret);
+			convertError(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
 		}
 
-		return ret;
+		List<HeaderArrayItem> items = arrayOfControls.getItems();
+		for (HeaderArrayItem arrayItem : items) {
+			HeaderValue v = arrayItem.getValue();
+			if (v instanceof HeaderArray) {
+				convertError(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
+				break;
+			}
+			Reference<HeaderClass> matchedClassRef = new Reference<>();
+			String className = v.getContent();
+			headerFile.traverseDownwards((headerClass -> {
+				if (headerClass.classNameEquals(className, true)) {
+					matchedClassRef.setValue(headerClass);
+					return false;
+				}
+				return true;
+			}));
+			if (matchedClassRef.getValue() == null) {
+				convertError(String.format("Convert.FailReason.control_class_in_array_dne_f", className, sourceName));
+			}
+			controls.add(getControl(matchedClassRef.getValue()));
+		}
 	}
 
 	private static void buildStructure(@NotNull List<ArmaControl> controls, @NotNull TreeStructure<ArmaControl> structure) {
@@ -210,11 +190,17 @@ public class HeaderToProject {
 		}
 	}
 
-	private static String appendError(String s, String append) {
-		if (s.length() == 0) {
-			s = append;
-		}
-		return s + "\n" + append;
+	@NotNull
+	private static ArmaControl getControl(@NotNull HeaderClass headerClass) {
+		return null;
+	}
+
+	private static void noClassError(String className) throws HeaderConversionException {
+		throw new HeaderConversionException(String.format(bundle.getString("Error.Error.no_class_f"), className));
+	}
+
+	private static String convertError(String s) throws HeaderConversionException {
+		throw new HeaderConversionException(String.format(bundle.getString("Convert.fail_f"), s));
 	}
 
 	/**

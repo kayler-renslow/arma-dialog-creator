@@ -137,7 +137,7 @@ public class HeaderParserLargeTest {
 	}
 
 	private static HeaderClass hClass(String name, String extend, ArrayList<HeaderAssignment> assignments, ArrayList<HeaderClass> nestedClasses) {
-		AST.HeaderClassNode c = new AST.HeaderClassNode(assignments, nestedClasses);
+		AST.HeaderClassNode c = new AST.HeaderClassNode((HeaderClass) null, assignments, nestedClasses);
 		c.setClassName(name);
 		c.setExtendClassName(extend);
 		return c;
