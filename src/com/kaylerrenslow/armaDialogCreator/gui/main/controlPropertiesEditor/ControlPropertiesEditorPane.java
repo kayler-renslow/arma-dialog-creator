@@ -14,10 +14,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  Houses an accordion that allows manipulating multiple control properties. The data editor for each control property is specialized for the input (e.g. color property gets color picker).
@@ -29,6 +26,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 	private ControlClass controlClass;
 
 	private LinkedList<ControlPropertyInputDescriptor> propertyDescriptors = new LinkedList<>();
+
+	private final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
 
 	private ControlPropertiesEditorPane() {
 		getChildren().add(accordion);
@@ -171,9 +170,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	private void setupAccordion(Iterable<ControlProperty> requiredProperties, Iterable<ControlProperty> optionalProperties, Iterable<ControlProperty> eventProperties) {
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.required"), requiredProperties, false));
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.optional"), optionalProperties, true));
-		accordion.getPanes().add(getTitledPane(Lang.ApplicationBundle().getString("ControlPropertiesEditorPane.events"), eventProperties, true));
+		accordion.getPanes().add(getTitledPane(bundle.getString("required"), requiredProperties, false));
+		accordion.getPanes().add(getTitledPane(bundle.getString("optional"), optionalProperties, true));
+		accordion.getPanes().add(getTitledPane(bundle.getString("events"), eventProperties, true));
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
 
@@ -191,7 +190,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		Iterator<ControlProperty> iterator = properties.iterator();
 
 		if (!iterator.hasNext()) {
-			vb.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_properties_available")));
+			vb.getChildren().add(new Label(bundle.getString("ControlPropertiesConfig.no_properties_available")));
 		} else {
 			while (iterator.hasNext()) {
 				vb.getChildren().add(getControlPropertyEntry(iterator.next(), optional));

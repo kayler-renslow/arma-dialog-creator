@@ -36,8 +36,9 @@ import java.util.ResourceBundle;
 class StringTableKeyEditorPane extends StackPane {
 	private static final Font FONT_KEY_ID = Font.font(15);
 
+	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
 	private final LanguageSelectionPane languagePane;
-	private final String noKeySelected = Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.no_selected_key");
+	private final String noKeySelected = bundle.getString("StringTableEditorPopup.Tab.Edit.no_selected_key");
 	private final Label lblKeyId = new Label();
 	private final Menu menuAddLanguage;
 	private final Menu menuRemoveLanguage;
@@ -46,7 +47,6 @@ class StringTableKeyEditorPane extends StackPane {
 	private List<StringTableKey> existingKeys;
 
 	public StringTableKeyEditorPane(@Nullable Language defaultPreviewLanguage) {
-		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		StringTableValueEditor taValue = new StringTableValueEditor(this);
 		taValue.setWrapText(true);
@@ -79,10 +79,10 @@ class StringTableKeyEditorPane extends StackPane {
 
 		lblKeyId.setFont(FONT_KEY_ID);
 
-		menuAddLanguage = new Menu(bundle.getString("Popups.StringTable.Tab.Edit.add_language"));
-		menuRemoveLanguage = new Menu(bundle.getString("Popups.StringTable.Tab.Edit.remove_language"));
+		menuAddLanguage = new Menu(bundle.getString("StringTableEditorPopup.Tab.Edit.add_language"));
+		menuRemoveLanguage = new Menu(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_language"));
 
-		MenuItem miEditPackage = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.edit_package"));
+		MenuItem miEditPackage = new MenuItem(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_package"));
 		miEditPackage.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -90,8 +90,8 @@ class StringTableKeyEditorPane extends StackPane {
 					return;
 				}
 				NameInputDialog dialog = new NameInputDialog(
-						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_package_popup_title_f"), key.getId()),
-						bundle.getString("Popups.StringTable.Tab.Edit.new_package_name"),
+						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_package_popup_title_f"), key.getId()),
+						bundle.getString("StringTableEditorPopup.Tab.Edit.new_package_name"),
 						bundle.getString("StringTable.no_package")
 				);
 				dialog.setInputText(key.getPath().getPackageName());
@@ -102,7 +102,7 @@ class StringTableKeyEditorPane extends StackPane {
 				key.getPath().setPackageName(dialog.getInputText());
 			}
 		});
-		MenuItem miEditContainer = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.edit_container"));
+		MenuItem miEditContainer = new MenuItem(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_container"));
 		miEditContainer.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -110,8 +110,8 @@ class StringTableKeyEditorPane extends StackPane {
 				//					return;
 				//				}
 				//				NameInputDialog dialog = new NameInputDialog(
-				//						String.format(bundle.getString("Popups.StringTable.Tab.Edit.edit_container_popup_title_f"), key.getId()),
-				//						bundle.getString("Popups.StringTable.Tab.Edit.new_container_name"),
+				//						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_container_popup_title_f"), key.getId()),
+				//						bundle.getString("StringTableEditorPopup.Tab.Edit.new_container_name"),
 				//						bundle.getString("StringTable.no_container")
 				//				);
 				//				dialog.setInputText(key.getPath().getContainerName());
@@ -122,7 +122,7 @@ class StringTableKeyEditorPane extends StackPane {
 				//				key.setContainerName(dialog.getInputText() != null ? dialog.getInputText() : "");
 			}
 		});
-		MenuItem miRenameId = new MenuItem(bundle.getString("Popups.StringTable.Tab.Edit.rename"));
+		MenuItem miRenameId = new MenuItem(bundle.getString("StringTableEditorPopup.Tab.Edit.rename"));
 		miRenameId.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -131,7 +131,7 @@ class StringTableKeyEditorPane extends StackPane {
 				}
 				NameInputDialog dialog = new NameInputDialog(
 						miRenameId.getText(),
-						bundle.getString("Popups.StringTable.Tab.Edit.new_id")
+						bundle.getString("StringTableEditorPopup.Tab.Edit.new_id")
 				);
 				dialog.setInputText(key.getId());
 				dialog.inputTextProperty().addListener(new ChangeListener<String>() {
@@ -281,7 +281,6 @@ class StringTableKeyEditorPane extends StackPane {
 		@Override
 		public void handle(ActionEvent event) {
 			boolean added = !this.added;
-			ResourceBundle bundle = Lang.ApplicationBundle();
 			if (added) {
 				menuAddLanguage.getItems().remove(miLanguage);
 				menuRemoveLanguage.getItems().add(miLanguage);
@@ -289,8 +288,8 @@ class StringTableKeyEditorPane extends StackPane {
 			} else {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
-						bundle.getString("Popups.StringTable.Tab.Edit.remove_language"),
-						String.format(bundle.getString("Popups.StringTable.Tab.Edit.remove_language_confirmation_f"), language.getName()),
+						bundle.getString("StringTableEditorPopup.Tab.Edit.remove_language"),
+						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_language_confirmation_f"), language.getName()),
 						true, true, false
 				);
 				dialog.show();

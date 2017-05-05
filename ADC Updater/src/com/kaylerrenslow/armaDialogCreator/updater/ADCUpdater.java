@@ -37,7 +37,7 @@ public class ADCUpdater extends Application {
 	private static final File ADC_DOWNLOAD_JAR_SAVE_LOCATION = new File(".");
 	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-dialog-creator/releases/latest";
 
-	public static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.updater.UpdaterBundle");
+	public static final ResourceBundle bundle = Lang.getBundle("UpdaterBundle");
 
 	/** Launches the updater as a new Application (DO NOT USE when an application is already running. Just create a new instance!) */
 	public static void main(String[] args) {

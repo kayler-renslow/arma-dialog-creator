@@ -36,49 +36,49 @@ import static com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.MenuUtil.addOnAc
  */
 class ADCMenuBar extends MenuBar {
 
-	final ResourceBundle bundle = Lang.ApplicationBundle();
+	final ResourceBundle bundle = Lang.getBundle("MainMenuBarBundle");
 
 	/*File*/
-	final MenuItem file_open = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_open")), new FileOpenAction());
-	final MenuItem file_save = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_save"), new ImageView(ADCImages.ICON_SAVE)), new FileSaveAction());
-	final MenuItem file_export = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_export"), new ImageView(ADCImages.ICON_EXPORT)), new FileExportAction());
-	final MenuItem file_closeProject = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_close_project")), new FileCloseProjectAction());
-	final MenuItem file_exit = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_exit")), new FileExitAction());
-	final MenuItem file_restart = addOnAction(new MenuItem(bundle.getString("MainMenuBar.file_restart")), new FileRestartAction());
+	final MenuItem file_open = addOnAction(new MenuItem(bundle.getString("file_open")), new FileOpenAction());
+	final MenuItem file_save = addOnAction(new MenuItem(bundle.getString("file_save"), new ImageView(ADCImages.ICON_SAVE)), new FileSaveAction());
+	final MenuItem file_export = addOnAction(new MenuItem(bundle.getString("file_export"), new ImageView(ADCImages.ICON_EXPORT)), new FileExportAction());
+	final MenuItem file_closeProject = addOnAction(new MenuItem(bundle.getString("file_close_project")), new FileCloseProjectAction());
+	final MenuItem file_exit = addOnAction(new MenuItem(bundle.getString("file_exit")), new FileExitAction());
+	final MenuItem file_restart = addOnAction(new MenuItem(bundle.getString("file_restart")), new FileRestartAction());
 
 
 	/*Edit*/
-	final MenuItem edit_undo = new MenuItem(bundle.getString("MainMenuBar.edit_undo"), new ImageView(ADCImages.ICON_UNDO));
-	final MenuItem edit_redo = new MenuItem(bundle.getString("MainMenuBar.edit_redo"), new ImageView(ADCImages.ICON_REDO));
+	final MenuItem edit_undo = new MenuItem(bundle.getString("edit_undo"), new ImageView(ADCImages.ICON_UNDO));
+	final MenuItem edit_redo = new MenuItem(bundle.getString("edit_redo"), new ImageView(ADCImages.ICON_REDO));
 
 	{
 		edit_redo.setOnAction(new EditRedoAction(edit_redo));
 		edit_undo.setOnAction(new EditUndoAction(edit_undo));
 	}
 
-	final MenuItem edit_viewChanges = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_changes")), new EditViewChangesAction());
-	final MenuItem edit_macros = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_macros")), new EditMacrosAction());
-	final MenuItem edit_custom_control = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_custom_control")), new EditCustomControlAction());
-	final MenuItem edit_string_table = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_string_table")), new EditStringTableAction());
-	final MenuItem edit_exportConfig = addOnAction(new MenuItem(bundle.getString("MainMenuBar.edit_export_config")), new EditExportConfigAction());
+	final MenuItem edit_viewChanges = addOnAction(new MenuItem(bundle.getString("edit_changes")), new EditViewChangesAction());
+	final MenuItem edit_macros = addOnAction(new MenuItem(bundle.getString("edit_macros")), new EditMacrosAction());
+	final MenuItem edit_custom_control = addOnAction(new MenuItem(bundle.getString("edit_custom_control")), new EditCustomControlAction());
+	final MenuItem edit_string_table = addOnAction(new MenuItem(bundle.getString("edit_string_table")), new EditStringTableAction());
+	final MenuItem edit_exportConfig = addOnAction(new MenuItem(bundle.getString("edit_export_config")), new EditExportConfigAction());
 
 
 	/*View*/
-	final MenuItem view_preview = addOnAction(new MenuItem(bundle.getString("MainMenuBar.view_preview"), null), new ViewPreviewAction());
-	final CheckMenuItem view_showGrid = addOnAction(new CheckMenuItem(bundle.getString("MainMenuBar.view_show_grid")), new ViewShowGridAction());
+	final MenuItem view_preview = addOnAction(new MenuItem(bundle.getString("view_preview"), null), new ViewPreviewAction());
+	final CheckMenuItem view_showGrid = addOnAction(new CheckMenuItem(bundle.getString("view_show_grid")), new ViewShowGridAction());
 
-	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(bundle.getString("MainMenuBar.view_dark_theme")), new
+	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(bundle.getString("view_dark_theme")), new
 			ViewDarkThemeAction(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties())));
 
 	{
 		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.get(ApplicationDataManager.getApplicationProperties()));
 	}
 
-	final MenuItem view_colors = addOnAction(new MenuItem(bundle.getString("MainMenuBar.view_change_colors")), new ViewColorsAction());
-	final MenuItem view_fullScreen = addOnAction(new MenuItem(bundle.getString("MainMenuBar.view_full_screen")), new ViewFullScreenAction());
+	final MenuItem view_colors = addOnAction(new MenuItem(bundle.getString("view_change_colors")), new ViewColorsAction());
+	final MenuItem view_fullScreen = addOnAction(new MenuItem(bundle.getString("view_full_screen")), new ViewFullScreenAction());
 	/*screen*/
 	final ChoiceBox<UIScale> choiceBoxUiScale = new ChoiceBox<>();
-	final Label lblUiScale = new Label(bundle.getString("MainMenuBar.view_ui_scale"), choiceBoxUiScale);
+	final Label lblUiScale = new Label(bundle.getString("view_ui_scale"), choiceBoxUiScale);
 	{
 		lblUiScale.setContentDisplay(ContentDisplay.RIGHT);
 		choiceBoxUiScale.getItems().addAll(ArmaUIScale.values());
@@ -89,7 +89,7 @@ class ADCMenuBar extends MenuBar {
 	final CustomMenuItem view_uiScale = new CustomMenuItem(lblUiScale, false);
 
 	final ChoiceBox<Language> choiceBoxUiLanguage = new ChoiceBox<>();
-	final Label lblUiLanguage = new Label(bundle.getString("MainMenuBar.view_ui_language"), choiceBoxUiLanguage);
+	final Label lblUiLanguage = new Label(bundle.getString("view_ui_language"), choiceBoxUiLanguage);
 
 	{
 		lblUiLanguage.setContentDisplay(ContentDisplay.RIGHT);
@@ -100,17 +100,17 @@ class ADCMenuBar extends MenuBar {
 
 	final CustomMenuItem view_uiLanguage = new CustomMenuItem(lblUiLanguage, false);
 
-	final Menu view_ui = new Menu(bundle.getString("MainMenuBar.view_ui"), null, view_uiScale, view_uiLanguage);
+	final Menu view_ui = new Menu(bundle.getString("view_ui"), null, view_uiScale, view_uiLanguage);
 	/*abs region*/
-	final PresetCheckMenuItem view_absRegion_show = addOnAction(new PresetCheckMenuItem(bundle.getString("MainMenuBar.view_abs_region_show"), true), new ViewAbsRegionShowAction());
-	final PresetCheckMenuItem view_absRegion_alwaysFront = addOnAction(new PresetCheckMenuItem(bundle.getString("MainMenuBar.view_abs_region_always_front"), true), new ViewAbsRegionAlwaysFrontAction());
-	final Menu view_absRegionAll = new Menu(bundle.getString("MainMenuBar.view_abs_region"), null, view_absRegion_show, view_absRegion_alwaysFront);
+	final PresetCheckMenuItem view_absRegion_show = addOnAction(new PresetCheckMenuItem(bundle.getString("view_abs_region_show"), true), new ViewAbsRegionShowAction());
+	final PresetCheckMenuItem view_absRegion_alwaysFront = addOnAction(new PresetCheckMenuItem(bundle.getString("view_abs_region_always_front"), true), new ViewAbsRegionAlwaysFrontAction());
+	final Menu view_absRegionAll = new Menu(bundle.getString("view_abs_region"), null, view_absRegion_show, view_absRegion_alwaysFront);
 	/*background*/
-	final RadioMenuItem view_bg_img1 = addOnAction(new RadioMenuItem(bundle.getString("MainMenuBar.view_change_background_image1")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_1));
-	final RadioMenuItem view_bg_img2 = addOnAction(new RadioMenuItem(bundle.getString("MainMenuBar.view_change_background_image2")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_2));
-	final RadioMenuItem view_bg_img3 = addOnAction(new RadioMenuItem(bundle.getString("MainMenuBar.view_change_background_image3")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_3));
-	final RadioMenuItem view_bg_custom = addOnAction(new RadioMenuItem(bundle.getString("MainMenuBar.view_change_background_image_custom")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_CUSTOM));
-	final RadioMenuItem view_bg_noImage = addOnAction(new RadioMenuItem(bundle.getString("MainMenuBar.view_change_background_none")), new ViewBackgroundAction(ViewBackgroundAction.NO_IMAGE));
+	final RadioMenuItem view_bg_img1 = addOnAction(new RadioMenuItem(bundle.getString("view_change_background_image1")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_1));
+	final RadioMenuItem view_bg_img2 = addOnAction(new RadioMenuItem(bundle.getString("view_change_background_image2")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_2));
+	final RadioMenuItem view_bg_img3 = addOnAction(new RadioMenuItem(bundle.getString("view_change_background_image3")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_3));
+	final RadioMenuItem view_bg_custom = addOnAction(new RadioMenuItem(bundle.getString("view_change_background_image_custom")), new ViewBackgroundAction(ViewBackgroundAction.IMAGE_CUSTOM));
+	final RadioMenuItem view_bg_noImage = addOnAction(new RadioMenuItem(bundle.getString("view_change_background_none")), new ViewBackgroundAction(ViewBackgroundAction.NO_IMAGE));
 
 	{
 		final ToggleGroup view_bg_toggleGroup = new ToggleGroup();
@@ -122,22 +122,22 @@ class ADCMenuBar extends MenuBar {
 		view_bg_toggleGroup.selectToggle(view_bg_noImage);
 	}
 
-	final Menu backgroundAll = new Menu(bundle.getString("MainMenuBar.view_background_image"), null, view_bg_img1, view_bg_img2, view_bg_img3, view_bg_custom, view_bg_noImage);
+	final Menu backgroundAll = new Menu(bundle.getString("view_background_image"), null, view_bg_img1, view_bg_img2, view_bg_img3, view_bg_custom, view_bg_noImage);
 
 	/*settings*/
-	final MenuItem settings_configureDirs = addOnAction(new MenuItem(bundle.getString("MainMenuBar.settings_configure_dirs")), new SettingsChangeSaveDirAction());
+	final MenuItem settings_configureDirs = addOnAction(new MenuItem(bundle.getString("settings_configure_dirs")), new SettingsChangeSaveDirAction());
 
 	/*create*/
-	final MenuItem create_macro = addOnAction(new MenuItem(bundle.getString("MainMenuBar.create_macro")), new CreateMacroAction());
-	final MenuItem create_control_class = addOnAction(new MenuItem(bundle.getString("MainMenuBar.create_control_class")), new CreateNewCustomControlAction());
-	final MenuItem create_new_control = addOnAction(new MenuItem(bundle.getString("MainMenuBar.create_control")), new CreateNewControlAction());
+	final MenuItem create_macro = addOnAction(new MenuItem(bundle.getString("create_macro")), new CreateMacroAction());
+	final MenuItem create_control_class = addOnAction(new MenuItem(bundle.getString("create_control_class")), new CreateNewCustomControlAction());
+	final MenuItem create_new_control = addOnAction(new MenuItem(bundle.getString("create_control")), new CreateNewControlAction());
 
 	/*help*/
-	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("MainMenuBar.help_wiki")), new WikiUrlAction());
-	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("MainMenuBar.help_about")), event -> new AboutDialog().show());
+	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
+	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("help_about")), event -> new AboutDialog().show());
 
 	final Menu menuFile = new Menu(
-			bundle.getString("MainMenuBar.file"), null,
+			bundle.getString("file"), null,
 			file_open,
 			file_save,
 			file_export,
@@ -147,7 +147,7 @@ class ADCMenuBar extends MenuBar {
 			file_exit
 	);
 	final Menu menuEdit = new Menu(
-			bundle.getString("MainMenuBar.edit"), null,
+			bundle.getString("edit"), null,
 			edit_undo,
 			edit_redo,
 			edit_viewChanges,
@@ -158,7 +158,7 @@ class ADCMenuBar extends MenuBar {
 			edit_exportConfig*/ //todo
 	);
 	final Menu menuView = new Menu(
-			bundle.getString("MainMenuBar.view"), null,
+			bundle.getString("view"), null,
 			view_preview,
 			view_showGrid,
 			view_colors,
@@ -169,17 +169,17 @@ class ADCMenuBar extends MenuBar {
 			view_fullScreen
 	);
 	final Menu menuSettings = new Menu(
-			bundle.getString("MainMenuBar.settings"), null,
+			bundle.getString("settings"), null,
 			settings_configureDirs
 	);
 	final Menu menuCreate = new Menu(
-			bundle.getString("MainMenuBar.create"), null,
+			bundle.getString("create"), null,
 			create_macro,
 			create_control_class,
 			create_new_control
 	);
 	final Menu menuHelp = new Menu(
-			bundle.getString("MainMenuBar.help"), null,
+			bundle.getString("help"), null,
 			help_wiki,
 			help_about
 	);

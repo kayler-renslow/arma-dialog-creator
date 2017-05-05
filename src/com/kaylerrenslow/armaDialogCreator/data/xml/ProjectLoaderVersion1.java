@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  A project loader for save-version='1'
@@ -38,6 +39,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private final ProjectInfo info;
 	private ArmaResolution resolution;
 	private Env env;
+
+	private ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
 
 	protected ProjectLoaderVersion1(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
@@ -177,14 +180,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				String propertyTypeAttr = macroElement.getAttribute(propertyTypeId);
 				String commentAttr = macroElement.getAttribute(comment);
 				if (keyAttr.length() == 0 || propertyTypeAttr.length() == 0) {
-					addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_macro_key_or_type_f"), keyAttr, propertyTypeAttr)));
+					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_key_or_type_f"), keyAttr, propertyTypeAttr)));
 					continue;
 				}
 				PropertyType propertyType;
 				try {
 					propertyType = PropertyType.findById(Integer.parseInt(propertyTypeAttr));
 				} catch (IllegalArgumentException e) { //will catch number format exception
-					addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_macro_property_type_f"), propertyTypeAttr)));
+					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_property_type_f"), propertyTypeAttr)));
 					continue;
 				}
 				SerializableValue value = getValue(propertyType, macroElement);
@@ -234,7 +237,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 
 			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_display_property_lookup_id_f"), lookupId), ParseError.genericRecover("-1")));
+				addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_display_property_lookup_id_f"), lookupId), ParseError.genericRecover("-1")));
 			}
 		}
 
@@ -313,7 +316,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		//class name
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.missing_control_name"), controlElement.getTextContent())));
+			addError(new ParseError(String.format(bundle.getString("ProjectLoad.missing_control_name"), controlElement.getTextContent())));
 			return null;
 		}
 
@@ -325,7 +328,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			int controlTypeId = Integer.parseInt(controlTypeStr);
 			controlType = ControlType.findById(controlTypeId);
 		} catch (IllegalArgumentException e) { //will catch number format exception as well
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_type_f"), controlTypeStr, controlClassName)));
+			addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_control_type_f"), controlTypeStr, controlClassName)));
 			return null;
 		}
 
@@ -336,7 +339,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		try {
 			rendererLookup = RendererLookup.getById(Integer.parseInt(rendererStr));
 		} catch (IllegalArgumentException e) {
-			addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_renderer_f"), rendererStr, controlClassName)));
+			addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_renderer_f"), rendererStr, controlClassName)));
 			return null;
 		}
 
@@ -439,7 +442,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 	}
 
-	private static class ControlExtendJob implements AfterLoadJob {
+	private class ControlExtendJob implements AfterLoadJob {
 		private final String controlClassName;
 		private final ArmaControl setMyExtend;
 		private final List<ControlPropertyLookup> inheritProperties;
@@ -458,7 +461,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			if (match != null) {
 				setMyExtend.extendControlClass(match);
 			} else {
-				loader.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
+				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
 			}
 			for (ControlPropertyLookup inheritProperty : inheritProperties) {
 				setMyExtend.inheritProperty(inheritProperty);

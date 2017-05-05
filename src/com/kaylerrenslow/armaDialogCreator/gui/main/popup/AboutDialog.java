@@ -27,9 +27,11 @@ import java.util.ResourceBundle;
  */
 public class AboutDialog extends StageDialog<VBox> {
 	public AboutDialog() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.About.dialog_title"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null, false, true, false);
 
 		ResourceBundle bundle = Lang.ApplicationBundle();
+
+		setTitle(bundle.getString("Popups.About.dialog_title"));
 
 		final Link hypRepo = new Link(Lang.Misc.REPO_URL);
 		final Label lblRepoUrl = new Label(bundle.getString("Popups.About.repository") + ":", hypRepo);

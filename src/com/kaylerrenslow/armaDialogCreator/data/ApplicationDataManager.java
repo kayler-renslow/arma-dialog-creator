@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 /**
  Manages save data
@@ -162,10 +163,13 @@ public class ApplicationDataManager {
 		private boolean saveProgress = false;
 
 		public SaveProjectDialog() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.SaveProject.popup_title"), true, true, false);
-			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.SaveProject.message")));
-			btnOk.setText(Lang.ApplicationBundle().getString("Confirmation.yes"));
-			btnCancel.setText(Lang.ApplicationBundle().getString("Confirmation.no"));
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, false);
+			ResourceBundle bundle = Lang.ApplicationBundle();
+			setTitle(bundle.getString("Popups.SaveProject.popup_title"));
+
+			myRootElement.getChildren().add(new Label(bundle.getString("Popups.SaveProject.message")));
+			btnOk.setText(bundle.getString("Confirmation.yes"));
+			btnCancel.setText(bundle.getString("Confirmation.no"));
 
 			myStage.setResizable(false);
 		}

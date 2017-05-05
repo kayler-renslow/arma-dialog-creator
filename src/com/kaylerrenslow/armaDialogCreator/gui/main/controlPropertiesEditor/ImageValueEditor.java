@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ResourceBundle;
 
 /**
  A ValueEditor implementation for selecting image files. This editor also has an implementation for discovering if the image file is a .paa or .tga file and will automatically
@@ -47,9 +48,11 @@ import java.io.FileNotFoundException;
  @author Kayler
  @since 07/16/2016. */
 public class ImageValueEditor implements ValueEditor<SVImage> {
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
-	private final Button btnChooseImage = new Button(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.locate_image"));
+	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+	private final Button btnChooseImage = new Button(bundle.getString("ValueEditors.ImageValueEditor.locate_image"));
+
 	protected final TextField tfFilePath = new TextField("");
 
 	private final HBox hBox = new HBox(5, btnChooseImage, tfFilePath);
@@ -67,7 +70,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			@Override
 			public void handle(ActionEvent event) {
 				FileChooser fc = new FileChooser();
-				fc.setTitle(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.locate_image"));
+				fc.setTitle(bundle.getString("ValueEditors.ImageValueEditor.locate_image"));
 				fc.getExtensionFilters().addAll(ADCStatic.IMAGE_FILE_EXTENSIONS);
 				fc.setInitialDirectory(Workspace.getWorkspace().getWorkspaceDirectory());
 				File chosenFile = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
@@ -160,14 +163,18 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		private ConvertPaaTask convertPaaTask;
 		private boolean errorShown = false;
 		private boolean dontShow = false;
+		private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 		public ConvertingPaaPopup(ImageValueEditor imageValueEditor, File convertingFile, File a3tools) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.popup_title"));
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null);
+
+			setTitle(bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.popup_title"));
+
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myRootElement.setPadding(new Insets(10));
 			myStage.setResizable(false);
 
-			myRootElement.getChildren().add(new Label(String.format(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.message_f"), convertingFile.getName())));
+			myRootElement.getChildren().add(new Label(String.format(bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.message_f"), convertingFile.getName())));
 			myRootElement.getChildren().add(progressBar);
 
 			initTask(imageValueEditor, convertingFile, a3tools);
@@ -204,7 +211,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 				@Override
 				public void changed(ObservableValue<? extends Throwable> observable, Throwable oldValue, Throwable newValue) {
 					newValue.printStackTrace();
-					conversionError(newValue.getMessage() != null ? newValue.getMessage() : Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
+					conversionError(newValue.getMessage() != null ? newValue.getMessage() : bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
 				}
 			});
 			convertPaaTask.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
@@ -218,14 +225,14 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 				@Override
 				public void handle(WorkerStateEvent event) {
 					if (convertPaaTask.isCancelWithFailMessage()) {
-						conversionError(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
+						conversionError(bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
 					}
 				}
 			});
 			convertPaaTask.setOnFailed(new EventHandler<WorkerStateEvent>() {
 				@Override
 				public void handle(WorkerStateEvent event) {
-					conversionError(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
+					conversionError(bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.unknown_image_conversion_error"));
 				}
 			});
 
@@ -307,11 +314,15 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 	private static class Arma3ToolsDirNotSetPopup extends StagePopup<VBox> {
 
 		public Arma3ToolsDirNotSetPopup() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.generic_popup_title"));
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
+			setTitle(bundle.getString("Popups.generic_popup_title"));
+
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myStage.setResizable(false);
 
-			Button btnLocate = new Button(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.set_a3_tools_btn"));
+			Button btnLocate = new Button(bundle.getString("ValueEditors.ImageValueEditor.set_a3_tools_btn"));
 			btnLocate.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
@@ -321,7 +332,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			});
 
 			myRootElement.setPadding(new Insets(10));
-			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.a3_tools_dir_not_set")));
+			myRootElement.getChildren().add(new Label(bundle.getString("ValueEditors.ImageValueEditor.a3_tools_dir_not_set")));
 			myRootElement.getChildren().add(btnLocate);
 
 			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, false));
@@ -336,7 +347,10 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 	private static class ConversionFailPopup extends StagePopup<VBox> {
 
 		public ConversionFailPopup(@NotNull String message) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.convert_error_popup_title"));
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
+
+			ResourceBundle bundle = Lang.ApplicationBundle();
+			setTitle(bundle.getString("ValueEditors.ImageValueEditor.ConvertingPaaPopup.convert_error_popup_title"));
 
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myRootElement.setPadding(new Insets(10));
@@ -350,7 +364,9 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 	private static class ImageAlreadyExistsDialog extends StageDialog<VBox> {
 
 		enum Option {
-			CANCEL(""), OVERWRITE(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.overwrite")), NEW_NAME(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.new_name"));
+			CANCEL(""),
+			OVERWRITE(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.overwrite")),
+			NEW_NAME(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.new_name"));
 
 			private final String displayName;
 
@@ -366,11 +382,16 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		 @param existingImage the .png image file that already exists
 		 */
 		public ImageAlreadyExistsDialog(File existingImage) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.dialog_title"), true, true, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, false);
 			if (!existingImage.getName().endsWith(".png")) {
 				throw new IllegalArgumentException("not a png image");
 			}
-			myRootElement.getChildren().add(new Label(String.format(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.message_f"), existingImage.getName())));
+
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
+			setTitle(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.dialog_title"));
+
+			myRootElement.getChildren().add(new Label(String.format(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.message_f"), existingImage.getName())));
 
 			final ImageView imageViewPreviewImage;
 			try {
@@ -379,7 +400,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 				ExceptionHandler.error(e);
 				return;
 			}
-			myRootElement.getChildren().add(new VBox(5, new Label(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.existing_image")), imageViewPreviewImage));
+			myRootElement.getChildren().add(new VBox(5, new Label(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.existing_image")), imageViewPreviewImage));
 			imageViewPreviewImage.setFitWidth(400d);
 			imageViewPreviewImage.setFitHeight(400d);
 

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  Created by Kayler on 06/02/2016.
@@ -26,8 +27,13 @@ import java.util.List;
 class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 	/**
 	 */
-	MissingControlPropertiesConfigPopup(@Nullable Stage primaryStage, @NotNull List<ControlProperty> missing) {
-		super(primaryStage, new VBox(5), Lang.ApplicationBundle().getString("Popups.MissingControlPropertiesConfig.popup_title"));
+	public MissingControlPropertiesConfigPopup(@Nullable Stage primaryStage, @NotNull List<ControlProperty> missing) {
+		super(primaryStage, new VBox(5), null);
+
+		ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
+
+		setTitle(bundle.getString("MissingControlPropertiesConfig.popup_title"));
+
 		myRootElement.setPadding(new Insets(5));
 		myStage.initModality(Modality.APPLICATION_MODAL);
 		myStage.initStyle(StageStyle.UTILITY);
@@ -46,7 +52,7 @@ class MissingControlPropertiesConfigPopup extends StagePopup<VBox> {
 		});
 		HBox hbox = new HBox(btnOk);
 		hbox.setAlignment(Pos.BOTTOM_RIGHT);
-		myRootElement.getChildren().addAll(new Label(Lang.ApplicationBundle().getString("Popups.MissingControlPropertiesConfig.missing_properties_message")), listView, hbox);
+		myRootElement.getChildren().addAll(new Label(bundle.getString("MissingControlPropertiesConfig.missing_properties_message")), listView, hbox);
 		myRootElement.setFillWidth(true);
 		setStageSize(500, 300);
 	}

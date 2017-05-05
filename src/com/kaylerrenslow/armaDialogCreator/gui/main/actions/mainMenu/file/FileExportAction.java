@@ -20,11 +20,15 @@ import javafx.scene.layout.VBox;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 /**
  Created by Kayler on 05/20/2016.
  */
 public class FileExportAction implements EventHandler<ActionEvent> {
+
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
+
 	@Override
 	public void handle(ActionEvent event) {
 		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration());
@@ -38,8 +42,8 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 			Notifications.showNotification(
 					new BoxNotification(
-							Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"),
-							String.format(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
+							bundle.getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"),
+							String.format(bundle.getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
 							8 * 1000
 					)
 			);
@@ -51,17 +55,17 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 	}
 
-	private static class ExportErrorAftermathDialog extends StageDialog<VBox> {
+	private class ExportErrorAftermathDialog extends StageDialog<VBox> {
 
 		public ExportErrorAftermathDialog(Throwable error) {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), "", false, true, false);
 			myStage.setMinWidth(300d);
 			myStage.setMinHeight(100d);
 
-			setTitle(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_failed"));
-			myRootElement.getChildren().add(new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.export_failed")));
+			setTitle(bundle.getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_failed"));
+			myRootElement.getChildren().add(new Label(bundle.getString("Popups.ExportProject.ExportAftermathPopup.export_failed")));
 			myRootElement.getChildren().add(new Label(error.getMessage()));
-			final ToggleButton toggleButton = new ToggleButton(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+			final ToggleButton toggleButton = new ToggleButton(bundle.getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
 			myRootElement.getChildren().add(toggleButton);
 
 			toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -71,10 +75,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
 					if (selected) {
-						toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.hide_error_message"));
+						toggleButton.setText(bundle.getString("Popups.ExportProject.ExportAftermathPopup.hide_error_message"));
 						myRootElement.getChildren().add(taErrorMessage);
 					} else {
-						toggleButton.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+						toggleButton.setText(bundle.getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
 						myRootElement.getChildren().remove(taErrorMessage);
 					}
 					if (firstExpansion) {

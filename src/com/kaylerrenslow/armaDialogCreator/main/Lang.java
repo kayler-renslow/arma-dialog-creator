@@ -30,24 +30,47 @@ public interface Lang {
 
 	}
 
+	/**
+	 Get a bundle with "com.kaylerrenslow.armaDialogCreator" prepended
+
+	 @param bundleName name of bundle (be sure to include package information if needed)
+	 @return the bundle
+	 */
+	@NotNull
 	static ResourceBundle getBundle(@NotNull String bundleName) {
-		return ResourceBundle.getBundle(bundleName, ArmaDialogCreator.getCurrentLocale());
+		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator." + bundleName, ArmaDialogCreator.getCurrentLocale());
 	}
 
+	/**
+	 @return {@link #getBundle(String)} with bundleName="ApplicationBundle"
+	 */
+	@NotNull
 	static ResourceBundle ApplicationBundle() {
-		return getBundle("com.kaylerrenslow.armaDialogCreator.ApplicationBundle");
+		return getBundle("ApplicationBundle");
 	}
 
+	/**
+	 @return {@link #getBundle(String)} with bundleName="EditChangeBundle"
+	 */
+	@NotNull
 	static ResourceBundle EditChangeBundle() {
-		return getBundle("com.kaylerrenslow.armaDialogCreator.EditChangeBundle");
+		return getBundle("EditChangeBundle");
 	}
 
+	/**
+	 @return {@link #getBundle(String)} with bundleName="FxControlBundle"
+	 */
+	@NotNull
 	static ResourceBundle FxControlBundle() {
-		return getBundle("com.kaylerrenslow.armaDialogCreator.FxControlBundle");
+		return getBundle("FxControlBundle");
 	}
 
+	/**
+	 @return {@link #getBundle(String)} with bundleName="LookupBundle"
+	 */
+	@NotNull
 	static ResourceBundle LookupBundle() {
-		return getBundle("com.kaylerrenslow.armaDialogCreator.LookupBundle");
+		return getBundle("LookupBundle");
 	}
 
 	interface Application {

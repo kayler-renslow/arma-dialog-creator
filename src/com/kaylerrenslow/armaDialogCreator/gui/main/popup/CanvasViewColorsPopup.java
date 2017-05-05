@@ -15,6 +15,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.StageStyle;
 
+import java.util.ResourceBundle;
+
 /**
  Creates a popup for changing the canvas colors
 
@@ -39,17 +41,22 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 	};
 
 	public CanvasViewColorsPopup() {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.Colors.popup_title"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null, false, true, false);
+
+		ResourceBundle bundle = Lang.ApplicationBundle();
+
+		setTitle(bundle.getString("Popups.Colors.popup_title"));
+
 		myStage.initStyle(StageStyle.UTILITY);
 		setupColorPickers();
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
 		myRootElement.getChildren().addAll(
-				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.selection"), cpSelection),
-				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.abs_region"), cpAbsRegion),
-				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.grid"), cpGrid),
-				colorOption(Lang.ApplicationBundle().getString("Popups.Colors.background"), cpEditorBg)
+				colorOption(bundle.getString("Popups.Colors.selection"), cpSelection),
+				colorOption(bundle.getString("Popups.Colors.abs_region"), cpAbsRegion),
+				colorOption(bundle.getString("Popups.Colors.grid"), cpGrid),
+				colorOption(bundle.getString("Popups.Colors.background"), cpEditorBg)
 		);
 	}
 

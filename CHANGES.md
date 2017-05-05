@@ -1,8 +1,10 @@
 **Added:**
-* ProjectToHeader now should handle extend classes and custom control classes properly
+* start for import dialogs dialog
 
 **Changed:**
-* moved PropertyTypes into SerializableValue to merge value updates with property type updates
+* cleaned up some ResourceBundle code
+    * tried to split up ApplicationBundle into many smaller bundles
+    * tried to remove a lot of calls to Lang.ApplicationBundle()
 
 **Fixed:**
 * 

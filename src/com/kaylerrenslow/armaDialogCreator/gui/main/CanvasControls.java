@@ -18,6 +18,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
+import java.util.ResourceBundle;
+
 /**
  Holds the step configuration contorls and the tree view for editor components.
 
@@ -30,7 +32,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg;
 	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
-	private final CheckBox checkBoxViewportSnapping = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.viewport_snapping"));
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
+	private final CheckBox checkBoxViewportSnapping = new CheckBox(bundle.getString("CanvasControls.viewport_snapping"));
 
 	public static final double PREFERRED_WIDTH = 250d;
 	private boolean showGrid = true;
@@ -46,8 +49,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 	private void initializeUI() {
 		initializeStepChoiceboxes();
 		FlowPane flowPaneStep = new FlowPane(5, 5,
-				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.step")), choiceBoxStep),
-				new HBox(5, new Label(Lang.ApplicationBundle().getString("CanvasControls.alt_step")), choiceBoxAltStep),
+				new HBox(5, new Label(bundle.getString("CanvasControls.step")), choiceBoxStep),
+				new HBox(5, new Label(bundle.getString("CanvasControls.alt_step")), choiceBoxAltStep),
 				checkBoxViewportSnapping
 		);
 
@@ -58,7 +61,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			}
 		});
 
-		final CheckBox cbShowBackgroundControls = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.show"));
+		final CheckBox cbShowBackgroundControls = new CheckBox(bundle.getString("CanvasControls.show"));
 		cbShowBackgroundControls.setSelected(true);
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -68,7 +71,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				}
 			}
 		});
-		final CheckBox cbShowControls = new CheckBox(Lang.ApplicationBundle().getString("CanvasControls.show"));
+		final CheckBox cbShowControls = new CheckBox(bundle.getString("CanvasControls.show"));
 		cbShowControls.setSelected(true);
 		cbShowControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -80,9 +83,9 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		});
 
 		final double vertSpacing = 5;
-		final HBox bgControlsHbox = new HBox(10, new Label(Lang.ApplicationBundle().getString("CanvasControls.background_controls")), cbShowBackgroundControls);
+		final HBox bgControlsHbox = new HBox(10, new Label(bundle.getString("CanvasControls.background_controls")), cbShowBackgroundControls);
 		final VBox vbBgControls = new VBox(vertSpacing, bgControlsHbox, treeViewBg);
-		final HBox controlHbox = new HBox(10, new Label(Lang.ApplicationBundle().getString("CanvasControls.controls")), cbShowControls);
+		final HBox controlHbox = new HBox(10, new Label(bundle.getString("CanvasControls.controls")), cbShowControls);
 		final VBox vbControls = new VBox(vertSpacing, controlHbox, treeViewMain);
 		// padding
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);

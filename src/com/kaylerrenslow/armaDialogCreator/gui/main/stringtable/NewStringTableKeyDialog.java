@@ -25,14 +25,18 @@ class NewStringTableKeyDialog extends NameInputDialog {
 	private final StringTableKey key = new StringTableKeyImpl("str_tag_name", FXCollections.observableHashMap());
 	private final StringTable table;
 
+	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
+
 	public NewStringTableKeyDialog(@NotNull StringTable table) {
-		super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.insert_key_tooltip"), Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.insert_key_popup_body"));
+		super("", "");
+		setMessage(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_popup_body"));
+		setTitle(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_tooltip"));
+
 		this.table = table;
-		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		setInputText(key.getId());
 
-		CheckMenuButton<Language> menuButtonLangs = new CheckMenuButton<>(bundle.getString("Popups.StringTable.Tab.Edit.insert_key_popup_lang_button_text"), null, KnownLanguage.values());
+		CheckMenuButton<Language> menuButtonLangs = new CheckMenuButton<>(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_popup_lang_button_text"), null, KnownLanguage.values());
 		menuButtonLangs.setAlignment(Pos.CENTER_LEFT);
 		menuButtonLangs.getSelectedItems().addListener(new ListChangeListener<Language>() {
 			@Override

@@ -7,18 +7,20 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.VBox;
 
+import java.util.ResourceBundle;
+
 /**
  @author Kayler
  @since 11/23/2016 */
 public class CouldNotLoadProjectDialog extends StageDialog<VBox> {
 	public CouldNotLoadProjectDialog(Exception e) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
+		ResourceBundle bundle = Lang.ApplicationBundle();
 		final TextArea taError = new TextArea(e.getMessage());
 		taError.setEditable(false);
 		myStage.setResizable(false);
 		myRootElement.getChildren().addAll(
-				new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.could_not_load_project")),
-				new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.reason")),
+				new Label(bundle.getString("ProjectLoadError.could_not_load_project")),
 				taError
 		);
 	}

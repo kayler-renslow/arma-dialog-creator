@@ -12,10 +12,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  Common XML writing/loading handling for save files.
@@ -23,6 +20,8 @@ import java.util.List;
  @author Kayler
  @since 11/12/2016. */
 public class ProjectXmlUtil {
+
+	private static final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
 
 	/**
 	 Loads a {@link ControlClassSpecification} from xml.
@@ -318,7 +317,7 @@ public class ProjectXmlUtil {
 	public static SerializableValue loadValue(@NotNull Element parentElement, @NotNull PropertyType propertyType, @Nullable DataContext dataContext, @NotNull XmlErrorRecorder recorder) {
 		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
 		if (valueElements.size() < propertyType.getPropertyValuesSize()) {
-			recorder.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
+			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
 			return null;
 		}
 		String[] values = new String[propertyType.getPropertyValuesSize()];
@@ -331,7 +330,7 @@ public class ProjectXmlUtil {
 			value = SerializableValue.constructNew(dataContext, propertyType, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			recorder.addError(new ParseError(String.format(Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_values_f"), Arrays.toString(values))));
+			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_values_f"), Arrays.toString(values))));
 			return null;
 		}
 		return value;
@@ -348,7 +347,7 @@ public class ProjectXmlUtil {
 			recorder.addError(
 					new ParseError(
 							String.format(
-									Lang.ApplicationBundle().getString("XmlParse.ProjectLoad.bad_control_property_lookup_id_f"),
+									bundle.getString("ProjectLoad.bad_control_property_lookup_id_f"),
 									lookupIdStr,
 									parentNode.getNodeName()
 							)

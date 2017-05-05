@@ -15,13 +15,19 @@ import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ResourceBundle;
+
 /**
+ Shown when the project successfully loaded, however there was errors.
  @author Kayler
  @since 11/23/2016 */
 public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 
 	public ProjectImproperResultDialog(@NotNull ProjectXmlLoader.ProjectParseResult result) {
-		super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.popup_title"), false, true, false);
+		super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), null, false, true, false);
+		ResourceBundle bundle = Lang.ApplicationBundle();
+		setTitle(bundle.getString("ProjectResultErrorPopup.popup_title"));
+
 		myRootElement.setFitToWidth(true);
 		myRootElement.setFitToHeight(true);
 		VBox root = (VBox) myRootElement.getContent();
@@ -30,16 +36,23 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 		root.setPadding(super.myRootElement.getPadding());
 		super.myRootElement.setPadding(new Insets(0));
 
-		root.getChildren().add(new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.errors_title")));
+		root.getChildren().add(new Label(bundle.getString("ProjectResultErrorPopup.errors_title")));
 		root.getChildren().add(new Separator(Orientation.HORIZONTAL));
 		for (ParseError error : result.getErrors()) {
 			VBox vbErrorMsg = new VBox(5);
 			vbErrorMsg.getChildren().addAll(
-					getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.error_message") + " " + error.getMessage(), null),
-					getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.recovered"), getLabel(error.recovered() ? Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.yes") : Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.no"), null))
+					getLabel(bundle.getString("ProjectResultErrorPopup.error_message") + " " + error.getMessage(), null),
+					getLabel(
+							bundle.getString("ProjectResultErrorPopup.recovered"),
+							getLabel(
+									error.recovered() ? bundle.getString("ProjectResultErrorPopup.yes")
+											: bundle.getString("ProjectResultErrorPopup.no"),
+									null
+							)
+					)
 			);
 			if (error.recovered()) {
-				vbErrorMsg.getChildren().add(getLabel(Lang.ApplicationBundle().getString("ProjectInitWindow.ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage(), null));
+				vbErrorMsg.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage(), null));
 			}
 
 			root.getChildren().add(vbErrorMsg);

@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 public class NameInputDialog extends StageDialog<VBox> {
 	protected final TextField textField = new TextField();
 	private final BooleanProperty canOkProperty = new SimpleBooleanProperty(true);
+	private final Label lblMessage = new Label();
 
 	public NameInputDialog(@NotNull String title, @NotNull String message) {
 		this(title, message, null);
@@ -27,7 +28,8 @@ public class NameInputDialog extends StageDialog<VBox> {
 	public NameInputDialog(@NotNull String title, @NotNull String message, @Nullable String promptText) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), title, true, true, false);
 		myRootElement.setFillWidth(true);
-		myRootElement.getChildren().add(new Label(message));
+		myRootElement.getChildren().add(lblMessage);
+		setMessage(message);
 		myRootElement.getChildren().add(textField);
 		myRootElement.setPrefWidth(320);
 		myStage.setResizable(false);
@@ -57,6 +59,10 @@ public class NameInputDialog extends StageDialog<VBox> {
 	@NotNull
 	public BooleanProperty getCanOkProperty() {
 		return canOkProperty;
+	}
+
+	public void setMessage(@NotNull String msg) {
+		lblMessage.setText(msg);
 	}
 
 	@Override

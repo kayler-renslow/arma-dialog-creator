@@ -18,7 +18,7 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 03/19/2017 */
 public class HeaderParser {
-	private static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
+	private static final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
 	private static final String S_EOF = bundle.getString("Error.HeaderParser.eof");
 	private static final char EOF = 26;
 	private static final char EOT = 3; //end of text

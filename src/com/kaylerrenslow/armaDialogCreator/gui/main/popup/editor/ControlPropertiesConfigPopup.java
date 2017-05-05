@@ -36,6 +36,7 @@ import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  Used for editing a control and it's control properties.
@@ -43,6 +44,8 @@ import java.util.List;
  @author Kayler
  @since 05/31/2016. */
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
+	private final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
+
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
 	private Label lblClassName;
@@ -127,7 +130,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 	private void addFooter(ArmaControl control) {
-		checkBoxIsBackgroundControl = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.is_background_control"));
+		checkBoxIsBackgroundControl = new CheckBox(bundle.getString("ControlPropertiesConfig.is_background_control"));
 		checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
 		checkBoxIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -156,7 +159,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		});
 
-		final CheckBox checkBoxHideInherited = new CheckBox(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.hide_inherited"));
+		final CheckBox checkBoxHideInherited = new CheckBox(bundle.getString("ControlPropertiesConfig.hide_inherited"));
 		checkBoxHideInherited.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -199,7 +202,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		btnClose.getStyleClass().add("close-button");
 
 		menuButtonExtendControls = new ComboBoxMenuButton<>(
-				true, Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.no_extend_class"), null
+				true, bundle.getString("ControlPropertiesConfig.no_extend_class"), null
 		);
 		ReadOnlyList<CustomControlClass> customControls = Project.getCurrentProject().getCustomControlClassRegistry().getControlClassList();
 		for (CustomControlClass customControlClass : customControls) {
@@ -287,14 +290,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		}
 	}
 
-	private static class MoveOutOfControlGroupDialog extends StageDialog<VBox> {
+	private class MoveOutOfControlGroupDialog extends StageDialog<VBox> {
 
 		private boolean moveOut = false;
 
 		public MoveOutOfControlGroupDialog(ArmaControl c) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), bundle.getString("ControlPropertiesConfig.MoveOutOfGroupPopup.popup_title"), true, true, false);
 			myRootElement.getChildren().addAll(
-					new Label(String.format(Lang.ApplicationBundle().getString("Popups.ControlPropertiesConfig.MoveOutOfGroupPopup.message_f"), c.getClassName()))
+					new Label(String.format(bundle.getString("ControlPropertiesConfig.MoveOutOfGroupPopup.message_f"), c.getClassName()))
 			);
 			myStage.initStyle(StageStyle.UTILITY);
 			sizeToScene();

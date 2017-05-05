@@ -50,8 +50,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 	private final ProjectInitWizardStep initWizardStep;
 	private final WorkspaceSelectionStep workspaceSelectionStep = new WorkspaceSelectionStep();
 
+	private static final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
+
 	public ADCProjectInitWindow() {
-		super(ArmaDialogCreator.getPrimaryStage(), Lang.ApplicationBundle().getString("ProjectInitWindow.window_title"), true);
+		super(ArmaDialogCreator.getPrimaryStage(), bundle.getString("window_title"), true);
 
 		initWizardStep = new ProjectInitWizardStep(this);
 
@@ -94,7 +96,6 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		public WorkspaceSelectionStep() {
 			super(new VBox(20));
-			ResourceBundle bundle = Lang.ApplicationBundle();
 			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.get(ApplicationDataManager.getApplicationProperties());
 			if (workspaceDirectory == null) {
 				workspaceDirectory = Workspace.DEFAULT_WORKSPACE_DIRECTORY;
@@ -102,9 +103,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 			content.setAlignment(Pos.CENTER);
 			content.setMaxWidth(STAGE_WIDTH / 4 * 3);
-			final Label lblChooseWorkspace = new Label(bundle.getString("ProjectInitWindow.choose_workspace"));
+			final Label lblChooseWorkspace = new Label(bundle.getString("choose_workspace"));
 			lblChooseWorkspace.setFont(Font.font(20));
-			content.getChildren().add(new VBox(5, lblChooseWorkspace, new Label(bundle.getString("ProjectInitWindow.workspace_about"))));
+			content.getChildren().add(new VBox(5, lblChooseWorkspace, new Label(bundle.getString("workspace_about"))));
 
 			final FileChooserPane chooserPane = new FileChooserPane(
 					ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
@@ -148,7 +149,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			this.projectInitWindow = projectInitWindow;
 
 			//header
-			final Label lblProjectSetup = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.project_setup"));
+			final Label lblProjectSetup = new Label(bundle.getString("project_setup"));
 			lblProjectSetup.setFont(Font.font(18d));
 
 			initTabPane();
@@ -261,7 +262,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		public class NewProjectTab extends ProjectInitTab {
 
-			private final Tab tabNew = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_new"));
+			private final Tab tabNew = new Tab(bundle.getString("tab_new"));
 
 			/** TextField used for getting project name in new tab */
 			private final TextField tfProjectName = new TextField();
@@ -274,11 +275,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 				final VBox root = getTabVbox(10);
 
-				final Label lblCreateNewProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.new_project_title"));
+				final Label lblCreateNewProject = new Label(bundle.getString("new_project_title"));
 				VBox.setMargin(lblCreateNewProject, new Insets(0, 0, 10, 0));
-				final Label lblProjectName = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.project_name"), tfProjectName);
+				final Label lblProjectName = new Label(bundle.getString("project_name"), tfProjectName);
 				lblProjectName.setContentDisplay(ContentDisplay.RIGHT);
-				final HBox hboxProjectDescription = new HBox(5, new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.new_project_description")), tfProjectDescription);
+				final HBox hboxProjectDescription = new HBox(5, new Label(bundle.getString("new_project_description")), tfProjectDescription);
 
 				root.getChildren().addAll(lblCreateNewProject, lblProjectName, hboxProjectDescription);
 
@@ -298,7 +299,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		public class OpenTab extends ProjectInitTab {
 
-			private final Tab tabOpen = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_open"));
+			private final Tab tabOpen = new Tab(bundle.getString("tab_open"));
 			private final ListView<ProjectInfo> lvKnownProjects = new ListView<>();
 			private final ADCProjectInitWindow projectInitWindow;
 			private LinkedList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
@@ -310,16 +311,16 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				projectConfigSet.updateValue(false);
 				final VBox root = getTabVbox(10d);
 				tabOpen.setContent(root);
-				final Label lblOpenProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.open_project_title"));
+				final Label lblOpenProject = new Label(bundle.getString("open_project_title"));
 				VBox.setMargin(lblOpenProject, new Insets(0d, 0d, 10d, 0d));
 
-				final Button btnLocateProject = new Button(Lang.ApplicationBundle().getString("ProjectInitWindow.open_from_file"));
+				final Button btnLocateProject = new Button(bundle.getString("open_from_file"));
 				btnLocateProject.setOnAction(new EventHandler<ActionEvent>() {
 					@Override
 					public void handle(ActionEvent event) {
 						FileChooser fc = new FileChooser();
 						fc.setInitialDirectory(projectInitWindow.getWorkspaceDirectory());
-						fc.setTitle(Lang.ApplicationBundle().getString("ProjectInitWindow.fc_locate_project_title"));
+						fc.setTitle(bundle.getString("fc_locate_project_title"));
 						fc.getExtensionFilters().add(ADCStatic.PROJECT_XML_FC_FILTER);
 
 						File chosen = fc.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
@@ -341,7 +342,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					}
 				});
 
-				root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.open_from_file_title")), btnLocateProject);
+				root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(bundle.getString("open_from_file_title")), btnLocateProject);
 
 				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectInfo>() {
 					@Override
@@ -367,7 +368,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
 					lvKnownProjects.getItems().add(result.getProjectInfo());
 				}
-				return new VBox(0, new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.detected_projects")), lvKnownProjects);
+				return new VBox(0, new Label(bundle.getString("detected_projects")), lvKnownProjects);
 			}
 
 			private void fetchProjects() {
@@ -415,13 +416,19 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		public class ImportTab extends ProjectInitTab {
 
-			private final Tab tabImport = new Tab(Lang.ApplicationBundle().getString("ProjectInitWindow.tab_import"));
+			private final Tab tabImport = new Tab(bundle.getString("tab_import"));
 
 			public ImportTab() {
-				final VBox root = getTabVbox(20);
-				final Label lblOpenProject = new Label(Lang.ApplicationBundle().getString("ProjectInitWindow.import_project_title"));
+				VBox root = getTabVbox(20);
+				Label lblOpenProject = new Label(bundle.getString("import_project_title"));
+				Label lblLocateDesc = new Label(bundle.getString("locate_description_ext_tip"));
+				lblLocateDesc.setWrapText(true);
 
-				root.getChildren().addAll(lblOpenProject);
+				Button btnLocate = new Button(bundle.getString("locate_description_ext"));
+				btnLocate.setOnAction(event -> {
+
+				});
+				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
 
 				tabImport.setContent(root);
 			}

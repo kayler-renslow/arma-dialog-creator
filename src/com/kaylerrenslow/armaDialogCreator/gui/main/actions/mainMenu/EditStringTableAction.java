@@ -27,7 +27,7 @@ public class EditStringTableAction implements EventHandler<ActionEvent> {
 		StringTable table = Project.getCurrentProject().getStringTable();
 		if (table == null) {
 			FileChooser chooser = new FileChooser();
-			chooser.setTitle(Lang.ApplicationBundle().getString("StringTable.locate_stringtable"));
+			chooser.setTitle(Lang.getBundle("MainMenuBarBundle").getString("Action.edit_string_table-locate"));
 			chooser.setInitialDirectory(Workspace.getWorkspace().getWorkspaceDirectory());
 			chooser.getExtensionFilters().add(ADCStatic.STRING_TABLE_XML_EXTENSION_FILTER);
 			File file = chooser.showOpenDialog(ArmaDialogCreator.getPrimaryStage());

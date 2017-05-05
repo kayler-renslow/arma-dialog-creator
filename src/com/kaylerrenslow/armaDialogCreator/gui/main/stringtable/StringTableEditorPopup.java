@@ -50,17 +50,20 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	private StringTable table;
 
 	private final LinkedList<ListChangeListener<StringTableKey>> listenersToRemoveFromTable = new LinkedList<>();
+	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
 
 	public StringTableEditorPopup(@NotNull StringTable table, @NotNull StringTableWriter writer, @NotNull StringTableParser parser) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), Lang.ApplicationBundle().getString("Popups.StringTable.popup_title"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), null);
+
+		setTitle(bundle.getString("StringTableEditorPopup.popup_title"));
+
 		this.table = table;
-		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		noPackageName = bundle.getString("StringTable.no_package");
 		noContainerName = bundle.getString("StringTable.no_container");
 
 		Button btnInsert = new Button("", new ImageView(ADCImages.ICON_PLUS));
-		btnInsert.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.Tab.Edit.insert_key_tooltip")));
+		btnInsert.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_tooltip")));
 		btnInsert.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -77,7 +80,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			}
 		});
 		Button btnRemove = new Button("", new ImageView(ADCImages.ICON_MINUS));
-		btnRemove.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.Tab.Edit.remove_key_tooltip")));
+		btnRemove.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_key_tooltip")));
 		btnRemove.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -89,7 +92,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
 						btnRemove.getTooltip().getText(),
-						String.format(bundle.getString("Popups.StringTable.Tab.Edit.remove_key_popup_body_f"), selected.getKey().getId()),
+						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_key_popup_body_f"), selected.getKey().getId()),
 						true, true, false
 				);
 				dialog.show();
@@ -104,14 +107,14 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 		btnRemove.setDisable(tabPane.getEditTab().getListView().getSelectionModel().isEmpty());
 		Button btnRefresh = new Button("", new ImageView(ADCImages.ICON_REFRESH));
-		btnRefresh.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.ToolBar.reload_tooltip")));
+		btnRefresh.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.ToolBar.reload_tooltip")));
 		btnRefresh.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
-						bundle.getString("Popups.StringTable.ToolBar.reload_popup_title"),
-						bundle.getString("Popups.StringTable.ToolBar.reload_popup_body"),
+						bundle.getString("StringTableEditorPopup.ToolBar.reload_popup_title"),
+						bundle.getString("StringTableEditorPopup.ToolBar.reload_popup_body"),
 						true, true, false
 				);
 				dialog.show();
@@ -128,7 +131,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			}
 		});
 		Button btnSave = new Button("", new ImageView(ADCImages.ICON_SAVE));
-		btnSave.setTooltip(new Tooltip(bundle.getString("Popups.StringTable.ToolBar.save_tooltip")));
+		btnSave.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.ToolBar.save_tooltip")));
 		btnSave.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -172,7 +175,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		listenersToRemoveFromTable.clear();
 	}
 
-	private static class StringTableEditorTabPane extends TabPane {
+	private class StringTableEditorTabPane extends TabPane {
 		private final ValueObserver<Language> previewLanguageObserver = new ValueObserver<>(KnownLanguage.Original);
 		private final StringTableEditorPopup popup;
 		private final BooleanProperty disableRemove;
@@ -208,18 +211,16 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		}
 	}
 
-	private static class ConfigTab extends Tab { //set xml things like project name attribute (project=root tag of stringtable.xml)
+	private class ConfigTab extends Tab { //set xml things like project name attribute (project=root tag of stringtable.xml)
 
 		public ConfigTab(@NotNull StringTableEditorPopup popup, @NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver) {
-			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Config.tab_title"));
+			super(bundle.getString("StringTableEditorPopup.Tab.Config.tab_title"));
 			VBox root = new VBox(10);
 			root.setPadding(new Insets(10));
 			root.setFillWidth(true);
 			setContent(root);
 			setGraphic(new ImageView(ADCImages.ICON_GEAR));
 			setClosable(false);
-
-			ResourceBundle bundle = Lang.ApplicationBundle();
 
 			ComboBox<Language> comboBoxLanguage = new ComboBox<>();
 			comboBoxLanguage.getItems().addAll(KnownLanguage.values());
@@ -230,17 +231,17 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 					previewLanguageObserver.updateValue(newValue);
 				}
 			});
-			Label lblPreviewLanguage = new Label(bundle.getString("Popups.StringTable.Tab.Config.preview_language"), comboBoxLanguage);
+			Label lblPreviewLanguage = new Label(bundle.getString("StringTableEditorPopup.Tab.Config.preview_language"), comboBoxLanguage);
 			lblPreviewLanguage.setContentDisplay(ContentDisplay.RIGHT);
 			root.getChildren().add(lblPreviewLanguage);
 
-			Label lblSize = new Label(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
+			Label lblSize = new Label(String.format(bundle.getString("StringTableEditorPopup.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 			root.getChildren().add(lblSize);
 
 			ListChangeListener<StringTableKey> keysListener = new ListChangeListener<StringTableKey>() {
 				@Override
 				public void onChanged(Change<? extends StringTableKey> c) {
-					lblSize.setText(String.format(bundle.getString("Popups.StringTable.Tab.Config.number_of_keys_f"), table.getKeys().size()));
+					lblSize.setText(String.format(bundle.getString("StringTableEditorPopup.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 				}
 			};
 			popup.listenersToRemoveFromTable.add(keysListener);
@@ -250,8 +251,8 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 	}
 
-	private static class EditTab extends Tab {
-		private static final Comparator<StringTableKeyDescriptor> comparator = new Comparator<StringTableKeyDescriptor>() {
+	private class EditTab extends Tab {
+		private final Comparator<StringTableKeyDescriptor> comparator = new Comparator<StringTableKeyDescriptor>() {
 			@Override
 			public int compare(StringTableKeyDescriptor o1, StringTableKeyDescriptor o2) {
 				return o1.getKey().getId().compareToIgnoreCase(o2.getKey().getId());
@@ -268,7 +269,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 
 		public EditTab(@NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver, @NotNull StringTableEditorPopup editorPopup) {
-			super(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Edit.tab_title"));
+			super(bundle.getString("StringTableEditorPopup.Tab.Edit.tab_title"));
 
 			listViewItemList = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
 				public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
@@ -294,9 +295,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			editorPane = new StringTableKeyEditorPane(KnownLanguage.Original);
 
-			ResourceBundle bundle = Lang.ApplicationBundle();
-
-			lvMatch.setPlaceholder(new Label(bundle.getString("Popups.StringTable.Tab.Edit.Search.no_match")));
+			lvMatch.setPlaceholder(new Label(bundle.getString("StringTableEditorPopup.Tab.Edit.Search.no_match")));
 			lvMatch.setStyle("-fx-font-family:monospace");
 			for (StringTableKey key : table.getKeys()) {
 				addNewKey(key);
@@ -366,7 +365,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		}
 	}
 
-	private static class GraphsTab extends Tab {
+	private class GraphsTab extends Tab {
 		private final StringTable table;
 
 		private final CategoryAxis xAxis = new CategoryAxis();
@@ -386,7 +385,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			popup.listenersToRemoveFromTable.add(keyListener);
 			table.getKeys().addListener(keyListener);
 
-			setText(Lang.ApplicationBundle().getString("Popups.StringTable.Tab.Graph.tab_title"));
+			setText(bundle.getString("StringTableEditorPopup.Tab.Graph.tab_title"));
 
 			setClosable(false);
 
@@ -401,14 +400,12 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			root.getChildren().add(chart);
 
-			ResourceBundle bundle = Lang.ApplicationBundle();
+			chart.setTitle(bundle.getString("StringTableEditorPopup.Tab.Graph.graph_label"));
 
-			chart.setTitle(bundle.getString("Popups.StringTable.Tab.Graph.graph_label"));
+			xAxis.setLabel(bundle.getString("StringTableEditorPopup.Tab.Graph.x_axis"));
+			yAxis.setLabel(bundle.getString("StringTableEditorPopup.Tab.Graph.y_axis"));
 
-			xAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.x_axis"));
-			yAxis.setLabel(bundle.getString("Popups.StringTable.Tab.Graph.y_axis"));
-
-			series.setName(bundle.getString("Popups.StringTable.Tab.Graph.series_label"));
+			series.setName(bundle.getString("StringTableEditorPopup.Tab.Graph.series_label"));
 		}
 
 		private void updateGraph() {

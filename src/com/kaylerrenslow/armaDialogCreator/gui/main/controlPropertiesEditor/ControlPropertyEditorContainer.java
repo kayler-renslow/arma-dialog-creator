@@ -36,7 +36,7 @@ import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEdit
 class ControlPropertyEditorContainer extends HBox {
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 
-	private static final ResourceBundle bundle = Lang.ApplicationBundle();
+	private static final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
 
 	private final ControlClass controlClass;
 	private final ControlProperty controlProperty;
@@ -66,16 +66,16 @@ class ControlPropertyEditorContainer extends HBox {
 
 		placeTooltip(menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
 
-		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("ControlPropertiesEditorPane.use_default_editor"));
-		final MenuItem miResetToInitial = new MenuItem(bundle.getString("ControlPropertiesEditorPane.reset_to_initial"));
-		final MenuItem miConvert = new MenuItem(bundle.getString("ControlPropertiesEditorPane.convert_value"));
-		final MenuItem miMacro = new MenuItem(bundle.getString("ControlPropertiesEditorPane.set_to_macro"));
-		final MenuItem miCustomData = new MenuItem(bundle.getString("ControlPropertiesEditorPane.value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
+		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
+		final MenuItem miResetToInitial = new MenuItem(bundle.getString("reset_to_initial"));
+		final MenuItem miConvert = new MenuItem(bundle.getString("convert_value"));
+		final MenuItem miMacro = new MenuItem(bundle.getString("set_to_macro"));
+		final MenuItem miCustomData = new MenuItem(bundle.getString("value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
 		miInheritanceButton = new MenuItem(
-				controlProperty.isInherited() ? bundle.getString("ControlPropertiesEditorPane.override") :
-						bundle.getString("ControlPropertiesEditorPane.inherit")
+				controlProperty.isInherited() ? bundle.getString("override") :
+						bundle.getString("inherit")
 		);
-		final MenuItem miClearValue = new MenuItem(bundle.getString("ControlPropertiesEditorPane.clear_value"));
+		final MenuItem miClearValue = new MenuItem(bundle.getString("clear_value"));
 		menuButtonOptions.setText(controlProperty.getName());
 		menuButtonOptions.getItems().setAll(
 				miDefaultEditor,
@@ -136,9 +136,9 @@ class ControlPropertyEditorContainer extends HBox {
 					miConvert.setDisable(disable || update.getControlProperty().getValue() == null);
 
 					if (update.wasInherited()) {
-						miInheritanceButton.setText(bundle.getString("ControlPropertiesEditorPane.override"));
+						miInheritanceButton.setText(bundle.getString("override"));
 					} else {
-						miInheritanceButton.setText(bundle.getString("ControlPropertiesEditorPane.inherit"));
+						miInheritanceButton.setText(bundle.getString("inherit"));
 					}
 					hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
@@ -220,8 +220,8 @@ class ControlPropertyEditorContainer extends HBox {
 
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
-						bundle.getString("ControlPropertiesEditorPane.ClearValuePopup.popup_title"),
-						bundle.getString("ControlPropertiesEditorPane.ClearValuePopup.body"), true, true, false
+						bundle.getString("ClearValuePopup.popup_title"),
+						bundle.getString("ClearValuePopup.body"), true, true, false
 				);
 				dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
 				dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
@@ -280,8 +280,8 @@ class ControlPropertyEditorContainer extends HBox {
 	private boolean askClearMacro() {
 		SimpleResponseDialog dialog = new SimpleResponseDialog(
 				ArmaDialogCreator.getPrimaryStage(),
-				bundle.getString("ControlPropertiesEditorPane.RemoveMacroDialog.dialog_title"),
-				bundle.getString("ControlPropertiesEditorPane.RemoveMacroDialog.body"),
+				bundle.getString("RemoveMacroDialog.dialog_title"),
+				bundle.getString("RemoveMacroDialog.body"),
 				true, true, false
 		);
 		dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
@@ -395,9 +395,9 @@ class ControlPropertyEditorContainer extends HBox {
 		private final ComboBox<PropertyType> comboBoxType = new ComboBox<>();
 
 		public ChooseNewPropertyTypeDialog(@NotNull ControlProperty property) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.popup_title"), true, true, true);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ConvertValueDialog.popup_title"), true, true, true);
 
-			Label lbl = new Label(String.format(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.body_f"), property.getName()));
+			Label lbl = new Label(String.format(bundle.getString("ConvertValueDialog.body_f"), property.getName()));
 			lbl.setWrapText(true);
 			myRootElement.getChildren().add(lbl);
 
@@ -410,10 +410,10 @@ class ControlPropertyEditorContainer extends HBox {
 			}
 			comboBoxType.getSelectionModel().select(property.getPropertyType());
 
-			Button btnUseInitial = new Button(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.use_initial"));
+			Button btnUseInitial = new Button(bundle.getString("ConvertValueDialog.use_initial"));
 			btnUseInitial.setOnAction((e) -> comboBoxType.getSelectionModel().select(property.getInitialPropertyType()));
 			myRootElement.getChildren().add(btnUseInitial);
-			btnUseInitial.setTooltip(new Tooltip(bundle.getString("ControlPropertiesEditorPane.ConvertValueDialog.use_initial_tooltip")));
+			btnUseInitial.setTooltip(new Tooltip(bundle.getString("ConvertValueDialog.use_initial_tooltip")));
 
 
 			setStageSize(420, 180);

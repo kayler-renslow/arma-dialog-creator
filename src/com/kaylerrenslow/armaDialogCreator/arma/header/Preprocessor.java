@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
  @since 03/21/2017 */
 class Preprocessor {
 
-	private static final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserBundle");
+	private static final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
 
 	private static final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
 	private static final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";

@@ -27,6 +27,8 @@ import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ResourceBundle;
+
 /**
  Base class for a popup that manipulates/creates macro data.
 
@@ -42,7 +44,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	private final InputField<MacroIdentifierChecker, String> inMacroKey = new InputField<>(new MacroIdentifierChecker());
 	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
 
-	private final Label lblNoTypeChosen = new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.no_type_chosen"));
+	private final Label lblNoTypeChosen = new Label(null);
 
 	/**
 	 Creates a Macro editor.
@@ -50,7 +52,13 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
 	public MacroEditBasePopup(Env env) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.MacroEdit.popup_title"), true, true, true);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);
+		ResourceBundle bundle = Lang.ApplicationBundle();
+
+		setTitle(bundle.getString("Popups.MacroEdit.popup_title"));
+
+		lblNoTypeChosen.setText(bundle.getString("Popups.MacroEdit.no_type_chosen"));
+
 		this.env = env;
 		myStage.initStyle(StageStyle.UTILITY);
 		myStage.setMinWidth(480d);
@@ -100,9 +108,9 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 		gridPaneTop.setHgap(hgap);
 		gridPaneTop.setVgap(vgap);
 
-		gridPaneTop.addRow(0, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_key")), inMacroKey);
-		gridPaneTop.addRow(1, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_type")), cbMacroType);
-		gridPaneTop.addRow(2, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_value")), paneEditor);
+		gridPaneTop.addRow(0, new Label(bundle.getString("Popups.MacroEdit.macro_key")), inMacroKey);
+		gridPaneTop.addRow(1, new Label(bundle.getString("Popups.MacroEdit.macro_type")), cbMacroType);
+		gridPaneTop.addRow(2, new Label(bundle.getString("Popups.MacroEdit.macro_value")), paneEditor);
 
 		RowConstraints constraint = new RowConstraints(-1, -1, Double.MAX_VALUE, Priority.ALWAYS, VPos.CENTER, true);
 		gridPaneTop.getRowConstraints().addAll(constraint, constraint, constraint);
@@ -110,7 +118,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 		GridPane.setHgrow(inMacroKey, Priority.ALWAYS);
 		GridPane.setHgrow(tfMacroDescription, Priority.ALWAYS);
 
-		final HBox hboxMacroDescription = new HBox(hgap, new Label(Lang.ApplicationBundle().getString("Popups.MacroEdit.macro_comment")), tfMacroDescription);
+		final HBox hboxMacroDescription = new HBox(hgap, new Label(bundle.getString("Popups.MacroEdit.macro_comment")), tfMacroDescription);
 		HBox.setHgrow(tfMacroDescription, Priority.ALWAYS);
 
 		paneEditor.setAlignment(Pos.CENTER_LEFT);

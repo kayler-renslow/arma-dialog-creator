@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
+import java.util.ResourceBundle;
 
 /**
  Created by Kayler on 09/13/2016.
@@ -26,6 +27,8 @@ public class ProjectExporter {
 	private static final String CONTROLS_BACKGROUND = "ControlsBackground";
 	private static final String OBJECTS = "Objects";
 	private static final String CONTROLS = "Controls";
+
+	private ResourceBundle bundle = Lang.ApplicationBundle();
 
 	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
 		this.configuration = configuration;
@@ -77,7 +80,7 @@ public class ProjectExporter {
 		} else {
 			exportMacros(macrosOutputStream);
 			if (configuration.shouldPlaceAdcNotice()) {
-				writelnComment(displayOutputStream, Lang.ApplicationBundle().getString("Misc.adc_export_notice"));
+				writelnComment(displayOutputStream, bundle.getString("Misc.adc_export_notice"));
 				writeln(displayOutputStream, "");
 			}
 		}
@@ -99,7 +102,7 @@ public class ProjectExporter {
 
 	private void exportMacros(@NotNull OutputStream os) throws IOException {
 		if (configuration.shouldPlaceAdcNotice()) {
-			writelnComment(os, Lang.ApplicationBundle().getString("Misc.adc_export_notice"));
+			writelnComment(os, bundle.getString("Misc.adc_export_notice"));
 			writeln(os, "");
 		}
 

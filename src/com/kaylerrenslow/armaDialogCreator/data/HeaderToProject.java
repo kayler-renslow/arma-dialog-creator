@@ -54,7 +54,7 @@ public class HeaderToProject {
 	// End static stuff
 	//
 
-	private final ResourceBundle bundle = Lang.getBundle("com.kaylerrenslow.armaDialogCreator.HeaderConversionBundle");
+	private final ResourceBundle bundle = Lang.getBundle("HeaderConversionBundle");
 	private final Workspace workspace;
 	private final File descExt;
 	private final SelectClassesCallback callback;
@@ -258,6 +258,7 @@ public class HeaderToProject {
 				extendClass = createAndAppendCustomControlClass(project, extendHeaderClass);
 			}
 		}
+
 
 		// After setting the properties, extend the class. As mentioned in the ControlProperty.inherit() documentation,
 		// the previous values of the control property will be saved

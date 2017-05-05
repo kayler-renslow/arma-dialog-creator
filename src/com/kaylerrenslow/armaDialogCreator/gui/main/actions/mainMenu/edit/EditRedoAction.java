@@ -15,11 +15,14 @@ import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ResourceBundle;
+
 /**
  Created by Kayler on 05/20/2016.
  */
 public class EditRedoAction implements EventHandler<ActionEvent> {
 	private final MenuItem editRedoMenuItem;
+	private final ResourceBundle bundle = Lang.getBundle("MainMenuBarBundle");
 
 	public EditRedoAction(MenuItem editRedoMenuItem) {
 		this.editRedoMenuItem = editRedoMenuItem;
@@ -31,15 +34,15 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						editRedoMenuItem.setDisable(true);
-						editRedoMenuItem.setText(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo"));
+						editRedoMenuItem.setText(bundle.getString("edit_redo"));
 						break;
 					}
 					case REDO: //intentional fall through
 					case UNDO: {
 						if (changelog.getToRedo() == null) {
-							editRedoMenuItem.setText(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo"));
+							editRedoMenuItem.setText(bundle.getString("edit_redo"));
 						} else {
-							editRedoMenuItem.setText(String.format(Lang.ApplicationBundle().getString("MainMenuBar.edit_redo_f"), changelog.getToRedo().getShortName()));
+							editRedoMenuItem.setText(String.format(bundle.getString("edit_redo_f"), changelog.getToRedo().getShortName()));
 						}
 						editRedoMenuItem.setDisable(changelog.getToRedo() == null);
 						break;
@@ -61,8 +64,8 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 		} catch (Exception e) {
 			if (e instanceof ChangeUpdateFailedException) {
 				Notifications.showNotification(new BoxNotification(
-								Lang.ApplicationBundle().getString("Notifications.RedoOperation.notification_title"),
-								String.format(Lang.ApplicationBundle().getString("Notifications.RedoOperation.notification_body_f"), e.getMessage()),
+						bundle.getString("Action.RedoOperation.notification_title"),
+						String.format(bundle.getString("Action.RedoOperation.notification_body_f"), e.getMessage()),
 								Notification.DEFAULT_DURATION,
 								true
 						)

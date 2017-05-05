@@ -16,6 +16,8 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
+import java.util.ResourceBundle;
+
 /**
  Used with {@link UICanvasEditor#setCanvasContextMenu(ContextMenu)}.
 
@@ -23,16 +25,20 @@ import javafx.scene.control.MenuItem;
  @since 11/15/2016 */
 public class CanvasContextMenu extends ContextMenu {
 	public CanvasContextMenu() {
+		ResourceBundle bundle = Lang.getBundle("MainMenuBarBundle");
+
 		Menu menuCreate = new Menu(
-				Lang.ApplicationBundle().getString("MainMenuBar.create"), null,
-				addOnAction(Lang.ApplicationBundle().getString("MainMenuBar.create_control"), new CreateNewControlAction()),
-				addOnAction(Lang.ApplicationBundle().getString("MainMenuBar.create_macro"), new CreateMacroAction()),
-				addOnAction(Lang.ApplicationBundle().getString("MainMenuBar.create_control_class"), new CreateNewCustomControlAction())
+				bundle.getString("create"), null,
+				addOnAction(bundle.getString("create_control"), new CreateNewControlAction()),
+				addOnAction(bundle.getString("create_macro"), new CreateMacroAction()),
+				addOnAction(bundle.getString("create_control_class"), new CreateNewCustomControlAction())
 		);
 		getItems().add(menuCreate);
 
-		CheckMenuItem menuItemViewportSnap = addOnAction(new CheckMenuItem(Lang.ApplicationBundle().getString("CanvasControls.viewport_snapping")), new ToggleViewportSnappingAction());
-		CheckMenuItem menuItemShowGrid = addOnAction(new CheckMenuItem(Lang.ApplicationBundle().getString("MainMenuBar.view_show_grid")), new ViewShowGridAction());
+		ResourceBundle bundleCanvasControls = Lang.ApplicationBundle();
+
+		CheckMenuItem menuItemViewportSnap = addOnAction(new CheckMenuItem(bundleCanvasControls.getString("CanvasControls.viewport_snapping")), new ToggleViewportSnappingAction());
+		CheckMenuItem menuItemShowGrid = addOnAction(new CheckMenuItem(bundle.getString("view_show_grid")), new ViewShowGridAction());
 		getItems().add(menuItemViewportSnap);
 		getItems().add(menuItemShowGrid);
 
