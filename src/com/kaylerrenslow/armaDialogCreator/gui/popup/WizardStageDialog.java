@@ -8,6 +8,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -24,7 +25,7 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 	private final Button btnPrevious;
 	private int wizardStepInd = 0;
 
-	public WizardStageDialog(Stage primaryStage, String title, boolean hasHelp, @NotNull WizardStep... wizardSteps) {
+	public WizardStageDialog(@Nullable Stage primaryStage, @Nullable String title, boolean hasHelp, @NotNull WizardStep... wizardSteps) {
 		super(primaryStage, new StackPane(), title, true, true, hasHelp);
 
 

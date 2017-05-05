@@ -9,6 +9,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  A wrapper class for {@link StagePopup} that is for dialogs. The difference between a {@link StagePopup} and a {@link StageDialog} is that the {@link StageDialog} will always halt the thread when
@@ -23,7 +25,7 @@ public class StageDialog<T extends Parent> extends StagePopup<VBox> {
 
 	private boolean cancel = false;
 
-	public StageDialog(Stage primaryStage, T myRootDialogElement, String title, boolean canCancel, boolean canOk, boolean hasHelp) {
+	public StageDialog(@Nullable Stage primaryStage, @NotNull T myRootDialogElement, @Nullable String title, boolean canCancel, boolean canOk, boolean hasHelp) {
 		super(primaryStage, new VBox(5), title);
 		this.myRootElement = myRootDialogElement;
 		super.myRootElement.setPadding(new Insets(10));

@@ -48,13 +48,14 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 	private static final double STAGE_HEIGHT = 400d;
 
 	private final ProjectInitWizardStep initWizardStep;
-	private final WorkspaceSelectionStep workspaceSelectionStep = new WorkspaceSelectionStep();
+	private final WorkspaceSelectionStep workspaceSelectionStep;
 
 	private static final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 
 	public ADCProjectInitWindow() {
 		super(ArmaDialogCreator.getPrimaryStage(), bundle.getString("window_title"), true);
 
+		workspaceSelectionStep = new WorkspaceSelectionStep();
 		initWizardStep = new ProjectInitWizardStep(this);
 
 		addWizardStep(workspaceSelectionStep);
@@ -426,7 +427,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 				Button btnLocate = new Button(bundle.getString("locate_description_ext"));
 				btnLocate.setOnAction(event -> {
-
+					File descExt = new File("");
+					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow.getWorkspaceDirectory(), descExt);
+					d.show();
 				});
 				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
 
@@ -484,19 +487,6 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			@NotNull
 			public ProjectInfo getProjectXmlInfo() {
 				return parseResult.getProjectInfo();
-			}
-		}
-
-		class ImportProject implements ProjectInit {
-			private final File descriptionExt;
-
-			public ImportProject(@NotNull File descriptionExt) {
-				this.descriptionExt = descriptionExt;
-			}
-
-			@NotNull
-			public File getDescriptionExt() {
-				return descriptionExt;
 			}
 		}
 	}

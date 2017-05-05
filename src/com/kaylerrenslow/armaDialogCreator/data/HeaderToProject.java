@@ -14,7 +14,6 @@ import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -45,9 +44,9 @@ public class HeaderToProject {
 	 */
 	private static final String CONTROL_TYPE = "type";
 
-	public static void convertAndSaveToWorkspace(@NotNull Workspace w, @NotNull File descExt, @NotNull SelectClassesCallback c, @NotNull DataContext dataContext)
+	public static void convertAndSaveToWorkspace(@NotNull File workspaceDir, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback c)
 			throws FileNotFoundException, HeaderConversionException {
-		new HeaderToProject(w, descExt, c, dataContext).run();
+		new HeaderToProject(new Workspace(workspaceDir), descExt, c).run();
 	}
 
 	//
@@ -57,17 +56,17 @@ public class HeaderToProject {
 	private final ResourceBundle bundle = Lang.getBundle("HeaderConversionBundle");
 	private final Workspace workspace;
 	private final File descExt;
-	private final SelectClassesCallback callback;
-	private final DataContext dataContext;
+	private final ConversionCallback callback;
+	private final ApplicationData dataContext;
 	private final ArmaResolution resolution;
 	private final Env env;
 	private HeaderFile headerFile;
 
-	public HeaderToProject(@NotNull Workspace workspace, @NotNull File descExt, @NotNull SelectClassesCallback callback, @NotNull DataContext dataContext) {
+	protected HeaderToProject(@NotNull Workspace workspace, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback callback) {
 		this.workspace = workspace;
 		this.descExt = descExt;
 		this.callback = callback;
-		this.dataContext = dataContext;
+		this.dataContext = new ApplicationData();
 
 		resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
 		env = DataKeys.ENV.get(dataContext);
@@ -78,11 +77,15 @@ public class HeaderToProject {
 	}
 
 	private void run() throws FileNotFoundException, HeaderConversionException {
+		callback.progressUpdate(0, -1);
+		callback.message(bundle.getString("Status.parsing"));
 		try {
 			headerFile = HeaderParser.parse(descExt);
 		} catch (HeaderParseException e) {
 			throw new HeaderConversionException(e.getMessage());
 		}
+
+		callback.message(bundle.getString("Status.locating_dialogs"));
 
 		List<String> discoveredDialogClassNames = new ArrayList<>();
 		for (HeaderClass hc : headerFile.getClasses()) {
@@ -92,12 +95,23 @@ public class HeaderToProject {
 			}
 		}
 
+		callback.message(bundle.getString("Status.requesting_dialogs_to_save"));
+
+
 		List<String> convertClasses = callback.selectClassesToSave(discoveredDialogClassNames);
+
+		int progress = 0;
+		int maxProgress = convertClasses.size();
+		callback.progressUpdate(progress, maxProgress);
 		for (String className : convertClasses) {
 			for (HeaderClass hc : headerFile.getClasses()) {
 				if (!className.equals(hc.getClassName())) {
 					continue;
 				}
+
+				callback.progressUpdate(++progress, maxProgress);
+
+				callback.message(String.format(bundle.getString("Status.converting_dialog_f"), className));
 
 				//begin conversion of dialog and save to workspace
 				saveToWorkspace(hc);
@@ -108,10 +122,18 @@ public class HeaderToProject {
 
 
 	private void saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
+		int progress = 0;
+		int maxProgress = 1/*create project*/
+				+ 1/*create dialog object*/
+				+ 1/*create controls*/
+				+ 1/*write to file*/;
+
 		//Project instance
 		Project project;
 		//display instance
 		ArmaDisplay armaDisplay;
+
+		callback.progressUpdate(progress, maxProgress);
 
 		//create project instance
 		{
@@ -126,6 +148,10 @@ public class HeaderToProject {
 			project = new Project(new ProjectInfo(displayClass.getClassName(), dialogDir));
 		}
 
+		dataContext.setCurrentProject(project);
+
+		callback.progressUpdate(++progress, maxProgress);
+
 		//todo add macros to macro registry?
 		//todo add the stringtable
 
@@ -134,6 +160,8 @@ public class HeaderToProject {
 			armaDisplay = new ArmaDisplay();
 			project.setEditingDisplay(armaDisplay);
 		}
+
+		callback.progressUpdate(++progress, maxProgress);
 
 		//load controls from nested classes or array of classes
 		{
@@ -160,6 +188,7 @@ public class HeaderToProject {
 			}
 		}
 
+		callback.progressUpdate(++progress, maxProgress);
 
 		//build the structure for the controls and bg controls
 		TreeStructure<ArmaControl> structureMain = new TreeStructure.Simple<>(TreeNode.Simple.newRoot());
@@ -170,10 +199,13 @@ public class HeaderToProject {
 		//write to file
 		ProjectSaveXmlWriter writer = new ProjectSaveXmlWriter(project, structureMain, structureBg);
 		try {
+			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), displayClass.getClassName()));
 			writer.write();
 		} catch (IOException e) {
 			convertError(String.format(bundle.getString("Convert.FailReason.write_file_fail_f"), displayClass.getClassName()));
 		}
+
+		callback.progressUpdate(++progress, maxProgress);
 
 		//done converting and conversion of dialog/display is written to file by here.
 	}
@@ -353,7 +385,11 @@ public class HeaderToProject {
 	 @author Kayler
 	 @since 04/30/2017
 	 */
-	public interface SelectClassesCallback {
+	public interface ConversionCallback {
 		@NotNull List<String> selectClassesToSave(@NotNull List<String> classesDiscovered);
+
+		void message(@NotNull String msg);
+
+		void progressUpdate(int stepsCompleted, int totalSteps);
 	}
 }
