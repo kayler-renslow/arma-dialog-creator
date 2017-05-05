@@ -112,6 +112,11 @@ public class ControlPropertySpecification {
 		return usingCustomData;
 	}
 
+	@Nullable
+	public PropertyType getPropertyType() {
+		return value == null ? null : value.getPropertyType();
+	}
+
 	@NotNull
 	public ControlPropertyLookup getPropertyLookup() {
 		return lookup;

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -46,12 +47,19 @@ public class AFont extends SerializableValue {
 	public String name() {
 		return this.name;
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return this;
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.FONT;
+	}
+
 	public static AFont[] values() {
 		return values;
 	}

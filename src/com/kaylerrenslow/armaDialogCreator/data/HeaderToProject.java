@@ -6,9 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.header.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.ControlType;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConstructionException;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
@@ -25,6 +23,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -109,13 +108,10 @@ public class HeaderToProject {
 
 
 	private void saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
-
-		//list of controls for dialog
-		List<ArmaControl> controls = new ArrayList<>();
-		//list of bg controls for dialog
-		List<ArmaControl> bgControls = new ArrayList<>();
 		//Project instance
 		Project project;
+		//display instance
+		ArmaDisplay armaDisplay;
 
 		//create project instance
 		{
@@ -130,7 +126,14 @@ public class HeaderToProject {
 			project = new Project(new ProjectInfo(displayClass.getClassName(), dialogDir));
 		}
 
-		//todo add macros to macro registry
+		//todo add macros to macro registry?
+		//todo add the stringtable
+
+		//create display and attach properties
+		{
+			armaDisplay = new ArmaDisplay();
+			project.setEditingDisplay(armaDisplay);
+		}
 
 		//load controls from nested classes or array of classes
 		{
@@ -138,37 +141,31 @@ public class HeaderToProject {
 			HeaderClass controlsClass = displayClass.getNestedClasses().getByName(CONTROLS, false);
 			if (controlsClass != null) {
 				for (HeaderClass hc : controlsClass.getNestedClasses()) {
-					bgControls.add(getArmaControl(project, hc));
+					armaDisplay.getControls().add(getArmaControl(project, hc));
 				}
 			} else {
 				HeaderAssignment controlsAssignment = displayClass.getAssignments().getByVarName(CONTROLS, false);
-				addArrayControls(project, controlsAssignment, bgControls, CONTROLS);
+				addArrayControls(project, controlsAssignment, armaDisplay.getControls(), CONTROLS);
 			}
 
 			//class ControlsBackground or controlsBackground[]={MyControl, ...}
 			HeaderClass bgControlsClass = displayClass.getNestedClasses().getByName(BG_CONTROLS, false);
 			if (bgControlsClass != null) {
 				for (HeaderClass hc : bgControlsClass.getNestedClasses()) {
-					bgControls.add(getArmaControl(project, hc));
+					armaDisplay.getBackgroundControls().add(getArmaControl(project, hc));
 				}
 			} else {
 				HeaderAssignment bgControlsAssignment = displayClass.getAssignments().getByVarName(BG_CONTROLS, false);
-				addArrayControls(project, bgControlsAssignment, bgControls, BG_CONTROLS);
+				addArrayControls(project, bgControlsAssignment, armaDisplay.getBackgroundControls(), BG_CONTROLS);
 			}
-		}
-
-		//create display and attach properties
-		{
-			ArmaDisplay armaDisplay = new ArmaDisplay();
-			project.setEditingDisplay(armaDisplay);
 		}
 
 
 		//build the structure for the controls and bg controls
 		TreeStructure<ArmaControl> structureMain = new TreeStructure.Simple<>(TreeNode.Simple.newRoot());
 		TreeStructure<ArmaControl> structureBg = new TreeStructure.Simple<>(TreeNode.Simple.newRoot());
-		buildStructure(controls, structureMain);
-		buildStructure(bgControls, structureBg);
+		buildStructure(armaDisplay.getControls(), structureMain);
+		buildStructure(armaDisplay.getBackgroundControls(), structureBg);
 
 		//write to file
 		ProjectSaveXmlWriter writer = new ProjectSaveXmlWriter(project, structureMain, structureBg);
@@ -238,26 +235,92 @@ public class HeaderToProject {
 			if (assignment == null) {
 				continue;
 			}
-			//todo convert assignment value into a value for property
-			if (assignment.getValue() instanceof HeaderArray) {
-				//todo build array
+
+			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType());
+			if (v != null) {
+				property.setValue(v);
 			} else {
-				String assignmentValue = assignment.getValue().getContent();
-				if (assignmentValue.charAt(0) == '"') {
-					assignmentValue = assignmentValue.substring(1, assignmentValue.length() - 1); //chop off quotes
-					property.setValue(SerializableValue.constructNew(dataContext, PropertyType.STRING, assignmentValue));
-				} else {
-					try {
-						property.setValue(SerializableValue.constructNew(dataContext, property.getInitialPropertyType(), assignmentValue));
-					} catch (SerializableValueConstructionException e) {
-						property.setCustomDataValue(assignmentValue);
-						property.setUsingCustomData(true);
-					}
-				}
+				property.setCustomDataValue(assignment.getValue().getContent());
+				property.setUsingCustomData(true);
 			}
 		}
 
+
+		//get the extend class
+		ControlClass extendClass = null;
+		if (headerClass.getExtendClassName() != null) {
+			extendClass = project.getCustomControlClassRegistry().findControlClassByName(headerClass.getExtendClassName());
+			if (extendClass == null) {
+				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
+				if (extendHeaderClass == null) {
+					convertError(String.format(bundle.getString("Error.no_class_f"), headerClass.getExtendClassName()));
+				}
+				extendClass = createAndAppendCustomControlClass(project, extendHeaderClass);
+			}
+		}
+
+		// After setting the properties, extend the class. As mentioned in the ControlProperty.inherit() documentation,
+		// the previous values of the control property will be saved
+		armaControl.extendControlClass(extendClass);
+
 		return armaControl;
+	}
+
+	@NotNull
+	private ControlClass createAndAppendCustomControlClass(@NotNull Project project, @NotNull HeaderClass headerClass) {
+		List<ControlPropertySpecification> optional = new ArrayList<>(headerClass.getAssignments().size());
+		for (HeaderAssignment assignment : headerClass.getAssignments()) {
+			//todo handle custom properties because the user may use the dialog class for more than just dialogs!
+			for (ControlPropertyLookup lookup : ControlPropertyLookup.values()) {
+				if (assignment.getVariableName().equalsIgnoreCase(lookup.getPropertyName())) {
+					optional.add(new ControlPropertySpecification(
+							lookup,
+							createValueFromAssignment(assignment, lookup.getPropertyType()),
+							null
+					));
+				}
+			}
+		}
+		ControlClassSpecification ccs = new ControlClassSpecification(
+				headerClass.getClassName(),
+				Collections.emptyList(),
+				optional
+		);
+
+		project.getCustomControlClassRegistry().addControlClass(ccs);
+
+		return new ControlClass(ccs, project);
+	}
+
+	@Nullable
+	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType) {
+		if (assignment.getValue() instanceof HeaderArray) {
+			if (SerializableValue.isConvertible(initialPropertyType, PropertyType.ARRAY)) {
+				HeaderArray headerArray = (HeaderArray) assignment.getValue();
+				String[] items = new String[headerArray.getItems().size()];
+				int i = 0;
+				for (HeaderArrayItem item : headerArray.getItems()) {
+					items[i++] = item.getValue().getContent();
+				}
+				return SerializableValue.constructNew(dataContext, PropertyType.ARRAY, items);
+			}
+
+		} else {
+			String assignmentValue = assignment.getValue().getContent();
+			if (assignmentValue.charAt(0) == '"') {
+				if (SerializableValue.isConvertible(initialPropertyType, PropertyType.STRING)) {
+					assignmentValue = assignmentValue.substring(1, assignmentValue.length() - 1); //chop off quotes
+					return SerializableValue.constructNew(dataContext, PropertyType.STRING, assignmentValue);
+				}
+			} else {
+				try {
+					return SerializableValue.constructNew(dataContext, initialPropertyType, assignmentValue);
+				} catch (SerializableValueConstructionException ignore) {
+
+				}
+			}
+		}
+		return null;
 	}
 
 	private void buildStructure(@NotNull List<ArmaControl> controls, @NotNull TreeStructure<ArmaControl> structure) {
@@ -277,10 +340,6 @@ public class HeaderToProject {
 				buildStructure(controlChild, treeNode);
 			}
 		}
-	}
-
-	private void noClassError(String className) throws HeaderConversionException {
-		throw new HeaderConversionException(String.format(bundle.getString("Error.Error.no_class_f"), className));
 	}
 
 	private void convertError(@NotNull String s) throws HeaderConversionException {

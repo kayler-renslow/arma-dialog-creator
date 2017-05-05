@@ -95,9 +95,24 @@ public class HeaderFile {
 		}
 	}
 
+	/**
+	 Get the extend class for the given {@link HeaderClass} instance
+
+	 @param headerClass the class to get extend class for
+	 @param caseSensitive true if the case sensitivity of class names matters
+	 @return the class, or null if <code>{@link HeaderClass#getExtendClassName()}==null</code>
+	 */
+	@Nullable
+	public HeaderClass getExtendClass(@NotNull HeaderClass headerClass, boolean caseSensitive) {
+		if (headerClass.getOwnerFile() != this) {
+			throw new IllegalArgumentException("headerClass is not a member of this file");
+		}
+		return getInherited(headerClass, caseSensitive);
+	}
+
 	@Nullable
 	private HeaderClass getInherited(@NotNull HeaderClass headerClass, boolean caseSensitive) {
-		if (headerClass.hasExtendClass()) {
+		if (headerClass.getExtendClassName() == null) {
 			return null;
 		}
 		return inheritanceHelper.computeIfAbsent(headerClass, (hc) -> {
@@ -123,5 +138,4 @@ public class HeaderFile {
 			return extendClassRef.getValue();
 		});
 	}
-
 }

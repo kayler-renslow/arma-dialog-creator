@@ -50,7 +50,9 @@ public interface Macro<T extends SerializableValue> {
 
 	/** Get the {@link PropertyType} of the macro */
 	@NotNull
-	PropertyType getPropertyType();
+	default PropertyType getPropertyType() {
+		return getValue().getPropertyType();
+	}
 
 	/** Get the macro type */
 	@NotNull
@@ -59,28 +61,26 @@ public interface Macro<T extends SerializableValue> {
 	/** Set the macro type */
 	void setMacroType(@NotNull MacroType myType);
 
-	static <T extends SerializableValue> Macro<T> newMacro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
-		return new BasicMacro<>(key, value, propertyType);
+	static <T extends SerializableValue> Macro<T> newMacro(@NotNull String key, @NotNull T value) {
+		return new BasicMacro<>(key, value);
 	}
 
 	class BasicMacro<T extends SerializableValue> implements Macro<T> {
 
 		private ValueObserver<String> keyObserver = new ValueObserver<>(null);
-		private final PropertyType propertyType;
 		protected ValueObserver<T> valueObserver;
 		protected String comment;
 		protected MacroType myType = MacroType.USER_DEFINED;
 
 		/**
 		 A macro is referenced by a key and the result is text that is appended into the ending .h file.
-
 		 @param key the key (prefered to be all caps)
 		 @param value the value (Object.toString() will be used to get end result)
+
 		 */
-		public BasicMacro(@NotNull String key, @NotNull T value, @NotNull PropertyType propertyType) {
+		public BasicMacro(@NotNull String key, @NotNull T value) {
 			getKeyObserver().updateValue(key); //do not change to setKey
 			this.valueObserver = new ValueObserver<>(value);
-			this.propertyType = propertyType;
 		}
 
 		@Override
@@ -103,12 +103,6 @@ public interface Macro<T extends SerializableValue> {
 		@Override
 		public String toString() {
 			return getKey();
-		}
-
-		@Override
-		@NotNull
-		public PropertyType getPropertyType() {
-			return propertyType;
 		}
 
 		@NotNull

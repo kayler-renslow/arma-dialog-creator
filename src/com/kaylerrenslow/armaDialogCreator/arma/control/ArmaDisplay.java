@@ -24,8 +24,7 @@ import java.util.List;
  @since 06/14/2016. */
 public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 
-	private int idd = -1;
-	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(idd);
+	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(-1);
 	private final DisplayControlList<ArmaControl> controlsList = new DisplayControlList<>(this);
 	private final DisplayControlList<ArmaControl> bgControlsList = new DisplayControlList<>(this);
 	private final DataContext userdata = new DataContext();
@@ -52,17 +51,9 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 	}
 
 	@Override
+	@NotNull
 	public Iterator<ArmaControl> iteratorForAllControls(boolean backwards) {
 		return new ListMergeIterator<>(backwards, controlsMerged);
-	}
-
-	public int getIdd() {
-		return idd;
-	}
-
-	public void setIdd(int idd) {
-		this.idd = idd;
-		iddProperty.setValue(idd);
 	}
 
 	@NotNull
@@ -109,7 +100,7 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 	}
 
 	@Override
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		for (ArmaControl control : bgControlsList) {
 			control.resolutionUpdate(newResolution);
 		}

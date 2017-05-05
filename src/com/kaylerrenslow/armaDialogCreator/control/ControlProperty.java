@@ -8,8 +8,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 /**
- Created by Kayler on 05/22/2016.
- */
+ @author Kayler
+ @see ControlClass
+ @since 05/22/2016. */
 public class ControlProperty {
 	public static final ControlProperty[] EMPTY = new ControlProperty[0];
 
@@ -29,10 +30,8 @@ public class ControlProperty {
 	};
 
 	private final ControlPropertyLookupConstant propertyLookup;
-	private final PropertyType initialPropertyType;
 	private final ControlPropertyValueObserver valueObserver;
 	private SerializableValue defaultValue;
-	private final ValueObserver<PropertyType> propertyTypeObserver = new ValueObserver<>(null);
 
 	/** The custom data instance for when {@link #setCustomDataValue(Object)} is invoked */
 	private Object customData;
@@ -57,7 +56,8 @@ public class ControlProperty {
 
 
 	/**
-	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}. This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
+	 A control property is something like "idc" or "colorBackground". The current implementation has all values a {@link SerializableValue}.
+	 This constructor also sets the default value (retrievable via {@link #getDefaultValue()}) equal to null.
 
 	 @param propertyLookup unique lookup for the property.
 	 @param value current value of the property
@@ -67,10 +67,6 @@ public class ControlProperty {
 		valueObserver = new ControlPropertyValueObserver(this, value);
 		defaultValue = null;
 		beforeMacroValue = value;
-
-		propertyTypeObserver.updateValue(propertyLookup.getPropertyType());
-		initialPropertyType = propertyTypeObserver.getValue();
-
 	}
 
 	protected ControlProperty(@NotNull ControlPropertySpecification specification, @NotNull MacroRegistry registry) {
@@ -240,28 +236,30 @@ public class ControlProperty {
 		return propertyLookup.getPropertyName();
 	}
 
-	/** Return true if the given type is equal to this instance's property type, false otherwise. (This is effectively doing the same thing as getPropertyType() == PropertyType.something) */
-	public boolean isPropertyType(PropertyType type) {
+	/**
+	 Return true if the given type is equal to this instance's property type, false otherwise.
+	 (This is effectively doing the same thing as getPropertyType() == PropertyType.something)
+
+	 @return true if equal, false if not equal or {@link #getPropertyType()} == null
+	 */
+	public boolean isPropertyType(@NotNull PropertyType type) {
 		return getPropertyType() == type;
 	}
 
-	@NotNull
+	/**
+	 Get the current {@link PropertyType}.
+
+	 @return the current {@link PropertyType}, or null if <code>{@link #getValue()}==null</code>
+	 */
+	@Nullable
 	public PropertyType getPropertyType() {
-		return propertyTypeObserver.getValue();
+		return getValue() != null ? getValue().getPropertyType() : null;
 	}
 
+	/** @return {@link ControlPropertyLookupConstant#getPropertyType()} */
 	@NotNull
 	public PropertyType getInitialPropertyType() {
-		return initialPropertyType;
-	}
-
-	public void setPropertyType(@NotNull PropertyType newType) {
-		propertyTypeObserver.updateValue(newType);
-	}
-
-	@NotNull
-	public ReadOnlyValueObserver<PropertyType> getReadOnlyPropertyTypeObserver() {
-		return propertyTypeObserver.getReadOnlyValueObserver();
+		return propertyLookup.getPropertyType();
 	}
 
 	@Nullable
@@ -389,7 +387,6 @@ public class ControlProperty {
 		}
 	}
 
-	/** Return true if instanceof {@link ControlProperty} and {@link #getPropertyLookup()} is reference-equivalent. */
 	@Override
 	public boolean equals(Object o) {
 		if (o == this) {
@@ -399,7 +396,57 @@ public class ControlProperty {
 			return false;
 		}
 		ControlProperty other = (ControlProperty) o;
-		return this.propertyLookup == other.propertyLookup;
+
+		if (getPropertyLookup() != other.getPropertyLookup()) {
+			return false;
+		}
+
+		boolean eq;
+		if (getValue() == null) {
+			eq = other.getValue() == null;
+		} else {
+			eq = getValue().equals(other.getValue());
+		}
+
+		if (!eq) {
+			return false;
+		}
+
+		if (getMacro() == null) {
+			eq = other.getMacro() == null;
+		} else {
+			eq = getMacro().equals(other.getMacro());
+		}
+
+		if (!eq) {
+			return false;
+		}
+
+		if (getDefaultValue() == null) {
+			eq = other.getDefaultValue() == null;
+		} else {
+			eq = getDefaultValue().equals(other.getDefaultValue());
+		}
+
+		if (!eq) {
+			return false;
+		}
+
+		if (isUsingCustomData()) {
+			eq = other.isUsingCustomData();
+		} else {
+			eq = !other.isUsingCustomData();
+		}
+
+		if (!eq) {
+			return false;
+		}
+
+		if (getCustomData() == null) {
+			return other.getCustomData() == null;
+		} else {
+			return getCustomData().equals(other.getCustomData());
+		}
 	}
 
 	@Override
@@ -455,8 +502,9 @@ public class ControlProperty {
 	}
 
 	/**
-	 Will set this property equal to the given one only if {@link #getPropertyLookup()} matches with this and <code>property</code>. Note: {@link ControlProperty#getValue()} will not be deep
-	 copied. If the desire is to deep copy the given property, use {@link ControlProperty#deepCopy()}.
+	 Will set this property equal to the given one only if {@link #getPropertyLookup()} matches with this and <code>property</code>.
+	 This method is used in conjunction with {@link #inherit(ControlProperty)}.
+	 Note: {@link ControlProperty#getValue()} will not be deep copied. If the desire is to deep copy the given property, use {@link ControlProperty#deepCopy()}.
 
 	 @param property property to set to
 	 */
@@ -539,6 +587,11 @@ public class ControlProperty {
 		return inherited;
 	}
 
+	/**
+	 A custom {@link ValueObserver} instance for handling {@link ControlProperty#setValue(SerializableValue)} and
+	 {@link ControlProperty#setValue(SerializableValue, ControlPropertyValueUpdate.ValueOrigin)}.
+	 When the value is updated, {@link ControlProperty#getControlPropertyUpdateGroup()} will be properly notified.
+	 */
 	private static class ControlPropertyValueObserver extends ValueObserver<SerializableValue> {
 
 		private final ControlProperty property;
@@ -549,6 +602,11 @@ public class ControlProperty {
 			this.property = property;
 		}
 
+		/**
+		 Used for updating the value with origin={@link ControlPropertyValueUpdate.ValueOrigin#OTHER}
+
+		 @param newValue new value to set to
+		 */
 		@Override
 		public void updateValue(SerializableValue newValue) {
 			SerializableValue old = this.getValue();
@@ -558,6 +616,12 @@ public class ControlProperty {
 			}
 		}
 
+		/**
+		 Used for updating the value with origin <b>not equal to</b> {@link ControlPropertyValueUpdate.ValueOrigin#OTHER}
+
+		 @param newValue new value to set to
+		 @param origin where the value was updated from
+		 */
 		public void updateValue(@Nullable SerializableValue newValue, @NotNull ControlPropertyValueUpdate.ValueOrigin origin) {
 			SerializableValue old = this.getValue();
 			disableUpdate = true;

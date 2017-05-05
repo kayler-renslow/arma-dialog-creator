@@ -5,8 +5,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
@@ -68,7 +68,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			if (newValue == null) {
 				menuButtonExtendControls.chooseItem((CustomControlClass) null);
 			} else {
-				CustomControlClassRegistry registry = Project.getCurrentProject().getCustomControlClassRegistry();
+				ProjectControlClassRegistry registry = Project.getCurrentProject().getCustomControlClassRegistry();
 				CustomControlClass customControlClass = registry.findCustomControlClassByName(newValue.getClassName());
 				menuButtonExtendControls.chooseItem(customControlClass);
 			}

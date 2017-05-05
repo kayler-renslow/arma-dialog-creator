@@ -34,7 +34,7 @@ public class Project implements SpecificationRegistry {
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
 	private final ProjectMacroRegistry macroRegistry;
 	private final ResourceRegistry resourceRegistry;
-	private final CustomControlClassRegistry controlRegistry;
+	private final ProjectControlClassRegistry controlRegistry;
 	private ProjectExportConfiguration exportConfiguration;
 
 	private ProjectDefaultValueProvider defaultValueProvider;
@@ -50,7 +50,7 @@ public class Project implements SpecificationRegistry {
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
 		resourceRegistry = new ResourceRegistry(this);
-		controlRegistry = new CustomControlClassRegistry();
+		controlRegistry = new ProjectControlClassRegistry();
 
 		projectSaveFile = info.getProjectXmlFile();
 	}
@@ -139,7 +139,7 @@ public class Project implements SpecificationRegistry {
 	}
 
 	@NotNull
-	public CustomControlClassRegistry getCustomControlClassRegistry() {
+	public ProjectControlClassRegistry getCustomControlClassRegistry() {
 		return controlRegistry;
 	}
 

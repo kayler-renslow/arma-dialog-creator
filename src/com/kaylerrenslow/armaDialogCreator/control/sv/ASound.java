@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -93,6 +94,7 @@ public class ASound extends SerializableValue {
 	}
 
 	/** Get the colors as a string array formatted like so: {soundName, db, pitch} */
+	@NotNull
 	public String[] getAsStringArray() {
 		valuesAsArray[0] = soundName;
 		valuesAsArray[1] = db + "";
@@ -100,9 +102,16 @@ public class ASound extends SerializableValue {
 		return valuesAsArray;
 	}
 
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return new ASound(soundName, db, pitch);
+	}
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.SOUND;
 	}
 
 	@Override

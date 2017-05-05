@@ -13,19 +13,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- Created by Kayler on 10/23/2016.
+ A {@link ControlClassRegistry} implementation for {@link Project#getCustomControlClassRegistry()}
+ @author Kayler
+ @since 10/23/2016.
  */
-public class CustomControlClassRegistry implements ControlClassRegistry {
+public class ProjectControlClassRegistry implements ControlClassRegistry {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
 
-	CustomControlClassRegistry() {
+	ProjectControlClassRegistry() {
 	}
 
+	@NotNull
 	public ReadOnlyList<CustomControlClass> getControlClassList() {
 		return controlClassReadOnlyList;
 	}
 
+	@NotNull
 	public Iterator<ControlClass> customControlsIterator() {
 		return new CustomControlClassIterator(this);
 	}
@@ -75,7 +79,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry {
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {
 		private final Iterator<CustomControlClass> iterator;
 
-		public CustomControlClassIterator(CustomControlClassRegistry registry) {
+		public CustomControlClassIterator(ProjectControlClassRegistry registry) {
 			iterator = registry.getControlClassList().iterator();
 		}
 

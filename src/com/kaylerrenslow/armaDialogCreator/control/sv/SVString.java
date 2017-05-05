@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -36,6 +37,12 @@ public final class SVString extends SerializableValue {
 	@Override
 	public SerializableValue deepCopy() {
 		return new SVString(valuesAsArray[0]);
+	}
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.STRING;
 	}
 
 	@Override

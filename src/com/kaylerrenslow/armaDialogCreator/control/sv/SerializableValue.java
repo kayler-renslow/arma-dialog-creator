@@ -65,6 +65,10 @@ public abstract class SerializableValue {
 		return type.getConverter().convert(dataContext, values);
 	}
 
+	//
+	//end static
+	//
+
 	protected final String[] valuesAsArray;
 
 	/**
@@ -80,6 +84,7 @@ public abstract class SerializableValue {
 	}
 
 	/** Return the value as a String array */
+	@NotNull
 	public String[] getAsStringArray() {
 		return valuesAsArray;
 	}
@@ -90,8 +95,16 @@ public abstract class SerializableValue {
 	}
 
 	/** Return the instance as a deep copy */
+	@NotNull
 	public abstract SerializableValue deepCopy();
 
+	/**
+	 Gets the constant {@link PropertyType} for this value
+
+	 @return the {@link PropertyType} of this value
+	 */
+	@NotNull
+	public abstract PropertyType getPropertyType();
 
 	@Override
 	public boolean equals(Object o) {

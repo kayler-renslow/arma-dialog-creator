@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -39,12 +40,19 @@ public class SVImage extends SerializableValue {
 	public String toString() {
 		return valuesAsArray[0];
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return new SVImage(imageRelativePath);
 	}
-		
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.IMAGE;
+	}
+
 	@Override
 	public boolean equals(Object o){
 		if(o == this){

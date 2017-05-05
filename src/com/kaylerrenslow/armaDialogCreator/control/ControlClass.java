@@ -189,10 +189,11 @@ public class ControlClass {
 	}
 
 	/**
-	 Extend the given {@link ControlClass}.
+	 Extend the given {@link ControlClass}, or clear the extend class with null.
 
 	 @param controlClass class to extend
 	 @throws IllegalArgumentException if <code>controlClass</code>==this
+	 @see ControlProperty#inherit(ControlProperty)
 	 */
 	public final void extendControlClass(@Nullable ControlClass controlClass) {
 		if (controlClass == this) {
@@ -207,15 +208,12 @@ public class ControlClass {
 				if (propertyIsOverridden(property)) {
 					continue;
 				}
-				try {
-					ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
-					if (propertyIsDefined(inherit)) {
-						property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
-						property.inherit(inherit);
-						property.getControlPropertyUpdateGroup().addListener(this.controlPropertyListener);
-					}
-				} catch (IllegalArgumentException ignore) {
 
+				ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
+				if (propertyIsDefined(inherit)) {
+					property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
+					property.inherit(inherit);
+					property.getControlPropertyUpdateGroup().addListener(this.controlPropertyListener);
 				}
 			}
 			controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);

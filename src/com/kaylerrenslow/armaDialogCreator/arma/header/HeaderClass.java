@@ -30,10 +30,6 @@ public interface HeaderClass extends HeaderItem {
 		return getClassName().equalsIgnoreCase(className);
 	}
 
-	default boolean hasExtendClass() {
-		return getExtendClassName() != null;
-	}
-
 	@Nullable String getExtendClassName();
 
 	/**

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -40,12 +41,19 @@ public class SVDouble extends SVNumber {
 	public double getDouble() {
 		return d;
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return new SVDouble(d);
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.FLOAT;
+	}
+
 	@Override
 	public String toString() {
 		return valuesAsArray[0];

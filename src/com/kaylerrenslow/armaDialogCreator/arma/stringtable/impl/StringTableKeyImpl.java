@@ -6,7 +6,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKeyPath;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.MacroType;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -32,7 +31,7 @@ public class StringTableKeyImpl extends Macro.BasicMacro<SVString> implements St
 	}
 
 	public StringTableKeyImpl(@NotNull String id, @NotNull StringTableKeyPath path, @NotNull ObservableMap<Language, String> values) {
-		super(id, new SVString(), PropertyType.STRING);
+		super(id, new SVString());
 		this.path = path;
 		setMacroType(MacroType.STRING_TABLE);
 		this.values = values;

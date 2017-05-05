@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionEvaluationException;
@@ -60,12 +61,19 @@ public class Expression extends SerializableValue {
 		Value.NumVal value = (Value.NumVal) getValue();
 		return value.v();
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return new Expression(valuesAsArray[0], env);
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.FLOAT;
+	}
+
 	@Override
 	public String toString() {
 		return valuesAsArray[0];

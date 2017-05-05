@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -48,7 +49,13 @@ public final class SVStringArray extends SerializableValue {
 		System.arraycopy(valuesAsArray, 0, copy, 0, copy.length);
 		return new SVStringArray(copy);
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.ARRAY;
+	}
+
 	@Override
 	public boolean equals(Object o){
 		if(o == this){

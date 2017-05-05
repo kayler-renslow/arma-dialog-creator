@@ -5,8 +5,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
@@ -71,7 +71,7 @@ public class ProjectSaveXmlWriter {
 		stm.close();
 	}
 
-	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull CustomControlClassRegistry registry) throws IOException {
+	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull ProjectControlClassRegistry registry) throws IOException {
 		String customControlClasses = "custom-controls";
 		stm.writeBeginTag(customControlClasses);
 		final String customControl = "custom-control";

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import javafx.scene.paint.Color;
@@ -153,8 +154,13 @@ public class AHexColor extends AColor {
 	public String toString() {
 		return hex;
 	}
-	
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.HEX_COLOR_STRING;
+	}
+
 	@Override
 	public boolean equals(Object o){
 		if(o == this){

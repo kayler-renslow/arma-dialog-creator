@@ -9,7 +9,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -41,7 +43,6 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private final StackPane stackPanePropertyInput = new StackPane();
 	private final MenuButton menuButtonOptions = new MenuButton();
-	private final PropertyTypeListener propertyTypeListener;
 	private MenuItem miInheritanceButton;
 	private ControlPropertyValueEditor propertyValueEditor;
 	private ControlPropertyUpdateListener controlPropertyUpdateListener;
@@ -54,10 +55,7 @@ class ControlPropertyEditorContainer extends HBox {
 		this.controlClass = controlClass;
 		this.controlProperty = property;
 
-		setCurrentPropertyValueEditor(controlProperty.getPropertyType(), false);
-
-		this.propertyTypeListener = new PropertyTypeListener(controlProperty, this);
-		controlProperty.getReadOnlyPropertyTypeObserver().addListener(propertyTypeListener);
+		updatePropertyValueEditor();
 
 		setAlignment(Pos.TOP_LEFT);
 		init();
@@ -135,7 +133,7 @@ class ControlPropertyEditorContainer extends HBox {
 					miResetToInitial.setDisable(disable);
 					miMacro.setDisable(disable);
 					miClearValue.setDisable(disable);
-					miConvert.setDisable(disable);
+					miConvert.setDisable(disable || update.getControlProperty().getValue() == null);
 
 					if (update.wasInherited()) {
 						miInheritanceButton.setText(bundle.getString("ControlPropertiesEditorPane.override"));
@@ -180,7 +178,16 @@ class ControlPropertyEditorContainer extends HBox {
 				if (type == null) {
 					return;
 				}
-				controlProperty.setPropertyType(type);
+				if (controlProperty.getValue() == null) {
+					throw new IllegalStateException("shouldn't be able to convert a null value");
+				}
+				try {
+					propertyValueEditor.clearListeners();
+					controlProperty.setValue(SerializableValue.convert(ApplicationData.getInstance(), controlProperty.getValue(), type));
+					updatePropertyValueEditor();
+				} catch (SerializableValueConversionException e) {
+					ExceptionHandler.error(e);
+				}
 			}
 		});
 		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
@@ -285,14 +292,12 @@ class ControlPropertyEditorContainer extends HBox {
 
 	public void unlink() {
 		propertyValueEditor.clearListeners();
-		propertyTypeListener.unlink();
 		controlClass.getControlClassUpdateGroup().removeListener(this.controlClassUpdateListener);
 		getControlProperty().getControlPropertyUpdateGroup().removeListener(this.controlPropertyUpdateListener);
 	}
 
 	public void link() {
 		propertyValueEditor.initListeners();
-		propertyTypeListener.link();
 		propertyValueEditor.refresh();
 		controlClass.getControlClassUpdateGroup().addListener(this.controlClassUpdateListener);
 		getControlProperty().getControlPropertyUpdateGroup().addListener(this.controlPropertyUpdateListener);
@@ -304,21 +309,9 @@ class ControlPropertyEditorContainer extends HBox {
 		return propertyValueEditor;
 	}
 
-	protected void setCurrentPropertyValueEditor(@NotNull PropertyType propertyType, boolean convertType) {
-		if (propertyValueEditor != null) {
-			propertyValueEditor.clearListeners();
-			stackPanePropertyInput.getChildren().clear();
-		}
-
-		if (controlProperty.getValue() != null && convertType) {
-			try {
-				controlProperty.setValue(SerializableValue.convert(ApplicationData.getInstance(), controlProperty.getValue(), propertyType));
-			} catch (SerializableValueConversionException e) {
-				ExceptionHandler.error(e);
-			}
-		}
-
-		propertyValueEditor = constructNewPropertyValueEditor(propertyType);
+	protected void updatePropertyValueEditor() {
+		stackPanePropertyInput.getChildren().clear();
+		propertyValueEditor = constructNewPropertyValueEditor();
 		if (propertyValueEditor.displayFullWidth()) {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
@@ -327,11 +320,13 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	/** Get node that holds the controls to input data. */
-	private ControlPropertyValueEditor constructNewPropertyValueEditor(@NotNull PropertyType propertyType) {
+	@NotNull
+	private ControlPropertyValueEditor constructNewPropertyValueEditor() {
 		ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
 		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
 			return new ControlPropertyInputOption(controlClass, controlProperty);
 		}
+		PropertyType propertyType = controlProperty.getPropertyType() == null ? controlProperty.getInitialPropertyType() : controlProperty.getPropertyType();
 		switch (propertyType) {
 			case INT:
 				return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
@@ -388,37 +383,12 @@ class ControlPropertyEditorContainer extends HBox {
 
 	 @param n Node to place tooltip on
 	 @param lookup constant to create tooltip of
-	 @return tooltip placed inside n
 	 */
-	static Tooltip placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
+	static void placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
 		Tooltip tip = getTooltip(lookup);
 		Tooltip.install(n, tip);
-		return tip;
 	}
 
-	private static class PropertyTypeListener implements ReadOnlyValueListener<PropertyType> {
-
-		private final ControlProperty property;
-		private final ControlPropertyEditorContainer editorContainer;
-
-		public PropertyTypeListener(@NotNull ControlProperty property, @NotNull ControlPropertyEditorContainer editorContainer) {
-			this.property = property;
-			this.editorContainer = editorContainer;
-		}
-
-		public void link() {
-			property.getReadOnlyPropertyTypeObserver().addListener(this);
-		}
-
-		public void unlink() {
-			property.getReadOnlyPropertyTypeObserver().removeListener(this);
-		}
-
-		@Override
-		public void valueUpdated(@NotNull ReadOnlyValueObserver<PropertyType> observer, @Nullable PropertyType oldValue, @Nullable PropertyType newValue) {
-			editorContainer.setCurrentPropertyValueEditor(newValue, true);
-		}
-	}
 
 	private static class ChooseNewPropertyTypeDialog extends StageDialog<VBox> {
 

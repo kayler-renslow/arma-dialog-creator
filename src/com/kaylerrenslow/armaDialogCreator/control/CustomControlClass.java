@@ -8,9 +8,10 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  A custom control class has two things: a specification and a implementation. The specification, provided by a {@link ControlClassSpecification} instance, is a way to construct the implementation,
- which is a {@link ControlClass} instance. There will only be one {@link ControlClass} instance per {@link CustomControlClass} instance and the two will be synchronized (when an update happens via
- {@link ControlClass#getPropertyUpdateGroup()}, the {@link ControlClassSpecification} will update as well). This synchronization will only happen between this class instance and {@link #getControlClass()}.
- However, editing the {@link ControlClassSpecification} will not change the {@link ControlClass} implementation.
+ which is a {@link ControlClass} instance. There will only be one {@link ControlClass} instance per {@link CustomControlClass} instance and the {@link ControlClass} changes will be tracked
+ (when an update happens via {@link ControlClass#getPropertyUpdateGroup()}, the {@link ControlClassSpecification} will update as well).
+ This update tracking will only happen between this class instance and {@link #getControlClass()}.
+ Editing the {@link ControlClassSpecification} will not change the {@link ControlClass} implementation.
 
  @author Kayler
  @since 11/13/2016 */

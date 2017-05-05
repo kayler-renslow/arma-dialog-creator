@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -30,12 +31,19 @@ public final class SVBoolean extends SerializableValue {
 	public boolean isTrue() {
 		return b;
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return get(b);
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.BOOLEAN;
+	}
+
 	@Override
 	public String toString() {
 		return b ? S_TRUE : S_FALSE;

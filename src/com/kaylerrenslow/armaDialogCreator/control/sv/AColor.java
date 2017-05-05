@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import javafx.scene.paint.Color;
@@ -168,6 +169,7 @@ public class AColor extends SerializableValue {
 	}
 	
 	/** Get the colors as a string array formatted like so: {red, green, blue, alpha} */
+	@NotNull
 	public String[] getAsStringArray() {
 		valuesAsArray[0] = format.format(color[0]);
 		valuesAsArray[1] = format.format(color[1]);
@@ -175,14 +177,21 @@ public class AColor extends SerializableValue {
 		valuesAsArray[3] = format.format(color[3]);
 		return valuesAsArray;
 	}
-	
+
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		double[] copy = new double[color.length];
 		System.arraycopy(color, 0, copy, 0, copy.length);
 		return new AColor(copy);
 	}
-	
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.COLOR;
+	}
+
 	/** Serializes the color array into a String. Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}" */
 	public String toString() {
 		return "{" + format.format(color[0]) + "," + format.format(color[1]) + "," + format.format(color[2]) + "," + format.format(color[3]) + "}";

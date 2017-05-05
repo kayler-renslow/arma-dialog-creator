@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -65,12 +66,18 @@ public class ControlStyleGroup extends SerializableValue {
 		return new ControlStyleGroup(copy);
 	}
 
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.CONTROL_STYLE;
+	}
+
 	public static String toString(@NotNull ControlStyle[] values) {
-		String s = "";
+		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < values.length; i++) {
-			s += values[i].styleValue + (i != values.length - 1 ? DEFAULT_DELIMITER : "");
+			s.append(values[i].styleValue).append(i != values.length - 1 ? DEFAULT_DELIMITER : "");
 		}
-		return s;
+		return s.toString();
 	}
 
 	@Override

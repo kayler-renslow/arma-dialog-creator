@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
@@ -30,9 +31,16 @@ public class SVInteger extends SVNumber {
 		return i;
 	}
 
+	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
 		return new SVInteger(i);
+	}
+
+	@NotNull
+	@Override
+	public PropertyType getPropertyType() {
+		return PropertyType.INT;
 	}
 
 	@Override

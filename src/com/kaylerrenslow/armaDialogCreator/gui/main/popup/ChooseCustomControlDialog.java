@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Pos;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry}.
+ This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link ProjectControlClassRegistry}.
 
  @author Kayler
  @since 11/13/2016 */
