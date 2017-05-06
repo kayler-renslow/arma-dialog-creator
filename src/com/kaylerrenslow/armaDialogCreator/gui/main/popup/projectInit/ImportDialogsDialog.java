@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
 import com.kaylerrenslow.armaDialogCreator.data.HeaderToProject;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckboxSelectionPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStep;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -20,18 +21,20 @@ import java.util.concurrent.ArrayBlockingQueue;
  @author Kayler
  @since 05/05/2017 */
 public class ImportDialogsDialog extends WizardStageDialog {
-	private final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
+	private enum Message {
+		CloseReaderThread, SelectClassesToSave, ChooseProjectToLoad
+	}
 
+	private final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 	/** Middleman queue for sending messages from converter to JavaFX */
 	private final ArrayBlockingQueue<KeyValue<Message, Object>> messageQFromTask = new ArrayBlockingQueue<>(1);
 	/** Queue for sending messages from JavaFX to converter */
 	private final ArrayBlockingQueue<KeyValue<Message, Object>> messageQToTask = new ArrayBlockingQueue<>(1);
+
 	/** The converter task. */
 	private final ConvertTask convertTask;
 
-	private enum Message {
-		CloseReaderThread, SelectClassesToSave
-	}
+	private File projectFileToOpen;
 
 	public ImportDialogsDialog(@NotNull File initialWorkspaceDir, @NotNull File descExt) {
 		super(ArmaDialogCreator.getPrimaryStage(), null, true);
@@ -57,11 +60,20 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		//todo
 	}
 
-	private class ConvertTask extends Task<ADCProjectInitWindow.ProjectInit> implements HeaderToProject.ConversionCallback {
+	private void chooseProjectToLoadEvent() {
+		//projectFileToOpen =
+
+	}
+
+	@NotNull
+	public File getProjectFileToOpen() {
+		return projectFileToOpen;
+	}
+
+	private class ConvertTask extends Task<Boolean> implements HeaderToProject.ConversionCallback {
 
 		private File workspaceDir;
 		private File descExt;
-		private ADCProjectInitWindow.ProjectInit projectInit;
 
 		public ConvertTask(@NotNull File workspaceDir, @NotNull File descExt) {
 			this.workspaceDir = workspaceDir;
@@ -69,11 +81,12 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		}
 
 		@Override
-		protected ADCProjectInitWindow.ProjectInit call() throws Exception {
+		protected Boolean call() throws Exception {
 			HeaderToProject.convertAndSaveToWorkspace(workspaceDir, descExt, this);
-			//todo send JavaFX message asking what project to load
-			//project info parsing should be done here
-			return projectInit;
+
+			messageQFromTask.add(new KeyValue<>(Message.ChooseProjectToLoad, ""));
+
+			return true;
 		}
 
 		@NotNull
@@ -104,6 +117,10 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	private class SelectDialogsToImportStep extends WizardStep<VBox> {
 		public SelectDialogsToImportStep() {
 			super(new VBox(10));
+			CheckboxSelectionPane<String> pane = new CheckboxSelectionPane<>();
+			pane.addItem("Hello World");
+			pane.addItem("Hello World Again");
+			myRootElement.getChildren().add(pane);
 		}
 
 		@Override
@@ -112,6 +129,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		}
 	}
 
+	/** Takes messages sent from task thread and then invokes the relevant method on the JavaFX thread to handle the message body */
 	private class MessageReaderThread extends Thread {
 
 		@Override
@@ -128,6 +146,15 @@ public class ImportDialogsDialog extends WizardStageDialog {
 								@Override
 								public void run() {
 									selectDialogsEvent((List<String>) msg.getValue());
+								}
+							};
+							break;
+						}
+						case ChooseProjectToLoad: {
+							r = new Runnable() {
+								@Override
+								public void run() {
+									chooseProjectToLoadEvent();
 								}
 							};
 							break;

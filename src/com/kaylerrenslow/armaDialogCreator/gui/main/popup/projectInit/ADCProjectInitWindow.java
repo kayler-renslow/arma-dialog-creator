@@ -418,6 +418,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public class ImportTab extends ProjectInitTab {
 
 			private final Tab tabImport = new Tab(bundle.getString("tab_import"));
+			private File projectFileToLoad;
+			private ProjectInit projectInit;
 
 			public ImportTab() {
 				VBox root = getTabVbox(20);
@@ -430,15 +432,27 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					File descExt = new File("");
 					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow.getWorkspaceDirectory(), descExt);
 					d.show();
+					if (d.wasCancelled()) {
+						return;
+					}
+					projectFileToLoad = d.getProjectFileToOpen();
+					try {
+						projectInit = new ProjectInit.OpenProject(ProjectXmlLoader.previewParseProjectXmlFile(projectFileToLoad));
+						projectConfigSet.updateValue(true);
+					} catch (XmlParseException e) {
+						new CouldNotLoadProjectDialog(e).show();
+					}
 				});
 				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
 
 				tabImport.setContent(root);
+
+				projectConfigSet.updateValue(false);
 			}
 
 			@Override
 			public ProjectInit getResult() {
-				return null;
+				return projectInit;
 			}
 
 

@@ -1,8 +1,8 @@
 **Added:**
-* 
+* checkbox selection pane
 
 **Changed:**
-* made some progress on import/convert adc dialog
+* more progress on import dialogs
 
 **Fixed:**
 * 
