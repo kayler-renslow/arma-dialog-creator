@@ -27,6 +27,8 @@ public class HeaderParserLargeTest {
 				),
 				assign("wreckLimit", "5"),
 				//#include "largeTestRoot_configs.h"
+				//#include "dir/dirF.h"
+				arr_assign("words", array(value(w("bird")), value(w("buh buh bird"))), false),
 				hClass("Configuration", null,
 						hClass("Reputation", null,
 								assign("max", "500"),

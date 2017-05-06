@@ -429,7 +429,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 				Button btnLocate = new Button(bundle.getString("locate_description_ext"));
 				btnLocate.setOnAction(event -> {
-					File descExt = new File("");
+					FileChooser fc = new FileChooser();
+					fc.getExtensionFilters().add(ADCStatic.DESCIRPTION_EXT);
+					File descExt = fc.showOpenDialog(projectInitWindow.myStage);
+					if (descExt == null) {
+						return;
+					}
 					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow.getWorkspaceDirectory(), descExt);
 					d.show();
 					if (d.wasCancelled()) {

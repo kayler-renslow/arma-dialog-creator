@@ -81,9 +81,11 @@ public class HeaderToProject {
 		callback.message(bundle.getString("Status.parsing"));
 		try {
 			headerFile = HeaderParser.parse(descExt);
+			callback.finishedParse();
 		} catch (HeaderParseException e) {
 			throw new HeaderConversionException(e.getMessage());
 		}
+
 
 		callback.message(bundle.getString("Status.locating_dialogs"));
 
@@ -114,7 +116,11 @@ public class HeaderToProject {
 				callback.message(String.format(bundle.getString("Status.converting_dialog_f"), className));
 
 				//begin conversion of dialog and save to workspace
-				saveToWorkspace(hc);
+				try {
+					saveToWorkspace(hc);
+				} catch (HeaderConversionException e) {
+					callback.conversionFailed(className, e);
+				}
 			}
 		}
 
@@ -391,5 +397,9 @@ public class HeaderToProject {
 		void message(@NotNull String msg);
 
 		void progressUpdate(int stepsCompleted, int totalSteps);
+
+		void finishedParse();
+
+		void conversionFailed(@NotNull String dialogClassName, @NotNull HeaderConversionException e);
 	}
 }

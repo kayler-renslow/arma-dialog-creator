@@ -118,10 +118,6 @@ class Preprocessor {
 
 	protected void doProcess(@NotNull File processFile, @NotNull StringBuilderReference fileContent) throws Exception {
 		Scanner scan = new Scanner(processFile);
-		doProcess(scan, fileContent);
-	}
-
-	protected void doProcess(@NotNull Scanner scan, @NotNull StringBuilderReference fileContent) throws Exception {
 		String line;
 
 		int ifCount = 0; //>0 if current line is inside (#ifdef or #ifndef) and before #endif
@@ -204,7 +200,7 @@ class Preprocessor {
 
 					String filePath = macroContent.substring(1, macroContent.length() - 1);
 
-					File f = FilePath.findFileByPath(filePath, workingDirectory);
+					File f = FilePath.findFileByPath(filePath, processFile.getParentFile());
 					if (f == null) {
 						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 					}
@@ -499,7 +495,12 @@ class Preprocessor {
 
 
 	protected void error(String string) throws HeaderParseException {
-		throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"), currentState().lineNumber, string));
+		throw new HeaderParseException(String.format(
+				bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"),
+				currentState().lineNumber,
+				currentState().processingFile.getAbsolutePath(),
+				string
+		));
 	}
 
 

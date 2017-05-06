@@ -13,7 +13,7 @@ wreckLimit = 5;
 class RscTitles;
 
 #include "largeTestRoot_functions.h"
-
+#include "dir/dirF.h"
 
 class CfgSounds
 {
