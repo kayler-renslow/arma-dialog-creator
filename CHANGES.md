@@ -2,11 +2,11 @@
 * 
 
 **Changed:**
-* 
+* HeaderToProject correctly creates the project
+* updated some error reporting for project xml loader
 
 **Fixed:**
-* loading loading projects is broken
-    * problem was broken controlClass.findProperty(). Wasn't searching through required properties 
+*  
 
 **Notes:**
 * 

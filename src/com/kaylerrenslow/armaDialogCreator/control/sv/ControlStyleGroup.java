@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -20,17 +21,25 @@ public class ControlStyleGroup extends SerializableValue {
 		@Override
 		public ControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
 			String[] split = values[0].split("\\+");
-			ControlStyle[] styles = new ControlStyle[split.length];
-			int styleInd = 0;
+			ArrayList<ControlStyle> styles = new ArrayList<>(split.length);
 			for (String s : split) {
+				int num;
 				try {
-					int id = Integer.parseInt(s);
-					styles[styleInd++] = ControlStyle.findById(id);
+					num = Integer.parseInt(s);
+				} catch (IllegalArgumentException ignore) { //will catch number format exception
+					continue;
+				}
+				try {
+					styles.add(ControlStyle.findById(num));
 				} catch (IllegalArgumentException e) { //will catch number format exception
-					return null;
+					try {
+						styles.add(ControlStyle.findByValue(num));
+					} catch (IllegalArgumentException ignore) {
+
+					}
 				}
 			}
-			return new ControlStyleGroup(styles);
+			return new ControlStyleGroup(styles.toArray(new ControlStyle[styles.size()]));
 		}
 	};
 

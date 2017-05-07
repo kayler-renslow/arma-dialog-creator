@@ -30,7 +30,7 @@ public class DefaultValueXmlLoader extends XmlLoader {
 				if (lookup == null) {
 					return null;
 				}
-				return ProjectXmlUtil.loadValue(propertyElement, lookup.getPropertyType(), dataContext, this);
+				return ProjectXmlUtil.loadValue(constantToFetch.getPropertyName(), propertyElement, lookup.getPropertyType(), dataContext, this);
 			}
 		}
 		return null;

@@ -12,7 +12,7 @@ public class Workspace {
 	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/Arma Dialog Creator");
 
 	private final File workspaceDirectory;
-	private final GlobalResourceRegistry globalResourceRegistry;
+	private final WorkspaceResourceRegistry globalResourceRegistry;
 
 	protected Workspace(@NotNull File workspaceDirectory) {
 		if (!workspaceDirectory.isDirectory()) {
@@ -22,7 +22,7 @@ public class Workspace {
 			throw new IllegalArgumentException("workspaceDirectory doesn't exist");
 		}
 		this.workspaceDirectory = workspaceDirectory;
-		globalResourceRegistry = new GlobalResourceRegistry(this);
+		globalResourceRegistry = new WorkspaceResourceRegistry(this);
 	}
 
 	@NotNull
@@ -51,7 +51,7 @@ public class Workspace {
 	}
 
 	@NotNull
-	public GlobalResourceRegistry getGlobalResourceRegistry() {
+	public WorkspaceResourceRegistry getGlobalResourceRegistry() {
 		return globalResourceRegistry;
 	}
 }

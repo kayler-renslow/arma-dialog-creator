@@ -221,6 +221,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 	private class SelectDialogsToImportStep extends WizardStep<VBox> implements MyWizardStep {
 		private final CheckboxSelectionPane<String> pane = new CheckboxSelectionPane<>();
+		private boolean done = false;
 
 		public SelectDialogsToImportStep() {
 			super(new VBox(10));
@@ -250,10 +251,14 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		}
 
+
 		@Override
-		protected void stepLeft() {
-			if (getPresentCount() == 1) {
-				messageQToTask.add(pane.getSelected());
+		protected void stepLeft(boolean movingForward) {
+			if (movingForward) {
+				if (!done) {
+					messageQToTask.add(pane.getSelected());
+				}
+				done = true;
 			}
 		}
 

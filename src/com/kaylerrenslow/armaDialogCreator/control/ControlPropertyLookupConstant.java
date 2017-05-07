@@ -68,4 +68,9 @@ public interface ControlPropertyLookupConstant {
 			return 1;
 		}
 	};
+
+	@NotNull
+	default String debugToString() {
+		return getPropertyName() + "[id=" + getPropertyId() + "]";
+	}
 }

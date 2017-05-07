@@ -82,7 +82,7 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 			beepFocus();
 			return false;
 		}
-		getCurrentStep().stepLeft();
+		getCurrentStep().stepLeft(true);
 		wizardStepInd++;
 		if (wizardStepInd >= wizardSteps.size()) {
 			wizardStepInd = wizardSteps.size() - 1;
@@ -105,7 +105,7 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 	}
 
 	protected void goBackwardStep() {
-		getCurrentStep().stepLeft();
+		getCurrentStep().stepLeft(false);
 		wizardStepInd--;
 		if (wizardStepInd <= 0) {
 			wizardStepInd = 0;

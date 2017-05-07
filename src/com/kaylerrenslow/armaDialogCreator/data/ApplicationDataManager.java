@@ -127,7 +127,7 @@ public class ApplicationDataManager {
 
 	public void saveGlobalResources() {
 		try {
-			new ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter().writeAndClose();
+			new ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter().writeAndClose();
 		} catch (IOException e) {
 			e.printStackTrace(System.out);
 		}

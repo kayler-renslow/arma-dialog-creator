@@ -190,7 +190,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_property_type_f"), propertyTypeAttr)));
 					continue;
 				}
-				SerializableValue value = getValue(propertyType, macroElement);
+				SerializableValue value = getValue(macro, propertyType, macroElement);
 				if (value == null) {
 					continue;
 				}
@@ -224,7 +224,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			try {
 				int id = Integer.parseInt(lookupId);
 				DisplayPropertyLookup lookup = DisplayPropertyLookup.findById(id);
-				SerializableValue value = getValue(lookup.getPropertyType(), displayPropertyElement);
+				SerializableValue value = getValue(lookup.getPropertyName(), lookup.getPropertyType(), displayPropertyElement);
 				switch (lookup) {
 					case IDD: {
 						display.getIddProperty().setValue(value);
@@ -396,8 +396,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return control;
 	}
 
-	private SerializableValue getValue(@NotNull PropertyType propertyType, @NotNull Element controlPropertyElement) {
-		return ProjectXmlUtil.loadValue(controlPropertyElement, propertyType, dataContext, this.loader);
+	private SerializableValue getValue(@NotNull String requester, @NotNull PropertyType propertyType, @NotNull Element controlPropertyElement) {
+		return ProjectXmlUtil.loadValue(requester, controlPropertyElement, propertyType, dataContext, this.loader);
 	}
 
 
@@ -462,6 +462,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				setMyExtend.extendControlClass(match);
 			} else {
 				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
+				return;
 			}
 			for (ControlPropertyLookup inheritProperty : inheritProperties) {
 				setMyExtend.inheritProperty(inheritProperty);

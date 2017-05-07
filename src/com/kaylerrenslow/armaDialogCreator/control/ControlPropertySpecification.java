@@ -141,7 +141,7 @@ public class ControlPropertySpecification {
 	@Override
 	public String toString() {
 		return "ControlPropertySpecification{" +
-				"lookup=" + lookup +
+				"lookup=" + lookup.debugToString() +
 				", value=" + value +
 				", macroKey='" + macroKey + '\'' +
 				", customData=" + customData +

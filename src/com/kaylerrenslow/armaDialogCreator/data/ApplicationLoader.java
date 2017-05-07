@@ -14,7 +14,7 @@ public class ApplicationLoader {
 	public static final ApplicationLoader INSTANCE = new ApplicationLoader();
 
 	public enum LoadType {
-		NEW_PROJECT, LOAD, IMPORT
+		NEW_PROJECT, LOAD
 	}
 
 	private ApplicationLoader() {

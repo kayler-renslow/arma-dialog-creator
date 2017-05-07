@@ -96,7 +96,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		String err = getExceptionString(t);
 		TextArea ta = new TextArea();
 		ta.setPrefSize(700, 700);
-		ta.setText("THREAD:" + thread.getName() + "\n" + err);
+		ta.setText(err + "\nTHREAD:" + thread.getName());
 		ta.setEditable(false);
 		return ta;
 	}

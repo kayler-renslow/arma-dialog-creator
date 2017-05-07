@@ -20,7 +20,7 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 
 	/**
 	 Construct a loader for an xml file that has the root tag "external-resources".
-	 This constructed loader is used explicitly for {@link com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter}.
+	 This constructed loader is used explicitly for {@link ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter}.
 	 <br>
 	 If you wish to load resources into an existing registry, use {@link #loadRegistryFromElement(ResourceRegistry, Element)}
 

@@ -37,8 +37,12 @@ public abstract class WizardStep<V extends Node> {
 		return presentCount;
 	}
 
-	/** Invoked when the step is no longer being presented to user */
-	protected void stepLeft() {
+	/**
+	 Invoked when the step is no longer being presented to user
+
+	 @param movingForward true if the next step is ahead of this step, false if the next step is behind this step
+	 */
+	protected void stepLeft(boolean movingForward) {
 
 	}
 

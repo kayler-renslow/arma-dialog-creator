@@ -181,7 +181,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		}
 
 		private void initTask(ImageValueEditor imageValueEditor, File chosenFile, File a3Tools) {
-			File convertDest = GlobalResourceRegistry.getInstance().getResourcesFilePathForName(chosenFile.getName() + ".png");
+			File convertDest = WorkspaceResourceRegistry.getInstance().getResourcesFilePathForName(chosenFile.getName() + ".png");
 
 			if (convertDest.exists()) {
 				ImageAlreadyExistsDialog dialog = new ImageAlreadyExistsDialog(convertDest);
@@ -299,7 +299,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
 
 			ExternalResource resource = new PaaImageExternalResource(toConvert, convertDest);
-			GlobalResourceRegistry.getInstance().getExternalResourceList().add(resource);
+			WorkspaceResourceRegistry.getInstance().getExternalResourceList().add(resource);
 			Project.getCurrentProject().getResourceRegistry().getExternalResourceList().add(resource);
 
 			return new SVImage(convertDest);

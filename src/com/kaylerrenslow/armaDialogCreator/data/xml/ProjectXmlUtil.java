@@ -102,7 +102,10 @@ public class ProjectXmlUtil {
 		List<Element> missingPropertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, "undefined");
 
 		for (Element propertyElement : propertyElements) {
-			list.add(loadControlProperty(propertyElement, context, recorder));
+			ControlPropertySpecification p = loadControlProperty(propertyElement, context, recorder);
+			if (p != null) {
+				list.add(p);
+			}
 		}
 		final String lookupId = "lookup-id";
 		final String macroKey = "macro-key";
@@ -111,7 +114,7 @@ public class ProjectXmlUtil {
 			String macroId = missingPropertyElement.getAttribute(macroKey);
 			ControlPropertyLookup lookup = getLookup(idAttr, missingPropertyElement, recorder);
 			if (lookup == null) {
-				return;
+				continue;
 			}
 
 			ControlPropertySpecification newSpec = new ControlPropertySpecification(lookup);
@@ -271,7 +274,8 @@ public class ProjectXmlUtil {
 	 Loads a {@link ControlPropertySpecification} from the given xml element.
 
 	 @param controlPropertyElement xml element (should be a &lt;property&gt; tag)
-	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See {@link #loadValue(Element, PropertyType, DataContext, XmlErrorRecorder)}
+	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See
+	 {@link #loadValue(String, Element, PropertyType, DataContext, XmlErrorRecorder)}
 	 @param recorder recorder to use for reporting errors
 	 @return the instance, or null if couldn't be loaded
 	 */
@@ -283,7 +287,7 @@ public class ProjectXmlUtil {
 		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
-		SerializableValue value = loadValue(controlPropertyElement, lookup.getPropertyType(), context, recorder);
+		SerializableValue value = loadValue(lookup.getPropertyName(), controlPropertyElement, lookup.getPropertyType(), context, recorder);
 		if (value == null) {
 			return null;
 		}
@@ -311,13 +315,15 @@ public class ProjectXmlUtil {
 	 &lt;/parentElement&gt;
 	 </code>
 
+	 @param requester the name of the thing that is requesting the value creation
 	 @param parentElement element that is the parent of the value tags
 	 @param propertyType type that will be used to determine the type of {@link ValueConverter}
 	 @param dataContext context to use for when converting text values to Java objects. See {@link ValueConverter#convert(DataContext, String...)}
 	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in errors).
 	 */
 	@Nullable
-	public static SerializableValue loadValue(@NotNull Element parentElement, @NotNull PropertyType propertyType, @Nullable DataContext dataContext, @NotNull XmlErrorRecorder recorder) {
+	public static SerializableValue loadValue(@NotNull String requester, @NotNull Element parentElement, @NotNull PropertyType propertyType,
+											  @Nullable DataContext dataContext, @NotNull XmlErrorRecorder recorder) {
 		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
 		if (valueElements.size() < propertyType.getPropertyValuesSize()) {
 			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_value_creation_count_f"), parentElement.getTagName(), valueElements.size())));
@@ -333,7 +339,7 @@ public class ProjectXmlUtil {
 			value = SerializableValue.constructNew(dataContext, propertyType, values);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_values_f"), Arrays.toString(values))));
+			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.could_not_create_value_f"), requester, Arrays.toString(values))));
 			return null;
 		}
 		return value;

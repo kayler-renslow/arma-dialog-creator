@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
 import java.util.MissingResourceException;
@@ -92,7 +93,13 @@ public enum ControlStyle {
 		return styleGroup;
 	}
 
-	/** @throws IllegalArgumentException when id couldn't be matched */
+	/**
+	 Match the {@link ControlStyle} by {@link ControlStyle#styleId}
+
+	 @return the matched instance
+	 @throws IllegalArgumentException when id couldn't be matched
+	 @see #findByValue(int)
+	 */
 	public static ControlStyle findById(int id) {
 		for (ControlStyle style : values()) {
 			if (style.styleId == id) {
@@ -113,6 +120,23 @@ public enum ControlStyle {
 		} catch (MissingResourceException e) {
 		}
 		return Lang.LookupBundle().getString("ControlStyle.Doc.no_doc");
+	}
+
+	/**
+	 Match the {@link ControlStyle} by {@link ControlStyle#styleValue}
+
+	 @return the matched instance
+	 @throws IllegalArgumentException when nothing could be matched
+	 @see #findById(int)
+	 */
+	@NotNull
+	public static ControlStyle findByValue(int value) {
+		for (ControlStyle style : values()) {
+			if (style.styleValue == value) {
+				return style;
+			}
+		}
+		throw new IllegalArgumentException("value " + value + " couldn't be matched");
 	}
 
 	private static class StyleIdVerifier {

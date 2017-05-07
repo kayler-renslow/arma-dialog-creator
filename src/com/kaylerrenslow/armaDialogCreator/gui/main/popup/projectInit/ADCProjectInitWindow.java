@@ -237,7 +237,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		}
 
 		@Override
-		protected void stepLeft() {
+		protected void stepLeft(boolean movingForward) {
 			projectInitWindow.getFooter().getBtnOk().setDisable(false);
 		}
 

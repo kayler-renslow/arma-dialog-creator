@@ -7,17 +7,20 @@ import org.jetbrains.annotations.NotNull;
 import java.io.IOException;
 
 /**
+ A {@link WorkspaceResourceRegistry} is a workspace level {@link ResourceRegistry}.
+ This {@link ResourceRegistry} has the option to share resources between projects.
+
  @author Kayler
  @since 11/23/2016 */
-public class GlobalResourceRegistry extends ResourceRegistry {
+public class WorkspaceResourceRegistry extends ResourceRegistry {
 
-	protected GlobalResourceRegistry(@NotNull Workspace workspace) {
+	protected WorkspaceResourceRegistry(@NotNull Workspace workspace) {
 		super(workspace.getFileForName(ResourceRegistry.RESOURCES_FILE_NAME + "/global-resources.xml"));
 		if (!getResourcesFile().exists()) {
 			getResourcesFile().getParentFile().mkdirs();
 			try {
 				getResourcesFile().createNewFile();
-				ResourceRegistryXmlWriter.GlobalResourceRegistryXmlWriter.writeAndClose(this);
+				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(this);
 			} catch (IOException e) {
 				ExceptionHandler.error(e);
 			}
@@ -25,7 +28,7 @@ public class GlobalResourceRegistry extends ResourceRegistry {
 	}
 
 	@NotNull
-	public static GlobalResourceRegistry getInstance() {
+	public static WorkspaceResourceRegistry getInstance() {
 		return Workspace.getWorkspace().getGlobalResourceRegistry();
 	}
 

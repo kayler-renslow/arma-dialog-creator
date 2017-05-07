@@ -128,6 +128,8 @@ public class HeaderToProject {
 
 
 	private void saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
+		final String dialogClassName = displayClass.getClassName();
+
 		int progress = 0;
 		int maxProgress = 1/*create project*/
 				+ 1/*create dialog object*/
@@ -143,15 +145,19 @@ public class HeaderToProject {
 
 		//create project instance
 		{
-			File dialogDir = workspace.getFileForName(displayClass.getClassName());
+			File dialogDir = workspace.getFileForName(dialogClassName);
 			if (dialogDir.exists()) {
 				dialogDir = workspace.getFileForName(dialogDir.getName() + System.currentTimeMillis());
 				while (dialogDir.exists()) {
 					dialogDir = workspace.getFileForName(dialogDir.getName() + "_" + System.currentTimeMillis());
 				}
+				dialogDir.mkdir();
+			} else {
 				dialogDir.mkdirs();
+				dialogDir.mkdir();
 			}
-			project = new Project(dataContext, new ProjectInfo(displayClass.getClassName(), dialogDir));
+			
+			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir));
 		}
 
 		dataContext.setCurrentProject(project);
@@ -175,22 +181,22 @@ public class HeaderToProject {
 			HeaderClass controlsClass = displayClass.getNestedClasses().getByName(CONTROLS, false);
 			if (controlsClass != null) {
 				for (HeaderClass hc : controlsClass.getNestedClasses()) {
-					armaDisplay.getControls().add(getArmaControl(project, hc));
+					armaDisplay.getControls().add(getArmaControl(dialogClassName, project, hc));
 				}
 			} else {
 				HeaderAssignment controlsAssignment = displayClass.getAssignments().getByVarName(CONTROLS, false);
-				addArrayControls(project, controlsAssignment, armaDisplay.getControls(), CONTROLS);
+				addArrayControls(dialogClassName, project, controlsAssignment, armaDisplay.getControls(), CONTROLS);
 			}
 
 			//class ControlsBackground or controlsBackground[]={MyControl, ...}
 			HeaderClass bgControlsClass = displayClass.getNestedClasses().getByName(BG_CONTROLS, false);
 			if (bgControlsClass != null) {
 				for (HeaderClass hc : bgControlsClass.getNestedClasses()) {
-					armaDisplay.getBackgroundControls().add(getArmaControl(project, hc));
+					armaDisplay.getBackgroundControls().add(getArmaControl(dialogClassName, project, hc));
 				}
 			} else {
 				HeaderAssignment bgControlsAssignment = displayClass.getAssignments().getByVarName(BG_CONTROLS, false);
-				addArrayControls(project, bgControlsAssignment, armaDisplay.getBackgroundControls(), BG_CONTROLS);
+				addArrayControls(dialogClassName, project, bgControlsAssignment, armaDisplay.getBackgroundControls(), BG_CONTROLS);
 			}
 		}
 
@@ -205,10 +211,10 @@ public class HeaderToProject {
 		//write to file
 		ProjectSaveXmlWriter writer = new ProjectSaveXmlWriter(project, structureMain, structureBg);
 		try {
-			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), displayClass.getClassName()));
+			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), dialogClassName));
 			writer.write();
 		} catch (IOException e) {
-			convertError(String.format(bundle.getString("Convert.FailReason.write_file_fail_f"), displayClass.getClassName()));
+			convertError(dialogClassName, bundle.getString("Convert.FailReason.write_file_fail"));
 		}
 
 		callback.progressUpdate(++progress, maxProgress);
@@ -216,21 +222,22 @@ public class HeaderToProject {
 		//done converting and conversion of dialog/display is written to file by here.
 	}
 
-	private void addArrayControls(@NotNull Project project, @Nullable HeaderAssignment arrayOfControlsAssignment, @NotNull List<ArmaControl> controls, @NotNull String sourceName)
+	private void addArrayControls(@NotNull String ownerDialogName, @NotNull Project project, @Nullable HeaderAssignment arrayOfControlsAssignment, @NotNull List<ArmaControl> controls, @NotNull String
+			sourceName)
 			throws HeaderConversionException {
 
 		HeaderArray arrayOfControls = null;
 		if (arrayOfControlsAssignment instanceof HeaderArrayAssignment) {
 			arrayOfControls = ((HeaderArrayAssignment) arrayOfControlsAssignment).getArray();
 		} else {
-			convertError(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
+			convertError(ownerDialogName, bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
 		}
 
 		List<HeaderArrayItem> items = arrayOfControls.getItems();
 		for (HeaderArrayItem arrayItem : items) {
 			HeaderValue v = arrayItem.getValue();
 			if (v instanceof HeaderArray) {
-				convertError(String.format(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
+				convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
 				break;
 			}
 			Reference<HeaderClass> matchedClassRef = new Reference<>();
@@ -243,26 +250,26 @@ public class HeaderToProject {
 				return true;
 			}));
 			if (matchedClassRef.getValue() == null) {
-				convertError(String.format(bundle.getString("Convert.FailReason.control_class_in_array_dne_f"), className, sourceName));
+				convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.control_class_in_array_dne_f"), className, sourceName));
 			}
-			controls.add(getArmaControl(project, matchedClassRef.getValue()));
+			controls.add(getArmaControl(ownerDialogName, project, matchedClassRef.getValue()));
 		}
 	}
 
 	@NotNull
-	private ArmaControl getArmaControl(@NotNull Project project, @NotNull HeaderClass headerClass) throws HeaderConversionException {
+	private ArmaControl getArmaControl(@NotNull String ownerDialogName, @NotNull Project project, @NotNull HeaderClass headerClass) throws HeaderConversionException {
 		final String controlClassName = headerClass.getClassName();
 
 		//get control type
 		HeaderAssignment controlTypeAssign = headerFile.getAssignmentByVarName(headerClass, CONTROL_TYPE, false);
 		if (controlTypeAssign == null) {
-			convertError(String.format(bundle.getString("Convert.FailReason.control_type_missing_f"), controlClassName));
+			convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.control_type_missing_f"), controlClassName));
 		}
 		ControlType controlType = null;
 		try {
 			controlType = ControlType.findById(Integer.parseInt(controlTypeAssign.getValue().getContent()));
 		} catch (IllegalArgumentException e) {
-			convertError(String.format(bundle.getString("Convert.FailReason.control_type_nan_f"), controlClassName));
+			convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.control_type_nan_f"), controlClassName));
 		}
 
 		//create the control
@@ -291,7 +298,7 @@ public class HeaderToProject {
 			if (extendClass == null) {
 				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
 				if (extendHeaderClass == null) {
-					convertError(String.format(bundle.getString("Error.no_class_f"), headerClass.getExtendClassName()));
+					convertError(ownerDialogName, String.format(bundle.getString("Error.no_class_f"), headerClass.getExtendClassName()));
 				}
 				extendClass = createAndAppendCustomControlClass(project, extendHeaderClass);
 			}
@@ -381,8 +388,9 @@ public class HeaderToProject {
 		}
 	}
 
-	private void convertError(@NotNull String s) throws HeaderConversionException {
-		throw new HeaderConversionException(String.format(bundle.getString("Convert.fail_f"), s));
+	private void convertError(@NotNull String dialogClassName, @NotNull String s) throws HeaderConversionException {
+		s = String.format(bundle.getString("Convert.fail_f"), dialogClassName, s);
+		throw new HeaderConversionException(s);
 	}
 
 	/**

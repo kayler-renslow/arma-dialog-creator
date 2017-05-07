@@ -188,7 +188,7 @@ public final class ArmaDialogCreator extends Application {
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
 
 		try {
-			new ResourceRegistryXmlLoader(GlobalResourceRegistry.getInstance().getResourcesFile(), null).load(GlobalResourceRegistry.getInstance());
+			new ResourceRegistryXmlLoader(WorkspaceResourceRegistry.getInstance().getResourcesFile(), null).load(WorkspaceResourceRegistry.getInstance());
 		} catch (XmlParseException e) {
 			ExceptionHandler.error(e);
 		}
