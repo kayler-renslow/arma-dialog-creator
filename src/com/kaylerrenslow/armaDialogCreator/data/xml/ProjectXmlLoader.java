@@ -1,15 +1,14 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,10 +21,12 @@ import java.util.ArrayList;
 public class ProjectXmlLoader extends XmlLoader {
 
 	private final String saveVersion;
+	protected final ApplicationData applicationData;
 
 
-	protected ProjectXmlLoader(@NotNull File xmlFile, @Nullable DataContext context, Key<?>... keys) throws XmlParseException {
-		super(xmlFile, context, keys);
+	protected ProjectXmlLoader(@NotNull File xmlFile, @NotNull ApplicationData data, Key<?>... keys) throws XmlParseException {
+		super(xmlFile, data, keys);
+		this.applicationData = data;
 		saveVersion = document.getDocumentElement().getAttribute("save-version").trim();
 	}
 
@@ -33,13 +34,13 @@ public class ProjectXmlLoader extends XmlLoader {
 	 Parses the given file and returns the result with the Project instance.
 
 	 @param info project information
-	 @param context must contain keys: {@link DataKeys#ARMA_RESOLUTION}, {@link DataKeys#ENV}
+	 @param data instance to parse with
 	 @return result
 	 @throws XmlParseException when the file could not be properly parsed
 	 */
 	@NotNull
-	public static ProjectParseResult parseProjectXmlFile(@NotNull ProjectInfo info, @NotNull DataContext context) throws XmlParseException {
-		ProjectXmlLoader loader = new ProjectXmlLoader(info.getProjectXmlFile(), context, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
+	public static ProjectParseResult parseProjectXmlFile(@NotNull ProjectInfo info, @NotNull ApplicationData data) throws XmlParseException {
+		ProjectXmlLoader loader = new ProjectXmlLoader(info.getProjectXmlFile(), data, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
 		ProjectVersionLoader versionLoader = getVersionLoader(info, loader);
 		versionLoader.parseDocument();
 		return new ProjectParseResult(versionLoader.project, versionLoader.treeStructureMain, versionLoader.treeStructureBg, loader.getErrors());

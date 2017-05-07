@@ -61,7 +61,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
 			env = DataKeys.ENV.get(dataContext);
 			String projectName = document.getDocumentElement().getAttribute("name");
-			project = new Project(info);
+			project = new Project(this.loader.applicationData, info);
 			loadMacroRegistry();
 			loadCustomControlClassRegistry();
 

@@ -209,7 +209,10 @@ public class ControlClass {
 					continue;
 				}
 
-				ControlProperty inherit = controlClass.findProperty(property.getPropertyLookup());
+				ControlProperty inherit = controlClass.findPropertyNullable(property.getPropertyLookup());
+				if (inherit == null) {
+					continue;
+				}
 				if (propertyIsDefined(inherit)) {
 					property.getControlPropertyUpdateGroup().removeListener(this.controlPropertyListener);
 					property.inherit(inherit);
@@ -305,16 +308,26 @@ public class ControlClass {
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in required properties
+	 @see #findRequiredPropertyNullable(ControlPropertyLookupConstant)
 	 */
 	@NotNull
 	public final ControlProperty findRequiredProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		for (ControlProperty controlProperty : getRequiredProperties()) {
-			if (controlProperty.getPropertyLookup() == lookup) {
-				return controlProperty;
-			}
+		ControlProperty controlProperty = findRequiredPropertyNullable(lookup);
+		if (controlProperty != null) {
+			return controlProperty;
 		}
 		noPropertyMatch(lookup, "required properties");
 		return null;
+	}
+
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
+
+	 @return the ControlProperty instance, or null if couldn't be matched
+	 */
+	@Nullable
+	public ControlProperty findRequiredPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
+		return findPropertyFromList(lookup, getRequiredProperties());
 	}
 
 	/**
@@ -322,16 +335,27 @@ public class ControlClass {
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in optional properties
+	 @see #findOptionalPropertyNullable(ControlPropertyLookupConstant)
 	 */
 	@NotNull
 	public final ControlProperty findOptionalProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		for (ControlProperty controlProperty : getOptionalProperties()) {
-			if (controlProperty.getPropertyLookup() == lookup) {
-				return controlProperty;
-			}
+		ControlProperty controlProperty = findOptionalPropertyNullable(lookup);
+		if (controlProperty != null) {
+			return controlProperty;
 		}
 		noPropertyMatch(lookup, "optional properties");
 		return null;
+	}
+
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
+
+	 @return the ControlProperty instance, or null if couldn't be matched
+	 @see #findOptionalProperty(ControlPropertyLookupConstant)
+	 */
+	@Nullable
+	public ControlProperty findOptionalPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
+		return findPropertyFromList(lookup, getOptionalProperties());
 	}
 
 	/**
@@ -339,23 +363,49 @@ public class ControlClass {
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup doesn't exist in the {@link ControlClass}
+	 @see #findPropertyNullable(ControlPropertyLookupConstant)
 	 */
 	@NotNull
 	public final ControlProperty findProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		try {
-			return findRequiredProperty(lookup);
-		} catch (IllegalArgumentException ignored) {
-		}
-		try {
-			return findOptionalProperty(lookup);
-		} catch (IllegalArgumentException ignored) {
+		ControlProperty c = findOptionalPropertyNullable(lookup);
+		if (c != null) {
+			return c;
 		}
 		noPropertyMatch(lookup, "control class");
 		return null;
 	}
 
+	/**
+	 Get the control property instance for the given lookup item. The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
+
+	 @return the ControlProperty instance, or null if couldn't be found
+	 @see #findProperty(ControlPropertyLookupConstant)
+	 */
+	@Nullable
+	public final ControlProperty findPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
+		ControlProperty c = findRequiredPropertyNullable(lookup);
+		if (c != null) {
+			return c;
+		}
+		c = findOptionalPropertyNullable(lookup);
+		if (c != null) {
+			return c;
+		}
+		return null;
+	}
+
+	@Nullable
+	private ControlProperty findPropertyFromList(@NotNull ControlPropertyLookupConstant lookup, @NotNull Iterable<ControlProperty> iterable) {
+		for (ControlProperty controlProperty : iterable) {
+			if (controlProperty.getPropertyLookup() == lookup) {
+				return controlProperty;
+			}
+		}
+		return null;
+	}
+
 	private void noPropertyMatch(@NotNull ControlPropertyLookupConstant lookup, @NotNull String place) {
-		throw new IllegalArgumentException("Lookup element '" + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]" + "' wasn't in " + place + ".");
+		throw new IllegalArgumentException("Lookup element '" + lookup.getPropertyName() + "[id=" + lookup.getPropertyId() + "]" + "' wasn't in " + place + ".");
 	}
 
 	@NotNull

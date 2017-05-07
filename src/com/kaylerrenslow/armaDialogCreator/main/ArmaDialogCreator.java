@@ -196,14 +196,15 @@ public final class ArmaDialogCreator extends Application {
 		getApplicationDataManager().initializeApplicationData();
 
 		ProjectXmlLoader.ProjectParseResult result = null;
+		ApplicationData data = ApplicationData.getManagerInstance();
 		if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
 			try {
-				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), ApplicationData.getInstance());
+				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), ApplicationData.getManagerInstance());
 
-				ApplicationData.getInstance().setCurrentProject(result.getProject());
+				ApplicationData.getManagerInstance().setCurrentProject(result.getProject());
 
 			} catch (Exception e) {
-				ApplicationData.getInstance().setCurrentProject(new Project(config.getProjectInfo()));
+				ApplicationData.getManagerInstance().setCurrentProject(new Project(data, config.getProjectInfo()));
 				INSTANCE.showLater.add(new Runnable() {
 					@Override
 					public void run() {
@@ -212,7 +213,7 @@ public final class ArmaDialogCreator extends Application {
 				});
 			}
 		} else {
-			ApplicationData.getInstance().setCurrentProject(new Project(config.getProjectInfo()));
+			ApplicationData.getManagerInstance().setCurrentProject(new Project(data, config.getProjectInfo()));
 		}
 
 

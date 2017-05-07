@@ -308,4 +308,9 @@ public class StagePopup<E extends Parent> {
 	public void setResizable(boolean resizable) {
 		myStage.setResizable(resizable);
 	}
+
+	@NotNull
+	public final Stage getStage() {
+		return myStage;
+	}
 }

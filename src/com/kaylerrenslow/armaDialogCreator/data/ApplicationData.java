@@ -83,12 +83,13 @@ public class ApplicationData extends DataContext {
 		return changelog;
 	}
 
-	public void setCurrentProject(@NotNull Project currentProject) {
-		this.currentProject = currentProject;
+	/** Shortcut for {@link ApplicationDataManager#getApplicationData()} */
+	@NotNull
+	public static ApplicationData getManagerInstance() {
+		return ApplicationDataManager.getInstance().getApplicationData();
 	}
 
-	@NotNull
-	public static ApplicationData getInstance() {
-		return ApplicationDataManager.getInstance().getApplicationData();
+	public void setCurrentProject(@NotNull Project project) {
+		this.currentProject = project;
 	}
 }

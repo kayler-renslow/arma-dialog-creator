@@ -183,7 +183,7 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 				try {
 					propertyValueEditor.clearListeners();
-					controlProperty.setValue(SerializableValue.convert(ApplicationData.getInstance(), controlProperty.getValue(), type));
+					controlProperty.setValue(SerializableValue.convert(ApplicationData.getManagerInstance(), controlProperty.getValue(), type));
 					updatePropertyValueEditor();
 				} catch (SerializableValueConversionException e) {
 					ExceptionHandler.error(e);

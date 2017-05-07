@@ -20,8 +20,10 @@ import java.util.List;
 public class ProjectControlClassRegistry implements ControlClassRegistry {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
+	private Project project;
 
-	ProjectControlClassRegistry() {
+	ProjectControlClassRegistry(@NotNull Project project) {
+		this.project = project;
 	}
 
 	@NotNull
@@ -35,7 +37,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClassSpecification controlClass) {
-		controlClassList.add(new CustomControlClass(controlClass, Project.getCurrentProject()));
+		controlClassList.add(new CustomControlClass(controlClass, project));
 	}
 
 	public void addControlClass(@NotNull CustomControlClass controlClass) {
@@ -69,7 +71,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	}
 
 	public void addControlClass(@NotNull ControlClass controlClass) {
-		addControlClass(new CustomControlClass(controlClass, Project.getCurrentProject()));
+		addControlClass(new CustomControlClass(controlClass, project));
 	}
 
 	public void removeControlClass(@NotNull CustomControlClass controlClass) {

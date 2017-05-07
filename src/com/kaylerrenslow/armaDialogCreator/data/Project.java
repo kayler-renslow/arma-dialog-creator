@@ -26,6 +26,7 @@ import java.util.List;
 public class Project implements SpecificationRegistry {
 	public static final String PROJECT_SAVE_FILE_NAME = "project.xml";
 
+	private final ApplicationData applicationData;
 	private String projectName;
 	private String projectDescription;
 	private final File projectSaveDirectory;
@@ -41,7 +42,8 @@ public class Project implements SpecificationRegistry {
 	private StringTable stringTable;
 	private Language defaultLanguage;
 
-	public Project(@NotNull ProjectInfo info) {
+	public Project(ApplicationData applicationData, @NotNull ProjectInfo info) {
+		this.applicationData = applicationData;
 		this.projectName = info.getProjectName();
 		this.projectSaveDirectory = info.getProjectDirectry();
 
@@ -50,7 +52,7 @@ public class Project implements SpecificationRegistry {
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
 		resourceRegistry = new ResourceRegistry(this);
-		controlRegistry = new ProjectControlClassRegistry();
+		controlRegistry = new ProjectControlClassRegistry(this);
 
 		projectSaveFile = info.getProjectXmlFile();
 	}
@@ -183,7 +185,7 @@ public class Project implements SpecificationRegistry {
 
 	@Override
 	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
-		defaultValueProvider = new ProjectDefaultValueProvider();
+		defaultValueProvider = new ProjectDefaultValueProvider(applicationData);
 		defaultValueProvider.prefetchValues(tofetch);
 	}
 

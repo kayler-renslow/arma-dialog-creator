@@ -1,12 +1,15 @@
 **Added:**
-* more preprocessor tests
+* 
 
 **Changed:**
-* reorganized preprocessor and parser tests
+* removed reader thread from import dialog because it was unnecessary complexity
+* made some progress on the import dialog again
+    * added parsing step
+    * added convert step
+    * added converting step
 
 **Fixed:**
-* preprocessor handles __EVAL()
-* preprocessor ignores line and block comments
+* 
 
 **Notes:**
-* 
+* loading projects is broken

@@ -77,20 +77,22 @@ public class WizardStageDialog extends StageDialog<StackPane> {
 		goForwardStep();
 	}
 
-	protected void goForwardStep() {
+	protected boolean goForwardStep() {
 		if (!getCurrentStep().stepIsComplete()) {
 			beepFocus();
-			return;
+			return false;
 		}
 		getCurrentStep().stepLeft();
 		wizardStepInd++;
-		if (wizardStepInd >= wizardSteps.size() - 1) {
+		if (wizardStepInd >= wizardSteps.size()) {
 			wizardStepInd = wizardSteps.size() - 1;
 		}
 		updateButtons();
 
 		updateContent();
 		getCurrentStep().stepPresented();
+
+		return true;
 	}
 
 	private void updateButtons() {

@@ -435,7 +435,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					if (descExt == null) {
 						return;
 					}
-					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow.getWorkspaceDirectory(), descExt);
+					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow, projectInitWindow.getWorkspaceDirectory(), descExt);
 					d.show();
 					if (d.wasCancelled()) {
 						return;

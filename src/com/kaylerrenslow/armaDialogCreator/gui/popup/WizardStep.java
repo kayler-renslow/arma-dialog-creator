@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public abstract class WizardStep<V extends Node> {
 	protected final V content;
 	private boolean hasBeenShown = false;
+	private int presentCount = 0;
 
 	public WizardStep(@NotNull V content) {
 		this.content = content;
@@ -23,11 +24,17 @@ public abstract class WizardStep<V extends Node> {
 	/** Invoked when step has been presented to user. */
 	protected void stepPresented() {
 		hasBeenShown = true;
+		presentCount++;
 	}
 
-	/** @return true if the step has been presented at least 1 time. Set to true via {@link #stepPresented()} */
+	/** @return true if the step has been presented at least 1 time. Set to true via {@link #stepPresented()}. */
 	protected boolean hasBeenPresented() {
 		return hasBeenShown;
+	}
+
+	/** @return the number of times this step has been presented. The value will be incremented with each {@link #stepPresented()} call */
+	public int getPresentCount() {
+		return presentCount;
 	}
 
 	/** Invoked when the step is no longer being presented to user */
