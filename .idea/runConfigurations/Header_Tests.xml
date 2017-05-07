@@ -18,9 +18,9 @@
     </option>
     <envs />
     <patterns>
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserLargeTest" />
+      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.largeTest.HeaderParserLargeTest" />
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserSmallMacroTests" />
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.PreprocessorTest" />
+      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.preprocessorTest.PreprocessorTest" />
     </patterns>
     <method />
   </configuration>

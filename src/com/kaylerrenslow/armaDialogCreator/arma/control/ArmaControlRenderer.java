@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
@@ -221,22 +222,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	@Override
 	public void setPercentX(double percentX) {
-		defineX(new Expression(PositionCalculator.format(percentX), env));
+		defineX(new Expression(ArmaPrecision.format(percentX), env));
 	}
 
 	@Override
 	public void setPercentY(double percentY) {
-		defineY(new Expression(PositionCalculator.format(percentY), env));
+		defineY(new Expression(ArmaPrecision.format(percentY), env));
 	}
 
 	@Override
 	public void setPercentW(double percentW) {
-		defineW(new Expression(PositionCalculator.format(percentW), env));
+		defineW(new Expression(ArmaPrecision.format(percentW), env));
 	}
 
 	@Override
 	public void setPercentH(double percentH) {
-		defineH(new Expression(PositionCalculator.format(percentH), env));
+		defineH(new Expression(ArmaPrecision.format(percentH), env));
 	}
 
 	@Override

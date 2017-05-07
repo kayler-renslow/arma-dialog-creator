@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
+import static com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision.format;
 
 /**
  Converts screen positions and width/height to viewport positions and width/height, and vice versa.
@@ -44,17 +43,7 @@ public class PositionCalculator {
 	public static final String SAFE_ZONE_X_ABS = "safeZoneXAbs";
 	/** Isn't used in the calculator itself, however, this should be equal to safeZoneW for non-triple displays. */
 	public static final String SAFE_ZONE_W_ABS = "safeZoneWAbs";
-	
-	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.########");
-	
-	static {
-		DECIMAL_FORMAT.setRoundingMode(RoundingMode.CEILING);
-	}
 
-	public static String format(double d) {
-		return DECIMAL_FORMAT.format(d);
-	}
-	
 	
 	/**
 	 Convert the given screen X position into a <a href='https://community.bistudio.com/wiki/SafeZone'>"Safe Zone"</a> expression String such as "safeZoneX + safeZoneW * .5".<br>

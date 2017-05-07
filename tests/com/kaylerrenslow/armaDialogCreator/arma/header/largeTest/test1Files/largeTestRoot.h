@@ -8,11 +8,13 @@ class Header
 
 wreckLimit = 5;
 
-#include "largeTestRoot_configs.h"
+//the tab for the below include to to make sure that the tab doesn't prevent a macro match
+    #include "largeTestRoot_configs.h"
 
 class RscTitles;
 
 #include "largeTestRoot_functions.h"
+//this file in the directory is meant to test if the preprocessor correctly handles multiple directories
 #include "dir/dirF.h"
 
 class CfgSounds

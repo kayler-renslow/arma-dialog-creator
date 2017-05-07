@@ -2,7 +2,12 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
+import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
+import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
+import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
 import org.jetbrains.annotations.NotNull;
@@ -21,16 +26,15 @@ import java.util.regex.Pattern;
  @since 03/21/2017 */
 class Preprocessor {
 
-	private static final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
-
 	private static final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
 	private static final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
 	private static final Pattern macroReferencePattern = Pattern.compile(
 			String.format(
+					//using ?= so that the pattern doesn't consume tokens (consuming will prevent a future pattern match)
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
 					beforeMacro,
 					"[a-zA-Z_0-9$]+", //identifier
-					"\\([a-zA-Z_0-9$,\" '\\-+*/.]+\\)", //parameters
+					"\\([a-zA-Z_0-9$,\"() '\\-+*/.{}]+\\)", //parameters
 					afterMacro
 			)
 	);
@@ -44,11 +48,14 @@ class Preprocessor {
 			)
 	);
 
-
+	/** The file where the preprocessing began */
 	private final File processFile;
+	/** Provided via {@link HeaderParser} */
 	private final HeaderParserContext parserContext;
-	private final File workingDirectory;
+	/** Set to true if this preprocessor instance has been run via {@link #run()} */
 	private boolean preprocessed = false;
+	/** Bundle to get things from */
+	private final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
 
 	/**
 	 Place the builder's text on in this list for order preservation so that when the PreprocessCallback.fileProcessed method is invoked,
@@ -60,14 +67,26 @@ class Preprocessor {
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
+	private final Env preprocessorEnv = new PreprocessorEnv();
 
+	/**
+	 Create a new, one time use, preprocessor for header files
+
+	 @param processFile The file to fully preprocess
+	 @param parserContext context to use
+	 */
 	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
-		this.workingDirectory = processFile.getParentFile();
 	}
 
 
+	/**
+	 Run the preprocessor and get a stream to read the preprocesed output
+
+	 @return preprocessed output
+	 @throws Exception when error occurred
+	 */
 	@NotNull
 	public PreprocessorInputStream run() throws Exception {
 		if (preprocessed) {
@@ -75,12 +94,39 @@ class Preprocessor {
 		}
 		preprocessed = true;
 
+		//setup macros that are predefined
+		//https://community.bistudio.com/wiki/PreProcessor_Commands
+		{
+			// With this config parser macro you can evaluate expressions, including previously assigned internal variables.
+			// Unlike with __EXEC, __EVAL supports multiple parentheses
+			defined.put("__EVAL", new ParameterDefineValue(new String[]{"a"}, "a"));// equivalent to #define __EVAL(a) a
+
+			// This keyword gets replaced with the line number in the file where it is found.
+			// For example, if __LINE__ is found on the 10th line of a file, the word __LINE__ will be replaced with the number 10.
+			defined.put("__LINE__", new DefineMacroContent.StringDefineValue("`THIS VALUE SHOULD NOT HAVE BEEN WRITTEN`"));
+
+			//This keyword gets replaced with the CURRENT file being processed.
+			defined.put("__FILE__", new DefineMacroContent.StringDefineValue("`THIS VALUE SHOULD NOT HAVE BEEN WRITTEN`"));
+
+			// This config parser macro allows you to assign values to internal variables. These variables can be used to create complex macros with counters for example.
+			// If you are ever feeling ambitious, fully support __EXEC:
+			defined.put("__EXEC", new ParameterDefineValue(new String[]{"a"}, "a"));// equivalent to #define __EVAL(a) a
+		}
+
 		StringBuilderReference br = new StringBuilderReference(new StringBuilder(0));
 		processNow(processFile, null, br);
 
 		return new PreprocessorInputStream(textParts);
 	}
 
+	/**
+	 Setup the preprocessor for preprocessing the given file and then preprocess it with {@link #doProcess(File, StringBuilderReference)}.
+
+	 @param toProcess the file to preprocess
+	 @param parentFile if null, the processor has just been started. If not null, the file that invoked this (needs #include) will be this parameter
+	 @param builderReference where to write preprocess output
+	 @throws Exception when error occurred
+	 */
 	private void processNow(@NotNull File toProcess, @Nullable File parentFile, @NotNull StringBuilderReference builderReference) throws Exception {
 		if (processingFiles.contains(toProcess)) {
 			if (parentFile == null) {
@@ -116,7 +162,15 @@ class Preprocessor {
 		processedFiles.add(processingFiles.pop()); //don't worry about duplicate includes. That should be handled elsewhere
 	}
 
-	protected void doProcess(@NotNull File processFile, @NotNull StringBuilderReference fileContent) throws Exception {
+	/**
+	 Fully preprocess the given file. This method should be invoked after a {@link PreprocessState} is present in {@link #preprocessStack}
+
+	 @param processFile the file to preprocess
+	 @param fileContent where to write the results to. This reference will change if an #include is discovered.
+	 See {@link #processNow(File, File, StringBuilderReference)} implementation for more info.
+	 @throws Exception when error occurred
+	 */
+	private void doProcess(@NotNull File processFile, @NotNull StringBuilderReference fileContent) throws Exception {
 		Scanner scan = new Scanner(processFile);
 		String line;
 
@@ -144,8 +198,63 @@ class Preprocessor {
 					write = true;
 				}
 				if (write) {
-					preprocessLine(line, fileContent);
-					fileContent.append('\n');
+
+					//exclude preprocessing comments
+					int indexOfLineComment = line.indexOf("//");
+					int indexOfBlockComment = line.indexOf("/*");
+					final boolean hasLineComment = indexOfLineComment >= 0;
+					final boolean hasBlockComment = indexOfBlockComment >= 0;
+					if (hasLineComment && (!hasBlockComment || indexOfLineComment < indexOfBlockComment)) {
+						//if line comment comes before a block comment, let the line comment take priority
+
+						//is line comment
+						if (indexOfLineComment == 0) {
+							fileContent.append(line);
+						} else {
+							preprocessText(line.substring(0, indexOfLineComment), fileContent);
+							fileContent.append(line.substring(indexOfLineComment));
+						}
+						fileContent.append('\n');
+
+					} else if (hasBlockComment && (!hasLineComment || indexOfBlockComment < indexOfLineComment)) {
+						//if line block comment comes before a line comment, let the block comment take priority
+
+						//is block comment
+						int end = line.indexOf("*/");
+						boolean endOfCommentOnSameLine = end >= 0;
+
+						if (indexOfBlockComment > 0 && endOfCommentOnSameLine) {
+							preprocessText(line.substring(0, indexOfBlockComment), fileContent);
+						}
+
+						if (endOfCommentOnSameLine) {
+							//write the comment
+							fileContent.append(line, indexOfBlockComment, end);
+						}
+
+						//if end is < 0, end of block comment is on different line
+						while (end < 0 && scan.hasNextLine()) {
+							fileContent.append(line);
+							fileContent.append('\n');
+							line = scan.nextLine();
+							incrementLineNumber();
+							end = line.indexOf("*/");
+						}
+						if (end > 0 && !endOfCommentOnSameLine) {
+							//write the text that comes before */
+							fileContent.append(line, 0, end);
+						}
+						fileContent.append("*/");
+						//here, we have made it past the block comment
+						//now preprocess the rest of the line
+						String noCommentLine = line.substring(end + 2); //end + 2 to skip past */
+						preprocessText(noCommentLine, fileContent);
+
+						fileContent.append('\n');
+					} else {
+						preprocessText(line, fileContent);
+						fileContent.append('\n');
+					}
 				}
 				continue;
 			}
@@ -158,13 +267,18 @@ class Preprocessor {
 					macroBuilder.append(line);
 				}
 			}
-			String macroText = macroBuilder.toString();
+
+			//trim macroText to remove and potential tabs or spaces before the macro
+			//i.e.:               #include ...
+			//     ^^white space^^
+			String macroText = macroBuilder.toString().trim();
 			int spaceInd = macroText.indexOf(' ');
 			if (spaceInd < 0) {
 				spaceInd = macroText.length();
 			}
 
 			String macroName = macroText.substring(0, spaceInd);
+
 			String macroContent = null;
 			if (spaceInd + 1 < macroText.length()) { //nothing in body
 				macroContent = macroText.substring(spaceInd + 1);
@@ -319,7 +433,14 @@ class Preprocessor {
 		scan.close();
 	}
 
-	protected void preprocessLine(@NotNull String base, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
+	/**
+	 Fully preprocess the given text and write the result to <code>writeTo</code>
+
+	 @param base the unprocessed line to preprocess
+	 @param writeTo where to write results
+	 @throws HeaderParseException when error occurred
+	 */
+	private void preprocessText(@NotNull String base, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
 		if (defined.size() == 0) {
 			writeTo.append(base);
 			return;
@@ -391,8 +512,21 @@ class Preprocessor {
 		}
 	}
 
+	/**
+	 Write the preprocessed body of the macro to <code>writeTo</code>. Example bodies: <br>
+	 <ul>
+	 <li><code>#define D 100</code> - body is 100. Macro key is D</li>
+	 <li><code>#define D_ARG(ARG) #ARG</code> - body is #ARG. Macro key is D_ARG This is also a parameter macro.</li>
+	 </ul>
+
+	 @param entry the entry that contains the macro key and the macro body stored in a {@link DefineValue} instance
+	 @param parameterText the text that the user put inside the parameter macro. This value should be null if not writing a parameter macro
+	 and should not be null if writing a parameter macro. Example parameterText (with D_ARG example above): D_ARG(42) and parameter text is (42)
+	 @param writeTo where to write the preprocessed body to
+	 @throws HeaderParseException when an error occurred
+	 */
 	private void writeDefineValue(@NotNull Entry<String, DefineValue> entry, @Nullable String parameterText, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
-		String text = entry.getValue().getText();
+		String entryValueText = entry.getValue().getText();
 
 		if (entry.getValue() instanceof ParameterDefineValue) {
 			if (parameterText == null) {
@@ -404,10 +538,19 @@ class Preprocessor {
 			String[] args = parameterText.substring(1, parameterText.length() - 1).split(",");
 			final int numParams = parameterValue.getParams().length;
 			if (args.length != numParams) {
-				error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_written_f"), numParams, args.length));
+				error(String.format(bundle.getString("Error.Preprocessor.Parse.wrong_amount_of_params_f"), numParams, args.length));
 			}
 
-			Matcher m = macroParamOutputTextPattern.matcher(text);
+			for (int i = 0; i < args.length; i++) {
+				args[i] = args[i].trim();
+			}
+
+			if (entry.getKey().equals("__EVAL")) {
+				write__EvalOutput(parameterText, writeTo);
+				return;
+			}
+
+			Matcher m = macroParamOutputTextPattern.matcher(entryValueText);
 
 			int ind = 0;
 			while (m.find()) {
@@ -425,9 +568,9 @@ class Preprocessor {
 					if (ind < start) {
 						if (quote || before.equals("##")) {
 							int startBefore = m.start("BEFORE");
-							writeTo.append(text, ind, startBefore);
+							writeTo.append(entryValueText, ind, startBefore);
 						} else {
-							writeTo.append(text, ind, start);
+							writeTo.append(entryValueText, ind, start);
 						}
 						ind = start;
 					}
@@ -445,33 +588,39 @@ class Preprocessor {
 				if (!found) {
 					continue;
 				}
-				String paramReplacement = args[paramInd];
-				for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
-					if (entry1 instanceof ParameterDefineValue) {
-						continue;
-					}
-					if (entry1.getKey().equals(paramReplacement)) {
-						paramReplacement = entry1.getValue().getText();
-						break;
-					}
-				}
-
-				if (quote) {
-					writeTo.append('"');
-				}
-
-				writeTo.append(paramReplacement);
-				if (quote) {
-					writeTo.append('"');
-				}
-
 				ind = m.end("PARAM");
-				if (ind + 1 < text.length() && text.charAt(ind) == '#' && text.charAt(ind + 1) == '#') {
-					ind += 2;
+
+				String paramArg = args[paramInd];
+				if (startsWithIgnoreSpace(paramArg, "__EVAL(")) {
+					write__EvalOutput(paramArg.substring("__EVAL(".length(), paramArg.length() - 1), writeTo); //cut off parenthesis
+				} else {
+					//check if paramArg is a macro itself like: TEST(ANOTHER_MACRO)
+					for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
+						if (entry1 instanceof ParameterDefineValue) {
+							continue;
+						}
+						if (entry1.getKey().equals(paramArg)) {
+							paramArg = entry1.getValue().getText();
+							break;
+						}
+					}
+					if (quote) {
+						writeTo.append('"');
+					}
+
+					writeTo.append(paramArg);
+					if (quote) {
+						writeTo.append('"');
+					}
+
+					if (ind + 1 < entryValueText.length() && entryValueText.charAt(ind) == '#' && entryValueText.charAt(ind + 1) == '#') {
+						ind += 2;
+					}
 				}
+
 			}
-			if (ind < text.length()) {
-				writeTo.append(text, ind, text.length());
+			if (ind < entryValueText.length()) {
+				writeTo.append(entryValueText, ind, entryValueText.length());
 			}
 
 		} else {
@@ -479,28 +628,114 @@ class Preprocessor {
 				error(bundle.getString("Error.Preprocessor.Parse.unexp_lparen"));
 			}
 
-			writeTo.append(text);
+			switch (entry.getKey()) {
+				case "__LINE__": {
+					writeTo.append(currentState().lineNumber + "");
+					break;
+				}
+				case "__FILE__": {
+					writeTo.append(currentState().processingFile.getName());
+					break;
+				}
+				default: {
+					writeTo.append(entryValueText);
+					break;
+				}
+			}
+
 		}
 
 	}
 
+	private void write__EvalOutput(@Nullable String parameterText, @NotNull Preprocessor.StringBuilderReference writeTo) throws HeaderParseException {
+		try {
+			Value value = ExpressionInterpreter.getInstance().evaluate(parameterText, preprocessorEnv);
+			if (value instanceof Value.NumVal) {
+				writeTo.append(ArmaPrecision.format(((Value.NumVal) value).v()));
+			} else {
+				throw new IllegalStateException("unknown value type:" + value.getClass());
+			}
+		} catch (Exception e) {
+			if (e.getCause() instanceof HeaderParseException) {
+				throw e;
+			}
+			throw new HeaderParseException(e.getMessage());
+		}
+	}
+
+	/** Increment the current state's line number */
 	private void incrementLineNumber() {
 		currentState().lineNumber++;
 	}
 
+	/**
+	 @return The current state.
+	 */
 	@NotNull
 	private PreprocessState currentState() {
 		return preprocessStack.peek();
 	}
 
+	/**
+	 Throw a {@link HeaderConversionException} with the message body as string.
+	 The body will be wrapped in some other info as well. This method will invoke {@link #parseException(String)}
+	 to create the exception.
 
-	protected void error(String string) throws HeaderParseException {
-		throw new HeaderParseException(String.format(
+	 @see #parseException(String)
+	 */
+	protected void error(@NotNull String string) throws HeaderParseException {
+		throw parseException(string);
+	}
+
+	/**
+	 Create a {@link HeaderParseException} with the given message body wrapped around some info
+
+	 @return an exception
+	 @see #error(String)
+	 */
+	protected HeaderParseException parseException(@NotNull String s) {
+		return new HeaderParseException(String.format(
 				bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"),
 				currentState().lineNumber,
 				currentState().processingFile.getAbsolutePath(),
-				string
+				s
 		));
+	}
+
+	/**
+	 An env for use with __EVAL. It will search all defined macros and use their keys as Identifiers.
+	 No parameter macros should be allowed to be used as identifiers inside __EVAL!
+	 */
+	private class PreprocessorEnv implements Env {
+		private final HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
+
+		@Nullable
+		@Override
+		public Value getValue(String identifier) {
+			for (Entry<String, DefineValue> defined : defined.entrySet()) {
+				if (identifier.equals(defined.getKey())) {
+					Value value = cachedValues.computeIfAbsent(
+							defined,
+							stringDefineValueEntry -> {
+								if (defined.getValue() instanceof ParameterDefineValue) {
+									//a parameter macro should not exist inside __EVAL or __EXEC
+									throw new RuntimeException(parseException(bundle.getString("Error.Preprocessor.Parse.unexpected_parameter_macro")));
+								}
+								DefineMacroContent.StringDefineValue sdv = (DefineMacroContent.StringDefineValue) defined.getValue();
+								try {
+									return new Value.NumVal(Double.parseDouble(sdv.getText()));
+								} catch (IllegalArgumentException e) {
+									throw new RuntimeException(parseException(
+											String.format(bundle.getString("Error.Preprocessor.Parse.expected_number_in_macro_body_f"), sdv.getText())
+									));
+								}
+							}
+					);
+					return value;
+				}
+			}
+			return null;
+		}
 	}
 
 

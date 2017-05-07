@@ -56,12 +56,14 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		//start threads
 		MessageReaderThread readerThread = new MessageReaderThread();
+		readerThread.setName("ADC - Message reader for description.ext converter");
 		readerThread.setDaemon(false);
 		readerThread.start();
 
 		ConvertTask convertTask = new ConvertTask(initialWorkspaceDir, descExt);
 		convertTask.exceptionProperty().addListener((observable, oldValue, newValue) -> newValue.printStackTrace());
 		Thread convertThread = new Thread(convertTask);
+		convertThread.setName("ADC - Convert description.ext task thread");
 		convertThread.setDaemon(false);
 		convertThread.start();
 	}
@@ -90,7 +92,11 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 	}
 
-	private void dialogConversionFailed(@NotNull String dialogClassName, @NotNull Exception e) {
+	private void parseCompleteEvent() {
+
+	}
+
+	private void dialogConversionFailedEvent(@NotNull String dialogClassName, @NotNull Exception e) {
 		e.printStackTrace(System.out);
 	}
 
@@ -114,7 +120,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			HeaderToProject.convertAndSaveToWorkspace(workspaceDir, descExt, this);
 
 			messageQFromTask.add(new KeyValue<>(Message.ConversionAndSaveComplete, ""));
-
+			messageQFromTask.add(new KeyValue<>(Message.CloseReaderThread, ""));
 			return true;
 		}
 
@@ -195,6 +201,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		@Override
 		public void run() {
+			loop:
 			while (true) {
 				try {
 					KeyValue<Message, Object> msg = messageQFromTask.take();
@@ -224,13 +231,25 @@ public class ImportDialogsDialog extends WizardStageDialog {
 							r = new Runnable() {
 								@Override
 								public void run() {
-
+									Object[] data = (Object[]) msg.getValue();
+									String name = (String) data[0];
+									Exception e = (Exception) data[1];
+									dialogConversionFailedEvent(name, e);
 								}
 							};
 							break;
 						}
 						case CloseReaderThread: {
-							return;
+							break loop;
+						}
+						case ParseComplete: {
+							r = new Runnable() {
+								@Override
+								public void run() {
+									parseCompleteEvent();
+								}
+							};
+							break;
 						}
 						default: {
 							throw new RuntimeException("unknown message type:" + msg.getKey());
@@ -241,6 +260,8 @@ public class ImportDialogsDialog extends WizardStageDialog {
 					return;
 				}
 			}
+
+			System.out.println("MessageReaderThread.run LEAVING READER LOOP\n");
 		}
 	}
 }

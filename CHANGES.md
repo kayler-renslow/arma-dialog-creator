@@ -1,12 +1,12 @@
 **Added:**
-* more progress on import dialog
-* test for multiple directory preprocessor
+* more preprocessor tests
 
 **Changed:**
-* 
+* reorganized preprocessor and parser tests
 
 **Fixed:**
-* \#include had the wrong working directory
+* preprocessor handles __EVAL()
+* preprocessor ignores line and block comments
 
 **Notes:**
-* preprocessor doesn't properly handle __EVAL()
+* 

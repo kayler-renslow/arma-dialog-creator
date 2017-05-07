@@ -138,4 +138,16 @@ public class HeaderFile {
 			return extendClassRef.getValue();
 		});
 	}
+
+	@NotNull
+	public String getAsString() {
+		StringBuilder b = new StringBuilder();
+		for (HeaderAssignment a : getAssignments()) {
+			b.append(a.getAsString());
+		}
+		for (HeaderClass hc : getClasses()) {
+			b.append(hc.getAsString());
+		}
+		return b.toString();
+	}
 }
