@@ -267,7 +267,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		public ConvertingDialogsStep() {
 			super(new StackPane());
 			content.setAlignment(Pos.CENTER);
-			content.getChildren().add(new VBox(10, lblMessage, progressBar));
+			Label lblHeader = new Label(bundle.getString("ImportDialogs.Step.Converting.title"));
+			lblHeader.setFont(Font.font(15));
+			content.getChildren().add(new VBox(10, lblHeader, lblMessage, progressBar));
 			progressBar.minWidthProperty().bind(content.widthProperty().multiply(.75));
 		}
 

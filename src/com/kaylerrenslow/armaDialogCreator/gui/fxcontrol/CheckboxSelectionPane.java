@@ -35,7 +35,7 @@ public class CheckboxSelectionPane<E> extends StackPane {
 					for (int i = c.getFrom(); i < c.getTo(); i++) {
 						E e = selectedList.get(i);
 						for (CheckBox box : boxList) {
-							if (box.getUserData() == e) {
+							if (box.getUserData().equals(e)) {
 								box.setSelected(true);
 								break;
 							}
@@ -44,7 +44,7 @@ public class CheckboxSelectionPane<E> extends StackPane {
 				} else if (c.wasRemoved()) {
 					for (E e : c.getRemoved()) {
 						for (CheckBox box : boxList) {
-							if (box.getUserData() == e) {
+							if (box.getUserData().equals(e)) {
 								box.setSelected(false);
 								break;
 							}
@@ -67,7 +67,7 @@ public class CheckboxSelectionPane<E> extends StackPane {
 		CheckBox remove = null;
 		int removeInd = 0;
 		for (CheckBox box : boxList) {
-			if (box.getUserData() == item) {
+			if (box.getUserData().equals(item)) {
 				remove = box;
 				break;
 			}

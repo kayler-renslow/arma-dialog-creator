@@ -19,7 +19,9 @@ import java.util.List;
 
 /**
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasEditor} is editing,
- the {@link ProjectMacroRegistry} instance, as well as all ExternalResources.
+ the {@link ProjectMacroRegistry} instance, as well as all {@link ExternalResource}s.
+
+ A project needs an {@link ApplicationData} instance for the project's {@link com.kaylerrenslow.armaDialogCreator.control.DefaultValueProvider} instance.
 
  @author Kayler
  @since 07/19/2016. */
@@ -42,7 +44,13 @@ public class Project implements SpecificationRegistry {
 	private StringTable stringTable;
 	private Language defaultLanguage;
 
-	public Project(ApplicationData applicationData, @NotNull ProjectInfo info) {
+	/**
+	 Create a new instance.
+
+	 @param applicationData the {@link ApplicationData} instance to use. See class level doc for more info.
+	 @param info info to create {@link Project} with
+	 */
+	public Project(@NotNull ApplicationData applicationData, @NotNull ProjectInfo info) {
 		this.applicationData = applicationData;
 		this.projectName = info.getProjectName();
 		this.projectSaveDirectory = info.getProjectDirectry();

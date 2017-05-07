@@ -326,7 +326,7 @@ public class ControlClass {
 	 @return the ControlProperty instance, or null if couldn't be matched
 	 */
 	@Nullable
-	public ControlProperty findRequiredPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
+	public final ControlProperty findRequiredPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
 		return findPropertyFromList(lookup, getRequiredProperties());
 	}
 
@@ -354,7 +354,7 @@ public class ControlClass {
 	 @see #findOptionalProperty(ControlPropertyLookupConstant)
 	 */
 	@Nullable
-	public ControlProperty findOptionalPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
+	public final ControlProperty findOptionalPropertyNullable(@NotNull ControlPropertyLookupConstant lookup) {
 		return findPropertyFromList(lookup, getOptionalProperties());
 	}
 
@@ -368,6 +368,10 @@ public class ControlClass {
 	@NotNull
 	public final ControlProperty findProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		ControlProperty c = findOptionalPropertyNullable(lookup);
+		if (c != null) {
+			return c;
+		}
+		c = findRequiredPropertyNullable(lookup);
 		if (c != null) {
 			return c;
 		}

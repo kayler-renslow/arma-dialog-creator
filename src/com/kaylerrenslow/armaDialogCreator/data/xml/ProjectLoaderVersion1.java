@@ -76,7 +76,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			throw new XmlParseException(e.getMessage());
+			throw new XmlParseException(e.getMessage(), e);
 		}
 	}
 
@@ -363,11 +363,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		//property matching and value setting
 		for (ControlPropertySpecification specification : properties) {
-			try {
-				control.findProperty(specification.getPropertyLookup()).setTo(specification, project);
-			} catch (IllegalArgumentException ignore) {
-				//if this happens, had an unnecessary property saved to file
+			ControlProperty p = control.findPropertyNullable(specification.getPropertyLookup());
+			if (p == null) {
+				continue;
 			}
+			p.setTo(specification, project);
 		}
 
 

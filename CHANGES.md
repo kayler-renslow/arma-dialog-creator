@@ -2,14 +2,11 @@
 * 
 
 **Changed:**
-* removed reader thread from import dialog because it was unnecessary complexity
-* made some progress on the import dialog again
-    * added parsing step
-    * added convert step
-    * added converting step
-
-**Fixed:**
 * 
 
+**Fixed:**
+* loading loading projects is broken
+    * problem was broken controlClass.findProperty(). Wasn't searching through required properties 
+
 **Notes:**
-* loading projects is broken
+* 

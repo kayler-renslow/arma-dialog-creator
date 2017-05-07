@@ -15,6 +15,9 @@ import org.jetbrains.annotations.Nullable;
 /**
  Holds data that aren't specific to the current Project, but rather the entire application itself. Resets after
  {@link com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator#loadNewProject(boolean)} is invoked.
+ <p>
+ Also stores an {@link Env} and {@link ArmaResolution} instance for ADC. Use keys {@link DataKeys#ENV} and {@link DataKeys#ARMA_RESOLUTION}
+ to get the respected values.
 
  @author Kayler
  @since 06/07/2016. */
@@ -83,12 +86,22 @@ public class ApplicationData extends DataContext {
 		return changelog;
 	}
 
-	/** Shortcut for {@link ApplicationDataManager#getApplicationData()} */
+	/**
+	 Shortcut for {@link ApplicationDataManager#getApplicationData()}.
+	 This method will throw an exception if {@link ApplicationData} isn't initialized for the {@link ApplicationDataManager}.
+
+	 @return data
+	 */
 	@NotNull
 	public static ApplicationData getManagerInstance() {
 		return ApplicationDataManager.getInstance().getApplicationData();
 	}
 
+	/**
+	 Set the current {@link Project} instance.
+
+	 @param project instance to use
+	 */
 	public void setCurrentProject(@NotNull Project project) {
 		this.currentProject = project;
 	}

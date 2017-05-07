@@ -273,7 +273,9 @@ public class ProjectXmlUtil {
 	 @param controlPropertyElement xml element (should be a &lt;property&gt; tag)
 	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See {@link #loadValue(Element, PropertyType, DataContext, XmlErrorRecorder)}
 	 @param recorder recorder to use for reporting errors
+	 @return the instance, or null if couldn't be loaded
 	 */
+	@Nullable
 	public static ControlPropertySpecification loadControlProperty(@NotNull Element controlPropertyElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		String lookupIdStr = controlPropertyElement.getAttribute("lookup-id");
 		String macroKey = controlPropertyElement.getAttribute("macro-key");
@@ -283,7 +285,7 @@ public class ProjectXmlUtil {
 		}
 		SerializableValue value = loadValue(controlPropertyElement, lookup.getPropertyType(), context, recorder);
 		if (value == null) {
-			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
+			return null;
 		}
 		return new ControlPropertySpecification(lookup, value, macroKey);
 	}
@@ -314,6 +316,7 @@ public class ProjectXmlUtil {
 	 @param dataContext context to use for when converting text values to Java objects. See {@link ValueConverter#convert(DataContext, String...)}
 	 @return the {@link SerializableValue}, or null if couldn't be created (will log errors in errors).
 	 */
+	@Nullable
 	public static SerializableValue loadValue(@NotNull Element parentElement, @NotNull PropertyType propertyType, @Nullable DataContext dataContext, @NotNull XmlErrorRecorder recorder) {
 		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
 		if (valueElements.size() < propertyType.getPropertyValuesSize()) {

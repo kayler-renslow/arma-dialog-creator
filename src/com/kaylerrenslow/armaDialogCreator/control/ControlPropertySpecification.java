@@ -137,4 +137,15 @@ public class ControlPropertySpecification {
 	public ControlProperty constructNewControlProperty(@NotNull MacroRegistry registry) {
 		return new ControlProperty(this, registry);
 	}
+
+	@Override
+	public String toString() {
+		return "ControlPropertySpecification{" +
+				"lookup=" + lookup +
+				", value=" + value +
+				", macroKey='" + macroKey + '\'' +
+				", customData=" + customData +
+				", usingCustomData=" + usingCustomData +
+				'}';
+	}
 }

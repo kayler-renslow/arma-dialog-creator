@@ -8,4 +8,8 @@ public class XmlParseException extends Exception {
 	public XmlParseException(String message) {
 		super(message);
 	}
+
+	public XmlParseException(String message, Exception e) {
+		super(message, e);
+	}
 }
