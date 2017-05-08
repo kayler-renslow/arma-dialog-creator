@@ -480,6 +480,20 @@ public class PreprocessorTest {
 		HeaderParserHelpers.assertPreprocessLine(expected, HeaderTestUtil.getFile("preprocessorTest/preprocessTest.h"), null);
 	}
 
+	@Test
+	public void stringTest() throws Exception {
+		//#define SLASH "/"
+		//#define URL __EVAL("http:" + SLASH + SLASH + "www.vbs2.com")
+		String base = "URL";
+		String expect = "http://www.vbs2.com";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				map(array("SLASH", "URL"), array("\"/\"", "__EVAL(\"http:\" + SLASH + SLASH + \"www.vbs2.com\")"))
+		);
+	}
+
 	public static String getStringFromFile(@NotNull File f) throws IOException {
 		FileInputStream fis = new FileInputStream(f);
 		byte[] arr = new byte[fis.available()];

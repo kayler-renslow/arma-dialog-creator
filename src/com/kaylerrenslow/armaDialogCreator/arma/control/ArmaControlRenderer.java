@@ -51,7 +51,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
 
-	public ArmaControlRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
+	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
 		this.resolution = resolution;
 		this.env = env;

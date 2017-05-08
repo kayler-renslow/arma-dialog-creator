@@ -1,35 +1,39 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 07/14/2016.
  */
 interface AST {
 	interface Visitor<T> {
-		T visit(AST.MaxExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MaxExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.MinExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MinExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.AddExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.AddExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.SubExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.SubExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.MultExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MultExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(AST.DivExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.DivExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(UnaryExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull UnaryExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(ParenExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull ParenExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(IdentifierExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull IdentifierExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(IntegerExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull IntegerExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
-		T visit(FloatExpr expr, Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull FloatExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull StringExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {
-		public abstract Object accept(Visitor visitor, Env env);
+		public abstract Object accept(@NotNull Visitor visitor, @NotNull Env env);
 	}
 
 	abstract class Expr extends ASTNode {
@@ -38,12 +42,12 @@ interface AST {
 
 	class MaxExpr extends CommandExpr {
 
-		public MaxExpr(Expr left, Expr right) {
+		public MaxExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 
@@ -51,12 +55,12 @@ interface AST {
 
 	class MinExpr extends CommandExpr {
 
-		public MinExpr(Expr left, Expr right) {
+		public MinExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 
@@ -66,17 +70,19 @@ interface AST {
 		private final Expr left;
 		private final Expr right;
 
-		public CommandExpr(Expr left, Expr right) {
+		public CommandExpr(@NotNull Expr left, @NotNull Expr right) {
 			this.left = left;
 			this.right = right;
 		}
 
 		/** Get left expression (left COMMAND right) */
+		@NotNull
 		public Expr getLeft() {
 			return left;
 		}
 
 		/** Get right expression (left COMMAND right) */
+		@NotNull
 		public Expr getRight() {
 			return right;
 		}
@@ -86,17 +92,19 @@ interface AST {
 		private final Expr left;
 		private final Expr right;
 
-		public ArithExpr(Expr left, Expr right) {
+		public ArithExpr(@NotNull Expr left, @NotNull Expr right) {
 			this.left = left;
 			this.right = right;
 		}
 
 		/** Get left expression (left OPERATOR right) */
+		@NotNull
 		public Expr getLeft() {
 			return left;
 		}
 
 		/** Get right expression (left OPERATOR right) */
+		@NotNull
 		public Expr getRight() {
 			return right;
 		}
@@ -104,45 +112,45 @@ interface AST {
 	}
 
 	class AddExpr extends ArithExpr {
-		public AddExpr(Expr left, Expr right) {
+		public AddExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
 
 	class SubExpr extends ArithExpr {
-		public SubExpr(Expr left, Expr right) {
+		public SubExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
 
 	class MultExpr extends ArithExpr {
-		public MultExpr(Expr left, Expr right) {
+		public MultExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
 
 	class DivExpr extends ArithExpr {
-		public DivExpr(Expr left, Expr right) {
+		public DivExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -151,7 +159,7 @@ interface AST {
 		private final boolean isAdd;
 		private final Expr expr;
 
-		public UnaryExpr(boolean isAdd, Expr expr) {
+		public UnaryExpr(boolean isAdd, @NotNull Expr expr) {
 			this.isAdd = isAdd;
 			this.expr = expr;
 		}
@@ -162,12 +170,13 @@ interface AST {
 		}
 
 		/** Get the expression after the operator */
+		@NotNull
 		public Expr getExpr() {
 			return expr;
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -180,12 +189,13 @@ interface AST {
 		}
 
 		/** Get the expression inside the parentheses: '(' expression ')' */
+		@NotNull
 		public Expr getExp() {
 			return exp;
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -197,16 +207,17 @@ interface AST {
 	class IdentifierExpr extends LiteralExpr {
 		private final String identifier;
 
-		public IdentifierExpr(String identifier) {
+		public IdentifierExpr(@NotNull String identifier) {
 			this.identifier = identifier;
 		}
 
+		@NotNull
 		public String getIdentifier() {
 			return identifier;
 		}
 		
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -223,7 +234,7 @@ interface AST {
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -240,7 +251,25 @@ interface AST {
 		}
 
 		@Override
-		public Object accept(Visitor visitor, Env env) {
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class StringExpr extends LiteralExpr {
+		private String s;
+
+		public StringExpr(@NotNull String s) {
+			this.s = s;
+		}
+
+		@NotNull
+		public String getValue() {
+			return s;
+		}
+
+		@Override
+		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}

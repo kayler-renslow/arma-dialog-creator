@@ -1,11 +1,34 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
+import org.jetbrains.annotations.NotNull;
+
 /**
- Created by Kayler on 07/14/2016.
+ Interface for values.
+ @author Kayler
+ @since 07/14/2016
+ @see ExpressionInterpreter
  */
 public interface Value {
-	@Override
-	String toString();
+
+	class StringLiteral implements Value {
+		private String value;
+
+		public StringLiteral(@NotNull String value) {
+			this.value = value;
+		}
+
+		@NotNull
+		public String getValue() {
+			return value;
+		}
+
+		/** @return {@link #getValue()} */
+		@Override
+		public String toString() {
+			return value;
+		}
+	}
 
 	class NumVal implements Value{
 		private double val;
@@ -18,13 +41,10 @@ public interface Value {
 			return val;
 		}
 
+		/**@return {@link ArmaPrecision#format(double)} of {@link #v()}*/
 		@Override
 		public String toString() {
-			int tmp = (int) val;
-			if (tmp == val) {
-				return "" + tmp; //get rid of trailing zeroes
-			}
-			return "" + val;
+			return ArmaPrecision.format(val);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
@@ -25,195 +26,243 @@ public class ExpressionInterpreterTest {
 
 	@Test
 	public void evaluate() throws Exception {
-		double v = 1 + 1;
-		String exp = "1 + 1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1 + 1;
+		String eval = "1 + 1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate1() throws Exception {
-		double v = 1 + (3 * 2);
-		String exp = "1 + (3 * 2)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1 + (3 * 2);
+		String eval = "1 + (3 * 2)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate2() throws Exception {
-		double v = -1 + (3 * 2);
-		String exp = "-1 + (3 * 2)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = -1 + (3 * 2);
+		String eval = "-1 + (3 * 2)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate3() throws Exception {
-		double v = (3 * 2) * -1;
-		String exp = "(3 * 2) * -1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = (3 * 2) * -1;
+		String eval = "(3 * 2) * -1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate4() throws Exception {
-		double v = 2 * 2 * (10 * 2);
-		String exp = "2 * 2 * (10 * 2)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 2 * 2 * (10 * 2);
+		String eval = "2 * 2 * (10 * 2)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate5() throws Exception {
-		double v = 2 * 20 * -1;
-		String exp = "2 * 20 * -1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 2 * 20 * -1;
+		String eval = "2 * 20 * -1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate6() throws Exception {
-		double v = 100.0 * 5;
-		String exp = "100.0 * 5";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 100.0 * 5;
+		String eval = "100.0 * 5";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate7() throws Exception {
-		double v = 0x05 * 100;
-		String exp = "0x05 * 100";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 0x05 * 100;
+		String eval = "0x05 * 100";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate8() throws Exception {
-		double v = -0x677 + 5 * 2 - -(800);
-		String exp = "-0x677 + 5 * 2 - -(800)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = -0x677 + 5 * 2 - -(800);
+		String eval = "-0x677 + 5 * 2 - -(800)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate9() throws Exception {
-		double v = 1e111 + (3 * 2);
-		String exp = "1e111 + (3 * 2)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1e111 + (3 * 2);
+		String eval = "1e111 + (3 * 2)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate10() throws Exception {
-		double v = -1e111 + (3 * 2);
-		String exp = "-1e111 + (3 * 2)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = -1e111 + (3 * 2);
+		String eval = "-1e111 + (3 * 2)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate11() throws Exception {
-		double v = 0.0 * 500 + (-9 - 9);
-		String exp = "0.0 * 500 + (- 9 - 9)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 0.0 * 500 + (-9 - 9);
+		String eval = "0.0 * 500 + (- 9 - 9)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate12() throws Exception {
-		double v = 4567 + 1e1 * 0x00;
-		String exp = "4567 + 1e1 * 0x00";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 4567 + 1e1 * 0x00;
+		String eval = "4567 + 1e1 * 0x00";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate13() throws Exception {
-		double v = 1 + 1 + 1 * 1e1 - 0x0;
-		String exp = "1 + 1 + 1 * 1e1 - 0x0";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1 + 1 + 1 * 1e1 - 0x0;
+		String eval = "1 + 1 + 1 * 1e1 - 0x0";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate14() throws Exception {
-		double v = 1;
-		String exp = "1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1;
+		String eval = "1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate15() throws Exception {
-		double v = -0e1;
-		String exp = "-0e1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = -0e1;
+		String eval = "-0e1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 
 	@Test
 	public void evaluate16() throws Exception {
-		double v = -1;
-		String exp = "-1";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = -1;
+		String eval = "-1";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 
 	@Test
 	public void evaluate17() throws Exception {
-		double v = 500 * (1 + (-900 + (500)) * 90) + 1 * (-1);
-		String exp = "500 * (1 + (-900 + (500)) * 90) + 1 * (-1)";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 500 * (1 + (-900 + (500)) * 90) + 1 * (-1);
+		String eval = "500 * (1 + (-900 + (500)) * 90) + 1 * (-1)";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 
 	@Test
 	public void evaluate18() throws Exception {
-		double v = (1 + (-(9 * (-(5 + 500 * 9 + 0x0000)))));
-		String exp = "(1+(-(9*(-(5 + 500 * 9 + 0x0000)))))";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = (1 + (-(9 * (-(5 + 500 * 9 + 0x0000)))));
+		String eval = "(1+(-(9*(-(5 + 500 * 9 + 0x0000)))))";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate19() throws Exception {
-		double v = 500 * a + 540;
-		String exp = "500 * a + 540";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 500 * a + 540;
+		String eval = "500 * a + 540";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 
 	@Test
 	public void evaluate20() throws Exception {
-		double v = a * 0;
-		String exp = "a * 0";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = a * 0;
+		String eval = "a * 0";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
+	}
+
+	@Test
+	public void evaluateString() throws Exception {
+		String expected = ArmaPrecision.format(25) + "hello";
+		String eval = "25 + \"hello\"";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
+	public void evaluateString2() throws Exception {
+		String expected = "hello" + ArmaPrecision.format(25);
+		String eval = "\"hello\" + 25";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
+	public void evaluateString3() throws Exception {
+		String expected = "hello" + ArmaPrecision.format(25);
+		String eval = "'hello' + 25";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
+	public void evaluateString4() throws Exception {
+		String expected = "\"hello\"" + ArmaPrecision.format(25);
+		String eval = "'''hello''' + 25";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
+	public void evaluateString5() throws Exception {
+		String expected = "\"hello\"" + ArmaPrecision.format(25);
+		String eval = "\"\"\"hello\"\"\" + 25";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
+	public void evaluateString6() throws Exception {
+		String expected = "hello world";
+		String eval = "\"hello \" + \"world\"";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.toString());
 	}
 
 	@Test
 	public void evaluate_trick() throws Exception {
-		String exp = "e134";//will return whatever the env returns since this isn't a valid number itself
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		String eval = "e134";//will return whatever the env returns since this isn't a valid number itself
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
 		assertEquals("", a, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate_trick1() throws Exception {
-		String exp = "x10";//will return whatever the env returns since this isn't a valid number itself
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
+		String eval = "x10";//will return whatever the env returns since this isn't a valid number itself
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
 		assertEquals("", a, ret.v(), 0);
 	}
 
 	@Test
 	public void evaluate_error() throws Exception {
-		String exp = "(";
+		String eval = "(";
 		try {
-			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			ExpressionInterpreter.getInstance().evaluate(eval, env);
 			assertEquals("Should have failed", false, true);
 		} catch (ExpressionEvaluationException e) {
 			assertEquals("Succeed", true, true);
@@ -223,9 +272,9 @@ public class ExpressionInterpreterTest {
 
 	@Test
 	public void evaluate_error1() throws Exception {
-		String exp = "()";
+		String eval = "()";
 		try {
-			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			ExpressionInterpreter.getInstance().evaluate(eval, env);
 			assertEquals("Should have failed", false, true);
 		} catch (ExpressionEvaluationException e) {
 			assertEquals("Succeed", true, true);
@@ -234,9 +283,9 @@ public class ExpressionInterpreterTest {
 
 	@Test
 	public void evaluate_error2() throws Exception {
-		String exp = "..1";
+		String eval = "..1";
 		try {
-			ExpressionInterpreter.getInstance().evaluate(exp, env);
+			ExpressionInterpreter.getInstance().evaluate(eval, env);
 			assertEquals("Should have failed", false, true);
 		} catch (ExpressionEvaluationException e) {
 			assertEquals("Succeed", true, true);
@@ -245,34 +294,34 @@ public class ExpressionInterpreterTest {
 
 	@Test
 	public void min1() throws Exception {
-		double v = 1 + 2 * 0 + Math.min(5, 1 + 8 * 8) * 5;
-		String exp = "1 + 2 * 0 + (5 min (1 + 8 * 8)) * 5";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1 + 2 * 0 + Math.min(5, 1 + 8 * 8) * 5;
+		String eval = "1 + 2 * 0 + (5 min (1 + 8 * 8)) * 5";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void min2() throws Exception {
-		double v = Math.min(5, 9);
-		String exp = "5 min 9";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = Math.min(5, 9);
+		String eval = "5 min 9";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void max1() throws Exception {
-		double v = 1 + 2 * 0 + Math.max(5, 1 + 8 * 8) * 5;
-		String exp = "1 + 2 * 0 + (5 max (1 + 8 * 8)) * 5";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = 1 + 2 * 0 + Math.max(5, 1 + 8 * 8) * 5;
+		String eval = "1 + 2 * 0 + (5 max (1 + 8 * 8)) * 5";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 	@Test
 	public void max2() throws Exception {
-		double v = Math.max(5, 9);
-		String exp = "5 max 9";
-		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(exp, env);
-		assertEquals("", v, ret.v(), 0);
+		double expected = Math.max(5, 9);
+		String eval = "5 max 9";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.getInstance().evaluate(eval, env);
+		assertEquals("", expected, ret.v(), 0);
 	}
 
 }

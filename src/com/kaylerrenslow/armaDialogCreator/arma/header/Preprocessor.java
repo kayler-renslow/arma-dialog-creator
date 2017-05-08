@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.data.FilePath;
 import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -592,7 +591,7 @@ class Preprocessor {
 
 				String paramArg = args[paramInd];
 				if (startsWithIgnoreSpace(paramArg, "__EVAL(")) {
-					write__EvalOutput(paramArg.substring("__EVAL(".length(), paramArg.length() - 1), writeTo); //cut off parenthesis
+					write__EvalOutput(get__EvalBody(paramArg), writeTo); //cut off parenthesis
 				} else {
 					//check if paramArg is a macro itself like: TEST(ANOTHER_MACRO)
 					for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
@@ -638,7 +637,11 @@ class Preprocessor {
 					break;
 				}
 				default: {
-					writeTo.append(entryValueText);
+					if (entry.getValue().getText().contains("__EVAL")) {
+						write__EvalOutput(get__EvalBody(entry.getValue().getText()), writeTo);
+					} else {
+						writeTo.append(entryValueText);
+					}
 					break;
 				}
 			}
@@ -647,19 +650,22 @@ class Preprocessor {
 
 	}
 
+	@NotNull
+	private String get__EvalBody(@NotNull String __evalMacro) {
+		final int eval = 7; //length of __EVAL(
+		return __evalMacro.substring(eval, __evalMacro.length() - 1);
+	}
+
 	private void write__EvalOutput(@Nullable String parameterText, @NotNull Preprocessor.StringBuilderReference writeTo) throws HeaderParseException {
 		try {
 			Value value = ExpressionInterpreter.getInstance().evaluate(parameterText, preprocessorEnv);
-			if (value instanceof Value.NumVal) {
-				writeTo.append(ArmaPrecision.format(((Value.NumVal) value).v()));
-			} else {
-				throw new IllegalStateException("unknown value type:" + value.getClass());
-			}
+			//if value is a decimal, the toString method should properly use DecimalFormat on the number for getting a String
+			writeTo.append(value.toString());
 		} catch (Exception e) {
 			if (e.getCause() instanceof HeaderParseException) {
 				throw e;
 			}
-			throw new HeaderParseException(e.getMessage());
+			throw new HeaderParseException(e.getMessage(), e);
 		}
 	}
 
@@ -723,11 +729,12 @@ class Preprocessor {
 								}
 								DefineMacroContent.StringDefineValue sdv = (DefineMacroContent.StringDefineValue) defined.getValue();
 								try {
-									return new Value.NumVal(Double.parseDouble(sdv.getText()));
+									return ExpressionInterpreter.getInstance().evaluate(sdv.getText(), preprocessorEnv);
 								} catch (IllegalArgumentException e) {
-									throw new RuntimeException(parseException(
-											String.format(bundle.getString("Error.Preprocessor.Parse.expected_number_in_macro_body_f"), sdv.getText())
-									));
+									throw new RuntimeException(
+											String.format(bundle.getString("Error.Preprocessor.Parse.unexpected_value_in_macro_body_f"), sdv.getText()),
+											e
+									);
 								}
 							}
 					);

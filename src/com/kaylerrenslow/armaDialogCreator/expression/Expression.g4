@@ -29,6 +29,7 @@ literal_expression returns [AST.LiteralExpr ast]:
     id=Identifier {$ast = new AST.IdentifierExpr($id.text);}
     | i=int_value {$ast = new AST.IntegerExpr($i.i);}
     | f=float_value {$ast = new AST.FloatExpr($f.d);}
+    | s=String {$ast = new AST.StringExpr($s.text);}
     ;
 
 int_value returns [Integer i]:
@@ -39,6 +40,10 @@ int_value returns [Integer i]:
 float_value returns [Double d]:
     fl=FloatLiteral {$d = new Double($fl.text);}
     ;
+
+String : (Quote ~('\'')* Quote)+ | (DQuote ~('"')* DQuote)+ ;
+Quote : '\'';
+DQuote : '"';
 
 Plus : '+';
 Minus : '-';

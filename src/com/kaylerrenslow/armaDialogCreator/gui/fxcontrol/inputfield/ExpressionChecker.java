@@ -27,7 +27,7 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 	@Override
 	public String validData(@NotNull String data) {
 		try {
-			ExpressionInterpreter.getInstance().evaluate(data, env);
+			parse(data);
 			return null;
 		} catch (ExpressionEvaluationException ex) {
 			return (ex.getMessage() == null || ex.getMessage().length() == 0) ? Lang.FxControlBundle().getString("InputField.DataCheckers.Expression.unknown_error") : ex.getMessage();
