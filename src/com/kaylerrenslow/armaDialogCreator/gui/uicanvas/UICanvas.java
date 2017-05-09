@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
-import java.util.function.Consumer;
 
 /**
  @author Kayler
@@ -135,12 +134,19 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	private void setDisplayListeners() {
-		this.display.getControls().deepIterator().forEach(new Consumer<CanvasControl>() {
-			@Override
-			public void accept(CanvasControl control) {
-				control.getRenderUpdateGroup().addListener(controlUpdateListener);
-			}
-		});
+		//todo we should need all of this commented code
+		//		this.display.getControls().deepIterator().forEach(new Consumer<CanvasControl>() {
+		//			@Override
+		//			public void accept(CanvasControl control) {
+		//				control.getRenderUpdateGroup().addListener(controlUpdateListener);
+		//			}
+		//		});
+		//		this.display.getBackgroundControls().deepIterator().forEach(new Consumer<CanvasControl>() {
+		//			@Override
+		//			public void accept(CanvasControl control) {
+		//				control.getRenderUpdateGroup().addListener(controlUpdateListener);
+		//			}
+		//		});
 		this.display.getControls().getUpdateGroup().addListener(controlListListener);
 		this.display.getBackgroundControls().getUpdateGroup().addListener(controlListListener);
 	}

@@ -456,14 +456,12 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			ArmaDisplay display = project.getEditingDisplay();
-			ArmaControl match = display.findControlByClassName(controlClassName);
-			if (match != null) {
-				setMyExtend.extendControlClass(match);
-			} else {
+			ControlClass cc = project.findControlClassByName(controlClassName);
+			if (cc == null) {
 				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
 				return;
 			}
+			setMyExtend.extendControlClass(cc);
 			for (ControlPropertyLookup inheritProperty : inheritProperties) {
 				setMyExtend.inheritProperty(inheritProperty);
 			}

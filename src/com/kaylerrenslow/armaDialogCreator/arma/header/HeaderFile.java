@@ -12,6 +12,7 @@ import java.util.function.Function;
 
 /**
  @author Kayler
+ @see HeaderParser
  @since 03/19/2017 */
 public class HeaderFile {
 	private final File file;
@@ -25,27 +26,48 @@ public class HeaderFile {
 		this.file = file;
 	}
 
+	/** Get the file that was parsed via {@link HeaderParser#parse()} */
 	@NotNull
 	public File getFile() {
 		return file;
 	}
 
+	/**
+	 List for inserting the root class's {@link HeaderClass#getNestedClasses()}
+
+	 @return a mutable list
+	 */
 	@NotNull
 	protected List<HeaderClass> getClassesMutable() {
 		return classesMutable;
 	}
 
+	/**
+	 List for inserting the root class's {@link HeaderClass#getAssignments()}
+
+	 @return a mutable list
+	 */
+
 	@NotNull
-	public List<HeaderAssignment> getAssignmentsMutable() {
+	protected List<HeaderAssignment> getAssignmentsMutable() {
 		return assignmentsMutable;
 	}
 
+	/**
+	 Get a list of child assignments for the {@link HeaderFile}. This will not return assignments inside each nested class.
+
+	 @return list of assignments
+	 */
 	@NotNull
 	public HeaderAssignmentList getAssignments() {
 		return assignments;
 	}
 
+	/**
+	 Get a list of child classes for the {@link HeaderFile}. This will not return classes nested inside each class.
 
+	 @return list of classes
+	 */
 	@NotNull
 	public HeaderClassList getClasses() {
 		return classes;
@@ -111,19 +133,23 @@ public class HeaderFile {
 	}
 
 	@Nullable
-	private HeaderClass getInherited(@NotNull HeaderClass headerClass, boolean caseSensitive) {
-		if (headerClass.getExtendClassName() == null) {
+	private HeaderClass getInherited(@NotNull HeaderClass subClass, boolean caseSensitive) {
+		if (subClass.getExtendClassName() == null) {
 			return null;
 		}
-		return inheritanceHelper.computeIfAbsent(headerClass, (hc) -> {
+		final String classNameToFind = subClass.getExtendClassName();
+		return inheritanceHelper.computeIfAbsent(subClass, (hc) -> {
+
+			//the root class (which the HeaderFile uses for getting its classes and assignmetns)
+			//will still be available in the heirarchy, so this will work
 			Reference<HeaderClass> extendClassRef = new Reference<>();
 
 			hc.traverseUpwards((parent) -> {
-				if (parent.classNameEquals(hc.getExtendClassName(), caseSensitive)) {
+				if (parent.classNameEquals(classNameToFind, caseSensitive)) {
 					extendClassRef.setValue(parent);
 					return false;
 				}
-				HeaderClass c = parent.getNestedClasses().getByName(hc.getExtendClassName(), caseSensitive);
+				HeaderClass c = parent.getNestedClasses().getByName(classNameToFind, caseSensitive);
 				if (c != null) {
 					extendClassRef.setValue(c);
 					return false;
@@ -132,7 +158,7 @@ public class HeaderFile {
 			});
 
 			if (extendClassRef.getValue() == null) {
-				throw new HeaderClassNotFoundException(hc);
+				throw new HeaderClassNotFoundException("", classNameToFind);
 			}
 
 			return extendClassRef.getValue();

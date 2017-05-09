@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -125,7 +124,7 @@ public class ControlClass {
 			optionalNestedClasses.add(s.constructNewControlClass(registry));
 		}
 		if (specification.getExtendClassName() != null) {
-			extendControlClass(Project.getCurrentProject().findControlClassByName(specification.getExtendClassName()));
+			extendControlClass(registry.findControlClassByName(specification.getExtendClassName()));
 		}
 		afterConstructor();
 	}
@@ -412,39 +411,98 @@ public class ControlClass {
 		throw new IllegalArgumentException("Lookup element '" + lookup.getPropertyName() + "[id=" + lookup.getPropertyId() + "]" + "' wasn't in " + place + ".");
 	}
 
+	/**
+	 Find a required nested {@link ControlClass} by name. If it can't be found, will throw an exception.
+
+	 @return matched class
+	 @see #findRequiredNestedClassNullable(String)
+	 */
 	@NotNull
 	public final ControlClass findRequiredNestedClass(@NotNull String className) {
-		for (ControlClass controlClass : requiredNestedClasses) {
-			if (controlClass.getClassName().equals(className)) {
-				return controlClass;
-			}
+		ControlClass c = findRequiredNestedClassNullable(className);
+		if (c != null) {
+			return c;
 		}
 		noClassMatch(className, "required nested classes");
 		return null;
 	}
 
+	/**
+	 Find a required nested {@link ControlClass} by name. If it can't be found, will return null
+
+	 @return matched class, or null
+	 @see #findRequiredNestedClass(String)
+	 */
+	@Nullable
+	public final ControlClass findRequiredNestedClassNullable(@NotNull String className) {
+		return findNestedClassFromList(className, requiredNestedClasses);
+	}
+
+	/**
+	 Find an optional nested {@link ControlClass} by name. If it can't be found, will throw an exception.
+
+	 @return matched class
+	 @see #findOptionalNestedClassNullable(String)
+	 */
 	@NotNull
 	public final ControlClass findOptionalNestedClass(@NotNull String className) {
-		for (ControlClass controlClass : optionalNestedClasses) {
-			if (controlClass.getClassName().equals(className)) {
-				return controlClass;
-			}
+		ControlClass c = findOptionalNestedClassNullable(className);
+		if (c != null) {
+			return c;
 		}
 		noClassMatch(className, "optional nested classes");
 		return null;
 	}
 
+	/**
+	 Find an optional nested {@link ControlClass} by name. If it can't be found, will return null
+
+	 @return matched class, or null
+	 @see #findOptionalNestedClass(String)
+	 */
+	@Nullable
+	public final ControlClass findOptionalNestedClassNullable(@NotNull String className) {
+		return findNestedClassFromList(className, optionalNestedClasses);
+	}
+
+	/**
+	 Find an optional or required nested {@link ControlClass} by name. If it can't be found, will throw an exception
+
+	 @return matched class
+	 @see #findNestedClassNullable(String)
+	 */
 	@NotNull
 	public final ControlClass findNestedClass(@NotNull String className) {
-		try {
-			return findRequiredNestedClass(className);
-		} catch (IllegalArgumentException ignore) {
-		}
-		try {
-			return findOptionalNestedClass(className);
-		} catch (IllegalArgumentException ignore) {
+		ControlClass c = findNestedClassNullable(className);
+		if (c != null) {
+			return c;
 		}
 		noClassMatch(className, " control class " + getClassName());
+		return null;
+	}
+
+	/**
+	 Find an optional or required nested {@link ControlClass} by name. If it can't be found, will return null
+
+	 @return matched class, or null
+	 @see #findNestedClass(String)
+	 */
+	@Nullable
+	public final ControlClass findNestedClassNullable(@NotNull String className) {
+		ControlClass c = findRequiredNestedClassNullable(className);
+		if (c != null) {
+			return c;
+		}
+		return findOptionalNestedClassNullable(className);
+	}
+
+	@Nullable
+	private ControlClass findNestedClassFromList(@NotNull String className, @NotNull Iterable<ControlClass> list) {
+		for (ControlClass controlClass : list) {
+			if (controlClass.getClassName().equals(className)) {
+				return controlClass;
+			}
+		}
 		return null;
 	}
 
@@ -465,24 +523,23 @@ public class ControlClass {
 	}
 
 	/**
-	 If {@link #getExtendClass()}!=null, the matched {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property. If the lookup isn't found
-	 in {@link #getExtendClass()} or {@link #getExtendClass()} is null, nothing will happen.
+	 If {@link #getExtendClass()}!=null, the matched {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property.
+	 If the lookup isn't found in this {@link ControlClass} or {@link #getExtendClass()} is null, nothing will happen.
 
 	 @throws IllegalArgumentException when the property isn't in this control class
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 */
 	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		ControlProperty mine = findProperty(lookup);
-		try {
-			if (getExtendClass() == null) {
-				return;
-			}
-			ControlProperty inherit = getExtendClass().findProperty(mine.getPropertyLookup());
-			mine.inherit(inherit);
-		} catch (IllegalArgumentException ignore) {
-
+		ControlProperty mine = findPropertyNullable(lookup);
+		if (mine == null) {
+			return;
 		}
+		if (getExtendClass() == null) {
+			return;
+		}
+		ControlProperty inherit = getExtendClass().findProperty(mine.getPropertyLookup());
+		mine.inherit(inherit);
 
 	}
 
@@ -507,11 +564,7 @@ public class ControlClass {
 	 @return true if the given property lookup is overridden, false if it isn't.
 	 */
 	public final boolean propertyIsOverridden(@NotNull ControlProperty property) {
-		try {
-			return propertyIsDefined(property) && !property.isInherited();
-		} catch (IllegalArgumentException e) {
-			return false;
-		}
+		return propertyIsDefined(property) && !property.isInherited();
 	}
 
 	@NotNull
@@ -699,18 +752,18 @@ public class ControlClass {
 		setClassName(controlClass.getClassName());
 
 		for (ControlProperty property : controlClass.getAllChildProperties()) {
-			try {
-				findProperty(property.getPropertyLookup()).setTo(property);
-			} catch (IllegalArgumentException ignore) {
-
+			ControlProperty m = findPropertyNullable(property.getPropertyLookup());
+			if (m == null) {
+				continue;
 			}
+			m.setTo(property);
 		}
 		for (ControlClass nested : controlClass.getAllNestedClasses()) {
-			try {
-				findNestedClass(nested.getClassName()).setTo(nested);
-			} catch (IllegalArgumentException ignore) {
-
+			ControlClass m = findNestedClassNullable(nested.getClassName());
+			if (m == null) {
+				continue;
 			}
+			m.setTo(nested);
 		}
 
 		for (ControlProperty override : controlClass.getOverriddenProperties()) {

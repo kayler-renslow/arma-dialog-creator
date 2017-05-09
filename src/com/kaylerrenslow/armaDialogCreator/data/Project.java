@@ -20,7 +20,7 @@ import java.util.List;
 /**
  A Project holds the its location to where all saved data is, the current display the {@link com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasEditor} is editing,
  the {@link ProjectMacroRegistry} instance, as well as all {@link ExternalResource}s.
-
+ <p>
  A project needs an {@link ApplicationData} instance for the project's {@link com.kaylerrenslow.armaDialogCreator.control.DefaultValueProvider} instance.
 
  @author Kayler
@@ -168,15 +168,21 @@ public class Project implements SpecificationRegistry {
 		this.exportConfiguration = exportConfiguration;
 	}
 
+	/**
+	 Will get the {@link ControlClass} instance by name. First will search {@link #getCustomControlClassRegistry()}.
+	 If that returns null, will search {@link #getEditingDisplay()} via {@link ArmaDisplay#findControlByClassName(String)}*
+
+	 @return the matched class, or null if couldn't be located
+	 */
 	@Override
 	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
-		ControlClass controlClass = getEditingDisplay().findControlByClassName(className);
+		ControlClass controlClass = controlRegistry.findControlClassByName(className);
 		if (controlClass != null) {
 			return controlClass;
 		}
 
-		return controlRegistry.findControlClassByName(className);
+		return getEditingDisplay().findControlByClassName(className);
 	}
 
 	@Nullable

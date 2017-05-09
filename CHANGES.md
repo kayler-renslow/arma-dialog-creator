@@ -1,12 +1,12 @@
 **Added:**
-* more tests for preprocessor
-* string support for expressions. will properly concatenate them as well
+* tooltip to color box in control treeview
+* more documentation for ControlClass and HeaderClass
 
 **Changed:**
-* modified Expression class to check for String literals
+* ControlClass now has nullable methods for finding nested classes
 
 **Fixed:**
-* 
+* Project xml loader not locating extend classes
 
 **Notes:**
-* 
+* may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

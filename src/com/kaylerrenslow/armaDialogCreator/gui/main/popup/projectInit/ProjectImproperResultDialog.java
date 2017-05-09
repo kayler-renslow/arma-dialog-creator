@@ -8,7 +8,6 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
@@ -19,6 +18,7 @@ import java.util.ResourceBundle;
 
 /**
  Shown when the project successfully loaded, however there was errors.
+
  @author Kayler
  @since 11/23/2016 */
 public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
@@ -31,6 +31,7 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 		myRootElement.setFitToWidth(true);
 		myRootElement.setFitToHeight(true);
 		VBox root = (VBox) myRootElement.getContent();
+		root.setFillWidth(true);
 
 		//swap out the dialog's root element padding for the vbox that is the root element of scrollpane
 		root.setPadding(super.myRootElement.getPadding());
@@ -40,29 +41,33 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 		root.getChildren().add(new Separator(Orientation.HORIZONTAL));
 		for (ParseError error : result.getErrors()) {
 			VBox vbErrorMsg = new VBox(5);
+			vbErrorMsg.setFillWidth(true);
 			vbErrorMsg.getChildren().addAll(
-					getLabel(bundle.getString("ProjectResultErrorPopup.error_message") + " " + error.getMessage(), null),
+					getLabel(bundle.getString("ProjectResultErrorPopup.error_message") + " " + error.getMessage()),
 					getLabel(
-							bundle.getString("ProjectResultErrorPopup.recovered"),
-							getLabel(
-									error.recovered() ? bundle.getString("ProjectResultErrorPopup.yes")
-											: bundle.getString("ProjectResultErrorPopup.no"),
-									null
-							)
+							bundle.getString("ProjectResultErrorPopup.recovered") + " " +
+									(
+											error.recovered() ? bundle.getString("ProjectResultErrorPopup.yes")
+													: bundle.getString("ProjectResultErrorPopup.no")
+									)
+
 					)
+
 			);
 			if (error.recovered()) {
-				vbErrorMsg.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage(), null));
+				vbErrorMsg.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage()));
 			}
 
 			root.getChildren().add(vbErrorMsg);
 		}
 		myStage.setWidth(340d);
+		myStage.setHeight(640d);
 	}
 
-	private Label getLabel(String text, Node graphic) {
-		Label label = new Label(text, graphic);
-		label.setContentDisplay(ContentDisplay.RIGHT);
+	private Node getLabel(String text) {
+		Label label = new Label(text);
+		label.setWrapText(true);
+		//todo fix wrap text
 		return label;
 	}
 

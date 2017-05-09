@@ -7,13 +7,18 @@ import java.util.LinkedList;
 import java.util.function.Function;
 
 /**
+ @see HeaderParser
+ @see HeaderFile
  @author Kayler
  @since 03/19/2017 */
 public interface HeaderClass extends HeaderItem {
+	/** @return {@link HeaderAssignment} instances that are inside this {@link HeaderClass}. */
 	@NotNull HeaderAssignmentList getAssignments();
 
+	/** @return {@link HeaderClass} instances that are inside this {@link HeaderClass} */
 	@NotNull HeaderClassList getNestedClasses();
 
+	/** @return class name */
 	@NotNull String getClassName();
 
 	/**
@@ -30,6 +35,12 @@ public interface HeaderClass extends HeaderItem {
 		return getClassName().equalsIgnoreCase(className);
 	}
 
+	/**
+	 Get the name of the class that this class extends, or null if this class doesn't extend anything.
+
+	 @return the class name, or null
+	 @see HeaderFile#getExtendClass(HeaderClass, boolean)
+	 */
 	@Nullable String getExtendClassName();
 
 	/**
@@ -53,10 +64,19 @@ public interface HeaderClass extends HeaderItem {
 	}
 
 	/**
-	 @return the parent {@link HeaderClass}, or null if has no parent class (likely inside {@link HeaderFile#getClasses()})
+	 Every class has a parent class, except the root class. The root class is used for populating {@link HeaderFile#getClasses()}
+	 and {@link HeaderFile#getAssignments()}. The root class basically copies the references to the {@link HeaderFile}, however,
+	 the root class still exists in the {@link HeaderClass} hierarchy and is reachable via this method.
+
+	 @return the parent {@link HeaderClass}, or null if has no parent class and is the root class.
 	 */
 	@Nullable HeaderClass getParentClass();
 
+	/**
+	 Get the {@link HeaderFile} that owns this {@link HeaderClass}
+
+	 @return owner
+	 */
 	@NotNull HeaderFile getOwnerFile();
 
 	/**

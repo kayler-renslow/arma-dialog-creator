@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ControlClassRegistry {
 
 	/**
-	 Will get the custom control class by the given name
+	 Will get the {@link ControlClass} by the given name
 
 	 @return the matched {@link ControlClass}, or null if nothing could be matched
 	 */

@@ -27,6 +27,7 @@ public class DefaultControlTreeItemGraphic extends HBox {
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 
+
 	public DefaultControlTreeItemGraphic() {
 		super(5);
 		rbSelected.setSelected(true);
@@ -72,6 +73,16 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		gc.setFill(color);
 		gc.fillRect(0, 0, box.getWidth(), box.getHeight());
 		gc.restore();
+
+		//generate hex string and bind it to tooltip
+		final double f = 255.0;
+		int r = (int) (color.getRed() * f);
+		int g = (int) (color.getGreen() * f);
+		int b = (int) (color.getBlue() * f);
+		int a = (int) (color.getOpacity() * f);
+		int argb = (a << 24) | (r << 16) | (g << 8) | b;
+
+		Tooltip.install(box, new Tooltip(Integer.toHexString(argb)));
 	}
 
 	public void updateVisibilityRadioButton(boolean visible) {

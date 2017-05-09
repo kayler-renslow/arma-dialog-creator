@@ -185,14 +185,17 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return type;
 	}
 
+	@NotNull
 	public final ArmaControlRenderer getRenderer() {
 		return renderer;
 	}
 
+	@NotNull
 	public final RendererLookup getRendererLookup() {
 		return rendererLookup;
 	}
 
+	@NotNull
 	public final ControlStyle[] getAllowedStyles() {
 		return allowedStyles;
 	}
@@ -234,6 +237,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
 	}
 
+	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType controlType, @NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 											@NotNull Env env, @NotNull SpecificationRegistry registry) {
 		return createControl(controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
