@@ -1,12 +1,11 @@
 **Added:**
-* 
+* project import dialog now lets the user select a converted project to open, and then open it
 
 **Changed:**
-* moved ProjectInit out of ADCProjectInitWindow and into data.xml package
-* added css property to make tooltips larger and more readable
+* wizard dialog will disable next button if step isn't completed
 
 **Fixed:**
-* text not wrapping for project parse errors dialog
+* 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

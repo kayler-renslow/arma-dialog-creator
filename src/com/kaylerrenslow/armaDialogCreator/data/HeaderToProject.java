@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,9 +45,20 @@ public class HeaderToProject {
 	 */
 	private static final String CONTROL_TYPE = "type";
 
-	public static void convertAndSaveToWorkspace(@NotNull File workspaceDir, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback c)
+	/**
+	 Runs the description.ext to {@link Project} converter and saves the converted {@link Project}s to files listed in the return value.
+
+	 @param workspaceDir the directory of the workspace. This directory must exist, or an exception will be thrown.
+	 @param descExt the description.ext file
+	 @param c callback to use
+	 @return a list of Files (with the key being the name of the dialog) that link to the project xml for each of the converted dialogs.
+	 The size may not be equal to the number of dialogs requested to be converted, however, it will never
+	 be larger than the requested amount.
+	 */
+	@NotNull
+	public static List<KeyValue<String, File>> convertAndSaveToWorkspace(@NotNull File workspaceDir, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback c)
 			throws FileNotFoundException, HeaderConversionException {
-		new HeaderToProject(new Workspace(workspaceDir), descExt, c).run();
+		return new HeaderToProject(new Workspace(workspaceDir), descExt, c).run();
 	}
 
 	//
@@ -76,7 +88,8 @@ public class HeaderToProject {
 		}
 	}
 
-	private void run() throws FileNotFoundException, HeaderConversionException {
+	private List<KeyValue<String, File>> run() throws FileNotFoundException, HeaderConversionException {
+		List<KeyValue<String, File>> ret = new ArrayList<>();
 		callback.progressUpdate(0, -1);
 		callback.message(bundle.getString("Status.parsing"));
 		try {
@@ -117,17 +130,19 @@ public class HeaderToProject {
 
 				//begin conversion of dialog and save to workspace
 				try {
-					saveToWorkspace(hc);
+					File projectXml = saveToWorkspace(hc);
+					ret.add(new KeyValue<>(hc.getClassName(), projectXml));
 				} catch (HeaderConversionException e) {
 					callback.conversionFailed(className, e);
 				}
 			}
 		}
 
+		return ret;
 	}
 
-
-	private void saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
+	@NotNull
+	private File saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
 		final String dialogClassName = displayClass.getClassName();
 
 		int progress = 0;
@@ -156,7 +171,7 @@ public class HeaderToProject {
 				dialogDir.mkdirs();
 				dialogDir.mkdir();
 			}
-			
+
 			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir));
 		}
 
@@ -220,6 +235,8 @@ public class HeaderToProject {
 		callback.progressUpdate(++progress, maxProgress);
 
 		//done converting and conversion of dialog/display is written to file by here.
+
+		return project.getProjectSaveFile();
 	}
 
 	private void addArrayControls(@NotNull String ownerDialogName, @NotNull Project project, @Nullable HeaderAssignment arrayOfControlsAssignment, @NotNull List<ArmaControl> controls, @NotNull String

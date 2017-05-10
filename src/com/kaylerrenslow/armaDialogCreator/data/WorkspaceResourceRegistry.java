@@ -27,6 +27,11 @@ public class WorkspaceResourceRegistry extends ResourceRegistry {
 		}
 	}
 
+	/**
+	 Get the {@link WorkspaceResourceRegistry} for the instance returned by {@link Workspace#getWorkspace()}
+
+	 @return registry
+	 */
 	@NotNull
 	public static WorkspaceResourceRegistry getInstance() {
 		return Workspace.getWorkspace().getGlobalResourceRegistry();

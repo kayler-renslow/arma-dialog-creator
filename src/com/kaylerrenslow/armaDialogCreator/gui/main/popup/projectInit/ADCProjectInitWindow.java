@@ -67,7 +67,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		myStage.setResizable(false);
 	}
 
-
+	@NotNull
 	public ProjectInit getProjectInit() {
 		return initWizardStep.getProjectInit();
 	}
@@ -130,11 +130,6 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public File getWorkspaceDirectory() {
 			return workspaceDirectory;
 		}
-
-		@Override
-		protected boolean stepIsComplete() {
-			return true;
-		}
 	}
 
 	private static class ProjectInitWizardStep extends WizardStep<VBox> {
@@ -148,6 +143,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public ProjectInitWizardStep(@NotNull ADCProjectInitWindow projectInitWindow) {
 			super(new VBox(5));
 			this.projectInitWindow = projectInitWindow;
+
+			stepIsCompleteProperty.set(false);
 
 			//header
 			final Label lblProjectSetup = new Label(bundle.getString("project_setup"));
@@ -199,10 +196,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			tabImport = new ImportTab();
 			initTabs.add(new ImportTab());
 
-			final ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
+			ValueListener<Boolean> enabledListener = new ValueListener<Boolean>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean enabled) {
-					projectInitWindow.getFooter().getBtnOk().setDisable(!enabled);
+					stepIsCompleteProperty.set(enabled);
 				}
 			};
 			for (ProjectInitTab initTab : initTabs) {
@@ -213,9 +210,25 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			tabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 				@Override
 				public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab selected) {
-					stepPresented();
+					updateStepIsCompleteProperty(selected);
 				}
 			});
+
+			updateStepIsCompleteProperty(tabPane.getSelectionModel().getSelectedItem());
+		}
+
+		private void updateStepIsCompleteProperty(@NotNull Tab selected) {
+			boolean found = false;
+			for (ProjectInitTab initTab : initTabs) {
+				if (initTab.getTab() == selected) {
+					found = true;
+					stepIsCompleteProperty.set(initTab.projectConfigSet.getValue());
+					break;
+				}
+			}
+			if (!found) {
+				throw new IllegalStateException("didn't find init tab");
+			}
 		}
 
 		private static VBox getTabVbox(double spacing) {
@@ -227,30 +240,13 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		@Override
 		protected void stepPresented() {
-			if (!hasBeenPresented()) {
-				super.stepPresented();
+			super.stepPresented();
+			if (getPresentCount() == 1) {
 				if (openTab.getParsedKnownProjects().size() > 0) {
 					tabPane.getSelectionModel().select(openTab.getTab());
 				}
 			}
-			projectInitWindow.getFooter().getBtnOk().setDisable(!stepIsComplete());
 		}
-
-		@Override
-		protected void stepLeft(boolean movingForward) {
-			projectInitWindow.getFooter().getBtnOk().setDisable(false);
-		}
-
-		@Override
-		protected boolean stepIsComplete() {
-			for (ProjectInitTab initTab : initTabs) {
-				if (initTab.getTab() == tabPane.getSelectionModel().getSelectedItem()) {
-					return initTab.projectConfigSet.getValue();
-				}
-			}
-			throw new IllegalStateException("unknown tab is selected");
-		}
-
 
 		private abstract class ProjectInitTab {
 			protected final ValueObserver<Boolean> projectConfigSet = new ValueObserver<>(true);
@@ -440,6 +436,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						return;
 					}
 					projectInit = d.getProjectInit();
+					if (projectInit != null) {
+						projectInitWindow.forceOkProperty.set(true);
+						projectInitWindow.ok();
+					} else {
+						//todo tell user that something went wrong
+					}
 
 				});
 				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
@@ -448,6 +450,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 				projectConfigSet.updateValue(false);
 			}
+
 
 			@Override
 			public ProjectInit getResult() {

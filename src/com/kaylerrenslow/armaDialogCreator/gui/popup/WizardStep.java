@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.popup;
 
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 
@@ -11,6 +13,8 @@ public abstract class WizardStep<V extends Node> {
 	protected final V content;
 	private boolean hasBeenShown = false;
 	private int presentCount = 0;
+	/** Boolean property that is initially true. See {@link #completeStep(boolean)} for more info */
+	protected final BooleanProperty stepIsCompleteProperty = new SimpleBooleanProperty(true);
 
 	public WizardStep(@NotNull V content) {
 		this.content = content;
@@ -21,7 +25,7 @@ public abstract class WizardStep<V extends Node> {
 		return content;
 	}
 
-	/** Invoked when step has been presented to user. */
+	/** Invoked when step has been presented to user. If overridden, this method must call the super method!*/
 	protected void stepPresented() {
 		hasBeenShown = true;
 		presentCount++;
@@ -46,6 +50,17 @@ public abstract class WizardStep<V extends Node> {
 
 	}
 
-	/** Return true if the wizard can progress, false if the step isn't complete yet */
-	abstract protected boolean stepIsComplete();
+	/** Set {@link #stepIsCompleteProperty} equal to complete */
+	protected final void completeStep(boolean complete) {
+		stepIsCompleteProperty.set(complete);
+	}
+
+	/**
+	 Returns whatever {@link #stepIsCompleteProperty} is set to. Default value is true.
+
+	 @return true if the wizard can progress, false if the step isn't complete yet.
+	 */
+	protected final boolean stepIsComplete() {
+		return stepIsCompleteProperty.get();
+	}
 }

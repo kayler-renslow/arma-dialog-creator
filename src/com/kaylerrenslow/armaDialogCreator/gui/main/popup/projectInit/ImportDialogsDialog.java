@@ -9,10 +9,13 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckboxSelectionPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStep;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -21,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -47,8 +51,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	private final ParsingStep parsingStep;
 	private final ConvertingDialogsStep convertingStep;
 	private final SelectDialogToLoadStep selectDialogToLoadStep;
-
-	private ProjectInit projectInit;
+	private final FinalizingStep finalizingStep;
 
 	public ImportDialogsDialog(@NotNull ADCProjectInitWindow initWindow, @NotNull File initialWorkspaceDir, @NotNull File descExt) {
 		super(initWindow.getStage(), null, true);
@@ -59,10 +62,12 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		importStep = new SelectDialogsToImportStep();
 		convertingStep = new ConvertingDialogsStep();
 		selectDialogToLoadStep = new SelectDialogToLoadStep();
+		finalizingStep = new FinalizingStep();
 		addWizardStep(parsingStep);
 		addWizardStep(importStep);
 		addWizardStep(convertingStep);
 		addWizardStep(selectDialogToLoadStep);
+		addWizardStep(finalizingStep);
 
 		//start convert thread
 		ConvertTask convertTask = new ConvertTask(initialWorkspaceDir, descExt);
@@ -98,12 +103,8 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 	private void selectDialogsEvent(@NotNull List<String> dialogNames) {
 		importStep.displayDialogNames(dialogNames);
-		parsingStep.complete();
+		parsingStep.completedParsing();
 		goForwardStep(); //go to the select dialogs step
-	}
-
-	private void setProjectToLoad(@NotNull ProjectInit projectInit) {
-		this.projectInit = projectInit;
 	}
 
 	private void parseCompleteEvent() {
@@ -117,7 +118,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 	@Nullable
 	public ProjectInit getProjectInit() {
-		return projectInit;
+		return finalizingStep.getProjectInit();
 	}
 
 	private class ConvertTask extends Task<Boolean> implements HeaderToProject.ConversionCallback {
@@ -132,7 +133,16 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		@Override
 		protected Boolean call() throws Exception {
-			HeaderToProject.convertAndSaveToWorkspace(workspaceDir, descExt, this);
+			List<KeyValue<String, File>> projectFiles = HeaderToProject.convertAndSaveToWorkspace(workspaceDir, descExt, this);
+
+			//send the project files to JavaFX to be selected
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					convertingStep.completedConversion();
+					selectDialogToLoadStep.setDialogs(projectFiles);
+				}
+			});
 
 			//wait for the JavaFX thread to tell what project file to load
 			File projectFile = (File) messageQToTask.take();
@@ -154,7 +164,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					setProjectToLoad(new ProjectInit.OpenProject(parseResult));
+					finalizingStep.setProjectToLoad(new ProjectInit.OpenProject(parseResult));
 				}
 			});
 			return true;
@@ -213,13 +223,13 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	private interface MyWizardStep {
 
 		void message(@NotNull String msg);
+
 		void progressUpdate(double progress);
 
 	}
 
 	private class ParsingStep extends WizardStep<StackPane> implements MyWizardStep {
 
-		private boolean complete = false;
 		private final Label lblMessage = new Label();
 
 		public ParsingStep() {
@@ -233,14 +243,6 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			content.setAlignment(Pos.CENTER);
 		}
 
-		public void complete() {
-			this.complete = true;
-		}
-
-		@Override
-		protected boolean stepIsComplete() {
-			return complete;
-		}
 
 		@Override
 		public void message(@NotNull String msg) {
@@ -249,6 +251,10 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		@Override
 		public void progressUpdate(double progress) {
+		}
+
+		public void completedParsing() {
+			this.completeStep(true);
 		}
 	}
 
@@ -260,11 +266,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			super(new VBox(10));
 			content.getChildren().add(new Label(bundle.getString("ImportDialogs.Step.SelectDialogs.body")));
 			content.getChildren().add(pane);
-		}
-
-		@Override
-		protected boolean stepIsComplete() {
-			return pane.getSelected().size() > 0;
+			pane.getSelected().addListener((ListChangeListener<? super String>) c -> {
+				stepIsCompleteProperty.set(pane.getSelected().size() > 0);
+			});
 		}
 
 		public void displayDialogNames(@NotNull List<String> dialogNames) {
@@ -308,13 +312,8 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			lblHeader.setFont(Font.font(15));
 			content.getChildren().add(new VBox(10, lblHeader, lblMessage, progressBar));
 			progressBar.minWidthProperty().bind(content.widthProperty().multiply(.75));
+			stepIsCompleteProperty.set(false);
 		}
-
-		@Override
-		protected boolean stepIsComplete() {
-			return false;
-		}
-
 		@Override
 		public void message(@NotNull String msg) {
 			lblMessage.setText(msg);
@@ -324,17 +323,26 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		public void progressUpdate(double progress) {
 			progressBar.setProgress(progress);
 		}
+
+		public void completedConversion() {
+			this.completeStep(true);
+		}
 	}
 
 	private class SelectDialogToLoadStep extends WizardStep<VBox> implements MyWizardStep {
 
+		private final ListView<String> listViewDialogs = new ListView<>();
+		private final HashMap<String, File> dialogNameToFile = new HashMap<>();
+
 		public SelectDialogToLoadStep() {
 			super(new VBox(10));
-		}
+			content.getChildren().add(new Label(bundle.getString("ImportDialogs.Step.SelectDialogsToLoad.title")));
+			content.getChildren().add(listViewDialogs);
 
-		@Override
-		protected boolean stepIsComplete() {
-			return false;
+			listViewDialogs.getSelectionModel().getSelectedItems().addListener((ListChangeListener<? super String>) c -> {
+				stepIsCompleteProperty.set(!listViewDialogs.getSelectionModel().isEmpty());
+			});
+			stepIsCompleteProperty.set(false);
 		}
 
 		@Override
@@ -345,6 +353,61 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		@Override
 		public void progressUpdate(double progress) {
 
+		}
+
+		@NotNull
+		public File getSelectedProjectFile() {
+			return dialogNameToFile.get(listViewDialogs.getSelectionModel().getSelectedItem());
+		}
+
+		public void setDialogs(@NotNull List<KeyValue<String, File>> dialogNamesWithTheirProjectFiles) {
+			for (KeyValue<String, File> kv : dialogNamesWithTheirProjectFiles) {
+				listViewDialogs.getItems().add(kv.getKey());
+				dialogNameToFile.put(kv.getKey(), kv.getValue());
+			}
+		}
+
+		@Override
+		protected void stepLeft(boolean movingForward) {
+			super.stepLeft(movingForward);
+			if (getPresentCount() == 1) { //first time leaving step
+				messageQToTask.add(getSelectedProjectFile());
+			}
+		}
+	}
+
+	private class FinalizingStep extends WizardStep<StackPane> implements MyWizardStep {
+
+		private final Label lblBody = new Label(bundle.getString("ImportDialogs.Step.Final.body_finalizing"));
+		private ProjectInit projectInit;
+
+		public FinalizingStep() {
+			super(new StackPane());
+			content.setAlignment(Pos.CENTER);
+			content.getChildren().add(lblBody);
+			lblBody.setWrapText(true);
+			stepIsCompleteProperty.set(false);
+		}
+
+		@Override
+		public void message(@NotNull String msg) {
+
+		}
+
+		@Override
+		public void progressUpdate(double progress) {
+
+		}
+
+		public void setProjectToLoad(ProjectInit projectInit) {
+			this.projectInit = projectInit;
+			completeStep(true);
+			lblBody.setText(bundle.getString("ImportDialogs.Step.Final.ready"));
+		}
+
+		@NotNull
+		public ProjectInit getProjectInit() {
+			return projectInit;
 		}
 	}
 }
