@@ -333,6 +333,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 
 
+
 		//renderer
 		RendererLookup rendererLookup;
 		String rendererStr = controlElement.getAttribute("renderer-id");
@@ -388,6 +389,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		List<ControlPropertyLookup> inheritControlProperties = ProjectXmlUtil.loadInheritedControlProperties(controlElement, this.loader);
 
+		//add extend job if needed
 		String extendClassName = controlElement.getAttribute("extend-class");
 		if (extendClassName.length() > 0) {
 			jobs.add(new ControlExtendJob(extendClassName, control, inheritControlProperties));
@@ -457,6 +459,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		@Override
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
 			ControlClass cc = project.findControlClassByName(controlClassName);
+
 			if (cc == null) {
 				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
 				return;

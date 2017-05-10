@@ -2,6 +2,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
 import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.data.HeaderToProject;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckboxSelectionPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStep;
@@ -15,6 +18,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.List;
@@ -26,6 +30,15 @@ import java.util.concurrent.ArrayBlockingQueue;
  @since 05/05/2017 */
 public class ImportDialogsDialog extends WizardStageDialog {
 
+	/*
+	* Order of operations for dialog:
+	* 1.
+	* 2. todo write this stuff in
+	* 3.
+	* 4.
+	*
+	* */
+
 	private final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 	/** Queue for sending messages from JavaFX to converter */
 	private final ArrayBlockingQueue<Object> messageQToTask = new ArrayBlockingQueue<>(1);
@@ -33,8 +46,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	private final SelectDialogsToImportStep importStep;
 	private final ParsingStep parsingStep;
 	private final ConvertingDialogsStep convertingStep;
+	private final SelectDialogToLoadStep selectDialogToLoadStep;
 
-	private File projectFileToOpen;
+	private ProjectInit projectInit;
 
 	public ImportDialogsDialog(@NotNull ADCProjectInitWindow initWindow, @NotNull File initialWorkspaceDir, @NotNull File descExt) {
 		super(initWindow.getStage(), null, true);
@@ -44,9 +58,11 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		parsingStep = new ParsingStep();
 		importStep = new SelectDialogsToImportStep();
 		convertingStep = new ConvertingDialogsStep();
+		selectDialogToLoadStep = new SelectDialogToLoadStep();
 		addWizardStep(parsingStep);
 		addWizardStep(importStep);
 		addWizardStep(convertingStep);
+		addWizardStep(selectDialogToLoadStep);
 
 		//start convert thread
 		ConvertTask convertTask = new ConvertTask(initialWorkspaceDir, descExt);
@@ -86,9 +102,8 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		goForwardStep(); //go to the select dialogs step
 	}
 
-	private void chooseProjectToLoadEvent() {
-		//projectFileToOpen =
-
+	private void setProjectToLoad(@NotNull ProjectInit projectInit) {
+		this.projectInit = projectInit;
 	}
 
 	private void parseCompleteEvent() {
@@ -96,12 +111,13 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	}
 
 	private void dialogConversionFailedEvent(@NotNull String dialogClassName, @NotNull Exception e) {
+		//todo
 		e.printStackTrace(System.out);
 	}
 
-	@NotNull
-	public File getProjectFileToOpen() {
-		return projectFileToOpen;
+	@Nullable
+	public ProjectInit getProjectInit() {
+		return projectInit;
 	}
 
 	private class ConvertTask extends Task<Boolean> implements HeaderToProject.ConversionCallback {
@@ -117,10 +133,28 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		@Override
 		protected Boolean call() throws Exception {
 			HeaderToProject.convertAndSaveToWorkspace(workspaceDir, descExt, this);
+
+			//wait for the JavaFX thread to tell what project file to load
+			File projectFile = (File) messageQToTask.take();
+
+			ProjectXmlLoader.ProjectPreviewParseResult parseResult;
+			try {
+				parseResult = ProjectXmlLoader.previewParseProjectXmlFile(projectFile);
+			} catch (XmlParseException e) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						new CouldNotLoadProjectDialog(e).show();
+					}
+				});
+				return false;
+			}
+
+
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
-					chooseProjectToLoadEvent();
+					setProjectToLoad(new ProjectInit.OpenProject(parseResult));
 				}
 			});
 			return true;
@@ -139,8 +173,6 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 			try {
 				ret = (List<String>) messageQToTask.take();
-				System.out.println("ConvertTask.selectClassesToSave ret=" + ret);
-
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
@@ -179,9 +211,10 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	}
 
 	private interface MyWizardStep {
-		void message(@NotNull String msg);
 
+		void message(@NotNull String msg);
 		void progressUpdate(double progress);
+
 	}
 
 	private class ParsingStep extends WizardStep<StackPane> implements MyWizardStep {
@@ -237,7 +270,6 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		public void displayDialogNames(@NotNull List<String> dialogNames) {
 			for (String s : dialogNames) {
 				pane.addItem(s);
-
 			}
 		}
 
@@ -294,5 +326,25 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		}
 	}
 
+	private class SelectDialogToLoadStep extends WizardStep<VBox> implements MyWizardStep {
 
+		public SelectDialogToLoadStep() {
+			super(new VBox(10));
+		}
+
+		@Override
+		protected boolean stepIsComplete() {
+			return false;
+		}
+
+		@Override
+		public void message(@NotNull String msg) {
+
+		}
+
+		@Override
+		public void progressUpdate(double progress) {
+
+		}
+	}
 }

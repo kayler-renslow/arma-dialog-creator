@@ -37,7 +37,7 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 		root.setPadding(super.myRootElement.getPadding());
 		super.myRootElement.setPadding(new Insets(0));
 
-		root.getChildren().add(new Label(bundle.getString("ProjectResultErrorPopup.errors_title")));
+		root.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.errors_title")));
 		root.getChildren().add(new Separator(Orientation.HORIZONTAL));
 		for (ParseError error : result.getErrors()) {
 			VBox vbErrorMsg = new VBox(5);
@@ -60,14 +60,14 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 
 			root.getChildren().add(vbErrorMsg);
 		}
-		myStage.setWidth(340d);
-		myStage.setHeight(640d);
+		myStage.setWidth(480d);
+		myStage.setHeight(480d);
 	}
 
 	private Node getLabel(String text) {
 		Label label = new Label(text);
 		label.setWrapText(true);
-		//todo fix wrap text
+		label.setMaxHeight(Double.MAX_VALUE);
 		return label;
 	}
 

@@ -1,3 +1,7 @@
+.tooltip {
+    -fx-font:15 'sans-serif';
+}
+
 /*Makes the node have rounded edges*/
 .rounded-node{
     -fx-background-radius: 10;

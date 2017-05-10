@@ -538,7 +538,10 @@ public class ControlClass {
 		if (getExtendClass() == null) {
 			return;
 		}
-		ControlProperty inherit = getExtendClass().findProperty(mine.getPropertyLookup());
+		ControlProperty inherit = getExtendClass().findPropertyNullable(mine.getPropertyLookup());
+		if (inherit == null) {
+			return; //don't want to clear mine.inherit()
+		}
 		mine.inherit(inherit);
 
 	}

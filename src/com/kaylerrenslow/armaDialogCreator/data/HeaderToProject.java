@@ -333,9 +333,15 @@ public class HeaderToProject {
 				optional
 		);
 
-		project.getCustomControlClassRegistry().addControlClass(ccs);
+		CustomControlClass ccc = project.getCustomControlClassRegistry().addControlClass(ccs);
 
-		return new ControlClass(ccs, project);
+
+		if (headerClass.getExtendClassName() != null) {
+			ControlClass cc = createAndAppendCustomControlClass(project, headerFile.getExtendClass(headerClass, false));
+			ccc.getControlClass().extendControlClass(cc);
+		}
+
+		return ccc.getControlClass();
 	}
 
 	@Nullable

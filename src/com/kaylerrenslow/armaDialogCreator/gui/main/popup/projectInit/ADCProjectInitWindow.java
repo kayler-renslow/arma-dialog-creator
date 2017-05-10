@@ -2,6 +2,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
 import com.kaylerrenslow.armaDialogCreator.data.*;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.FileChooserPane;
@@ -29,7 +30,6 @@ import javafx.scene.text.Font;
 import javafx.stage.FileChooser;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -418,7 +418,6 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public class ImportTab extends ProjectInitTab {
 
 			private final Tab tabImport = new Tab(bundle.getString("tab_import"));
-			private File projectFileToLoad;
 			private ProjectInit projectInit;
 
 			public ImportTab() {
@@ -440,13 +439,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					if (d.wasCancelled()) {
 						return;
 					}
-					projectFileToLoad = d.getProjectFileToOpen();
-					try {
-						projectInit = new ProjectInit.OpenProject(ProjectXmlLoader.previewParseProjectXmlFile(projectFileToLoad));
-						projectConfigSet.updateValue(true);
-					} catch (XmlParseException e) {
-						new CouldNotLoadProjectDialog(e).show();
-					}
+					projectInit = d.getProjectInit();
+
 				});
 				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
 
@@ -469,44 +463,4 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 	}
 
-	public interface ProjectInit {
-
-		class NewProject implements ProjectInit {
-			private final String projectName;
-			private final String projectDescription;
-
-			public NewProject(@Nullable String projectName, @NotNull String projectDescription) {
-				this.projectName = projectName;
-				this.projectDescription = projectDescription;
-			}
-
-			@NotNull
-			public String getProjectDescription() {
-				return projectDescription;
-			}
-
-			@Nullable
-			public String getProjectName() {
-				return projectName;
-			}
-		}
-
-		class OpenProject implements ProjectInit {
-			private final ProjectXmlLoader.ProjectPreviewParseResult parseResult;
-
-			public OpenProject(@NotNull ProjectXmlLoader.ProjectPreviewParseResult parseResult) {
-				this.parseResult = parseResult;
-			}
-
-			@NotNull
-			public ProjectXmlLoader.ProjectPreviewParseResult getParseResult() {
-				return parseResult;
-			}
-
-			@NotNull
-			public ProjectInfo getProjectXmlInfo() {
-				return parseResult.getProjectInfo();
-			}
-		}
-	}
 }

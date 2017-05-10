@@ -14,9 +14,9 @@ import java.util.List;
 
 /**
  A {@link ControlClassRegistry} implementation for {@link Project#getCustomControlClassRegistry()}
+
  @author Kayler
- @since 10/23/2016.
- */
+ @since 10/23/2016. */
 public class ProjectControlClassRegistry implements ControlClassRegistry {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
@@ -36,16 +36,54 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 		return new CustomControlClassIterator(this);
 	}
 
-	public void addControlClass(@NotNull ControlClassSpecification controlClass) {
-		controlClassList.add(new CustomControlClass(controlClass, project));
+	/**
+	 Add a new {@link CustomControlClass} instance by creating it from the given {@link ControlClassSpecification}.
+
+	 @return the {@link CustomControlClass} that was created and added to {@link #getControlClassList()}
+	 */
+	@NotNull
+	public CustomControlClass addControlClass(@NotNull ControlClassSpecification controlClass) {
+		CustomControlClass ccc = new CustomControlClass(controlClass, project);
+		controlClassList.add(ccc);
+		return ccc;
 	}
 
+	/**
+	 Add the given {@link CustomControlClass} instance to {@link #getControlClassList()}
+	 */
 	public void addControlClass(@NotNull CustomControlClass controlClass) {
 		controlClassList.add(controlClass);
 	}
 
-	/** Will get the {@link CustomControlClass#getControlClass()} by the given name, or null if nothing could be matched */
+	/**
+	 Add a new {@link CustomControlClass} instance by creating it from the given {@link ControlClass}.
+
+	 @return the {@link CustomControlClass} that was created and added to {@link #getControlClassList()}
+	 @see #addControlClass(ControlClassSpecification)
+	 @see #addControlClass(CustomControlClass)
+	 */
+	@NotNull
+	public CustomControlClass addControlClass(@NotNull ControlClass controlClass) {
+		CustomControlClass ccc = new CustomControlClass(controlClass, project);
+		addControlClass(ccc);
+		return ccc;
+	}
+
+	/**
+	 Remove the given {@link CustomControlClass} from {@link #getControlClassList()}.
+	 If the {@link CustomControlClass} wasn't in the list, nothing will happen.
+	 */
+	public void removeControlClass(@NotNull CustomControlClass controlClass) {
+		controlClassList.remove(controlClass);
+	}
+
+	/**
+	 Will get the {@link CustomControlClass#getControlClass()} by the given name, or null if nothing could be matched
+
+	 @return the matched {@link ControlClass}, or null if couldn't be found
+	 */
 	@Override
+	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
 			if (controlClass.getSpecification().getClassName().equals(className)) {
@@ -68,14 +106,6 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 			}
 		}
 		return null;
-	}
-
-	public void addControlClass(@NotNull ControlClass controlClass) {
-		addControlClass(new CustomControlClass(controlClass, project));
-	}
-
-	public void removeControlClass(@NotNull CustomControlClass controlClass) {
-		controlClassList.remove(controlClass);
 	}
 
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {

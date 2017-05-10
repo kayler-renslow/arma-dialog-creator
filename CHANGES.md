@@ -1,12 +1,12 @@
 **Added:**
-* tooltip to color box in control treeview
-* more documentation for ControlClass and HeaderClass
+* 
 
 **Changed:**
-* ControlClass now has nullable methods for finding nested classes
+* moved ProjectInit out of ADCProjectInitWindow and into data.xml package
+* added css property to make tooltips larger and more readable
 
 **Fixed:**
-* Project xml loader not locating extend classes
+* text not wrapping for project parse errors dialog
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

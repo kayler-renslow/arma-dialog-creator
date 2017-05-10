@@ -1,6 +1,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.ADCProjectInitWindow;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
@@ -34,20 +35,20 @@ public class ApplicationLoader {
 
 		applicationDataManager.loadWorkspace(projectInitWindow.getWorkspaceDirectory());
 
-		ADCProjectInitWindow.ProjectInit init = projectInitWindow.getProjectInit();
+		ProjectInit init = projectInitWindow.getProjectInit();
 		ProjectInfo project;
 
 		LoadType loadType;
 
-		if (init instanceof ADCProjectInitWindow.ProjectInit.OpenProject) {
-			ADCProjectInitWindow.ProjectInit.OpenProject openProject = (ADCProjectInitWindow.ProjectInit.OpenProject) init;
+		if (init instanceof ProjectInit.OpenProject) {
+			ProjectInit.OpenProject openProject = (ProjectInit.OpenProject) init;
 			project = openProject.getProjectXmlInfo();
 			loadType = LoadType.LOAD;
 		} else {
 			loadType = LoadType.NEW_PROJECT;
 			String projectName = null;
-			if (init instanceof ADCProjectInitWindow.ProjectInit.NewProject) {
-				ADCProjectInitWindow.ProjectInit.NewProject newProject = (ADCProjectInitWindow.ProjectInit.NewProject) init;
+			if (init instanceof ProjectInit.NewProject) {
+				ProjectInit.NewProject newProject = (ProjectInit.NewProject) init;
 				projectName = newProject.getProjectName();
 			}
 			if (init == null) {
