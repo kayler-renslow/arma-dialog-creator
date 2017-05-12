@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
@@ -523,26 +524,46 @@ public class ControlClass {
 	}
 
 	/**
-	 If {@link #getExtendClass()}!=null, the matched {@link ControlProperty} will be set to ({@link ControlProperty#setTo(ControlProperty)}) a matched inherited property.
-	 If the lookup isn't found in this {@link ControlClass} or {@link #getExtendClass()} is null, nothing will happen.
+	 <ul>
+	 <li>
+	 If {@link #getExtendClass()}!=null, the matched {@link ControlProperty} will be set to
+	 a matched inherited property by using the {@link ControlProperty#setTo(ControlProperty)} method.
+	 </li>
+	 <li>If {@link #getExtendClass()} is null, nothing will happen.</li>
+	 <li>If the lookup isn't found in this {@link ControlClass} and {@link #getExtendClass()} is null, nothing will happen.</li>
+	 <li>
+	 If the lookup isn't found in this {@link ControlClass} but is inside {@link #getExtendClass()},
+	 the {@link ControlProperty} will be inserted into {@link #getOptionalProperties()}
+	 </li>
+	 <li>
+	 If the lookup is found in this {@link ControlClass} but isn't inside {@link #getExtendClass()},
+	 nothing will happen.
+	 </li>
+	 </ul>
+	 If at any point, one of the above conditions changes because {@link #extendControlClass(ControlClass)} is
+	 invoked, the properties should react accordingly due to {@link ControlClass#getControlClassUpdateGroup()}
+	 listeners.
 
 	 @throws IllegalArgumentException when the property isn't in this control class
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 */
 	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		ControlProperty mine = findPropertyNullable(lookup);
-		if (mine == null) {
-			return;
-		}
 		if (getExtendClass() == null) {
 			return;
 		}
-		ControlProperty inherit = getExtendClass().findPropertyNullable(mine.getPropertyLookup());
-		if (inherit == null) {
-			return; //don't want to clear mine.inherit()
+		ControlProperty mine = findPropertyNullable(lookup);
+		if (mine != null) {
+			ControlProperty inherit = getExtendClass().findPropertyNullable(mine.getPropertyLookup());
+			if (inherit == null) {
+				//todo make sure to handle the case when the property is inserted into getExtendClass at a later time!
+				return; //don't want to clear mine.inherit()
+			}
+			mine.inherit(inherit);
+			return;
+		} else {
+			//todo
 		}
-		mine.inherit(inherit);
 
 	}
 
@@ -644,7 +665,7 @@ public class ControlClass {
 	@NotNull
 	public final Iterable<ControlProperty> getInheritedProperties() {
 		if (getExtendClass() == null) {
-			return new ArrayList<>();
+			return Collections.emptyList();
 		}
 		List<ControlProperty> list = new LinkedList<>();
 		appendInheritedProperties(getExtendClass(), list);

@@ -20,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
+import javafx.scene.text.TextBoundsType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -49,7 +50,8 @@ public class BasicTextRenderer {
 	}
 
 	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx) {
-		textObj.setTextOrigin(VPos.BASELINE);
+		textObj.setTextOrigin(VPos.TOP);
+		textObj.setBoundsType(TextBoundsType.VISUAL);
 
 		control.findProperty(text).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
@@ -133,7 +135,7 @@ public class BasicTextRenderer {
 
 	private int getTextY() {
 		int textHeight = (int) (textObj.getLayoutBounds().getHeight());
-		return renderer.getTopY() + renderer.getHeight() / 2 + textHeight / 4;
+		return renderer.getTopY() + (renderer.getHeight() + textHeight) / 2;
 	}
 
 	public void paint(GraphicsContext gc) {

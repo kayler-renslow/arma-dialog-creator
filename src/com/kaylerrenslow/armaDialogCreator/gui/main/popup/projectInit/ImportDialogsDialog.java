@@ -21,7 +21,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.HashMap;
@@ -103,12 +102,11 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 	private void selectDialogsEvent(@NotNull List<String> dialogNames) {
 		importStep.displayDialogNames(dialogNames);
-		parsingStep.completedParsing();
 		goForwardStep(); //go to the select dialogs step
 	}
 
 	private void parseCompleteEvent() {
-
+		parsingStep.completedParsing();
 	}
 
 	private void dialogConversionFailedEvent(@NotNull String dialogClassName, @NotNull Exception e) {
@@ -116,7 +114,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		e.printStackTrace(System.out);
 	}
 
-	@Nullable
+	@NotNull
 	public ProjectInit getProjectInit() {
 		return finalizingStep.getProjectInit();
 	}
@@ -326,6 +324,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		public void completedConversion() {
 			this.completeStep(true);
+			//todo tell user to press next step
 		}
 	}
 

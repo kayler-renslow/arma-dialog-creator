@@ -18,7 +18,7 @@ import org.jetbrains.annotations.Nullable;
 public class CustomControlClass {
 	private final ControlClassSpecification specification;
 	private final SpecificationRegistry registry;
-	private ControlClass controlClass;
+	private final ControlClass controlClass;
 	private final DataContext programData = new DataContext();
 	private String comment;
 
@@ -30,8 +30,9 @@ public class CustomControlClass {
 	 @param controlClass instance to use
 	 */
 	public CustomControlClass(@NotNull ControlClass controlClass, @NotNull SpecificationRegistry registry) {
-		this(new ControlClassSpecification(controlClass), registry);
+		this.specification = new ControlClassSpecification(controlClass);
 		this.controlClass = controlClass;
+		this.registry = registry;
 		loadControlClassListeners();
 	}
 
@@ -43,15 +44,13 @@ public class CustomControlClass {
 	public CustomControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
 		this.specification = specification;
 		this.registry = registry;
+		controlClass = specification.constructNewControlClass(registry);
+		loadControlClassListeners();
 	}
 
 	/** Get the {@link ControlClass} instance. This instance will remain constant. */
 	@NotNull
 	public ControlClass getControlClass() {
-		if (controlClass == null) {
-			controlClass = specification.constructNewControlClass(registry);
-			loadControlClassListeners();
-		}
 		return controlClass;
 	}
 

@@ -436,12 +436,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						return;
 					}
 					projectInit = d.getProjectInit();
-					if (projectInit != null) {
-						projectInitWindow.forceOkProperty.set(true);
-						projectInitWindow.ok();
-					} else {
-						//todo tell user that something went wrong
-					}
+					projectInitWindow.forceOkProperty.set(true);
+					projectInitWindow.ok();
 
 				});
 				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
