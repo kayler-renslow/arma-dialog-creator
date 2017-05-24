@@ -19,8 +19,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.expression.Value;
+import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import javafx.application.Application;
@@ -75,24 +74,14 @@ public class EditorComponentTreeViewTest extends Application {
 	private static class TestArmaControlClass extends ArmaControl {
 
 		public TestArmaControlClass() {
-			super(ControlType.STATIC, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
-				@Override
-				public @Nullable Value getValue(String identifier) {
-					return null;
-				}
-			}, SpecReg.INSTANCE);
+			super(ControlType.STATIC, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
 		}
 	}
 
 	private static class TestArmaControlGroupClass extends ArmaControlGroup {
 
 		public TestArmaControlGroupClass() {
-			super("", new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new Env() {
-				@Override
-				public @Nullable Value getValue(String identifier) {
-					return null;
-				}
-			}, SpecReg.INSTANCE);
+			super("", new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
 		}
 	}
 

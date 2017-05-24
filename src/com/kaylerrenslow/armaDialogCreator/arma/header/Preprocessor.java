@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.data.FilePath;
 import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
+import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
@@ -66,7 +67,7 @@ class Preprocessor {
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
-	private final Env preprocessorEnv = new PreprocessorEnv();
+	private final Env preprocessorEnv = new ParserTimeEnv();
 
 	/**
 	 Create a new, one time use, preprocessor for header files
@@ -519,12 +520,28 @@ class Preprocessor {
 	 </ul>
 
 	 @param entry the entry that contains the macro key and the macro body stored in a {@link DefineValue} instance
-	 @param parameterText the text that the user put inside the parameter macro. This value should be null if not writing a parameter macro
-	 and should not be null if writing a parameter macro. Example parameterText (with D_ARG example above): D_ARG(42) and parameter text is (42)
+	 @param parameterText the text that the user put inside the parameter macro.
+	 This value should be null if not writing a parameter macro and should not be null if writing a parameter macro.
+	 Example parameterText: (with D_ARG example above): D_ARG(42) and parameter text is (42)<br>
+	 Another example : MACRO(parameterText,goes,between,these,parenthesis)
 	 @param writeTo where to write the preprocessed body to
 	 @throws HeaderParseException when an error occurred
 	 */
 	private void writeDefineValue(@NotNull Entry<String, DefineValue> entry, @Nullable String parameterText, @NotNull StringBuilderReference writeTo) throws HeaderParseException {
+		//This method will write a macro's body and then recursively call preprocessText() on the macro body to handle any possible nested macro references.
+		//It will do that by having a "buffer" StringBuilderReference that this method will write to. Then the buffer's text content will be passed into preprocessText().
+		//There should not be stack overflow because preprocessText() will invoke this method only when a macro was matched in its input parameter
+
+		//In the case that the given macro is a parameter macro, the parameter's of the macro will be written with the body, and THEN preprocessText() will be invoked.
+		//So, it is a possible scenario that a parameter macro will write a body that happens to be a predefined macro name.
+		//Example:
+		// #define ARG 1
+		// #define PARAM(A) A#RG
+		// f=PARAM(A) // will result in f=1
+		//
+
+		StringBuilderReference buffer = new StringBuilderReference(new StringBuilder());
+
 		String entryValueText = entry.getValue().getText();
 
 		if (entry.getValue() instanceof ParameterDefineValue) {
@@ -545,7 +562,7 @@ class Preprocessor {
 			}
 
 			if (entry.getKey().equals("__EVAL")) {
-				write__EvalOutput(parameterText, writeTo);
+				write__EvalOutput(parameterText, buffer);
 				return;
 			}
 
@@ -567,9 +584,9 @@ class Preprocessor {
 					if (ind < start) {
 						if (quote || before.equals("##")) {
 							int startBefore = m.start("BEFORE");
-							writeTo.append(entryValueText, ind, startBefore);
+							buffer.append(entryValueText, ind, startBefore);
 						} else {
-							writeTo.append(entryValueText, ind, start);
+							buffer.append(entryValueText, ind, start);
 						}
 						ind = start;
 					}
@@ -591,7 +608,7 @@ class Preprocessor {
 
 				String paramArg = args[paramInd];
 				if (startsWithIgnoreSpace(paramArg, "__EVAL(")) {
-					write__EvalOutput(get__EvalBody(paramArg), writeTo); //cut off parenthesis
+					write__EvalOutput(get__EvalBody(paramArg), buffer); //cut off parenthesis
 				} else {
 					//check if paramArg is a macro itself like: TEST(ANOTHER_MACRO)
 					for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
@@ -604,12 +621,12 @@ class Preprocessor {
 						}
 					}
 					if (quote) {
-						writeTo.append('"');
+						buffer.append('"');
 					}
 
-					writeTo.append(paramArg);
+					buffer.append(paramArg);
 					if (quote) {
-						writeTo.append('"');
+						buffer.append('"');
 					}
 
 					if (ind + 1 < entryValueText.length() && entryValueText.charAt(ind) == '#' && entryValueText.charAt(ind + 1) == '#') {
@@ -619,7 +636,7 @@ class Preprocessor {
 
 			}
 			if (ind < entryValueText.length()) {
-				writeTo.append(entryValueText, ind, entryValueText.length());
+				buffer.append(entryValueText, ind, entryValueText.length());
 			}
 
 		} else {
@@ -629,18 +646,18 @@ class Preprocessor {
 
 			switch (entry.getKey()) {
 				case "__LINE__": {
-					writeTo.append(currentState().lineNumber + "");
+					buffer.append(currentState().lineNumber + "");
 					break;
 				}
 				case "__FILE__": {
-					writeTo.append(currentState().processingFile.getName());
+					buffer.append(currentState().processingFile.getName());
 					break;
 				}
 				default: {
 					if (entry.getValue().getText().contains("__EVAL")) {
-						write__EvalOutput(get__EvalBody(entry.getValue().getText()), writeTo);
+						write__EvalOutput(get__EvalBody(entry.getValue().getText()), buffer);
 					} else {
-						writeTo.append(entryValueText);
+						buffer.append(entryValueText);
 					}
 					break;
 				}
@@ -648,7 +665,11 @@ class Preprocessor {
 
 		}
 
+		//this recursive call is to handle any possible macro references after the body of this macro was written
+		preprocessText(buffer.toString(), writeTo);
+
 	}
+
 
 	@NotNull
 	private String get__EvalBody(@NotNull String __evalMacro) {
@@ -708,16 +729,43 @@ class Preprocessor {
 		));
 	}
 
-	/**
-	 An env for use with __EVAL. It will search all defined macros and use their keys as Identifiers.
-	 No parameter macros should be allowed to be used as identifiers inside __EVAL!
-	 */
-	private class PreprocessorEnv implements Env {
-		private final HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
 
-		@Nullable
+	/**
+	 A {@link Env} for {@link Preprocessor}. This environment is for handling __EXEC and __EVAL for the preprocessor.
+
+	 @author Kayler
+	 @since 05/24/2017
+	 */
+	public class ParserTimeEnv extends SimpleEnv {
+
+		/** Instead of constantly computing a macro's body as an expression, cache the values calculated. */
+		private HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
+
 		@Override
-		public Value getValue(String identifier) {
+		public Value put(@NotNull String identifier, Value v) {
+			return super.put(identifier, v);
+		}
+
+		@Override
+		public Value remove(@NotNull String identifier) {
+			return super.remove(identifier);
+		}
+
+		/**
+		 Search all defined macros and use their keys as Identifiers. Will also check for any values created from __EXEC.
+		 No parameter macros should be allowed to be used as identifiers inside __EVAL!
+		 */
+		@Override
+		@Nullable
+		public Value getValue(@NotNull String identifier) {
+			Value v = getValueFromDefined(identifier);
+			if (v != null) {
+				return v;
+			}
+			return super.getValue(identifier);
+		}
+
+		private Value getValueFromDefined(@Nullable String identifier) {
 			for (Entry<String, DefineValue> defined : defined.entrySet()) {
 				if (identifier.equals(defined.getKey())) {
 					Value value = cachedValues.computeIfAbsent(
@@ -799,6 +847,19 @@ class Preprocessor {
 		/** @see StringBuilder#append(CharSequence, int, int) */
 		public void append(String s, int start, int end) {
 			b.append(s, start, end);
+		}
+
+		public void append(StringBuilder b) {
+			b.append(b);
+		}
+
+		public void append(StringBuilderReference b) {
+			b.append(b.getBuilder());
+		}
+
+		@Override
+		public String toString() {
+			return b.toString();
 		}
 	}
 

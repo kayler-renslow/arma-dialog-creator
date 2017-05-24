@@ -293,6 +293,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 		return options;
 	}
 
+	@NotNull
 	@Override
 	public String getPropertyName() {
 		return propertyName;

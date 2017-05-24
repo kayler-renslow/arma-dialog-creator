@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
@@ -14,10 +15,10 @@ public class ExpressionInterpreterTest {
 	/** use this variable for identifier/variable tests */
 	private static final int a = 51;
 
-	private static class MyEnv implements Env {
+	private static class MyEnv extends SimpleEnv {
 
 		@Override
-		public @Nullable Value getValue(String identifier) {
+		public @Nullable Value getValue(@NotNull String identifier) {
 			return new Value.NumVal(a);
 		}
 	}

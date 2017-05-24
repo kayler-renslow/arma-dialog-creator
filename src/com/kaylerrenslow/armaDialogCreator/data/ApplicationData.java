@@ -33,7 +33,7 @@ public class ApplicationData extends DataContext {
 
 	private final SimpleEnv globalEnv = new SimpleEnv() {
 		@Override
-		public @Nullable Value getValue(String identifier) {
+		public @Nullable Value getValue(@NotNull String identifier) {
 			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ApplicationData.this);
 			if (resolution == null) {
 				throw new IllegalStateException("resolution shouldn't be null");

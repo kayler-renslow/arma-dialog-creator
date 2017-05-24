@@ -91,6 +91,17 @@ public class ControlClass {
 	};
 
 
+	/**
+	 Construct a new instance with the given class name, specification, and registry.
+	 This constructor will create new {@link ControlProperty} instances for
+	 {@link #getOptionalProperties()} and {@link #getRequiredProperties()} via {@link ControlPropertyLookupConstant#newEmptyProperty(DefaultValueProvider)}
+	 (using parameter <code>registry</code>).
+
+	 @param name the class name
+	 @param specification specification to use
+	 @param registry registry to use
+	 @see ControlProperty
+	 */
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification, @NotNull SpecificationRegistry registry) {
 		classNameObserver.updateValue(name);
 		this.specProvider = specification;
@@ -544,7 +555,6 @@ public class ControlClass {
 	 invoked, the properties should react accordingly due to {@link ControlClass#getControlClassUpdateGroup()}
 	 listeners.
 
-	 @throws IllegalArgumentException when the property isn't in this control class
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 */

@@ -9,23 +9,24 @@ import java.util.ArrayList;
 import java.util.Comparator;
 
 /**
- A {@link ControlPropertyLookupConstant} is a way to check if one {@link ControlProperty} equals another. Each instance that implements this interface must be instantiated only <b>once</b>.
+ A {@link ControlPropertyLookupConstant} is a way to check if one {@link ControlProperty} equals another.
+ Each instance that implements this interface must be instantiated only <b>once</b>.
 
  @author Kayler
  @since 09/15/2016. */
 public interface ControlPropertyLookupConstant {
 	ReadOnlyList<ControlPropertyLookupConstant> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
-	/** All values that the property can be, or null if user defined. */
+	/** All values that the property can be, or null if not using options. */
 	@Nullable
 	ControlPropertyOption[] getOptions();
 
 	/** Get the name associated with the property. Is not guaranteed to be unique. */
+	@NotNull
 	String getPropertyName();
 
 	/**
-	 Get the {@link PropertyType} associated with the property. This is the <b>initial</b> {@link PropertyType} and for each {@link ControlProperty}, the {@link PropertyType} can change via
-	 {@link ControlProperty#setPropertyType(PropertyType)}.
+	 Get the {@link PropertyType} associated with the property. This is the <b>initial</b> {@link PropertyType} and for each {@link ControlProperty}.
 	 */
 	@NotNull
 	PropertyType getPropertyType();
@@ -40,6 +41,16 @@ public interface ControlPropertyLookupConstant {
 	String getAbout();
 
 
+	/**
+	 Construct a new {@link ControlProperty} instance with the given {@link DefaultValueProvider}.
+	 If <code>provider==null</code>, will simply return {@link ControlProperty#ControlProperty(ControlPropertyLookupConstant)}
+	 with this as the parameter.<p>
+	 If <code>provider!=null</code>, will return {@link ControlProperty#ControlProperty(ControlPropertyLookupConstant, SerializableValue)}
+	 with the value equal to what {@link DefaultValueProvider#getDefaultValue(ControlPropertyLookupConstant)} returns
+
+	 @param provider provider to use, or null if not to use one
+	 @return the new instance
+	 */
 	@NotNull
 	default ControlProperty newEmptyProperty(@Nullable DefaultValueProvider provider) {
 		if (provider == null) {

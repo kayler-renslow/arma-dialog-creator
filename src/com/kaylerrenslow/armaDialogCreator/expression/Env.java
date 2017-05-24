@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -8,7 +9,26 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 07/14/2016. */
 public interface Env {
-	/** Returns the value for the given identifier. If returns null, means identifier couldn't be resolved to a value. */
+	/** @return the value for the given identifier. If returns null, means identifier couldn't be resolved to a value. */
 	@Nullable
-	Value getValue(String identifier);
+	Value getValue(@NotNull String identifier);
+
+	/**
+	 Associates the specified value with the specified identifier in this env.
+	 If the env previously contained a mapping for the identifier, the old value is replaced.
+
+	 @return the previous value associated with identifier, or null if there was no mapping for identifier.
+	 (A null return can also indicate that the map previously associated null with identifier.)
+	 */
+	@Nullable
+	Value put(@NotNull String identifier, @Nullable Value v);
+
+	/**
+	 Removes the mapping for the specified identifier from this env if present.
+
+	 @return the previous value associated with identifier, or null if there was no mapping for identifier.
+	 (A null return can also indicate that the map previously associated null with identifier.)
+	 */
+	@Nullable
+	Value remove(@NotNull String identifier);
 }

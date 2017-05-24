@@ -98,6 +98,45 @@ public class PreprocessorTest {
 		);
 	}
 
+	@Test
+	public void replace4() throws Exception {
+		/*
+		#define TWO 2
+		#define twenty ##TWO##0
+		hint str twenty; // outputs "20"
+		*/
+		String[] toMatch = {"TWO", "twenty"};
+		String[] replace = {"2", "##TWO##0"};
+
+		String base = "hint str twenty;";
+		String expect = "hint str 20;";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				map(toMatch, replace)
+		);
+	}
+
+	@Test
+	public void replace5() throws Exception {
+		// #define ARG 1
+		// #define PARAM(A) A#RG
+		// f=PARAM(A)
+
+		String base = "f=PARAM(A)";
+		String expect = "f=1";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				mergeIntoFirst(
+						map(array("ARG"), array("1")),
+						mapParams("PARAM", array("A"), "A#RG")
+				)
+		);
+	}
+
 
 	@Test
 	public void replaceParameter() throws Exception {
