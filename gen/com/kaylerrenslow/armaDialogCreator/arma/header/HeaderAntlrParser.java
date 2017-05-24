@@ -19,9 +19,9 @@ public class HeaderAntlrParser extends Parser {
 	public static final int
 		String=1, Class=2, Comma=3, Colon=4, Semicolon=5, PlusEqual=6, Equal=7, 
 		LBrace=8, RBrace=9, BacketPair=10, Quote=11, DQuote=12, Plus=13, Minus=14, 
-		Star=15, FSlash=16, LParen=17, RParen=18, Identifier=19, Number=20, Letter=21, 
-		LetterOrDigit=22, WhiteSpace=23, Comment=24, INTEGER_LITERAL=25, DEC_LITERAL=26, 
-		HEX_LITERAL=27;
+		Star=15, FSlash=16, LParen=17, RParen=18, BSlash=19, Identifier=20, Number=21, 
+		Letter=22, LetterOrDigit=23, WhiteSpace=24, Comment=25, INTEGER_LITERAL=26, 
+		DEC_LITERAL=27, HEX_LITERAL=28;
 	public static final int
 		RULE_root_class = 0, RULE_header_class = 1, RULE_header_class_helper = 2, 
 		RULE_assignment = 3, RULE_arr_assignment = 4, RULE_array = 5, RULE_array_helper = 6, 
@@ -33,14 +33,14 @@ public class HeaderAntlrParser extends Parser {
 
 	private static final String[] _LITERAL_NAMES = {
 		null, null, "'class'", "','", "':'", "';'", "'+='", "'='", "'{'", "'}'", 
-		"'[]'", "'''", "'\"'", "'+'", "'-'", "'*'", "'/'", "'('", "')'"
+		"'[]'", "'''", "'\"'", "'+'", "'-'", "'*'", "'/'", "'('", "')'", "'\\'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "String", "Class", "Comma", "Colon", "Semicolon", "PlusEqual", "Equal", 
 		"LBrace", "RBrace", "BacketPair", "Quote", "DQuote", "Plus", "Minus", 
-		"Star", "FSlash", "LParen", "RParen", "Identifier", "Number", "Letter", 
-		"LetterOrDigit", "WhiteSpace", "Comment", "INTEGER_LITERAL", "DEC_LITERAL", 
-		"HEX_LITERAL"
+		"Star", "FSlash", "LParen", "RParen", "BSlash", "Identifier", "Number", 
+		"Letter", "LetterOrDigit", "WhiteSpace", "Comment", "INTEGER_LITERAL", 
+		"DEC_LITERAL", "HEX_LITERAL"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -512,7 +512,7 @@ public class HeaderAntlrParser extends Parser {
 			setState(77);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << LBrace) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0)) {
+			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << LBrace) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0)) {
 				{
 				setState(69);
 				array_helper(_localctx.items);
@@ -591,6 +591,7 @@ public class HeaderAntlrParser extends Parser {
 			case FSlash:
 			case LParen:
 			case RParen:
+			case BSlash:
 			case Identifier:
 			case Number:
 				enterOuterAlt(_localctx, 1);
@@ -651,8 +652,8 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			setState(95);
 			_errHandler.sync(this);
-			switch (_input.LA(1)) {
-			case String:
+			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
 				setState(90);
@@ -660,14 +661,7 @@ public class HeaderAntlrParser extends Parser {
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).s!=null?((ValueContext)_localctx).s.getText():null)); 
 				}
 				break;
-			case Plus:
-			case Minus:
-			case Star:
-			case FSlash:
-			case LParen:
-			case RParen:
-			case Identifier:
-			case Number:
+			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
 				setState(92);
@@ -675,8 +669,6 @@ public class HeaderAntlrParser extends Parser {
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).eq!=null?_input.getText(((ValueContext)_localctx).eq.start,((ValueContext)_localctx).eq.stop):null)); 
 				}
 				break;
-			default:
-				throw new NoViableAltException(this);
 			}
 		}
 		catch (RecognitionException re) {
@@ -723,6 +715,14 @@ public class HeaderAntlrParser extends Parser {
 		public TerminalNode Identifier(int i) {
 			return getToken(HeaderAntlrParser.Identifier, i);
 		}
+		public List<TerminalNode> BSlash() { return getTokens(HeaderAntlrParser.BSlash); }
+		public TerminalNode BSlash(int i) {
+			return getToken(HeaderAntlrParser.BSlash, i);
+		}
+		public List<TerminalNode> String() { return getTokens(HeaderAntlrParser.String); }
+		public TerminalNode String(int i) {
+			return getToken(HeaderAntlrParser.String, i);
+		}
 		public EquationContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
@@ -752,7 +752,7 @@ public class HeaderAntlrParser extends Parser {
 				{
 				setState(97);
 				_la = _input.LA(1);
-				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0)) ) {
+				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0)) ) {
 				_errHandler.recoverInline(this);
 				}
 				else {
@@ -765,7 +765,7 @@ public class HeaderAntlrParser extends Parser {
 				setState(100); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
-			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << Identifier) | (1L << Number))) != 0) );
+			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0) );
 			}
 		}
 		catch (RecognitionException re) {
@@ -780,32 +780,32 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\35i\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36i\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
 		"\n\2\f\2\16\2\31\13\2\3\3\3\3\3\3\3\3\3\3\5\3 \n\3\3\3\3\3\7\3$\n\3\f"+
 		"\3\16\3\'\13\3\3\3\5\3*\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
 		"\4\3\4\5\48\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
 		"\7\3\7\3\7\3\7\7\7K\n\7\f\7\16\7N\13\7\5\7P\n\7\3\7\3\7\3\7\3\b\3\b\3"+
 		"\b\3\b\3\b\3\b\5\b[\n\b\3\t\3\t\3\t\3\t\3\t\5\tb\n\t\3\n\6\ne\n\n\r\n"+
-		"\16\nf\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\3\2\17\26\2j\2\27\3"+
-		"\2\2\2\4\32\3\2\2\2\6\67\3\2\2\2\b9\3\2\2\2\n?\3\2\2\2\fF\3\2\2\2\16Z"+
-		"\3\2\2\2\20a\3\2\2\2\22d\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\31\3\2"+
-		"\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2\2\2\31\27\3\2\2\2\32\33\7\4"+
-		"\2\2\33\37\7\25\2\2\34\35\7\6\2\2\35\36\7\25\2\2\36 \b\3\1\2\37\34\3\2"+
-		"\2\2\37 \3\2\2\2 )\3\2\2\2!%\7\n\2\2\"$\5\6\4\2#\"\3\2\2\2$\'\3\2\2\2"+
-		"%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2(*\7\13\2\2)!\3\2\2\2)*\3\2\2"+
-		"\2*+\3\2\2\2+,\7\7\2\2,-\b\3\1\2-\5\3\2\2\2./\5\4\3\2/\60\b\4\1\2\608"+
-		"\3\2\2\2\61\62\5\b\5\2\62\63\b\4\1\2\638\3\2\2\2\64\65\5\n\6\2\65\66\b"+
-		"\4\1\2\668\3\2\2\2\67.\3\2\2\2\67\61\3\2\2\2\67\64\3\2\2\28\7\3\2\2\2"+
-		"9:\7\25\2\2:;\7\t\2\2;<\5\20\t\2<=\7\7\2\2=>\b\5\1\2>\t\3\2\2\2?@\7\25"+
-		"\2\2@A\7\f\2\2AB\t\2\2\2BC\5\f\7\2CD\7\7\2\2DE\b\6\1\2E\13\3\2\2\2FO\7"+
-		"\n\2\2GL\5\16\b\2HI\7\5\2\2IK\5\16\b\2JH\3\2\2\2KN\3\2\2\2LJ\3\2\2\2L"+
-		"M\3\2\2\2MP\3\2\2\2NL\3\2\2\2OG\3\2\2\2OP\3\2\2\2PQ\3\2\2\2QR\7\13\2\2"+
-		"RS\b\7\1\2S\r\3\2\2\2TU\5\20\t\2UV\b\b\1\2V[\3\2\2\2WX\5\f\7\2XY\b\b\1"+
-		"\2Y[\3\2\2\2ZT\3\2\2\2ZW\3\2\2\2[\17\3\2\2\2\\]\7\3\2\2]b\b\t\1\2^_\5"+
-		"\22\n\2_`\b\t\1\2`b\3\2\2\2a\\\3\2\2\2a^\3\2\2\2b\21\3\2\2\2ce\t\3\2\2"+
-		"dc\3\2\2\2ef\3\2\2\2fd\3\2\2\2fg\3\2\2\2g\23\3\2\2\2\f\27\37%)\67LOZa"+
-		"f";
+		"\16\nf\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\4\2\3\3\17\27\2j\2"+
+		"\27\3\2\2\2\4\32\3\2\2\2\6\67\3\2\2\2\b9\3\2\2\2\n?\3\2\2\2\fF\3\2\2\2"+
+		"\16Z\3\2\2\2\20a\3\2\2\2\22d\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\31"+
+		"\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2\2\2\31\27\3\2\2\2\32\33"+
+		"\7\4\2\2\33\37\7\26\2\2\34\35\7\6\2\2\35\36\7\26\2\2\36 \b\3\1\2\37\34"+
+		"\3\2\2\2\37 \3\2\2\2 )\3\2\2\2!%\7\n\2\2\"$\5\6\4\2#\"\3\2\2\2$\'\3\2"+
+		"\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2(*\7\13\2\2)!\3\2\2\2)*\3"+
+		"\2\2\2*+\3\2\2\2+,\7\7\2\2,-\b\3\1\2-\5\3\2\2\2./\5\4\3\2/\60\b\4\1\2"+
+		"\608\3\2\2\2\61\62\5\b\5\2\62\63\b\4\1\2\638\3\2\2\2\64\65\5\n\6\2\65"+
+		"\66\b\4\1\2\668\3\2\2\2\67.\3\2\2\2\67\61\3\2\2\2\67\64\3\2\2\28\7\3\2"+
+		"\2\29:\7\26\2\2:;\7\t\2\2;<\5\20\t\2<=\7\7\2\2=>\b\5\1\2>\t\3\2\2\2?@"+
+		"\7\26\2\2@A\7\f\2\2AB\t\2\2\2BC\5\f\7\2CD\7\7\2\2DE\b\6\1\2E\13\3\2\2"+
+		"\2FO\7\n\2\2GL\5\16\b\2HI\7\5\2\2IK\5\16\b\2JH\3\2\2\2KN\3\2\2\2LJ\3\2"+
+		"\2\2LM\3\2\2\2MP\3\2\2\2NL\3\2\2\2OG\3\2\2\2OP\3\2\2\2PQ\3\2\2\2QR\7\13"+
+		"\2\2RS\b\7\1\2S\r\3\2\2\2TU\5\20\t\2UV\b\b\1\2V[\3\2\2\2WX\5\f\7\2XY\b"+
+		"\b\1\2Y[\3\2\2\2ZT\3\2\2\2ZW\3\2\2\2[\17\3\2\2\2\\]\7\3\2\2]b\b\t\1\2"+
+		"^_\5\22\n\2_`\b\t\1\2`b\3\2\2\2a\\\3\2\2\2a^\3\2\2\2b\21\3\2\2\2ce\t\3"+
+		"\2\2dc\3\2\2\2ef\3\2\2\2fd\3\2\2\2fg\3\2\2\2g\23\3\2\2\2\f\27\37%)\67"+
+		"LOZaf";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

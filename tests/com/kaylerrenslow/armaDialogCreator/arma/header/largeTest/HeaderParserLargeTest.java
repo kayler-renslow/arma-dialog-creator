@@ -1,9 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header.largeTest;
 
-import com.kaylerrenslow.armaDialogCreator.arma.header.*;
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderClass;
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderFile;
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParser;
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderTestUtil;
 import org.junit.Test;
-
-import java.util.function.Function;
 
 import static com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserHelpers.*;
 
@@ -13,7 +14,7 @@ import static com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserHelper
 public class HeaderParserLargeTest {
 
 	@Test
-	public void parseHeaderTest() throws Exception {
+	public void parseHeaderTest1() throws Exception {
 		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test1Files/largeTestRoot.h"));
 
 		HeaderClass expected = hClass("-root class", null,
@@ -66,23 +67,45 @@ public class HeaderParserLargeTest {
 
 
 	@Test
-	public void parseHeaderTest1() throws Exception {
+	public void parseHeaderTest2() throws Exception {
 		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test2Files/largeTest2.h"));
-
-		Function<String, HeaderAssignment> f = new Function<String, HeaderAssignment>() {
-			@Override
-			public HeaderAssignment apply(String s) {
-				return assign("msg", s);
-			}
-		};
 
 		HeaderClass expected = hClass("-root class", null,
 				hClass("DevStuff", null,
 						hClass("Errors", null,
-								hClass("InvalidArgument", null, f.apply(w("Invalid Argument"))),
-								hClass("IllegalState", null, f.apply(w("Illegal State"))),
-								hClass("ClassNotFound", null, f.apply(w("Class Not Found")))
+								hClass("InvalidArgument", null, assign("msg", w("Invalid Argument"))),
+								hClass("IllegalState", null, assign("msg", w("Illegal State"))),
+								hClass("ClassNotFound", null, assign("msg", w("Class Not Found")))
 						)
+				)
+		);
+
+		testEquivalence(headerFile, expected);
+	}
+
+	@Test
+	public void parseHeaderTest3() throws Exception {
+		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test3Files/largeTest3.h"));
+
+		HeaderClass hClassOne = hClass(
+				"Sound_Man_one",
+				null,
+				assign("name", w("")),
+				arr_assign("sound", array(value(w("\\sounds\\Man\\one.ogg")), value("5"), value("1")), false),
+				arr_assign("titles", array(value("0"), value(w("Man says 'one'"))), false)
+		);
+		HeaderClass hClassTwo = hClass(
+				"Sound_Man_two",
+				null,
+				assign("name", w("")),
+				arr_assign("sound", array(value(w("\\sounds\\Man\\two.ogg")), value("5"), value("1")), false),
+				arr_assign("titles", array(value("0"), value(w("Man says 'two'"))), false)
+		);
+
+		HeaderClass expected = hClass("-root class", null,
+				hClass("CfgSounds", null,
+						hClassOne,
+						hClassTwo
 				)
 		);
 

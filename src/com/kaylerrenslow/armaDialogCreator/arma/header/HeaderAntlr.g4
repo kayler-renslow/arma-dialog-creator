@@ -74,7 +74,7 @@ value returns [AST.HeaderValueNode ast]:
 
 //match as much as possible. Don't worry about correctness because it will be dealt with later.
 equation :
-    (Plus | Minus | Star | FSlash | LParen | RParen | Number | Identifier)+
+    (Plus | Minus | Star | FSlash | LParen | RParen | Number | Identifier | BSlash | String)+
     ;
 
 String : (Quote ~('\'')* Quote)+ | (DQuote ~('"')* DQuote)+ ;
@@ -95,6 +95,7 @@ Star : '*' ;
 FSlash : '/' ;
 LParen : '(' ;
 RParen : ')' ;
+BSlash : '\\' ;
 
 Identifier :  Letter LetterOrDigit*;
 Number : INTEGER_LITERAL | DEC_LITERAL | HEX_LITERAL;

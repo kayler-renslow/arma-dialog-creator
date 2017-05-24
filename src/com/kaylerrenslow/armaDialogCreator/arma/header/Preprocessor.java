@@ -67,7 +67,7 @@ class Preprocessor {
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
-	private final Env preprocessorEnv = new ParserTimeEnv();
+	private final Env preprocessorEnv = new PreprocessorEnv();
 
 	/**
 	 Create a new, one time use, preprocessor for header files
@@ -539,6 +539,8 @@ class Preprocessor {
 		// #define PARAM(A) A#RG
 		// f=PARAM(A) // will result in f=1
 		//
+		//In Arma 3, the output will not be f=1, but it isn't clear what happens behind the scenes and this outcome makes the most sense for our code.
+		//So this is the intended outcome.
 
 		StringBuilderReference buffer = new StringBuilderReference(new StringBuilder());
 
@@ -736,7 +738,7 @@ class Preprocessor {
 	 @author Kayler
 	 @since 05/24/2017
 	 */
-	public class ParserTimeEnv extends SimpleEnv {
+	public class PreprocessorEnv extends SimpleEnv {
 
 		/** Instead of constantly computing a macro's body as an expression, cache the values calculated. */
 		private HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
