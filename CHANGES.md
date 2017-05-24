@@ -1,5 +1,5 @@
 **Added:**
-* another preprocessor test
+* assignments and statements to expression interpreter
 
 **Changed:**
 * 

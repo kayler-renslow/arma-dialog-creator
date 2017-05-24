@@ -8,6 +8,36 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ExpressionListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#statements}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatements(ExpressionParser.StatementsContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#statements}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatements(ExpressionParser.StatementsContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void enterStatement(ExpressionParser.StatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#statement}.
+	 * @param ctx the parse tree
+	 */
+	void exitStatement(ExpressionParser.StatementContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void enterAssignment(ExpressionParser.AssignmentContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#assignment}.
+	 * @param ctx the parse tree
+	 */
+	void exitAssignment(ExpressionParser.AssignmentContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#expression}.
 	 * @param ctx the parse tree
 	 */

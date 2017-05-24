@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 07/14/2016.
@@ -30,6 +31,10 @@ interface AST {
 		T visit(@NotNull FloatExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
 		T visit(@NotNull StringExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull Statement statement, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull Assignment assignment, @NotNull Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {
@@ -270,6 +275,61 @@ interface AST {
 
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class Assignment extends ASTNode {
+
+		private final String var;
+		private final Expr expr;
+
+		public Assignment(@NotNull String var, @NotNull Expr e) {
+			this.var = var;
+			this.expr = e;
+		}
+
+		@NotNull
+		public String getVar() {
+			return var;
+		}
+
+		@NotNull
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class Statement extends ASTNode {
+
+		private Expr expr;
+		private Assignment assign;
+
+		public Statement(@NotNull Expr expr) {
+			this.expr = expr;
+		}
+
+		public Statement(@NotNull Assignment assign) {
+			this.assign = assign;
+		}
+
+		@Nullable
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Nullable
+		public Assignment getAssignment() {
+			return assign;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}

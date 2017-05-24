@@ -58,6 +58,37 @@ public class ExpressionInterpreter {
 		return evaluator.evaluate(e, env);
 	}
 
+	/**
+	 Evaluate the given statements as a String in the given environment.
+
+	 @param statements statements text to evaluate
+	 @param env environment that holds information on all identifiers
+	 @return resulted {@link Value} instance from the last {@link AST.Statement}
+	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
+	 */
+	@NotNull
+	public Value evaluateStatements(String statements, Env env) throws ExpressionEvaluationException {
+		if (statements == null || statements.trim().length() == 0) {
+			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
+		}
+		ExpressionLexer l = getLexer(statements);
+		ExpressionParser p = getParser(new CommonTokenStream(l));
+
+		//prevent ANTLR printing to the console when the expression is invalid
+		l.getErrorListeners().clear();
+		p.getErrorListeners().clear();
+
+		p.addErrorListener(ErrorListener.INSTANCE);
+		p.setErrorHandler(ErrorStrategy.INSTANCE);
+		l.addErrorListener(ErrorListener.INSTANCE);
+
+		try {
+			return evaluator.evaluate(p.statements().lst, env);
+		} catch (Exception ex) {
+			throw new ExpressionEvaluationException(ex.getMessage());
+		}
+	}
+
 	@NotNull
 	private ExpressionParser getParser(CommonTokenStream stream) {
 		return new ExpressionParser(stream);

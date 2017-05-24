@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.regex.Pattern;
 
@@ -23,6 +24,25 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	public Value evaluate(AST.Expr e, Env env) throws ExpressionEvaluationException {
 		try {
 			return (Value) e.accept(this, env);
+		} catch (Exception ex) {
+			throw new ExpressionEvaluationException(ex.getMessage(), ex);
+		}
+	}
+
+	/**
+	 Each statement provided will be evaluated. If <code>statements.size()==0</code>, then {@link Value.Void} will be returned
+
+	 @return the last {@link AST.Statement} value for the given statement list in the given environment.
+	 @throws ExpressionEvaluationException If one of the statements is invalid
+	 */
+	@NotNull
+	public Value evaluate(List<AST.Statement> statements, Env env) throws ExpressionEvaluationException {
+		try {
+			Value last = Value.Void;
+			for (AST.Statement s : statements) {
+				last = (Value) s.accept(this, env);
+			}
+			return last;
 		} catch (Exception ex) {
 			throw new ExpressionEvaluationException(ex.getMessage(), ex);
 		}
@@ -164,6 +184,27 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		return new Value.StringLiteral(
 				stringPattern.matcher(truncated).replaceAll("\"")
 		);
+	}
+
+	@Override
+	public Value visit(@NotNull AST.Statement statement, @NotNull Env env) throws ExpressionEvaluationException {
+		if (statement.getAssignment() != null) {
+			AST.Assignment assignment = statement.getAssignment();
+			Value v = (Value) assignment.getExpr().accept(this, env);
+			env.put(assignment.getVar(), v);
+			return Value.Void;
+		}
+		if (statement.getExpr() != null) {
+			AST.Expr expr = statement.getExpr();
+
+			return (Value) expr.accept(this, env);
+		}
+		throw new IllegalStateException("didn't match an assignment or expression");
+	}
+
+	@Override
+	public Value visit(@NotNull AST.Assignment assignment, @NotNull Env env) throws ExpressionEvaluationException {
+		return Value.Void;
 	}
 
 	private double getNumValValue(@NotNull Value v) {

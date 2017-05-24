@@ -2,6 +2,21 @@
 
 grammar Expression;
 
+statements returns [List<AST.Statement> lst] @init{ $lst = new ArrayList<>(); }:
+    (s=statement Semicolon {$lst.add($s.ast);})*
+    s2=statement Semicolon?{$lst.add($s2.ast);}
+    ;
+
+statement returns [AST.Statement ast]:
+    a=assignment {$ast = new AST.Statement($a.ast);}
+    | e=expression {$ast = new AST.Statement($e.ast);}
+    ;
+
+assignment returns [AST.Assignment ast]:
+    i=Identifier Equal e=expression {$ast = new AST.Assignment($i.text, $e.ast);}
+    ;
+
+
 expression returns [AST.Expr ast]:
     lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
@@ -53,6 +68,8 @@ LParen : '(';
 RParen : ')';
 Min : 'min';
 Max : 'max';
+Equal : '=' ;
+Semicolon : ';';
 
 
 Identifier :  Letter LetterOrDigit*;

@@ -325,4 +325,54 @@ public class ExpressionInterpreterTest {
 		assertEquals("", expected, ret.v(), 0);
 	}
 
+	@Test
+	public void statement1() throws Exception {
+		Value expected = Value.Void;
+		String eval = "v=1";
+		Value ret = ExpressionInterpreter.getInstance().evaluateStatements(eval, env);
+		assertEquals("", expected, ret);
+	}
+
+	@Test
+	public void statement2() throws Exception {
+		Value expected = Value.Void;
+		String eval = "v=1; b=1";
+		Value ret = ExpressionInterpreter.getInstance().evaluateStatements(eval, env);
+		assertEquals("", expected, ret);
+	}
+
+	@Test
+	public void statement3() throws Exception {
+		Value expected = Value.Void;
+		String eval = "v=1; b=1;";
+		Value ret = ExpressionInterpreter.getInstance().evaluateStatements(eval, env);
+		assertEquals("", expected, ret);
+	}
+
+	@Test
+	public void statement4() throws Exception {
+		Value expected = new Value.NumVal(1 + 1);
+		String eval = "v=1; 1+1;";
+		Value ret = ExpressionInterpreter.getInstance().evaluateStatements(eval, env);
+		assertEquals("", expected, ret);
+	}
+
+	@Test
+	public void assignment1() throws Exception {
+		Env e = new SimpleEnv();
+		Value expected = new Value.NumVal(1);
+		String eval = "v=1; 1+1;";
+		ExpressionInterpreter.getInstance().evaluateStatements(eval, e);
+		assertEquals("", expected, e.getValue("v"));
+	}
+
+	@Test
+	public void assignment2() throws Exception {
+		Env e = new SimpleEnv();
+		Value expected = new Value.NumVal(1 + 9);
+		String eval = "v=1+9;";
+		ExpressionInterpreter.getInstance().evaluateStatements(eval, e);
+		assertEquals("", expected, e.getValue("v"));
+	}
+
 }
