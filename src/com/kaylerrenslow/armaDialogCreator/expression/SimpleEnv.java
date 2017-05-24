@@ -1,9 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  A simple implementation of {@link Env} that allows for adding identifiers to the env and removing identifiers from the env.
@@ -27,5 +30,27 @@ public class SimpleEnv implements Env {
 	@Nullable
 	public Value getValue(@NotNull String identifier) {
 		return map.get(identifier);
+	}
+
+	@NotNull
+	@Override
+	public Iterator<KeyValue<String, Value>> iterator() {
+		return new MyIterator();
+	}
+
+	private class MyIterator implements Iterator<KeyValue<String, Value>> {
+
+		private final Iterator<Map.Entry<String, Value>> iter = map.entrySet().iterator();
+
+		@Override
+		public boolean hasNext() {
+			return iter.hasNext();
+		}
+
+		@Override
+		public KeyValue<String, Value> next() {
+			Map.Entry<String, Value> next = iter.next();
+			return new KeyValue<>(next.getKey(), next.getValue());
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/14/2016. */
-public interface Env {
+public interface Env extends Iterable<KeyValue<String, Value>> {
 	/** @return the value for the given identifier. If returns null, means identifier couldn't be resolved to a value. */
 	@Nullable
 	Value getValue(@NotNull String identifier);

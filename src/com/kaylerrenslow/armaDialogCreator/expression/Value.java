@@ -5,10 +5,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  Interface for values.
+
  @author Kayler
- @since 07/14/2016
  @see ExpressionInterpreter
- */
+ @since 07/14/2016 */
 public interface Value {
 
 	class StringLiteral implements Value {
@@ -21,6 +21,11 @@ public interface Value {
 		@NotNull
 		public String getValue() {
 			return value;
+		}
+
+		@NotNull
+		public String getAsDisplayableArmaString() {
+			return "\"" + value.replaceAll("\"", "\"") + "\"";
 		}
 
 		@Override
@@ -42,7 +47,7 @@ public interface Value {
 		}
 	}
 
-	class NumVal implements Value{
+	class NumVal implements Value {
 		private double val;
 
 		public NumVal(double v) {
@@ -66,7 +71,7 @@ public interface Value {
 			return val;
 		}
 
-		/**@return {@link ArmaPrecision#format(double)} of {@link #v()}*/
+		/** @return {@link ArmaPrecision#format(double)} of {@link #v()} */
 		@Override
 		public String toString() {
 			return ArmaPrecision.format(val);

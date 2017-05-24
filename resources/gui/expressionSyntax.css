@@ -1,0 +1,13 @@
+/*See gui.ExpressionEvaluatorPopup*/
+
+.command{
+     -fx-fill: orange !important;
+}
+
+.string{
+     -fx-fill: green !important;
+}
+
+.number{
+     -fx-fill: blue !important;
+}

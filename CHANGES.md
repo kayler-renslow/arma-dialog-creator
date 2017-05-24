@@ -1,5 +1,6 @@
 **Added:**
-* assignments and statements to expression interpreter
+* added mini SQF expression evaluator popup
+    * reachable via main menu bar
 
 **Changed:**
 * 

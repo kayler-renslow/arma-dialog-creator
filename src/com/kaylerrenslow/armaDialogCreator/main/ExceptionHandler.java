@@ -7,7 +7,7 @@ import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
@@ -112,7 +112,8 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		return getExceptionTextArea(Thread.currentThread(), t);
 	}
 
-	private static String getExceptionString(Throwable t) {
+	@NotNull
+	public static String getExceptionString(@NotNull Throwable t) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		t.printStackTrace(pw);

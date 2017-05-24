@@ -16,6 +16,12 @@ public class ExpressionInterpreter {
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
 
+	/** Will return a new array of all supported commands. */
+	@NotNull
+	public static String[] getSupportedCommands() {
+		return new String[]{"min", "max"};
+	}
+
 	private ExpressionInterpreter() {
 	}
 

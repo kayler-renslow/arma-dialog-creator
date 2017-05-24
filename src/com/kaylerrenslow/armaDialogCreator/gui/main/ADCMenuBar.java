@@ -18,6 +18,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.file.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.help.WikiUrlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.view.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.AboutDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ExpressionEvaluatorPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.UIScale;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -135,6 +136,7 @@ class ADCMenuBar extends MenuBar {
 	/*help*/
 	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
 	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("help_about")), event -> new AboutDialog().show());
+	final MenuItem help_evaluator = addOnAction(new MenuItem(bundle.getString("help_evaluator")), event -> new ExpressionEvaluatorPopup().show());
 
 	final Menu menuFile = new Menu(
 			bundle.getString("file"), null,
@@ -180,6 +182,7 @@ class ADCMenuBar extends MenuBar {
 	);
 	final Menu menuHelp = new Menu(
 			bundle.getString("help"), null,
+			help_evaluator,
 			help_wiki,
 			help_about
 	);
