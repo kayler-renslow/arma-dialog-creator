@@ -119,7 +119,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		}
 		stackPaneResult.getChildren().add(new Label(returnValueString));
 		environmentOverviewPane.setEnv(env);
-		taConsole.appendText(consoleString + "\n");
+		taConsole.appendText(consoleString + "\n\n");
 	}
 
 	private class CodeAreaPane extends SyntaxTextArea {

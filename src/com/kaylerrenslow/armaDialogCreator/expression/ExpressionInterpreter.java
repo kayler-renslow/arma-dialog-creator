@@ -5,6 +5,9 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 /**
  Evaluates simple mathematical expressions.
@@ -13,13 +16,18 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 07/14/2016. */
 public class ExpressionInterpreter {
-	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
-	private static final ExpressionEvaluator evaluator = new ExpressionEvaluator();
 
-	/** Will return a new array of all supported commands. */
+	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
+
+	private static final String[] supportedCommands = new String[]{"min", "max", "if", "true", "false", "then", "exitWith", "select"};
+
+	/**
+	 Will return an array of all supported commands. This array is used to make sure the user isn't
+	 assigning values to these commands through {@link Env#put(String, Value)}.
+	 */
 	@NotNull
 	public static String[] getSupportedCommands() {
-		return new String[]{"min", "max"};
+		return supportedCommands;
 	}
 
 	private ExpressionInterpreter() {
@@ -32,15 +40,16 @@ public class ExpressionInterpreter {
 	}
 
 	/**
-	 Evaluate the given expression String in the given environment.
+	 Evaluate the given expression String in the given environment. This method will throw errors if the given string contains assignments
+	 or multiple expressions separated by semicolons.
 
 	 @param exp expression text to evaluate
 	 @param env environment that holds information on all identifiers
 	 @return resulted {@link Value} instance
-	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
+	 @throws ExpressionEvaluationException if the expression couldn't be evaluated (includes if <code>exp==null or exp.trim().length()==0</code>)
 	 */
 	@NotNull
-	public Value evaluate(String exp, Env env) throws ExpressionEvaluationException {
+	public Value evaluate(@Nullable String exp, @NotNull Env env) throws ExpressionEvaluationException {
 		if (exp == null || exp.trim().length() == 0) {
 			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
@@ -59,8 +68,12 @@ public class ExpressionInterpreter {
 		try {
 			e = p.expression().ast;
 		} catch (Exception ex) {
-			throw new ExpressionEvaluationException(ex.getMessage());
+			if (ex instanceof ExpressionEvaluationException) {
+				throw ex;
+			}
+			throw new ExpressionEvaluationException(ex.getMessage(), ex);
 		}
+		ExpressionEvaluator evaluator = new ExpressionEvaluator(l, p);
 		return evaluator.evaluate(e, env);
 	}
 
@@ -73,7 +86,7 @@ public class ExpressionInterpreter {
 	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
 	 */
 	@NotNull
-	public Value evaluateStatements(String statements, Env env) throws ExpressionEvaluationException {
+	public Value evaluateStatements(@Nullable String statements, @NotNull Env env) throws ExpressionEvaluationException {
 		if (statements == null || statements.trim().length() == 0) {
 			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
@@ -88,8 +101,30 @@ public class ExpressionInterpreter {
 		p.setErrorHandler(ErrorStrategy.INSTANCE);
 		l.addErrorListener(ErrorListener.INSTANCE);
 
+		ExpressionEvaluator evaluator = new ExpressionEvaluator(l, p);
 		try {
-			return evaluator.evaluate(p.statements().lst, env);
+			return evaluateStatements(p.statements().lst, env, evaluator);
+		} catch (Exception e) {
+			if (e instanceof ExpressionEvaluationException) {
+				throw e;
+			}
+			throw new ExpressionEvaluationException(e.getMessage(), e);
+		}
+	}
+
+	/**
+	 Evaluate the given statements as a String in the given environment. This method is used with {@link Value.Code#exec()}
+
+	 @param statements statements to evaluate
+	 @param env environment that holds information on all identifiers
+	 @param evaluator the {@link ExpressionEvaluator} instance to use.
+	 @return resulted {@link Value} instance from the last {@link AST.Statement}
+	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
+	 */
+	@NotNull
+	protected Value evaluateStatements(@NotNull List<AST.Statement> statements, @NotNull Env env, @NotNull ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+		try {
+			return evaluator.evaluate(statements, env);
 		} catch (Exception ex) {
 			throw new ExpressionEvaluationException(ex.getMessage());
 		}

@@ -3,6 +3,8 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  Created by Kayler on 07/14/2016.
  */
@@ -35,10 +37,40 @@ interface AST {
 		T visit(@NotNull Statement statement, @NotNull Env env) throws ExpressionEvaluationException;
 
 		T visit(@NotNull Assignment assignment, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull Code code, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull CodeExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull IfExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull Array array, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull SelectExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {
 		public abstract Object accept(@NotNull Visitor visitor, @NotNull Env env);
+	}
+
+
+	class Code extends ASTNode {
+
+		private final List<Statement> statements;
+
+		public Code(@NotNull List<Statement> statements) {
+			this.statements = statements;
+		}
+
+		@NotNull
+		public List<Statement> getStatements() {
+			return statements;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
 	}
 
 	abstract class Expr extends ASTNode {
@@ -93,11 +125,11 @@ interface AST {
 		}
 	}
 
-	abstract class ArithExpr extends Expr {
+	abstract class BinaryExpr extends Expr {
 		private final Expr left;
 		private final Expr right;
 
-		public ArithExpr(@NotNull Expr left, @NotNull Expr right) {
+		public BinaryExpr(@NotNull Expr left, @NotNull Expr right) {
 			this.left = left;
 			this.right = right;
 		}
@@ -116,7 +148,7 @@ interface AST {
 
 	}
 
-	class AddExpr extends ArithExpr {
+	class AddExpr extends BinaryExpr {
 		public AddExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
@@ -127,7 +159,7 @@ interface AST {
 		}
 	}
 
-	class SubExpr extends ArithExpr {
+	class SubExpr extends BinaryExpr {
 		public SubExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
@@ -138,7 +170,7 @@ interface AST {
 		}
 	}
 
-	class MultExpr extends ArithExpr {
+	class MultExpr extends BinaryExpr {
 		public MultExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
@@ -149,7 +181,7 @@ interface AST {
 		}
 	}
 
-	class DivExpr extends ArithExpr {
+	class DivExpr extends BinaryExpr {
 		public DivExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
 		}
@@ -201,6 +233,93 @@ interface AST {
 
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class IfExpr extends Expr {
+
+		public enum Type {
+			IfThen, ExitWith
+		}
+
+		private final Expr condition;
+		private final Type type;
+		private Array arr;
+		private Expr trueCond;
+		private Expr falseCond;
+
+		public IfExpr(@NotNull Expr condition, @NotNull Expr trueCond, @Nullable Expr falseCond, @NotNull Type type) {
+			this.condition = condition;
+			this.trueCond = trueCond;
+			this.falseCond = falseCond;
+			this.type = type;
+		}
+
+		public IfExpr(@NotNull Expr condition, @NotNull Array arr) {
+			this.condition = condition;
+			this.arr = arr;
+			this.type = Type.IfThen;
+		}
+
+		@NotNull
+		public Expr getCondition() {
+			return condition;
+		}
+
+		@NotNull
+		public Type getType() {
+			return type;
+		}
+
+		@Nullable
+		public Array getArr() {
+			return arr;
+		}
+
+		@Nullable
+		public Expr getTrueCond() {
+			return trueCond;
+		}
+
+		@Nullable
+		public Expr getFalseCond() {
+			return falseCond;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class SelectExpr extends BinaryExpr {
+
+		public SelectExpr(@NotNull Expr left, @NotNull Expr right) {
+			super(left, right);
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class CodeExpr extends Expr {
+
+		private Code code;
+
+		public CodeExpr(@NotNull Code code) {
+			this.code = code;
+		}
+
+		@NotNull
+		public Code getCode() {
+			return code;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -275,6 +394,25 @@ interface AST {
 
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class Array extends LiteralExpr {
+
+		private final List<Expr> items;
+
+		public Array(@NotNull List<Expr> items) {
+			this.items = items;
+		}
+
+		@NotNull
+		public List<Expr> getItems() {
+			return items;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}

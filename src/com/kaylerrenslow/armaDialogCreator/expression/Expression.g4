@@ -16,6 +16,9 @@ assignment returns [AST.Assignment ast]:
     i=Identifier Equal e=expression {$ast = new AST.Assignment($i.text, $e.ast);}
     ;
 
+code returns [AST.Code ast] locals[List<AST.Statement> lst] @init{ $lst = new ArrayList<>(); }:
+    LCurly (s=statements {$lst=$s.lst;})? RCurly {$ast = new AST.Code($lst);}
+    ;
 
 expression returns [AST.Expr ast]:
     lu=unary_expression {$ast = $lu.ast;}
@@ -27,6 +30,9 @@ expression returns [AST.Expr ast]:
     | ll=literal_expression {$ast = $ll.ast;}
     | lmax=expression Max rmax=expression {$ast = new AST.MaxExpr($lmax.ast, $rmax.ast);}
     | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
+    | select_e=expression Select select_i=expression {$ast = new AST.SelectExpr($select_e.ast, $select_i.ast);}
+    | ifexp=if_expression {$ast = $ifexp.ast;}
+    | codeExp=code {$ast = new AST.CodeExpr($codeExp.ast);}
     ;
 
 unary_expression returns [AST.UnaryExpr ast]:
@@ -45,6 +51,23 @@ literal_expression returns [AST.LiteralExpr ast]:
     | i=int_value {$ast = new AST.IntegerExpr($i.i);}
     | f=float_value {$ast = new AST.FloatExpr($f.d);}
     | s=String {$ast = new AST.StringExpr($s.text);}
+    | a=array {$ast = $a.ast;}
+    ;
+
+if_expression returns [AST.IfExpr ast]:
+    If cond=expression (
+        (ExitWith exitWith=expression {$ast = new AST.IfExpr($cond.ast, $exitWith.ast, null, AST.IfExpr.Type.ExitWith);})
+        | (Then arr=array       {$ast = new AST.IfExpr($cond.ast, $arr.ast);})
+        | (Then condIsTrue=expression Else condIsFalse=expression {$ast = new AST.IfExpr($cond.ast, $condIsTrue.ast, $condIsFalse.ast, AST.IfExpr.Type.IfThen);})
+        | (Then condIsTrue=expression {$ast = new AST.IfExpr($cond.ast, $condIsTrue.ast, null, AST.IfExpr.Type.IfThen);})
+    )
+    ;
+
+array returns [AST.Array ast] locals[List<AST.Expr> items] @init{$items = new ArrayList<>();}:
+    LBracket
+    e1=expression {$items.add($e1.ast);}
+    (Comma e2=expression {$items.add($e2.ast);})*
+    RBracket {$ast = new AST.Array($items);}
     ;
 
 int_value returns [Integer i]:
@@ -60,14 +83,25 @@ String : (Quote ~('\'')* Quote)+ | (DQuote ~('"')* DQuote)+ ;
 Quote : '\'';
 DQuote : '"';
 
+LCurly : '{';
+RCurly : '}';
+LBracket : '[';
+RBracket : ']';
+
 Plus : '+';
 Minus : '-';
 FSlash : '/';
 Star : '*';
 LParen : '(';
 RParen : ')';
+Comma :',';
 Min : 'min';
 Max : 'max';
+If : 'if';
+Then : 'then';
+Else : 'else';
+ExitWith : 'exitWith';
+Select : 'select';
 Equal : '=' ;
 Semicolon : ';';
 

@@ -38,6 +38,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitAssignment(ExpressionParser.AssignmentContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#code}.
+	 * @param ctx the parse tree
+	 */
+	void enterCode(ExpressionParser.CodeContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#code}.
+	 * @param ctx the parse tree
+	 */
+	void exitCode(ExpressionParser.CodeContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#expression}.
 	 * @param ctx the parse tree
 	 */
@@ -77,6 +87,26 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLiteral_expression(ExpressionParser.Literal_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#if_expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterIf_expression(ExpressionParser.If_expressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#if_expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitIf_expression(ExpressionParser.If_expressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#array}.
+	 * @param ctx the parse tree
+	 */
+	void enterArray(ExpressionParser.ArrayContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#array}.
+	 * @param ctx the parse tree
+	 */
+	void exitArray(ExpressionParser.ArrayContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#int_value}.
 	 * @param ctx the parse tree

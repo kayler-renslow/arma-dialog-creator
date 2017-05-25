@@ -48,7 +48,8 @@ interface AST {
 		}
 
 		@Override
-		public @NotNull HeaderValue getValue() {
+		@NotNull
+		public HeaderValue getValue() {
 			return value;
 		}
 
