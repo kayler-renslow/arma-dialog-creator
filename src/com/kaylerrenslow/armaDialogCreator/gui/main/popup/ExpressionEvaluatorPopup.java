@@ -59,6 +59,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 			taConsole.appendText(command != commands[commands.length - 1] ? command + ", " : command);
 		}
 		taConsole.appendText("\n\n");
+		taConsole.setWrapText(true);
 
 		//setup toolbar
 		Button btnEval = new Button(bundle.getString("Toolbar.evaluate"));
@@ -132,8 +133,9 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		private final String hex = "0[xX]0*[0-9a-fA-F]+";
 
 		private final Pattern pattern = Pattern.compile(
-				"(?<IDENTIFIER>[a-zA-Z_$][a-zA-Z_$0-9]+)" +
-						String.format("|(?<NUMBER>%s|%s|%s|%s)", integer, decimal, exponent, hex) +
+				"(?<MAGICVAR>_x(?=[^a-zA-Z_$0-9]|$))" +
+						"|(?<IDENTIFIER>[a-zA-Z_$][a-zA-Z_$0-9]+)" +
+						String.format("|(?<NUMBER>%s|%s|%s|%s)", exponent, hex, decimal, integer) +
 						"|(?<STRING>('[^']*')+|(\"[^\"]*\")+)"
 		);
 
@@ -168,6 +170,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 					styleClass = "number";
 				} else if (matcher.group("STRING") != null) {
 					styleClass = "string";
+				} else if (matcher.group("MAGICVAR") != null) {
+					styleClass = "magic-var";
 				}
 
 				assert styleClass != null; //this should never happen

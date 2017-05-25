@@ -1,11 +1,12 @@
 **Added:**
-* Code value, if, true, false, array value, and select to expression interpreter
+* support for ==, !=, <, <=, >, <=
+* made _x red in evaluator popup
 
 **Changed:**
-* color of numbers in expression evaluator popup
+* 
 
 **Fixed:**
-*  
+* decimals, hex, and exponents not being colored in evaluator test popup 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects
@@ -14,3 +15,5 @@
 * may 24 : we need to support __EXEC
     * we need to make sure that values created in __EXEC are passed between multiple files (don't destroy them after each file preprocess action)
 * may 24: we need concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, % ^
+    * also, we need tests for Code value, if, true, false, array value, and select to expression interpreter
+    * need tests for concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, %, ^ as well

@@ -258,5 +258,10 @@ public interface Value {
 			//no need to cast and compare values since there are only 2 instance of BoolVal
 			return o == this;
 		}
+
+		@NotNull
+		public static BoolVal get(boolean b) {
+			return b ? True : False;
+		}
 	}
 }

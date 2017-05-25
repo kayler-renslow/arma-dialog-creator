@@ -67,6 +67,12 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 			return last;
 		} catch (Exception ex) {
+			if (ex instanceof ExpressionEvaluationException) {
+				if (ex instanceof EndEvaluationException) {
+					return ((EndEvaluationException) ex).getReturnValue();
+				}
+				throw ex;
+			}
 			throw new ExpressionEvaluationException(ex.getMessage(), ex);
 		}
 	}
@@ -308,7 +314,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				throw new IllegalStateException("unhandled type: " + expr.getType());
 			}
 		}
-		throw new IllegalStateException("should have returned something before this point");
+		return Value.Void;
 	}
 
 	@Override
@@ -416,6 +422,57 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			unexpectedValueException(right, codeTypeName() + "," + boolTypeName() + "," + arrayTypeName());
 		}
 		return unexpectedValueException(left, stringTypeName() + "," + arrayTypeName());
+	}
+
+	@Override
+	public Value visit(@NotNull AST.CompExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+		Value left = (Value) expr.getLeft().accept(this, env);
+		Value right = (Value) expr.getRight().accept(this, env);
+		switch (expr.getOperator()) {
+			case Equal: {
+				return Value.BoolVal.get(left.equals(right));
+			}
+			case NotEqual: {
+				return Value.BoolVal.get(!left.equals(right));
+			}
+			case LessThan: {
+				if (!(left instanceof Value.NumVal)) {
+					unexpectedValueException(left, numberTypeName());
+				}
+				if (!(right instanceof Value.NumVal)) {
+					unexpectedValueException(right, numberTypeName());
+				}
+				return Value.BoolVal.get(getNumValValue(left) < getNumValValue(right));
+			}
+			case LessThanOrEqual: {
+				if (!(left instanceof Value.NumVal)) {
+					unexpectedValueException(left, numberTypeName());
+				}
+				if (!(right instanceof Value.NumVal)) {
+					unexpectedValueException(right, numberTypeName());
+				}
+				return Value.BoolVal.get(getNumValValue(left) <= getNumValValue(right));
+			}
+			case GreaterThan: {
+				if (!(left instanceof Value.NumVal)) {
+					unexpectedValueException(left, numberTypeName());
+				}
+				if (!(right instanceof Value.NumVal)) {
+					unexpectedValueException(right, numberTypeName());
+				}
+				return Value.BoolVal.get(getNumValValue(left) > getNumValValue(right));
+			}
+			case GreaterThanOrEqual: {
+				if (!(left instanceof Value.NumVal)) {
+					unexpectedValueException(left, numberTypeName());
+				}
+				if (!(right instanceof Value.NumVal)) {
+					unexpectedValueException(right, numberTypeName());
+				}
+				return Value.BoolVal.get(getNumValValue(left) >= getNumValValue(right));
+			}
+		}
+		throw new IllegalStateException("unhandled operator: " + expr.getOperator());
 	}
 
 	private double getNumValValue(@NotNull Value v) {

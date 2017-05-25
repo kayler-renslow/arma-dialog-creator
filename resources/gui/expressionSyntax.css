@@ -11,3 +11,7 @@
 .number{
      -fx-fill: #119ac5 !important;
 }
+
+.magic-var{
+    -fx-fill: red !important;
+}

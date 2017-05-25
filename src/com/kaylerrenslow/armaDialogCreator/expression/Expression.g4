@@ -27,6 +27,7 @@ expression returns [AST.Expr ast]:
     | lf=expression FSlash rf=expression {$ast = new AST.DivExpr($lf.ast, $rf.ast);} //don't mess with order of arguments because of order of operations
     | la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
     | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
+    | lcomp=expression compOp=(EqEq | NotEq | LtEq | Lt | GtEq | Gt) rcomp=expression {$ast = new AST.CompExpr($lcomp.ast, $rcomp.ast, $compOp.text);}
     | ll=literal_expression {$ast = $ll.ast;}
     | lmax=expression Max rmax=expression {$ast = new AST.MaxExpr($lmax.ast, $rmax.ast);}
     | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
@@ -102,6 +103,12 @@ Then : 'then';
 Else : 'else';
 ExitWith : 'exitWith';
 Select : 'select';
+EqEq : '==' ;
+NotEq : '!=' ;
+Lt : '<' ;
+LtEq : '<=' ;
+Gt : '>' ;
+GtEq : '>=' ;
 Equal : '=' ;
 Semicolon : ';';
 

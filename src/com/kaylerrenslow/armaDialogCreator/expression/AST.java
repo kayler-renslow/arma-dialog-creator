@@ -47,6 +47,8 @@ interface AST {
 		T visit(@NotNull Array array, @NotNull Env env) throws ExpressionEvaluationException;
 
 		T visit(@NotNull SelectExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull CompExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {
@@ -188,6 +190,43 @@ interface AST {
 
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class CompExpr extends BinaryExpr {
+		public enum Operator {
+			Equal, NotEqual, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual
+		}
+
+		private final Operator operator;
+
+		public CompExpr(@NotNull Expr left, @NotNull Expr right, @NotNull String operatorText) {
+			super(left, right);
+			if (operatorText.equals("==")) {
+				operator = Operator.Equal;
+			} else if (operatorText.equals("!=")) {
+				operator = Operator.NotEqual;
+			} else if (operatorText.equals("<")) {
+				operator = Operator.LessThan;
+			} else if (operatorText.equals("<=")) {
+				operator = Operator.LessThanOrEqual;
+			} else if (operatorText.equals(">")) {
+				operator = Operator.GreaterThan;
+			} else if (operatorText.equals(">=")) {
+				operator = Operator.GreaterThanOrEqual;
+			} else {
+				throw new IllegalArgumentException("unknown operator:" + operatorText);
+			}
+		}
+
+		@NotNull
+		public Operator getOperator() {
+			return operator;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
 	}
@@ -339,7 +378,7 @@ interface AST {
 		public String getIdentifier() {
 			return identifier;
 		}
-		
+
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
