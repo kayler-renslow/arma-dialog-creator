@@ -33,6 +33,7 @@ expression returns [AST.Expr ast]:
     | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
     | select_e=expression Select select_i=expression {$ast = new AST.SelectExpr($select_e.ast, $select_i.ast);}
     | ifexp=if_expression {$ast = $ifexp.ast;}
+    | forexp=for_expression {$ast = $forexp.ast;}
     | codeExp=code {$ast = new AST.CodeExpr($codeExp.ast);}
     ;
 
@@ -61,6 +62,20 @@ if_expression returns [AST.IfExpr ast]:
         | (Then arr=array       {$ast = new AST.IfExpr($cond.ast, $arr.ast);})
         | (Then condIsTrue=expression Else condIsFalse=expression {$ast = new AST.IfExpr($cond.ast, $condIsTrue.ast, $condIsFalse.ast, AST.IfExpr.Type.IfThen);})
         | (Then condIsTrue=expression {$ast = new AST.IfExpr($cond.ast, $condIsTrue.ast, null, AST.IfExpr.Type.IfThen);})
+    )
+    ;
+
+for_expression returns [AST.ForExpr ast]:
+    (
+     For var=expression From fromExp=expression To toExp=expression Step stepExp=expression Do doExp=expression
+     {$ast = new AST.ForVarExpr($var.ast, $fromExp.ast, $toExp.ast, $stepExp.ast, $doExp.ast);}
+     )
+    |(
+     For var=expression From fromExp=expression To toExp=expression Do doExp=expression
+     {$ast = new AST.ForVarExpr($var.ast, $fromExp.ast, $toExp.ast, null, $doExp.ast);}
+     )
+    |(
+     For arr=expression Do doExp=expression {$ast = new AST.ForArrExpr($arr.ast, $doExp.ast);}
     )
     ;
 
@@ -103,6 +118,11 @@ Then : 'then';
 Else : 'else';
 ExitWith : 'exitWith';
 Select : 'select';
+For :'for';
+From :'from';
+To :'to';
+Step :'step';
+Do :'do';
 EqEq : '==' ;
 NotEq : '!=' ;
 Lt : '<' ;

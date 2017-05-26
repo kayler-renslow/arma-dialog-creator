@@ -14,7 +14,8 @@ import java.util.Map;
  @author Kayler
  @since 07/15/2016. */
 public class SimpleEnv implements Env {
-	private HashMap<String, Value> map = new HashMap<>();
+	/** Map for identifiers to values */
+	protected final HashMap<String, Value> map = new HashMap<>();
 
 	@Override
 	public Value put(@NotNull String identifier, Value v) {

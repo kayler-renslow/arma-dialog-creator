@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- Interface for values.
+ Interface for values. A value should be immutable.
 
  @author Kayler
  @see ExpressionInterpreter
@@ -15,7 +15,7 @@ import java.util.List;
 public interface Value {
 
 	class StringLiteral implements Value {
-		private String value;
+		private final String value;
 
 		public StringLiteral(@NotNull String value) {
 			this.value = value;
@@ -56,7 +56,7 @@ public interface Value {
 	}
 
 	class NumVal implements Value {
-		private double val;
+		private final double val;
 
 		public NumVal(double v) {
 			val = v;
@@ -93,45 +93,40 @@ public interface Value {
 	 @since 5/24/2017
 	 */
 	class Code implements Value {
-
-		private final Env env;
 		private String codeString;
 		private List<AST.Statement> statements;
 		private ExpressionEvaluator evaluator;
 
 		/**
-		 Create a code instance with the given code String and {@link Env}.
+		 Create a code instance with the given code String.
 		 This code will be executed in a new evaluator via {@link ExpressionInterpreter#evaluateStatements(String, Env)}
 
 		 @param codeString the code to execute, in a String
-		 @param e environment instance
 		 */
-		public Code(@NotNull String codeString, @NotNull Env e) {
+		public Code(@NotNull String codeString) {
 			this.codeString = codeString;
-			this.env = e;
 		}
 
 		/**
-		 Creates a code instance with the given list of {@link AST.Statement}, environment, and {@link ExpressionEvaluator}.
-		 This constructor is primarily used in {@link Code#exec()} for when the code was inside {} instead of a String.
+		 Creates a code instance with the given list of {@link AST.Statement} and {@link ExpressionEvaluator}.
+		 This constructor is primarily used in {@link Code#exec(Env)} for when the code was inside {} instead of a String.
 
 		 @param statements list of {@link AST.Statement}
-		 @param e environment
 		 @param evaluator evaluator instance that the {@link Code} instance is being constructed in
 		 */
-		protected Code(@NotNull List<AST.Statement> statements, @NotNull Env e, @NotNull ExpressionEvaluator evaluator) {
+		protected Code(@NotNull List<AST.Statement> statements, @NotNull ExpressionEvaluator evaluator) {
 			this.statements = statements;
-			this.env = e;
 			this.evaluator = evaluator;
 		}
 
 		/**
 		 Execute the code.
 
+		 @param env environment to execute in
 		 @return the last statement's value in a code string or {}.
 		 */
 		@NotNull
-		public Value exec() throws ExpressionEvaluationException {
+		public Value exec(@NotNull Env env) throws ExpressionEvaluationException {
 			if (codeString != null) {
 				return ExpressionInterpreter.getInstance().evaluateStatements(codeString, env);
 			}

@@ -17,6 +17,7 @@ public class SyntaxTextArea extends CodeArea {
 		init();
 	}
 
+
 	public SyntaxTextArea() {
 		init();
 	}

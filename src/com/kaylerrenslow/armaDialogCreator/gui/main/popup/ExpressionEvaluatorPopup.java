@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SyntaxTextArea;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.main.ProgramArgument;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -12,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 import org.intellij.lang.annotations.RegExp;
@@ -83,7 +85,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		vboxAfterToolBar.getChildren().add(hbox);
 		vboxAfterToolBar.getChildren().add(stackPaneConsole);
 
-		vboxAfterToolBar.getChildren().add(new HBox(5, new Label(bundle.getString("CodeArea.return_value")), stackPaneResult));
+		vboxAfterToolBar.getChildren().add(new HBox(5, returnValueLabel(bundle.getString("CodeArea.return_value")), stackPaneResult));
 
 		ScrollPane scrollPane = new ScrollPane(vboxAfterToolBar);
 		scrollPane.setFitToHeight(true);
@@ -117,15 +119,24 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		} catch (ExpressionEvaluationException e) {
 			returnValueString = bundle.getString("CodeArea.error");
 			consoleString = e.getMessage();
+			if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
+				e.printStackTrace(System.out);
+			}
 		}
-		stackPaneResult.getChildren().add(new Label(returnValueString));
+		stackPaneResult.getChildren().add(returnValueLabel(returnValueString));
 		environmentOverviewPane.setEnv(env);
 		taConsole.appendText(consoleString + "\n\n");
 	}
 
+	private Label returnValueLabel(@NotNull String s) {
+		Label label = new Label(s);
+		label.setFont(Font.font(14));
+		return label;
+	}
+
 	private class CodeAreaPane extends SyntaxTextArea {
 		@RegExp
-		private final String decimal = "\\.[0-9]+|[0-9]+\\.[0-9]+";
+		private final String decimal = "(\\.[0-9]+)|([0-9]+\\.[0-9]+)";
 		@RegExp
 		private final String integer = "[0-9]+";
 		private final String exponent = String.format("(%s|%s)[Ee][+-]?[0-9]*", integer, decimal);
@@ -133,16 +144,14 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		private final String hex = "0[xX]0*[0-9a-fA-F]+";
 
 		private final Pattern pattern = Pattern.compile(
-				"(?<MAGICVAR>_x(?=[^a-zA-Z_$0-9]|$))" +
-						"|(?<IDENTIFIER>[a-zA-Z_$][a-zA-Z_$0-9]+)" +
-						String.format("|(?<NUMBER>%s|%s|%s|%s)", exponent, hex, decimal, integer) +
+				"(?<IDENTIFIER>\\b([a-zA-Z_$][a-zA-Z_$0-9]*)\\b)" +
+						String.format("|(?<NUMBER>(%s)|(%s)|(%s)|(%s))", exponent, hex, decimal, integer) +
 						"|(?<STRING>('[^']*')+|(\"[^\"]*\")+)"
 		);
 
-		private final String[] supportedCommands = ExpressionInterpreter.getSupportedCommands();
-
 		public CodeAreaPane() {
 			getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/expressionSyntax.css");
+			//			setParagraphGraphicFactory(LineNumberFactory.get(this));
 			richChanges()
 					.filter(c -> !c.getInserted().equals(c.getRemoved()))
 					.subscribe(c -> {
@@ -160,21 +169,24 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 				String styleClass = null;
 				String s;
 				if ((s = matcher.group("IDENTIFIER")) != null) {
-					for (String command : supportedCommands) {
+					for (String command : ExpressionInterpreter.getSupportedCommands()) {
 						if (s.equals(command)) {
 							styleClass = "command";
 							break;
 						}
 					}
+					if (s.equals("_x")) {
+						styleClass = "magic-var";
+					}
 				} else if (matcher.group("NUMBER") != null) {
 					styleClass = "number";
 				} else if (matcher.group("STRING") != null) {
 					styleClass = "string";
-				} else if (matcher.group("MAGICVAR") != null) {
-					styleClass = "magic-var";
 				}
 
-				assert styleClass != null; //this should never happen
+				if (styleClass == null) {
+					continue;
+				}
 
 				spansBuilder.add(Collections.emptyList(), matcher.start() - lastKwEnd);
 				spansBuilder.add(Collections.singleton(styleClass), matcher.end() - matcher.start());

@@ -49,6 +49,10 @@ interface AST {
 		T visit(@NotNull SelectExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 
 		T visit(@NotNull CompExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull ForVarExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+
+		T visit(@NotNull ForArrExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
 	}
 
 	abstract class ASTNode implements AST {
@@ -324,6 +328,82 @@ interface AST {
 		@Nullable
 		public Expr getFalseCond() {
 			return falseCond;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	abstract class ForExpr extends Expr {
+		private final Expr doCode;
+
+		public ForExpr(@NotNull Expr doCode) {
+			this.doCode = doCode;
+		}
+
+		@NotNull
+		public Expr getDoCode() {
+			return doCode;
+		}
+	}
+
+	/** Example: for "_i" from 9 to 1 step -2 do {debugLog _i;}; */
+	class ForVarExpr extends ForExpr {
+
+		private final Expr varExpr;
+		private final Expr fromExpr;
+		private final Expr toExpr;
+		private final Expr stepExpr;
+
+		public ForVarExpr(@NotNull Expr varExpr, @NotNull Expr fromExpr, @NotNull Expr toExpr, @Nullable Expr stepExpr, @NotNull Expr doCode) {
+			super(doCode);
+			this.varExpr = varExpr;
+			this.fromExpr = fromExpr;
+			this.toExpr = toExpr;
+			this.stepExpr = stepExpr;
+		}
+
+		@NotNull
+		public Expr getVarExpr() {
+			return varExpr;
+		}
+
+		@NotNull
+		public Expr getFromExpr() {
+			return fromExpr;
+		}
+
+		@NotNull
+		public Expr getToExpr() {
+			return toExpr;
+		}
+
+		@Nullable
+		public Expr getStepExpr() {
+			return stepExpr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	/** Example: for [{_i=0}, {_i < 10}, {_i = _i + 1}] do {hint str _i}; */
+	class ForArrExpr extends ForExpr {
+
+		private final Expr array;
+
+		public ForArrExpr(@NotNull AST.Expr array, @NotNull Expr doCode) {
+			super(doCode);
+			this.array = array;
+		}
+
+		@Nullable
+		public Expr getArray() {
+			return array;
 		}
 
 		@Override

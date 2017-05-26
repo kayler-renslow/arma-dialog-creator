@@ -1,11 +1,11 @@
 /*See gui.ExpressionEvaluatorPopup*/
 
 .command{
-     -fx-fill: orange !important;
+     -fx-fill: #ffa500 !important;
 }
 
 .string{
-     -fx-fill: green !important;
+     -fx-fill: #008000 !important;
 }
 
 .number{
@@ -13,5 +13,6 @@
 }
 
 .magic-var{
-    -fx-fill: red !important;
+    -fx-fill: #ff0000 !important;
+    -fx-font-style: italic !important;
 }

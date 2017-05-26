@@ -1,12 +1,12 @@
 **Added:**
-* support for ==, !=, <, <=, >, <=
-* made _x red in evaluator popup
+* support for "for" loops
 
 **Changed:**
 * 
 
 **Fixed:**
-* decimals, hex, and exponents not being colored in evaluator test popup 
+*  null pointer exception when copying text from evaluator popup
+    * as adding null to the stylespans list 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects
@@ -17,3 +17,4 @@
 * may 24: we need concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, % ^
     * also, we need tests for Code value, if, true, false, array value, and select to expression interpreter
     * need tests for concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, %, ^ as well
+    * for "" is supported, but for [] isn't implemented

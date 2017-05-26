@@ -19,7 +19,10 @@ public class ExpressionInterpreter {
 
 	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 
-	private static final String[] supportedCommands = new String[]{"min", "max", "if", "true", "false", "then", "exitWith", "select"};
+	private static final String[] supportedCommands = new String[]{
+			"min", "max", "if", "true", "false", "then", "exitWith", "select",
+			"for", "from", "to", "step", "do"
+	};
 
 	/**
 	 Will return an array of all supported commands. This array is used to make sure the user isn't

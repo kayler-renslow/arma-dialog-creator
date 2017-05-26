@@ -22,7 +22,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 
 	/**
 	 Construct a new evaluator with the given lexer and parser. The lexer and parser given is what will be
-	 passed into any {@link Value.Code} instances. The error reporters for the lexer and parser will be used any time {@link Value.Code#exec()} is invoked.
+	 passed into any {@link Value.Code} instances. The error reporters for the lexer and parser will be used any time {@link Value.Code#exec(Env)} is invoked.
 
 	 @param lexer the lexer
 	 @param parser the parser
@@ -238,7 +238,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 
 	@Override
 	public Value visit(@NotNull AST.Code code, @NotNull Env env) throws ExpressionEvaluationException {
-		return new Value.Code(code.getStatements(), env, this);
+		return new Value.Code(code.getStatements(), this);
 	}
 
 	@Override
@@ -260,7 +260,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					}
 					Value ret = (Value) expr.getTrueCond().accept(this, env);
 					if (ret instanceof Value.Code) {
-						throw new EndEvaluationException(((Value.Code) ret).exec());
+						throw new EndEvaluationException(((Value.Code) ret).exec(env));
 					}
 					unexpectedValueException(ret, codeTypeName());
 				}
@@ -275,7 +275,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 						}
 						Value v = array.get(0);
 						if (v instanceof Value.Code) {
-							return ((Value.Code) v).exec();
+							return ((Value.Code) v).exec(env);
 						}
 						unexpectedValueException(v, codeTypeName());
 					} else {
@@ -284,7 +284,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 						}
 						Value v = (Value) expr.getTrueCond().accept(this, env);
 						if (v instanceof Value.Code) {
-							return ((Value.Code) v).exec();
+							return ((Value.Code) v).exec(env);
 						}
 						unexpectedValueException(v, codeTypeName());
 					}
@@ -296,7 +296,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					}
 					Value v = array.get(1);
 					if (v instanceof Value.Code) {
-						return ((Value.Code) v).exec();
+						return ((Value.Code) v).exec(env);
 					}
 					unexpectedValueException(v, codeTypeName());
 				} else {
@@ -305,7 +305,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					}
 					Value v = (Value) expr.getFalseCond().accept(this, env);
 					if (v instanceof Value.Code) {
-						return ((Value.Code) v).exec();
+						return ((Value.Code) v).exec(env);
 					}
 					unexpectedValueException(v, codeTypeName());
 				}
@@ -369,7 +369,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				Value.Code rightCode = (Value.Code) right;
 				for (Value v : leftArr) {
 					env.put("_x", v);
-					if (rightCode.exec() == Value.True) {
+					if (rightCode.exec(env) == Value.True) {
 						newItems.add(v);
 					}
 				}
@@ -473,6 +473,62 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 		}
 		throw new IllegalStateException("unhandled operator: " + expr.getOperator());
+	}
+
+	@Override
+	public Value visit(@NotNull AST.ForVarExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+		Value varVal = (Value) expr.getVarExpr().accept(this, env);
+		if (!(varVal instanceof Value.StringLiteral)) {
+			unexpectedValueException(varVal, stringTypeName());
+		}
+		String var = ((Value.StringLiteral) varVal).getValue();
+
+		Value fromVal = (Value) expr.getFromExpr().accept(this, env);
+		if (!(fromVal instanceof Value.NumVal)) {
+			unexpectedValueException(fromVal, numberTypeName());
+		}
+		double from = getNumValValue(fromVal);
+
+		Value toVal = (Value) expr.getToExpr().accept(this, env);
+		if (!(toVal instanceof Value.NumVal)) {
+			unexpectedValueException(toVal, numberTypeName());
+		}
+
+		double to = getNumValValue(toVal);
+
+		double step = 1;
+		if (expr.getStepExpr() != null) {
+			Value stepVal = (Value) expr.getStepExpr().accept(this, env);
+			if (!(stepVal instanceof Value.NumVal)) {
+				unexpectedValueException(stepVal, numberTypeName());
+			}
+			step = getNumValValue(stepVal);
+		}
+
+		Value.Code code;
+		{
+			Value doCodeVal = (Value) expr.getDoCode().accept(this, env);
+			if (!(doCodeVal instanceof Value.Code)) {
+				unexpectedValueException(doCodeVal, codeTypeName());
+			}
+			code = (Value.Code) doCodeVal;
+		}
+
+		DisposableWrapperEnv tempEnv = new DisposableWrapperEnv(env);
+		for (double i = from; i <= to; i += step) {
+			tempEnv.forcePut(var, new Value.NumVal(i)); //make _i not leak out of the temporary environment
+			code.exec(tempEnv);
+		}
+
+		//todo should all Env be DisposableWrapperEnv functionality where we can set the scope of the variable because of private command?
+		//maybe have getParentEnv() and default is returning null
+
+		return Value.Void;
+	}
+
+	@Override
+	public Value visit(@NotNull AST.ForArrExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+		return Value.Void;
 	}
 
 	private double getNumValValue(@NotNull Value v) {
