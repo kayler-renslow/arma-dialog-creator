@@ -7,7 +7,10 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.ProgramArgument;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -20,6 +23,7 @@ import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,9 +49,13 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 	private final EnvOverviewPane environmentOverviewPane = new EnvOverviewPane();
 	private final CodeAreaPane codeAreaPane = new CodeAreaPane();
 	private final StackPane stackPaneResult = new StackPane();
+	private final StackPane stackPaneRunTime = new StackPane();
 	private final TextArea taConsole = new TextArea();
 	private final StackPane stackPaneConsole = new StackPane();
 	private boolean showingConsole = false;
+	private Task activeEvaluateTask;
+	private final Button btnEval, btnTerminate;
+	private AtomicLong evaluateStartTime = new AtomicLong();
 
 	public ExpressionEvaluatorPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), null);
@@ -64,14 +72,27 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		taConsole.setWrapText(true);
 
 		//setup toolbar
-		Button btnEval = new Button(bundle.getString("Toolbar.evaluate"));
-		btnEval.setOnAction(event -> evaluateText());
-		Button btnToggleConsole = new Button(bundle.getString("Toolbar.toggle_console"));
-		btnToggleConsole.setOnAction(event -> toggleConsole());
-		ToolBar toolBar = new ToolBar(btnEval, btnToggleConsole);
+		ToolBar toolBar;
+		{
+			btnEval = new Button(bundle.getString("Toolbar.evaluate"));
+			btnEval.setOnAction(event -> evaluateText());
+
+			btnTerminate = new Button(bundle.getString("Toolbar.terminate"));
+			btnTerminate.setDisable(true);
+			btnTerminate.setOnAction(event -> {
+				activeEvaluateTask.cancel(true);
+				btnTerminate.setDisable(false);
+			});
+
+			Button btnToggleConsole = new Button(bundle.getString("Toolbar.toggle_console"));
+			btnToggleConsole.setOnAction(event -> toggleConsole());
+
+			toolBar = new ToolBar(btnEval, btnTerminate, new Separator(Orientation.VERTICAL), btnToggleConsole);
+		}
 
 		myRootElement.getChildren().add(toolBar);
 
+		//setup code area pane and environment overview
 		VBox vboxAfterToolBar = new VBox(10);
 		VBox.setVgrow(vboxAfterToolBar, Priority.ALWAYS);
 		vboxAfterToolBar.setPadding(new Insets(10));
@@ -85,7 +106,12 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		vboxAfterToolBar.getChildren().add(hbox);
 		vboxAfterToolBar.getChildren().add(stackPaneConsole);
 
-		vboxAfterToolBar.getChildren().add(new HBox(5, returnValueLabel(bundle.getString("CodeArea.return_value")), stackPaneResult));
+		vboxAfterToolBar.getChildren().add(new HBox(
+				5,
+				footerValueLabel(bundle.getString("CodeArea.return_value")), stackPaneResult,
+				new Separator(Orientation.VERTICAL),
+				footerValueLabel(bundle.getString("CodeArea.run_time")), stackPaneRunTime
+		));
 
 		ScrollPane scrollPane = new ScrollPane(vboxAfterToolBar);
 		scrollPane.setFitToHeight(true);
@@ -108,27 +134,79 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 	}
 
 	private void evaluateText() {
-		SimpleEnv env = new SimpleEnv();
 		stackPaneResult.getChildren().clear();
-		String returnValueString;
-		String consoleString;
-		try {
-			Value returnValue = ExpressionInterpreter.getInstance().evaluateStatements(codeAreaPane.getText(), env);
-			returnValueString = getValueAsString(returnValue);
-			consoleString = bundle.getString("CodeArea.success");
-		} catch (ExpressionEvaluationException e) {
-			returnValueString = bundle.getString("CodeArea.error");
-			consoleString = e.getMessage();
-			if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
-				e.printStackTrace(System.out);
+		stackPaneRunTime.getChildren().clear();
+		btnTerminate.setDisable(false);
+		btnEval.setDisable(true);
+		environmentOverviewPane.clearEnv();
+
+		activeEvaluateTask = new Task<Boolean>() {
+			ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
+
+			@Override
+			public boolean cancel(boolean mayInterruptIfRunning) {
+				interpreter.terminateAll();
+				return true;
 			}
-		}
-		stackPaneResult.getChildren().add(returnValueLabel(returnValueString));
-		environmentOverviewPane.setEnv(env);
-		taConsole.appendText(consoleString + "\n\n");
+
+			@Override
+			protected Boolean call() throws Exception {
+				evaluateStartTime.set(System.currentTimeMillis());
+
+				SimpleEnv env = new SimpleEnv();
+
+				String returnValueString;
+				String consoleString;
+
+				try {
+					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env);
+					returnValueString = getValueAsString(returnValue);
+					consoleString = bundle.getString("CodeArea.success");
+				} catch (ExpressionEvaluationException e) {
+					if (e instanceof TerminateEvaluationException) {
+						returnValueString = bundle.getString("CodeArea.terminated");
+						consoleString = returnValueString;
+					} else {
+						returnValueString = bundle.getString("CodeArea.error");
+						consoleString = e.getMessage();
+						if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
+							e.printStackTrace(System.out);
+						}
+					}
+				}
+
+				String finalConsoleString = consoleString;
+				String finalReturnValueString = returnValueString;
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						stackPaneResult.getChildren().add(footerValueLabel(finalReturnValueString));
+						environmentOverviewPane.setEnv(env);
+						taConsole.appendText(finalConsoleString + "\n\n");
+
+						btnTerminate.setDisable(true);
+						btnEval.setDisable(false);
+						stackPaneRunTime.getChildren().add(
+								footerValueLabel(
+										String.format(
+												"%d %s",
+												(System.currentTimeMillis() - evaluateStartTime.get()),
+												bundle.getString("CodeArea.milliseconds")
+										)
+								)
+						);
+					}
+				});
+
+				return true;
+			}
+		};
+		Thread t = new Thread(activeEvaluateTask, "ADC - Mini SQF Evaluator Popup - Execute SQF Task");
+		t.setDaemon(false);
+		t.start();
 	}
 
-	private Label returnValueLabel(@NotNull String s) {
+	private Label footerValueLabel(@NotNull String s) {
 		Label label = new Label(s);
 		label.setFont(Font.font(14));
 		return label;
@@ -222,6 +300,10 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 			for (KeyValue<String, Value> kv : list) {
 				listView.getItems().add(String.format("%-" + maxVarLength + "s = %s", kv.getKey(), getValueAsString(kv.getValue())));
 			}
+		}
+
+		public void clearEnv() {
+			listView.getItems().clear();
 		}
 	}
 

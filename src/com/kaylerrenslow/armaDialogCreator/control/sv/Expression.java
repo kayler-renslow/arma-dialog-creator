@@ -62,7 +62,7 @@ public class Expression extends SerializableValue {
 
 	@NotNull
 	public Value getValue() {
-		Value v = ExpressionInterpreter.getInstance().evaluate(valuesAsArray[0], env); //do not cache because the environment may change;
+		Value v = ExpressionInterpreter.newInstance().evaluate(valuesAsArray[0], env); //do not cache because the environment may change;
 		if (v instanceof Value.NumVal) {
 			return v;
 		}

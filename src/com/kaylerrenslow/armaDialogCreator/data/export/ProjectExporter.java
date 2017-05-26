@@ -31,6 +31,10 @@ public class ProjectExporter {
 	private ResourceBundle bundle = Lang.ApplicationBundle();
 
 	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
+		if (true) {
+			//Hey you. Convert this class to use util.IndentedStringBuilder
+			throw new RuntimeException();
+		}
 		this.configuration = configuration;
 		this.project = configuration.getProject();
 	}

@@ -70,7 +70,7 @@ public interface Value {
 			if (o instanceof NumVal) {
 				NumVal other = (NumVal) o;
 				//see Double.equals()
-				return Double.doubleToLongBits(this.val) == Double.doubleToLongBits(other.val);
+				return ArmaPrecision.isEqualTo(this.val, other.val);
 			}
 			return false;
 		}
@@ -87,25 +87,14 @@ public interface Value {
 	}
 
 	/**
-	 Used for executing a code String or code in {}.
+	 Used for executing code in {}.
 
 	 @author Kayler
 	 @since 5/24/2017
 	 */
 	class Code implements Value {
-		private String codeString;
-		private List<AST.Statement> statements;
-		private ExpressionEvaluator evaluator;
-
-		/**
-		 Create a code instance with the given code String.
-		 This code will be executed in a new evaluator via {@link ExpressionInterpreter#evaluateStatements(String, Env)}
-
-		 @param codeString the code to execute, in a String
-		 */
-		public Code(@NotNull String codeString) {
-			this.codeString = codeString;
-		}
+		private final List<AST.Statement> statements;
+		private final ExpressionEvaluator evaluator;
 
 		/**
 		 Creates a code instance with the given list of {@link AST.Statement} and {@link ExpressionEvaluator}.
@@ -127,15 +116,18 @@ public interface Value {
 		 */
 		@NotNull
 		public Value exec(@NotNull Env env) throws ExpressionEvaluationException {
-			if (codeString != null) {
-				return ExpressionInterpreter.getInstance().evaluateStatements(codeString, env);
-			}
-			return ExpressionInterpreter.getInstance().evaluateStatements(statements, env, evaluator);
+			return ExpressionInterpreter.newInstance().evaluateStatements(statements, env, evaluator);
 		}
 
 		@Override
 		public String toString() {
-			return "{...}";
+			StringBuilder sb = new StringBuilder();
+			sb.append('{');
+			for (AST.Statement s : statements) {
+				sb.append(s.toString());
+			}
+			sb.append('}');
+			return sb.toString();
 		}
 	}
 

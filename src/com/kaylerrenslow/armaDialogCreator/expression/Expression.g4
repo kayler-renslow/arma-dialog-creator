@@ -4,7 +4,7 @@ grammar Expression;
 
 statements returns [List<AST.Statement> lst] @init{ $lst = new ArrayList<>(); }:
     (s=statement Semicolon {$lst.add($s.ast);})*
-    s2=statement Semicolon?{$lst.add($s2.ast);}
+    s2=statement Semicolon? {$lst.add($s2.ast);}
     ;
 
 statement returns [AST.Statement ast]:

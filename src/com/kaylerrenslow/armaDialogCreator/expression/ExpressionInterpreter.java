@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  Evaluates simple mathematical expressions.
@@ -16,8 +17,6 @@ import java.util.List;
  @author Kayler
  @since 07/14/2016. */
 public class ExpressionInterpreter {
-
-	private static final ExpressionInterpreter INSTANCE = new ExpressionInterpreter();
 
 	private static final String[] supportedCommands = new String[]{
 			"min", "max", "if", "true", "false", "then", "exitWith", "select",
@@ -33,14 +32,22 @@ public class ExpressionInterpreter {
 		return supportedCommands;
 	}
 
-	private ExpressionInterpreter() {
+	/** Get a new instance of the interpreter */
+	@NotNull
+	public static ExpressionInterpreter newInstance() {
+		return new ExpressionInterpreter();
 	}
 
-	/** Get the only instance of the interpreter */
-	@NotNull
-	public static ExpressionInterpreter getInstance() {
-		return INSTANCE;
+	/** All running evaluators */
+	private final ConcurrentLinkedQueue<ExpressionEvaluator> q = new ConcurrentLinkedQueue<>();
+
+	/** Terminate all running evaluators for this interpreter */
+	public synchronized void terminateAll() {
+		for (ExpressionEvaluator e : q) {
+			e.terminate();
+		}
 	}
+
 
 	/**
 	 Evaluate the given expression String in the given environment. This method will throw errors if the given string contains assignments
@@ -76,8 +83,11 @@ public class ExpressionInterpreter {
 			}
 			throw new ExpressionEvaluationException(ex.getMessage(), ex);
 		}
-		ExpressionEvaluator evaluator = new ExpressionEvaluator(l, p);
-		return evaluator.evaluate(e, env);
+		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
+		q.add(evaluator);
+		Value ret = evaluator.evaluate(e, env);
+		q.remove(evaluator);
+		return ret;
 	}
 
 	/**
@@ -104,9 +114,12 @@ public class ExpressionInterpreter {
 		p.setErrorHandler(ErrorStrategy.INSTANCE);
 		l.addErrorListener(ErrorListener.INSTANCE);
 
-		ExpressionEvaluator evaluator = new ExpressionEvaluator(l, p);
+		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
 		try {
-			return evaluateStatements(p.statements().lst, env, evaluator);
+			q.add(evaluator);
+			Value ret = evaluateStatements(p.statements().lst, env, evaluator);
+			q.remove(evaluator);
+			return ret;
 		} catch (Exception e) {
 			if (e instanceof ExpressionEvaluationException) {
 				throw e;
@@ -116,7 +129,7 @@ public class ExpressionInterpreter {
 	}
 
 	/**
-	 Evaluate the given statements as a String in the given environment. This method is used with {@link Value.Code#exec()}
+	 Evaluate the given statements as a list of {@link AST.Statement} in the given environment.
 
 	 @param statements statements to evaluate
 	 @param env environment that holds information on all identifiers
@@ -129,7 +142,10 @@ public class ExpressionInterpreter {
 		try {
 			return evaluator.evaluate(statements, env);
 		} catch (Exception ex) {
-			throw new ExpressionEvaluationException(ex.getMessage());
+			if (ex instanceof ExpressionEvaluationException) {
+				throw ex;
+			}
+			throw new ExpressionEvaluationException(ex.getMessage(), ex);
 		}
 	}
 

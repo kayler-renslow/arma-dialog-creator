@@ -33,6 +33,11 @@ public class SimpleEnv implements Env {
 		return map.get(identifier);
 	}
 
+	@Override
+	public String toString() {
+		return map.toString();
+	}
+
 	@NotNull
 	@Override
 	public Iterator<KeyValue<String, Value>> iterator() {

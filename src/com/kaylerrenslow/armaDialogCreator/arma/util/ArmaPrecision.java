@@ -10,6 +10,12 @@ import java.text.DecimalFormat;
  @since 05/06/2017 */
 public class ArmaPrecision {
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.########");
+	public static final double EPSILON = 0.00000001;
+
+	/** Return true if d1 == d2 or Math.abs(d1 - d2) < {@link #EPSILON}. */
+	public static boolean isEqualTo(double d1, double d2) {
+		return d1 == d2 || Math.abs(d1 - d2) < EPSILON;
+	}
 
 	static {
 		DECIMAL_FORMAT.setRoundingMode(RoundingMode.CEILING);

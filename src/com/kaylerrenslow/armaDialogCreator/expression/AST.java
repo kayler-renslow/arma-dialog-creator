@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +59,15 @@ interface AST {
 
 	abstract class ASTNode implements AST {
 		public abstract Object accept(@NotNull Visitor visitor, @NotNull Env env);
+
+		abstract void toString(@NotNull IndentedStringBuilder sb);
+
+		@Override
+		public String toString() {
+			IndentedStringBuilder sb = new IndentedStringBuilder(4);
+			toString(sb);
+			return sb.toString();
+		}
 	}
 
 
@@ -77,13 +88,31 @@ interface AST {
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("{ ");
+			sb.incrementTabCount();
+			final boolean appendNewline = statements.size() > 1;
+			if (appendNewline) {
+				sb.append('\n');
+			}
+			for (Statement s : statements) {
+				s.toString(sb);
+				if (appendNewline) {
+					sb.append('\n');
+				}
+			}
+			sb.decrementTabCount();
+			sb.append(" }");
+		}
 	}
 
 	abstract class Expr extends ASTNode {
 
 	}
 
-	class MaxExpr extends CommandExpr {
+	class MaxExpr extends BinaryCommandExpr {
 
 		public MaxExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
@@ -94,12 +123,23 @@ interface AST {
 			return visitor.visit(this, env);
 		}
 
+		@NotNull
+		protected String commandNameForToString() {
+			return "max";
+		}
+
 	}
 
-	class MinExpr extends CommandExpr {
+	class MinExpr extends BinaryCommandExpr {
 
 		public MinExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
+		}
+
+		@Override
+		@NotNull
+		protected String commandNameForToString() {
+			return "min";
 		}
 
 		@Override
@@ -109,11 +149,11 @@ interface AST {
 
 	}
 
-	abstract class CommandExpr extends Expr {
+	abstract class BinaryCommandExpr extends Expr {
 		private final Expr left;
 		private final Expr right;
 
-		public CommandExpr(@NotNull Expr left, @NotNull Expr right) {
+		public BinaryCommandExpr(@NotNull Expr left, @NotNull Expr right) {
 			this.left = left;
 			this.right = right;
 		}
@@ -128,6 +168,18 @@ interface AST {
 		@NotNull
 		public Expr getRight() {
 			return right;
+		}
+
+		@NotNull
+		protected abstract String commandNameForToString();
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			getLeft().toString(sb);
+			sb.append(" ");
+			sb.append(commandNameForToString());
+			sb.append(" ");
+			getRight().toString(sb);
 		}
 	}
 
@@ -152,11 +204,30 @@ interface AST {
 			return right;
 		}
 
+		/** Return an operator for {@link #toString()}. */
+		@NotNull
+		protected abstract String operatorForToString();
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			getLeft().toString(sb);
+			sb.append(" ");
+			sb.append(operatorForToString());
+			sb.append(" ");
+			getRight().toString(sb);
+		}
+
 	}
 
 	class AddExpr extends BinaryExpr {
 		public AddExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
+		}
+
+		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return "+";
 		}
 
 		@Override
@@ -171,6 +242,12 @@ interface AST {
 		}
 
 		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return "-";
+		}
+
+		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
@@ -179,6 +256,12 @@ interface AST {
 	class MultExpr extends BinaryExpr {
 		public MultExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
+		}
+
+		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return "*";
 		}
 
 		@Override
@@ -193,6 +276,12 @@ interface AST {
 		}
 
 		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return "/";
+		}
+
+		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
@@ -200,28 +289,35 @@ interface AST {
 
 	class CompExpr extends BinaryExpr {
 		public enum Operator {
-			Equal, NotEqual, LessThan, LessThanOrEqual, GreaterThan, GreaterThanOrEqual
+			Equal("=="), NotEqual("!="), LessThan("<"), LessThanOrEqual("<="), GreaterThan(">"), GreaterThanOrEqual(">=");
+
+			private final String operatorText;
+
+			Operator(String operatorText) {
+				this.operatorText = operatorText;
+			}
 		}
 
-		private final Operator operator;
+		private Operator operator;
 
 		public CompExpr(@NotNull Expr left, @NotNull Expr right, @NotNull String operatorText) {
 			super(left, right);
-			if (operatorText.equals("==")) {
-				operator = Operator.Equal;
-			} else if (operatorText.equals("!=")) {
-				operator = Operator.NotEqual;
-			} else if (operatorText.equals("<")) {
-				operator = Operator.LessThan;
-			} else if (operatorText.equals("<=")) {
-				operator = Operator.LessThanOrEqual;
-			} else if (operatorText.equals(">")) {
-				operator = Operator.GreaterThan;
-			} else if (operatorText.equals(">=")) {
-				operator = Operator.GreaterThanOrEqual;
-			} else {
+
+			for (Operator o : Operator.values()) {
+				if (o.operatorText.equals(operatorText)) {
+					operator = o;
+					break;
+				}
+			}
+			if (operator == null) {
 				throw new IllegalArgumentException("unknown operator:" + operatorText);
 			}
+		}
+
+		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return getOperator().operatorText;
 		}
 
 		@NotNull
@@ -259,6 +355,12 @@ interface AST {
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(isAdd() ? "+" : "-");
+			getExpr().toString(sb);
+		}
 	}
 
 	class ParenExpr extends Expr {
@@ -277,6 +379,13 @@ interface AST {
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("(");
+			getExp().toString(sb);
+			sb.append(")");
 		}
 	}
 
@@ -334,6 +443,37 @@ interface AST {
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		public void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("if ");
+			getCondition().toString(sb);
+			switch (getType()) {
+				case ExitWith: {
+					sb.append(" exitWith ");
+					getTrueCond().toString(sb);
+					break;
+				}
+				case IfThen: {
+					sb.append(" then ");
+					if (getArr() == null) {
+						getTrueCond().toString(sb);
+						if (getFalseCond() != null) {
+							sb.append(" else ");
+							getFalseCond().toString(sb);
+						}
+
+					} else {
+						getArr().toString(sb);
+					}
+					break;
+				}
+				default: {
+					throw new IllegalStateException("unhandled type " + getType());
+				}
+			}
+
+		}
 	}
 
 	abstract class ForExpr extends Expr {
@@ -389,6 +529,31 @@ interface AST {
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			if (getStepExpr() == null) {
+				sb.append("for ");
+				getVarExpr().toString(sb);
+				sb.append(" from ");
+				getFromExpr().toString(sb);
+				sb.append(" to ");
+				getToExpr().toString(sb);
+				sb.append(" do ");
+				getDoCode().toString(sb);
+			} else {
+				sb.append("for ");
+				getVarExpr().toString(sb);
+				sb.append(" from ");
+				getFromExpr().toString(sb);
+				sb.append(" to ");
+				getToExpr().toString(sb);
+				sb.append(" step ");
+				getStepExpr().toString(sb);
+				sb.append(" do ");
+				getDoCode().toString(sb);
+			}
+		}
 	}
 
 	/** Example: for [{_i=0}, {_i < 10}, {_i = _i + 1}] do {hint str _i}; */
@@ -401,7 +566,7 @@ interface AST {
 			this.array = array;
 		}
 
-		@Nullable
+		@NotNull
 		public Expr getArray() {
 			return array;
 		}
@@ -410,12 +575,26 @@ interface AST {
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("for ");
+			getArray().toString(sb);
+			sb.append(" do ");
+			getDoCode().toString(sb);
+		}
 	}
 
-	class SelectExpr extends BinaryExpr {
+	class SelectExpr extends BinaryCommandExpr {
 
 		public SelectExpr(@NotNull Expr left, @NotNull Expr right) {
 			super(left, right);
+		}
+
+		@Override
+		@NotNull
+		protected String commandNameForToString() {
+			return "select";
 		}
 
 		@Override
@@ -441,6 +620,11 @@ interface AST {
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			code.toString(sb);
+		}
 	}
 
 	abstract class LiteralExpr extends Expr {
@@ -463,6 +647,11 @@ interface AST {
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(identifier);
+		}
 	}
 
 	class IntegerExpr extends LiteralExpr {
@@ -480,6 +669,11 @@ interface AST {
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(i + "");
+		}
 	}
 
 	class FloatExpr extends LiteralExpr {
@@ -496,6 +690,11 @@ interface AST {
 		@Override
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(ArmaPrecision.format(d));
 		}
 	}
 
@@ -515,6 +714,11 @@ interface AST {
 		public Object accept(@NotNull Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
 		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(s);
+		}
 	}
 
 	class Array extends LiteralExpr {
@@ -533,6 +737,19 @@ interface AST {
 		@Override
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append('[');
+			int i = 0;
+			for (Expr e : getItems()) {
+				e.toString(sb);
+				if (i != getItems().size() - 1) {
+					sb.append("', '");
+				}
+			}
+			sb.append(']');
 		}
 	}
 
@@ -559,6 +776,13 @@ interface AST {
 		@Override
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(var);
+			sb.append(" = ");
+			getExpr().toString(sb);
 		}
 	}
 
@@ -588,6 +812,16 @@ interface AST {
 		@Override
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			if (getExpr() != null) {
+				getExpr().toString(sb);
+			} else if (getAssignment() != null) {
+				getAssignment().toString(sb);
+			}
+			sb.append(";");
 		}
 	}
 }
