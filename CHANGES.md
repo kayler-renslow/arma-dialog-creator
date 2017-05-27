@@ -1,16 +1,12 @@
 **Added:**
-* an indent stringbuilder class and tests for it
-* program run time to evaluator popup
-* support for terminating expression interpreters
-* toString methods for all ASTNode classes for expression
+* support for array and string concatenation
+* support for array element removing (array-array)
 
 **Changed:**
-* made evaluator popup run the SQF on a different thread
-* removed EvaluatorWrapperEnv class and just put the relevant code in the Evaluator visitor methods 
+*  
 
 **Fixed:**
-*  null pointer exception when copying text from evaluator popup
-    * as adding null to the stylespans list 
+*  
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

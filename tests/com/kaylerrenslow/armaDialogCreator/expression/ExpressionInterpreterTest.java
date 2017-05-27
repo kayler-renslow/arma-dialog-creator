@@ -1,9 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
-import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 
@@ -198,48 +200,32 @@ public class ExpressionInterpreterTest {
 	}
 
 	@Test
-	public void evaluateString() throws Exception {
-		String expected = ArmaPrecision.format(25) + "hello";
-		String eval = "25 + \"hello\"";
-		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
-		assertEquals("", expected, ret.toString());
-	}
-
-	@Test
-	public void evaluateString2() throws Exception {
-		String expected = "hello" + ArmaPrecision.format(25);
-		String eval = "\"hello\" + 25";
-		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
-		assertEquals("", expected, ret.toString());
-	}
-
-	@Test
 	public void evaluateString3() throws Exception {
-		String expected = "hello" + ArmaPrecision.format(25);
-		String eval = "'hello' + 25";
+		String expected = "\"hello\"";
+		String eval = "'hello'";
 		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
-		assertEquals("", expected, ret.toString());
+		assertEquals(expected, ret.toString());
 	}
 
 	@Test
 	public void evaluateString4() throws Exception {
-		String expected = "\"hello\"" + ArmaPrecision.format(25);
-		String eval = "'''hello''' + 25";
+		String expected = "\"hello\"";
+		String eval = "'''hello'''";
 		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
-		assertEquals("", expected, ret.toString());
+		assertEquals(expected, ret.getValue());
 	}
 
 	@Test
 	public void evaluateString5() throws Exception {
-		String expected = "\"hello\"" + ArmaPrecision.format(25);
-		String eval = "\"\"\"hello\"\"\" + 25";
+		String expected = "\"\"\"hello\"\"\"";
+		String eval = "\"\"\"hello\"\"\"";
 		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
 		assertEquals("", expected, ret.toString());
 	}
 
 	@Test
 	public void evaluateString6() throws Exception {
-		String expected = "hello world";
+		String expected = "\"hello world\"";
 		String eval = "\"hello \" + \"world\"";
 		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env);
 		assertEquals("", expected, ret.toString());
@@ -323,6 +309,75 @@ public class ExpressionInterpreterTest {
 		String eval = "5 max 9";
 		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.newInstance().evaluate(eval, env);
 		assertEquals("", expected, ret.v(), 0);
+	}
+
+	@Test
+	public void stringConcatFail1() throws Exception {
+		String eval = "25 + \"hello\"";
+		try {
+			ExpressionInterpreter.newInstance().evaluate(eval, env);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals(true, true);
+			return;
+		}
+		assertEquals(false, true);
+	}
+
+	@Test
+	public void stringConcatFail2() throws Exception {
+		String eval = "\"hello\" + 25";
+		try {
+			ExpressionInterpreter.newInstance().evaluate(eval, env);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals(true, true);
+			return;
+		}
+		assertEquals(false, true);
+	}
+
+	@Test
+	public void stringConcat() throws Exception {
+		String eval = "\"Hello \" + \"World\"";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals("\"Hello World\"", ret.toString());
+	}
+
+	@Test
+	public void arrayConcat() throws Exception {
+		String eval = "[\"Hello\"] + [\"World\"]";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(new Value.Array(Arrays.asList(new Value.StringLiteral("Hello"), new Value.StringLiteral("World"))), ret);
+	}
+
+	@Test
+	public void arraySubtract() throws Exception {
+		String eval = "[\"Hello\",\"World\"] - [\"World\"]";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(new Value.Array(Collections.singletonList(new Value.StringLiteral("Hello"))), ret);
+	}
+
+	@Test
+	public void arrayConcatFail1() throws Exception {
+		String eval = "25 + [0]";
+		try {
+			ExpressionInterpreter.newInstance().evaluate(eval, env);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals(true, true);
+			return;
+		}
+		assertEquals(false, true);
+	}
+
+	@Test
+	public void arrayConcatFail2() throws Exception {
+		String eval = "[0] + 25";
+		try {
+			ExpressionInterpreter.newInstance().evaluate(eval, env);
+		} catch (ExpressionEvaluationException e) {
+			assertEquals(true, true);
+			return;
+		}
+		assertEquals(false, true);
 	}
 
 }

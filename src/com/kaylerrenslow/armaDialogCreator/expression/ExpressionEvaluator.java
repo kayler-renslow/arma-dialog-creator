@@ -129,30 +129,43 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(leftN + getNumValValue(right));
 			}
-			if (right instanceof Value.StringLiteral) {
-				return new Value.StringLiteral(ArmaPrecision.format(leftN) + right.toString());
-			}
-			return unexpectedValueException(right, numberTypeName() + "," + stringTypeName());
+			return unexpectedValueException(right, numberTypeName());
 		} else if (left instanceof Value.StringLiteral) {
-			if (right instanceof Value.NumVal) {
-				return new Value.StringLiteral(left.toString() + ArmaPrecision.format(getNumValValue(right)));
-			}
 			if (right instanceof Value.StringLiteral) {
-				return new Value.StringLiteral(left.toString() + right.toString());
+				return new Value.StringLiteral(((Value.StringLiteral) left).getValue() + ((Value.StringLiteral) right).getValue());
 			}
-			return unexpectedValueException(right, numberTypeName() + "," + stringTypeName());
-
+			return unexpectedValueException(right, stringTypeName());
+		} else if (left instanceof Value.Array) {
+			if (right instanceof Value.Array) {
+				((Value.Array) left).getItems().addAll(((Value.Array) right).getItems());
+				return left;
+			}
+			return unexpectedValueException(right, arrayTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName() + "," + stringTypeName());
+		return unexpectedValueException(left, numberTypeName() + "," + stringTypeName() + "," + arrayTypeName());
 	}
 
 	@Override
 	public Value visit(@NotNull AST.SubExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
-		Value.NumVal left = (Value.NumVal) expr.getLeft().accept(this, env);
-		Value.NumVal right = (Value.NumVal) expr.getRight().accept(this, env);
-		return new Value.NumVal(left.v() - right.v());
+		Value left = (Value) expr.getLeft().accept(this, env);
+		Value right = (Value) expr.getRight().accept(this, env);
+
+		if (left instanceof Value.NumVal) {
+			double leftN = getNumValValue(left);
+			if (right instanceof Value.NumVal) {
+				return new Value.NumVal(leftN - getNumValValue(right));
+			}
+			return unexpectedValueException(right, numberTypeName());
+		} else if (left instanceof Value.Array) {
+			if (right instanceof Value.Array) {
+				((Value.Array) left).getItems().removeAll(((Value.Array) right).getItems());
+				return left;
+			}
+			return unexpectedValueException(right, arrayTypeName());
+		}
+		return unexpectedValueException(left, numberTypeName() + "," + arrayTypeName());
 	}
 
 	@Override

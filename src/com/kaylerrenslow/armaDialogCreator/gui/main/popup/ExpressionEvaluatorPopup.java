@@ -39,9 +39,6 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		if (v == Value.Void) {
 			return "nil";
 		}
-		if (v instanceof Value.StringLiteral) {
-			return ((Value.StringLiteral) v).getAsDisplayableArmaString();
-		}
 		return v.toString();
 	}
 

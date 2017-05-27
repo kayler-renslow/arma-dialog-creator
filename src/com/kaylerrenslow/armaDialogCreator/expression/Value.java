@@ -15,20 +15,25 @@ import java.util.List;
 public interface Value {
 
 	class StringLiteral implements Value {
-		private final String value;
+		private final String rawValue;
+		private final String displayableValue;
 
 		public StringLiteral(@NotNull String value) {
-			this.value = value;
+			this.rawValue = value;
+			this.displayableValue = "\"" + value.replaceAll("([\"'])", "$1$1") + "\"";
 		}
 
+		/**
+		 Return the raw version of the String.
+		 This will not be the String that will look like an arma string
+		 (won't have surrounded quotes, no cancelling quotes like "")
+
+		 @return raw value for use in {@link ExpressionInterpreter}
+		 @see #toString()
+		 */
 		@NotNull
 		public String getValue() {
-			return value;
-		}
-
-		@NotNull
-		public String getAsDisplayableArmaString() {
-			return "\"" + value.replaceAll("\"", "\"") + "\"";
+			return rawValue;
 		}
 
 		@Override
@@ -38,20 +43,20 @@ public interface Value {
 			}
 			if (o instanceof StringLiteral) {
 				StringLiteral other = (StringLiteral) o;
-				return this.value.equals(other.value);
+				return this.rawValue.equals(other.rawValue);
 			}
 			return false;
 		}
 
-		/** @return {@link #getValue()} */
+		/** @return the String as an Arma string. Will have surrounding quotes and all inner quotes (",') will be cancelled ("="", '='')*/
 		@Override
 		public String toString() {
-			return value;
+			return displayableValue;
 		}
 
 		/** @return the value's length */
 		public int length() {
-			return value.length();
+			return rawValue.length();
 		}
 	}
 

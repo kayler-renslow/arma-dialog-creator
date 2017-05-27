@@ -21,6 +21,7 @@ code returns [AST.Code ast] locals[List<AST.Statement> lst] @init{ $lst = new Ar
     ;
 
 expression returns [AST.Expr ast]:
+//todo binary logical operators and !expression
     lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
     | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}

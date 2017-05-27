@@ -59,9 +59,29 @@ public class BasicTextRenderer {
 				if (newValue == null) {
 					setText("");
 				} else {
-					setText(newValue.toString().replaceAll("\"\"", "\""));
+					String tostring = newValue.toString();
+					if (tostring.length() < 2) {
+						//isn't a string literal like "HELLO ""World"""
+						setText(cancelQuotes(tostring));
+					} else {
+						char first = tostring.charAt(0);
+						char last = tostring.charAt(tostring.length() - 1);
+						if (first == last && (first == '"' || first == '\'')) {
+							if (tostring.length() > 2) { //isn't an empty string like "" or ''
+								tostring = tostring.substring(1, tostring.length());
+							} else {
+								tostring = ""; //empty string
+							}
+						}
+						setText(cancelQuotes(tostring));
+					}
 				}
 				renderer.requestRender();
+			}
+
+			private String cancelQuotes(@NotNull String s) {
+				s = s.replaceAll("([\"'])\\1", "$1"); //remove any "" or '' and convert to " and '
+				return s;
 			}
 		});
 		control.findProperty(colorText).getValueObserver().addListener(new ValueListener<SerializableValue>() {

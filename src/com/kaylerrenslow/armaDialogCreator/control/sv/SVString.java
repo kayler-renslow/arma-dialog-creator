@@ -21,7 +21,7 @@ public final class SVString extends SerializableValue {
 		super(s == null ? "" : s);
 	}
 
-	/** Involes {@link #SVString(String)} with "" (empty String) */
+	/** Involves {@link #SVString(String)} with "" (empty String) */
 	public SVString() {
 		this("");
 	}
