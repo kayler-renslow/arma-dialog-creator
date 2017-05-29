@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -378,6 +379,147 @@ public class ExpressionInterpreterTest {
 			return;
 		}
 		assertEquals(false, true);
+	}
+
+	@Test
+	public void equalsOperatorTrue() throws Exception {
+		String eval = "1==1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void equalsOperatorFalse() throws Exception {
+		String eval = "1==2";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void notEqualsOperatorTrue() throws Exception {
+		String eval = "1!=[]";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void notEqualsOperatorFalse() throws Exception {
+		String eval = "1 != 1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void lessThanOperatorTrue() throws Exception {
+		String eval = "1<2";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void lessThanOperatorFalse() throws Exception {
+		String eval = "1 <1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void lessThanOrEqualOperatorTrue() throws Exception {
+		String eval = "1<=2";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void lessThanOrEqualOperatorFalse() throws Exception {
+		String eval = "1 <=0";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void greaterThanOperatorTrue() throws Exception {
+		String eval = "2 > 1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void greaterThanOperatorFalse() throws Exception {
+		String eval = "1 > 1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void greaterThanOrEqualOperatorTrue() throws Exception {
+		String eval = "1>=1";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void greaterThanOrEqualOperatorFalse() throws Exception {
+		String eval = "-1 >=0";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void trueCommand() throws Exception {
+		String eval = "true";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.True, ret);
+	}
+
+	@Test
+	public void falseCommand() throws Exception {
+		String eval = "false";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(Value.False, ret);
+	}
+
+	@Test
+	public void emptyArray() throws Exception {
+		String eval = "[]";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(new Value.Array(), ret);
+	}
+
+	@Test
+	public void emptyCode() throws Exception {
+		String eval = "{}";
+		Value ret = ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(true, ret instanceof Value.Code && ((Value.Code) ret).getStatements().size() == 0);
+	}
+
+	@Test
+	public void mod() throws Exception {
+		String eval = "1 % 2";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(true, ArmaPrecision.isEqualTo(1 % 2, ret.v()));
+	}
+
+	@Test
+	public void exponent1() throws Exception {
+		String eval = "1 ^ 2";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.newInstance().evaluate(eval, env);
+
+		assertEquals(true, ArmaPrecision.isEqualTo(1, ret.v()));
+	}
+
+	@Test
+	public void exponent2() throws Exception {
+		String eval = "1 ^ 2 ^ 3";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(true, ArmaPrecision.isEqualTo(1, ret.v()));
+	}
+
+	@Test
+	public void exponent3() throws Exception {
+		String eval = "5 ^ 2 ^ 3";
+		Value.NumVal ret = (Value.NumVal) ExpressionInterpreter.newInstance().evaluate(eval, env);
+		assertEquals(true, ArmaPrecision.isEqualTo(Math.pow(Math.pow(5, 2), 3), ret.v()));
 	}
 
 }

@@ -58,6 +58,16 @@ public interface ExpressionListener extends ParseTreeListener {
 	 */
 	void exitExpression(ExpressionParser.ExpressionContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#caret_expression_helper}.
+	 * @param ctx the parse tree
+	 */
+	void enterCaret_expression_helper(ExpressionParser.Caret_expression_helperContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#caret_expression_helper}.
+	 * @param ctx the parse tree
+	 */
+	void exitCaret_expression_helper(ExpressionParser.Caret_expression_helperContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ExpressionParser#unary_expression}.
 	 * @param ctx the parse tree
 	 */

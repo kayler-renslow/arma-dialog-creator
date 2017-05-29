@@ -16,3 +16,7 @@
     -fx-fill: #ff0000 !important;
     -fx-font-style: italic !important;
 }
+
+.comment{
+    -fx-fill: gray !important;
+};

@@ -66,7 +66,7 @@ public class Expression extends SerializableValue {
 		if (v instanceof Value.NumVal) {
 			return v;
 		}
-		throw new ExpressionEvaluationException(
+		throw new ExpressionEvaluationException(null,
 				String.format(bundle.getString("unexpected_value_expected_f"), valuesAsArray[0], bundle.getString("number"))
 		);
 	}

@@ -1,12 +1,13 @@
 **Added:**
-* support for array and string concatenation
-* support for array element removing (array-array)
+* more expression tests
+* support for ^, %, count
+* comment support for expression interpreter
 
 **Changed:**
 *  
 
 **Fixed:**
-*  
+* expression couldnt handle empty array
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects
@@ -14,8 +15,5 @@
 * **may 10: we need extensive tests for ControlClass that test inheritance in many different ways!**
 * may 24 : we need to support __EXEC
     * we need to make sure that values created in __EXEC are passed between multiple files (don't destroy them after each file preprocess action)
-* may 24: we need concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, % ^
-    * also, we need tests for Code value, if, true, false, array value, and select to expression interpreter
-    * need tests for concat of arrays, subtract of arrays, ==, !=, <= <, >=, >, %, ^ as well
-    * for "" is supported, but for [] isn't implemented
-* may 26 : we need count []. see wiki for more syntaxes for count
+* may 28: if we wanted to support case insensitivity for commands and variables for expression interpreter, convert the entire file to lowercase
+    (except strings) and make the grammar match the lowercase commands 

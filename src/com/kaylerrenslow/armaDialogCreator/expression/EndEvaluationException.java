@@ -11,7 +11,7 @@ public class EndEvaluationException extends ExpressionEvaluationException {
 	private Value returnValue;
 
 	public EndEvaluationException(@NotNull Value returnValue) {
-		super("");
+		super(null, "");
 		this.returnValue = returnValue;
 	}
 

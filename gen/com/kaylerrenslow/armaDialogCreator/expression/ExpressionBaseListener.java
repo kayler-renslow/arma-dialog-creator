@@ -76,6 +76,18 @@ public class ExpressionBaseListener implements ExpressionListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterCaret_expression_helper(ExpressionParser.Caret_expression_helperContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitCaret_expression_helper(ExpressionParser.Caret_expression_helperContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterUnary_expression(ExpressionParser.Unary_expressionContext ctx) { }
 	/**
 	 * {@inheritDoc}

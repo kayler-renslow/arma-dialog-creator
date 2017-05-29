@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -12,49 +13,55 @@ import java.util.List;
  */
 interface AST {
 	interface Visitor<T> {
-		T visit(@NotNull AST.MaxExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MaxExpr expr, @NotNull Env env);
 
-		T visit(@NotNull AST.MinExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MinExpr expr, @NotNull Env env);
 
-		T visit(@NotNull AST.AddExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.AddExpr expr, @NotNull Env env);
 
-		T visit(@NotNull AST.SubExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.SubExpr expr, @NotNull Env env);
 
-		T visit(@NotNull AST.MultExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.MultExpr expr, @NotNull Env env);
 
-		T visit(@NotNull AST.DivExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull AST.DivExpr expr, @NotNull Env env);
 
-		T visit(@NotNull UnaryExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull ModExpr expr, @NotNull Env env);
 
-		T visit(@NotNull ParenExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull ExponentExpr expr, @NotNull Env env);
 
-		T visit(@NotNull IdentifierExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull UnaryExpr expr, @NotNull Env env);
 
-		T visit(@NotNull IntegerExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull ParenExpr expr, @NotNull Env env);
 
-		T visit(@NotNull FloatExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull IdentifierExpr expr, @NotNull Env env);
 
-		T visit(@NotNull StringExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull IntegerExpr expr, @NotNull Env env);
 
-		T visit(@NotNull Statement statement, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull FloatExpr expr, @NotNull Env env);
 
-		T visit(@NotNull Assignment assignment, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull StringExpr expr, @NotNull Env env);
 
-		T visit(@NotNull Code code, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull Statement statement, @NotNull Env env);
 
-		T visit(@NotNull CodeExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull Assignment assignment, @NotNull Env env);
 
-		T visit(@NotNull IfExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull Code code, @NotNull Env env);
 
-		T visit(@NotNull Array array, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull CodeExpr expr, @NotNull Env env);
 
-		T visit(@NotNull SelectExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull IfExpr expr, @NotNull Env env);
 
-		T visit(@NotNull CompExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull Array array, @NotNull Env env);
 
-		T visit(@NotNull ForVarExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull SelectExpr expr, @NotNull Env env);
 
-		T visit(@NotNull ForArrExpr expr, @NotNull Env env) throws ExpressionEvaluationException;
+		T visit(@NotNull CompExpr expr, @NotNull Env env);
+
+		T visit(@NotNull ForVarExpr expr, @NotNull Env env);
+
+		T visit(@NotNull ForArrExpr expr, @NotNull Env env);
+
+		T visit(@NotNull CountExpr expr, @NotNull Env env);
 	}
 
 	abstract class ASTNode implements AST {
@@ -331,6 +338,50 @@ interface AST {
 		}
 	}
 
+	class ModExpr extends BinaryExpr {
+		public ModExpr(@NotNull Expr left, @NotNull Expr right) {
+			super(left, right);
+		}
+
+		@Override
+		@NotNull
+		protected String operatorForToString() {
+			return "%";
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+	}
+
+	class ExponentExpr extends Expr {
+
+		private final List<Expr> exprs = new ArrayList<>();
+
+		public ExponentExpr(@NotNull Expr expr) {
+			exprs.add(expr);
+		}
+
+		@NotNull
+		public List<Expr> getExprs() {
+			return exprs;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			for (Expr e : exprs) {
+				e.toString(sb);
+				sb.append('^');
+			}
+		}
+	}
+
 	class UnaryExpr extends Expr {
 		private final boolean isAdd;
 		private final Expr expr;
@@ -600,6 +651,42 @@ interface AST {
 		@Override
 		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
 			return visitor.visit(this, env);
+		}
+	}
+
+	class CountExpr extends Expr {
+		private final Expr left;
+		private final Expr right;
+
+		public CountExpr(@Nullable Expr left, @NotNull Expr right) {
+			this.left = left;
+			this.right = right;
+		}
+
+		/** Get left expression (left count right) */
+		@Nullable
+		public Expr getLeft() {
+			return left;
+		}
+
+		/** Get right expression (left count right) */
+		@NotNull
+		public Expr getRight() {
+			return right;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			if (getLeft() != null) {
+				getLeft().toString(sb);
+			}
+			sb.append(" count ");
+			getRight().toString(sb);
 		}
 	}
 

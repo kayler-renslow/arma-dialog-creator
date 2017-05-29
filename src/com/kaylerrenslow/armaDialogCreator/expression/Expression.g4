@@ -22,20 +22,31 @@ code returns [AST.Code ast] locals[List<AST.Statement> lst] @init{ $lst = new Ar
 
 expression returns [AST.Expr ast]:
 //todo binary logical operators and !expression
-    lu=unary_expression {$ast = $lu.ast;}
+    //count
+    Count count_r=expression {$ast = new AST.CountExpr(null, $count_r.ast);}
+    | count_l=expression Count count_r=expression {$ast = new AST.CountExpr($count_l.ast, $count_r.ast);}
+    //end count
+    | lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
     | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}
     | lf=expression FSlash rf=expression {$ast = new AST.DivExpr($lf.ast, $rf.ast);} //don't mess with order of arguments because of order of operations
+    | lperc=expression Perc rperc=expression {$ast = new AST.ModExpr($lperc.ast, $rperc.ast);}
+    | lexpon=expression Caret ({$ast = new AST.ExponentExpr($lexpon.ast);} caret_expression_helper[(AST.ExponentExpr)$ast])
     | la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
     | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
     | lcomp=expression compOp=(EqEq | NotEq | LtEq | Lt | GtEq | Gt) rcomp=expression {$ast = new AST.CompExpr($lcomp.ast, $rcomp.ast, $compOp.text);}
-    | ll=literal_expression {$ast = $ll.ast;}
     | lmax=expression Max rmax=expression {$ast = new AST.MaxExpr($lmax.ast, $rmax.ast);}
     | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
     | select_e=expression Select select_i=expression {$ast = new AST.SelectExpr($select_e.ast, $select_i.ast);}
     | ifexp=if_expression {$ast = $ifexp.ast;}
     | forexp=for_expression {$ast = $forexp.ast;}
     | codeExp=code {$ast = new AST.CodeExpr($codeExp.ast);}
+    | ll=literal_expression {$ast = $ll.ast;}
+    ;
+
+caret_expression_helper[AST.ExponentExpr ast]:
+    (e1=expression Caret {$ast.getExprs().add($e1.ast);})*
+    e2=expression {$ast.getExprs().add($e2.ast);}
     ;
 
 unary_expression returns [AST.UnaryExpr ast]:
@@ -82,7 +93,7 @@ for_expression returns [AST.ForExpr ast]:
 
 array returns [AST.Array ast] locals[List<AST.Expr> items] @init{$items = new ArrayList<>();}:
     LBracket
-    e1=expression {$items.add($e1.ast);}
+    (e1=expression {$items.add($e1.ast);})?
     (Comma e2=expression {$items.add($e2.ast);})*
     RBracket {$ast = new AST.Array($items);}
     ;
@@ -108,6 +119,8 @@ RBracket : ']';
 Plus : '+';
 Minus : '-';
 FSlash : '/';
+Perc :'%';
+Caret :'^';
 Star : '*';
 LParen : '(';
 RParen : ')';
@@ -119,6 +132,7 @@ Then : 'then';
 Else : 'else';
 ExitWith : 'exitWith';
 Select : 'select';
+Count :'count';
 For :'for';
 From :'from';
 To :'to';
@@ -157,5 +171,7 @@ LetterOrDigit: [a-zA-Z0-9$_]
     {Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?;
 
 WhiteSpace : (' '|'\t'|'\r'|'\n'|'\r\n') -> skip; //ignore whitespace
+Comment : ('//' ~('\r'|'\n')+ | '/*' .*? '*/') -> skip; //ignore comments
+
 
 fragment DIGIT: ('0'..'9');

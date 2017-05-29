@@ -36,9 +36,6 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 
 	@NotNull
 	private static String getValueAsString(@NotNull Value v) {
-		if (v == Value.Void) {
-			return "nil";
-		}
 		return v.toString();
 	}
 
@@ -221,7 +218,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		private final Pattern pattern = Pattern.compile(
 				"(?<IDENTIFIER>\\b([a-zA-Z_$][a-zA-Z_$0-9]*)\\b)" +
 						String.format("|(?<NUMBER>(%s)|(%s)|(%s)|(%s))", exponent, hex, decimal, integer) +
-						"|(?<STRING>('[^']*')+|(\"[^\"]*\")+)"
+						"|(?<STRING>('[^']*')+|(\"[^\"]*\")+)" +
+						"|(?<COMMENT>(//[^\r\n]*)|(/\\*.*?\\*/))"
 		);
 
 		public CodeAreaPane() {
@@ -233,6 +231,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 						setStyleSpans(0, computeHighlighting(getText()));
 					});
 			getStyleClass().add("bordered-syntax-text-area");
+
+			setWrapText(true);
 		}
 
 		private StyleSpans<Collection<String>> computeHighlighting(String text) {
@@ -257,6 +257,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 					styleClass = "number";
 				} else if (matcher.group("STRING") != null) {
 					styleClass = "string";
+				} else if (matcher.group("COMMENT") != null) {
+					styleClass = "comment";
 				}
 
 				if (styleClass == null) {

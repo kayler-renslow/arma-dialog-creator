@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
- Evaluates simple mathematical expressions.
+ Evaluates simple mathematical expressions and some things of Arma 3's scripting language SQF.
  Order of operations is supported as well as identifier lookup.
 
  @author Kayler
@@ -19,8 +19,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class ExpressionInterpreter {
 
 	private static final String[] supportedCommands = new String[]{
-			"min", "max", "if", "true", "false", "then", "exitWith", "select",
-			"for", "from", "to", "step", "do"
+			"min", "max", "if", "then", "exitWith", "do", "true", "false",
+			"select", "for", "from", "to", "step", "count"
 	};
 
 	/**
@@ -38,30 +38,42 @@ public class ExpressionInterpreter {
 		return new ExpressionInterpreter();
 	}
 
-	/** All running evaluators */
+	/** All running evaluators in a thread-safe queue */
 	private final ConcurrentLinkedQueue<ExpressionEvaluator> q = new ConcurrentLinkedQueue<>();
 
-	/** Terminate all running evaluators for this interpreter */
-	public synchronized void terminateAll() {
+	/**
+	 Terminate all running evaluators for this interpreter. This method is thread-safe.
+	 <br>
+	 For each evaluator:
+	 <ul>
+	 <li>If the evaluator is running and this is invoked, the evaluator will throw a {@link TerminateEvaluationException}.</li>
+	 <li>If the evaluator is no longer running, nothing will happen.</li>
+	 </ul>
+	 */
+	public void terminateAll() {
 		for (ExpressionEvaluator e : q) {
 			e.terminate();
 		}
+		q.clear();
 	}
 
 
 	/**
-	 Evaluate the given expression String in the given environment. This method will throw errors if the given string contains assignments
-	 or multiple expressions separated by semicolons.
+	 Evaluate the given expression String in the given environment. This method will create a new evaluator.
+	 This method will throw errors if the given string contains assignments
+	 or multiple expressions separated by semicolons.<br><br>
+	 This method is a blocking method.
 
 	 @param exp expression text to evaluate
 	 @param env environment that holds information on all identifiers
 	 @return resulted {@link Value} instance
 	 @throws ExpressionEvaluationException if the expression couldn't be evaluated (includes if <code>exp==null or exp.trim().length()==0</code>)
+	 @throws TerminateEvaluationException if the evaluator created by this method is terminated via {@link #terminateAll()}
 	 */
 	@NotNull
 	public Value evaluate(@Nullable String exp, @NotNull Env env) throws ExpressionEvaluationException {
 		if (exp == null || exp.trim().length() == 0) {
-			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
+			throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
 		ExpressionLexer l = getLexer(exp);
 		ExpressionParser p = getParser(new CommonTokenStream(l));
@@ -81,7 +93,7 @@ public class ExpressionInterpreter {
 			if (ex instanceof ExpressionEvaluationException) {
 				throw ex;
 			}
-			throw new ExpressionEvaluationException(ex.getMessage(), ex);
+			throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
 		}
 		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
 		q.add(evaluator);
@@ -92,16 +104,19 @@ public class ExpressionInterpreter {
 
 	/**
 	 Evaluate the given statements as a String in the given environment.
+	 This method will create a new evaluator.<br><br>
+	 This method is a blocking method.
 
 	 @param statements statements text to evaluate
 	 @param env environment that holds information on all identifiers
 	 @return resulted {@link Value} instance from the last {@link AST.Statement}
 	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
+	 @throws TerminateEvaluationException if the evaluator created by this method is terminated via {@link #terminateAll()}
 	 */
 	@NotNull
 	public Value evaluateStatements(@Nullable String statements, @NotNull Env env) throws ExpressionEvaluationException {
 		if (statements == null || statements.trim().length() == 0) {
-			throw new ExpressionEvaluationException(Lang.ApplicationBundle().getString("Expression.error_no_input"));
+			throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
 		}
 		ExpressionLexer l = getLexer(statements);
 		ExpressionParser p = getParser(new CommonTokenStream(l));
@@ -117,14 +132,15 @@ public class ExpressionInterpreter {
 		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
 		try {
 			q.add(evaluator);
-			Value ret = evaluateStatements(p.statements().lst, env, evaluator);
+			List<AST.Statement> statementList = p.statements().lst;
+			Value ret = evaluateStatements(statementList, env, evaluator);
 			q.remove(evaluator);
 			return ret;
 		} catch (Exception e) {
 			if (e instanceof ExpressionEvaluationException) {
 				throw e;
 			}
-			throw new ExpressionEvaluationException(e.getMessage(), e);
+			throw new ExpressionEvaluationException(null, e.getMessage(), e);
 		}
 	}
 
@@ -145,7 +161,7 @@ public class ExpressionInterpreter {
 			if (ex instanceof ExpressionEvaluationException) {
 				throw ex;
 			}
-			throw new ExpressionEvaluationException(ex.getMessage(), ex);
+			throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
 		}
 	}
 

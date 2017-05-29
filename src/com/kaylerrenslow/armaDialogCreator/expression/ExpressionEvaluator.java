@@ -25,7 +25,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		this.interpreter = interpreter;
 	}
 
-
+	/** Terminate this evaluator immediately. This method is thread-safe */
 	public void terminate() {
 		terminated.set(true);
 	}
@@ -42,7 +42,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	 @throws ExpressionEvaluationException If the expression is invalid
 	 */
 	@NotNull
-	public Value evaluate(@NotNull AST.Expr e, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value evaluate(@NotNull AST.Expr e, @NotNull Env env) {
 		try {
 			return (Value) e.accept(this, env);
 		} catch (Exception ex) {
@@ -52,7 +52,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				}
 				throw ex;
 			}
-			throw new ExpressionEvaluationException(ex.getMessage(), ex);
+			throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
 		}
 	}
 
@@ -63,11 +63,11 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	 @throws ExpressionEvaluationException If one of the statements is invalid
 	 */
 	@NotNull
-	public Value evaluate(@NotNull List<AST.Statement> statements, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value evaluate(@NotNull List<AST.Statement> statements, @NotNull Env env) {
 		try {
 			Value last = Value.Void;
 			if (statements.size() == 0) {
-				//In the case that we are in an infinite loop evaluating nothing (for loop with empty code block),
+				//In the case that we are in a loop evaluating nothing (for loop with empty code block),
 				//we must check if we terminated here since it won't be triggered inside a visitor method.
 				checkIfTerminated();
 			}
@@ -82,12 +82,12 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				}
 				throw ex;
 			}
-			throw new ExpressionEvaluationException(ex.getMessage(), ex);
+			throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
 		}
 	}
 
 	@Override
-	public Value visit(@NotNull AST.MaxExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.MaxExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value left = (Value) expr.getLeft().accept(this, env);
@@ -97,13 +97,13 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(Math.max(leftN, getNumValValue(right)));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 	}
 
 	@Override
-	public Value visit(@NotNull AST.MinExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.MinExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value left = (Value) expr.getLeft().accept(this, env);
@@ -113,9 +113,9 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(Math.min(leftN, getNumValValue(right)));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 	}
 
 	@Override
@@ -129,20 +129,20 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(leftN + getNumValValue(right));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		} else if (left instanceof Value.StringLiteral) {
 			if (right instanceof Value.StringLiteral) {
 				return new Value.StringLiteral(((Value.StringLiteral) left).getValue() + ((Value.StringLiteral) right).getValue());
 			}
-			return unexpectedValueException(right, stringTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), stringTypeName());
 		} else if (left instanceof Value.Array) {
 			if (right instanceof Value.Array) {
 				((Value.Array) left).getItems().addAll(((Value.Array) right).getItems());
 				return left;
 			}
-			return unexpectedValueException(right, arrayTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), arrayTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName() + "," + stringTypeName() + "," + arrayTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName() + "," + stringTypeName() + "," + arrayTypeName());
 	}
 
 	@Override
@@ -157,15 +157,15 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(leftN - getNumValValue(right));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		} else if (left instanceof Value.Array) {
 			if (right instanceof Value.Array) {
 				((Value.Array) left).getItems().removeAll(((Value.Array) right).getItems());
 				return left;
 			}
-			return unexpectedValueException(right, arrayTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), arrayTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName() + "," + arrayTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName() + "," + arrayTypeName());
 	}
 
 	@Override
@@ -179,9 +179,9 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(leftN * getNumValValue(right));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 	}
 
 	@Override
@@ -195,9 +195,49 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			if (right instanceof Value.NumVal) {
 				return new Value.NumVal(leftN / getNumValValue(right));
 			}
-			return unexpectedValueException(right, numberTypeName());
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 		}
-		return unexpectedValueException(left, numberTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
+	}
+
+	@Override
+	public Value visit(@NotNull AST.ModExpr expr, @NotNull Env env) {
+		checkIfTerminated();
+
+		Value left = (Value) expr.getLeft().accept(this, env);
+		Value right = (Value) expr.getRight().accept(this, env);
+		if (left instanceof Value.NumVal) {
+			double leftN = getNumValValue(left);
+			if (right instanceof Value.NumVal) {
+				return new Value.NumVal(leftN % getNumValValue(right));
+			}
+			return unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
+		}
+		return unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
+	}
+
+	@Override
+	public Value visit(@NotNull AST.ExponentExpr expr, @NotNull Env env) {
+		checkIfTerminated();
+
+		double result = 0;
+		boolean didFirst = false;
+
+		for (AST.Expr e : expr.getExprs()) {
+			Value v = (Value) e.accept(this, env);
+			if (v instanceof Value.NumVal) {
+				if (!didFirst) {
+					result = ((Value.NumVal) v).v();
+					didFirst = true;
+				} else {
+					result = Math.pow(result, ((Value.NumVal) v).v());
+				}
+			} else {
+				return unexpectedValueException(expr, v, e, numberTypeName());
+			}
+		}
+
+		return new Value.NumVal(result);
 	}
 
 	@Override
@@ -212,7 +252,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 			return new Value.NumVal(-v.v());
 		}
-		return unexpectedValueException(val, numberTypeName());
+		return unexpectedValueException(expr, val, expr.getExpr(), numberTypeName());
 	}
 
 	@Override
@@ -223,7 +263,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.IdentifierExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.IdentifierExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		String var = expr.getIdentifier();
@@ -235,7 +275,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		}
 		Value v = env.getValue(var);
 		if (v == null) {
-			throw new ExpressionEvaluationException(String.format(Lang.ApplicationBundle().getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
+			throw new ExpressionEvaluationException(expr, String.format(Lang.ApplicationBundle().getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
 		}
 		return v;
 	}
@@ -251,9 +291,9 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.StringExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.StringExpr expr, @NotNull Env env) {
 		//this method will cut off the surrounded quotes given by the lexer
-		//then, it will convert "" and '' to single " and then return the Java string in a class
+		//then, it will convert "" and '' to single "
 
 		String truncated = expr.getValue().substring(1, expr.getValue().length() - 1);
 
@@ -263,7 +303,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.Statement statement, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.Statement statement, @NotNull Env env) {
 		checkIfTerminated();
 
 		if (statement.getAssignment() != null) {
@@ -276,13 +316,13 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.Assignment assignment, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.Assignment assignment, @NotNull Env env) {
 		checkIfTerminated();
 
 		String var = assignment.getVar();
 		for (String s : ExpressionInterpreter.getSupportedCommands()) {
 			if (s.equals(var)) {
-				throw new ExpressionEvaluationException(String.format(bundle.getString("assigning_to_command_error_f"), s));
+				throw new ExpressionEvaluationException(assignment, String.format(bundle.getString("assigning_to_command_error_f"), s));
 			}
 		}
 		env.put(var, (Value) assignment.getExpr().accept(this, env));
@@ -291,26 +331,26 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.Code code, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.Code code, @NotNull Env env) {
 		checkIfTerminated();
 
 		return new Value.Code(code.getStatements(), this);
 	}
 
 	@Override
-	public Value visit(@NotNull AST.CodeExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.CodeExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		return (Value) expr.getCode().accept(this, env);
 	}
 
 	@Override
-	public Value visit(@NotNull AST.IfExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.IfExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value cond = (Value) expr.getCondition().accept(this, env);
 		if (cond != Value.True && cond != Value.False) {
-			unexpectedValueException(cond, boolTypeName());
+			unexpectedValueException(expr, cond, expr.getCondition(), boolTypeName());
 		}
 		switch (expr.getType()) {
 			case ExitWith: {
@@ -322,7 +362,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					if (ret instanceof Value.Code) {
 						throw new EndEvaluationException(((Value.Code) ret).exec(env));
 					}
-					unexpectedValueException(ret, codeTypeName());
+					unexpectedValueException(expr, ret, expr.getTrueCond(), codeTypeName());
 				}
 				break;
 			}
@@ -331,13 +371,13 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					if (expr.getArr() != null) {
 						Value.Array array = (Value.Array) expr.getArr().accept(this, env);
 						if (array.length() < 2) {
-							badArrayLength(array, 2, "if condition then []");
+							badArrayLength(expr, array, 2, "if condition then []");
 						}
 						Value v = array.get(0);
 						if (v instanceof Value.Code) {
 							return ((Value.Code) v).exec(env);
 						}
-						unexpectedValueException(v, codeTypeName());
+						unexpectedValueException(expr, v, expr.getArr(), codeTypeName());
 					} else {
 						if (expr.getTrueCond() == null) {
 							throw new IllegalStateException("getTrueCond() is null");
@@ -346,39 +386,39 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 						if (v instanceof Value.Code) {
 							return ((Value.Code) v).exec(env);
 						}
-						unexpectedValueException(v, codeTypeName());
+						unexpectedValueException(expr, v, expr.getTrueCond(), codeTypeName());
 					}
 				}
 				if (expr.getArr() != null) {
 					Value.Array array = (Value.Array) expr.getArr().accept(this, env);
 					if (array.length() < 2) {
-						badArrayLength(array, 2, "if condition then []");
+						badArrayLength(expr, array, 2, "if condition then [{},{}]");
 					}
 					Value v = array.get(1);
 					if (v instanceof Value.Code) {
 						return ((Value.Code) v).exec(env);
 					}
-					unexpectedValueException(v, codeTypeName());
+					unexpectedValueException(expr, v, expr.getArr(), codeTypeName());
 				} else {
 					if (expr.getFalseCond() == null) {
-						throw new IllegalStateException("getFalseCond() is null");
+						return Value.Void;
 					}
 					Value v = (Value) expr.getFalseCond().accept(this, env);
 					if (v instanceof Value.Code) {
 						return ((Value.Code) v).exec(env);
 					}
-					unexpectedValueException(v, codeTypeName());
+					unexpectedValueException(expr, v, expr.getFalseCond(), codeTypeName());
 				}
 			}
 			default: {
 				throw new IllegalStateException("unhandled type: " + expr.getType());
 			}
 		}
-		return Value.Void;
+		throw new IllegalStateException();
 	}
 
 	@Override
-	public Value visit(@NotNull AST.Array array, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.Array array, @NotNull Env env) {
 		checkIfTerminated();
 
 		List<Value> values = new ArrayList<>();
@@ -389,7 +429,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.SelectExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.SelectExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value left = (Value) expr.getLeft().accept(this, env);
@@ -400,28 +440,31 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				//string select [start,length]
 				Value.Array rightArr = (Value.Array) right;
 				if (rightArr.length() < 1) {
-					badArrayLength(rightArr, 1, "\"string\" select [start,length]");
+					badArrayLength(expr, rightArr, 1, "\"string\" select [start,length]");
 				}
 				Value startVal = rightArr.get(0);
 				if (!(startVal instanceof Value.NumVal)) {
-					unexpectedValueException(startVal, numberTypeName());
+					unexpectedValueException(expr, startVal, expr.getRight(), numberTypeName());
 				}
 				int start = (int) getNumValValue(startVal);
 				if (start < 0 || start >= string.length()) {
-					indexOutOfBounds(string.getValue(), "start", start, 0, string.length() - 1);
+					indexOutOfBounds(expr, string.getValue(), "start", start, 0, string.length() - 1);
 				}
-				int length = string.length();
 				if (rightArr.length() > 1) {
+					int length;
 					Value lengthVal = rightArr.get(1);
 					if (!(lengthVal instanceof Value.NumVal)) {
-						unexpectedValueException(lengthVal, numberTypeName());
+						unexpectedValueException(expr, lengthVal, expr.getRight(), numberTypeName());
 					}
 					length = (int) getNumValValue(lengthVal);
+					if (length < 0 || start + length >= string.length()) {
+						indexOutOfBounds(expr, string.getValue(), "length", length, 0, string.length() - 1);
+					}
+
+					return new Value.StringLiteral(string.getValue().substring(start, start + length));
 				}
-				if (length < 0 || length >= string.length()) {
-					indexOutOfBounds(string.getValue(), "length", length, 0, string.length() - 1);
-				}
-				return new Value.StringLiteral(string.getValue().substring(start, length));
+
+				return new Value.StringLiteral(string.getValue().substring(start));
 			}
 		}
 		if (left instanceof Value.Array) {
@@ -443,12 +486,12 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				//[] select boolean
 				if (right == Value.True) {
 					if (leftArr.length() < 2) {
-						indexOutOfBounds(leftArr.toString(), "boolean", 1, 0, 2);
+						indexOutOfBounds(expr, leftArr.toString(), "boolean", 1, 0, 2);
 					}
 					return leftArr.get(1);
 				} else {
 					if (leftArr.length() < 2) {
-						indexOutOfBounds(leftArr.toString(), "boolean", 1, 0, 2);
+						indexOutOfBounds(expr, leftArr.toString(), "boolean", 1, 0, 2);
 					}
 					return leftArr.get(0);
 				}
@@ -458,38 +501,38 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				Value.Array rightArr = (Value.Array) right;
 
 				if (rightArr.length() < 2) {
-					badArrayLength(rightArr, 2, "[] select [start, count]");
+					badArrayLength(expr, rightArr, 2, "[] select [start, count]");
 				}
 
 				Value startVal = rightArr.get(0);
 				if (!(startVal instanceof Value.NumVal)) {
-					unexpectedValueException(startVal, numberTypeName());
+					unexpectedValueException(expr, startVal, expr.getRight(), numberTypeName());
 				}
 				int start = (int) getNumValValue(startVal);
 
 				Value countVal = rightArr.get(1);
 				if (!(countVal instanceof Value.NumVal)) {
-					unexpectedValueException(countVal, numberTypeName());
+					unexpectedValueException(expr, countVal, expr.getRight(), numberTypeName());
 				}
 				int count = (int) getNumValValue(countVal);
 
 				if (start < 0 || start >= leftArr.length()) {
-					indexOutOfBounds(leftArr.toString(), "start", start, 0, leftArr.length() - 1);
+					indexOutOfBounds(expr, leftArr.toString(), "start", start, 0, leftArr.length() - 1);
 				}
 
-				if (count < 0 || count >= leftArr.length()) {
-					indexOutOfBounds(leftArr.toString(), "count", count, 0, leftArr.length() - 1);
+				if (count < 0) {
+					indexOutOfBounds(expr, leftArr.toString(), "count", count, 0, 10000000);
 				}
 
-				return new Value.Array(leftArr.getItems().subList(start, count + 1));
+				return new Value.Array(leftArr.getItems().subList(start, Math.min(count, leftArr.length())));
 			}
-			unexpectedValueException(right, codeTypeName() + "," + boolTypeName() + "," + arrayTypeName());
+			unexpectedValueException(expr, right, expr.getRight(), codeTypeName() + "," + boolTypeName() + "," + arrayTypeName());
 		}
-		return unexpectedValueException(left, stringTypeName() + "," + arrayTypeName());
+		return unexpectedValueException(expr, left, expr.getLeft(), stringTypeName() + "," + arrayTypeName());
 	}
 
 	@Override
-	public Value visit(@NotNull AST.CompExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.CompExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value left = (Value) expr.getLeft().accept(this, env);
@@ -503,19 +546,19 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 			case LessThan: {
 				if (!(left instanceof Value.NumVal)) {
-					unexpectedValueException(left, numberTypeName());
+					unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 				}
 				if (!(right instanceof Value.NumVal)) {
-					unexpectedValueException(right, numberTypeName());
+					unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 				}
 				return Value.BoolVal.get(getNumValValue(left) < getNumValValue(right));
 			}
 			case LessThanOrEqual: {
 				if (!(left instanceof Value.NumVal)) {
-					unexpectedValueException(left, numberTypeName());
+					unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 				}
 				if (!(right instanceof Value.NumVal)) {
-					unexpectedValueException(right, numberTypeName());
+					unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 				}
 				double leftN = getNumValValue(left);
 				double rightN = getNumValValue(right);
@@ -523,10 +566,10 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 			case GreaterThan: {
 				if (!(left instanceof Value.NumVal)) {
-					unexpectedValueException(left, numberTypeName());
+					unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 				}
 				if (!(right instanceof Value.NumVal)) {
-					unexpectedValueException(right, numberTypeName());
+					unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 				}
 				double leftN = getNumValValue(left);
 				double rightN = getNumValValue(right);
@@ -534,10 +577,10 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			}
 			case GreaterThanOrEqual: {
 				if (!(left instanceof Value.NumVal)) {
-					unexpectedValueException(left, numberTypeName());
+					unexpectedValueException(expr, left, expr.getLeft(), numberTypeName());
 				}
 				if (!(right instanceof Value.NumVal)) {
-					unexpectedValueException(right, numberTypeName());
+					unexpectedValueException(expr, right, expr.getRight(), numberTypeName());
 				}
 
 				double leftN = getNumValValue(left);
@@ -549,24 +592,24 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.ForVarExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.ForVarExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
 		Value varVal = (Value) expr.getVarExpr().accept(this, env);
 		if (!(varVal instanceof Value.StringLiteral)) {
-			unexpectedValueException(varVal, stringTypeName());
+			unexpectedValueException(expr, varVal, expr.getVarExpr(), stringTypeName());
 		}
 		String var = ((Value.StringLiteral) varVal).getValue();
 
 		Value fromVal = (Value) expr.getFromExpr().accept(this, env);
 		if (!(fromVal instanceof Value.NumVal)) {
-			unexpectedValueException(fromVal, numberTypeName());
+			unexpectedValueException(expr, fromVal, expr.getFromExpr(), numberTypeName());
 		}
 		double from = getNumValValue(fromVal);
 
 		Value toVal = (Value) expr.getToExpr().accept(this, env);
 		if (!(toVal instanceof Value.NumVal)) {
-			unexpectedValueException(toVal, numberTypeName());
+			unexpectedValueException(expr, toVal, expr.getToExpr(), numberTypeName());
 		}
 
 		double to = getNumValValue(toVal);
@@ -575,7 +618,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		if (expr.getStepExpr() != null) {
 			Value stepVal = (Value) expr.getStepExpr().accept(this, env);
 			if (!(stepVal instanceof Value.NumVal)) {
-				unexpectedValueException(stepVal, numberTypeName());
+				unexpectedValueException(expr, stepVal, expr.getStepExpr(), numberTypeName());
 			}
 			step = getNumValValue(stepVal);
 		}
@@ -584,7 +627,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		{
 			Value doCodeVal = (Value) expr.getDoCode().accept(this, env);
 			if (!(doCodeVal instanceof Value.Code)) {
-				unexpectedValueException(doCodeVal, codeTypeName());
+				unexpectedValueException(expr, doCodeVal, expr.getDoCode(), codeTypeName());
 			}
 			code = (Value.Code) doCodeVal;
 		}
@@ -601,10 +644,98 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	@Override
-	public Value visit(@NotNull AST.ForArrExpr expr, @NotNull Env env) throws ExpressionEvaluationException {
+	public Value visit(@NotNull AST.ForArrExpr expr, @NotNull Env env) {
 		checkIfTerminated();
 
+		//for [{},{},{}] do {};
+
+		Value value = (Value) expr.getArray().accept(this, env);
+		if (!(value instanceof Value.Array)) {
+			unexpectedValueException(expr, value, expr.getArray(), arrayTypeName());
+		}
+		Value.Array array = (Value.Array) value;
+		if (array.length() < 3) {
+			badArrayLength(expr, array, 3, "forspec");
+		}
+
+		if (!(array.get(0) instanceof Value.Code)) {
+			unexpectedValueException(expr, array.get(0), expr.getArray(), codeTypeName());
+		}
+
+		if (!(array.get(1) instanceof Value.Code)) {
+			unexpectedValueException(expr, array.get(1), expr.getArray(), codeTypeName());
+		}
+
+		if (!(array.get(2) instanceof Value.Code)) {
+			unexpectedValueException(expr, array.get(2), expr.getArray(), codeTypeName());
+		}
+
+		Value.Code initCode = (Value.Code) array.get(0);
+		Value.Code conditionCode = (Value.Code) array.get(1);
+		Value.Code iterCompleteCode = (Value.Code) array.get(2);
+
+		Value valueDo = (Value) expr.getDoCode().accept(this, env);
+		if (!(valueDo instanceof Value.Code)) {
+			unexpectedValueException(expr, valueDo, expr.getDoCode(), codeTypeName());
+		}
+		Value.Code doCode = (Value.Code) valueDo;
+
+
+		initCode.exec(env);
+
+		while (conditionCode.exec(env) == Value.True) {
+			doCode.exec(env);
+			iterCompleteCode.exec(env);
+		}
+
 		return Value.Void;
+	}
+
+	@Override
+	public Value visit(@NotNull AST.CountExpr expr, @NotNull Env env) {
+		checkIfTerminated();
+
+		if (expr.getLeft() != null) {
+			Value left = (Value) expr.getLeft().accept(this, env);
+			if (left instanceof Value.Code) {
+				//{} count []
+				Value.Code condition = (Value.Code) left;
+				Value right = (Value) expr.getRight().accept(this, env);
+				if (!(right instanceof Value.Array)) {
+					unexpectedValueException(expr, right, expr.getRight(), arrayTypeName());
+				}
+				Value.Array array = (Value.Array) right;
+
+				int count = 0;
+				for (Value v : array) {
+					env.put("_x", v);
+					Value ret = condition.exec(env);
+					if (ret == Value.True) {
+						count++;
+					}
+				}
+
+				return new Value.NumVal(count);
+			} else {
+				unexpectedValueException(expr, left, expr.getLeft(), codeTypeName());
+			}
+		}
+
+		int count = 0;
+		Value right = (Value) expr.getRight().accept(this, env);
+		if (right instanceof Value.StringLiteral) {
+			//count ""
+			Value.StringLiteral string = (Value.StringLiteral) right;
+			count = string.length();
+		} else if (right instanceof Value.Array) {
+			//count []
+			Value.Array array = (Value.Array) right;
+			count = array.length();
+		} else {
+			unexpectedValueException(expr, right, expr.getRight(), stringTypeName() + "," + arrayTypeName());
+		}
+
+		return new Value.NumVal(count);
 	}
 
 	private double getNumValValue(@NotNull Value v) {
@@ -636,16 +767,25 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		return bundle.getString("boolean");
 	}
 
-	private Value unexpectedValueException(@NotNull Value v, @NotNull String expected) {
-		throw new ExpressionEvaluationException(String.format(bundle.getString("unexpected_value_expected_f"), v.toString(), expected));
+	/**
+	 Create and throw {@link ExpressionEvaluationException} with the given information
+
+	 @param errorNode the node (often the visitor parameter) in which the error occurred
+	 @param v the value that was invalid/unexpected
+	 @param valueNode the node that contains the invalid/unexpected value
+	 @param expected the value type that was expected
+	 @return nothing since will throw an exception
+	 */
+	private Value unexpectedValueException(@NotNull AST.ASTNode errorNode, @NotNull Value v, @NotNull AST.ASTNode valueNode, @NotNull String expected) {
+		throw new ExpressionEvaluationException(errorNode, String.format(bundle.getString("unexpected_value_expected_f"), v.toString(), valueNode.toString(), expected));
 	}
 
-	private void badArrayLength(@NotNull Value.Array arr, int reqSize, @NotNull String from) {
-		throw new ExpressionEvaluationException(String.format(bundle.getString("bad_array_size_f"), arr.length(), reqSize, from));
+	private void badArrayLength(@NotNull AST.ASTNode errorNode, @NotNull Value.Array arr, int reqSize, @NotNull String from) {
+		throw new ExpressionEvaluationException(errorNode, String.format(bundle.getString("bad_array_size_f"), arr.length(), reqSize, from));
 	}
 
-	private void indexOutOfBounds(@NotNull String source, @NotNull String varName, int index, int lowerBound, int upperBound) {
-		throw new ExpressionEvaluationException(String.format(bundle.getString("index_out_of_bounds"), varName, source, index, lowerBound, upperBound));
+	private void indexOutOfBounds(@NotNull AST.ASTNode errorNode, @NotNull String source, @NotNull String varName, int index, int lowerBound, int upperBound) {
+		throw new ExpressionEvaluationException(errorNode, String.format(bundle.getString("index_out_of_bounds"), varName, source, index, lowerBound, upperBound));
 	}
 
 	private final Pattern stringPattern = Pattern.compile("(\"\")|('')");

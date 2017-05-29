@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,6 +19,12 @@ public interface Value {
 		private final String rawValue;
 		private final String displayableValue;
 
+		/**
+		 A string literal.
+
+		 @param value the String without surrounding quotes and
+		 all inner cancelled quotes ("" ,'') are replaced with "
+		 */
 		public StringLiteral(@NotNull String value) {
 			this.rawValue = value;
 			this.displayableValue = "\"" + value.replaceAll("([\"'])", "$1$1") + "\"";
@@ -48,7 +55,7 @@ public interface Value {
 			return false;
 		}
 
-		/** @return the String as an Arma string. Will have surrounding quotes and all inner quotes (",') will be cancelled ("="", '='')*/
+		/** @return the String as an Arma string. Will have surrounding quotes and all inner quotes (",') will be cancelled ("="", '='') */
 		@Override
 		public String toString() {
 			return displayableValue;
@@ -113,6 +120,12 @@ public interface Value {
 			this.evaluator = evaluator;
 		}
 
+		/** @return list of {@link AST.Statement} to run with {@link #exec(Env)} */
+		@NotNull
+		protected List<AST.Statement> getStatements() {
+			return statements;
+		}
+
 		/**
 		 Execute the code.
 
@@ -137,7 +150,7 @@ public interface Value {
 	}
 
 	/**
-	 An array
+	 An array with the underlying data being a list.
 
 	 @author Kayler
 	 @since 5/24/2017
@@ -145,8 +158,14 @@ public interface Value {
 	class Array implements Value, Iterable<Value> {
 		private final List<Value> items;
 
+		/** Construct an array with the internal data equal to items */
 		public Array(@NotNull List<Value> items) {
 			this.items = items;
+		}
+
+		/** Construct an array with the internal data equal to a new, empty {@link ArrayList} */
+		public Array() {
+			items = new ArrayList<>();
 		}
 
 		@NotNull
@@ -198,7 +217,7 @@ public interface Value {
 		}
 	}
 
-
+	/**Only instance of {@link Void}*/
 	Void Void = new Void();
 
 	/**
@@ -213,7 +232,7 @@ public interface Value {
 
 		@Override
 		public String toString() {
-			return "";
+			return "nil";
 		}
 
 		@Override
@@ -222,7 +241,9 @@ public interface Value {
 		}
 	}
 
+	/**Only instance of {@link BoolVal} that is equal to true*/
 	BoolVal True = new BoolVal(true);
+	/**Only instance of {@link BoolVal} that is equal to false*/
 	BoolVal False = new BoolVal(false);
 
 	class BoolVal implements Value {

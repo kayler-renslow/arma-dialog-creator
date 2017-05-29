@@ -6,14 +6,15 @@ package com.kaylerrenslow.armaDialogCreator.expression;
  @author Kayler
  @since 05/26/2017 */
 public class TerminateEvaluationException extends ExpressionEvaluationException {
-	public TerminateEvaluationException() {
+	protected TerminateEvaluationException() {
+		super(null);
 	}
 
 	public TerminateEvaluationException(String message) {
-		super(message);
+		super(null, message);
 	}
 
 	public TerminateEvaluationException(String message, Throwable cause) {
-		super(message, cause);
+		super(null, message, cause);
 	}
 }
