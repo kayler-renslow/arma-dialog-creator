@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,7 +18,7 @@ public class ExpressionInterpreterTest2 {
 	public void statement1() throws Exception {
 		Value expected = Value.Void;
 		String eval = "v=1";
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -25,7 +26,7 @@ public class ExpressionInterpreterTest2 {
 	public void statement2() throws Exception {
 		Value expected = Value.Void;
 		String eval = "v=1; b=1";
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -33,7 +34,7 @@ public class ExpressionInterpreterTest2 {
 	public void statement3() throws Exception {
 		Value expected = Value.Void;
 		String eval = "v=1; b=1;";
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -41,7 +42,7 @@ public class ExpressionInterpreterTest2 {
 	public void statement4() throws Exception {
 		Value expected = new Value.NumVal(1 + 1);
 		String eval = "v=1; 1+1;";
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -50,7 +51,7 @@ public class ExpressionInterpreterTest2 {
 		Env e = new SimpleEnv();
 		Value expected = new Value.NumVal(1);
 		String eval = "v=1; 1+1;";
-		ExpressionInterpreter.newInstance().evaluateStatements(eval, e);
+		ExpressionInterpreter.newInstance().evaluateStatements(eval, e).get();
 		assertEquals(expected, e.getValue("v"));
 	}
 
@@ -59,7 +60,7 @@ public class ExpressionInterpreterTest2 {
 		Env e = new SimpleEnv();
 		Value expected = new Value.NumVal(1 + 9);
 		String eval = "v=1+9;";
-		ExpressionInterpreter.newInstance().evaluateStatements(eval, e);
+		ExpressionInterpreter.newInstance().evaluateStatements(eval, e).get();
 		assertEquals(expected, e.getValue("v"));
 	}
 
@@ -71,7 +72,7 @@ public class ExpressionInterpreterTest2 {
 				"a"
 		});
 		Value expected = new Value.NumVal(10);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -83,7 +84,7 @@ public class ExpressionInterpreterTest2 {
 				"a"
 		});
 		Value expected = new Value.NumVal(3);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -95,7 +96,7 @@ public class ExpressionInterpreterTest2 {
 				"a"
 		});
 		Value expected = new Value.NumVal(5);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -107,7 +108,7 @@ public class ExpressionInterpreterTest2 {
 				"a"
 		});
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -119,7 +120,7 @@ public class ExpressionInterpreterTest2 {
 				"a"
 		});
 		Value expected = new Value.NumVal(0);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -127,7 +128,7 @@ public class ExpressionInterpreterTest2 {
 	public void forLoopArray1() throws Exception {
 		Env env = new SimpleEnv();
 		String eval = "for [{_a = 0; _b = 1},{_a <= 10},{_a = _a + 1; _b = _b + _b}] do {};";
-		ExpressionInterpreter.newInstance().evaluateStatements(eval, env);
+		ExpressionInterpreter.newInstance().evaluateStatements(eval, env).get();
 		Value a = env.getValue("_a");
 		Value b = env.getValue("_b");
 		if (!a.equals(new Value.NumVal(11))) {
@@ -142,7 +143,7 @@ public class ExpressionInterpreterTest2 {
 	public void countWithCondition1() throws Exception {
 		String eval = "{true} count []";
 		Value expected = new Value.NumVal(0);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -150,7 +151,7 @@ public class ExpressionInterpreterTest2 {
 	public void countWithCondition2() throws Exception {
 		String eval = "{true} count [1,2]";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -158,7 +159,7 @@ public class ExpressionInterpreterTest2 {
 	public void countWithCondition3() throws Exception {
 		String eval = "{false} count [1,2]";
 		Value expected = new Value.NumVal(0);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -166,7 +167,7 @@ public class ExpressionInterpreterTest2 {
 	public void countArray() throws Exception {
 		String eval = "count [1,2]";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -174,7 +175,7 @@ public class ExpressionInterpreterTest2 {
 	public void countString() throws Exception {
 		String eval = "count \"hello\"";
 		Value expected = new Value.NumVal(5);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -182,7 +183,7 @@ public class ExpressionInterpreterTest2 {
 	public void countWithSubtract() throws Exception {
 		String eval = "count \"hello\" - 1";
 		Value expected = new Value.NumVal(4);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -190,7 +191,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectWithCondition1() throws Exception {
 		String eval = "[1,2] select {true}";
 		Value expected = new Value.Array(Arrays.asList(new Value.NumVal(1), new Value.NumVal(2)));
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -198,7 +199,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectWithCondition2() throws Exception {
 		String eval = "[1,2] select {false}";
 		Value expected = new Value.Array();
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -206,7 +207,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectWithBoolTrue() throws Exception {
 		String eval = "[1,2] select true";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -214,7 +215,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectWithBoolFalse() throws Exception {
 		String eval = "[1,2] select false";
 		Value expected = new Value.NumVal(1);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -222,7 +223,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectSubArray1() throws Exception {
 		String eval = "[1,2] select [0,5]";
 		Value expected = new Value.Array(Arrays.asList(new Value.NumVal(1), new Value.NumVal(2)));
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -230,7 +231,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectSubArray2() throws Exception {
 		String eval = "[1,2] select [0,1]";
 		Value expected = new Value.Array(Collections.singletonList(new Value.NumVal(1)));
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -238,7 +239,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectSubString1() throws Exception {
 		String eval = "\"japa is the man!\" select [8]";
 		Value expected = new Value.StringLiteral("the man!");
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -246,7 +247,7 @@ public class ExpressionInterpreterTest2 {
 	public void selectSubString2() throws Exception {
 		String eval = "\"japa is the man!\" select [0,7]";
 		Value expected = new Value.StringLiteral("japa is");
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -254,7 +255,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThen1() throws Exception {
 		String eval = "a=0;if true then {a=1};a";
 		Value expected = new Value.NumVal(1);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -262,7 +263,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThen2() throws Exception {
 		String eval = "a=0;if false then {a=1};a";
 		Value expected = new Value.NumVal(0);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -270,7 +271,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThen3() throws Exception {
 		String eval = "a=if false then {1};a";
 		Value expected = Value.Void;
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -278,7 +279,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThen4() throws Exception {
 		String eval = "a=if true then {1};a";
 		Value expected = new Value.NumVal(1);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -286,7 +287,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThenElse1() throws Exception {
 		String eval = "a=0;if true then {a=1} else {a=2};a";
 		Value expected = new Value.NumVal(1);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -294,7 +295,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThenElse2() throws Exception {
 		String eval = "a=0;if false then {a=1} else {a=2};a";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -302,7 +303,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifThenElse3() throws Exception {
 		String eval = "a=if false then {1} else {2};a";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -310,7 +311,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifArr1() throws Exception {
 		String eval = "a=0;if true then [{a=1},{a=2}];a";
 		Value expected = new Value.NumVal(1);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -318,7 +319,7 @@ public class ExpressionInterpreterTest2 {
 	public void ifArr2() throws Exception {
 		String eval = "a=0;if false then [{a=1},{a=2}];a";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
 
@@ -326,8 +327,53 @@ public class ExpressionInterpreterTest2 {
 	public void ifArr3() throws Exception {
 		String eval = "a=if false then [{1},{2}];a";
 		Value expected = new Value.NumVal(2);
-		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv());
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
 		assertEquals(expected, ret);
 	}
+
+	@Test
+	public void terminateEvaluator() throws Exception {
+		String eval = "for [{a = 0; _b = 1},{a <= 100},{a = a + 1;}] do {};a";
+		String evalInfinite = "for [{_a = 0; _b = 1},{true},{_a = _a + 1;}] do {};";
+		ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
+		FutureEvaluatedValue evaluatorValueInf = interpreter.evaluateStatements(evalInfinite, new SimpleEnv());
+		FutureEvaluatedValue evaluatorValue = interpreter.evaluateStatements(eval, new SimpleEnv());
+		FutureEvaluatedValue evaluatorValueInf2 = interpreter.evaluateStatements(evalInfinite, new SimpleEnv());
+
+		//wait for infinite loops to start
+		Thread.sleep(300);
+
+		if (!evaluatorValue.get().equals(new Value.NumVal(101))) {
+			assertEquals("evaluatorValue wasn't equal to 101. It was " + evaluatorValue.get(), true, false);
+		}
+
+		AtomicInteger cancels = new AtomicInteger(0);
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					evaluatorValueInf.get();
+				} catch (TerminateEvaluationException e) {
+					cancels.incrementAndGet();
+				}
+				try {
+					evaluatorValueInf2.get();
+				} catch (TerminateEvaluationException e) {
+					cancels.incrementAndGet();
+				}
+			}
+		});
+		thread.start();
+
+		Thread.sleep(1000);
+		evaluatorValueInf.cancel();
+		evaluatorValueInf2.cancel();
+		thread.join();
+
+		assertEquals("Attempted to terminate 2 infinite loop evaluations.", 2, cancels.get());
+	}
+
+	//for [{_a = 0; _b = 1},{_a <= 100000},{_a = _a + 1;}] do {};
 
 }

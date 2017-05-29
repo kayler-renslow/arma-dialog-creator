@@ -1,13 +1,12 @@
 **Added:**
-* more expression tests
-* support for ^, %, count
-* comment support for expression interpreter
+* 
 
 **Changed:**
-*  
+* made expression interpret return future
+* made expression interpreter use thread pool
 
 **Fixed:**
-* expression couldnt handle empty array
+* 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

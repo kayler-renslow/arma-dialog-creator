@@ -27,7 +27,7 @@ public interface Value {
 		 */
 		public StringLiteral(@NotNull String value) {
 			this.rawValue = value;
-			this.displayableValue = "\"" + value.replaceAll("([\"'])", "$1$1") + "\"";
+			this.displayableValue = "\"" + value.replaceAll("([\"'])", "\"\"") + "\"";
 		}
 
 		/**

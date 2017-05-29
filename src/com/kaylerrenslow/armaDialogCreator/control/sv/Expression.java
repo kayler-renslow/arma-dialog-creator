@@ -48,7 +48,7 @@ public class Expression extends SerializableValue {
 		setExpression(exp);
 	}
 
-	public void setExpression(String exp) throws ExpressionEvaluationException {
+	public void setExpression(@NotNull String exp) throws ExpressionEvaluationException {
 		valuesAsArray[0] = exp;
 
 		//check if valid
@@ -62,7 +62,7 @@ public class Expression extends SerializableValue {
 
 	@NotNull
 	public Value getValue() {
-		Value v = ExpressionInterpreter.newInstance().evaluate(valuesAsArray[0], env); //do not cache because the environment may change;
+		Value v = ExpressionInterpreter.newInstance().evaluate(valuesAsArray[0], env).get(); //do not cache because the environment may change;
 		if (v instanceof Value.NumVal) {
 			return v;
 		}

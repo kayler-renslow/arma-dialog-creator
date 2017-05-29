@@ -8,11 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 /**
  Evaluates simple mathematical expressions and some things of Arma 3's scripting language SQF.
- Order of operations is supported as well as identifier lookup.
+ Order of operations is supported as well as identifier lookup.<br>
+ All evaluations are done inside a thread pool and in new evaluators.
 
  @author Kayler
  @since 07/14/2016. */
@@ -38,23 +42,29 @@ public class ExpressionInterpreter {
 		return new ExpressionInterpreter();
 	}
 
-	/** All running evaluators in a thread-safe queue */
-	private final ConcurrentLinkedQueue<ExpressionEvaluator> q = new ConcurrentLinkedQueue<>();
+	/** Thread pool with all executing evaluators */
+	private ExecutorService threadPool;
+
+	public ExpressionInterpreter() {
+		instantiatePool();
+	}
+
+	private void instantiatePool() {
+		threadPool = Executors.newFixedThreadPool(2);
+	}
 
 	/**
 	 Terminate all running evaluators for this interpreter. This method is thread-safe.
 	 <br>
 	 For each evaluator:
 	 <ul>
-	 <li>If the evaluator is running and this is invoked, the evaluator will throw a {@link TerminateEvaluationException}.</li>
+	 <li>If the evaluator is running and this is invoked, the {@link FutureEvaluatedValue#get()} method will throw a {@link TerminateEvaluationException}.</li>
 	 <li>If the evaluator is no longer running, nothing will happen.</li>
 	 </ul>
 	 */
 	public void terminateAll() {
-		for (ExpressionEvaluator e : q) {
-			e.terminate();
-		}
-		q.clear();
+		threadPool.shutdown();
+		instantiatePool();
 	}
 
 
@@ -62,44 +72,48 @@ public class ExpressionInterpreter {
 	 Evaluate the given expression String in the given environment. This method will create a new evaluator.
 	 This method will throw errors if the given string contains assignments
 	 or multiple expressions separated by semicolons.<br><br>
-	 This method is a blocking method.
+	 This method is a non-blocking method and is executed on the interpreter's thread pool.
 
 	 @param exp expression text to evaluate
-	 @param env environment that holds information on all identifiers
-	 @return resulted {@link Value} instance
-	 @throws ExpressionEvaluationException if the expression couldn't be evaluated (includes if <code>exp==null or exp.trim().length()==0</code>)
-	 @throws TerminateEvaluationException if the evaluator created by this method is terminated via {@link #terminateAll()}
+	 @param env environment that holds information on all identifiers. Please consider thread safety of this environment
+	 as the evaluation will run on a different thread
+	 @return a {@link Future} class that contains the resulted {@link Value} instance
 	 */
 	@NotNull
-	public Value evaluate(@Nullable String exp, @NotNull Env env) throws ExpressionEvaluationException {
-		if (exp == null || exp.trim().length() == 0) {
-			throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
-		}
-		ExpressionLexer l = getLexer(exp);
-		ExpressionParser p = getParser(new CommonTokenStream(l));
+	public FutureEvaluatedValue evaluate(@Nullable String exp, @NotNull Env env) {
+		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		Future<Value> future = threadPool.submit(new Callable<Value>() {
+			@Override
+			public Value call() throws Exception {
+				if (exp == null || exp.trim().length() == 0) {
+					throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
+				}
+				ExpressionLexer l = getLexer(exp);
+				ExpressionParser p = getParser(new CommonTokenStream(l));
 
-		//prevent ANTLR printing to the console when the expression is invalid
-		l.getErrorListeners().clear();
-		p.getErrorListeners().clear();
+				//prevent ANTLR printing to the console when the expression is invalid
+				l.getErrorListeners().clear();
+				p.getErrorListeners().clear();
 
-		p.addErrorListener(ErrorListener.INSTANCE);
-		p.setErrorHandler(ErrorStrategy.INSTANCE);
-		l.addErrorListener(ErrorListener.INSTANCE);
+				p.addErrorListener(ErrorListener.INSTANCE);
+				p.setErrorHandler(ErrorStrategy.INSTANCE);
+				l.addErrorListener(ErrorListener.INSTANCE);
 
-		AST.Expr e;
-		try {
-			e = p.expression().ast;
-		} catch (Exception ex) {
-			if (ex instanceof ExpressionEvaluationException) {
-				throw ex;
+
+				AST.Expr e;
+				try {
+					e = p.expression().ast;
+				} catch (Exception ex) {
+					if (ex instanceof ExpressionEvaluationException) {
+						throw ex;
+					}
+					throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
+				}
+
+				return evaluator.evaluate(e, env);
 			}
-			throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
-		}
-		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
-		q.add(evaluator);
-		Value ret = evaluator.evaluate(e, env);
-		q.remove(evaluator);
-		return ret;
+		});
+		return new FutureEvaluatedValue(this, evaluator, future);
 	}
 
 	/**
@@ -108,44 +122,49 @@ public class ExpressionInterpreter {
 	 This method is a blocking method.
 
 	 @param statements statements text to evaluate
-	 @param env environment that holds information on all identifiers
-	 @return resulted {@link Value} instance from the last {@link AST.Statement}
-	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
-	 @throws TerminateEvaluationException if the evaluator created by this method is terminated via {@link #terminateAll()}
+	 @param env environment that holds information on all identifiers. Please consider thread safety of this environment
+	 as the evaluation will run on a different thread
+	 @return a {@link Future} like class that contains the resulted {@link Value} instance from the last {@link AST.Statement}
+	 {@link #terminateAll()} or {@link FutureEvaluatedValue#cancel(boolean)}
 	 */
 	@NotNull
-	public Value evaluateStatements(@Nullable String statements, @NotNull Env env) throws ExpressionEvaluationException {
-		if (statements == null || statements.trim().length() == 0) {
-			throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
-		}
-		ExpressionLexer l = getLexer(statements);
-		ExpressionParser p = getParser(new CommonTokenStream(l));
+	public FutureEvaluatedValue evaluateStatements(@Nullable String statements, @NotNull Env env) {
+		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		Future<Value> future = threadPool.submit(new Callable<Value>() {
+			@Override
+			public Value call() throws Exception {
+				if (statements == null || statements.trim().length() == 0) {
+					throw new ExpressionEvaluationException(null, Lang.ApplicationBundle().getString("Expression.error_no_input"));
+				}
+				ExpressionLexer l = getLexer(statements);
+				ExpressionParser p = getParser(new CommonTokenStream(l));
 
-		//prevent ANTLR printing to the console when the expression is invalid
-		l.getErrorListeners().clear();
-		p.getErrorListeners().clear();
+				//prevent ANTLR printing to the console when the expression is invalid
+				l.getErrorListeners().clear();
+				p.getErrorListeners().clear();
 
-		p.addErrorListener(ErrorListener.INSTANCE);
-		p.setErrorHandler(ErrorStrategy.INSTANCE);
-		l.addErrorListener(ErrorListener.INSTANCE);
+				p.addErrorListener(ErrorListener.INSTANCE);
+				p.setErrorHandler(ErrorStrategy.INSTANCE);
+				l.addErrorListener(ErrorListener.INSTANCE);
 
-		ExpressionEvaluator evaluator = new ExpressionEvaluator(this);
-		try {
-			q.add(evaluator);
-			List<AST.Statement> statementList = p.statements().lst;
-			Value ret = evaluateStatements(statementList, env, evaluator);
-			q.remove(evaluator);
-			return ret;
-		} catch (Exception e) {
-			if (e instanceof ExpressionEvaluationException) {
-				throw e;
+
+				try {
+					List<AST.Statement> statementList = p.statements().lst;
+					return evaluateStatements(statementList, env, evaluator);
+				} catch (Exception e) {
+					if (e instanceof ExpressionEvaluationException) {
+						throw e;
+					}
+					throw new ExpressionEvaluationException(null, e.getMessage(), e);
+				}
 			}
-			throw new ExpressionEvaluationException(null, e.getMessage(), e);
-		}
+		});
+		return new FutureEvaluatedValue(this, evaluator, future);
 	}
 
 	/**
-	 Evaluate the given statements as a list of {@link AST.Statement} in the given environment.
+	 Evaluate the given statements as a list of {@link AST.Statement} in the given environment.<br>
+	 This will not be executed on a new thread and thus will be a blocking call.
 
 	 @param statements statements to evaluate
 	 @param env environment that holds information on all identifiers
@@ -154,7 +173,7 @@ public class ExpressionInterpreter {
 	 @throws ExpressionEvaluationException if the expression couldn't be evaluated
 	 */
 	@NotNull
-	protected Value evaluateStatements(@NotNull List<AST.Statement> statements, @NotNull Env env, @NotNull ExpressionEvaluator evaluator) throws ExpressionEvaluationException {
+	protected Value evaluateStatements(@NotNull List<AST.Statement> statements, @NotNull Env env, @NotNull ExpressionEvaluator evaluator) {
 		try {
 			return evaluator.evaluate(statements, env);
 		} catch (Exception ex) {

@@ -681,13 +681,10 @@ class Preprocessor {
 
 	private void write__EvalOutput(@Nullable String parameterText, @NotNull Preprocessor.StringBuilderReference writeTo) throws HeaderParseException {
 		try {
-			Value value = ExpressionInterpreter.newInstance().evaluate(parameterText, preprocessorEnv);
+			Value value = ExpressionInterpreter.newInstance().evaluate(parameterText, preprocessorEnv).get();
 			//if value is a decimal, the toString method should properly use DecimalFormat on the number for getting a String
 			writeTo.append(value.toString());
 		} catch (Exception e) {
-			if (e.getCause() instanceof HeaderParseException) {
-				throw e;
-			}
 			throw new HeaderParseException(e.getMessage(), e);
 		}
 	}
@@ -779,8 +776,8 @@ class Preprocessor {
 								}
 								DefineMacroContent.StringDefineValue sdv = (DefineMacroContent.StringDefineValue) defined.getValue();
 								try {
-									return ExpressionInterpreter.newInstance().evaluate(sdv.getText(), preprocessorEnv);
-								} catch (IllegalArgumentException e) {
+									return ExpressionInterpreter.newInstance().evaluate(sdv.getText(), preprocessorEnv).get();
+								} catch (Exception e) {
 									throw new RuntimeException(
 											String.format(bundle.getString("Error.Preprocessor.Parse.unexpected_value_in_macro_body_f"), sdv.getText()),
 											e

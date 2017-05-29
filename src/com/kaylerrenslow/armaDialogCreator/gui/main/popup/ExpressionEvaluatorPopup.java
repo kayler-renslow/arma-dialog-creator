@@ -153,7 +153,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 				String consoleString;
 
 				try {
-					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env);
+					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env).get();
 					returnValueString = getValueAsString(returnValue);
 					consoleString = bundle.getString("CodeArea.success");
 				} catch (ExpressionEvaluationException e) {

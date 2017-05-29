@@ -18,14 +18,12 @@ import java.util.regex.Pattern;
 class ExpressionEvaluator implements AST.Visitor<Value> {
 
 	private final ResourceBundle bundle = Lang.getBundle("ExpressionBundle");
-	private final ExpressionInterpreter interpreter;
 	private final AtomicBoolean terminated = new AtomicBoolean(false);
 
-	public ExpressionEvaluator(@NotNull ExpressionInterpreter interpreter) {
-		this.interpreter = interpreter;
-	}
-
-	/** Terminate this evaluator immediately. This method is thread-safe */
+	/**
+	 Terminate this evaluator immediately. This method is thread-safe.
+	 <br>Will cause the evaluator to throw a {@link TerminateEvaluationException}
+	 */
 	public void terminate() {
 		terminated.set(true);
 	}
