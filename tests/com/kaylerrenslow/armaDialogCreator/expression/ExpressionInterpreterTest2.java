@@ -2,8 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.Assert.assertEquals;
@@ -252,6 +254,22 @@ public class ExpressionInterpreterTest2 {
 	}
 
 	@Test
+	public void ifExitWith1() throws Exception {
+		String eval = "a=0;if true exitWith {1};a";
+		Value expected = new Value.NumVal(1);
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void ifExitWith2() throws Exception {
+		String eval = "a=0;if false exitWith {1};a";
+		Value expected = new Value.NumVal(0);
+		Value ret = ExpressionInterpreter.newInstance().evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
 	public void ifThen1() throws Exception {
 		String eval = "a=0;if true then {a=1};a";
 		Value expected = new Value.NumVal(1);
@@ -331,8 +349,11 @@ public class ExpressionInterpreterTest2 {
 		assertEquals(expected, ret);
 	}
 
+
 	@Test
 	public void terminateEvaluator() throws Exception {
+		//test if the interpreter is actually multithreaded and cancelling works properly
+
 		String eval = "for [{a = 0; _b = 1},{a <= 100},{a = a + 1;}] do {};a";
 		String evalInfinite = "for [{_a = 0; _b = 1},{true},{_a = _a + 1;}] do {};";
 		ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
@@ -372,6 +393,42 @@ public class ExpressionInterpreterTest2 {
 		thread.join();
 
 		assertEquals("Attempted to terminate 2 infinite loop evaluations.", 2, cancels.get());
+	}
+
+	@Test
+	public void interpreterTerminateAll() throws Exception {
+		//test if the interpreter is actually multithreaded and terminateAll() works correctly
+
+		String evalInfinite = "for [{},{true},{}] do {};";
+		ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
+
+		int createCount = 10;
+		List<FutureEvaluatedValue> listCreated = new ArrayList<>();
+		for (int i = 0; i < createCount; i++) {
+			listCreated.add(interpreter.evaluateStatements(evalInfinite, new SimpleEnv()));
+		}
+		AtomicInteger cancels = new AtomicInteger(0);
+
+		Thread thread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (FutureEvaluatedValue fev : listCreated) {
+					try {
+						fev.get();
+					} catch (TerminateEvaluationException e) {
+						cancels.incrementAndGet();
+					}
+				}
+			}
+		});
+		thread.start();
+
+		//wait for all threads to start
+		Thread.sleep(300);
+		interpreter.terminateAll();
+		thread.join();
+
+		assertEquals(String.format("Attempted to terminate %d infinite loop evaluations.", createCount), createCount, cancels.get());
 	}
 
 	//for [{_a = 0; _b = 1},{_a <= 100000},{_a = _a + 1;}] do {};

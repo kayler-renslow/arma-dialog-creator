@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  This class serves as a wrapper around a Future created inside {@link ExpressionInterpreter#evaluate(String, Env)}
@@ -16,6 +17,7 @@ public class FutureEvaluatedValue implements Future<Value> {
 	private final ExpressionInterpreter interpreter;
 	private final ExpressionEvaluator evaluator;
 	private final Future<Value> future;
+	private final AtomicBoolean cancelled = new AtomicBoolean(false);
 
 	/**
 	 @param interpreter {@link ExpressionInterpreter} that created this instance
@@ -51,12 +53,14 @@ public class FutureEvaluatedValue implements Future<Value> {
 	 */
 	public void cancel() {
 		evaluator.terminate();
+		cancelled.set(true);
 		//don't cancel the future. the evaluator will throw an ExpressionEvaluationException from terminate
+		//and thus inherently cancel the future
 	}
 
 	@Override
 	public boolean isCancelled() {
-		return future.isCancelled();
+		return cancelled.get();
 	}
 
 

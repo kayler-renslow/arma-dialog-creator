@@ -362,7 +362,8 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					}
 					unexpectedValueException(expr, ret, expr.getTrueCond(), codeTypeName());
 				}
-				break;
+				//nothing left to do
+				return Value.Void;
 			}
 			case IfThen: {
 				if (cond == Value.True) {
@@ -412,7 +413,6 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				throw new IllegalStateException("unhandled type: " + expr.getType());
 			}
 		}
-		throw new IllegalStateException();
 	}
 
 	@Override

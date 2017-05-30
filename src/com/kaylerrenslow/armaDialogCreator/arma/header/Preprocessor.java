@@ -9,37 +9,45 @@ import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
+import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.io.*;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.ResourceBundle;
+import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
  @author Kayler
- @since 03/21/2017 */
+ @since 03/21/2017
+ @see <a href='https://resources.bisimulations.com/wiki/PreProcessor_Commands'>Bohemia Interactive Preprocessor Documentation</a>*/
 class Preprocessor {
 
-	private static final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
-	private static final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
-	private static final Pattern macroReferencePattern = Pattern.compile(
+	private final @RegExp
+	String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
+	private final @RegExp
+	String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
+	private final Pattern macroReferencePattern = Pattern.compile(
 			String.format(
 					//using ?= so that the pattern doesn't consume tokens (consuming will prevent a future pattern match)
 					"(?<BEFORE>%s)(?<MACRO>%s)(?<PARAMS>%s)?(?=%s)",
 					beforeMacro,
 					"[a-zA-Z_0-9$]+", //identifier
-					"\\([a-zA-Z_0-9$,\"() '\\-+*/.{}]+\\)", //parameters
+
+					// Parameters: allow for everything in between (), except ';'
+					// OR allow everything in between () except '(' and ')'
+					"\\(([^;]+|[^()]+)\\)",
 					afterMacro
 			)
 	);
 
-	private static final Pattern macroParamOutputTextPattern = Pattern.compile(
+	private final Pattern macroParamOutputTextPattern = Pattern.compile(
 			String.format(
 					"(?<BEFORE>%s)(?<PARAM>%s)(?=%s)",
 					beforeMacro, //before
@@ -57,17 +65,16 @@ class Preprocessor {
 	/** Bundle to get things from */
 	private final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
 
-	/**
-	 Place the builder's text on in this list for order preservation so that when the PreprocessCallback.fileProcessed method is invoked,
-	 the InputStream can read as if there was one large String. We are storing the Strings instead of StringBuilder instances so that there
-	 can be garbage collection on unnecessary large char[] inside StringBuilder instances
-	 */
-	protected final LinkedList<String> textParts = new LinkedList<>();
+	/** Stream to write the fully preprocessed results to. This is currently a {@link FileOutputStream} for {@link #temporaryFullyPreprocessedResultFile} */
+	private final OutputStream writeSteam;
+	private final File temporaryFullyPreprocessedResultFile;
 	protected final LinkedList<File> processingFiles = new LinkedList<>();
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
 	private final Env preprocessorEnv = new PreprocessorEnv();
+
+	private final ExpressionInterpreter expressionInterpreter = ExpressionInterpreter.newInstance();
 
 	/**
 	 Create a new, one time use, preprocessor for header files
@@ -75,9 +82,12 @@ class Preprocessor {
 	 @param processFile The file to fully preprocess
 	 @param parserContext context to use
 	 */
-	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) {
+	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) throws IOException {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
+		temporaryFullyPreprocessedResultFile = new File(processFile.getAbsolutePath() + ".preprocessed");
+
+		writeSteam = new FileOutputStream(temporaryFullyPreprocessedResultFile);
 	}
 
 
@@ -109,14 +119,18 @@ class Preprocessor {
 			defined.put("__FILE__", new DefineMacroContent.StringDefineValue("`THIS VALUE SHOULD NOT HAVE BEEN WRITTEN`"));
 
 			// This config parser macro allows you to assign values to internal variables. These variables can be used to create complex macros with counters for example.
-			// If you are ever feeling ambitious, fully support __EXEC:
-			defined.put("__EXEC", new ParameterDefineValue(new String[]{"a"}, "a"));// equivalent to #define __EVAL(a) a
+			// Also, __EXEC can't write values.
+			//Also, __EXEC supports statements and semicolons, __EVAL doesn't
+			defined.put("__EXEC", new ParameterDefineValue(new String[]{"a"}, "a"));// equivalent to #define __EXEC(a) a
 		}
 
 		StringBuilderReference br = new StringBuilderReference(new StringBuilder(0));
 		processNow(processFile, null, br);
 
-		return new PreprocessorInputStream(textParts);
+		writeSteam.flush();
+		writeSteam.close();
+
+		return new PreprocessorInputStream(temporaryFullyPreprocessedResultFile);
 	}
 
 	/**
@@ -138,7 +152,8 @@ class Preprocessor {
 		StringBuilder oldBuilder = builderReference.getBuilder();
 
 		// Add the old builder's contents. This will be invoked at the start of preprocessing and when an #include has been discovered
-		textParts.add(oldBuilder.toString());
+		writeSteam.write(oldBuilder.toString().getBytes());
+		writeSteam.flush();
 
 		// Create a new builder for the new file.
 		StringBuilder textContent = new StringBuilder((int) toProcess.length());
@@ -151,7 +166,8 @@ class Preprocessor {
 		//process the file given
 		doProcess(toProcess, builderReference);
 
-		textParts.add(builderReference.getBuilder().toString());
+		writeSteam.write(builderReference.getBuilder().toString().getBytes());
+		writeSteam.flush();
 
 		//reset the builder reference for reading a new part
 		builderReference.setBuilder(new StringBuilder(Math.max(10, oldBuilder.capacity() - oldBuilder.length())));
@@ -426,7 +442,9 @@ class Preprocessor {
 					break;
 				}
 				default: {
-					error(String.format(bundle.getString("Error.Preprocessor.Parse.unknown_macro_f"), macroName));
+					//ignore anything else
+					System.out.println(String.format(bundle.getString("Error.Preprocessor.Parse.unknown_macro_f"), macroName));
+					break;
 				}
 			}
 		}
@@ -550,6 +568,17 @@ class Preprocessor {
 			if (parameterText == null) {
 				throw new IllegalArgumentException("parameterText should not be null if entry is a ParameterDefineValue");
 			}
+
+			if (entry.getKey().equals("__EXEC")) {
+				handle__Exec(get__ExecBody(parameterText));
+				return;
+			}
+
+			if (entry.getKey().equals("__EVAL")) {
+				handle__Eval(parameterText, writeTo);
+				return;
+			}
+
 			ParameterDefineValue paramDefineValue = (ParameterDefineValue) entry.getValue();
 
 			ParameterDefineValue parameterValue = (ParameterDefineValue) entry.getValue();
@@ -561,11 +590,6 @@ class Preprocessor {
 
 			for (int i = 0; i < args.length; i++) {
 				args[i] = args[i].trim();
-			}
-
-			if (entry.getKey().equals("__EVAL")) {
-				write__EvalOutput(parameterText, buffer);
-				return;
 			}
 
 			Matcher m = macroParamOutputTextPattern.matcher(entryValueText);
@@ -610,7 +634,8 @@ class Preprocessor {
 
 				String paramArg = args[paramInd];
 				if (startsWithIgnoreSpace(paramArg, "__EVAL(")) {
-					write__EvalOutput(get__EvalBody(paramArg), buffer); //cut off parenthesis
+					//NOTE we don't need to handle __EXEC because you can't have semicolons in __EVAL
+					handle__Eval(get__EvalBody(paramArg), buffer);
 				} else {
 					//check if paramArg is a macro itself like: TEST(ANOTHER_MACRO)
 					for (Entry<String, DefineValue> entry1 : defined.entrySet()) {
@@ -656,11 +681,7 @@ class Preprocessor {
 					break;
 				}
 				default: {
-					if (entry.getValue().getText().contains("__EVAL")) {
-						write__EvalOutput(get__EvalBody(entry.getValue().getText()), buffer);
-					} else {
-						buffer.append(entryValueText);
-					}
+					buffer.append(entryValueText);
 					break;
 				}
 			}
@@ -672,19 +693,43 @@ class Preprocessor {
 
 	}
 
-
+	/** @return the text between parentheses of __EVAL() (and will not include the parentheses) */
 	@NotNull
 	private String get__EvalBody(@NotNull String __evalMacro) {
 		final int eval = 7; //length of __EVAL(
 		return __evalMacro.substring(eval, __evalMacro.length() - 1);
 	}
 
-	private void write__EvalOutput(@Nullable String parameterText, @NotNull Preprocessor.StringBuilderReference writeTo) throws HeaderParseException {
+	/** @return the text between parentheses of __EXEC() (and will not include the parentheses) */
+	@NotNull
+	private String get__ExecBody(@NotNull String __execMacro) {
+		final int exec = 7; //length of __EXEC(
+		return __execMacro.substring(exec, __execMacro.length() - 1);
+	}
+
+	/** Evaluate __EVAL(<code>parameterText</code>) and write it to <code>writeTo</code> */
+	private void handle__Eval(@Nullable String parameterText, @NotNull Preprocessor.StringBuilderReference writeTo) throws HeaderParseException {
 		try {
-			Value value = ExpressionInterpreter.newInstance().evaluate(parameterText, preprocessorEnv).get();
+			Value value = expressionInterpreter.evaluate(parameterText, preprocessorEnv).get(10, TimeUnit.SECONDS); //.get() to block until eval is done
 			//if value is a decimal, the toString method should properly use DecimalFormat on the number for getting a String
 			writeTo.append(value.toString());
 		} catch (Exception e) {
+			if (e instanceof InterruptedException) {
+				throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.evaluate_timer_end_f"), parameterText));
+			}
+			throw new HeaderParseException(e.getMessage(), e);
+		}
+	}
+
+	/** Evaluate __EXEC(<code>parameterText</code>). This will not actually write anything */
+	private void handle__Exec(@Nullable String parameterText) throws HeaderParseException {
+		try {
+			expressionInterpreter.evaluateStatements(parameterText, preprocessorEnv).get(10, TimeUnit.SECONDS); //.get() to block until eval is done
+			//write nothing
+		} catch (Exception e) {
+			if (e instanceof InterruptedException) {
+				throw new HeaderParseException(String.format(bundle.getString("Error.Preprocessor.Parse.evaluate_timer_end_f"), parameterText));
+			}
 			throw new HeaderParseException(e.getMessage(), e);
 		}
 	}
@@ -862,69 +907,45 @@ class Preprocessor {
 		}
 	}
 
+	/**
+	 A simple wrapper {@link InputStream} so we can easily change how preprocessed results are stored,
+	 without changing how the results are read
+	 */
 	protected static class PreprocessorInputStream extends InputStream {
 
-		private final Iterator<String> partIterator;
-		private CharSequenceReader r;
-		private int avail = 0;
+		private final FileInputStream fis;
 
-		public PreprocessorInputStream(@NotNull List<String> textParts) {
-			partIterator = textParts.iterator();
-			if (partIterator.hasNext()) {
-				r = newReader();
-			}
+		/**
+		 Create a new {@link InputStream} that reads the fully preprocessed file's contents
 
-			int totalLen = 0;
-			for (String s : textParts) {
-				totalLen += s.length();
-			}
-			avail = totalLen;
-		}
-
-		private CharSequenceReader newReader() {
-			return new CharSequenceReader(partIterator.next());
-		}
-
-		@Override
-		public int available() {
-			return avail;
-		}
-
-		@Override
-		public int read(@NotNull byte[] b) {
+		 @param preprocessedFile the file that contains the fully preprocessed contents
+		 */
+		protected PreprocessorInputStream(@NotNull File preprocessedFile) {
 			try {
-				return super.read(b);
-			} catch (IOException e) {
-				throw new IllegalStateException("HOW?????", e);
+				fis = new FileInputStream(preprocessedFile);
+			} catch (FileNotFoundException e) {
+				throw new IllegalArgumentException("preprocessedFile wasn't found!", e);
 			}
 		}
 
 		@Override
-		public int read(@NotNull byte[] b, int off, int len) {
-			try {
-				return super.read(b, off, len);
-			} catch (IOException e) {
-				throw new IllegalStateException("HOW?????", e);
-			}
+		public int available() throws IOException {
+			return fis.available();
 		}
 
 		@Override
-		public int read() {
-			if (r == null) {
-				return -1;
-			}
+		public int read(@NotNull byte[] b) throws IOException {
+			return super.read(b);
+		}
 
-			while (!r.hasAvailable() && partIterator.hasNext()) {
-				r = newReader();
-			}
+		@Override
+		public int read(@NotNull byte[] b, int off, int len) throws IOException {
+			return super.read(b, off, len);
+		}
 
-			if (!r.hasAvailable()) {
-				return -1;
-			}
-
-			avail--;
-
-			return r.read();
+		@Override
+		public int read() throws IOException {
+			return fis.read();
 		}
 	}
 }

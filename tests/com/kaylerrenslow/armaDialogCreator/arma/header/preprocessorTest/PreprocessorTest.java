@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.header.preprocessorTest;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParseException;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserHelpers;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderTestUtil;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static junit.framework.Assert.assertEquals;
 
 /**
  @author Kayler
@@ -365,6 +368,18 @@ public class PreprocessorTest {
 	}
 
 	@Test
+	public void __evalTest2() throws Exception {
+		String base = "__EVAL(100 + 2)";
+		String expect = "102";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				null
+		);
+	}
+
+	@Test
 	public void commentTest() throws Exception {
 		/*
 		* #define TEST(s) s;
@@ -530,6 +545,62 @@ public class PreprocessorTest {
 				expect,
 				createFileFromText(base),
 				map(array("SLASH", "URL"), array("\"/\"", "__EVAL(\"http:\" + SLASH + SLASH + \"www.vbs2.com\")"))
+		);
+	}
+
+	@Test
+	public void unknownMacro() throws Exception {
+		//#define SLASH "/"
+		//#define URL __EVAL("http:" + SLASH + SLASH + "www.vbs2.com")
+		String base = "#fakeMacro_blah_blah";
+		String expect = "";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				null
+		);
+	}
+
+	@Test
+	public void __evalInfiniteLoop() throws Exception {
+		String base = "__EVAL(for[{},{true},{}] do{})";
+		String expect = "";
+
+		try {
+			HeaderParserHelpers.assertPreprocessLine(
+					expect,
+					createFileFromText(base),
+					null
+			);
+		} catch (HeaderParseException e) {
+			assertEquals(true, true);
+			return;
+		}
+		assertEquals("Expected the __Eval to run forever and then error.", true, false);
+	}
+
+	@Test
+	public void __exec1() throws Exception {
+		String base = "__EXEC(cat = 5 + 1; lev = 0)";
+		String expect = "";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				null
+		);
+	}
+
+	@Test
+	public void __exec2() throws Exception {
+		String base = "__EXEC(testVar = 1)";
+		String expect = "";
+
+		HeaderParserHelpers.assertPreprocessLine(
+				expect,
+				createFileFromText(base),
+				null
 		);
 	}
 

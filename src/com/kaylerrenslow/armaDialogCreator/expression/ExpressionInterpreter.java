@@ -8,10 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 /**
  Evaluates simple mathematical expressions and some things of Arma 3's scripting language SQF.
@@ -43,15 +40,11 @@ public class ExpressionInterpreter {
 	}
 
 	/** Thread pool with all executing evaluators */
-	private ExecutorService threadPool;
+	private final ExecutorService threadPool = Executors.newFixedThreadPool(2);
 
-	public ExpressionInterpreter() {
-		instantiatePool();
-	}
+	/** Queue of all running/queued {@link ExpressionEvaluator} instances */
+	private final LinkedBlockingQueue<ExpressionEvaluator> evaluatorsQ = new LinkedBlockingQueue<>();
 
-	private void instantiatePool() {
-		threadPool = Executors.newFixedThreadPool(2);
-	}
 
 	/**
 	 Terminate all running evaluators for this interpreter. This method is thread-safe.
@@ -62,9 +55,14 @@ public class ExpressionInterpreter {
 	 <li>If the evaluator is no longer running, nothing will happen.</li>
 	 </ul>
 	 */
-	public void terminateAll() {
-		threadPool.shutdown();
-		instantiatePool();
+	public synchronized void terminateAll() {
+		//keep this method synchronized so that evaluate() and evaluateStatements()
+		//can't run at the same time as this method
+
+		for (ExpressionEvaluator evaluator : evaluatorsQ) {
+			evaluator.terminate();
+		}
+		evaluatorsQ.clear();
 	}
 
 
@@ -80,8 +78,13 @@ public class ExpressionInterpreter {
 	 @return a {@link Future} class that contains the resulted {@link Value} instance
 	 */
 	@NotNull
-	public FutureEvaluatedValue evaluate(@Nullable String exp, @NotNull Env env) {
+	public synchronized FutureEvaluatedValue evaluate(@Nullable String exp, @NotNull Env env) {
+		//this method is synchronized so that no new evaluators can be created if terminateAll() is invoked
+
 		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+
+		evaluatorsQ.add(evaluator);
+
 		Future<Value> future = threadPool.submit(new Callable<Value>() {
 			@Override
 			public Value call() throws Exception {
@@ -109,8 +112,10 @@ public class ExpressionInterpreter {
 					}
 					throw new ExpressionEvaluationException(null, ex.getMessage(), ex);
 				}
+				Value v = evaluator.evaluate(e, env);
+				evaluatorsQ.remove(evaluator);
 
-				return evaluator.evaluate(e, env);
+				return v;
 			}
 		});
 		return new FutureEvaluatedValue(this, evaluator, future);
@@ -128,8 +133,11 @@ public class ExpressionInterpreter {
 	 {@link #terminateAll()} or {@link FutureEvaluatedValue#cancel(boolean)}
 	 */
 	@NotNull
-	public FutureEvaluatedValue evaluateStatements(@Nullable String statements, @NotNull Env env) {
+	public synchronized FutureEvaluatedValue evaluateStatements(@Nullable String statements, @NotNull Env env) {
+		//this method is synchronized so that no new evaluators can be created if terminateAll() is invoked
+
 		ExpressionEvaluator evaluator = new ExpressionEvaluator();
+		evaluatorsQ.add(evaluator);
 		Future<Value> future = threadPool.submit(new Callable<Value>() {
 			@Override
 			public Value call() throws Exception {
@@ -150,7 +158,9 @@ public class ExpressionInterpreter {
 
 				try {
 					List<AST.Statement> statementList = p.statements().lst;
-					return evaluateStatements(statementList, env, evaluator);
+					Value v = evaluateStatements(statementList, env, evaluator);
+					evaluatorsQ.remove(evaluator);
+					return v;
 				} catch (Exception e) {
 					if (e instanceof ExpressionEvaluationException) {
 						throw e;
