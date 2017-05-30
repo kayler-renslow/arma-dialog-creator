@@ -522,4 +522,25 @@ public class ExpressionInterpreterTest {
 		assertEquals(true, ArmaPrecision.isEqualTo(Math.pow(Math.pow(5, 2), 3), ret.v()));
 	}
 
+	@Test
+	public void str1() throws Exception {
+		String eval = "str 1";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env).get();
+		assertEquals("\"1\"", ret.toString());
+	}
+
+	@Test
+	public void str2() throws Exception {
+		String eval = "str [1,1]";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env).get();
+		assertEquals("\"[1, 1]\"", ret.toString());
+	}
+
+	@Test
+	public void str3() throws Exception {
+		String eval = "str \"hello\"";
+		Value.StringLiteral ret = (Value.StringLiteral) ExpressionInterpreter.newInstance().evaluate(eval, env).get();
+		assertEquals("\"hello\"", ret.toString());
+	}
+
 }

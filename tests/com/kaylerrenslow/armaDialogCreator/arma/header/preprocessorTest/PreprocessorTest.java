@@ -550,8 +550,6 @@ public class PreprocessorTest {
 
 	@Test
 	public void unknownMacro() throws Exception {
-		//#define SLASH "/"
-		//#define URL __EVAL("http:" + SLASH + SLASH + "www.vbs2.com")
 		String base = "#fakeMacro_blah_blah";
 		String expect = "";
 

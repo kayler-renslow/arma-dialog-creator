@@ -26,6 +26,7 @@ expression returns [AST.Expr ast]:
     Count count_r=expression {$ast = new AST.CountExpr(null, $count_r.ast);}
     | count_l=expression Count count_r=expression {$ast = new AST.CountExpr($count_l.ast, $count_r.ast);}
     //end count
+    | Str str_exp=expression {$ast = new AST.StrExpr($str_exp.ast);}
     | lu=unary_expression {$ast = $lu.ast;}
     | lp=paren_expression {$ast = $lp.ast;}
     | ls=expression Star rs=expression {$ast = new AST.MultExpr($ls.ast, $rs.ast);}
@@ -138,6 +139,7 @@ From :'from';
 To :'to';
 Step :'step';
 Do :'do';
+Str: 'str';
 EqEq : '==' ;
 NotEq : '!=' ;
 Lt : '<' ;

@@ -736,6 +736,16 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		return new Value.NumVal(count);
 	}
 
+	@Override
+	public Value visit(@NotNull AST.StrExpr expr, @NotNull Env env) {
+		checkIfTerminated();
+		Value v = (Value) expr.getExpr().accept(this, env);
+		if (v instanceof Value.StringLiteral) {
+			return v;
+		}
+		return new Value.StringLiteral(v.toString());
+	}
+
 	private double getNumValValue(@NotNull Value v) {
 		return ((Value.NumVal) v).v();
 	}

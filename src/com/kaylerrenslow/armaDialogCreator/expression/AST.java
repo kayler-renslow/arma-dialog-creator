@@ -62,6 +62,9 @@ interface AST {
 		T visit(@NotNull ForArrExpr expr, @NotNull Env env);
 
 		T visit(@NotNull CountExpr expr, @NotNull Env env);
+
+		T visit(@NotNull StrExpr expr, @NotNull Env env);
+
 	}
 
 	abstract class ASTNode implements AST {
@@ -633,6 +636,31 @@ interface AST {
 			getArray().toString(sb);
 			sb.append(" do ");
 			getDoCode().toString(sb);
+		}
+	}
+
+	class StrExpr extends Expr {
+
+		private Expr expr;
+
+		public StrExpr(@NotNull Expr expr) {
+			this.expr = expr;
+		}
+
+		@NotNull
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("str ");
+			expr.toString(sb);
 		}
 	}
 
