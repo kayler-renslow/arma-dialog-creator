@@ -1,5 +1,5 @@
 **Added:**
-* support str command in expression and tests for it
+* tests for control class
 
 **Changed:**
 * 

@@ -15,9 +15,8 @@ import java.util.Arrays;
  @author Kayler
  @since 05/22/2016. */
 public class AColor extends SerializableValue {
-	private static DecimalFormat format = new DecimalFormat("#.####");
-	private static final double f = 255.0;
-	
+	private static final DecimalFormat format = new DecimalFormat("#.####");
+
 	public static final ValueConverter<AColor> CONVERTER = new ValueConverter<AColor>() {
 		@Override
 		public AColor convert(DataContext context, @NotNull String... values) {
@@ -60,7 +59,7 @@ public class AColor extends SerializableValue {
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
 	 */
 	public AColor(int r, int g, int b, int a) {
-		this(r / f, g / f, b / f, a / f);
+		this(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 	}
 	
 	/**
@@ -96,7 +95,10 @@ public class AColor extends SerializableValue {
 			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=1): " + c);
 		}
 	}
-	
+
+	/**
+	 @return 0-1.0 inclusively (1.0 being max value (255/255))
+	 */
 	public double getRed() {
 		return color[0];
 	}
@@ -111,7 +113,10 @@ public class AColor extends SerializableValue {
 		color[0] = r;
 		updateJavafxColor = true;
 	}
-	
+
+	/**
+	 @return 0-1.0 inclusively (1.0 being max value (255/255))
+	 */
 	public double getGreen() {
 		return color[1];
 	}
@@ -126,7 +131,10 @@ public class AColor extends SerializableValue {
 		color[1] = g;
 		updateJavafxColor = g != color[1];
 	}
-	
+
+	/**
+	 @return 0-1.0 inclusively (1.0 being max value (255/255))
+	 */
 	public double getBlue() {
 		return color[2];
 	}
@@ -141,7 +149,10 @@ public class AColor extends SerializableValue {
 		updateJavafxColor = b != color[2];
 		color[2] = b;
 	}
-	
+
+	/**
+	 @return 0-1.0 inclusively (1.0 being max value (255/255))
+	 */
 	public double getAlpha() {
 		return color[3];
 	}

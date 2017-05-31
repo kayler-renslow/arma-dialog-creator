@@ -21,7 +21,7 @@ public class ExpressionInterpreter {
 
 	private static final String[] supportedCommands = new String[]{
 			"min", "max", "if", "then", "exitWith", "do", "true", "false",
-			"select", "for", "from", "to", "step", "count"
+			"select", "for", "from", "to", "step", "count", "str"
 	};
 
 	/**
