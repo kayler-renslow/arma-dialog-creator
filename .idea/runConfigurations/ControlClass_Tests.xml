@@ -24,7 +24,7 @@
     <envs />
     <patterns>
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassConstructorTests" />
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassPropertyTests" />
+      <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassFindMethodsTests" />
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassInheritanceTests" />
     </patterns>
     <method />

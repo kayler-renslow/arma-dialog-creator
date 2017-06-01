@@ -327,15 +327,16 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	/**
 	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyType()}
 	 is equal to find
+	 @param find type to find
 
 	 @return list of matched
 	 */
 	@NotNull
 	public static List<ControlPropertyLookup> getAllOfByType(@NotNull PropertyType find) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
-		for (ControlPropertyLookup controlProperty : values()) {
-			if (controlProperty.propertyType == find) {
-				props.add(controlProperty);
+		for (ControlPropertyLookup lookup : values()) {
+			if (lookup.propertyType == find) {
+				props.add(lookup);
 			}
 		}
 		return props;
@@ -345,14 +346,15 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyName()}
 	 is equal to find
 
+	 @param find name to find
 	 @return list of matched
 	 */
 	@NotNull
 	public static List<ControlPropertyLookup> getAllOfByName(@NotNull String find) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
-		for (ControlPropertyLookup controlProperty : values()) {
-			if (controlProperty.getPropertyName().equals(find)) {
-				props.add(controlProperty);
+		for (ControlPropertyLookup lookup : values()) {
+			if (lookup.getPropertyName().equals(find)) {
+				props.add(lookup);
 			}
 		}
 		return props;

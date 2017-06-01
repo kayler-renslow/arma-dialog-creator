@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* the control's renderer was setting property values, even if there was already a value there
+* 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

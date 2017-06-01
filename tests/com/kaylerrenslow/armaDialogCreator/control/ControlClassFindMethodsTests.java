@@ -7,10 +7,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
+ Tests for find related methods (e.g. {@link ControlClass#findProperty(ControlPropertyLookupConstant)} and {@link ControlClass#findNestedClass(String)})
  @author Kayler
  @since 05/30/2017 */
-public class ControlClassPropertyTests {
-
+public class ControlClassFindMethodsTests {
 
 	@Test
 	public void getExtendControlClass() throws Exception {
@@ -36,6 +36,12 @@ public class ControlClassPropertyTests {
 		tcc1.extendControlClass(null);
 		assertEquals(null, tcc1.getExtendClass());
 	}
+
+	//
+	//
+	// Control Property finding
+	//
+	//
 
 	@Test
 	public void findRequiredProperty_fail() throws Exception {
@@ -145,36 +151,118 @@ public class ControlClassPropertyTests {
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyNullable(match).getPropertyLookup());
 	}
 
+	//
+	//
+	// Nested Class finding
+	//
+	//
+
 	@Test
-	public void findRequiredNestedClass() throws Exception {
+	public void findRequiredNestedClass_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		try {
+			tcc.findRequiredNestedClass(TestFakeControlClass.INSTANCE.getClassName());
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", false, true);
 	}
 
 	@Test
-	public void findRequiredNestedClassNullable() throws Exception {
+	public void findRequiredNestedClass_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.reqNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match", match, tcc.findRequiredNestedClass(match).getClassName());
 	}
 
 	@Test
-	public void findOptionalNestedClass() throws Exception {
+	public void findRequiredNestedClassNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findRequiredNestedClassNullable(TestFakeControlClass.INSTANCE.getClassName()));
 	}
 
 	@Test
-	public void findOptionalNestedClassNullable() throws Exception {
+	public void findRequiredNestedClassNullable_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.reqNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findRequiredNestedClassNullable(match).getClassName());
 	}
 
 	@Test
-	public void findNestedClass() throws Exception {
+	public void findOptionalNestedClass_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		try {
+			tcc.findOptionalNestedClass(TestFakeControlClass.INSTANCE.getClassName());
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", false, true);
 	}
 
 	@Test
-	public void findNestedClassNullable() throws Exception {
+	public void findOptionalNestedClass_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.optNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalNestedClass(match).getClassName());
 	}
 
 	@Test
-	public void overrideProperty() throws Exception {
+	public void findOptionalNestedClassNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findOptionalNestedClassNullable(TestFakeControlClass.INSTANCE.getClassName()));
 	}
 
 	@Test
-	public void inheritProperty() throws Exception {
+	public void findOptionalNestedClassNullable_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.optNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalNestedClassNullable(match).getClassName());
+	}
+
+	@Test
+	public void findNestedClass_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		try {
+			tcc.findNestedClass(TestFakeControlClass.INSTANCE.getClassName());
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", false, true);
+
+	}
+
+	@Test
+	public void findNestedClass_required_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.reqNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findNestedClass(match).getClassName());
+	}
+
+	@Test
+	public void findNestedClass_optional_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.optNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findNestedClass(match).getClassName());
+	}
+
+	@Test
+	public void findNestedClassNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findNestedClassNullable(TestFakeControlClass.INSTANCE.getClassName()));
+	}
+
+	@Test
+	public void findNestedClassNullable_required_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.reqNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findNestedClassNullable(match).getClassName());
+	}
+
+	@Test
+	public void findNestedClassNullable_optional_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		String match = TestControlClass.optNested.get(0).getClassName();
+		assertEquals("Shouldn't be null and should match.", match, tcc.findNestedClassNullable(match).getClassName());
 	}
 
 	@Test
@@ -187,14 +275,6 @@ public class ControlClassPropertyTests {
 		TestControlClass tcc = newTestControlClass();
 		tcc.setClassName("************************");
 		assertEquals(false, newTestControlClass().classEquals(tcc));
-	}
-
-	@Test
-	public void setTo() throws Exception {
-	}
-
-	@Test
-	public void propertyIsDefined() throws Exception {
 	}
 
 	//helpers

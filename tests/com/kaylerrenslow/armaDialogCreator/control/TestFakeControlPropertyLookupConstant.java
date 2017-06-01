@@ -6,7 +6,8 @@ import org.jetbrains.annotations.Nullable;
 /**
  A {@link ControlPropertyLookupConstant} implementation used for testing.
  NEVER USE THIS in a {@link ControlClass} or {@link ControlClassSpecification}, including testing related ones.
- If you do use this, you are defeating the purpose of this class.
+ If you do use this, you are defeating the purpose of this class,
+ which is for guaranteeing no {@link ControlPropertyLookupConstant} is found via a {@link ControlClass#findProperty(ControlPropertyLookupConstant)} related method..
 
  @author Kayler
  @since 05/30/2017 */
