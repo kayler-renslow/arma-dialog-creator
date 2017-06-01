@@ -8,6 +8,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -18,7 +19,9 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 05/25/2016.
+ A renderer for {@link StaticControl}
+ @author Kayler
+ @since 05/25/2016
  */
 public class StaticRenderer extends ArmaControlRenderer {
 
@@ -35,10 +38,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 				getBackgroundColorObserver().updateValue((AColor) newValue);
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(getBackgroundColor()));
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");
-		myControl.findProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setValueIfAbsent(true, new AColor(getBackgroundColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new AColor(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
+		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, AFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 	}
 

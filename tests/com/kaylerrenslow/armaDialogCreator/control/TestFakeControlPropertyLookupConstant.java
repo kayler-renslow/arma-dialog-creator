@@ -21,12 +21,12 @@ public class TestFakeControlPropertyLookupConstant implements ControlPropertyLoo
 
 	@Override
 	public @NotNull String getPropertyName() {
-		return null;
+		return "**FAKE PROPERTY**";
 	}
 
 	@Override
 	public @NotNull PropertyType getPropertyType() {
-		return null;
+		return PropertyType.INT;
 	}
 
 	@Override

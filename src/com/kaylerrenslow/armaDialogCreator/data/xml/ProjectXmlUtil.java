@@ -332,6 +332,14 @@ public class ProjectXmlUtil {
 		String[] values = new String[propertyType.getPropertyValuesSize()];
 		int valueInd = 0;
 		for (Element valueElement : valueElements) {
+			if (valueInd >= values.length) {
+				System.out.println(
+						"WARNING: ProjectXmlUtil.loadValue: too many v XML elements for parent"
+								+ parentElement.getTagName()
+								+ " (" + parentElement.getTextContent().replaceAll("[\r\n]+", " ") + ")"
+				);
+				break;
+			}
 			values[valueInd++] = XmlUtil.getImmediateTextContent(valueElement);
 		}
 		SerializableValue value;

@@ -80,9 +80,8 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		int g = (int) (color.getGreen() * f);
 		int b = (int) (color.getBlue() * f);
 		int a = (int) (color.getOpacity() * f);
-		int argb = (a << 24) | (r << 16) | (g << 8) | b;
 
-		Tooltip.install(box, new Tooltip(Integer.toHexString(argb)));
+		Tooltip.install(box, new Tooltip(String.format("red:%d, green:%d, blue:%d, alpha:%d", r, g, b, a)));
 	}
 
 	public void updateVisibilityRadioButton(boolean visible) {

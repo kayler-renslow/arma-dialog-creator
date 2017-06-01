@@ -12,7 +12,7 @@ public class HeaderParserSmallMacroTests {
 
 	@Test
 	public void parseHeaderTest() throws Exception {
-		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"));
+		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"), HeaderTestUtil.getTemporaryResultsFile());
 		p.parse();
 
 		HeaderMacro[] macros = {

@@ -15,7 +15,7 @@ import java.io.IOException;
 public class WorkspaceResourceRegistry extends ResourceRegistry {
 
 	protected WorkspaceResourceRegistry(@NotNull Workspace workspace) {
-		super(workspace.getFileForName(ResourceRegistry.RESOURCES_FILE_NAME + "/global-resources.xml"));
+		super(workspace.getFileInAdcDirectory("resources/global-resources.xml"));
 		if (!getResourcesFile().exists()) {
 			getResourcesFile().getParentFile().mkdirs();
 			try {

@@ -12,4 +12,9 @@ public class HeaderTestUtil {
 	public static File getFile(@NotNull String fileName) {
 		return new File("tests/com/kaylerrenslow/armaDialogCreator/arma/header/" + fileName);
 	}
+
+	@NotNull
+	public static File getTemporaryResultsFile() {
+		return getFile("testsData_ignore");
+	}
 }

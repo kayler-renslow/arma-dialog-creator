@@ -25,8 +25,8 @@ import java.util.regex.Pattern;
 
 /**
  @author Kayler
- @since 03/21/2017
- @see <a href='https://resources.bisimulations.com/wiki/PreProcessor_Commands'>Bohemia Interactive Preprocessor Documentation</a>*/
+ @see <a href='https://resources.bisimulations.com/wiki/PreProcessor_Commands'>Bohemia Interactive Preprocessor Documentation</a>
+ @since 03/21/2017 */
 class Preprocessor {
 
 	private final @RegExp
@@ -85,7 +85,15 @@ class Preprocessor {
 	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) throws IOException {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
-		temporaryFullyPreprocessedResultFile = new File(processFile.getAbsolutePath() + ".preprocessed");
+
+		File preprocessedResults = new File(parserContext.getTempDirectory().getAbsolutePath() + "/" + processFile.getName() + ".preprocessed");
+		boolean newFile = preprocessedResults.createNewFile();
+		while (!newFile) {
+			preprocessedResults = new File(preprocessedResults.getAbsolutePath() + System.currentTimeMillis());
+			newFile = preprocessedResults.createNewFile();
+		}
+
+		temporaryFullyPreprocessedResultFile = preprocessedResults;
 
 		writeSteam = new FileOutputStream(temporaryFullyPreprocessedResultFile);
 	}
@@ -443,7 +451,7 @@ class Preprocessor {
 				}
 				default: {
 					//ignore anything else
-					System.out.println(String.format(bundle.getString("Error.Preprocessor.Parse.unknown_macro_f"), macroName));
+					System.out.println(String.format("Preprocessor.java: Ignored unknown macro: %s. (No Errors)", macroName));
 					break;
 				}
 			}

@@ -1,14 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
@@ -326,50 +324,39 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 		return priority;
 	}
 
+	/**
+	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyType()}
+	 is equal to find
 
-	public ControlProperty getIntProperty(int defaultValue) {
-		if (getPropertyType() != PropertyType.INT) {
-			throw new IllegalStateException("can't get int property when property type isn't int");
-		}
-		return new ControlProperty(this, defaultValue);
-	}
-
-	public ControlProperty getFloatProperty(double defaultValue) {
-		if (getPropertyType() != PropertyType.FLOAT) {
-			throw new IllegalStateException("can't get float property when property type isn't float");
-		}
-		return new ControlProperty(this, defaultValue);
-	}
-
-	public ControlProperty getBooleanProperty(boolean defaultValue) {
-		if (getPropertyType() != PropertyType.BOOLEAN) {
-			throw new IllegalStateException("can't get boolean property when property type isn't boolean");
-		}
-		return new ControlProperty(this, defaultValue);
-	}
-
-	public ControlProperty getProperty(SerializableValue defaultValue) {
-		return new ControlProperty(this, defaultValue);
-	}
-
-	public ControlProperty getPropertyFromOption(int optionNum) {
-		if (getOptions() == null || optionNum < 0 || optionNum > getOptions().length) {
-			throw new IllegalStateException("options and optionNum are bad. options=" + (getOptions() != null ? Arrays.toString(getOptions()) : "null") + " optionNum=" + optionNum);
-		}
-		return new ControlProperty(this, new SVString(getOptions()[optionNum].value));
-	}
-
-	/** Get all lookup enums where their property type is equal to find */
-	public static ControlPropertyLookup[] getAllOfTypeControlProperties(PropertyType find) {
+	 @return list of matched
+	 */
+	@NotNull
+	public static List<ControlPropertyLookup> getAllOfByType(@NotNull PropertyType find) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
 		for (ControlPropertyLookup controlProperty : values()) {
 			if (controlProperty.propertyType == find) {
 				props.add(controlProperty);
 			}
 		}
-		return props.toArray(new ControlPropertyLookup[props.size()]);
+		return props;
 	}
 
+	/**
+	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyName()}
+	 is equal to find
+
+	 @return list of matched
+	 */
+	@NotNull
+	public static List<ControlPropertyLookup> getAllOfByName(@NotNull String find) {
+		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
+		for (ControlPropertyLookup controlProperty : values()) {
+			if (controlProperty.getPropertyName().equals(find)) {
+				props.add(controlProperty);
+			}
+		}
+		return props;
+	}
 
 	/** @throws IllegalArgumentException when id couldn't be matched */
 	@NotNull

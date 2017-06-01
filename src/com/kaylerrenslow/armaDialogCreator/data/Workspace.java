@@ -18,6 +18,7 @@ public class Workspace {
 
 	private final File workspaceDirectory;
 	private final WorkspaceResourceRegistry globalResourceRegistry;
+	private final File adcDirectory;
 
 	/**
 	 Construct a new instance
@@ -33,9 +34,12 @@ public class Workspace {
 		}
 		this.workspaceDirectory = workspaceDirectory;
 		globalResourceRegistry = new WorkspaceResourceRegistry(this);
+
+		adcDirectory = getFileForName(".adc");
+		adcDirectory.mkdirs();
 	}
 
-	/** @return the File that is the workspace's directory that contains a bunch of {@link Project}s */
+	/** @return the File that is the workspace's directory that contains a bunch of {@link Project}'s */
 	@NotNull
 	public File getWorkspaceDirectory() {
 		return workspaceDirectory;
@@ -52,15 +56,19 @@ public class Workspace {
 		return ApplicationDataManager.getInstance().getWorkspace();
 	}
 
-	/** @return a File with {@link #getWorkspaceDirectory()} as the prefixed path.
-	 @see #getFilePathForName(String) */
+	/**
+	 @return a File with {@link #getWorkspaceDirectory()} as the prefixed path.
+	 @see #getFilePathForName(String)
+	 */
 	@NotNull
 	public File getFileForName(@NotNull String fileName) {
 		return new File(getFilePathForName(fileName));
 	}
 
-	/** @return a file's path with {@link #getWorkspaceDirectory()} as the prefixed path.
-	 @see #getFileForName(String) */
+	/**
+	 @return a file's path with {@link #getWorkspaceDirectory()} as the prefixed path.
+	 @see #getFileForName(String)
+	 */
 	@NotNull
 	public String getFilePathForName(@NotNull String fileName) {
 		return workspaceDirectory.getPath() + "\\" + fileName;
@@ -74,5 +82,17 @@ public class Workspace {
 	@NotNull
 	public WorkspaceResourceRegistry getGlobalResourceRegistry() {
 		return globalResourceRegistry;
+	}
+
+	/** @return file in "{@link #getWorkspaceDirectory()}/.adc" */
+	@NotNull
+	public File getAdcDirectory() {
+		return adcDirectory;
+	}
+
+	/** @return file in "{@link #getWorkspaceDirectory()}/.adc/<code>fileName</code>" */
+	@NotNull
+	public File getFileInAdcDirectory(@NotNull String fileName) {
+		return getFileForName(".adc/" + fileName);
 	}
 }

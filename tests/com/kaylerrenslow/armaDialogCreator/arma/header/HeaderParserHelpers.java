@@ -18,7 +18,7 @@ public class HeaderParserHelpers {
 
 
 	public static void assertPreprocessLine(@NotNull String expect, @NotNull File processFile, @Nullable HashMap<String, DefineMacroContent.DefineValue> toInsert) throws Exception {
-		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext());
+		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext(HeaderTestUtil.getTemporaryResultsFile()));
 		if (toInsert != null) {
 			p.defined.putAll(toInsert);
 		}

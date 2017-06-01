@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
@@ -93,10 +94,12 @@ public class HeaderToProject {
 		callback.progressUpdate(0, -1);
 		callback.message(bundle.getString("Status.parsing"));
 		try {
-			headerFile = HeaderParser.parse(descExt);
+			headerFile = HeaderParser.parse(descExt, workspace.getFileInAdcDirectory("temp"));
 			callback.finishedParse();
 		} catch (HeaderParseException e) {
 			throw new HeaderConversionException(e.getMessage());
+		} catch (IOException e2) {
+			ExceptionHandler.error(e2);
 		}
 
 
@@ -334,15 +337,25 @@ public class HeaderToProject {
 		List<ControlPropertySpecification> optional = new ArrayList<>(headerClass.getAssignments().size());
 		for (HeaderAssignment assignment : headerClass.getAssignments()) {
 			//todo handle custom properties because the user may use the dialog class for more than just dialogs!
-			for (ControlPropertyLookup lookup : ControlPropertyLookup.values()) {
-				if (assignment.getVariableName().equalsIgnoreCase(lookup.getPropertyName())) {
-					optional.add(new ControlPropertySpecification(
-							lookup,
-							createValueFromAssignment(assignment, lookup.getPropertyType()),
-							null
-					));
+			List<ControlPropertyLookup> matchedByName = ControlPropertyLookup.getAllOfByName(assignment.getVariableName());
+			if (matchedByName.isEmpty()) {
+				//todo
+				continue;
+			}
+			SerializableValue value = null;
+			ControlPropertyLookup usedLookup = null;
+			for (ControlPropertyLookup lookup : matchedByName) {
+				value = createValueFromAssignment(assignment, lookup.getPropertyType());
+				if (value != null) {
+					usedLookup = lookup;
+					break;
 				}
 			}
+			if (usedLookup == null) {
+				//todo
+				continue;
+			}
+			optional.add(new ControlPropertySpecification(usedLookup, value, null));
 		}
 		ControlClassSpecification ccs = new ControlClassSpecification(
 				headerClass.getClassName(),
@@ -363,22 +376,35 @@ public class HeaderToProject {
 
 	@Nullable
 	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType) {
+		int vCount = initialPropertyType.getPropertyValuesSize();
 		if (assignment.getValue() instanceof HeaderArray) {
+			HeaderArray headerArray = (HeaderArray) assignment.getValue();
+			if (vCount < headerArray.getItems().size()) {
+				return null;
+			}
+			String[] items = new String[headerArray.getItems().size()];
+			int i = 0;
+			for (HeaderArrayItem arrayItem : headerArray.getItems()) {
+				items[i] = removeQuotes(arrayItem.getAsString());
+				i++;
+			}
+			try {
+				return SerializableValue.constructNew(dataContext, initialPropertyType, items);
+			} catch (SerializableValueConstructionException ignore) {
+
+			}
 			if (SerializableValue.isConvertible(initialPropertyType, PropertyType.ARRAY)) {
-				HeaderArray headerArray = (HeaderArray) assignment.getValue();
-				String[] items = new String[headerArray.getItems().size()];
-				int i = 0;
-				for (HeaderArrayItem item : headerArray.getItems()) {
-					items[i++] = item.getValue().getContent();
-				}
 				return SerializableValue.constructNew(dataContext, PropertyType.ARRAY, items);
 			}
 
 		} else {
+			if (vCount > 1) {
+				return null;
+			}
 			String assignmentValue = assignment.getValue().getContent();
 			if (assignmentValue.charAt(0) == '"') {
 				if (SerializableValue.isConvertible(initialPropertyType, PropertyType.STRING)) {
-					assignmentValue = assignmentValue.substring(1, assignmentValue.length() - 1); //chop off quotes
+					assignmentValue = removeQuotes(assignmentValue); //chop off quotes
 					return SerializableValue.constructNew(dataContext, PropertyType.STRING, assignmentValue);
 				}
 			} else {
@@ -390,6 +416,14 @@ public class HeaderToProject {
 			}
 		}
 		return null;
+	}
+
+	@NotNull
+	private String removeQuotes(String stringLiteral) {
+		if (stringLiteral.length() >= 2 && (stringLiteral.charAt(0) == '"' || stringLiteral.charAt(0) == '\'') && stringLiteral.charAt(0) == stringLiteral.charAt(stringLiteral.length() - 1)) {
+			return stringLiteral.substring(1, stringLiteral.length() - 1);
+		}
+		return stringLiteral;
 	}
 
 	private void buildStructure(@NotNull List<ArmaControl> controls, @NotNull TreeStructure<ArmaControl> structure) {

@@ -190,7 +190,7 @@ public class ControlProperty {
 
 	 @see #setDefaultValue(boolean, SerializableValue)
 	 */
-	public void setDefaultValue(boolean setValue, String defaultValue) {
+	public void setDefaultValue(boolean setValue, @Nullable String defaultValue) {
 		setDefaultValue(setValue, new SVString(defaultValue));
 	}
 
@@ -585,6 +585,22 @@ public class ControlProperty {
 	@Nullable
 	public ControlProperty getInherited() {
 		return inherited;
+	}
+
+	/**
+	 Set's the default value (if <code>setDefaultValue==true</code>) and current value equal to <code>value</code>
+	 if they are null.
+
+	 @param setDefaultValue if true, will set the default value equal to <code>value</code> if default value is null
+	 @param value value to set if the value is null
+	 */
+	public void setValueIfAbsent(boolean setDefaultValue, SerializableValue value) {
+		if (getValue() == null) {
+			setValue(value);
+		}
+		if (defaultValue == null && setDefaultValue) {
+			setDefaultValue(false, value);
+		}
 	}
 
 	/**

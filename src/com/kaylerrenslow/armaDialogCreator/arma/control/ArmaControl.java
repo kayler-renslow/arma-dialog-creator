@@ -32,12 +32,8 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
 
-
-	/** Control id (-1 if doesn't matter) */
-	private int idc = -1;
-
 	private ControlProperty idcProperty, accessProperty;
-	private UpdateListenerGroup<ArmaControl> rerenderUpdateGroup = new UpdateListenerGroup<>();
+	private final UpdateListenerGroup<ArmaControl> rerenderUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<CanvasDisplay<ArmaControl>> displayObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
 

@@ -7,9 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkContro
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -42,7 +40,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		});
 		shadowProperty = myControl.findProperty(ControlPropertyLookup.BTN_COLOR_SHADOW);
 		shadowProperty.getValueObserver().addListener(renderValueUpdateListener);
-		shadowProperty.setDefaultValue(true, new AColor(0d, 0d, 0d, 1d));
+		shadowProperty.setValueIfAbsent(true, new AColor(0d, 0d, 0d, 1d));
 
 		offsetXProperty = myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X);
 		offsetXProperty.getValueObserver().addListener(renderValueUpdateListener);
@@ -51,12 +49,12 @@ public class ButtonRenderer extends ArmaControlRenderer {
 
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setDefaultValue(true, new AColor(getBackgroundColor()));
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setDefaultValue(true, new AColor(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.TEXT).setDefaultValue(true, "");
-		myControl.findProperty(ControlPropertyLookup.FONT).setDefaultValue(true, AFont.DEFAULT);
-		myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X).setDefaultValue(true, 0.01);
-		myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_Y).setDefaultValue(true, 0.01);
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setValueIfAbsent(true, new AColor(getBackgroundColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new AColor(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
+		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, AFont.DEFAULT);
+		myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X).setValueIfAbsent(true, new SVDouble(0.01));
+		myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_Y).setValueIfAbsent(true, new SVDouble(0.01));
 
 	}
 

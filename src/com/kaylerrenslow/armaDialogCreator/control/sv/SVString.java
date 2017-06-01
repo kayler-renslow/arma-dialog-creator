@@ -61,4 +61,10 @@ public final class SVString extends SerializableValue {
 		}
 		return false;
 	}
+
+	/** @return a new {@link SVString} instance with "" as the value */
+	@NotNull
+	public static SVString newEmptyString() {
+		return new SVString("");
+	}
 }

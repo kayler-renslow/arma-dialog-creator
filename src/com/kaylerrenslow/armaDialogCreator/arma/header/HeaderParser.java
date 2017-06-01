@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
+ A parser for Arma 3 header files (.h, .hh, etc)
+
  @author Kayler
  @since 03/19/2017 */
 public class HeaderParser {
@@ -27,22 +29,38 @@ public class HeaderParser {
 	private final File parsingFile;
 	private final HeaderParserContext parserContext;
 
-	protected HeaderParser(@NotNull File parsingFile) {
+	protected HeaderParser(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException {
 		this.parsingFile = parsingFile;
-		this.parserContext = new HeaderParserContext();
+		if (tempDirectory.exists() && !tempDirectory.isDirectory()) {
+			throw new IllegalArgumentException("tempDirectory is not a directory");
+		}
+		if (!tempDirectory.exists()) {
+			tempDirectory.mkdirs();
+		}
+		this.parserContext = new HeaderParserContext(tempDirectory);
 	}
 
+	/**
+	 Create a new header parser, preprocess the header file, parse the file,
+	 and return a {@link HeaderFile} instance containing the results.
+
+	 @param parsingFile the header file to parse
+	 @param tempDirectory a directory
+	 @return the result
+	 */
 	@NotNull
-	public static HeaderFile parse(@NotNull File parsingFile) throws FileNotFoundException, HeaderParseException {
-		HeaderParser p = new HeaderParser(parsingFile);
+	public static HeaderFile parse(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
+		HeaderParser p = new HeaderParser(parsingFile, tempDirectory);
 		return p.parse();
 	}
 
+	/**@return the header file being parsed (.h, .hh, etc)*/
 	@NotNull
 	public File getParsingFile() {
 		return parsingFile;
 	}
 
+	/**@return all macros discovered (#include, #ifdef, #else, #define, etc)*/
 	@NotNull
 	public List<HeaderMacro> getMacros() {
 		return parserContext.getMacros();
@@ -145,19 +163,19 @@ public class HeaderParser {
 		@Override
 		public void reportAmbiguity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, boolean exact, BitSet ambigAlts, ATNConfigSet configs) {
 			super.reportAmbiguity(recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs);
-			System.out.println("HeaderParserErrorListener.reportAmbiguity");
+			//			System.out.println("HeaderParserErrorListener.reportAmbiguity");
 		}
 
 		@Override
 		public void reportAttemptingFullContext(Parser recognizer, DFA dfa, int startIndex, int stopIndex, BitSet conflictingAlts, ATNConfigSet configs) {
 			super.reportAttemptingFullContext(recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs);
-			System.out.println("HeaderParserErrorListener.reportAttemptingFullContext");
+			//			System.out.println("HeaderParserErrorListener.reportAttemptingFullContext");
 		}
 
 		@Override
 		public void reportContextSensitivity(Parser recognizer, DFA dfa, int startIndex, int stopIndex, int prediction, ATNConfigSet configs) {
 			super.reportContextSensitivity(recognizer, dfa, startIndex, stopIndex, prediction, configs);
-			System.out.println("HeaderParserErrorListener.reportContextSensitivity");
+			//			System.out.println("HeaderParserErrorListener.reportContextSensitivity");
 		}
 	}
 }

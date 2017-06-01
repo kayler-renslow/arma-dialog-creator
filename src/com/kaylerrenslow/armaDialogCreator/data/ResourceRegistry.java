@@ -14,7 +14,7 @@ import java.util.List;
 public class ResourceRegistry {
 	private final List<ExternalResource> externalResourceList = new ArrayList<>();
 
-	public static final String RESOURCES_FILE_NAME = ".resources";
+	public static final String RESOURCES_FILE_NAME = ".adc_resources";
 
 	private final File resourcesFile;
 
