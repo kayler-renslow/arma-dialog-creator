@@ -273,7 +273,7 @@ public class ControlProperty {
 	}
 
 	/**
-	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#INT}). This is set by
+	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#Int}). This is set by
 	 invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
 	 */
 	public boolean isUsingCustomData() {

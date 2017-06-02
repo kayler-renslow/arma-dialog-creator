@@ -58,31 +58,31 @@ public interface ValueEditor<V extends SerializableValue> {
 	 */
 	static ValueEditor getEditor(PropertyType propertyType, Env env) {
 		switch (propertyType) {
-			case INT:
+			case Int:
 				return new InputFieldValueEditor.IntegerEditor(env);
-			case FLOAT:
+			case Float:
 				return new InputFieldValueEditor.DoubleEditor(env);
-			case CONTROL_STYLE:
+			case ControlStyle:
 				return new ControlStyleValueEditor();
-			case BOOLEAN:
+			case Boolean:
 				return new BooleanValueEditor();
-			case STRING:
+			case String:
 				return new InputFieldValueEditor.ArmaStringEditor();
-			case ARRAY:
+			case Array:
 				return new ArrayValueEditor(2);
-			case COLOR:
+			case Color:
 				return new ColorValueEditor();
-			case SOUND:
+			case Sound:
 				return new SoundValueEditor();
-			case FONT:
+			case Font:
 				return new FontValueEditor();
-			case FILE_NAME:
+			case FileName:
 				return new InputFieldValueEditor.ArmaStringEditor();
-			case IMAGE:
+			case Image:
 				return new ImageValueEditor();
-			case HEX_COLOR_STRING:
+			case HexColorString:
 				return new HexColorValueEditor();
-			case TEXTURE:
+			case Texture:
 				return new InputFieldValueEditor.ArmaStringEditor();
 			case SQF:
 				return new InputFieldValueEditor.ArmaStringEditor();

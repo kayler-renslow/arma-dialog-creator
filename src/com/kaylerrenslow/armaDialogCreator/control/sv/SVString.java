@@ -42,7 +42,7 @@ public final class SVString extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.STRING;
+		return PropertyType.String;
 	}
 
 	@Override

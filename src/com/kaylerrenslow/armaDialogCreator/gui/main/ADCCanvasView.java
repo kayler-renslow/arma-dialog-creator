@@ -168,7 +168,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	@Override
-	public void setTreeStructure(boolean background, TreeStructure<ArmaControl> treeStructure) {
+	public void setTreeStructure(boolean background, @Nullable TreeStructure<ArmaControl> treeStructure) {
 		if (background) {
 			canvasControls.getTreeViewBackground().loadStructure(treeStructure);
 		} else {

@@ -51,7 +51,7 @@ public class SVDouble extends SVNumber {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.FLOAT;
+		return PropertyType.Float;
 	}
 
 	@Override

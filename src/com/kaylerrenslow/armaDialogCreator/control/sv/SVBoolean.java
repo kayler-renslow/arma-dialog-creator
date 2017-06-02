@@ -41,7 +41,7 @@ public final class SVBoolean extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.BOOLEAN;
+		return PropertyType.Boolean;
 	}
 
 	@Override

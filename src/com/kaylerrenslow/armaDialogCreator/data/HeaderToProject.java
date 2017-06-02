@@ -393,8 +393,10 @@ public class HeaderToProject {
 			} catch (SerializableValueConstructionException ignore) {
 
 			}
-			if (SerializableValue.isConvertible(initialPropertyType, PropertyType.ARRAY)) {
-				return SerializableValue.constructNew(dataContext, PropertyType.ARRAY, items);
+			try {
+				return SerializableValue.constructNew(dataContext, PropertyType.Array, items);
+			} catch (SerializableValueConstructionException ignore) {
+
 			}
 
 		} else {
@@ -403,9 +405,11 @@ public class HeaderToProject {
 			}
 			String assignmentValue = assignment.getValue().getContent();
 			if (assignmentValue.charAt(0) == '"') {
-				if (SerializableValue.isConvertible(initialPropertyType, PropertyType.STRING)) {
+				try {
 					assignmentValue = removeQuotes(assignmentValue); //chop off quotes
-					return SerializableValue.constructNew(dataContext, PropertyType.STRING, assignmentValue);
+					return SerializableValue.constructNew(dataContext, PropertyType.String, assignmentValue);
+				} catch (SerializableValueConstructionException ignore) {
+
 				}
 			} else {
 				try {

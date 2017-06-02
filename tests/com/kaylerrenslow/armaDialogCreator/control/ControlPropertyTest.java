@@ -79,13 +79,13 @@ public class ControlPropertyTest {
 	@Test
 	public void isPropertyType() throws Exception {
 		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, (SerializableValue) null);
-		assertEquals(p.isPropertyType(PropertyType.ARRAY), false);
+		assertEquals(p.isPropertyType(PropertyType.Array), false);
 	}
 
 	@Test
 	public void isPropertyType2() throws Exception {
 		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, new SVInteger(1));
-		assertEquals(p.isPropertyType(PropertyType.INT), true);
+		assertEquals(p.isPropertyType(PropertyType.Int), true);
 	}
 
 	@Test

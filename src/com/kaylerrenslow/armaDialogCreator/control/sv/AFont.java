@@ -57,7 +57,7 @@ public class AFont extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.FONT;
+		return PropertyType.Font;
 	}
 
 	public static AFont[] values() {

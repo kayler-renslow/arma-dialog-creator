@@ -78,7 +78,7 @@ public class ControlStyleGroup extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.CONTROL_STYLE;
+		return PropertyType.ControlStyle;
 	}
 
 	public static String toString(@NotNull ControlStyle[] values) {

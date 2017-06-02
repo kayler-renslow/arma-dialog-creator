@@ -13,9 +13,9 @@ import java.util.ArrayList;
  Created by Kayler on 09/15/2016.
  */
 public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
-	IDD(0, "idd", PropertyType.INT, "The unique id to the display."),
-	MOVING_ENABLE(1, "movingEnable", PropertyType.BOOLEAN, "True if the display can be moved with mouse, false otherwise."),
-	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.BOOLEAN, "True if the display will allow user interaction (e.g. buttons can be pressed), false otherwise.");
+	IDD(0, "idd", PropertyType.Int, "The unique id to the display."),
+	MOVING_ENABLE(1, "movingEnable", PropertyType.Boolean, "True if the display can be moved with mouse, false otherwise."),
+	ENABLE_SIMULATION(2, "enableSimulation", PropertyType.Boolean, "True if the display will allow user interaction (e.g. buttons can be pressed), false otherwise.");
 
 	public static final DisplayPropertyLookup[] EMPTY = new DisplayPropertyLookup[0];
 
@@ -90,21 +90,21 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 	}
 
 	public DisplayProperty getIntProperty(int defaultValue) {
-		if (getPropertyType() != PropertyType.INT) {
+		if (getPropertyType() != PropertyType.Int) {
 			throw new IllegalStateException("can't get int property when property type isn't int");
 		}
 		return new DisplayProperty(this, new SVInteger(defaultValue));
 	}
 
 	public DisplayProperty getFloatProperty(double defaultValue) {
-		if (getPropertyType() != PropertyType.FLOAT) {
+		if (getPropertyType() != PropertyType.Float) {
 			throw new IllegalStateException("can't get float property when property type isn't float");
 		}
 		return new DisplayProperty(this, new SVDouble(defaultValue));
 	}
 
 	public DisplayProperty getBooleanProperty(boolean defaultValue) {
-		if (getPropertyType() != PropertyType.BOOLEAN) {
+		if (getPropertyType() != PropertyType.Boolean) {
 			throw new IllegalStateException("can't get boolean property when property type isn't boolean");
 		}
 		return new DisplayProperty(this, SVBoolean.get(defaultValue));

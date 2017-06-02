@@ -91,7 +91,7 @@ public class Expression extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.FLOAT;
+		return PropertyType.Float;
 	}
 
 	@Override

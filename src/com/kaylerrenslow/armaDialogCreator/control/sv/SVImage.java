@@ -50,7 +50,7 @@ public class SVImage extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.IMAGE;
+		return PropertyType.Image;
 	}
 
 	@Override

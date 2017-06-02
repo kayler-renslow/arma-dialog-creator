@@ -1,6 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
+import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.gui.FXUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.NotificationPane;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
@@ -15,6 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  The main window of Arma Dialog Creator
@@ -48,17 +52,26 @@ public class ADCWindow {
 		this.primaryStage.setScene(scene);
 	}
 
-	public void initialize() {
+	public void initialize(@Nullable TreeStructure<ArmaControl> backgroundTreeStructure, @Nullable TreeStructure<ArmaControl> mainTreeStructure) {
 		rootElement = new VBox();
 		primaryStage.getScene().setRoot(rootElement);
 		Scene scene = primaryStage.getScene();
 
-		initNotificationPane();
-		canvasView = new ADCCanvasView(notificationPane);
-		mainMenuBar = new ADCMenuBar();
+		FXUtil.runWhenVisible(rootElement, new Runnable() {
+			@Override
+			public void run() {
+				initNotificationPane();
+				canvasView = new ADCCanvasView(notificationPane);
+				mainMenuBar = new ADCMenuBar();
+
+				rootElement.getChildren().addAll(mainMenuBar, canvasView);
+
+				canvasView.setTreeStructure(true, backgroundTreeStructure);
+				canvasView.setTreeStructure(false, mainTreeStructure);
+			}
+		});
 
 
-		rootElement.getChildren().addAll(mainMenuBar, canvasView);
 		rootElement.minWidth(ScreenDimension.SMALLEST.width + CanvasControls.PREFERRED_WIDTH);
 		rootElement.minHeight(ScreenDimension.SMALLEST.height + 50.0);
 		EventHandler<KeyEvent> keyEvent = new EventHandler<KeyEvent>() {

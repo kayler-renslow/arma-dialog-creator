@@ -2,7 +2,8 @@
 * more tests for control class
 
 **Changed:**
-* 
+* renamed PropertyType enums because they are easier to read the new way
+* the adc window should appear faster, but loading time will be about the same
 
 **Fixed:**
 * 
@@ -19,3 +20,6 @@
 * May 31: we should have documentation for control's properties and default value providers in one xml file for every control.
     * this will make documentation easier, xml files shorter (load faster for default value provider), and modularize things a lil
     * for the documentation, we should have documentation for each property by id and not store it in ControlPropertyLookup
+    * MergePropertyException for attempting to merge a property and it failing
+* May 31: for converting a value into another, have a convert fail dialog that will have an editor that will have the ControlPropertyEditor
+    for the converted value and the convert from value. The user can then edit either to get the result they want

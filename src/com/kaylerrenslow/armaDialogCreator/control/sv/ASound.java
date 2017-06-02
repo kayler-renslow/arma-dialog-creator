@@ -111,7 +111,7 @@ public class ASound extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.SOUND;
+		return PropertyType.Sound;
 	}
 
 	@Override

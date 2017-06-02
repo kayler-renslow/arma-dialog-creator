@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 
 /**
- Base class that specifies that a value can be converted into a String[]. For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
+ Base class that specifies that a value can be converted into a String[].
+ For primitives or other values that don't have multiple attributes, the String[] is length 1 with the attribute at index 0.
 
  @author Kayler
  @since 07/13/2016. */
 public abstract class SerializableValue {
-
 
 	/**
 	 A safe way of converting a {@link SerializableValue} into a different one, i.e. {@link SVString} to {@link SVInteger}.
@@ -31,10 +31,6 @@ public abstract class SerializableValue {
 		} catch (SerializableValueConstructionException e) {
 			throw new SerializableValueConversionException(e.getMessage());
 		}
-	}
-
-	public static boolean isConvertible(@NotNull PropertyType from, @NotNull PropertyType to) {
-		return from.getPropertyValuesSize() == to.getPropertyValuesSize() && Arrays.equals(from.getIndexesWithQuotes(), to.getIndexesWithQuotes());
 	}
 
 	/**
@@ -125,4 +121,5 @@ public abstract class SerializableValue {
 		}
 		return false;
 	}
+
 }

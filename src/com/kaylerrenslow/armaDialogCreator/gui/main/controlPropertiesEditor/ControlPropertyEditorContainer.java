@@ -328,31 +328,31 @@ class ControlPropertyEditorContainer extends HBox {
 		}
 		PropertyType propertyType = controlProperty.getPropertyType() == null ? controlProperty.getInitialPropertyType() : controlProperty.getPropertyType();
 		switch (propertyType) {
-			case INT:
+			case Int:
 				return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
-			case FLOAT:
+			case Float:
 				return new ControlPropertyInputFieldDouble(controlClass, controlProperty);
-			case CONTROL_STYLE:
+			case ControlStyle:
 				return new ControlStylePropertyInput(controlClass, controlProperty);
-			case BOOLEAN:
+			case Boolean:
 				return new ControlPropertyBooleanChoiceBox(controlClass, controlProperty);
-			case STRING:
+			case String:
 				return new ControlPropertyInputFieldString(controlClass, controlProperty);
-			case ARRAY:
+			case Array:
 				return new ControlPropertyArrayInput(controlClass, controlProperty, 2);
-			case COLOR:
+			case Color:
 				return new ControlPropertyColorPicker(controlClass, controlProperty);
-			case SOUND:
+			case Sound:
 				return new ControlPropertySoundInput(controlClass, controlProperty);
-			case FONT:
+			case Font:
 				return new ControlPropertyFontChoiceBox(controlClass, controlProperty);
-			case FILE_NAME:
+			case FileName:
 				return new ControlPropertyInputFieldString(controlClass, controlProperty);
-			case IMAGE:
+			case Image:
 				return new ControlPropertyInputFieldString(controlClass, controlProperty); //todo use proper value editor
-			case HEX_COLOR_STRING:
+			case HexColorString:
 				return new ControlPropertyColorPicker(controlClass, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
-			case TEXTURE:
+			case Texture:
 				return new ControlPropertyInputFieldString(controlClass, controlProperty);
 			case SQF:
 				return new ControlPropertyInputFieldString(controlClass, controlProperty);
@@ -404,9 +404,7 @@ class ControlPropertyEditorContainer extends HBox {
 			myRootElement.getChildren().add(comboBoxType);
 
 			for (PropertyType type : PropertyType.values()) {
-				if (SerializableValue.isConvertible(type, property.getPropertyType())) {
-					comboBoxType.getItems().add(type);
-				}
+				comboBoxType.getItems().add(type);
 			}
 			comboBoxType.getSelectionModel().select(property.getPropertyType());
 

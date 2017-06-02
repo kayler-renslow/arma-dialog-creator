@@ -528,8 +528,10 @@ public class ControlClass {
 
 	 @throws IllegalArgumentException when the property doesn't exist in this {@link ControlClass}
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
+	 @see ControlProperty#inherit(ControlProperty)
+	 @see #inheritProperty(ControlPropertyLookupConstant)
 	 */
-	public final void overrideProperty(@NotNull ControlPropertyLookupConstant property) throws IllegalArgumentException, IllegalStateException {
+	public final void overrideProperty(@NotNull ControlPropertyLookupConstant property) throws IllegalArgumentException {
 		ControlProperty mine = findProperty(property);
 		mine.inherit(null);
 	}
@@ -557,6 +559,7 @@ public class ControlClass {
 
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
+	 @see ControlProperty#inherit(ControlProperty)
 	 */
 	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		if (getExtendClass() == null) {

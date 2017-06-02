@@ -12,31 +12,31 @@ import java.util.LinkedList;
  @since 07/15/2016. */
 public enum PropertyType {
 	/** Is a integer value. Current implementation is a 32 bit integer (java int) */
-	INT(0, Expression.CONVERTER, getString("PropertyType.int")),
+	Int(0, Expression.CONVERTER, getString("PropertyType.int")),
 	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
-	FLOAT(1, Expression.CONVERTER, getString("PropertyType.float")),
+	Float(1, Expression.CONVERTER, getString("PropertyType.float")),
 	/** Unique property type to {@link ControlPropertyLookup#STYLE} */
-	CONTROL_STYLE(2, ControlStyleGroup.CONVERTER, getString("PropertyType.control_style")),
+	ControlStyle(2, ControlStyleGroup.CONVERTER, getString("PropertyType.control_style")),
 	/** Denotes an image path inside a String */
-	IMAGE(3, SVImage.CONVERTER, getString("PropertyType.image"), true),
+	Image(3, SVImage.CONVERTER, getString("PropertyType.image"), true),
 	/** Is a boolean (0 for false, 1 for true) */
-	BOOLEAN(4, SVBoolean.CONVERTER, getString("PropertyType.boolean")),
+	Boolean(4, SVBoolean.CONVERTER, getString("PropertyType.boolean")),
 	/** Is a String */
-	STRING(5, SVString.CONVERTER, getString("PropertyType.string"), true),
+	String(5, SVString.CONVERTER, getString("PropertyType.string"), true),
 	/** Generic array property type */
-	ARRAY(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2, PropertyTypeHelper.EMPTY),
+	Array(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2, PropertyTypeHelper.EMPTY),
 	/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
-	COLOR(7, AColor.CONVERTER, getString("PropertyType.color"), 4, PropertyTypeHelper.EMPTY),
+	Color(7, AColor.CONVERTER, getString("PropertyType.color"), 4, PropertyTypeHelper.EMPTY),
 	/** Is an array that is formatted to fit a sound and its params */
-	SOUND(8, ASound.CONVERTER, getString("PropertyType.sound"), 3, 0),
+	Sound(8, ASound.CONVERTER, getString("PropertyType.sound"), 3, 0),
 	/** Is font name */
-	FONT(9, AFont.CONVERTER, getString("PropertyType.font"), true),
+	Font(9, AFont.CONVERTER, getString("PropertyType.font"), true),
 	/** Denotes a file name inside a String */
-	FILE_NAME(10, SVString.CONVERTER, getString("PropertyType.file_name"), true),
+	FileName(10, SVString.CONVERTER, getString("PropertyType.file_name"), true),
 	/** Color is set to a hex string like #ffffff or #ffffffff */
-	HEX_COLOR_STRING(11, AHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
+	HexColorString(11, AHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
-	TEXTURE(12, SVString.CONVERTER, getString("PropertyType.texture"), true),
+	Texture(12, SVString.CONVERTER, getString("PropertyType.texture"), true),
 	/** SQF code String */
 	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true);
 

@@ -40,7 +40,7 @@ public class SVInteger extends SVNumber {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.INT;
+		return PropertyType.Int;
 	}
 
 	@Override

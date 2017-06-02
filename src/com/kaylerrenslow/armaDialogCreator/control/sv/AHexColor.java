@@ -158,7 +158,7 @@ public class AHexColor extends AColor {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.HEX_COLOR_STRING;
+		return PropertyType.HexColorString;
 	}
 
 	@Override

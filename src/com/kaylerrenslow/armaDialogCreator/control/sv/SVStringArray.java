@@ -53,7 +53,7 @@ public final class SVStringArray extends SerializableValue {
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
-		return PropertyType.ARRAY;
+		return PropertyType.Array;
 	}
 
 	@Override

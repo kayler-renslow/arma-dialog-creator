@@ -217,12 +217,10 @@ public final class ArmaDialogCreator extends Application {
 		}
 
 
-		getMainWindow().initialize();
+		getMainWindow().initialize(result != null ? result.getTreeStructureBg() : null, result != null ? result.getTreeStructureMain() : null);
 		getMainWindow().show();
 
 		if (result != null) {
-			getMainWindow().getCanvasView().setTreeStructure(false, result.getTreeStructureMain());
-			getMainWindow().getCanvasView().setTreeStructure(true, result.getTreeStructureBg());
 			if (result.getErrors().size() > 0) {
 				new ProjectImproperResultDialog(result).showAndWait();
 			}
