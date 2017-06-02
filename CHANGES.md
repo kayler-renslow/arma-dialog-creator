@@ -2,13 +2,11 @@
 * 
 
 **Changed:**
-* removed double clicking cell for renaming for controls tree view
-* disabling/enabling controls in tree view now has a more noticeable effect
-    * added a link between TreeItemData and TreeCell by placing a custom style class list in TreeItemData
-    * when disabled, the radio button becomes an indeterminate checkbox and the tree cell becomes less opaque
+* removed a lot of unnecessary checks for termination of expression evaluator
+    * evaluator runs much faster now
 
 **Fixed:**
-* Static text renderer wasn't loading text color in renderer properly
+* 
 
 **Notes:**
 * may 9 3:37 : project xml loader can find classes to extend, but it isn't working for imported projects

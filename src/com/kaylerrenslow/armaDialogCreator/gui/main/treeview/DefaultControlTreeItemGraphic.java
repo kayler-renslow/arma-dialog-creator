@@ -90,10 +90,6 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		rbSelected.setSelected(visible);
 	}
 
-	public void setBoxColor(Color color) {
-		fillBox(color);
-	}
-
 	public void setGraphicIsEnabled(boolean enabled) {
 		this.getChildren().remove(getChildren().size() - 1);
 		String lessVisibleText = "less-visible-tree-cell";
