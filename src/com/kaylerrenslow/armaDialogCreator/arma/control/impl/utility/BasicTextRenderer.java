@@ -45,7 +45,6 @@ public class BasicTextRenderer {
 							 ControlPropertyLookupConstant sizeEx) {
 		this.control = control;
 		this.renderer = renderer;
-		textColor = renderer.getBackgroundColor().invert();
 		init(text, colorText, style, sizeEx);
 	}
 
@@ -84,7 +83,12 @@ public class BasicTextRenderer {
 				return s;
 			}
 		});
-		control.findProperty(colorText).getValueObserver().addListener(new ValueListener<SerializableValue>() {
+		ControlProperty textColorProp = control.findProperty(colorText);
+		if (textColorProp.getValue() != null && textColorProp.getValue() instanceof AColor) {
+			textColor = ((AColor) textColorProp.getValue()).toJavaFXColor();
+		}
+		textColorProp.setValueIfAbsent(true, new AColor(renderer.getBackgroundColor().invert()));
+		textColorProp.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue instanceof AColor) {

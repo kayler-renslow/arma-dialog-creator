@@ -9,6 +9,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
@@ -26,14 +27,15 @@ public class DefaultControlTreeItemGraphic extends HBox {
 	private static final String BORDER_STYLE = "-fx-background-color:#b3b3b3,white;-fx-background-insets:0,20;-fx-padding:1px;";
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
-
+	private ControlTreeItemEntry entry;
 
 	public DefaultControlTreeItemGraphic() {
 		super(5);
 		rbSelected.setSelected(true);
 	}
 
-	public void init(ControlTreeItemEntry entry) {
+	public void init(@NotNull ControlTreeItemEntry entry) {
+		this.entry = entry;
 		rbSelected.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -90,5 +92,20 @@ public class DefaultControlTreeItemGraphic extends HBox {
 
 	public void setBoxColor(Color color) {
 		fillBox(color);
+	}
+
+	public void setGraphicIsEnabled(boolean enabled) {
+		this.getChildren().remove(getChildren().size() - 1);
+		String lessVisibleText = "less-visible-tree-cell";
+		if (enabled) {
+			getChildren().add(rbSelected);
+			entry.getStyleClass().remove(lessVisibleText);
+		} else {
+			CheckBox checkBox = new CheckBox();
+			checkBox.setIndeterminate(true);
+			checkBox.setDisable(true);
+			getChildren().add(checkBox);
+			entry.getStyleClass().add(lessVisibleText);
+		}
 	}
 }

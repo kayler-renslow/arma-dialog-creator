@@ -48,3 +48,7 @@
 .search-text-field-focused{
     -fx-background-color: -fx-focus-color, -fx-text-box-border, -fx-control-inner-background;
 }
+
+.less-visible-tree-cell{
+    -fx-opacity:0.7;
+}

@@ -4,6 +4,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.control.TextField;
@@ -21,7 +22,6 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 	private static final long WAIT_DURATION_TREE_VIEW_FOLDER = 500;
 	private static final Color COLOR_TREE_VIEW_DRAG = Color.ORANGE;
 
-	private static final long DOUBLE_CLICK_WAIT_TIME_MILLIS = 250;
 	private static final String HOVER_TREE_CELL = "hover-tree-cell";
 
 	private final TreeCellSelectionUpdate treeCellSelectionUpdate;
@@ -31,12 +31,8 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 
 	private long waitStartTime = 0;
 
-	/** Millisecond epoch when this cell was selected (used for double click detection) */
-	private long lastSelectedTime = -1;
-
-	/**TreeItem's being dragged*/
+	/** TreeItem's being dragged */
 	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
-	private boolean hasDoubleClicked;
 	private static TreeCell<?> hoveredChildParent; //static for the same reasons as dragging
 	private Effect cellEffect;
 
@@ -52,26 +48,7 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 		this.setEditable(true);
 		// first method called when the user clicks and drags a tree item
 		TreeCell<Td> myTreeCell = this;
-		this.setOnMouseClicked(new EventHandler<MouseEvent>() {
-			@Override
-			public void handle(MouseEvent event) {
-				try {
-					doHandle();
-				} catch (Exception e) {
-					ExceptionHandler.getInstance().uncaughtException(e);
-				}
-			}
 
-			private void doHandle() {
-				long now = System.currentTimeMillis();
-				hasDoubleClicked = now - lastSelectedTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
-				if (hasDoubleClicked) {
-					startEdit();
-					hasDoubleClicked = false; //I don't know why this statement makes it work correctly
-				}
-				lastSelectedTime = now;
-			}
-		});
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -272,9 +249,6 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 
 	@Override
 	public void startEdit() {
-		if (!hasDoubleClicked) {
-			return;
-		}
 		if (getTreeItem() == null) {
 			return;
 		}
@@ -323,6 +297,19 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 		}
 		if (node != null) {
 			node.setText(getText());
+
+			node.getStyleClass().addListener((ListChangeListener<? super String>) c -> {
+				while (c.next()) {
+					if (c.wasAdded()) {
+						for (int i = c.getFrom(); i < c.getTo(); i++) {
+							getStyleClass().add(c.getList().get(i));
+						}
+					} else if (c.wasRemoved()) {
+						getStyleClass().removeAll(c.getRemoved());
+					}
+				}
+
+			});
 		}
 	}
 

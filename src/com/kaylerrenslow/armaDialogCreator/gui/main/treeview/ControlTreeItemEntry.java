@@ -55,9 +55,15 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		if (myArmaControl.getRenderer().isGhost()) { //only adjusted the visibility, so don't disable the graphic
 			return;
 		}
-		getGraphic().setDisable(!enabled);
+		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
+			DefaultControlTreeItemGraphic graphic1 = (DefaultControlTreeItemGraphic) getGraphic();
+			graphic1.setGraphicIsEnabled(enabled);
+		} else {
+			getGraphic().setDisable(!enabled);
+		}
 	}
 
+	@NotNull
 	public ArmaControl getMyArmaControl() {
 		return myArmaControl;
 	}

@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView;
 
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +19,7 @@ public class TreeItemData {
 	private final Node graphic;
 
 	private String text;
+	private final ObservableList<String> styleClassList = FXCollections.observableArrayList();
 
 
 	public TreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable Node graphic) {
@@ -79,5 +82,10 @@ public class TreeItemData {
 		if (this.updateListener != null) {
 			this.updateListener.delete();
 		}
+	}
+
+	@NotNull
+	public ObservableList<String> getStyleClass() {
+		return styleClassList;
 	}
 }

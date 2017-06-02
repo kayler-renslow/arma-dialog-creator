@@ -16,7 +16,9 @@ public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.
 		super(new TreeItem<>());
 		this.showRootProperty().set(false);
 
-		this.setEditable(true);
+		//setEditable() is for double clicking and renaming the cell
+		//We do not want the double clicking functionality
+		this.setEditable(false);
 		getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 		setCellSelectionUpdate(selectionUpdate);
 	}
