@@ -16,6 +16,7 @@ import java.util.function.Consumer;
  <li>Extend-able via {@link ControlClass#extendControlClass(ControlClass)}</li>
  <li>Required and optional {@link ControlProperty}'s (obtainable via {@link #getRequiredProperties()} and {@link #getOptionalProperties()} respectively).</li>
  <li>Required and optional nested classes (classes within this class) which can be accessed with {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} respectively.</li>
+ <li>There should be no duplicate names across all {@link ControlProperty} instances.</li>
  </ol>
  <p>
  A required {@link ControlProperty} is a property that is necessary to fill a {@link ControlClassRequirementSpecification}. In other words, those properties' values
@@ -300,21 +301,6 @@ public class ControlClass {
 	}
 
 	/**
-	 Return the first missing property, or null if not missing an properties
-
-	 @return property, or null if nothing is missing.
-	 @see #getMissingRequiredProperties()
-	 */
-	public final ControlProperty getFirstMissingProperty() {
-		for (ControlProperty req : requiredProperties) {
-			if (!propertyIsDefined(req)) {
-				return req;
-			}
-		}
-		return null;
-	}
-
-	/**
 	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
 
 	 @return the ControlProperty instance
@@ -413,6 +399,58 @@ public class ControlClass {
 	private ControlProperty findPropertyFromList(@NotNull ControlPropertyLookupConstant lookup, @NotNull Iterable<ControlProperty> iterable) {
 		for (ControlProperty controlProperty : iterable) {
 			if (controlProperty.getPropertyLookup() == lookup) {
+				return controlProperty;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 Get the control property instance by name ({@link ControlProperty#getName()}).
+	 The search will be done inside {@link #getOptionalProperties()}
+	 There should be no duplicate names across all {@link ControlProperty} instances.
+
+	 @return the ControlProperty instance, or null if couldn't be found
+	 @see #findProperty(ControlPropertyLookupConstant)
+	 */
+	@Nullable
+	public final ControlProperty findOptionalPropertyByNameNullable(@NotNull String propertyName) {
+		return findPropertyByNameFromList(propertyName, optionalProperties);
+	}
+
+	/**
+	 Get the control property instance by name ({@link ControlProperty#getName()}).
+	 The search will be done inside {@link #getRequiredProperties()}.
+
+	 @return the ControlProperty instance, or null if couldn't be found
+	 @see #findProperty(ControlPropertyLookupConstant)
+	 */
+	@Nullable
+	public final ControlProperty findRequiredPropertyByNameNullable(@NotNull String propertyName) {
+		return findPropertyByNameFromList(propertyName, requiredProperties);
+	}
+
+	/**
+	 Get the control property instance by name ({@link ControlProperty#getName()}).
+	 The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.<br>
+	 There should be no duplicate names across all {@link ControlProperty} instances.
+
+	 @return the ControlProperty instance, or null if couldn't be found
+	 @see #findProperty(ControlPropertyLookupConstant)
+	 */
+	@Nullable
+	public final ControlProperty findPropertyByNameNullable(@NotNull String propertyName) {
+		ControlProperty c = findPropertyByNameFromList(propertyName, requiredProperties);
+		if (c != null) {
+			return c;
+		}
+		return findPropertyByNameFromList(propertyName, optionalProperties);
+	}
+
+	@Nullable
+	private ControlProperty findPropertyByNameFromList(@NotNull String propertyName, @NotNull Iterable<ControlProperty> iterable) {
+		for (ControlProperty controlProperty : iterable) {
+			if (controlProperty.getName().equals(propertyName)) {
 				return controlProperty;
 			}
 		}
@@ -561,13 +599,13 @@ public class ControlClass {
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 @see ControlProperty#inherit(ControlProperty)
 	 */
-	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
+	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup, @NotNull MergeValueHandler mergeHandler) {
 		if (getExtendClass() == null) {
 			return;
 		}
-		ControlProperty mine = findPropertyNullable(lookup);
+		ControlProperty mine = findPropertyByNameNullable(lookup.getPropertyName());
 		if (mine != null) {
-			ControlProperty inherit = getExtendClass().findPropertyNullable(mine.getPropertyLookup());
+			ControlProperty inherit = getExtendClass().findPropertyByNameNullable(mine.getPropertyLookup().getPropertyName());
 			if (inherit == null) {
 				//todo make sure to handle the case when the property is inserted into getExtendClass at a later time!
 				return; //don't want to clear mine.inherit()
@@ -575,7 +613,7 @@ public class ControlClass {
 			mine.inherit(inherit);
 			return;
 		} else {
-			//todo
+			//todo create a temporary property for this class and create a custom event class for it
 		}
 
 	}

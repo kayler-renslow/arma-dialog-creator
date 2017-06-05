@@ -38,10 +38,9 @@ public class ExpressionParser extends Parser {
 
 	private static final String[] _LITERAL_NAMES = {
 		null, null, "'''", "'\"'", "'{'", "'}'", "'['", "']'", "'+'", "'-'", "'/'", 
-		"'%'", "'^'", "'*'", "'('", "')'", "','", "'min'", "'max'", "'if'", "'then'", 
-		"'else'", "'exitWith'", "'select'", "'count'", "'for'", "'from'", "'to'", 
-		"'step'", "'do'", "'str'", "'=='", "'!='", "'<'", "'<='", "'>'", "'>='", 
-		"'='", "';'"
+		"'%'", "'^'", "'*'", "'('", "')'", "','", null, null, null, null, null, 
+		null, null, null, null, null, null, null, null, null, "'=='", "'!='", 
+		"'<'", "'<='", "'>'", "'>='", "'='", "';'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "String", "Quote", "DQuote", "LCurly", "RCurly", "LBracket", "RBracket", 

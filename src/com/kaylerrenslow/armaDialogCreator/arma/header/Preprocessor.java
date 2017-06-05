@@ -87,11 +87,7 @@ class Preprocessor {
 		this.parserContext = parserContext;
 
 		File preprocessedResults = new File(parserContext.getTempDirectory().getAbsolutePath() + "/" + processFile.getName() + ".preprocessed");
-		boolean newFile = preprocessedResults.createNewFile();
-		while (!newFile) {
-			preprocessedResults = new File(preprocessedResults.getAbsolutePath() + System.currentTimeMillis());
-			newFile = preprocessedResults.createNewFile();
-		}
+		preprocessedResults.createNewFile();
 
 		temporaryFullyPreprocessedResultFile = preprocessedResults;
 

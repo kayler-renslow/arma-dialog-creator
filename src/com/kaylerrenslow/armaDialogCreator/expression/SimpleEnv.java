@@ -10,6 +10,7 @@ import java.util.Map;
 
 /**
  A simple implementation of {@link Env} that allows for adding identifiers to the env and removing identifiers from the env.
+ All identifiers case don't matter (i.e. AAA==aaa)
 
  @author Kayler
  @since 07/15/2016. */
@@ -19,18 +20,18 @@ public class SimpleEnv implements Env {
 
 	@Override
 	public Value put(@NotNull String identifier, Value v) {
-		return map.put(identifier, v);
+		return map.put(identifier.toLowerCase(), v);
 	}
 
 	@Override
 	public Value remove(@NotNull String identifier) {
-		return map.remove(identifier);
+		return map.remove(identifier.toLowerCase());
 	}
 
 	@Override
 	@Nullable
 	public Value getValue(@NotNull String identifier) {
-		return map.get(identifier);
+		return map.get(identifier.toLowerCase());
 	}
 
 	@Override

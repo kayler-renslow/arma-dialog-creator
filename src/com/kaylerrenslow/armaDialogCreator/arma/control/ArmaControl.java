@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
@@ -60,7 +61,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
 		}
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
-		idcProperty.setDefaultValue(true, -1);
+		idcProperty.setValueIfAbsent(true, new SVInteger(-1));
 		defineType(type);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		this.allowedStyles = provider.getAllowedStyles();

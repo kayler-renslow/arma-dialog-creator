@@ -151,6 +151,66 @@ public class ControlClassFindMethodsTests {
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyNullable(match).getPropertyLookup());
 	}
 
+	@Test
+	public void findPropertyByNameNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findPropertyByNameNullable("---------------"));
+	}
+
+	@Test
+	public void findPropertyByNameNullable_required_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.requiredProperties[0];
+		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
+	@Test
+	public void findPropertyByNameNullable_optional_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.optionalProperties[0];
+		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
+	@Test
+	public void findRequiredPropertyByName_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.requiredProperties[0];
+		assertEquals("Shouldn't be null and should match", match, tcc.findRequiredPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
+	@Test
+	public void findRequiredPropertyByNameNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findRequiredPropertyByNameNullable("-------------"));
+	}
+
+	@Test
+	public void findRequiredPropertyByNameNullable_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.requiredProperties[0];
+		assertEquals("Shouldn't be null and should match.", match, tcc.findRequiredPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
+	@Test
+	public void findOptionalPropertyByNameNullable_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.optionalProperties[0];
+		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
+	@Test
+	public void findOptionalPropertyByNameNullableNullable_fail() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		assertNull("Should be null", tcc.findOptionalPropertyByNameNullable("-------------"));
+	}
+
+	@Test
+	public void findOptionalPropertyByNameNullableNullable_succeed() throws Exception {
+		TestControlClass tcc = newTestControlClass();
+		ControlPropertyLookupConstant match = TestControlClass.optionalProperties[0];
+		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
+	}
+
 	//
 	//
 	// Nested Class finding

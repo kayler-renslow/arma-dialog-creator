@@ -242,10 +242,10 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	@Override
 	public Value visit(@NotNull AST.IdentifierExpr expr, @NotNull Env env) {
 		String var = expr.getIdentifier();
-		if (var.equals("true")) {
+		if (var.equalsIgnoreCase("true")) {
 			return Value.True;
 		}
-		if (var.equals("false")) {
+		if (var.equalsIgnoreCase("false")) {
 			return Value.False;
 		}
 		Value v = env.getValue(var);
