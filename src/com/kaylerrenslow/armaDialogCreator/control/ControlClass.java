@@ -202,6 +202,8 @@ public class ControlClass {
 
 	/**
 	 Extend the given {@link ControlClass}, or clear the extend class with null.
+	 Any properties that initially have a value in them ({@link #propertyIsDefined(ControlProperty)}) will not be inherited,
+	 unless explicitly stated with {@link #inheritProperty(ControlPropertyLookupConstant)}.
 
 	 @param controlClass class to extend
 	 @throws IllegalArgumentException if <code>controlClass</code>==this
@@ -599,7 +601,7 @@ public class ControlClass {
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 @see ControlProperty#inherit(ControlProperty)
 	 */
-	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup, @NotNull MergeValueHandler mergeHandler) {
+	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		if (getExtendClass() == null) {
 			return;
 		}
@@ -853,8 +855,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null or if {@link ControlProperty#isUsingCustomData()} and
-	 {@link ControlProperty#getCustomData()} != null;
+	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null
+	 or if {@link ControlProperty#isUsingCustomData()} and {@link ControlProperty#getCustomData()} != null;
 
 	 @param property property to check
 	 @return true if the property is defined, false otherwise
@@ -890,19 +892,9 @@ public class ControlClass {
 		} else if (data instanceof ControlClassOverridePropertyUpdate) {
 			ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
 			if (update.wasOverridden()) {
-				try {
-					overrideProperty(update.getOveridden().getPropertyLookup());
-				} catch (IllegalArgumentException ignore) {
-
-				}
-
+				overrideProperty(update.getOveridden().getPropertyLookup());
 			} else {
-				try {
-					inheritProperty(update.getOveridden().getPropertyLookup());
-				} catch (IllegalArgumentException ignore) {
-
-				}
-
+				inheritProperty(update.getOveridden().getPropertyLookup());
 			}
 		} else if (data instanceof ControlClassExtendUpdate) {
 			ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;

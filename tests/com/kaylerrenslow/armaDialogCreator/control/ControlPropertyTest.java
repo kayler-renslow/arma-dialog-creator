@@ -131,22 +131,27 @@ public class ControlPropertyTest {
 
 	@Test
 	public void setTo() throws Exception {
+		throw new RuntimeException("todo");
 	}
 
 	@Test
 	public void setTo1() throws Exception {
+		throw new RuntimeException("todo");
 	}
 
 	@Test
 	public void inherit() throws Exception {
+		throw new RuntimeException("todo");
 	}
 
 	@Test
 	public void isInherited() throws Exception {
+		throw new RuntimeException("todo");
 	}
 
 	@Test
 	public void getInherited() throws Exception {
+		throw new RuntimeException("todo");
 	}
 
 }

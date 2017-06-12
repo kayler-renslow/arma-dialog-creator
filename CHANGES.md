@@ -1,8 +1,8 @@
 **Added:**
-* ControlClass.findPropertyByName and related methods
+* more controlclass tests
 
 **Changed:**
-* made expression interpreter/parser support case insensitive commands
+* drastically cleaned up ProjectExporter. Much easier to read now!
 
 **Fixed:**
 * 
@@ -23,3 +23,6 @@
 * June 2: editor tree view: we don't need to iterate through the entire tree to find the TreeItem since it is placed in the dataContext of the control
     * remember that the controls can move from one tree to another
     * there could be a data race between the 2 trees
+* June 11: exporter doesn't write any of the custom control classes
+    * should we have an additional export place for that? Like export all of them to a different file.
+      We'll need to consider macro merges if we separate into many files since custom class can have macros.

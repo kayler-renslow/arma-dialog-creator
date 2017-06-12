@@ -249,7 +249,10 @@ public class ControlProperty {
 	/**
 	 Get the current {@link PropertyType}.
 
-	 @return the current {@link PropertyType}, or null if <code>{@link #getValue()}==null</code>
+	 @return the current {@link PropertyType} of the current value,
+	 or null if <code>{@link #getValue()}==null</code>
+
+	 @see SerializableValue#getPropertyType()
 	 */
 	@Nullable
 	public PropertyType getPropertyType() {

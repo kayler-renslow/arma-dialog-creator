@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- A {@link ControlClass} used for testing.
+ A {@link ControlClass} used for testing. DO NOT MODIFY THIS CLASS.
 
  @author Kayler
  @since 05/30/2017 */

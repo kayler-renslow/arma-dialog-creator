@@ -104,6 +104,11 @@ public class IndentedStringBuilder {
 		return b;
 	}
 
+	/** @see StringBuilder#length() */
+	public int length() {
+		return b.length();
+	}
+
 	/**
 	 If c=='\n', will also then append {@link #getCurrentTab()}.
 
