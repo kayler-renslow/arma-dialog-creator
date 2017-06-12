@@ -1,8 +1,8 @@
 **Added:**
-* more controlclass tests
+* more ControlClass tests
 
 **Changed:**
-* drastically cleaned up ProjectExporter. Much easier to read now!
+* 
 
 **Fixed:**
 * 
@@ -26,3 +26,6 @@
 * June 11: exporter doesn't write any of the custom control classes
     * should we have an additional export place for that? Like export all of them to a different file.
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
+* June 12: when a temporary property is created for inheritance (inherit property that doesn't exist in ControlClass),
+    we need to mark it custom in the save. If we don't mark the property temporary, then when the class loses the inherited
+    property, it won't think its temporary.

@@ -55,7 +55,7 @@ public class ControlClassInheritanceTests {
 	}
 
 	@Test
-	public void inherit_success_exists_change_after() throws Exception {
+	public void inherit_success_exists_changeAfter() throws Exception {
 		//test value updates to inherited properties
 		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
 		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
@@ -79,17 +79,39 @@ public class ControlClassInheritanceTests {
 	}
 
 	@Test
-	public void inheritProperty_success_create_temp() throws Exception { //todo
+	public void inheritProperty_success_createTemp() throws Exception { //todo
 		//inherit property that does not exist in the class, but does in the parent class
+		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
+		if (tcc.findPropertyNullable(constant) != null) {
+			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClass for testing purposes");
+		}
+		tcc2.findProperty(constant).setValue(new SVString("value"));
 
-		throw new RuntimeException("todo");
+		tcc.extendControlClass(tcc2);
+
+		tcc.inheritProperty(constant);
+
+		assertEquals(tcc2.findProperty(constant).getValue(), tcc.findProperty(constant).getValue());
 	}
 
 	@Test
-	public void inheritProperty_success_exist_wrong_lookup() throws Exception { //todo
-		//override property that does exist in the class, but the lookups aren't equal and requires a merge
+	public void inheritProperty_success_exist_wrongLookup() throws Exception { //todo
+		//override property that does exist in the class, but the lookups aren't equal
 
-		throw new RuntimeException("todo");
+		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		ControlPropertyLookupConstant constant = ControlPropertyLookup.IDC;
+		ControlPropertyLookupConstant constantLookalike = TestControlPropertyLookup.IDC;
+
+		tcc2.findProperty(constant).setValue(new SVString("value"));
+
+		tcc.extendControlClass(tcc2);
+
+		tcc.inheritProperty(constantLookalike);
+
+		assertEquals(tcc2.findProperty(constant).getValue(), tcc.findProperty(constant).getValue());
 	}
 
 	@Test
@@ -113,10 +135,27 @@ public class ControlClassInheritanceTests {
 	}
 
 	@Test
-	public void overrideProperty_success_does_not_exist() throws Exception { //todo
+	public void overrideProperty_success_doesNotExist() throws Exception { //todo
 		//override property that does not exist in the class, but was inherited
+		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
+		if (tcc.findPropertyNullable(constant) != null) {
+			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClass for testing purposes");
+		}
+		tcc2.findProperty(constant).setValue(new SVString("value"));
 
-		throw new RuntimeException("todo");
+		tcc.extendControlClass(tcc2);
+
+		tcc.inheritProperty(constant);
+
+		if (tcc.findPropertyNullable(constant) == null) {
+			throw new IllegalStateException("the constant " + constant + " SHOULD exist in the ControlClass since it was inherited");
+		}
+
+		tcc.overrideProperty(constant);
+
+		assertEquals(null, tcc.findPropertyNullable(constant));
 	}
 
 }

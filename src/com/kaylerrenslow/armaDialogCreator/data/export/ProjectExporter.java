@@ -222,12 +222,12 @@ public class ProjectExporter {
 	private void writeControl(@NotNull IndentedStringBuilder stringBuilder, @NotNull ArmaControl control) {
 		if (control instanceof ArmaControlGroup) {
 			//write group's "Controls" class
-			for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
-				writeClass(stringBuilder, CONTROLS, null, sb -> {
+			writeClass(stringBuilder, CONTROLS, null, sb -> {
+				for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
 					writeControl(sb, subControl);
-					return null;
-				});
-			}
+				}
+				return null;
+			});
 
 		}
 		//write control body

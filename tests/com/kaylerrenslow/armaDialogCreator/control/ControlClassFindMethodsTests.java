@@ -47,7 +47,7 @@ public class ControlClassFindMethodsTests {
 	public void findRequiredProperty_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
 		try {
-			tcc.findRequiredProperty(TestFakeControlPropertyLookupConstant.INSTANCE);
+			tcc.findRequiredProperty(TestControlPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -64,7 +64,7 @@ public class ControlClassFindMethodsTests {
 	@Test
 	public void findRequiredPropertyNullable_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findRequiredPropertyNullable(TestFakeControlPropertyLookupConstant.INSTANCE));
+		assertNull("Should be null", tcc.findRequiredPropertyNullable(TestControlPropertyLookup.FAKE));
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class ControlClassFindMethodsTests {
 	public void findOptionalProperty_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
 		try {
-			tcc.findOptionalProperty(TestFakeControlPropertyLookupConstant.INSTANCE);
+			tcc.findOptionalProperty(TestControlPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -95,7 +95,7 @@ public class ControlClassFindMethodsTests {
 	@Test
 	public void findOptionalPropertyNullable_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findOptionalPropertyNullable(TestFakeControlPropertyLookupConstant.INSTANCE));
+		assertNull("Should be null", tcc.findOptionalPropertyNullable(TestControlPropertyLookup.FAKE));
 	}
 
 	@Test
@@ -109,7 +109,7 @@ public class ControlClassFindMethodsTests {
 	public void findProperty_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
 		try {
-			tcc.findProperty(TestFakeControlPropertyLookupConstant.INSTANCE);
+			tcc.findProperty(TestControlPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -134,7 +134,7 @@ public class ControlClassFindMethodsTests {
 	@Test
 	public void findPropertyNullable_fail() throws Exception {
 		TestControlClass tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findPropertyNullable(TestFakeControlPropertyLookupConstant.INSTANCE));
+		assertNull("Should be null", tcc.findPropertyNullable(TestControlPropertyLookup.FAKE));
 	}
 
 	@Test
