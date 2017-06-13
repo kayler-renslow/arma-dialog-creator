@@ -1,8 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 11/13/2016 */
 public class CustomControlClass {
-	private final ControlClassSpecification specification;
-	private final SpecificationRegistry registry;
 	private final ControlClass controlClass;
 	private final DataContext programData = new DataContext();
 	private String comment;
@@ -26,14 +22,11 @@ public class CustomControlClass {
 	/**
 	 Construct a new custom control class with the given {@link ControlClass} instance. The given instance will be the underlying instance for {@link #getControlClass()} and a new
 	 {@link ControlClassSpecification} will be created with the instance via {@link ControlClassSpecification(ControlClass)}.
+	 * @param controlClass instance to use
 
-	 @param controlClass instance to use
 	 */
-	public CustomControlClass(@NotNull ControlClass controlClass, @NotNull SpecificationRegistry registry) {
-		this.specification = new ControlClassSpecification(controlClass);
+	public CustomControlClass(@NotNull ControlClass controlClass) {
 		this.controlClass = controlClass;
-		this.registry = registry;
-		loadControlClassListeners();
 	}
 
 	/**
@@ -42,70 +35,13 @@ public class CustomControlClass {
 	 @param specification specification to use
 	 */
 	public CustomControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
-		this.specification = specification;
-		this.registry = registry;
 		controlClass = specification.constructNewControlClass(registry);
-		loadControlClassListeners();
 	}
 
 	/** Get the {@link ControlClass} instance. This instance will remain constant. */
 	@NotNull
 	public ControlClass getControlClass() {
 		return controlClass;
-	}
-
-	private void loadControlClassListeners() {
-		controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
-			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
-				if (data instanceof ControlClassRenameUpdate) {
-					ControlClassRenameUpdate update = (ControlClassRenameUpdate) data;
-					specification.setClassName(update.getNewName());
-				} else if (data instanceof ControlClassPropertyUpdate) {
-					update(((ControlClassPropertyUpdate) data).getPropertyUpdate());
-				} else if (data instanceof ControlClassOverridePropertyUpdate) {
-					ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
-					if (update.wasOverridden()) {
-						ControlPropertySpecification propertySpecification = specification.findInheritedProperty(update.getOveridden().getPropertyLookup());
-						if (propertySpecification != null) {
-							specification.getInheritedProperties().remove(propertySpecification);
-						}
-					} else {
-						specification.getInheritedProperties().add(new ControlPropertySpecification(update.getOveridden()));
-
-					}
-				} else if (data instanceof ControlClassExtendUpdate) {
-					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
-					if (update.getNewValue() == null) {
-						specification.setExtendClass(null);
-					} else {
-						specification.setExtendClass(update.getNewValue().getClassName());
-					}
-				} else {
-					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control class update:" + data);
-				}
-			}
-
-			private void update(ControlPropertyUpdate data) {
-				ControlPropertySpecification propertySpec = specification.findProperty(data.getControlProperty().getPropertyLookup());
-				if (data instanceof ControlPropertyValueUpdate) {
-					ControlPropertyValueUpdate update = (ControlPropertyValueUpdate) data;
-					propertySpec.setValue(update.getNewValue());
-				} else if (data instanceof ControlPropertyMacroUpdate) {
-					ControlPropertyMacroUpdate update = (ControlPropertyMacroUpdate) data;
-					propertySpec.setMacroKey(update.getNewMacro() != null ? update.getNewMacro().getKey() : null);
-				} else if (data instanceof ControlPropertyCustomDataUpdate) {
-					ControlPropertyCustomDataUpdate update = (ControlPropertyCustomDataUpdate) data;
-					propertySpec.setCustomData(update.getNewCustomData());
-					propertySpec.setUsingCustomData(update.isUsingCustomData());
-				} else if (data instanceof ControlPropertyInheritUpdate) {
-					//already handled in control class update
-				} else {
-					System.err.println("WARNING: CustomControlClass.loadControlClassListeners(): unknown control property update:" + data);
-				}
-			}
-		});
-
 	}
 
 	/** Some information provided by the user about the custom control */
@@ -121,19 +57,20 @@ public class CustomControlClass {
 		this.comment = comment;
 	}
 
+	/** @return a new instance of {@link ControlClassSpecification} equal to {@link #getControlClass()} */
 	@NotNull
-	public ControlClassSpecification getSpecification() {
-		return specification;
+	public ControlClassSpecification newSpecification() {
+		return new ControlClassSpecification(this.controlClass);
 	}
 
 	@Override
 	public int hashCode() {
-		return specification.getClassName().hashCode();
+		return controlClass.getClassName().hashCode();
 	}
 
 	@Override
 	public String toString() {
-		return specification.getClassName();
+		return controlClass.getClassName();
 	}
 
 	/** Get a {@link DataContext} instance that stores random things. */

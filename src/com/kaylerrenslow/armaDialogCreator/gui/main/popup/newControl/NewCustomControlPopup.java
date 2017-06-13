@@ -160,7 +160,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 		ControlClassMenuItem[] items = new ControlClassMenuItem[customControlClasses.size()];
 		int i = 0;
 		for (CustomControlClass customControlClass : customControlClasses) {
-			items[i] = new ControlClassMenuItem(customControlClass.getSpecification().constructNewControlClass(Project.getCurrentProject()));
+			items[i] = new ControlClassMenuItem(customControlClass.newSpecification().constructNewControlClass(Project.getCurrentProject()));
 			i++;
 		}
 		return items;
@@ -219,7 +219,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 
 	@Override
 	protected void ok() {
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), Project.getCurrentProject());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
 		customControlClass.setComment(taComment.getText());
 		Project.getCurrentProject().getCustomControlClassRegistry().addControlClass(customControlClass);
 

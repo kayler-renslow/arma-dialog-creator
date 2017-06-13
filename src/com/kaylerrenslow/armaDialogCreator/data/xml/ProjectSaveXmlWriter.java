@@ -78,7 +78,7 @@ public class ProjectSaveXmlWriter {
 		final String comment = "comment";
 		for (CustomControlClass customClass : registry.getControlClassList()) {
 			stm.writeBeginTag(customControl);
-			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.getSpecification());
+			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.newSpecification());
 			if (customClass.getComment() != null) {
 				stm.writeBeginTag(comment);
 				stm.write(customClass.getComment());

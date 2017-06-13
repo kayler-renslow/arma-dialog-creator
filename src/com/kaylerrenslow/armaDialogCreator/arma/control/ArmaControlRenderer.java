@@ -67,7 +67,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		});
 		styleProperty = control.findRequiredProperty(ControlPropertyLookup.STYLE);
-		styleProperty.setDefaultValue(true, style);
+		styleProperty.setValueIfAbsent(true, style);
 		xProperty = control.findRequiredProperty(ControlPropertyLookup.X);
 		yProperty = control.findRequiredProperty(ControlPropertyLookup.Y);
 		wProperty = control.findRequiredProperty(ControlPropertyLookup.W);

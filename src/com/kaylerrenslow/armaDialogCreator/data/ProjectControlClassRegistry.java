@@ -64,7 +64,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	 */
 	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClass controlClass) {
-		CustomControlClass ccc = new CustomControlClass(controlClass, project);
+		CustomControlClass ccc = new CustomControlClass(controlClass);
 		addControlClass(ccc);
 		return ccc;
 	}
@@ -86,7 +86,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
-			if (controlClass.getSpecification().getClassName().equals(className)) {
+			if (controlClass.getControlClass().getClassName().equals(className)) {
 				return controlClass.getControlClass();
 			}
 		}
@@ -101,7 +101,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	@Nullable
 	public CustomControlClass findCustomControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
-			if (controlClass.getSpecification().getClassName().equals(className)) {
+			if (controlClass.getControlClass().getClassName().equals(className)) {
 				return controlClass;
 			}
 		}

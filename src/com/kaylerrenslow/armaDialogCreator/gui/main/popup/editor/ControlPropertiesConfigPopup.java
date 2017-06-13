@@ -49,7 +49,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
 	private Label lblClassName;
-	private ComboBoxMenuButton<CustomControlClass> menuButtonExtendControls;
+	private ComboBoxMenuButton<ControlClass> menuButtonExtendControls;
 	private CheckBox checkBoxIsBackgroundControl;
 	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
 		@Override
@@ -69,11 +69,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 			if (newValue == null) {
-				menuButtonExtendControls.chooseItem((CustomControlClass) null);
+				menuButtonExtendControls.chooseItem((ControlClass) null);
 			} else {
 				ProjectControlClassRegistry registry = Project.getCurrentProject().getCustomControlClassRegistry();
 				CustomControlClass customControlClass = registry.findCustomControlClassByName(newValue.getClassName());
-				menuButtonExtendControls.chooseItem(customControlClass);
+				if (customControlClass == null) {
+					return;
+				}
+				menuButtonExtendControls.chooseItem(customControlClass.getControlClass());
 			}
 		}
 	};
@@ -215,13 +218,16 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			} catch (IllegalArgumentException ignore) {
 
 			}
-			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass, imageContainer));
+			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass.getControlClass(), imageContainer));
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addListener(new ReadOnlyValueListener<CustomControlClass>() {
+		if (control.getExtendClass() != null) {
+			menuButtonExtendControls.chooseItem(control.getExtendClass());
+		}
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ReadOnlyValueListener<ControlClass>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<CustomControlClass> observer, CustomControlClass oldValue, CustomControlClass selected) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
 				if (selected != null) {
-					control.extendControlClass(selected.getControlClass());
+					control.extendControlClass(selected);
 				}
 			}
 		});

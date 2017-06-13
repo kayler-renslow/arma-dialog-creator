@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.control;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Update triggered by {@link ControlClass#overrideProperty(ControlPropertyLookup)}
+ Update triggered by {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}
 
  @author Kayler
  @since 11/16/2016 */

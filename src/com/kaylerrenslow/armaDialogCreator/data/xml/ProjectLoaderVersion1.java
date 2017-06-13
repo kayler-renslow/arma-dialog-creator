@@ -24,6 +24,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -39,7 +40,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private final ProjectInfo info;
 	private ArmaResolution resolution;
 	private Env env;
-
 	private ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
 
 	protected ProjectLoaderVersion1(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
@@ -51,6 +51,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	public void parseDocument() throws XmlParseException {
 		loadProject();
 
+		Collections.sort(jobs);
 		for (AfterLoadJob job : jobs) {
 			job.doWork(project, this);
 		}
@@ -62,6 +63,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			env = DataKeys.ENV.get(dataContext);
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(this.loader.applicationData, info);
+			project.setProjectName(projectName);
 			loadMacroRegistry();
 			loadCustomControlClassRegistry();
 
@@ -156,12 +158,12 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					continue;
 				}
 				ControlClassSpecification spec = ProjectXmlUtil.loadControlClassSpecification(controlClassSpecs.get(0), dataContext, this.loader);
-				CustomControlClass customControlClass = new CustomControlClass(spec, project);
 				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
+				String commentContent = null;
 				if (commentElements.size() > 0) {
-					customControlClass.setComment(XmlUtil.getImmediateTextContent(commentElements.get(0)));
+					commentContent = XmlUtil.getImmediateTextContent(commentElements.get(0));
 				}
-				project.getCustomControlClassRegistry().addControlClass(customControlClass);
+				jobs.add(new CreateCustomControlClassJob(spec, commentContent));
 			}
 		}
 	}
@@ -403,12 +405,54 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 
-
-	private interface AfterLoadJob {
+	private interface AfterLoadJob extends Comparable<AfterLoadJob> {
 		void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader);
 	}
 
-	private static class ControlNestedClassesJob implements AfterLoadJob {
+	private class CreateCustomControlClassJob implements AfterLoadJob {
+
+		private ControlClassSpecification spec;
+		private String comment;
+
+		public CreateCustomControlClassJob(@NotNull ControlClassSpecification spec, @Nullable String comment) {
+			this.spec = spec;
+			this.comment = comment;
+		}
+
+		@Override
+		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
+			CustomControlClass customControlClass = new CustomControlClass(spec, project);
+			customControlClass.setComment(comment);
+			project.getCustomControlClassRegistry().addControlClass(customControlClass);
+		}
+
+		@Override
+		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
+			if (o instanceof CreateCustomControlClassJob) {
+				CreateCustomControlClassJob other = (CreateCustomControlClassJob) o;
+				if (other.spec.getExtendClassName() == null) {
+					//run this first
+					return -1;
+				}
+				if (spec.getExtendClassName() == null) {
+					//run this first
+					return -1;
+				}
+				if (spec.getExtendClassName().equals(other.spec.getClassName())) {
+					//allow the other to load first
+					return 1;
+				}
+				if (other.spec.getExtendClassName().equals(spec.getClassName())) {
+					//let this job load first
+					return -1;
+				}
+
+			}
+			return -1;
+		}
+	}
+
+	private class ControlNestedClassesJob implements AfterLoadJob {
 
 		private final ControlClass addToMe;
 		private final List<ControlClassSpecification> requiredNested;
@@ -442,15 +486,23 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 			}
 		}
+
+		@Override
+		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
+			if (o instanceof ControlNestedClassesJob) {
+				return 0;
+			}
+			return 1;
+		}
 	}
 
 	private class ControlExtendJob implements AfterLoadJob {
-		private final String controlClassName;
+		private final String extendThisControlClassName;
 		private final ArmaControl setMyExtend;
 		private final List<ControlPropertyLookup> inheritProperties;
 
-		public ControlExtendJob(String controlClassName, ArmaControl setMyExtend, List<ControlPropertyLookup> inheritProperties) {
-			this.controlClassName = controlClassName;
+		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ControlPropertyLookup> inheritProperties) {
+			this.extendThisControlClassName = extendThisControlClassName;
 			this.setMyExtend = setMyExtend;
 			this.inheritProperties = inheritProperties;
 		}
@@ -458,17 +510,28 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			ControlClass cc = project.findControlClassByName(controlClassName);
+			ControlClass cc = project.findControlClassByName(extendThisControlClassName);
 
 			if (cc == null) {
-				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), controlClassName, setMyExtend.getClassName())));
+				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName())));
 				return;
 			}
+
 			setMyExtend.extendControlClass(cc);
 			for (ControlPropertyLookup inheritProperty : inheritProperties) {
 				setMyExtend.inheritProperty(inheritProperty);
 			}
 		}
+
+		@Override
+		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
+			if (o instanceof ControlExtendJob) {
+				return 0;
+			}
+			//always let other jobs go before this one
+			return 1;
+		}
 	}
+
 
 }

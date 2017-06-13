@@ -149,8 +149,12 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this.controlClassName = className;
 	}
 
-	public void setExtendClass(@Nullable String extendClass) {
-		this.extendClass = extendClass;
+	public void setExtendClass(@Nullable String extendClassName) {
+		if (extendClassName != null && extendClassName.trim().length() == 0) {
+			this.extendClass = null;
+			return;
+		}
+		this.extendClass = extendClassName;
 	}
 
 	@Nullable

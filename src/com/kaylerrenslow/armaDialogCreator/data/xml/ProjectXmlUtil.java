@@ -44,7 +44,10 @@ public class ProjectXmlUtil {
 
 	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		String className = classSpecElement.getAttribute("name");
-		String extend = classSpecElement.getAttribute("extend");
+		String extend = classSpecElement.getAttribute("extend").trim();
+		if (extend.length() == 0) {
+			extend = null;
+		}
 		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
 		List<ControlPropertySpecification> optionalProperties = new LinkedList<>();
 		List<ControlPropertyLookup> overriddenProperties = new LinkedList<>();

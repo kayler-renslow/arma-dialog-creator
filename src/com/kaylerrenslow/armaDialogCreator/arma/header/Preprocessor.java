@@ -828,7 +828,7 @@ class Preprocessor {
 									return ExpressionInterpreter.newInstance().evaluate(sdv.getText(), preprocessorEnv).get();
 								} catch (Exception e) {
 									throw new RuntimeException(
-											String.format(bundle.getString("Error.Preprocessor.Parse.unexpected_value_in_macro_body_f"), sdv.getText()),
+											String.format(bundle.getString("Error.Preprocessor.Parse.couldnt_evaluate_macro_body_f"), sdv.getText()),
 											e
 									);
 								}
