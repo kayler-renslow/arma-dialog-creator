@@ -166,7 +166,7 @@ public class ControlClass {
 		});
 	}
 
-	private void addProperties(List<ControlProperty> propertiesList, List<ControlPropertyLookupConstant> props, @NotNull SpecificationRegistry registry, boolean required) {
+	private void addProperties(@NotNull List<ControlProperty> propertiesList, @NotNull List<ControlPropertyLookupConstant> props, @NotNull SpecificationRegistry registry, boolean required) {
 		for (ControlPropertyLookupConstant lookup : props) {
 			if (required) {
 				propertiesList.add(lookup.newEmptyProperty(registry));
@@ -610,18 +610,19 @@ public class ControlClass {
 		if (getExtendClass() == null) {
 			return;
 		}
+		ControlProperty inherit = getExtendClass().findPropertyByNameNullable(lookup.getPropertyName());
+		if (inherit == null) {
+			return;
+		}
+
 		ControlProperty mine = findPropertyByNameNullable(lookup.getPropertyName());
+
 		if (mine == null) {
 			//create a temporary property for this class
 			mine = lookup.newEmptyProperty(null);
 			controlClassUpdateGroup.update(new ControlClassTemporaryPropertyUpdate(this, mine, true));
 			tempProperties.add(mine);
 			optionalProperties.add(mine);
-		}
-
-		ControlProperty inherit = getExtendClass().findPropertyByNameNullable(lookup.getPropertyName());
-		if (inherit == null) {
-			return;
 		}
 		mine.inherit(inherit);
 	}

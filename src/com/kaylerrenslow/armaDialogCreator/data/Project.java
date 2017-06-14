@@ -199,7 +199,9 @@ public class Project implements SpecificationRegistry {
 
 	@Override
 	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
-		defaultValueProvider = new ProjectDefaultValueProvider(applicationData);
+		if (defaultValueProvider == null) {
+			defaultValueProvider = new ProjectDefaultValueProvider(applicationData);
+		}
 		defaultValueProvider.prefetchValues(tofetch);
 	}
 

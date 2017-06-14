@@ -74,7 +74,7 @@ public class AColor extends SerializableValue {
 	}
 	
 	/** Set the color from a JavaFX Color instance */
-	public AColor(Color newValue) {
+	public AColor(@NotNull Color newValue) {
 		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
 		this.javafxColor = newValue;
 		updateJavafxColor = false;
@@ -86,7 +86,7 @@ public class AColor extends SerializableValue {
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public AColor(String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
+	public AColor(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
 		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 	

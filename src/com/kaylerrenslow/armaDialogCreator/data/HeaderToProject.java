@@ -23,10 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  Used for converting an Arma 3 config file (header file) into a project that is usable by Arma Dialog Creator.
@@ -295,9 +292,12 @@ public class HeaderToProject {
 		//create the control
 		ArmaControl armaControl = ArmaControl.createControl(controlClassName, ArmaControlLookup.findByControlType(controlType), resolution, env, project);
 
+		List<ControlPropertyLookupConstant> inheritProperties = new LinkedList<>();
+
 		for (ControlProperty property : armaControl.getAllChildProperties()) {
 			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
 			if (assignment == null) {
+				inheritProperties.add(property.getPropertyLookup());
 				continue;
 			}
 
@@ -328,6 +328,10 @@ public class HeaderToProject {
 		// After setting the properties, extend the class. As mentioned in the ControlProperty.inherit() documentation,
 		// the previous values of the control property will be saved
 		armaControl.extendControlClass(extendClass);
+
+		for (ControlPropertyLookupConstant inherit : inheritProperties) {
+			armaControl.inheritProperty(inherit);
+		}
 
 		return armaControl;
 	}
@@ -471,4 +475,5 @@ public class HeaderToProject {
 
 		void conversionFailed(@NotNull String dialogClassName, @NotNull HeaderConversionException e);
 	}
+
 }

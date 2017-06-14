@@ -54,18 +54,18 @@ public class ProjectXmlUtil {
 		List<ControlClassSpecification> requiredClasses = ControlClassSpecification.EMPTY;
 		List<ControlClassSpecification> optionalClasses = ControlClassSpecification.EMPTY;
 
-		final String controlProperty = "property";
+		final String controlPropertyTagName = "property";
 
 		//required control properties
 		List<Element> requiredPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-properties");
 		if (requiredPropertyElementGroups.size() > 0) {
-			loadPropertyList(requiredProperties, context, recorder, controlProperty, requiredPropertyElementGroups.get(0));
+			loadPropertyList(requiredProperties, context, recorder, controlPropertyTagName, requiredPropertyElementGroups.get(0));
 		}
 
 		//optional control properties
 		List<Element> optionalPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-properties");
 		if (optionalPropertyElementGroups.size() > 0) {
-			loadPropertyList(optionalProperties, context, recorder, controlProperty, optionalPropertyElementGroups.get(0));
+			loadPropertyList(optionalProperties, context, recorder, controlPropertyTagName, optionalPropertyElementGroups.get(0));
 		}
 
 		//overridden control properties
@@ -100,8 +100,8 @@ public class ProjectXmlUtil {
 	}
 
 	private static void loadPropertyList(@NotNull List<ControlPropertySpecification> list, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder,
-										 String controlProperty, Element propertyElementGroup) {
-		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlProperty);
+										 @NotNull String controlPropertyTagName, @NotNull Element propertyElementGroup) {
+		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlPropertyTagName);
 		List<Element> missingPropertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, "undefined");
 
 		for (Element propertyElement : propertyElements) {

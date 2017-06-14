@@ -1,20 +1,15 @@
 **Added:**
-* more ControlClass tests
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* inheritance wasn't working for ControlClass when the class didn't originally have the lookup
-* project xml loader can find classes to extend, but it isn't working
-      * made sure the order in which things are extended will result in a correct state
+* HeaderToProject not setting inheritted properties correctly
 
 **Notes:**
 * may 9: we need to implement dialog conversion error for dialog import dialog
 * **may 10: we need extensive tests for ControlClass that test inheritance in many different ways!**
-* May 31: HeaderToProject, createCustomControlClass is working, however, the wrong ControlPropertyLookup instances are being used.
-    * As soon the control extends the custom control class, it is trying to find a lookup to inherit from that isn't there.
-    * We need to locate all lookups with the same name and combine them into one lookup intelligently
 * May 31: we should have documentation for control's properties and default value providers in one xml file for every control.
     * this will make documentation easier, xml files shorter (load faster for default value provider), and modularize things a lil
     * for the documentation, we should have documentation for each property by id and not store it in ControlPropertyLookup
@@ -27,13 +22,8 @@
 * June 11: exporter doesn't write any of the custom control classes
     * should we have an additional export place for that? Like export all of them to a different file.
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
-* June 12: when a temporary property is created for inheritance (inherit property that doesn't exist in ControlClass),
-    we need to mark it custom in the save. If we don't mark the property temporary, then when the class loses the inherited
-    property, it won't think its temporary.
-    * also, we need to handle the check for the update in the ControlPropertyEditor and any other classes that listen for
-     ControlClassUpdate instance
 * June 12: we need tests for definedProperties(), eventProperties(), etc
 * June 12: for changelg optimization, do not have a optimizer class. have the change registrar optimize the changes
     * if the last change was the same type and the time between the changes is < 300ms, then modify the previous change
 * June 13: ControlPropertiesEditorPane doesn't properly initialize inheritted/overridden properties (inherited properties have option to be inherited)
- * June 13: We need to mark properties as inherited when doing HeaderToProject
+ * June 13: We need to not save temporary properties when saving project
