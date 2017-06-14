@@ -78,7 +78,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			MyWizardStep step = (MyWizardStep) getCurrentStep();
 			step.progressUpdate(newValue.doubleValue());
 		});
-		convertTask.exceptionProperty().addListener((observable, oldValue, newValue) -> newValue.printStackTrace());
+		convertTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+			newValue.printStackTrace();
+		});
 		Thread convertThread = new Thread(convertTask);
 		convertThread.setName("ADC - Convert description.ext task thread");
 		convertThread.setDaemon(false);

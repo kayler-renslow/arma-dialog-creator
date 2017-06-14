@@ -46,7 +46,7 @@ public class ExpressionInterpreter {
 	/** Queue of all running/queued {@link ExpressionEvaluator} instances */
 	private final LinkedBlockingQueue<ExpressionEvaluator> evaluatorsQ = new LinkedBlockingQueue<>();
 
-	protected ExpressionInterpreter() {
+	public ExpressionInterpreter() {
 		ADCExecutors.registerExecutorService(threadPool);
 	}
 

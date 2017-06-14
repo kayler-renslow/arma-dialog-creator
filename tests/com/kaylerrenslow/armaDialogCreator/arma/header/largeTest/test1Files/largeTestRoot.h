@@ -15,7 +15,7 @@ class RscTitles;
 
 #include "largeTestRoot_functions.h"
 //this file in the directory is meant to test if the preprocessor correctly handles multiple directories
-#include "dir/dirF.h"
+#include <dir/dirF.h>
 
 class CfgSounds
 {

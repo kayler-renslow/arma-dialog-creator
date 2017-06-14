@@ -314,16 +314,18 @@ class Preprocessor {
 					}
 					char left = macroContent.charAt(0);
 					char right = macroContent.charAt(macroContent.length() - 1);
-					boolean badFormat = left != right;
+					boolean badFormat;
 					switch (left) {
 						case '"': {
-							//intentional fall through
+							badFormat = left != right;
+							break;
 						}
 						case '<': {
-							//intentional fall through
+							badFormat = right != '>';
+							break;
 						}
 						case '\'': {
-							//do nothing
+							badFormat = left != right;
 							break;
 						}
 						default: {
@@ -358,9 +360,10 @@ class Preprocessor {
 
 					for (int i = 0; i < macroContent.length(); i++) {
 						char c = macroContent.charAt(i);
-						if (c == ' ' || c == '(') {
+						final boolean whitespace = c == ' ' || c == '\t';
+						if (whitespace || c == '(') {
 							definedVar = macroContent.substring(0, i);
-							if (c != ' ') {
+							if (!whitespace) {
 								if (i >= macroContent.length()) {
 									error(bundle.getString("Error.Preprocessor.Parse.parameter_define_bad"));
 								}

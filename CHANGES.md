@@ -5,8 +5,8 @@
 * 
 
 **Fixed:**
-* major performance hit while running ExpressionInterpeter tests
-    * added method to shutdown internal thread pool
+* preprocessor not working with #include \<thing.h>
+* HeaderToProject didn't consider that stringtable macros were in strings ("$STR_thing")
 
 **Notes:**
 * may 9: we need to implement dialog conversion error for dialog import dialog
@@ -33,5 +33,6 @@
   We can also have a class that caches the documentation in the case that multiple controls of the same type are opened.
     * We could just use ResourceBundle, have a method in the Documentation class that gets documentation for a property
       with the given locale. Also, we should just store the .properties file as such: ControlPropertyLookup.name=documentation
-      
+* June 14: when the description.ext fails parse in ImportDialogsDialog and an exception is thrown in the ConvertTask, nothing
+    is displayed for the user.
     

@@ -98,7 +98,7 @@ public class HeaderToProject {
 			headerFile = HeaderParser.parse(descExt, workspace.getFileInAdcDirectory("temp"));
 			callback.finishedParse();
 		} catch (HeaderParseException e) {
-			throw new HeaderConversionException(e.getMessage());
+			throw new HeaderConversionException(e.getMessage(), e);
 		} catch (IOException e2) {
 			ExceptionHandler.error(e2);
 		}
@@ -108,8 +108,8 @@ public class HeaderToProject {
 
 		List<String> discoveredDialogClassNames = new ArrayList<>();
 		for (HeaderClass hc : headerFile.getClasses()) {
-			boolean hasIddAssign = hc.getAssignments().getByVarName(IDD, true) != null;
-			if (hasIddAssign || headerFile.getAssignmentByVarName(hc, IDD, true) != null) {
+			boolean hasIddAssign = hc.getAssignments().getByVarName(IDD, false) != null;
+			if (hasIddAssign || headerFile.getAssignmentByVarName(hc, IDD, false) != null) {
 				discoveredDialogClassNames.add(hc.getClassName());
 			}
 		}
@@ -456,8 +456,11 @@ public class HeaderToProject {
 
 
 	private void checkAndSetToStringTableMacro(@NotNull ControlProperty property, @NotNull String possibleStr_Key, @NotNull Project project) {
-		if (possibleStr_Key.toLowerCase().startsWith("$str_") && project.getStringTable() != null) {
-			StringTableKey key = project.getStringTable().getKeyById(possibleStr_Key.substring(1)); //remove $ at start
+		possibleStr_Key = possibleStr_Key.toLowerCase();
+		final boolean str_ = possibleStr_Key.startsWith("$str_");
+		final boolean quote_str_ = possibleStr_Key.startsWith("\"$str_");
+		if ((str_ || quote_str_) && project.getStringTable() != null) {
+			StringTableKey key = project.getStringTable().getKeyById(str_ ? possibleStr_Key.substring(1) : possibleStr_Key.substring(2, possibleStr_Key.length() - 1)); //remove $ or "$ at start
 			if (key != null) {
 				property.setValueToMacro(key);
 			}
