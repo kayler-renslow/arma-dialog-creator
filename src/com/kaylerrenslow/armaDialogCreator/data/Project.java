@@ -188,6 +188,12 @@ public class Project implements SpecificationRegistry {
 	@Nullable
 	@Override
 	public Macro findMacroByKey(@NotNull String macroKey) {
+		if (stringTable != null && macroKey.toLowerCase().startsWith("str_")) {
+			Macro m = stringTable.getKeyById(macroKey);
+			if (m != null) {
+				return m;
+			}
+		}
 		return getMacroRegistry().findMacroByKey(macroKey);
 	}
 

@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequireme
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -64,6 +65,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(this.loader.applicationData, info);
 			project.setProjectName(projectName);
+			loadStringtableXml();
 			loadMacroRegistry();
 			loadCustomControlClassRegistry();
 
@@ -79,6 +81,19 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new XmlParseException(e.getMessage(), e);
+		}
+	}
+
+	private void loadStringtableXml() {
+		List<Element> stringtableElementList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "stringtable");
+		if (stringtableElementList.size() <= 0) {
+			return;
+		}
+		try {
+			StringTable stringTable = new DefaultStringTableXmlParser(new File(XmlUtil.getImmediateTextContent(stringtableElementList.get(0)))).createStringTableInstance();
+			project.setStringTable(stringTable);
+		} catch (Exception e) {
+			addError(new ParseError(bundle.getString("ProjectLoad.couldnt_load_stringtable_xml"), bundle.getString("ProjectLoad.couldnt_load_stringtable_xml_recover")));
 		}
 	}
 

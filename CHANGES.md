@@ -1,11 +1,12 @@
 **Added:**
-* 
+* stringtable.xml save to project
+* HeaderToProject loads stringtable keys and sets the macros for the relevant ControlProperty instances
 
 **Changed:**
 * 
 
 **Fixed:**
-* HeaderToProject not setting inheritted properties correctly
+* Project wasn't looking for StringTable keys in Project.findMacroByKey()
 
 **Notes:**
 * may 9: we need to implement dialog conversion error for dialog import dialog
@@ -26,4 +27,11 @@
 * June 12: for changelg optimization, do not have a optimizer class. have the change registrar optimize the changes
     * if the last change was the same type and the time between the changes is < 300ms, then modify the previous change
 * June 13: ControlPropertiesEditorPane doesn't properly initialize inheritted/overridden properties (inherited properties have option to be inherited)
- * June 13: We need to not save temporary properties when saving project
+* June 13: We need to not save temporary properties when saving project
+* June 13: instead of storing documentation in the ControlProperties, have a dedicated class to fetch the documentation
+  and store it there. We then can fetch the documentation when a ControlPropertiesEditorPopup is opened.
+  We can also have a class that caches the documentation in the case that multiple controls of the same type are opened.
+    * We could just use ResourceBundle, have a method in the Documentation class that gets documentation for a property
+      with the given locale. Also, we should just store the .properties file as such: ControlPropertyLookup.name=documentation
+      
+    

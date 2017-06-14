@@ -5,12 +5,15 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.header.*;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConstructionException;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.data.xml.DefaultStringTableXmlParser;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
@@ -22,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
 
@@ -112,8 +116,26 @@ public class HeaderToProject {
 
 		callback.message(bundle.getString("Status.requesting_dialogs_to_save"));
 
-
 		List<String> convertClasses = callback.selectClassesToSave(discoveredDialogClassNames);
+
+		//load StringTable, if it exists
+		File[] stringtableArray = descExt.getParentFile().listFiles(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.equalsIgnoreCase("stringtable.xml");
+			}
+		});
+		StringTable stringTable = null;
+		if (stringtableArray != null && stringtableArray.length > 0) {
+
+			callback.message(bundle.getString("Status.loading_stringtable"));
+
+			try {
+				stringTable = new DefaultStringTableXmlParser(stringtableArray[0]).createStringTableInstance();
+			} catch (Exception ignore) {
+
+			}
+		}
 
 		int progress = 0;
 		int maxProgress = convertClasses.size();
@@ -130,7 +152,7 @@ public class HeaderToProject {
 
 				//begin conversion of dialog and save to workspace
 				try {
-					File projectXml = saveToWorkspace(hc);
+					File projectXml = saveToWorkspace(hc, stringTable);
 					ret.add(new KeyValue<>(hc.getClassName(), projectXml));
 				} catch (HeaderConversionException e) {
 					callback.conversionFailed(className, e);
@@ -141,8 +163,7 @@ public class HeaderToProject {
 		return ret;
 	}
 
-	@NotNull
-	private File saveToWorkspace(@NotNull HeaderClass displayClass) throws HeaderConversionException {
+	private File saveToWorkspace(@NotNull HeaderClass displayClass, @Nullable StringTable stringTable) throws HeaderConversionException {
 		final String dialogClassName = displayClass.getClassName();
 
 		int progress = 0;
@@ -182,10 +203,11 @@ public class HeaderToProject {
 		//todo add macros to macro registry?
 		//todo add the stringtable
 
-		//create display and attach properties
+		//create display, attach properties, and look for StringTable
 		{
 			armaDisplay = new ArmaDisplay();
 			project.setEditingDisplay(armaDisplay);
+			project.setStringTable(stringTable);
 		}
 
 		callback.progressUpdate(++progress, maxProgress);
@@ -301,13 +323,15 @@ public class HeaderToProject {
 				continue;
 			}
 
-			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType());
+			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType(), project);
 			if (v != null) {
 				property.setValue(v);
 			} else {
 				property.setCustomDataValue(assignment.getValue().getContent());
 				property.setUsingCustomData(true);
 			}
+
+			checkAndSetToStringTableMacro(property, assignment.getValue().getContent(), project);
 		}
 
 
@@ -348,8 +372,12 @@ public class HeaderToProject {
 			}
 			SerializableValue value = null;
 			ControlPropertyLookup usedLookup = null;
+			String macroName = null;
 			for (ControlPropertyLookup lookup : matchedByName) {
-				value = createValueFromAssignment(assignment, lookup.getPropertyType());
+				if (assignment.getValue().getContent().toLowerCase().startsWith("$str_")) {
+					macroName = assignment.getValue().toString().substring(1); //remove $
+				}
+				value = createValueFromAssignment(assignment, lookup.getPropertyType(), project);
 				if (value != null) {
 					usedLookup = lookup;
 					break;
@@ -359,7 +387,7 @@ public class HeaderToProject {
 				//todo
 				continue;
 			}
-			optional.add(new ControlPropertySpecification(usedLookup, value, null));
+			optional.add(new ControlPropertySpecification(usedLookup, value, macroName));
 		}
 		ControlClassSpecification ccs = new ControlClassSpecification(
 				headerClass.getClassName(),
@@ -379,7 +407,7 @@ public class HeaderToProject {
 	}
 
 	@Nullable
-	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType) {
+	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType, @NotNull Project project) {
 		int vCount = initialPropertyType.getPropertyValuesSize();
 		if (assignment.getValue() instanceof HeaderArray) {
 			HeaderArray headerArray = (HeaderArray) assignment.getValue();
@@ -424,6 +452,16 @@ public class HeaderToProject {
 			}
 		}
 		return null;
+	}
+
+
+	private void checkAndSetToStringTableMacro(@NotNull ControlProperty property, @NotNull String possibleStr_Key, @NotNull Project project) {
+		if (possibleStr_Key.toLowerCase().startsWith("$str_") && project.getStringTable() != null) {
+			StringTableKey key = project.getStringTable().getKeyById(possibleStr_Key.substring(1)); //remove $ at start
+			if (key != null) {
+				property.setValueToMacro(key);
+			}
+		}
 	}
 
 	@NotNull

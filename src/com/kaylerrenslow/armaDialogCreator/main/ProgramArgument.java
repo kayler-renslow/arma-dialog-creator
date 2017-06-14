@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 10/12/2016.
  */
 public enum ProgramArgument {
-	ShowDebugFeatures("-showDebugFeatures"), LOG_INIT_PROGRESS("-logInitProgress");
+	ShowDebugFeatures("-showDebugFeatures"), LogInitProgress("-logInitProgress");
 
 	private final String argText;
 

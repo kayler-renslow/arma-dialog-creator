@@ -39,7 +39,7 @@ public interface StringTable {
 		for (StringTableKey key : table.getKeys()) {
 			boolean found = false;
 			for (StringTableKey myKey : getKeys()) {
-				if (myKey.getId().equals(key.getId())) {
+				if (myKey.getId().equalsIgnoreCase(key.getId())) {
 					myKey.setTo(key);
 					found = true;
 					break;
@@ -60,7 +60,7 @@ public interface StringTable {
 	@Nullable
 	default StringTableKey getKeyById(@NotNull String id) {
 		for (StringTableKey key : getKeys()) {
-			if (key.getId().equals(id)) {
+			if (key.getId().equalsIgnoreCase(id)) {
 				return key;
 			}
 		}

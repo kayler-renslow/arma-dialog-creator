@@ -80,7 +80,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	private void notifyPreloaderLog(Preloader.PreloaderNotification notification) {
-		if (containsUnamedLaunchParameter(ProgramArgument.LOG_INIT_PROGRESS)) {
+		if (containsUnamedLaunchParameter(ProgramArgument.LogInitProgress)) {
 			if (notification instanceof Preloader.ProgressNotification) {
 				System.out.println("Preloader Log Progress: " + ((Preloader.ProgressNotification) notification).getProgress());
 			} else if (notification instanceof Preloader.StateChangeNotification) {

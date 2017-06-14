@@ -57,6 +57,12 @@ public class ProjectSaveXmlWriter {
 		stm.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : ""));
 		stm.write("</project-description>");
 
+		if (project.getStringTable() != null) {
+			stm.writeBeginTag("stringtable");
+			stm.write(project.getStringTable().getFile().getAbsolutePath());
+			stm.writeCloseTag("stringtable");
+		}
+
 		writeResources(stm, project.getResourceRegistry());
 		writeMacros(stm);
 		writeDisplay(stm, project.getEditingDisplay());
