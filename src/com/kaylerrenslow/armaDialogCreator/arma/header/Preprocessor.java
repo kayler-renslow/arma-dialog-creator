@@ -134,6 +134,8 @@ class Preprocessor {
 		writeSteam.flush();
 		writeSteam.close();
 
+		expressionInterpreter.shutdownAndDisable();
+
 		return new PreprocessorInputStream(temporaryFullyPreprocessedResultFile);
 	}
 
@@ -825,7 +827,7 @@ class Preprocessor {
 								}
 								DefineMacroContent.StringDefineValue sdv = (DefineMacroContent.StringDefineValue) defined.getValue();
 								try {
-									return ExpressionInterpreter.newInstance().evaluate(sdv.getText(), preprocessorEnv).get();
+									return expressionInterpreter.evaluate(sdv.getText(), preprocessorEnv).get();
 								} catch (Exception e) {
 									throw new RuntimeException(
 											String.format(bundle.getString("Error.Preprocessor.Parse.couldnt_evaluate_macro_body_f"), sdv.getText()),

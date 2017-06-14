@@ -46,9 +46,17 @@ public class ExpressionInterpreter {
 	/** Queue of all running/queued {@link ExpressionEvaluator} instances */
 	private final LinkedBlockingQueue<ExpressionEvaluator> evaluatorsQ = new LinkedBlockingQueue<>();
 
-
-	public ExpressionInterpreter() {
+	protected ExpressionInterpreter() {
 		ADCExecutors.registerExecutorService(threadPool);
+	}
+
+	/**
+	 Shutdown this interpreter and prevent reuse. Be sure to shutdown interpreters that aren't being used anymore!
+	 If you don't, the application will take serious performance hits over time. This method will also invoke {@link #terminateAll()}
+	 */
+	public synchronized void shutdownAndDisable() {
+		terminateAll();
+		threadPool.shutdownNow();
 	}
 
 	/**
@@ -85,6 +93,10 @@ public class ExpressionInterpreter {
 	@NotNull
 	public synchronized FutureEvaluatedValue evaluate(@Nullable String exp, @NotNull Env env) {
 		//this method is synchronized so that no new evaluators can be created if terminateAll() is invoked
+
+		if (threadPool.isShutdown()) {
+			throw new IllegalStateException("can't use a shutdown interpreter");
+		}
 
 		ExpressionEvaluator evaluator = new ExpressionEvaluator();
 
@@ -140,6 +152,10 @@ public class ExpressionInterpreter {
 	@NotNull
 	public synchronized FutureEvaluatedValue evaluateStatements(@Nullable String statements, @NotNull Env env) {
 		//this method is synchronized so that no new evaluators can be created if terminateAll() is invoked
+
+		if (threadPool.isShutdown()) {
+			throw new IllegalStateException("can't use a shutdown interpreter");
+		}
 
 		ExpressionEvaluator evaluator = new ExpressionEvaluator();
 		evaluatorsQ.add(evaluator);

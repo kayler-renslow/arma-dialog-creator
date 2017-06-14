@@ -2,8 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  A central place for storing and shutting down all {@link ExecutorService} instances since
@@ -12,13 +14,20 @@ import java.util.concurrent.LinkedBlockingQueue;
  @author Kayler
  @since 06/13/2017 */
 public class ADCExecutors {
-	private static LinkedBlockingQueue<ExecutorService> executors = new LinkedBlockingQueue<>();
+	private static final List<ExecutorService> executors = Collections.synchronizedList(new ArrayList<>());
 
-	public static void registerExecutorService(@NotNull ExecutorService service) {
+	public static synchronized void registerExecutorService(@NotNull ExecutorService service) {
+		//synchronized to prevent terminating and register happening at same time
+
 		executors.add(service);
 	}
 
+	/**
+	 Terminate all registered executors. This should only be used when the application is exiting.
+	 */
 	public static synchronized void terminateAll() {
+		//synchronized to prevent terminating and register happening at same time
+
 		for (ExecutorService executorService : executors) {
 			executorService.shutdownNow();
 		}

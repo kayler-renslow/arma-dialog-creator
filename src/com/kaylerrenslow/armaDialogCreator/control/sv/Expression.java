@@ -24,6 +24,8 @@ public class Expression extends SerializableValue {
 
 	private static final ResourceBundle bundle = Lang.getBundle("ExpressionBundle");
 
+	private static final ExpressionInterpreter SHARED_INTERPRETER = ExpressionInterpreter.newInstance();
+
 	/**
 	 {@link ValueConverter} instance for Expression values. The {@link DataContext} parameter in the {@link ValueConverter#convert(DataContext, String...)}
 	 method must contain a non-null entry with key {@link DataKeys#ENV}, or {@link IllegalArgumentException} will be thrown from {@link ValueConverter#convert(DataContext, String...)}.
@@ -62,7 +64,7 @@ public class Expression extends SerializableValue {
 
 	@NotNull
 	public Value getValue() {
-		Value v = ExpressionInterpreter.newInstance().evaluate(valuesAsArray[0], env).get(); //do not cache because the environment may change;
+		Value v = SHARED_INTERPRETER.evaluate(valuesAsArray[0], env).get(); //do not cache because the environment may change;
 		if (v instanceof Value.NumVal) {
 			return v;
 		}

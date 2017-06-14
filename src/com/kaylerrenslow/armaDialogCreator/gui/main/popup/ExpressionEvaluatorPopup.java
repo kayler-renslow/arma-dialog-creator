@@ -139,7 +139,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 
 			@Override
 			public boolean cancel(boolean mayInterruptIfRunning) {
-				interpreter.terminateAll();
+				interpreter.shutdownAndDisable();
 				return true;
 			}
 
@@ -154,6 +154,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 
 				try {
 					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env).get();
+					interpreter.shutdownAndDisable();
 					returnValueString = getValueAsString(returnValue);
 					consoleString = bundle.getString("CodeArea.success");
 				} catch (ExpressionEvaluationException e) {

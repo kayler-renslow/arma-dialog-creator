@@ -5,8 +5,8 @@
 * 
 
 **Fixed:**
-* off by one pixel in rendering controls
-* bug that wasn't closing the window when clicking on the X in the window
+* major performance hit while running ExpressionInterpeter tests
+    * added method to shutdown internal thread pool
 
 **Notes:**
 * may 9: we need to implement dialog conversion error for dialog import dialog

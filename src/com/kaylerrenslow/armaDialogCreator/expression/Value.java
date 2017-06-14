@@ -134,7 +134,7 @@ public interface Value {
 		 */
 		@NotNull
 		public Value exec(@NotNull Env env) throws ExpressionEvaluationException {
-			return ExpressionInterpreter.newInstance().evaluateStatements(statements, env, evaluator);
+			return evaluator.evaluate(statements, env);
 		}
 
 		@Override
