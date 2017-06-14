@@ -95,6 +95,7 @@ public final class ArmaDialogCreator extends Application {
 	@Override
 	public void stop() throws Exception {
 		ApplicationDataManager.getInstance().askSaveAll();
+		ADCExecutors.terminateAll();
 	}
 
 	@Override

@@ -136,7 +136,7 @@ public class PositionCalculator {
 	 @return screen y position
 	 */
 	public static int getScreenY(ArmaResolution resolution, double percentY) {
-		return (int) (resolution.getViewportY() + percentY * resolution.getViewportHeight());
+		return (int) Math.ceil(resolution.getViewportY() + percentY * resolution.getViewportHeight());
 	}
 	
 	
@@ -159,7 +159,7 @@ public class PositionCalculator {
 	 @return on screen height
 	 */
 	public static int getScreenHeight(ArmaResolution resolution, double percentH) {
-		return (int) (resolution.getViewportHeight() * percentH);
+		return (int) Math.ceil(resolution.getViewportHeight() * percentH);
 	}
 	
 	/**

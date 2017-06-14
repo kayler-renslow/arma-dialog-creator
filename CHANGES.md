@@ -1,12 +1,12 @@
 **Added:**
-* stringtable.xml save to project
-* HeaderToProject loads stringtable keys and sets the macros for the relevant ControlProperty instances
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* Project wasn't looking for StringTable keys in Project.findMacroByKey()
+* off by one pixel in rendering controls
+* bug that wasn't closing the window when clicking on the X in the window
 
 **Notes:**
 * may 9: we need to implement dialog conversion error for dialog import dialog

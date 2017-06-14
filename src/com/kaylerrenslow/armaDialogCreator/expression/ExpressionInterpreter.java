@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.expression;
 
+import com.kaylerrenslow.armaDialogCreator.main.ADCExecutors;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
@@ -45,6 +46,10 @@ public class ExpressionInterpreter {
 	/** Queue of all running/queued {@link ExpressionEvaluator} instances */
 	private final LinkedBlockingQueue<ExpressionEvaluator> evaluatorsQ = new LinkedBlockingQueue<>();
 
+
+	public ExpressionInterpreter() {
+		ADCExecutors.registerExecutorService(threadPool);
+	}
 
 	/**
 	 Terminate all running evaluators for this interpreter. This method is thread-safe.

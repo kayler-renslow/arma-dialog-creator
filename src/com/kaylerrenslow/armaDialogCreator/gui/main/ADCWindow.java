@@ -68,12 +68,13 @@ public class ADCWindow {
 
 				canvasView.setTreeStructure(true, backgroundTreeStructure);
 				canvasView.setTreeStructure(false, mainTreeStructure);
+
+				//force canvas to render at proper size
+				autoResizeCanvasView();
 			}
 		});
 
 
-		rootElement.minWidth(ScreenDimension.SMALLEST.width + CanvasControls.PREFERRED_WIDTH);
-		rootElement.minHeight(ScreenDimension.SMALLEST.height + 50.0);
 		EventHandler<KeyEvent> keyEvent = new EventHandler<KeyEvent>() {
 			@Override
 			public void handle(KeyEvent event) {
