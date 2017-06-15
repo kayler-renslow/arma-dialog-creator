@@ -506,14 +506,42 @@ public class HeaderToProject {
 	 @since 04/30/2017
 	 */
 	public interface ConversionCallback {
+		/**
+		 Invoked when the conversion requires dialogs (given as their class names) to be converted.
+
+		 @param classesDiscovered all discovered dialogs
+		 @return a list of dialog class names that should be converted.
+		 */
 		@NotNull List<String> selectClassesToSave(@NotNull List<String> classesDiscovered);
 
+		/**
+		 Used to pass a message (often a status update)
+
+		 @param msg the message
+		 */
 		void message(@NotNull String msg);
 
+		/**
+		 Get a progress update on the conversion. A percentage can be acquired by doing stepsCompleted/totalSteps
+
+		 @param stepsCompleted how many steps have been complete
+		 @param totalSteps number of total steps
+		 */
 		void progressUpdate(int stepsCompleted, int totalSteps);
 
+		/**
+		 Invoked when all dialogs have converted
+
+		 @see #selectClassesToSave(List)
+		 */
 		void finishedParse();
 
+		/**
+		 Invoked when a dialog couldn't be converted
+
+		 @param dialogClassName the dialog's class name
+		 @param e the exception that occurred
+		 */
 		void conversionFailed(@NotNull String dialogClassName, @NotNull HeaderConversionException e);
 	}
 

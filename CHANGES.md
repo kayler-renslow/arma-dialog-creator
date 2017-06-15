@@ -1,15 +1,16 @@
 **Added:**
-* 
+* dialog for when conversion error happens inside import dialog
 
 **Changed:**
-* 
+* when the conversion has been completed for all dialogs, wasn't clear to press next
+    * added a message that tells the user to press Next.
 
 **Fixed:**
-* preprocessor not working with #include \<thing.h>
-* HeaderToProject didn't consider that stringtable macros were in strings ("$STR_thing")
+* when the description.ext fails parse in ImportDialogsDialog and an exception is thrown in the ConvertTask, nothing
+  is displayed for the user.
+    * just added a dialog that appears
 
 **Notes:**
-* may 9: we need to implement dialog conversion error for dialog import dialog
 * **may 10: we need extensive tests for ControlClass that test inheritance in many different ways!**
 * May 31: we should have documentation for control's properties and default value providers in one xml file for every control.
     * this will make documentation easier, xml files shorter (load faster for default value provider), and modularize things a lil
@@ -33,6 +34,4 @@
   We can also have a class that caches the documentation in the case that multiple controls of the same type are opened.
     * We could just use ResourceBundle, have a method in the Documentation class that gets documentation for a property
       with the given locale. Also, we should just store the .properties file as such: ControlPropertyLookup.name=documentation
-* June 14: when the description.ext fails parse in ImportDialogsDialog and an exception is thrown in the ConvertTask, nothing
-    is displayed for the user.
     

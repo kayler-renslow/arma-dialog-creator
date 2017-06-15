@@ -6,21 +6,24 @@ import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckboxSelectionPane;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.WizardStep;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.HashMap;
@@ -79,7 +82,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			step.progressUpdate(newValue.doubleValue());
 		});
 		convertTask.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-			newValue.printStackTrace();
+			new ImportErrorDialog(null, newValue).show();
 		});
 		Thread convertThread = new Thread(convertTask);
 		convertThread.setName("ADC - Convert description.ext task thread");
@@ -112,8 +115,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	}
 
 	private void dialogConversionFailedEvent(@NotNull String dialogClassName, @NotNull Exception e) {
-		//todo
-		e.printStackTrace(System.out);
+		new ImportErrorDialog(dialogClassName, e).show();
 	}
 
 	@NotNull
@@ -314,6 +316,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			progressBar.minWidthProperty().bind(content.widthProperty().multiply(.75));
 			stepIsCompleteProperty.set(false);
 		}
+
 		@Override
 		public void message(@NotNull String msg) {
 			lblMessage.setText(msg);
@@ -326,6 +329,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		public void completedConversion() {
 			this.completeStep(true);
+			lblMessage.setText(bundle.getString("ImportDialogs.Step.Converting.convert_done_press_next"));
 			//todo tell user to press next step
 		}
 	}
@@ -409,6 +413,56 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		@NotNull
 		public ProjectInit getProjectInit() {
 			return projectInit;
+		}
+	}
+
+	private class ImportErrorDialog extends StageDialog<VBox> {
+
+		public ImportErrorDialog(@Nullable String dialogClassName, @NotNull Throwable error) {
+			super(ImportDialogsDialog.this.myStage, new VBox(10), null, false, true, false);
+			setTitle(bundle.getString("ImportDialogs.ErrorDialog.popup_title"));
+
+			final String showStackTraceLblStr = bundle.getString("ImportDialogs.ErrorDialog.toggle_detail_show");
+			final String hideStackTraceLblStr = bundle.getString("ImportDialogs.ErrorDialog.toggle_detail_hide");
+
+			myStage.setMinWidth(300d);
+			myStage.setMinHeight(100d);
+
+			//If dialogClassName is not null, have the pre-message say that there couldn't be a dialog converted.
+			//If dialogClassName is null, just have a message saying the conversion failed
+			myRootElement.getChildren().add(new Label(
+					dialogClassName != null ?
+							String.format(
+									bundle.getString("ImportDialogs.ErrorDialog.pre_message_dialog_f"),
+									dialogClassName
+							)
+							: bundle.getString("ImportDialogs.ErrorDialog.pre_message")
+			));
+
+			myRootElement.getChildren().add(new Label(error.getMessage()));
+			ToggleButton toggleButton = new ToggleButton(showStackTraceLblStr);
+			myRootElement.getChildren().add(toggleButton);
+
+			toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
+				boolean firstExpansion = true;
+
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					if (selected) {
+						toggleButton.setText(hideStackTraceLblStr);
+						myRootElement.getChildren().add(taErrorMessage);
+					} else {
+						toggleButton.setText(showStackTraceLblStr);
+						myRootElement.getChildren().remove(taErrorMessage);
+					}
+					if (firstExpansion) {
+						firstExpansion = false;
+						ImportErrorDialog.this.sizeToScene();
+					}
+				}
+			});
+
 		}
 	}
 }

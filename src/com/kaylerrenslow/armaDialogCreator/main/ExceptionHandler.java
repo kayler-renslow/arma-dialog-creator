@@ -118,7 +118,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		PrintWriter pw = new PrintWriter(sw);
 		t.printStackTrace(pw);
 		pw.close();
-		return "An error occurred. Please report this message to the developer(s).\n" + sw.toString();
+		return sw.toString();
 	}
 
 	/** Initializes the exception handling (should be called when application is launched) */
