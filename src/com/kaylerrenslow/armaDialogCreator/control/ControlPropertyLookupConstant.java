@@ -37,10 +37,6 @@ public interface ControlPropertyLookupConstant {
 	 */
 	int getPropertyId();
 
-	/** Get documentation on the property. */
-	String getAbout();
-
-
 	/**
 	 Construct a new {@link ControlProperty} instance with the given {@link DefaultValueProvider}.
 	 If <code>provider==null</code>, will simply return {@link ControlProperty#ControlProperty(ControlPropertyLookupConstant)}

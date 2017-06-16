@@ -1,14 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
 
 /**
  A place to find ALL known control properties for all controls. This is where the name of the property, property type, description, and options (if allowed) are listed.
@@ -306,17 +303,6 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	@Override
 	public int getPropertyId() {
 		return propertyId;
-	}
-
-	@Override
-	public String getAbout() {
-		ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.ControlPropertyLookupBundle", ArmaDialogCreator.getCurrentLocale());
-		try {
-			return bundle.getString(name());
-		} catch (MissingResourceException e) {
-			return bundle.getString("Lookup.no_documentation");
-		}
-
 	}
 
 	@Override

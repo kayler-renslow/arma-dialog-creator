@@ -8,51 +8,51 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/07/2016.
  */
 public enum ArmaControlLookup {
-	STATIC(ControlType.STATIC, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	EDIT(ControlType.EDIT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	STRUCTURED_TEXT(ControlType.STRUCTURED_TEXT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	ACTIVETEXT(ControlType.ACTIVETEXT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Static(ControlType.Static, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	Edit(ControlType.Edit, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	StructuredText(ControlType.StructuredText, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ActiveText(ControlType.ActiveText, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	BUTTON(ControlType.BUTTON, ButtonControl.SPEC_PROVIDER, RendererLookup.BUTTON),
-	SHORTCUTBUTTON(ControlType.SHORTCUTBUTTON, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	XBUTTON(ControlType.XBUTTON, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Button(ControlType.Button, ButtonControl.SPEC_PROVIDER, RendererLookup.Button),
+	ShortcutButton(ControlType.ShortcutButton, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	XButton(ControlType.XButton, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	PROGRESS(ControlType.PROGRESS, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	STATIC_SKEW(ControlType.STATIC_SKEW, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	LINEBREAK(ControlType.LINEBREAK, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	TREE(ControlType.TREE, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	CONTROLS_GROUP(ControlType.CONTROLS_GROUP, ControlGroupControl.SPEC_PROVIDER, RendererLookup.CONTROL_GROUP),
-	XKEYDESC(ControlType.XKEYDESC, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	ANIMATED_TEXTURE(ControlType.ANIMATED_TEXTURE, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	ANIMATED_USER(ControlType.ANIMATED_USER, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	ITEMSLOT(ControlType.ITEMSLOT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Progress(ControlType.Progress, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	StaticSkew(ControlType.StaticSkew, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	LineBreak(ControlType.Linebreak, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	Tree(ControlType.Tree, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ControlsGroup(ControlType.ControlsGroup, ControlGroupControl.SPEC_PROVIDER, RendererLookup.ControlGroup),
+	XKeyDesc(ControlType.XKeyDesc, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	AnimatedTexture(ControlType.AnimatedTexture, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	AnimatedUser(ControlType.AnimatedUser, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ItemSlot(ControlType.ItemSlot, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	SLIDER(ControlType.SLIDER, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	XSLIDER(ControlType.XSLIDER, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Slider(ControlType.Slider, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	XSlider(ControlType.XSlider, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	COMBO(ControlType.COMBO, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	XCOMBO(ControlType.XCOMBO, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Combo(ControlType.Combo, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	XCombo(ControlType.XCombo, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	LISTBOX(ControlType.LISTBOX, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	XLISTBOX(ControlType.XLISTBOX, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	LISTNBOX(ControlType.LISTNBOX, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	ListBox(ControlType.ListBox, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	XListBox(ControlType.XListBox, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ListNBox(ControlType.ListNBox, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	TOOLBOX(ControlType.TOOLBOX, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	CHECKBOXES(ControlType.CHECKBOXES, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	CHECKBOX(ControlType.CHECKBOX, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	ToolBox(ControlType.ToolBox, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	CheckBoxes(ControlType.CheckBoxes, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	CheckBox(ControlType.CheckBox, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	CONTEXT_MENU(ControlType.CONTEXT_MENU, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	MENU(ControlType.MENU, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	MENU_STRIP(ControlType.MENU_STRIP, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	ContextMenu(ControlType.ContextMenu, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	Menu(ControlType.Menu, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	MenuStrip(ControlType.MenuStrip, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	OBJECT(ControlType.OBJECT, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	OBJECT_ZOOM(ControlType.OBJECT_ZOOM, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	OBJECT_CONTAINER(ControlType.OBJECT_CONTAINER, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	OBJECT_CONT_ANIM(ControlType.OBJECT_CONT_ANIM, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
+	Object(ControlType.Object, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ObjectZoom(ControlType.ObjectZoom, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ObjectContainer(ControlType.ObjectContainer, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	ObjectContAnim(ControlType.ObjectContAnim, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
 
-	MAP(ControlType.MAP, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC),
-	MAP_MAIN(ControlType.MAP_MAIN, StaticControl.SPEC_PROVIDER, RendererLookup.STATIC);
+	Map(ControlType.Map, StaticControl.SPEC_PROVIDER, RendererLookup.Static),
+	MapMain(ControlType.MapMain, StaticControl.SPEC_PROVIDER, RendererLookup.Static);
 
 	@NotNull
 	public final ControlType controlType;

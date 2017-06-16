@@ -24,7 +24,7 @@ public class ButtonDataCreator implements TreeItemDataCreator<ArmaControl, TreeI
 	@NotNull
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(ControlType.BUTTON, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
+		NewControlDialog dialog = new NewControlDialog(ControlType.Button, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;

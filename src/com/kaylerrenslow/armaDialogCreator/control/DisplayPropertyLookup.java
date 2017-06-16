@@ -68,7 +68,7 @@ public enum DisplayPropertyLookup implements ControlPropertyLookupConstant {
 		return propertyId;
 	}
 
-	@Override
+	@NotNull
 	public String getAbout() {
 		return about;
 	}

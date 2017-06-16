@@ -180,7 +180,9 @@ public class ControlClassInheritanceTests {
 
 		tcc.overrideProperty(constant);
 
-		assertEquals(null, tcc.findPropertyNullable(constant));
+
+		//check if the overridden property exists after the override
+		assertEquals(constant.getPropertyName(), tcc.findProperty(constant).getName());
 	}
 
 }

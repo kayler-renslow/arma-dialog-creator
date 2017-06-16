@@ -82,7 +82,7 @@ public class StaticControl extends ArmaControl {
 	};
 
 	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.STATIC, name, SPEC_PROVIDER, idc, ControlStyle.CENTER.getStyleGroup(), resolution, RendererLookup.STATIC, env, registry);
+		super(ControlType.Static, name, SPEC_PROVIDER, idc, ControlStyle.CENTER.getStyleGroup(), resolution, RendererLookup.Static, env, registry);
 	}
 
 }

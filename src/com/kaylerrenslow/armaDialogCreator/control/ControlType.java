@@ -10,54 +10,54 @@ import org.jetbrains.annotations.NotNull;
  */
 public enum ControlType {
 	//@formatter:off
-	STATIC(0, getString("ControlType.static"), ControlTypeGroup.TEXT, "control_static.png"),
+	Static(0, getString("ControlType.static"), ControlTypeGroup.TEXT, "control_static.png"),
 	HTML(9, getString("ControlType.html"), ControlTypeGroup.TEXT, "control_html.png"),
-	EDIT(2, getString("ControlType.edit"), ControlTypeGroup.TEXT, "control_edit.png"),
-	STRUCTURED_TEXT(13, getString("ControlType.structured_text"), ControlTypeGroup.TEXT, "control_structuredtext.png"),
-	ACTIVETEXT(11, getString("ControlType.activetext"), ControlTypeGroup.TEXT, "control_activetext.png"),
+	Edit(2, getString("ControlType.edit"), ControlTypeGroup.TEXT, "control_edit.png"),
+	StructuredText(13, getString("ControlType.structured_text"), ControlTypeGroup.TEXT, "control_structuredtext.png"),
+	ActiveText(11, getString("ControlType.activetext"), ControlTypeGroup.TEXT, "control_activetext.png"),
 	
-	BUTTON(1, getString("ControlType.button"), ControlTypeGroup.BUTTON, "control_button.png"),
-	SHORTCUTBUTTON(16, getString("ControlType.shortcutbutton"), ControlTypeGroup.BUTTON, "control_shortcutbutton.png"),
-	XBUTTON(41, getString("ControlType.xbutton"), ControlTypeGroup.BUTTON),
+	Button(1, getString("ControlType.button"), ControlTypeGroup.BUTTON, "control_button.png"),
+	ShortcutButton(16, getString("ControlType.shortcutbutton"), ControlTypeGroup.BUTTON, "control_shortcutbutton.png"),
+	XButton(41, getString("ControlType.xbutton"), ControlTypeGroup.BUTTON),
 	
-	PROGRESS(8, getString("ControlType.progress"), ControlTypeGroup.MISC, "control_progress.png"),
-	STATIC_SKEW(10, getString("ControlType.static_skew"), ControlTypeGroup.MISC),
-	LINEBREAK(98, getString("ControlType.linebreak"), ControlTypeGroup.MISC),
-	TREE(12, getString("ControlType.tree"), ControlTypeGroup.MISC, "control_tree.png"),
-	CONTROLS_GROUP(15, getString("ControlType.controls_group"), ControlTypeGroup.MISC, "control_group.png"),
-	XKEYDESC(40, getString("ControlType.xkeydesc"), ControlTypeGroup.MISC),
-	ANIMATED_TEXTURE(45, getString("ControlType.animated_texture"), ControlTypeGroup.MISC),
-	ANIMATED_USER(99, getString("ControlType.animated_user"), ControlTypeGroup.MISC),
-	ITEMSLOT(103, getString("ControlType.itemslot"), ControlTypeGroup.MISC),
+	Progress(8, getString("ControlType.progress"), ControlTypeGroup.MISC, "control_progress.png"),
+	StaticSkew(10, getString("ControlType.static_skew"), ControlTypeGroup.MISC),
+	Linebreak(98, getString("ControlType.linebreak"), ControlTypeGroup.MISC),
+	Tree(12, getString("ControlType.tree"), ControlTypeGroup.MISC, "control_tree.png"),
+	ControlsGroup(15, getString("ControlType.controls_group"), ControlTypeGroup.MISC, "control_group.png"),
+	XKeyDesc(40, getString("ControlType.xkeydesc"), ControlTypeGroup.MISC),
+	AnimatedTexture(45, getString("ControlType.animated_texture"), ControlTypeGroup.MISC),
+	AnimatedUser(99, getString("ControlType.animated_user"), ControlTypeGroup.MISC),
+	ItemSlot(103, getString("ControlType.itemslot"), ControlTypeGroup.MISC),
 	
-	SLIDER(3, getString("ControlType.slider"), ControlTypeGroup.SLIDER, "control_slider.png", true),
-	XSLIDER(43, getString("ControlType.xslider"), ControlTypeGroup.SLIDER),
+	Slider(3, getString("ControlType.slider"), ControlTypeGroup.SLIDER, "control_slider.png", true),
+	XSlider(43, getString("ControlType.xslider"), ControlTypeGroup.SLIDER),
 	
-	COMBO(4, getString("ControlType.combo"), ControlTypeGroup.COMBO, "control_combobox.png"),
-	XCOMBO(44, getString("ControlType.xcombo"), ControlTypeGroup.COMBO),
+	Combo(4, getString("ControlType.combo"), ControlTypeGroup.COMBO, "control_combobox.png"),
+	XCombo(44, getString("ControlType.xcombo"), ControlTypeGroup.COMBO),
 	
-	LISTBOX(5, getString("ControlType.listbox"), ControlTypeGroup.LIST_BOX, "control_listbox.png"),
-	XLISTBOX(42, getString("ControlType.xlistbox"), ControlTypeGroup.LIST_BOX, "control_xlistbox.png"),
-	LISTNBOX(102, getString("ControlType.listnbox"), ControlTypeGroup.LIST_BOX, "control_nlistbox.png"),
+	ListBox(5, getString("ControlType.listbox"), ControlTypeGroup.LIST_BOX, "control_listbox.png"),
+	XListBox(42, getString("ControlType.xlistbox"), ControlTypeGroup.LIST_BOX, "control_xlistbox.png"),
+	ListNBox(102, getString("ControlType.listnbox"), ControlTypeGroup.LIST_BOX, "control_nlistbox.png"),
 	
-	TOOLBOX(6, getString("ControlType.toolbox"), ControlTypeGroup.CHECK_BOX),
-	CHECKBOXES(7, getString("ControlType.checkboxes"), ControlTypeGroup.CHECK_BOX),
-	CHECKBOX(77, getString("ControlType.checkbox"), ControlTypeGroup.CHECK_BOX),
+	ToolBox(6, getString("ControlType.toolbox"), ControlTypeGroup.CHECK_BOX),
+	CheckBoxes(7, getString("ControlType.checkboxes"), ControlTypeGroup.CHECK_BOX),
+	CheckBox(77, getString("ControlType.checkbox"), ControlTypeGroup.CHECK_BOX),
 	
-	CONTEXT_MENU(14, getString("ControlType.context_menu"), ControlTypeGroup.MENU),
-	MENU(46, getString("ControlType.menu"), ControlTypeGroup.MENU),
-	MENU_STRIP(47, getString("ControlType.menu_strip"), ControlTypeGroup.MENU),
+	ContextMenu(14, getString("ControlType.context_menu"), ControlTypeGroup.MENU),
+	Menu(46, getString("ControlType.menu"), ControlTypeGroup.MENU),
+	MenuStrip(47, getString("ControlType.menu_strip"), ControlTypeGroup.MENU),
 	
-	OBJECT(80, getString("ControlType.object"), ControlTypeGroup.OBJECT),
-	OBJECT_ZOOM(81, getString("ControlType.object_zoom"), ControlTypeGroup.OBJECT),
-	OBJECT_CONTAINER(82, getString("ControlType.object_container"), ControlTypeGroup.OBJECT),
-	OBJECT_CONT_ANIM(83, getString("ControlType.object_cont_anim"), ControlTypeGroup.OBJECT),
+	Object(80, getString("ControlType.object"), ControlTypeGroup.OBJECT),
+	ObjectZoom(81, getString("ControlType.object_zoom"), ControlTypeGroup.OBJECT),
+	ObjectContainer(82, getString("ControlType.object_container"), ControlTypeGroup.OBJECT),
+	ObjectContAnim(83, getString("ControlType.object_cont_anim"), ControlTypeGroup.OBJECT),
 	
-	MAP(100, getString("ControlType.map"), ControlTypeGroup.MAP),
-	MAP_MAIN(101, getString("ControlType.map_main"), ControlTypeGroup.MAP);
+	Map(100, getString("ControlType.map"), ControlTypeGroup.MAP),
+	MapMain(101, getString("ControlType.map_main"), ControlTypeGroup.MAP);
 	//@formatter:on
 
-	public static final ControlType[] BETA_SUPPORTED = {STATIC, CONTROLS_GROUP, BUTTON};
+	public static final ControlType[] BETA_SUPPORTED = {Static, ControlsGroup, Button};
 
 	private final int typeId;
 	private final String displayName;
@@ -76,7 +76,7 @@ public enum ControlType {
 		this(typeId, displayName, group, iconPath, false);
 	}
 
-	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type STATIC)
+	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type Static)
 	ControlType(int typeId, String displayName, ControlTypeGroup group, String iconPath, boolean deprecated) {
 		this.typeId = typeId;
 		this.displayName = displayName;

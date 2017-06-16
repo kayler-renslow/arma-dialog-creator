@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public class ControlGroupControl extends ArmaControlGroup {
 
 	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, idc, resolution, RendererLookup.CONTROL_GROUP, env, registry);
+		super(name, idc, resolution, RendererLookup.ControlGroup, env, registry);
 	}
 
 }

@@ -23,7 +23,7 @@ public class StaticDataCreator implements TreeItemDataCreator<ArmaControl, TreeI
 
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(ControlType.STATIC, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
+		NewControlDialog dialog = new NewControlDialog(ControlType.Static, ArmaDialogCreator.getMainWindow().getCanvasView().getBackgroundControlTreeView() == treeView);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;

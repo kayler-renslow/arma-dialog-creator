@@ -35,8 +35,8 @@ import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEdit
  @since 11/20/2016 */
 class ControlPropertyEditorContainer extends HBox {
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
-
 	private static final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
+	private static final ControlPropertyDocumentationProvider lookupDocProvider = new ControlPropertyDocumentationProvider();
 
 	private final ControlClass controlClass;
 	private final ControlProperty controlProperty;
@@ -64,7 +64,7 @@ class ControlPropertyEditorContainer extends HBox {
 	private void init() {
 		currentValueEditor().disableEditing(controlProperty.getPropertyLookup() == ControlPropertyLookup.TYPE);
 
-		placeTooltip(menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
+		placeTooltip(controlClass, menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
 
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
 		final MenuItem miResetToInitial = new MenuItem(bundle.getString("reset_to_initial"));
@@ -372,8 +372,19 @@ class ControlPropertyEditorContainer extends HBox {
 		setManaged(visible);
 	}
 
-	static Tooltip getTooltip(@NotNull ControlPropertyLookupConstant lookup) {
-		Tooltip tp = new Tooltip(lookup.getAbout());
+	static Tooltip getTooltip(@NotNull ControlClass controlClass, @NotNull ControlPropertyLookupConstant lookup) {
+		ControlType type = null;
+		{
+			ControlProperty prop = controlClass.findPropertyByNameNullable("type");
+			if (prop != null && prop.getInitialPropertyType() == PropertyType.Int) {
+				try {
+					type = ControlType.findById(prop.getIntValue());
+				} catch (IllegalArgumentException ignore) {
+
+				}
+			}
+		}
+		Tooltip tp = new Tooltip(lookupDocProvider.getDocumentation(lookup, type));
 		tp.setFont(TOOLTIP_FONT);
 		return tp;
 	}
@@ -381,11 +392,12 @@ class ControlPropertyEditorContainer extends HBox {
 	/**
 	 Places tooltip on n
 
+	 @param controlClass used for getting a {@link ControlType}, which assists in getting documentation
 	 @param n Node to place tooltip on
 	 @param lookup constant to create tooltip of
 	 */
-	static void placeTooltip(Node n, ControlPropertyLookupConstant lookup) {
-		Tooltip tip = getTooltip(lookup);
+	static void placeTooltip(@NotNull ControlClass controlClass, @NotNull Node n, @NotNull ControlPropertyLookupConstant lookup) {
+		Tooltip tip = getTooltip(controlClass, lookup);
 		Tooltip.install(n, tip);
 	}
 

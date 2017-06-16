@@ -28,7 +28,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;
 	/** Type of the control */
-	private ControlType type = ControlType.STATIC;
+	private ControlType type = ControlType.Static;
 
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
@@ -118,8 +118,8 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	private void checkControlType(@NotNull ControlType type) {
-		if (type == ControlType.CONTROLS_GROUP && !(this instanceof ArmaControlGroup)) {
-			throw new IllegalStateException("Do not use ArmaControl for ControlType.CONTROLS_GROUP");
+		if (type == ControlType.ControlsGroup && !(this instanceof ArmaControlGroup)) {
+			throw new IllegalStateException("Do not use ArmaControl for ControlType.ControlsGroup");
 		}
 	}
 
@@ -205,7 +205,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider,
 											@NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.CONTROLS_GROUP) {
+		if (type == ControlType.ControlsGroup) {
 			return new ArmaControlGroup(specification, provider, resolution, rendererLookup, env, registry);
 		}
 		return new ArmaControl(specification, provider, resolution, rendererLookup, env, registry);
@@ -214,7 +214,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlStyleGroup style,
 											@NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.CONTROLS_GROUP) {
+		if (type == ControlType.ControlsGroup) {
 			return new ArmaControlGroup(name, idc, resolution, rendererLookup, env, registry);
 		}
 		return new ArmaControl(type, name, provider, idc, style, resolution, rendererLookup, env, registry);
@@ -223,7 +223,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
 											@NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.CONTROLS_GROUP) {
+		if (type == ControlType.ControlsGroup) {
 			return new ArmaControlGroup(name, resolution, rendererLookup, env, registry);
 		}
 		return new ArmaControl(type, name, provider, resolution, rendererLookup, env, registry);

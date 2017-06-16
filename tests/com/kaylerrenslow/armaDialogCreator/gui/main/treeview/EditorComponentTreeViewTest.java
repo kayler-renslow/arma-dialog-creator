@@ -74,7 +74,7 @@ public class EditorComponentTreeViewTest extends Application {
 	private static class TestArmaControlClass extends ArmaControl {
 
 		public TestArmaControlClass() {
-			super(ControlType.STATIC, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
+			super(ControlType.Static, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
 		}
 	}
 

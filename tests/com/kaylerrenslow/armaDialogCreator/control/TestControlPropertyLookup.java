@@ -47,9 +47,4 @@ public enum TestControlPropertyLookup implements ControlPropertyLookupConstant {
 	public int getPropertyId() {
 		return resemble != null ? resemble.getPropertyId() : 0;
 	}
-
-	@Override
-	public String getAbout() {
-		return resemble != null ? resemble.getAbout() : null;
-	}
 }

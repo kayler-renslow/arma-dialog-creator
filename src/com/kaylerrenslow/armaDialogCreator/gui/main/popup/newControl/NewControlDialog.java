@@ -64,7 +64,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 
 		menuButtonControlType.setMinWidth(250);
 		if (fixedType == null) {
-			menuButtonControlType.chooseItem(ControlType.STATIC);
+			menuButtonControlType.chooseItem(ControlType.Static);
 		} else {
 			menuButtonControlType.chooseItem(fixedType);
 			menuButtonControlType.setDisable(true);

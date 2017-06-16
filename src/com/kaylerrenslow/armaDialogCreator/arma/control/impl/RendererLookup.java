@@ -11,9 +11,9 @@ import java.util.LinkedList;
  @since 08/03/2016. */
 public enum RendererLookup {
 	/** Renderer for a basic static control */
-	STATIC(0, StaticRenderer.class),
-	CONTROL_GROUP(1, ControlGroupRenderer.class),
-	BUTTON(2, ButtonRenderer.class),
+	Static(0, StaticRenderer.class),
+	ControlGroup(1, ControlGroupRenderer.class),
+	Button(2, ButtonRenderer.class),
 	/**Renderer for tests. DO NOT USE FOR CLIENT CODE.*/
 	TEST(-1, ArmaControlRenderer.class);
 	

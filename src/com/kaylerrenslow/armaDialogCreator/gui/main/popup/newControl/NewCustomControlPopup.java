@@ -86,7 +86,7 @@ public class NewCustomControlPopup extends StagePopup<VBox> {
 			controlClass.findRequiredProperty(ControlPropertyLookup.TYPE).setValue(lookup.controlType.getTypeId());
 			controlTypeControlClasses[i] = new ControlClassMenuItem(controlClass, new BorderedImageView(lookup.controlType.getIcon()));
 			controlClass.setClassName("Custom_" + controlClass.getClassName());
-			if (lookup.controlType == ControlType.STATIC) {
+			if (lookup.controlType == ControlType.Static) {
 				toSelect = controlTypeControlClasses[i];
 			}
 		}

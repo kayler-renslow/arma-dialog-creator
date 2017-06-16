@@ -4,10 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -203,30 +200,41 @@ public class ControlClass {
 	 unless explicitly stated with {@link #inheritProperty(ControlPropertyLookupConstant)}.
 
 	 @param extendMe class to extend
-	 @throws IllegalArgumentException if <code>extendMe</code>==this
+	 @throws IllegalArgumentException if <code>extendMe==this</code>
 	 @see ControlProperty#inherit(ControlProperty)
 	 */
 	public final void extendControlClass(@Nullable ControlClass extendMe) {
 		if (extendMe == this) {
 			throw new IllegalArgumentException("Extend class can't extend itself!");
 		}
+
 		ControlClass oldExtendClass = getExtendClass();
 		if (oldExtendClass == extendMe) {
 			return;
 		}
+
 		if (extendMe != null) {
+			//attempt to inherit all properties, if they aren't defined in this ControlClass
 			for (ControlProperty checkToInherit : extendMe.getAllChildProperties()) {
 				if (this.propertyIsOverridden(checkToInherit.getPropertyLookup())) {
 					continue;
 				}
-
 				this.inheritProperty(checkToInherit.getPropertyLookup());
 			}
+
 			extendMe.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 		} else {
+			//remove all temp properties
+			for (Iterator<ControlProperty> iter = tempProperties.iterator(); iter.hasNext(); ) {
+				ControlProperty tempProperty = iter.next();
+				iter.remove();
+				controlClassUpdateGroup.update(new ControlClassTemporaryPropertyUpdate(this, tempProperty, false));
+			}
+
 			for (ControlProperty property : this.getAllChildProperties()) {
 				this.overrideProperty(property.getPropertyLookup());
 			}
+
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
 		}
 
@@ -234,17 +242,23 @@ public class ControlClass {
 
 	}
 
+	/** @return the {@link ControlClass} that this instance is extending, or null if extending nothing */
 	@Nullable
 	public final ControlClass getExtendClass() {
 		return extendClassObserver.getValue();
 	}
 
+	/** @return a {@link ValueObserver} for {@link #getExtendClass()} */
 	@NotNull
 	public final ValueObserver<ControlClass> getExtendClassObserver() {
 		return extendClassObserver;
 	}
 
-	/** Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use. */
+	/**
+	 Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use.
+
+	 @return the spec provider
+	 */
 	public final ControlClassRequirementSpecification getSpecProvider() {
 		return specProvider;
 	}
@@ -552,10 +566,12 @@ public class ControlClass {
 	/**
 	 Override's a property that may exist inside {@link #getExtendClass()}. When a property is "overridden",
 	 the property's value will never be inherited until it is no longer overridden
-	 (achievable with {@link #inheritProperty(ControlPropertyLookupConstant)}).<br><br>
+	 (achievable with {@link #inheritProperty(ControlPropertyLookupConstant)}).<p>
+	 <p>
 	 If the given property is a temporary property (doesn't actually exist in the {@link ControlClass},
 	 but does in {@link #extendControlClass(ControlClass)} and was inherited), the temporary property
-	 will be deleted and a new {@link ControlClassTemporaryPropertyUpdate} will be created.
+	 will be deleted and a new {@link ControlClassTemporaryPropertyUpdate} will be created. The property will
+	 also remain in {@link #getOptionalProperties()}.
 
 	 @throws IllegalArgumentException when the property doesn't exist in this {@link ControlClass}
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
@@ -575,7 +591,6 @@ public class ControlClass {
 			return;
 		}
 		tempProperties.remove(index);
-		optionalProperties.remove(mine);
 		controlClassUpdateGroup.update(new ControlClassTemporaryPropertyUpdate(this, mine, false));
 	}
 
@@ -737,6 +752,17 @@ public class ControlClass {
 		}
 
 		return eventProperties;
+	}
+
+	/**
+	 To listen for when temporary properties are added/removed, check for {@link ControlClassTemporaryPropertyUpdate} in {@link #getControlClassUpdateGroup()}
+
+	 @return all {@link ControlProperty} instances that exist only because of inheritance and not temporary.
+	 @see #inheritProperty(ControlPropertyLookupConstant)
+	 */
+	@NotNull
+	public final ReadOnlyList<ControlProperty> getTempPropertiesReadOnly() {
+		return tempPropertiesReadOnly;
 	}
 
 	/**
