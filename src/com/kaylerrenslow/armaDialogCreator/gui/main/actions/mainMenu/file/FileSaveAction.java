@@ -10,7 +10,6 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -30,7 +29,7 @@ public class FileSaveAction implements EventHandler<ActionEvent> {
 					bundle.getString("Notifications.ProjectSave.Success.notification_title"),
 					String.format(bundle.getString("Notifications.ProjectSave.Success.notification_body_f"), saveFile.getAbsolutePath())
 			);
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			String reason = e.getMessage() != null && e.getMessage().length() > 0 ? e.getMessage() : bundle.getString("Notifications.ProjectSave.Fail.unknown_reason");
 			resultNotification = new BoxNotification(

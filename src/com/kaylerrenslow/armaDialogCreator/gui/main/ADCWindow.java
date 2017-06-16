@@ -4,15 +4,11 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.FXUtil;
-import com.kaylerrenslow.armaDialogCreator.gui.notification.NotificationPane;
-import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
-import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
@@ -29,7 +25,6 @@ public class ADCWindow {
 	private final Stage primaryStage;
 	private VBox rootElement = new VBox();
 	private ADCCanvasView canvasView;
-	private NotificationPane notificationPane;
 	private ADCMenuBar mainMenuBar;
 	private boolean fullscreen = false;
 
@@ -60,8 +55,7 @@ public class ADCWindow {
 		FXUtil.runWhenVisible(rootElement, new Runnable() {
 			@Override
 			public void run() {
-				initNotificationPane();
-				canvasView = new ADCCanvasView(notificationPane);
+				canvasView = new ADCCanvasView();
 				mainMenuBar = new ADCMenuBar();
 
 				rootElement.getChildren().addAll(mainMenuBar, canvasView);
@@ -85,19 +79,6 @@ public class ADCWindow {
 		scene.setOnKeyReleased(keyEvent);
 		scene.getMnemonics().clear();
 
-	}
-
-	private void initNotificationPane() {
-		final VBox vboxNotifications = new VBox(10);
-		vboxNotifications.setAlignment(Pos.BOTTOM_RIGHT);
-		vboxNotifications.setPadding(new Insets(5));
-		notificationPane = new NotificationPane(vboxNotifications);
-		Notifications.setNotificationPane(notificationPane);
-	}
-
-	@NotNull
-	public NotificationPane getNotificationPane() {
-		return notificationPane;
 	}
 
 	public void show() {

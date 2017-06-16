@@ -12,6 +12,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntr
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.EditorComponentTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.notification.NotificationPane;
+import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -19,7 +20,9 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
@@ -28,6 +31,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,17 +55,28 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private boolean selectFromTreeView = false;
 	private ArmaDisplay display;
 
-	ADCCanvasView(@NotNull NotificationPane notificationPane) {
-		this.notificationPane = notificationPane;
+	ADCCanvasView() {
+
 		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
 		canvasControls = new CanvasControls(this);
 
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
 		initializeUICanvasEditor(display);
 
-		final StackPane stackPane = new StackPane(uiCanvasEditor, notificationPane.getNotificationsPane());
-		notificationPane.getNotificationsPane().setMouseTransparent(true);
+		//init notification pane
+		{
+			VBox vboxNotifications = new VBox(10);
+			vboxNotifications.setFillWidth(true);
+			vboxNotifications.setAlignment(Pos.BOTTOM_RIGHT);
+			vboxNotifications.setPadding(new Insets(5));
+			vboxNotifications.setMinWidth(120);
 
+			notificationPane = new NotificationPane(vboxNotifications);
+			Notifications.setDefaultNotificationPane(notificationPane);
+		}
+
+		final StackPane stackPane = new StackPane(uiCanvasEditor, notificationPane.getContentPane());
+		notificationPane.getContentPane().setMouseTransparent(true);
 
 		this.getChildren().addAll(stackPane, canvasControls);
 		HBox.setHgrow(canvasControls, Priority.ALWAYS);
@@ -70,7 +85,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 		focusToCanvas(true);
 	}
 
-	private void initializeUICanvasEditor(ArmaDisplay display) {
+	private void initializeUICanvasEditor(@NotNull ArmaDisplay display) {
 		canvasControls.getTreeViewMain().setToDisplay(display);
 		canvasControls.getTreeViewBackground().setToDisplay(display);
 
@@ -138,8 +153,11 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void focusToCanvas(boolean focusToCanvas) {
+		//If focusToCanvas, prevent key strokes from going to buttons or something else
+		//and send them to the canvas
 		canvasControls.setFocusTraversable(!focusToCanvas);
 		uiCanvasEditor.setFocusTraversable(focusToCanvas);
+
 		if (focusToCanvas) {
 			uiCanvasEditor.requestFocus();
 		}
@@ -207,6 +225,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	void keyEvent(String text, boolean keyDown, boolean shiftDown, boolean controlDown, boolean altDown) {
+		//forward the event
 		uiCanvasEditor.keyEvent(text, keyDown, shiftDown, controlDown, altDown);
 	}
 
@@ -244,14 +263,14 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 			double sceneX = event.getSceneX();
 			double sceneY = event.getSceneY();
-			for (Node node : canvasView.notificationPane.getNotificationsPane().getChildren()) {
+			for (Node node : canvasView.notificationPane.getContentPane().getChildren()) {
 				Point2D point2D = node.sceneToLocal(sceneX, sceneY);
 				if (node.contains(point2D)) {
-					canvasView.notificationPane.getNotificationsPane().setMouseTransparent(false);
+					canvasView.notificationPane.getContentPane().setMouseTransparent(false);
 					return;
 				}
 			}
-			canvasView.notificationPane.getNotificationsPane().setMouseTransparent(true);
+			canvasView.notificationPane.getContentPane().setMouseTransparent(true);
 
 		}
 	}

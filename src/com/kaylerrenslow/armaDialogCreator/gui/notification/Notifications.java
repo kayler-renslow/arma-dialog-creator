@@ -33,11 +33,11 @@ public class Notifications {
 	 Shows the specified {@link Notification} on {@link #getNotificationPane()}
 
 	 @param notification notification to show
-	 @throws IllegalStateException when {@link #setNotificationPane(NotificationPane)} is not invoked prior to this call
+	 @throws IllegalStateException when {@link #setDefaultNotificationPane(NotificationPane)} is not invoked prior to this call
 	 */
 	public static void showNotification(@NotNull Notification notification) {
 		if (INSTANCE.notificationPane == null) {
-			throw new IllegalStateException("notificationPane is not set from setNotificationPane()");
+			throw new IllegalStateException("notificationPane is not set from setDefaultNotificationPane()");
 		}
 		INSTANCE.doShowNotification(notification, INSTANCE.notificationPane);
 	}
@@ -53,11 +53,11 @@ public class Notifications {
 
 	 @param notificationPane the pane
 	 */
-	public static void setNotificationPane(@NotNull NotificationPane notificationPane) {
+	public static void setDefaultNotificationPane(@NotNull NotificationPane notificationPane) {
 		INSTANCE.notificationPane = notificationPane;
 	}
 
-	/** {@link #setNotificationPane(NotificationPane)} */
+	/** {@link #setDefaultNotificationPane(NotificationPane)} */
 	public static NotificationPane getNotificationPane() {
 		return INSTANCE.notificationPane;
 	}
@@ -84,6 +84,7 @@ public class Notifications {
 		notificationPane.addNotification(notification);
 		if (!visibilityTask.isRunning()) {
 			Thread thread = new Thread(visibilityTask);
+			thread.setName("ADC - Notifications Thread");
 			thread.setDaemon(true);
 			thread.start();
 		}
@@ -92,6 +93,7 @@ public class Notifications {
 	private static class NotificationsVisibilityTask extends Task<Boolean> {
 
 		private final Notifications notifications;
+		private final List<NotificationDescriptor> tohide = Collections.synchronizedList(new LinkedList<>());
 
 		public NotificationsVisibilityTask(@NotNull Notifications notifications) {
 			this.notifications = notifications;
@@ -99,14 +101,12 @@ public class Notifications {
 
 		@Override
 		protected Boolean call() throws Exception {
-			List<NotificationDescriptor> tohide = Collections.synchronizedList(new LinkedList<>());
 			while (true) {
 				long now = System.currentTimeMillis();
 				for (int i = 0; i < notifications.showingNotifications.size(); ) {
 					NotificationDescriptor wrapper = notifications.showingNotifications.get(i);
 					if (!wrapper.getNotification().isShowing() || wrapper.getTimeShown() + wrapper.getNotification().getDisplayDurationMilliseconds() <= now) {
-						NotificationDescriptor remove = notifications.showingNotifications.remove(i);
-						tohide.add(remove);
+						tohide.add(notifications.showingNotifications.remove(i));
 						continue;
 					}
 					i++;
@@ -127,10 +127,7 @@ public class Notifications {
 					} catch (Exception ignore) {
 					}
 				} else {
-					try {
-						Thread.sleep(20);
-					} catch (Exception ignore) {
-					}
+					Thread.yield();
 				}
 			}
 

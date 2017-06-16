@@ -34,7 +34,7 @@ public class NotificationPane {
 
 	/** Get the {@link Pane} instance that will store all of the notifications */
 	@NotNull
-	public Pane getNotificationsPane() {
+	public Pane getContentPane() {
 		return pane;
 	}
 

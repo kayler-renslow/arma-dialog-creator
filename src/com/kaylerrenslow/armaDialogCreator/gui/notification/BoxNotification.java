@@ -21,14 +21,20 @@ public class BoxNotification extends Notification {
 
 	public BoxNotification(@NotNull String notificationTitle, @NotNull String notificationText) {
 		super(notificationTitle, notificationText);
+		afterConstructor();
 	}
 
 	public BoxNotification(@NotNull String notificationTitle, @NotNull String notificationText, long displayDurationMilliseconds) {
 		super(notificationTitle, notificationText, displayDurationMilliseconds);
+		afterConstructor();
 	}
 
 	public BoxNotification(@NotNull String notificationTitle, @NotNull String notificationText, long displayDurationMilliseconds, boolean isErrorNotification) {
 		super(notificationTitle, notificationText, displayDurationMilliseconds, isErrorNotification);
+		afterConstructor();
+	}
+
+	private void afterConstructor() {
 		root.setStyle("-fx-background-color:-fx-control-inner-background;-fx-border-color:black;-fx-border-width:1px;");
 
 		final Button btnClose = new Button("x");
@@ -64,7 +70,6 @@ public class BoxNotification extends Notification {
 
 		root.setPrefWidth(width);
 		root.setMaxWidth(width);
-
 	}
 
 	/** Get the JavaFX node that represents notification */

@@ -18,6 +18,7 @@ public abstract class Notification {
 	protected final BooleanProperty showProperty = new SimpleBooleanProperty(true);
 	protected long displayDurationMilliseconds;
 	protected boolean saveToHistory = true;
+	protected boolean isErrorNotification;
 
 	/**
 	 A non-error notification that will last {@link #DEFAULT_DURATION} seconds
@@ -52,6 +53,7 @@ public abstract class Notification {
 		this.notificationTitle = notificationTitle;
 		this.notificationText = notificationText;
 		this.displayDurationMilliseconds = displayDurationMilliseconds;
+		this.isErrorNotification = isErrorNotification;
 	}
 
 	/**

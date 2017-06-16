@@ -2,12 +2,11 @@
 * 
 
 **Changed:**
-* ControlClass changes in Changelog are now combined together, if needed
-    * also updated how control's x,y,w,h property change updates are displayed to user
-        * instead of saying the property that moved and it's new value, it just says the control was moved.
+* small tweaks to Notifications
 
 **Fixed:**
-* HeaderToProject.createAndAppendCustomControlClass() didn't consider StringTable macro inside a string
+* CanvasView wasn't displaying notifications
+    * turns out the BoxNotification class wasn't initializing its JavaFX content
 
 **Notes:**
 * May 31: we should have documentation for control's properties and default value providers in one xml file for every control.
