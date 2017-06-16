@@ -1,4 +1,4 @@
-Features
+Ideas
 -----------------------------------
 * for when specifying properties of controls, list the required ones and have a button that says "add optional property" and it lists the optional ones.
     * There can also be a button that says "add custom property" and it will prompt to fill out the name, type, and text(s)
@@ -10,7 +10,7 @@ Features
 * for new control, it isn't proper to say "Required" since the new control can allow for partial implementation
 * have help button implementation for all popups
 * allow for setting the current pixel location values for controls (then convert the x,y,w,h to new safeZone values based off pixel values)
-* when choosing stringtable key macro, the preview area should show all strings (original, english, etc)
+* maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
 
 General
 -----------------------------------
@@ -24,7 +24,6 @@ General
 * ............................................
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
-* maybe instead of hardcoding percentages for snap, we have expression evaluating (safeZoneW * .25 is 25% of canvas width, where 0.25 is 25% of viewport width)
 * ............................................
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)

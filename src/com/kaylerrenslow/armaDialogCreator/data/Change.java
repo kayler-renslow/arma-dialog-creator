@@ -1,14 +1,16 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 08/02/2016.
  */
 public interface Change {
-	String getShortName();
+	@NotNull String getShortName();
 
-	String getDescription();
+	@NotNull String getDescription();
 
-	ChangeRegistrar getRegistrar();
+	@NotNull ChangeRegistrar getRegistrar();
 
 	enum ChangeType {
 		/** an undo change */

@@ -163,11 +163,12 @@ public class HeaderToProject {
 		return ret;
 	}
 
+	@NotNull
 	private File saveToWorkspace(@NotNull HeaderClass displayClass, @Nullable StringTable stringTable) throws HeaderConversionException {
 		final String dialogClassName = displayClass.getClassName();
 
 		int progress = 0;
-		int maxProgress = 1/*create project*/
+		final int maxProgress = 1/*create project*/
 				+ 1/*create dialog object*/
 				+ 1/*create controls*/
 				+ 1/*write to file*/;
@@ -331,7 +332,10 @@ public class HeaderToProject {
 				property.setUsingCustomData(true);
 			}
 
-			checkAndSetToStringTableMacro(property, assignment.getValue().getContent(), project);
+			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
+			if (m != null) {
+				property.setValueToMacro(m);
+			}
 		}
 
 
@@ -365,7 +369,7 @@ public class HeaderToProject {
 		List<ControlPropertySpecification> optional = new ArrayList<>(headerClass.getAssignments().size());
 		for (HeaderAssignment assignment : headerClass.getAssignments()) {
 			//todo handle custom properties because the user may use the dialog class for more than just dialogs!
-			List<ControlPropertyLookup> matchedByName = ControlPropertyLookup.getAllOfByName(assignment.getVariableName());
+			List<ControlPropertyLookup> matchedByName = ControlPropertyLookup.getAllOfByName(assignment.getVariableName(), false);
 			if (matchedByName.isEmpty()) {
 				//todo
 				continue;
@@ -374,9 +378,9 @@ public class HeaderToProject {
 			ControlPropertyLookup usedLookup = null;
 			String macroName = null;
 			for (ControlPropertyLookup lookup : matchedByName) {
-				if (assignment.getValue().getContent().toLowerCase().startsWith("$str_")) {
-					macroName = assignment.getValue().toString().substring(1); //remove $
-				}
+				Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
+				macroName = m == null ? null : m.getKey();
+
 				value = createValueFromAssignment(assignment, lookup.getPropertyType(), project);
 				if (value != null) {
 					usedLookup = lookup;
@@ -436,7 +440,7 @@ public class HeaderToProject {
 				return null;
 			}
 			String assignmentValue = assignment.getValue().getContent();
-			if (assignmentValue.charAt(0) == '"') {
+			if (assignmentValue.charAt(0) == '"' || assignmentValue.charAt(0) == '\'') {
 				try {
 					assignmentValue = removeQuotes(assignmentValue); //chop off quotes
 					return SerializableValue.constructNew(dataContext, PropertyType.String, assignmentValue);
@@ -454,18 +458,21 @@ public class HeaderToProject {
 		return null;
 	}
 
-
-	private void checkAndSetToStringTableMacro(@NotNull ControlProperty property, @NotNull String possibleStr_Key, @NotNull Project project) {
+	@Nullable
+	private Macro checkAndGetStringTableMacro(@NotNull String possibleStr_Key, @NotNull Project project) {
 		possibleStr_Key = possibleStr_Key.toLowerCase();
 		final boolean str_ = possibleStr_Key.startsWith("$str_");
-		final boolean quote_str_ = possibleStr_Key.startsWith("\"$str_");
+		final boolean quote_str_ = possibleStr_Key.startsWith("\"$str_") || possibleStr_Key.startsWith("'$str_");
 		if ((str_ || quote_str_) && project.getStringTable() != null) {
-			StringTableKey key = project.getStringTable().getKeyById(str_ ? possibleStr_Key.substring(1) : possibleStr_Key.substring(2, possibleStr_Key.length() - 1)); //remove $ or "$ at start
-			if (key != null) {
-				property.setValueToMacro(key);
-			}
+			StringTableKey key = project.getStringTable()
+					.getKeyById(
+							str_ ? possibleStr_Key.substring(1) : possibleStr_Key.substring(2, possibleStr_Key.length() - 1)
+					); //remove $ or "$ at start
+			return key;
 		}
+		return null;
 	}
+
 
 	@NotNull
 	private String removeQuotes(String stringLiteral) {

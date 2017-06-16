@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 08/02/2016.
  */
@@ -10,16 +12,18 @@ public class ChangelogUpdate {
 	public enum UpdateType {
 		CHANGE_ADDED, UNDO, REDO
 	}
-	
-	public ChangelogUpdate(UpdateType type, Change change) {
+
+	public ChangelogUpdate(@NotNull UpdateType type, @NotNull Change change) {
 		this.type = type;
 		this.change = change;
 	}
-	
+
+	@NotNull
 	public UpdateType getType() {
 		return type;
 	}
-	
+
+	@NotNull
 	public Change getChange() {
 		return change;
 	}

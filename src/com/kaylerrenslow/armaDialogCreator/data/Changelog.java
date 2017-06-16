@@ -15,18 +15,19 @@ import java.util.LinkedList;
  @since 08/02/2016. */
 public class Changelog {
 
-
+	/** Get the instance stored in an {@link ApplicationData} instance, which is stored in {@link ArmaDialogCreator#getApplicationData()}. */
+	@NotNull
 	public static Changelog getInstance() {
 		return ArmaDialogCreator.getApplicationData().getChangelog();
 	}
 
-	private final LinkedList<Change> undo = new LinkedList<>();
-	private final LinkedList<Change> redo = new LinkedList<>();
-	private final ReadOnlyList<Change> undoReadOnly = new ReadOnlyList<>(undo);
-	private final ReadOnlyList<Change> redoReadOnly = new ReadOnlyList<>(redo);
+	private final LinkedList<ChangeDescriptor> undo = new LinkedList<>();
+	private final LinkedList<ChangeDescriptor> redo = new LinkedList<>();
+	private final ReadOnlyList<ChangeDescriptor> undoReadOnly = new ReadOnlyList<>(undo);
+	private final ReadOnlyList<ChangeDescriptor> redoReadOnly = new ReadOnlyList<>(redo);
 	private final UpdateListenerGroup<ChangelogUpdate> changeUpdateGroup = new UpdateListenerGroup<>();
-	private final LinkedList<ChangeDescriptor> pastChanges = new LinkedList<>();
-	private final ReadOnlyList<ChangeDescriptor> pastChangesReadOnly = new ReadOnlyList<>(pastChanges);
+	private final LinkedList<ChangeDescriptor> recentChanges = new LinkedList<>();
+	private final ReadOnlyList<ChangeDescriptor> recentChangesReadOnly = new ReadOnlyList<>(recentChanges);
 	private int maxChanges;
 
 	/**
@@ -60,19 +61,24 @@ public class Changelog {
 	}
 
 	/**
-	 Add a change to the stack. {@link #getRedoList()} will be cleared
+	 Add a change to the stack. {@link #getRedoList()} will be cleared.
+	 A new {@link ChangeDescriptor} instance will be placed on {@link #getRecentChanges()}
+	 with the given {@link Change} instance and the {@link Change.ChangeType} will be {@link Change.ChangeType#CREATED}.
 
 	 @param change change to add
 	 */
-	public void addChange(Change change) {
-		undo.push(change);
+	public void addChange(@NotNull Change change) {
+		ChangeDescriptor changeDescriptor = new ChangeDescriptor(change, Change.ChangeType.CREATED, System.currentTimeMillis());
+		undo.push(changeDescriptor);
+
 		if (undo.size() >= maxChanges) {
 			while (undo.size() >= maxChanges) {
 				undo.removeLast();
 			}
 		}
-		updateChanges(change, Change.ChangeType.CREATED);
+		updateChanges(changeDescriptor);
 		redo.clear();
+
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.CHANGE_ADDED, change));
 	}
 
@@ -85,10 +91,14 @@ public class Changelog {
 		if (undo.size() == 0) {
 			return;
 		}
-		Change undid = undo.pop();
-		updateChanges(undid, Change.ChangeType.UNDO);
-		redo.push(undid);
+
+		Change undid = undo.pop().getChange();
+
+		ChangeDescriptor changeDescriptor = new ChangeDescriptor(undid, Change.ChangeType.UNDO, System.currentTimeMillis());
+		updateChanges(changeDescriptor);
+		redo.push(changeDescriptor);
 		undid.getRegistrar().undo(undid);
+
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.UNDO, undid));
 	}
 
@@ -101,17 +111,20 @@ public class Changelog {
 		if (redo.size() == 0) {
 			return;
 		}
-		Change c = redo.pop();
-		updateChanges(c, Change.ChangeType.REDO);
-		undo.push(c);
+		Change c = redo.pop().getChange();
+
+		ChangeDescriptor changeDescriptor = new ChangeDescriptor(c, Change.ChangeType.REDO, System.currentTimeMillis());
+		updateChanges(changeDescriptor);
+		undo.push(changeDescriptor);
 		c.getRegistrar().redo(c);
+
 		changeUpdateGroup.update(new ChangelogUpdate(ChangelogUpdate.UpdateType.REDO, c));
 	}
 
-	private void updateChanges(@NotNull Change toAdd, Change.ChangeType changeType) {
-		pastChanges.add(0, new ChangeDescriptor(toAdd, changeType, System.currentTimeMillis()));
-		while (pastChanges.size() >= maxChanges) {
-			pastChanges.removeLast();
+	private void updateChanges(@NotNull ChangeDescriptor toAdd) {
+		recentChanges.addFirst(toAdd);
+		while (recentChanges.size() >= maxChanges) {
+			recentChanges.removeLast();
 		}
 	}
 
@@ -125,7 +138,7 @@ public class Changelog {
 		if (undo.size() == 0) {
 			return null;
 		}
-		return undo.peek();
+		return undo.peek().getChange();
 	}
 
 	/**
@@ -138,26 +151,71 @@ public class Changelog {
 		if (redo.size() == 0) {
 			return null;
 		}
+		return redo.peek().getChange();
+	}
+
+	/**
+	 Get the first {@link ChangeDescriptor} instance to undo with {@link #undo()}
+
+	 @return first {@link ChangeDescriptor}, or null if nothing to undo
+	 */
+	@Nullable
+	public ChangeDescriptor getToUndoDescriptor() {
+		if (undo.size() == 0) {
+			return null;
+		}
+		return undo.peek();
+	}
+
+	/**
+	 Get the first {@link ChangeDescriptor} instance to redo with {@link #redo()}
+
+	 @return first {@link ChangeDescriptor}, or null if nothing to undo
+	 */
+	@Nullable
+	public ChangeDescriptor getToRedoDescriptor() {
+		if (redo.size() == 0) {
+			return null;
+		}
 		return redo.peek();
 	}
 
-	/** Get a list of changes with the most recent at the beginning of list */
+
+	/**
+	 Get a list of changes with the most recent at the beginning of list.
+	 This will include any undo and redo changes that have occurred.
+
+	 @return most recent change, or null if there wasn't one
+	 */
 	@NotNull
-	public ReadOnlyList<ChangeDescriptor> getChanges() {
-		return pastChangesReadOnly;
+	public ReadOnlyList<ChangeDescriptor> getRecentChanges() {
+		return recentChangesReadOnly;
+	}
+
+	/**
+	 Equal to doing {@link #getRecentChanges()} on index = 0
+
+	 @return the most recent change, or null if there wasn't one
+	 */
+	@Nullable
+	public ChangeDescriptor getMostRecentChange() {
+		return recentChanges.isEmpty() ? null : recentChanges.getFirst();
 	}
 
 	/** Get the list of things that can be undone */
-	public ReadOnlyList<Change> getUndoList() {
+	@NotNull
+	public ReadOnlyList<ChangeDescriptor> getUndoList() {
 		return undoReadOnly;
 	}
 
 	/** Get the list of things that can be redone */
-	public ReadOnlyList<Change> getRedoList() {
+	@NotNull
+	public ReadOnlyList<ChangeDescriptor> getRedoList() {
 		return redoReadOnly;
 	}
 
 	/** Add a listener to this group for when a change occurs. */
+	@NotNull
 	public UpdateListenerGroup<ChangelogUpdate> getChangeUpdateGroup() {
 		return changeUpdateGroup;
 	}

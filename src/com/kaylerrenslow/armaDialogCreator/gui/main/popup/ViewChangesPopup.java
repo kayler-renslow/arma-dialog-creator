@@ -19,7 +19,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- View changes collected from {@link Changelog#getChanges()}
+ View changes collected from {@link Changelog#getRecentChanges()}
 
  @author Kayler
  @since 11/19/2016 */
@@ -36,7 +36,7 @@ public class ViewChangesPopup extends HistoryListPopup {
 		@Override
 		public List<HistoryListItem> collectItems() {
 			List<HistoryListItem> list = new LinkedList<>();
-			ReadOnlyList<ChangeDescriptor> pastChanges = Changelog.getInstance().getChanges();
+			ReadOnlyList<ChangeDescriptor> pastChanges = Changelog.getInstance().getRecentChanges();
 			for (ChangeDescriptor pastChange : pastChanges) {
 				list.add(new ChangeHistoryListItem(pastChange));
 			}

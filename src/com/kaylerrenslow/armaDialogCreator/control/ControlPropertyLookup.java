@@ -347,13 +347,15 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	 is equal to find
 
 	 @param find name to find
+	 @param caseSensitive true if case sensitivity matters, false if it doesn't
 	 @return list of matched
 	 */
 	@NotNull
-	public static List<ControlPropertyLookup> getAllOfByName(@NotNull String find) {
+	public static List<ControlPropertyLookup> getAllOfByName(@NotNull String find, boolean caseSensitive) {
 		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
 		for (ControlPropertyLookup lookup : values()) {
-			if (lookup.getPropertyName().equals(find)) {
+			String propertyName = lookup.getPropertyName();
+			if (caseSensitive ? propertyName.equals(find) : propertyName.equalsIgnoreCase(find)) {
 				props.add(lookup);
 			}
 		}

@@ -29,8 +29,6 @@ import java.util.function.Consumer;
  @author Kayler
  @since 05/23/2016. */
 public class ControlClass {
-	public static final ControlClass[] EMPTY = new ControlClass[0];
-
 	private final ControlClassRequirementSpecification specProvider;
 
 	private final List<ControlProperty> requiredProperties = new LinkedList<>();

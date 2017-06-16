@@ -12,12 +12,6 @@ import java.util.Arrays;
  @see ControlClass
  @since 05/22/2016. */
 public class ControlProperty {
-	public static final ControlProperty[] EMPTY = new ControlProperty[0];
-
-	/** Truncates the double to remove insignificant decimal places */
-	public static double truncate(double x) {
-		return MathUtil.truncate(x, 8);
-	}
 
 	private final ValueListener<?> macroListener = new ValueListener<Object>() {
 		@Override
