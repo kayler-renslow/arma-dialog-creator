@@ -2,12 +2,9 @@
 * 
 
 **Changed:**
-* ControlClass.overrideProperty() now removes temp property and inserts into optional as a permanent one instead
-  of removing the property all together
-* Cleaned up the enum names of ControlType and things related to that
-* beginning to redo how ControlProperty documentation is done
-    * aiming for: each ControlType has its own resource bundle. Every ControlProperty that ControlType needs, there will be
-    an entry in the ResourceBundle for it
+* better merge functionality for Changelog updates that involve position updates to a control
+    * an issue was happening that not all relevant position related properties (x,y,w,h) were
+    being stored so the undo/redo actions weren't undo/redo to the correct old state
 
 **Fixed:**
 * 

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.data.changeRegistrars;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlListChange;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -11,8 +12,11 @@ import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  Tracks changes made to {@link Project#getEditingDisplay()} and its {@link ArmaDisplay#getControls()} and {@link ArmaDisplay#getBackgroundControls()} lists. For each {@link ArmaControl} in those
@@ -42,17 +46,14 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					//attempt to merge/combine changes that are similar to reduce changelog's Change count
 					if (latestChangeDescrip != null && latestChangeDescrip.getChangeType() == Change.ChangeType.CREATED) {
 						if (latestChangeDescrip.getChange() instanceof ControlClassChange) {
-							ControlClassChange latestControlClassChangeHead = (ControlClassChange) latestChangeDescrip.getChange();
-							ControlClassChange laterSimilarChange = latestControlClassChangeHead.getLatestSimilarChange();
-							ControlClassChange latestControlClassChange = laterSimilarChange != null ? laterSimilarChange :
-									latestControlClassChangeHead;
+							ControlClassChange latestControlClassChange = (ControlClassChange) latestChangeDescrip.getChange();
 
 							if (latestControlClassChange.isSimilar(newChange)) {
 
 								//Check if the latest change happened less then a second ago.
 								//We want to separate changes that are similar but happened some time ago.
 								if (System.currentTimeMillis() - latestControlClassChange.getTimeCreated() < 1000) {
-									latestControlClassChangeHead.setLaterSimilarChange(newChange);
+									latestControlClassChange.mergeChanges(newChange);
 									return;
 								}
 							}
@@ -96,32 +97,22 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 
 	@Override
 	public void undo(@NotNull Change c) throws ChangeUpdateFailedException {
-		if (c instanceof ControlClassChange) {
-			ControlClassChange classChange = (ControlClassChange) c;
-			disableListener = true;
-
-			if (classChange.getLatestSimilarChange() != null) {
-				classChange.getLatestSimilarChange().getAction().undo();
-			}
-			classChange.getAction().undo();
-
-			disableListener = false;
+		ControlClassChange classChange = (ControlClassChange) c;
+		disableListener = true;
+		for (ChangeAction action : classChange.getActions()) {
+			action.undo();
 		}
+		disableListener = false;
 	}
 
 	@Override
 	public void redo(@NotNull Change c) throws ChangeUpdateFailedException {
-		if (c instanceof ControlClassChange) {
-			ControlClassChange classChange = (ControlClassChange) c;
-			disableListener = true;
-
-			if (classChange.getLatestSimilarChange() != null) {
-				classChange.getLatestSimilarChange().getAction().redo();
-			}
-			classChange.getAction().redo();
-
-			disableListener = false;
+		ControlClassChange classChange = (ControlClassChange) c;
+		disableListener = true;
+		for (ChangeAction action : classChange.getActions()) {
+			action.redo();
 		}
+		disableListener = false;
 	}
 
 	private static class ControlClassChange implements Change {
@@ -130,16 +121,20 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		/** {@link ControlClass} name that triggered the change */
 		private final String className;
 		private String shortName, description;
-		private ControlClassChangeAction action;
-
-		private ControlClassChange laterSimilarChange = null;
-		/** How many times {@link #laterSimilarChange} has been set */
-		private int laterSimilarChangeCount = 0;
+		private List<ChangeAction> actions = new ArrayList<>();
+		/**
+		 Inputs an old {@link ControlClassChange} and outputs the new actions to be used for {@link #actions}
+		 (all of the old actions will be replaced).<p>
+		 This function is used for {@link #mergeChanges(ControlClassChange)}.
+		 If this value is null, old {@link #actions} will be discarded and the newest
+		 change actions will be used for {@link #actions}.
+		 */
+		private Function<ControlClassChange, List<ChangeAction>> mergeActionsFunction;
 
 		private ControlClassChangeType changeType;
 
 		@NotNull
-		private String additionalInformationForCheckingIfSimilar = "";
+		private String stringForCheckingIfSimilar = "";
 
 		public enum ControlClassChangeType {
 			ClassRename, OverrideProperty, ClassExtend,
@@ -156,6 +151,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 
 			className = classUpdate.getControlClass().getClassName();
 			ControlClass controlClass = classUpdate.getControlClass();
+			@NotNull ChangeAction action;
 			if (classUpdate instanceof ControlClassRenameUpdate) {
 				//
 				// rename
@@ -163,7 +159,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				ControlClassRenameUpdate update = (ControlClassRenameUpdate) classUpdate;
 				shortName = bundle.getString("ControlClassChange.Rename.short_name");
 				description = String.format(bundle.getString("ControlClassChange.Rename.description_f"), update.getOldName(), update.getNewName());
-				action = new ControlClassChangeAction() {
+				action = new ChangeAction() {
 					@Override
 					public void undo() {
 						controlClass.setClassName(update.getOldName());
@@ -173,9 +169,15 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					public void redo() {
 						controlClass.setClassName(update.getNewName());
 					}
+
+					@Override
+					@NotNull
+					public String getDebugName() {
+						return "ControlClassRenameUpdate_ChangeAction";
+					}
 				};
 				changeType = ControlClassChangeType.ClassRename;
-				additionalInformationForCheckingIfSimilar = update.getControlClass().getClassName();
+				stringForCheckingIfSimilar = update.getControlClass().getClassName();
 				//
 				//
 				//
@@ -183,7 +185,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				//
 				// property update
 				//
-				handlePropertyUpdate((ControlClassPropertyUpdate) classUpdate);
+				action = handlePropertyUpdate((ControlClassPropertyUpdate) classUpdate);
 				//
 				//
 				//
@@ -200,7 +202,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					shortName = bundle.getString("ControlClassChange.Override.inherit_short_name");
 					description = String.format(bundle.getString("ControlClassChange.Override.inherit_description_f"), propertyName, className);
 				}
-				action = new ControlClassChangeAction() {
+				action = new ChangeAction() {
 					@Override
 					public void undo() {
 						if (update.wasOverridden()) {
@@ -218,9 +220,15 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 							controlClass.inheritProperty(update.getOveridden().getPropertyLookup());
 						}
 					}
+
+					@Override
+					@NotNull
+					public String getDebugName() {
+						return "ControlClassOverridePropertyUpdate_ChangeAction";
+					}
 				};
 				changeType = ControlClassChangeType.OverrideProperty;
-				additionalInformationForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + propertyName;
+				stringForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + propertyName;
 				//
 				//
 				//
@@ -235,7 +243,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				} else {
 					description = String.format(bundle.getString("ControlClassChange.Extend.extend_description_f"), className, update.getNewValue().getClassName());
 				}
-				action = new ControlClassChangeAction() {
+				action = new ChangeAction() {
 					@Override
 					public void undo() {
 						controlClass.extendControlClass(update.getOldValue());
@@ -245,9 +253,15 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					public void redo() {
 						controlClass.extendControlClass(update.getNewValue());
 					}
+
+					@Override
+					@NotNull
+					public String getDebugName() {
+						return "ControlClassExtendUpdate_ChangeAction";
+					}
 				};
 				changeType = ControlClassChangeType.ClassExtend;
-				additionalInformationForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + update.getNewValue();
+				stringForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + update.getNewValue();
 				//
 				//
 				//
@@ -255,16 +269,20 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				throw new IllegalArgumentException("WARNING: ControlClassChangeRegistrar.ControlClassChangeRegistrar(): unknown control class update:" + classUpdate);
 
 			}
+
+			actions.add(action);
 		}
 
-		private void handlePropertyUpdate(@NotNull ControlClassPropertyUpdate classUpdate) throws Exception {
+		private ChangeAction handlePropertyUpdate(@NotNull ControlClassPropertyUpdate classUpdate) throws Exception {
 			ControlPropertyUpdate propertyUpdate = classUpdate.getPropertyUpdate();
 			String propertyName = propertyUpdate.getControlProperty().getName();
-			ControlProperty property = propertyUpdate.getControlProperty();
+			ControlProperty updatedProperty = propertyUpdate.getControlProperty();
 
 			//Use the class name as a prefix to prevent 2 different ControlClass' updates that had the same property names conflicting with each other.
 			//Using an ending null character to separate class name from property name
-			additionalInformationForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0" + propertyName;
+			stringForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0" + propertyName;
+
+			@NotNull ChangeAction changeAction;
 
 			if (propertyUpdate instanceof ControlPropertyValueUpdate) {
 				//
@@ -277,17 +295,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					description = String.format(
 							bundle.getString("ControlClassChange.Property.Value.description_f"), propertyName, update.getOldValue(), update.getNewValue()
 					);
-					action = new ControlClassChangeAction() {
-						@Override
-						public void undo() {
-							property.setValue(update.getOldValue());
-						}
-
-						@Override
-						public void redo() {
-							property.setValue(update.getNewValue());
-						}
-					};
+					changeAction = new PropertyValueChangeAction(updatedProperty, update);
 				} else {
 					throw new Exception();
 				}
@@ -295,9 +303,46 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				changeType = ControlClassChangeType.PropertyValue;
 				if (lookup == ControlPropertyLookup.X || lookup == ControlPropertyLookup.Y || lookup == ControlPropertyLookup.W || lookup == ControlPropertyLookup.H) {
 					//inserted extra null characters to help guarantee no conflicts in property name
-					additionalInformationForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0POS_UPDATE\0";
+					stringForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0POS_UPDATE\0";
 					shortName = bundle.getString("ControlClassChange.Property.Value.control_moved_short_name");
 					description = bundle.getString("ControlClassChange.Property.Value.control_moved_description");
+
+					//using a merge function so that all x,y,w,h property updates are stored together as 1 change
+					mergeActionsFunction = otherClassChange -> {
+						List<ChangeAction> actions = new ArrayList<>(4);
+						List<String> propertiesUpdatedInActions = new ArrayList<>();
+
+						List<ChangeAction> allActionsToMerge = new ArrayList<>(this.actions.size() + otherClassChange.actions.size());
+						allActionsToMerge.addAll(this.actions);
+						//append otherClassChange's actions so that the old are iterated first
+						//and the old are iterated last
+						allActionsToMerge.addAll(otherClassChange.actions);
+
+						for (ChangeAction action : allActionsToMerge) {
+							if (action instanceof PropertyValueChangeAction) {
+								PropertyValueChangeAction valueChangeAction = (PropertyValueChangeAction) action;
+
+								String updatedPropertyName = valueChangeAction.getUpdatedProperty().getName();
+
+								//if the property isn't already in the actions list, add it
+								int i = propertiesUpdatedInActions.indexOf(updatedPropertyName);
+								if (i < 0) {
+									actions.add(action);
+									propertiesUpdatedInActions.add(updatedPropertyName);
+								} else {
+									//use newest update, but change the old value
+									//to use the old action's old value
+									ChangeAction oldAction = actions.set(i, action);
+									valueChangeAction.setOldValue(((PropertyValueChangeAction) oldAction).oldValue);
+								}
+							} else {
+								throw new IllegalStateException("attempting to merge unrelated actions. My changeAction="
+										+ changeAction.getDebugName()
+										+ " and otherClassChange.description=" + otherClassChange.getDescription());
+							}
+						}
+						return actions;
+					};
 				}
 
 				//
@@ -319,15 +364,21 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 							bundle.getString("ControlClassChange.Property.Macro.Remove.description_f"), propertyName, update.getOldMacro().getKey()
 					);
 				}
-				action = new ControlClassChangeAction() {
+				changeAction = new ChangeAction() {
 					@Override
 					public void undo() {
-						property.setValueToMacro(update.getOldMacro());
+						updatedProperty.setValueToMacro(update.getOldMacro());
 					}
 
 					@Override
 					public void redo() {
-						property.setValueToMacro(update.getNewMacro());
+						updatedProperty.setValueToMacro(update.getNewMacro());
+					}
+
+					@Override
+					@NotNull
+					public String getDebugName() {
+						return "ControlPropertyMacroUpdate_ChangeAction";
 					}
 				};
 				changeType = ControlClassChangeType.PropertyMacro;
@@ -363,23 +414,29 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 						);
 					}
 				}
-				action = new ControlClassChangeAction() {
+				changeAction = new ChangeAction() {
 					@Override
 					public void undo() {
 						if (update.isSetValueUpdate()) {
-							property.setCustomDataValue(update.getOldCustomData());
+							updatedProperty.setCustomDataValue(update.getOldCustomData());
 						} else {
-							property.setUsingCustomData(!update.isUsingCustomData());
+							updatedProperty.setUsingCustomData(!update.isUsingCustomData());
 						}
 					}
 
 					@Override
 					public void redo() {
 						if (update.isSetValueUpdate()) {
-							property.setCustomDataValue(update.getNewCustomData());
+							updatedProperty.setCustomDataValue(update.getNewCustomData());
 						} else {
-							property.setUsingCustomData(update.isUsingCustomData());
+							updatedProperty.setUsingCustomData(update.isUsingCustomData());
 						}
+					}
+
+					@Override
+					@NotNull
+					public String getDebugName() {
+						return "ControlPropertyCustomDataUpdate_ChangeAction";
 					}
 				};
 				changeType = ControlClassChangeType.PropertyCustomData;
@@ -397,6 +454,8 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			} else {
 				throw new IllegalArgumentException("WARNING: ControlClassChangeRegistrar.handlePropertyUpdate(): unknown control property update:" + propertyUpdate);
 			}
+
+			return changeAction;
 		}
 
 		/** @return epoch that this object was created */
@@ -404,38 +463,18 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			return timeCreated;
 		}
 
-		/**
-		 Instead of flooding the changelog with barely different {@link ControlClassChange} instances, we will combine
-		 them into a {@link ControlClassChange} and invoke each instance independently.
-		 How instances are determined to be combined is up to the {@link ControlClassChangeRegistrar}, however,
-		 {@link #isSimilar(ControlClassChange)} will be considered.
-		 This instance shouldn't internally affect this list and should only be mutated by the {@link ControlClassChangeRegistrar}.
-		 <p>
-		 <p>
-		 <b>For undo and redo:</b> this must be executed before
-		 this instance's undo/redo action (inside {@link #getAction()}) method is invoked<br>
-
-		 @return this instance's latest similar change, or null if not set
-		 */
-		@Nullable
-		public ControlClassChange getLatestSimilarChange() {
-			return laterSimilarChange;
-		}
-
-		public void setLaterSimilarChange(@NotNull ControlClassChange laterSimilarChange) {
-			this.laterSimilarChange = laterSimilarChange;
-			laterSimilarChangeCount++;
-		}
-
 		/** @return true if the change is similar, false if it isn't */
 		public boolean isSimilar(@NotNull ControlClassChange change) {
 			return this.changeType == change.changeType &&
-					this.additionalInformationForCheckingIfSimilar.equals(change.additionalInformationForCheckingIfSimilar);
+					this.stringForCheckingIfSimilar.equals(change.stringForCheckingIfSimilar);
 		}
 
-		@NotNull
-		private String getMoreLabel(int count) {
-			return "\n..." + String.format(bundle.getString("more_f"), count) + "...\n";
+		public void mergeChanges(@NotNull ControlClassChange change) {
+			if (this.mergeActionsFunction == null) {
+				this.actions = change.actions;
+				return;
+			}
+			this.actions = mergeActionsFunction.apply(change);
 		}
 
 		@NotNull
@@ -447,16 +486,8 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		@NotNull
 		@Override
 		public String getDescription() {
-			String moreLabel = getMoreLabel(laterSimilarChangeCount);
-			return className + ":\n" + (
-					laterSimilarChange != null ?
-							(
-									laterSimilarChange.description + moreLabel + description
-							)
-							: description
-			);
+			return className + ":\n" + description;
 		}
-
 
 		@NotNull
 		@Override
@@ -465,14 +496,67 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		}
 
 		@NotNull
-		public ControlClassChangeAction getAction() {
-			return action;
+		public List<ControlClassChangeRegistrar.ChangeAction> getActions() {
+			return actions;
+		}
+
+		private static class PropertyValueChangeAction implements ChangeAction {
+			private final ControlProperty updatedProperty;
+			private SerializableValue oldValue, newValue;
+
+			public PropertyValueChangeAction(@NotNull ControlProperty updatedProperty, @NotNull ControlPropertyValueUpdate update) {
+				this.updatedProperty = updatedProperty;
+				oldValue = update.getOldValue();
+				newValue = update.getNewValue();
+			}
+
+			@NotNull
+			public ControlProperty getUpdatedProperty() {
+				return updatedProperty;
+			}
+
+			@Nullable
+			public SerializableValue getOldValue() {
+				return oldValue;
+			}
+
+			public void setOldValue(@Nullable SerializableValue oldValue) {
+				this.oldValue = oldValue;
+			}
+
+			@Nullable
+			public SerializableValue getNewValue() {
+				return newValue;
+			}
+
+			public void setNewValue(@Nullable SerializableValue newValue) {
+				this.newValue = newValue;
+			}
+
+			@Override
+			public void undo() {
+				updatedProperty.setValue(oldValue);
+			}
+
+			@Override
+			public void redo() {
+				updatedProperty.setValue(newValue);
+			}
+
+			@Override
+			@NotNull
+			public String getDebugName() {
+				return "ControlPropertyValueChange_ChangeAction";
+			}
 		}
 	}
 
-	private interface ControlClassChangeAction {
+	private interface ChangeAction {
 		void undo();
 
 		void redo();
+
+		@NotNull String getDebugName();
 	}
+
 }

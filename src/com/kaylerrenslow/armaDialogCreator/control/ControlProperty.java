@@ -394,7 +394,7 @@ public class ControlProperty {
 		}
 		ControlProperty other = (ControlProperty) o;
 
-		if (getPropertyLookup() != other.getPropertyLookup()) {
+		if (!getName().equals(other.getName())) {
 			return false;
 		}
 
@@ -598,6 +598,11 @@ public class ControlProperty {
 		if (defaultValue == null && setDefaultValue) {
 			setDefaultValue(false, value);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
 	}
 
 	/**
