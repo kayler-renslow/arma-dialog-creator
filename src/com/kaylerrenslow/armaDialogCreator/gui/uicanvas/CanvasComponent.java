@@ -17,10 +17,10 @@ public interface CanvasComponent extends Region {
 	void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext);
 	
 	void setBackgroundColor(@NotNull Color paint);
-	
-	Color getBackgroundColor();
-	
-	Border getBorder();
+
+	@NotNull Color getBackgroundColor();
+
+	@Nullable Border getBorder();
 	
 	void setBorder(@Nullable Border border);
 	
@@ -57,4 +57,10 @@ public interface CanvasComponent extends Region {
 			return 0;
 		}
 	};
+
+	/** @return a string that contains information on the position */
+	@NotNull
+	default String getPositionInformation() {
+		return String.format("x:%d, y:%d, width:%d, height:%d, area:%d", getLeftX(), getTopY(), getWidth(), getHeight(), getArea());
+	}
 }

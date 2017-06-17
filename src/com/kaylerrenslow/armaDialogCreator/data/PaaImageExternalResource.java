@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -23,6 +24,7 @@ public class PaaImageExternalResource extends ExternalResource {
 		super(convertedImage, new KeyValueString[]{new KeyValueString(keyPaaImagePath, paaImagePath.getPath())});
 	}
 
+	@Nullable
 	public static File getPaaImagePath(@NotNull ExternalResource resource) {
 		KeyValueString kv = resource.getPropertyValue(keyPaaImagePath);
 		if (kv == null) {
@@ -32,6 +34,7 @@ public class PaaImageExternalResource extends ExternalResource {
 	}
 
 	/** Get the path to the converted .paa image (stored as a .png) */
+	@Nullable
 	public File getPaaImagePath() {
 		return getPaaImagePath(this);
 	}

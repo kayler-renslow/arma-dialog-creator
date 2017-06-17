@@ -58,7 +58,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (paintPreview(dataContext)) {
 			blinkControlHandler.paint(gc, dataContext);
 		}
-
 		super.paint(gc, dataContext);
 		textRenderer.paint(gc);
 	}
@@ -68,6 +67,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		this.textRenderer.setTextColor(color);
 	}
 
+	@NotNull
 	@Override
 	public Color getTextColor() {
 		return textRenderer.getTextColor();

@@ -61,7 +61,7 @@ public class ExternalResource {
 		this.properties = properties;
 	}
 
-	/** Return true if the external resource links to a file that exists, return false if the linked false doesn't exist */
+	/** @return true if the external resource links to a file that exists, return false if the linked false doesn't exist */
 	public boolean resourceExists() {
 		return externalFile.exists();
 	}

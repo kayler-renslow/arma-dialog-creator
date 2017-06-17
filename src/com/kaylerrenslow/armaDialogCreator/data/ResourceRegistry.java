@@ -33,10 +33,12 @@ public class ResourceRegistry {
 	}
 
 	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path. */
+	@NotNull
 	public File getResourcesFilePathForName(@NotNull String fileName) {
 		return new File(resourcesFile + "/" + fileName);
 	}
 
+	@NotNull
 	public List<ExternalResource> getExternalResourceList() {
 		return externalResourceList;
 	}

@@ -85,10 +85,12 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		this.backgroundColor = paint;
 	}
 
+	@NotNull
 	public Color getBackgroundColor() {
 		return backgroundColor;
 	}
 
+	@Nullable
 	public Border getBorder() {
 		return border;
 	}
@@ -101,6 +103,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		this.textColor = color;
 	}
 
+	@NotNull
 	public Color getTextColor() {
 		return textColor;
 	}
@@ -173,7 +176,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	/** Set the position equal to the given region */
 	@Override
-	public void setPosition(Region r) {
+	public void setPosition(@NotNull Region r) {
 		setPosition(r.getX1(), r.getY1(), r.getX2(), r.getY2());
 	}
 
@@ -270,7 +273,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	/** Check to see if this region is strictly bigger than the given region and if the given region is inside this one */
 	@Override
-	public boolean contains(Region r) {
+	public boolean contains(@NotNull Region r) {
 		if (getLeftX() < r.getLeftX() && getTopY() < r.getTopY()) {
 			if (getRightX() > r.getRightX() && getBottomY() > r.getBottomY()) {
 				return true;

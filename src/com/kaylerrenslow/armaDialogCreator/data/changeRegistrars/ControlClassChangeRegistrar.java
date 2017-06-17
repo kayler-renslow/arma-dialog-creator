@@ -337,8 +337,8 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 								}
 							} else {
 								throw new IllegalStateException("attempting to merge unrelated actions. My changeAction="
-										+ changeAction.getDebugName()
-										+ " and otherClassChange.description=" + otherClassChange.getDescription());
+										+ changeAction.getDebugName() + ", unrelated action=" + action.getDebugName()
+										+ ", otherClassChange.description=" + otherClassChange.getDescription());
 							}
 						}
 						return actions;

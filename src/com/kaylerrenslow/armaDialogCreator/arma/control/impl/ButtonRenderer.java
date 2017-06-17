@@ -96,6 +96,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		this.textRenderer.setTextColor(color);
 	}
 
+	@NotNull
 	@Override
 	public Color getTextColor() {
 		return textRenderer.getTextColor();

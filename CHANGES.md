@@ -1,10 +1,9 @@
 **Added:**
-* 
+* ArmaControlRenderer.paintCheckerboard() for use when a background/image can't be loaded
 
 **Changed:**
-* better merge functionality for Changelog updates that involve position updates to a control
-    * an issue was happening that not all relevant position related properties (x,y,w,h) were
-    being stored so the undo/redo actions weren't undo/redo to the correct old state
+* tweaked PositionCalculator to be more pixel perfect with rendering
+    * now using Math.round instead of floor or ceil
 
 **Fixed:**
 * 

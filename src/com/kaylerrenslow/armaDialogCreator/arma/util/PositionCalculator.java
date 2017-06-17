@@ -1,5 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
+import org.jetbrains.annotations.NotNull;
+
 import static com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision.format;
 
 /**
@@ -58,6 +60,7 @@ public class PositionCalculator {
 	 @param screenX x screen position
 	 @return "Safe Zone" expression String
 	 */
+	@NotNull
 	public static String getSafeZoneExpressionX(ArmaResolution resolution, double screenX) {
 		final double percentXCanvas = screenX / resolution.getScreenWidth();
 		return SAFE_ZONE_X + " + " + SAFE_ZONE_W + " * " + format(percentXCanvas);
@@ -76,6 +79,7 @@ public class PositionCalculator {
 	 @param screenY y screen position
 	 @return "Safe Zone" expression String
 	 */
+	@NotNull
 	public static String getSafeZoneExpressionY(ArmaResolution resolution, double screenY) {
 		final double percentYCanvas = screenY / resolution.getScreenHeight();
 		return SAFE_ZONE_Y + " + " + SAFE_ZONE_H + " * " + format(percentYCanvas);
@@ -94,6 +98,7 @@ public class PositionCalculator {
 	 @param screenW on-screen width
 	 @return "Safe Zone" expression String
 	 */
+	@NotNull
 	public static String getSafeZoneExpressionW(ArmaResolution resolution, double screenW) {
 		final double percentWCanvas = screenW / resolution.getScreenWidth();
 		return SAFE_ZONE_W + " * " + format(percentWCanvas);
@@ -112,6 +117,7 @@ public class PositionCalculator {
 	 @param screenH on-screen height
 	 @return "Safe Zone" expression String
 	 */
+	@NotNull
 	public static String getSafeZoneExpressionH(ArmaResolution resolution, double screenH) {
 		final double percentHCanvas = screenH / resolution.getScreenHeight();
 		return SAFE_ZONE_H + " * " + format(percentHCanvas);
@@ -125,7 +131,8 @@ public class PositionCalculator {
 	 @return screen x position
 	 */
 	public static int getScreenX(ArmaResolution resolution, double percentX) {
-		return (int) (resolution.getViewportX() + percentX * resolution.getViewportWidth());
+		//do not change math.round because it makes the rendering correct (June 17, 2017)
+		return (int) Math.round(resolution.getViewportX() + percentX * resolution.getViewportWidth());
 	}
 	
 	/**
@@ -136,7 +143,8 @@ public class PositionCalculator {
 	 @return screen y position
 	 */
 	public static int getScreenY(ArmaResolution resolution, double percentY) {
-		return (int) Math.ceil(resolution.getViewportY() + percentY * resolution.getViewportHeight());
+		//do not change math.round because it makes the rendering correct (June 17, 2017)
+		return (int) Math.round(resolution.getViewportY() + percentY * resolution.getViewportHeight());
 	}
 	
 	
@@ -148,7 +156,8 @@ public class PositionCalculator {
 	 @return on screen width
 	 */
 	public static int getScreenWidth(ArmaResolution resolution, double percentW) {
-		return (int) (resolution.getViewportWidth() * percentW);
+		//do not change math.round because it makes the rendering correct (June 17, 2017)
+		return (int) Math.round(resolution.getViewportWidth() * percentW);
 	}
 	
 	/**
@@ -159,7 +168,8 @@ public class PositionCalculator {
 	 @return on screen height
 	 */
 	public static int getScreenHeight(ArmaResolution resolution, double percentH) {
-		return (int) Math.ceil(resolution.getViewportHeight() * percentH);
+		//do not change math.round because it makes the rendering correct (June 17, 2017)
+		return (int) Math.round(resolution.getViewportHeight() * percentH);
 	}
 	
 	/**

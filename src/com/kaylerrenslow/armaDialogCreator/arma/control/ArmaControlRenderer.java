@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ViewportCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -353,7 +354,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	@Override
-	public void setPosition(Region r) {
+	public void setPosition(@NotNull Region r) {
 		super.setPosition(r);
 		recalcPosition();
 	}
@@ -428,7 +429,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		//enable observer is already handled
 	}
 
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		setXSilent((Expression) xProperty.getValue());
 		setYSilent((Expression) yProperty.getValue());
 		setWSilent((Expression) wProperty.getValue());
@@ -445,5 +446,45 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	@NotNull
 	public UpdateListenerGroup<Resolution> getResolutionUpdateGroup() {
 		return resolutionUpdateGroup;
+	}
+
+
+	/**
+	 Paint a checkerboard with the given {@link GraphicsContext} and coordinates
+
+	 @param gc context
+	 @param x x pos
+	 @param y y pos
+	 @param w width
+	 @param h height
+	 @param color1 one of the colors to use
+	 @param color2 other color to use
+	 */
+	public static void paintCheckerboard(@NotNull GraphicsContext gc, int x, int y, int w, int h, @NotNull Color color1, @NotNull Color color2) {
+		final int numBoxes = 10;
+		final int boxWidth = w / numBoxes;
+		final int boxHeight = h / numBoxes;
+		final int remainderWidth = w - numBoxes * boxWidth;
+		final int remainderHeight = h - numBoxes * boxHeight;
+
+		gc.save();
+
+		for (int row = 0; row < numBoxes || (row == numBoxes && remainderHeight > 0); row++) {
+			//doing <= to make sure that the full height and width is painted
+			//since the aspect ratio of the checkerboard may not be equal to aspect ratio of the given width and height
+
+			int yy = y + row * boxHeight;
+			for (int box = 0; box < numBoxes || (box == numBoxes && remainderWidth > 0); box++) {
+				gc.setStroke((box + row) % 2 == 0 ? color1 : color2);
+				int xx = x + box * boxWidth;
+				Region.fillRectangle(
+						gc, xx, yy,
+						xx + (box == numBoxes ? remainderWidth : boxWidth),
+						yy + (row == numBoxes ? remainderHeight : boxHeight)
+				);
+			}
+		}
+
+		gc.restore();
 	}
 }
