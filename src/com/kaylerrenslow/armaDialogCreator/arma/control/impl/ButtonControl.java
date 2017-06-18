@@ -81,6 +81,7 @@ public class ButtonControl extends ArmaControl {
 	};
 
 	public ButtonControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.Button, name, SPEC_PROVIDER, idc, ControlStyle.CENTER.getStyleGroup(), resolution, RendererLookup.Button, env, registry);
+		super(ControlType.Button, name, SPEC_PROVIDER, idc, resolution, RendererLookup.Button, env, registry);
+		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
 	}
 }

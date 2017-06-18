@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
  @author Kayler
  @since 07/19/2016. */
 public class ResourceRegistry {
-	private final List<ExternalResource> externalResourceList = new ArrayList<>();
+	private final List<ExternalResource> resourceList = new ArrayList<>();
 
 	public static final String RESOURCES_FILE_NAME = ".adc_resources";
 
@@ -39,8 +40,17 @@ public class ResourceRegistry {
 	}
 
 	@NotNull
-	public List<ExternalResource> getExternalResourceList() {
-		return externalResourceList;
+	public List<ExternalResource> getResourceList() {
+		return resourceList;
 	}
 
+	@Nullable
+	public ExternalResource getResourceByFile(@NotNull File f) {
+		for (ExternalResource resource : resourceList) {
+			if (resource.getExternalFile().equals(f)) {
+				return resource;
+			}
+		}
+		return null;
+	}
 }

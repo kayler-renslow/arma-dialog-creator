@@ -1,9 +1,11 @@
 **Added:**
-* ArmaControlRenderer.paintCheckerboard() for use when a background/image can't be loaded
+* image rendering to Static control
+    * when the image can't be loaded, a checkerboard with red and the control's background color will be painted
+* when the background color can't be loaded for static control, a checkerboard with black
+  and the control's background color will be painted
 
 **Changed:**
-* tweaked PositionCalculator to be more pixel perfect with rendering
-    * now using Math.round instead of floor or ceil
+* 
 
 **Fixed:**
 * 

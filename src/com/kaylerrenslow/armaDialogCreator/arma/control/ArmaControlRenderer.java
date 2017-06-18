@@ -5,9 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -46,9 +44,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
-	protected final ControlProperty styleProperty, xProperty, yProperty, wProperty, hProperty;
+	protected final ControlProperty xProperty, yProperty, wProperty, hProperty;
 	private final Env env;
-	private ControlStyleGroup style = ControlStyle.NA.getStyleGroup();
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
 
@@ -67,8 +64,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 				}
 			}
 		});
-		styleProperty = control.findRequiredProperty(ControlPropertyLookup.STYLE);
-		styleProperty.setValueIfAbsent(true, style);
+
 		xProperty = control.findRequiredProperty(ControlPropertyLookup.X);
 		yProperty = control.findRequiredProperty(ControlPropertyLookup.Y);
 		wProperty = control.findRequiredProperty(ControlPropertyLookup.W);
@@ -328,17 +324,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	@NotNull
 	public ValueObserver<AColor> getBackgroundColorObserver() {
 		return globalBackgroundColorObserver;
-	}
-
-	/** Set and define the style control property */
-	protected final void defineStyle(ControlStyleGroup style) {
-		styleProperty.setValue(style);
-		setStyle(style);
-	}
-
-	/** Just set the style without telling the {@link ValueObserver} instance */
-	protected final void setStyle(ControlStyleGroup style) {
-		this.style = style;
 	}
 
 	@Override

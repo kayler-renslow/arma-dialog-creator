@@ -51,12 +51,11 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 
 	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(ControlType.ControlsGroup, name, SPEC_PROVIDER, resolution, renderer, env, registry);
-		defineStyle(ControlStyle.NA.getStyleGroup());
 	}
 
 	protected ArmaControlGroup(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer,
 							   @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.ControlsGroup, name, SPEC_PROVIDER, idc, ControlStyle.NA.getStyleGroup(), resolution, renderer, env, registry);
+		super(ControlType.ControlsGroup, name, SPEC_PROVIDER, idc, resolution, renderer, env, registry);
 	}
 
 	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,

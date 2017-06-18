@@ -46,7 +46,7 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement).trim());
 			}
 			ExternalResource externalResource = new ExternalResource(new File(XmlUtil.getImmediateTextContent(externalResourceElement).trim()), keyValues);
-			resourceRegistry.getExternalResourceList().add(externalResource);
+			resourceRegistry.getResourceList().add(externalResource);
 		}
 	}
 

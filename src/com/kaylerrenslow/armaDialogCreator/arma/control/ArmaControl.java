@@ -4,7 +4,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -90,20 +89,17 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	 @param type type of the control
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param idc control id (-1 if doesn't matter)
-	 @param style style of the control
 	 @param resolution resolution to use
 	 @param rendererLookup renderer for the control
 	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
-	public ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlStyleGroup style,
+	public ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc,
 					   @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		this(name, provider, resolution, rendererLookup, env, registry);
 		checkControlType(type);
-		renderer.styleProperty.setDefaultValue(false, style);
 
 		defineType(type);
 		idcProperty.setDefaultValue(false, idc);
-		defineStyle(style);
 	}
 
 	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
@@ -167,11 +163,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return idcProperty;
 	}
 
-	/** Set and define the style control property */
-	protected final void defineStyle(ControlStyleGroup style) {
-		renderer.defineStyle(style);
-	}
-
 	/** Set and define the access property */
 	public final void defineAccess(int access) {
 		this.accessProperty.setValue(access);
@@ -202,23 +193,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return rerenderUpdateGroup;
 	}
 
-	@NotNull
-	public static ArmaControl createControl(@NotNull ControlType type, @NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider,
-											@NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.ControlsGroup) {
-			return new ArmaControlGroup(specification, provider, resolution, rendererLookup, env, registry);
-		}
-		return new ArmaControl(specification, provider, resolution, rendererLookup, env, registry);
-	}
-
-	@NotNull
-	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc, @NotNull ControlStyleGroup style,
-											@NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.ControlsGroup) {
-			return new ArmaControlGroup(name, idc, resolution, rendererLookup, env, registry);
-		}
-		return new ArmaControl(type, name, provider, idc, style, resolution, rendererLookup, env, registry);
-	}
 
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,

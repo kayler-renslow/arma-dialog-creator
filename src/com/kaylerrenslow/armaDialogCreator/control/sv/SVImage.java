@@ -19,21 +19,22 @@ public class SVImage extends SerializableValue {
 			return new SVImage(new File(values[0]));
 		}
 	};
-	
-	private File imageRelativePath;
-	
-	public SVImage(File imageRelativePath) {
-		super(imageRelativePath.getPath());
-		setImageRelativePath(imageRelativePath);
+
+	private File imageFile;
+
+	public SVImage(@NotNull File imageFile) {
+		super(imageFile.getPath());
+		setImageFile(imageFile);
 	}
-	
-	public File getImageRelativePath() {
-		return imageRelativePath;
+
+	@NotNull
+	public File getImageFile() {
+		return imageFile;
 	}
-	
-	public void setImageRelativePath(File imageRelativePath) {
-		this.imageRelativePath = imageRelativePath;
-		valuesAsArray[0] = imageRelativePath.getPath();
+
+	public void setImageFile(@NotNull File imageFile) {
+		this.imageFile = imageFile;
+		valuesAsArray[0] = imageFile.getPath();
 	}
 	
 	@Override
@@ -44,7 +45,7 @@ public class SVImage extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVImage(imageRelativePath);
+		return new SVImage(imageFile);
 	}
 
 	@NotNull
@@ -60,7 +61,7 @@ public class SVImage extends SerializableValue {
 		}
 		if(o instanceof SVImage){
 			SVImage other = (SVImage) o;
-			return this.imageRelativePath.equals(other.imageRelativePath);
+			return this.imageFile.equals(other.imageFile);
 		}
 		return false;
 	}

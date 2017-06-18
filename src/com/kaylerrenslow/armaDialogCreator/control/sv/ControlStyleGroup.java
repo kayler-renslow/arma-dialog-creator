@@ -10,7 +10,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- Created by Kayler on 08/05/2016.
+ A {@link ControlStyleGroup} has a 1 length {@link #getAsStringArray()}.
+ @author Kayler
+ @since 08/05/2016
  */
 public class ControlStyleGroup extends SerializableValue {
 	private ControlStyle[] values;

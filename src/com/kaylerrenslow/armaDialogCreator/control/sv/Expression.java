@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
 /**
  Expression value that is used for {@link ExpressionInterpreter} and is
@@ -64,7 +65,12 @@ public class Expression extends SerializableValue {
 
 	@NotNull
 	public Value getValue() {
-		Value v = SHARED_INTERPRETER.evaluate(valuesAsArray[0], env).get(); //do not cache because the environment may change;
+		Value v = null; //do not cache because the environment may change;
+		try {
+			v = SHARED_INTERPRETER.evaluate(valuesAsArray[0], env).get(4, TimeUnit.SECONDS);
+		} catch (InterruptedException ignore) {
+
+		}
 		if (v instanceof Value.NumVal) {
 			return v;
 		}

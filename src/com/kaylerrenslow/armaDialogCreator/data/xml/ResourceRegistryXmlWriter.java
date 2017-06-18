@@ -64,7 +64,7 @@ public class ResourceRegistryXmlWriter {
 
 	public void write(@NotNull XmlWriterOutputStream stm) throws IOException {
 		stm.write("<external-resources>");
-		for (ExternalResource resource : resourceRegistry.getExternalResourceList()) {
+		for (ExternalResource resource : resourceRegistry.getResourceList()) {
 			writeResource(stm, resource);
 		}
 		stm.write("</external-resources>");

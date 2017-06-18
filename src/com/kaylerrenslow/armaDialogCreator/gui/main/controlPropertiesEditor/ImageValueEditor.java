@@ -299,8 +299,8 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			Thread.sleep(500); //show that there was success for a brief moment to not to confuse user
 
 			ExternalResource resource = new PaaImageExternalResource(toConvert, convertDest);
-			WorkspaceResourceRegistry.getInstance().getExternalResourceList().add(resource);
-			Project.getCurrentProject().getResourceRegistry().getExternalResourceList().add(resource);
+			WorkspaceResourceRegistry.getInstance().getResourceList().add(resource);
+			Project.getCurrentProject().getResourceRegistry().getResourceList().add(resource);
 
 			return new SVImage(convertDest);
 		}

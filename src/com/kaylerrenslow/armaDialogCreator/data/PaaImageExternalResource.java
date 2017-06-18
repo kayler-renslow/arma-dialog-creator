@@ -12,7 +12,11 @@ import java.io.File;
  @author Kayler
  @since 07/19/2016. */
 public class PaaImageExternalResource extends ExternalResource {
-	private static final String keyPaaImagePath = "paa-image-path";
+	/**
+	 Key used for the original .paa image. To get the .paa image file path,
+	 use key with {@link #getPropertyValue(String)}
+	 */
+	public static final String keyPaaImagePath = "paa-image-path";
 
 	/**
 	 Create a link for a .paa image
