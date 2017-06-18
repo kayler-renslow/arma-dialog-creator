@@ -5,6 +5,7 @@ import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,7 +44,14 @@ public class ValueObserver<V> implements Observable {
 		}
 		V oldValue = this.value;
 		this.value = newValue;
-		for (ValueListener<V> listener : valueListeners) {
+
+		Iterator<ValueListener<V>> iter = valueListeners.iterator();
+		while (iter.hasNext()) {
+			ValueListener<V> listener = iter.next();
+			if (listener.hasExpired()) {
+				iter.remove();
+				continue;
+			}
 			listener.valueUpdated(this, oldValue, this.value);
 		}
 

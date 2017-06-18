@@ -157,6 +157,11 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 
+	@Override
+	public boolean displayFullWidth() {
+		return true;
+	}
+
 	private static class ConvertingPaaPopup extends StagePopup<VBox> {
 
 		private final ProgressBar progressBar = new ProgressBar(0);

@@ -1,7 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
@@ -32,7 +34,7 @@ import java.util.List;
  @since 01/29/2017 */
 class ControlPropertyValueEditors {
 	/** Used for when a set amount of options are available (uses radio button group for option selecting) */
-	static class ControlPropertyInputOption extends FlowPane implements ControlPropertyValueEditor {
+	static class ControlPropertyOptionEditor extends FlowPane implements ControlPropertyValueEditor {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
@@ -56,7 +58,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyInputOption(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ControlPropertyOptionEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
 			ControlPropertyValueEditor.modifyRawInput(rawInput, controlProperty);
@@ -68,7 +70,7 @@ class ControlPropertyValueEditors {
 				throw new IllegalStateException("options shouldn't be null");
 			}
 			radioButtons = new ArrayList<>(lookup.getOptions().length);
-			for (ControlPropertyOption option : lookup.getOptions()) {
+			for (com.kaylerrenslow.armaDialogCreator.control.ControlPropertyOption option : lookup.getOptions()) {
 				if (option == null) {
 					throw new IllegalStateException("option shouldn't be null");
 				}
@@ -161,7 +163,7 @@ class ControlPropertyValueEditors {
 		}
 	}
 
-	static class ControlStylePropertyInput extends ControlStyleValueEditor implements ControlPropertyValueEditor {
+	static class ControlStyleEditor extends ControlStyleValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<ControlStyleGroup> editorValueListener = new ReadOnlyValueListener<ControlStyleGroup>() {
@@ -181,12 +183,12 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public ControlStylePropertyInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		public ControlStyleEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
-				for (ControlStyle style : menuButton.getItems()) {
+				for (com.kaylerrenslow.armaDialogCreator.control.ControlStyle style : menuButton.getItems()) {
 					menuButton.bindTooltip(style, style.documentation);
 				}
 			}
@@ -251,7 +253,7 @@ class ControlPropertyValueEditors {
 	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link Expression}
 	 */
 	@SuppressWarnings("unchecked")
-	static abstract class ControlPropertyInputField<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyValueEditor {
+	private static abstract class InputFieldEditor<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final Class<C> macroTypeClass;
@@ -273,7 +275,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyInputField(@NotNull Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
+		InputFieldEditor(@NotNull Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
 			this.macroTypeClass = macroTypeClass;
 
@@ -333,14 +335,14 @@ class ControlPropertyValueEditors {
 		}
 	}
 
-	static class ControlPropertyInputFieldString extends ControlPropertyInputField<SVString> {
-		ControlPropertyInputFieldString(ControlClass control, ControlProperty controlProperty) {
+	static class StringEditor extends InputFieldEditor<SVString> {
+		StringEditor(ControlClass control, ControlProperty controlProperty) {
 			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.LookupBundle().getString("PropertyType.string"));
 		}
 	}
 
-	static class ControlPropertyInputFieldDouble extends ControlPropertyInputField<Expression> {
-		ControlPropertyInputFieldDouble(ControlClass control, ControlProperty controlProperty) {
+	static class FloatEditor extends InputFieldEditor<Expression> {
+		FloatEditor(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_FLOAT),
 					Lang.LookupBundle().getString("PropertyType.float")
@@ -348,8 +350,8 @@ class ControlPropertyValueEditors {
 		}
 	}
 
-	static class ControlPropertyInputFieldInteger extends ControlPropertyInputField<Expression> {
-		ControlPropertyInputFieldInteger(ControlClass control, ControlProperty controlProperty) {
+	static class IntegerEditor extends InputFieldEditor<Expression> {
+		IntegerEditor(ControlClass control, ControlProperty controlProperty) {
 			super(Expression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_INT),
 					Lang.LookupBundle().getString("PropertyType.int")
@@ -361,7 +363,7 @@ class ControlPropertyValueEditors {
 	 Used for when control property requires color input.
 	 Use this only when the ControlProperty's value is of type {@link AColor}
 	 */
-	static class ControlPropertyColorPicker extends ColorValueEditor implements ControlPropertyValueEditor {
+	static class ColorPickerEditor extends ColorValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<AColor> valueEditorListener = new ReadOnlyValueListener<AColor>() {
@@ -381,7 +383,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyColorPicker(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ColorPickerEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			boolean validData = controlProperty.getValue() != null;
@@ -444,7 +446,7 @@ class ControlPropertyValueEditors {
 	 Used for boolean control properties
 	 Use this editor for when the ControlProperty's value is of type {@link SVBoolean}
 	 */
-	static class ControlPropertyBooleanChoiceBox extends BooleanValueEditor implements ControlPropertyValueEditor {
+	static class BooleanChoiceBoxEditor extends BooleanValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<SVBoolean> editorValueListener = new ReadOnlyValueListener<SVBoolean>() {
@@ -460,7 +462,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyBooleanChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		BooleanChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
@@ -522,7 +524,7 @@ class ControlPropertyValueEditors {
 	 This editor will use {@link SVStringArray} as the ControlProperty's value type
 	 */
 	@SuppressWarnings("unchecked")
-	static class ControlPropertyArrayInput extends ArrayValueEditor implements ControlPropertyValueEditor {
+	static class ArrayEditor extends ArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<SVStringArray> editorValueListener = new ReadOnlyValueListener<SVStringArray>() {
@@ -538,7 +540,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyArrayInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
+		ArrayEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
 			if (true) {
 				throw new RuntimeException("review this code to check for correctness");
@@ -604,7 +606,7 @@ class ControlPropertyValueEditors {
 	 Used for control property font picking
 	 Used for ControlProperty instances where it's value is {@link AFont}
 	 */
-	static class ControlPropertyFontChoiceBox extends FontValueEditor implements ControlPropertyValueEditor {
+	static class FontChoiceBoxEditor extends FontValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<AFont> editorValueListener = new ReadOnlyValueListener<AFont>() {
@@ -620,7 +622,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyFontChoiceBox(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		FontChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
@@ -674,8 +676,82 @@ class ControlPropertyValueEditors {
 		}
 	}
 
+	/**
+	 Used for control property image editing
+	 Used for ControlProperty instances where it's value is {@link SVImage}
+	 */
+	static class ImageEditor extends ImageValueEditor implements ControlPropertyValueEditor {
+
+		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<SVImage> editorValueListener = new ReadOnlyValueListener<SVImage>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVImage> observer, SVImage oldValue, SVImage newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				ImageEditor.this.setValue((SVImage) controlProperty.getValue());
+			}
+		};
+
+		ImageEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			this.controlProperty = controlProperty;
+			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
+
+			setValue((SVImage) controlProperty.getValue());
+			initListeners();
+		}
+
+		@Override
+		public boolean hasValidData() {
+			return true;
+		}
+
+		@NotNull
+		@Override
+		public ControlProperty getControlProperty() {
+			return controlProperty;
+		}
+
+		@Override
+		public void disableEditing(boolean disable) {
+			getRootNode().setDisable(disable);
+		}
+
+
+		@Override
+		public void setToMode(EditMode mode) {
+			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		}
+
+		@NotNull
+		@Override
+		public Class<? extends SerializableValue> getMacroClass() {
+			return SVImage.class;
+		}
+
+		@Override
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refresh() {
+			setValue((SVImage) controlProperty.getValue());
+		}
+	}
+
 	/** Use this editor for {@link ASound} ControlProperty values */
-	static class ControlPropertySoundInput extends SoundValueEditor implements ControlPropertyValueEditor {
+	static class SoundEditor extends SoundValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
 		private final ReadOnlyValueListener<ASound> editorValueListener = new ReadOnlyValueListener<ASound>() {
@@ -691,7 +767,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public ControlPropertySoundInput(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		public SoundEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);

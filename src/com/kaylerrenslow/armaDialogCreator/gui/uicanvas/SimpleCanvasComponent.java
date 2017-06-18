@@ -25,7 +25,6 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	protected int x1, y1, x2, y2;
 	protected Color backgroundColor = randomColor(this);
-	protected Color textColor = backgroundColor.invert();
 
 	private Border border;
 	private boolean isEnabled = true;
@@ -99,14 +98,6 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		this.border = border;
 	}
 
-	public void setTextColor(@NotNull Color color) {
-		this.textColor = color;
-	}
-
-	@NotNull
-	public Color getTextColor() {
-		return textColor;
-	}
 
 	@Override
 	public int getRenderPriority() {

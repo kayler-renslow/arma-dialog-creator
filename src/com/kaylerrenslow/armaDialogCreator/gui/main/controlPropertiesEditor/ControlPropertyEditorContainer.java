@@ -43,7 +43,7 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private final StackPane stackPanePropertyInput = new StackPane();
 	private final MenuButton menuButtonOptions = new MenuButton();
-	private MenuItem miInheritanceButton;
+	private MenuItem inheritanceMenuItem;
 	private ControlPropertyValueEditor propertyValueEditor;
 	private ControlPropertyUpdateListener controlPropertyUpdateListener;
 	private ControlClassUpdateListener controlClassUpdateListener;
@@ -71,7 +71,7 @@ class ControlPropertyEditorContainer extends HBox {
 		final MenuItem miConvert = new MenuItem(bundle.getString("convert_value"));
 		final MenuItem miMacro = new MenuItem(bundle.getString("set_to_macro"));
 		final MenuItem miCustomData = new MenuItem(bundle.getString("value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
-		miInheritanceButton = new MenuItem(
+		inheritanceMenuItem = new MenuItem(
 				controlProperty.isInherited() ? bundle.getString("override") :
 						bundle.getString("inherit")
 		);
@@ -83,18 +83,21 @@ class ControlPropertyEditorContainer extends HBox {
 				new SeparatorMenuItem(),
 				miResetToInitial,
 				miMacro,
-				miInheritanceButton,
+				inheritanceMenuItem,
 				miClearValue
 				/*,miCustomData*/
 		);
 
+		if (SerializableValue.getTypesCanConvertTo(controlProperty.getInitialPropertyType()).size() == 0) {
+			menuButtonOptions.getItems().remove(miConvert);
+		}
 
 		controlClassUpdateListener = new ControlClassUpdateListener(controlClass) {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
 				if (data instanceof ControlClassExtendUpdate) {
 					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
-					miInheritanceButton.setVisible(update.getNewValue() != null);
+					inheritanceMenuItem.setVisible(update.getNewValue() != null);
 				}
 			}
 		};
@@ -136,9 +139,9 @@ class ControlPropertyEditorContainer extends HBox {
 					miConvert.setDisable(disable || update.getControlProperty().getValue() == null);
 
 					if (update.wasInherited()) {
-						miInheritanceButton.setText(bundle.getString("override"));
+						inheritanceMenuItem.setText(bundle.getString("override"));
 					} else {
-						miInheritanceButton.setText(bundle.getString("inherit"));
+						inheritanceMenuItem.setText(bundle.getString("inherit"));
 					}
 					hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
@@ -196,7 +199,7 @@ class ControlPropertyEditorContainer extends HBox {
 				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 			}
 		});
-		miInheritanceButton.setOnAction(new EventHandler<ActionEvent>() {
+		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				if (getControlProperty().isInherited()) {
@@ -238,7 +241,7 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	private void updateContainer() {
-		miInheritanceButton.setVisible(controlClass.getExtendClass() != null);
+		inheritanceMenuItem.setVisible(controlClass.getExtendClass() != null);
 		if (getControlProperty().isUsingCustomData()) {
 			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 		} else if (getControlProperty().getMacro() != null) {
@@ -324,38 +327,38 @@ class ControlPropertyEditorContainer extends HBox {
 	private ControlPropertyValueEditor constructNewPropertyValueEditor() {
 		ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
 		if (lookup.getOptions() != null && lookup.getOptions().length > 0) {
-			return new ControlPropertyInputOption(controlClass, controlProperty);
+			return new ControlPropertyOptionEditor(controlClass, controlProperty);
 		}
 		PropertyType propertyType = controlProperty.getPropertyType() == null ? controlProperty.getInitialPropertyType() : controlProperty.getPropertyType();
 		switch (propertyType) {
 			case Int:
-				return new ControlPropertyInputFieldInteger(controlClass, controlProperty);
+				return new IntegerEditor(controlClass, controlProperty);
 			case Float:
-				return new ControlPropertyInputFieldDouble(controlClass, controlProperty);
+				return new FloatEditor(controlClass, controlProperty);
 			case ControlStyle:
-				return new ControlStylePropertyInput(controlClass, controlProperty);
+				return new ControlStyleEditor(controlClass, controlProperty);
 			case Boolean:
-				return new ControlPropertyBooleanChoiceBox(controlClass, controlProperty);
+				return new BooleanChoiceBoxEditor(controlClass, controlProperty);
 			case String:
-				return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				return new StringEditor(controlClass, controlProperty);
 			case Array:
-				return new ControlPropertyArrayInput(controlClass, controlProperty, 2);
+				return new ArrayEditor(controlClass, controlProperty, 2);
 			case Color:
-				return new ControlPropertyColorPicker(controlClass, controlProperty);
+				return new ColorPickerEditor(controlClass, controlProperty);
 			case Sound:
-				return new ControlPropertySoundInput(controlClass, controlProperty);
+				return new SoundEditor(controlClass, controlProperty);
 			case Font:
-				return new ControlPropertyFontChoiceBox(controlClass, controlProperty);
+				return new FontChoiceBoxEditor(controlClass, controlProperty);
 			case FileName:
-				return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				return new StringEditor(controlClass, controlProperty);
 			case Image:
-				return new ControlPropertyInputFieldString(controlClass, controlProperty); //todo use proper value editor
+				return new ImageEditor(controlClass, controlProperty);
 			case HexColorString:
-				return new ControlPropertyColorPicker(controlClass, controlProperty); //todo have hex color editor (or maybe just take the AColor value instance and create a AHexColor instance from it)
+				return new ColorPickerEditor(controlClass, controlProperty);
 			case Texture:
-				return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				return new StringEditor(controlClass, controlProperty);
 			case SQF:
-				return new ControlPropertyInputFieldString(controlClass, controlProperty);
+				return new StringEditor(controlClass, controlProperty);
 		}
 		throw new IllegalStateException("Should have made a match");
 	}
@@ -413,11 +416,13 @@ class ControlPropertyEditorContainer extends HBox {
 			lbl.setWrapText(true);
 			myRootElement.getChildren().add(lbl);
 
-			myRootElement.getChildren().add(comboBoxType);
 
 			for (PropertyType type : PropertyType.values()) {
-				comboBoxType.getItems().add(type);
+				if (SerializableValue.isConvertible(property.getPropertyType(), type)) {
+					comboBoxType.getItems().add(type);
+				}
 			}
+			myRootElement.getChildren().add(comboBoxType);
 			comboBoxType.getSelectionModel().select(property.getPropertyType());
 
 			Button btnUseInitial = new Button(bundle.getString("ConvertValueDialog.use_initial"));

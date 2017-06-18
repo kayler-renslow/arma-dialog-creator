@@ -15,7 +15,6 @@ Ideas
 General
 -----------------------------------
 * create documentation for all java classes and **well** document it
-* for creating a macro, there should be only one Color option, one SQF code string option - this is to prevent confusion. DO NOT delete the property types. There should just be a behind-the-scenes check
 * Arma 3 won't allow .png images. All images must be .paa, or .jpg. When we do an export, convert all .png to .paa
     * it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
     * [https://resources.bisimulations.com/wiki/Dialogs_Static#Images](https://resources.bisimulations.com/wiki/Dialogs_Static#Images)

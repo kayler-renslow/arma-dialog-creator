@@ -181,13 +181,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), Color.RED, getBackgroundColor());
 	}
 
-	@Override
+
 	public void setTextColor(@NotNull Color color) {
 		this.textRenderer.setTextColor(color);
 	}
 
 	@NotNull
-	@Override
 	public Color getTextColor() {
 		return textRenderer.getTextColor();
 	}
