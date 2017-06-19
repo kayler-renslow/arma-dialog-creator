@@ -10,7 +10,6 @@ import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlListChange;
@@ -196,9 +195,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 					close();
 				}
 				if (!goodValues) {
-					StagePopup popup = new MissingControlPropertiesConfigPopup(myStage, missing);
-					popup.show();
-					popup.requestFocus();
+					StageDialog dialog = new MissingControlPropertiesConfigDialog(myStage, missing);
+					dialog.show();
+					if (!dialog.wasCancelled()) {
+						close();
+					}
 				}
 			}
 		});

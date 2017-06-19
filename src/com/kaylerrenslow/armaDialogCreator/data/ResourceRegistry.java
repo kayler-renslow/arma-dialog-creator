@@ -33,10 +33,15 @@ public class ResourceRegistry {
 		return resourcesFile;
 	}
 
-	/** Get the path for the given filename relative to the {@link #getResourcesFile()} path. */
 	@NotNull
-	public File getResourcesFilePathForName(@NotNull String fileName) {
-		return new File(resourcesFile + "/" + fileName);
+	public File getResourcesDirectory() {
+		return resourcesFile.getParentFile();
+	}
+
+	/** Get the path for the given filename relative to the {@link #getResourcesDirectory()} path. */
+	@NotNull
+	public File getFileForName(@NotNull String fileName) {
+		return new File(getResourcesDirectory().getAbsolutePath() + "/" + fileName);
 	}
 
 	@NotNull

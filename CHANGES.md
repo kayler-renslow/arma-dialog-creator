@@ -1,9 +1,9 @@
 **Added:**
-* support for control property image type editing
+* for missing control properties popup, made ok button close the config popup
+* static control now attempts to locate a converted .paa if the image path is a .paa 
 
 **Changed:**
-* added back Serializable.isConvertible()
-* ControlProperty editor will now hide "Convert Type" if there is nothing to convert to
+* 
 
 **Fixed:**
 * 

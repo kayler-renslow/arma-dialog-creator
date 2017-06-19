@@ -9,6 +9,9 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.PaaImageExternalResource;
+import com.kaylerrenslow.armaDialogCreator.data.Workspace;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -98,6 +101,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, AFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
+		renderTypeForStyle = getRenderTypeFromStyle();
 		checkAndSetRenderType();
 	}
 
@@ -109,12 +113,27 @@ public class StaticRenderer extends ArmaControlRenderer {
 			File f;
 			if (textValue instanceof SVImage) {
 				SVImage image = (SVImage) textValue;
-				f = image.getImageFile();
+				if (image.getNonPaaImageFile() != null) {
+					f = image.getNonPaaImageFile();
+				} else {
+					f = image.getImageFile(); //use this file anyways
+				}
 			} else if (textValue == null) {
 				f = null;
 			} else {
 				f = new File(textValue.toString());
 			}
+
+			if (f != null) {
+				if (f.getName().endsWith(".paa")) {
+					ExternalResource resource = Workspace.getWorkspace().getGlobalResourceRegistry().getResourceByFile(f);
+					if (resource != null) {
+						String convertedPaaPath = resource.getPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE);
+						f = convertedPaaPath == null ? f : new File(convertedPaaPath);
+					}
+				}
+			}
+
 			if (f != null && f.exists()) {
 				try {
 					FileInputStream fis = new FileInputStream(f);

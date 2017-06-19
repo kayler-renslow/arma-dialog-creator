@@ -82,11 +82,11 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		});
 	}
 
-	private void chooseImage(File chosenFile) {
+	private void chooseImage(@NotNull File chosenFile) {
 		if (chosenFile.getName().endsWith(".paa")) {
 			convertImage(chosenFile);
 		} else {
-			setValue(new SVImage(chosenFile));
+			setValue(new SVImage(chosenFile, chosenFile));
 		}
 	}
 
@@ -186,7 +186,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		}
 
 		private void initTask(ImageValueEditor imageValueEditor, File chosenFile, File a3Tools) {
-			File convertDest = WorkspaceResourceRegistry.getInstance().getResourcesFilePathForName(chosenFile.getName() + ".png");
+			File convertDest = WorkspaceResourceRegistry.getInstance().getFileForName(chosenFile.getName() + ".png");
 
 			if (convertDest.exists()) {
 				ImageAlreadyExistsDialog dialog = new ImageAlreadyExistsDialog(convertDest);
@@ -307,7 +307,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 			WorkspaceResourceRegistry.getInstance().getResourceList().add(resource);
 			Project.getCurrentProject().getResourceRegistry().getResourceList().add(resource);
 
-			return new SVImage(convertDest);
+			return new SVImage(toConvert, convertDest);
 		}
 
 		/** If true, do not show an error message that the task was cancelled */

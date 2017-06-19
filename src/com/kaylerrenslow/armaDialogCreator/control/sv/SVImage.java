@@ -4,39 +4,46 @@ import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
 /**
  A SerializableValue implementation for storing an image file
+
  @author Kayler
  @since 07/16/2016. */
 public class SVImage extends SerializableValue {
-	
+
 	public static final ValueConverter<SVImage> CONVERTER = new ValueConverter<SVImage>() {
 		@Override
 		public SVImage convert(DataContext context, @NotNull String... values) throws Exception {
-			return new SVImage(new File(values[0]));
+			return new SVImage(new File(values[0]), null);
 		}
 	};
 
 	private File imageFile;
+	private File nonPaaImageFile;
 
-	public SVImage(@NotNull File imageFile) {
+	public SVImage(@NotNull File imageFile, @Nullable File nonPaaImageFile) {
 		super(imageFile.getPath());
-		setImageFile(imageFile);
+		this.nonPaaImageFile = nonPaaImageFile;
+		this.imageFile = imageFile;
+		valuesAsArray[0] = imageFile.getPath();
 	}
 
+	/** @return the file that is displayed to the user (may be a .paa image file) */
 	@NotNull
 	public File getImageFile() {
 		return imageFile;
 	}
 
-	public void setImageFile(@NotNull File imageFile) {
-		this.imageFile = imageFile;
-		valuesAsArray[0] = imageFile.getPath();
+	/** @return a file that is guaranteed not to be a .paa image file */
+	@Nullable
+	public File getNonPaaImageFile() {
+		return nonPaaImageFile;
 	}
-	
+
 	@Override
 	public String toString() {
 		return valuesAsArray[0];
@@ -45,7 +52,7 @@ public class SVImage extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVImage(imageFile);
+		return new SVImage(imageFile, nonPaaImageFile);
 	}
 
 	@NotNull
@@ -55,11 +62,11 @@ public class SVImage extends SerializableValue {
 	}
 
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
-		if(o instanceof SVImage){
+		if (o instanceof SVImage) {
 			SVImage other = (SVImage) o;
 			return this.imageFile.equals(other.imageFile);
 		}

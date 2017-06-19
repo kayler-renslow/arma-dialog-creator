@@ -25,7 +25,7 @@ public class ExternalResource {
 	 @param properties other data to save in the resource
 	 */
 	public ExternalResource(@NotNull String resourceFileName, @NotNull KeyValueString[] properties) {
-		this(Project.getCurrentProject().getResourceRegistry().getResourcesFilePathForName(resourceFileName), properties);
+		this(Project.getCurrentProject().getResourceRegistry().getFileForName(resourceFileName), properties);
 	}
 
 	/**
@@ -67,10 +67,10 @@ public class ExternalResource {
 	}
 
 	@Nullable
-	public final KeyValueString getPropertyValue(@NotNull String keyName) {
+	public final String getPropertyValue(@NotNull String keyName) {
 		for (KeyValueString keyValue : properties) {
 			if (keyValue.getKey().equals(keyName)) {
-				return keyValue;
+				return keyValue.getValue();
 			}
 		}
 		return null;
