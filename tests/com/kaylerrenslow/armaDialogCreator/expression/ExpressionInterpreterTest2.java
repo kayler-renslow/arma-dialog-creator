@@ -503,7 +503,10 @@ public class ExpressionInterpreterTest2 {
 		//wait for all threads to start
 		Thread.sleep(300);
 		interpreter.terminateAll();
-		thread.join();
+
+		//Wait for 2 seconds before throwing exception and failing test.
+		//If the threads join in under 2 seconds, the test will reach the assertEquals
+		thread.join(2 * 1000);
 
 		assertEquals(String.format("Attempted to terminate %d infinite loop evaluations.", createCount), createCount, cancels.get());
 		interpreter.shutdownAndDisable();

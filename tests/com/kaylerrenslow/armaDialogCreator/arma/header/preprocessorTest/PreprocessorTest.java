@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.assertEquals;
@@ -565,17 +566,32 @@ public class PreprocessorTest {
 		String base = "__EVAL(for[{},{true},{}] do{})";
 		String expect = "";
 
+		AtomicBoolean done = new AtomicBoolean(false);
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					Thread.sleep(12 * 1000);
+					if (!done.get()) {
+						throw new RuntimeException("Expected the __Eval to run forever and then error.");
+					}
+				} catch (InterruptedException e) {
+					throw new RuntimeException(e);
+				}
+			}
+		});
+		t.setDaemon(true);
+		t.start();
 		try {
 			HeaderParserHelpers.assertPreprocessLine(
 					expect,
 					createFileFromText(base),
 					null
 			);
+			done.set(true);
 		} catch (HeaderParseException e) {
 			assertEquals(true, true);
-			return;
 		}
-		assertEquals("Expected the __Eval to run forever and then error.", true, false);
 	}
 
 	@Test

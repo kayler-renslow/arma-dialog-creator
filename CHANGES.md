@@ -1,11 +1,11 @@
 **Added:**
-* 
+* ControlList tests
 
 **Changed:**
-* added SV prefix to SerializableValue subclasses' names
+* some tests that involve infinite loops have infinite loop detection on the test itself so the test doesn't run forever itself
 
 **Fixed:**
-* display property not loading from project correctly
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
