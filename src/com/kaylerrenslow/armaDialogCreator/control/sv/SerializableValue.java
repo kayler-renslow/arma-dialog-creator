@@ -100,7 +100,7 @@ public abstract class SerializableValue {
 	}
 
 	/**
-	 A safe way of converting a {@link SerializableValue} into a different one, i.e. {@link SVString} to {@link AFont}.
+	 A safe way of converting a {@link SerializableValue} into a different one, i.e. {@link SVString} to {@link SVFont}.
 	 If <code>newPropertyType</code> is equal to the current type, <code>convertMe</code> will be returned.
 
 	 @param dataContext context to use

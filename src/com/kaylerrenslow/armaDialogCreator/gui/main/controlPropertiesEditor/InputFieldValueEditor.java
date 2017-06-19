@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -76,13 +76,13 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		return inputField.getValueObserver().getReadOnlyValueObserver();
 	}
 
-	public static class IntegerEditor extends InputFieldValueEditor<Expression> {
+	public static class IntegerEditor extends InputFieldValueEditor<SVExpression> {
 		public IntegerEditor(@NotNull Env env) {
 			super(new ExpressionChecker(env, ExpressionChecker.TYPE_INT));
 		}
 	}
 
-	public static class DoubleEditor extends InputFieldValueEditor<Expression> {
+	public static class DoubleEditor extends InputFieldValueEditor<SVExpression> {
 		public DoubleEditor(@NotNull Env env) {
 			super(new ExpressionChecker(env, ExpressionChecker.TYPE_FLOAT));
 		}

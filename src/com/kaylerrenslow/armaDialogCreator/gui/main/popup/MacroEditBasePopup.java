@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
@@ -49,7 +50,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	/**
 	 Creates a Macro editor.
 
-	 @param env instance used for evaluating {@link com.kaylerrenslow.armaDialogCreator.control.sv.Expression} based Macros' values. The env is only used for checking that an expression evaluates properly.
+	 @param env instance used for evaluating {@link SVExpression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
 	public MacroEditBasePopup(Env env) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);

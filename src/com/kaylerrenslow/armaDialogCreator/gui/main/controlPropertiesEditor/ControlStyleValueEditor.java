@@ -1,7 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckMenuButton;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
@@ -25,11 +25,11 @@ import java.util.List;
 
  @author Kayler
  @since 08/05/2016. */
-public class ControlStyleValueEditor extends HBox implements ValueEditor<ControlStyleGroup> {
+public class ControlStyleValueEditor extends HBox implements ValueEditor<SVControlStyleGroup> {
 	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"), null);
 	private final TextField textField = new TextField();
 	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
-	protected final ValueObserver<ControlStyleGroup> valueObserver = new ValueObserver<>(null);
+	protected final ValueObserver<SVControlStyleGroup> valueObserver = new ValueObserver<>(null);
 
 	public ControlStyleValueEditor() {
 		super(5);
@@ -46,11 +46,11 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 				StringBuilder s = new StringBuilder();
 				List<ControlStyle> selected = menuButton.getSelectedItems();
 				for (int i = 0; i < selected.size(); i++) {
-					s.append(selected.get(i).styleValue).append(i != selected.size() - 1 ? ControlStyleGroup.DEFAULT_DELIMITER : "");
+					s.append(selected.get(i).styleValue).append(i != selected.size() - 1 ? SVControlStyleGroup.DEFAULT_DELIMITER : "");
 				}
 				textField.setText(s.toString());
-				ControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? new ControlStyleGroup(ControlStyle.EMPTY) :
-						new ControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
+				SVControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? new SVControlStyleGroup(ControlStyle.EMPTY) :
+						new SVControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
 				valueObserver.updateValue(group);
 			}
 		});
@@ -66,12 +66,12 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 
 	@Nullable
 	@Override
-	public ControlStyleGroup getValue() {
+	public SVControlStyleGroup getValue() {
 		return valueObserver.getValue();
 	}
 
 	@Override
-	public void setValue(ControlStyleGroup val) {
+	public void setValue(SVControlStyleGroup val) {
 		if (val == null) {
 			menuButton.clearSelection();
 		} else {
@@ -111,7 +111,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<Control
 	}
 
 	@Override
-	public ReadOnlyValueObserver<ControlStyleGroup> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVControlStyleGroup> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 

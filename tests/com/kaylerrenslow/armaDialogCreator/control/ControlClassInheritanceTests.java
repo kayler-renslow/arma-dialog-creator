@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVFont;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
@@ -71,13 +71,13 @@ public class ControlClassInheritanceTests {
 
 		//make sure this value is not equal to what the merge method returns
 		//so that we can assert that the value actually changed
-		tcc2.findRequiredProperty(constant).setValue(AFont.LUCIDA_CONSOLE_B);
+		tcc2.findRequiredProperty(constant).setValue(SVFont.LUCIDA_CONSOLE_B);
 
 		tcc.inheritProperty(constant);
 
-		tcc2.findRequiredProperty(constant).setValue(AFont.DEFAULT);
+		tcc2.findRequiredProperty(constant).setValue(SVFont.DEFAULT);
 
-		assertEquals(AFont.DEFAULT, tcc.findRequiredProperty(constant).getValue());
+		assertEquals(SVFont.DEFAULT, tcc.findRequiredProperty(constant).getValue());
 	}
 
 	@Test

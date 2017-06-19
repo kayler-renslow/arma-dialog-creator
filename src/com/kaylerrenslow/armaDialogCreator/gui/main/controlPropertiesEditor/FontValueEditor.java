@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.AFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVFont;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -21,24 +21,24 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class FontValueEditor implements ValueEditor<AFont> {
+public class FontValueEditor implements ValueEditor<SVFont> {
 	private final Button btnChooseDefault = new Button(Lang.ApplicationBundle().getString("ValueEditors.FontValueEditor.default_font"));
-	protected final ComboBox<AFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(AFont.values()));
+	protected final ComboBox<SVFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(SVFont.values()));
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(editorHbox);
-	private final ValueObserver<AFont> valueObserver = new ValueObserver<>(null);
+	private final ValueObserver<SVFont> valueObserver = new ValueObserver<>(null);
 
 	public FontValueEditor() {
 		btnChooseDefault.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				comboBox.getSelectionModel().select(AFont.DEFAULT);
+				comboBox.getSelectionModel().select(SVFont.DEFAULT);
 			}
 		});
-		comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AFont>() {
+		comboBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<SVFont>() {
 			@Override
-			public void changed(ObservableValue<? extends AFont> observable, AFont oldValue, AFont newValue) {
+			public void changed(ObservableValue<? extends SVFont> observable, SVFont oldValue, SVFont newValue) {
 				valueObserver.updateValue(newValue);
 			}
 		});
@@ -50,12 +50,12 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	}
 
 	@Override
-	public AFont getValue() {
+	public SVFont getValue() {
 		return comboBox.getValue();
 	}
 
 	@Override
-	public void setValue(AFont val) {
+	public void setValue(SVFont val) {
 		comboBox.setValue(val);
 	}
 
@@ -90,7 +90,7 @@ public class FontValueEditor implements ValueEditor<AFont> {
 	}
 
 	@Override
-	public ReadOnlyValueObserver<AFont> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVFont> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 }

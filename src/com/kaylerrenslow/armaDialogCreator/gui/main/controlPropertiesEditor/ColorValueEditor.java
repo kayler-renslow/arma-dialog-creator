@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
@@ -16,25 +16,25 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class ColorValueEditor implements ValueEditor<AColor> {
+public class ColorValueEditor implements ValueEditor<SVColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
-	private final ValueObserver<AColor> valueObserver = new ValueObserver<>(null);
+	private final ValueObserver<SVColor> valueObserver = new ValueObserver<>(null);
 
 	public ColorValueEditor() {
 		colorPicker.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Color newValue = colorPicker.getValue();
-				AColor aColor;
+				SVColor color;
 				if (newValue == null) {
-					aColor = null;
+					color = null;
 				} else {
-					aColor = new AColor(newValue);
+					color = new SVColor(newValue);
 
 				}
-				valueObserver.updateValue(aColor);
+				valueObserver.updateValue(color);
 			}
 		});
 	}
@@ -45,12 +45,12 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	}
 
 	@Override
-	public AColor getValue() {
+	public SVColor getValue() {
 		return valueObserver.getValue();
 	}
 	
 	@Override
-	public void setValue(AColor val) {
+	public void setValue(SVColor val) {
 		if (val == null) {
 			colorPicker.setValue(null);
 		} else {
@@ -89,7 +89,7 @@ public class ColorValueEditor implements ValueEditor<AColor> {
 	}
 
 	@Override
-	public ReadOnlyValueObserver<AColor> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVColor> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 }

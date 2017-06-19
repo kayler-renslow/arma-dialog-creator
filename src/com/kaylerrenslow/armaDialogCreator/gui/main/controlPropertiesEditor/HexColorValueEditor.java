@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.AHexColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVHexColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
@@ -16,24 +16,24 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class HexColorValueEditor implements ValueEditor<AHexColor> {
+public class HexColorValueEditor implements ValueEditor<SVHexColor> {
 	protected final ColorPicker colorPicker = new ColorPicker();
 	
 	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(colorPicker);
 
-	private final ValueObserver<AHexColor> valueObserver = new ValueObserver<>(null);
+	private final ValueObserver<SVHexColor> valueObserver = new ValueObserver<>(null);
 
 	public HexColorValueEditor() {
 		colorPicker.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Color newValue = colorPicker.getValue();
-				AHexColor aColor;
+				SVHexColor aColor;
 				if (newValue == null) {
 					aColor = null;
 				} else {
-					aColor = new AHexColor(newValue);
+					aColor = new SVHexColor(newValue);
 				}
 				valueObserver.updateValue(aColor);
 			}
@@ -46,12 +46,12 @@ public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	}
 
 	@Override
-	public AHexColor getValue() {
+	public SVHexColor getValue() {
 		return valueObserver.getValue();
 	}
 
 	@Override
-	public void setValue(AHexColor val) {
+	public void setValue(SVHexColor val) {
 		colorPicker.setValue(val.toJavaFXColor());
 	}
 
@@ -81,7 +81,7 @@ public class HexColorValueEditor implements ValueEditor<AHexColor> {
 	}
 
 	@Override
-	public ReadOnlyValueObserver<AHexColor> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVHexColor> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 }

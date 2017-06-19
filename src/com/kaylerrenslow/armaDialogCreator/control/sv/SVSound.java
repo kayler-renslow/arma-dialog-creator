@@ -11,11 +11,11 @@ import java.util.Arrays;
  Specifies a sound
  @author Kayler
  @since 05/22/2016. */
-public class ASound extends SerializableValue {
-	public static final ValueConverter<ASound> CONVERTER = new ValueConverter<ASound>() {
+public class SVSound extends SerializableValue {
+	public static final ValueConverter<SVSound> CONVERTER = new ValueConverter<SVSound>() {
 		@Override
-		public ASound convert(DataContext context, @NotNull String... values) {
-			return new ASound(values);
+		public SVSound convert(DataContext context, @NotNull String... values) {
+			return new SVSound(values);
 		}
 	};
 
@@ -29,7 +29,7 @@ public class ASound extends SerializableValue {
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 3)
 	 */
-	public ASound(String[] values) throws NumberFormatException, IndexOutOfBoundsException {
+	public SVSound(String[] values) throws NumberFormatException, IndexOutOfBoundsException {
 		super(values);
 		init(values[0], Double.valueOf(values[1]), Double.valueOf(values[2]));
 	}
@@ -42,7 +42,7 @@ public class ASound extends SerializableValue {
 	 @param pitch pitch (ranged 0.0 - 1.0)
 	 @throws IllegalArgumentException when pitch is less than 0 or greater than 1
 	 */
-	public ASound(String soundName, double db, double pitch) {
+	public SVSound(String soundName, double db, double pitch) {
 		super(new String[]{soundName, db + "", pitch + ""});
 		init(soundName, db, pitch);
 	}
@@ -105,7 +105,7 @@ public class ASound extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new ASound(soundName, db, pitch);
+		return new SVSound(soundName, db, pitch);
 	}
 
 	@NotNull
@@ -124,8 +124,8 @@ public class ASound extends SerializableValue {
 		if(o == this){
 			return true;
 		}
-		if(o instanceof ASound){
-			ASound other = (ASound) o;
+		if (o instanceof SVSound) {
+			SVSound other = (SVSound) o;
 			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
 		}
 		return false;

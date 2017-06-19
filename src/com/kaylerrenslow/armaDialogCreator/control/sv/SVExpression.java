@@ -16,36 +16,36 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 
 /**
- Expression value that is used for {@link ExpressionInterpreter} and is
+ SVExpression value that is used for {@link ExpressionInterpreter} and is
  storable in {@link ControlProperty}. Only {@link Value.NumVal} is allowed, thus {@link #getValue()} will only return {@link Value.NumVal}.
 
  @author Kayler
  @since 07/15/2016. */
-public class Expression extends SerializableValue {
+public class SVExpression extends SerializableValue {
 
 	private static final ResourceBundle bundle = Lang.getBundle("ExpressionBundle");
 
 	private static final ExpressionInterpreter SHARED_INTERPRETER = ExpressionInterpreter.newInstance();
 
 	/**
-	 {@link ValueConverter} instance for Expression values. The {@link DataContext} parameter in the {@link ValueConverter#convert(DataContext, String...)}
+	 {@link ValueConverter} instance for {@link SVExpression} values. The {@link DataContext} parameter in the {@link ValueConverter#convert(DataContext, String...)}
 	 method must contain a non-null entry with key {@link DataKeys#ENV}, or {@link IllegalArgumentException} will be thrown from {@link ValueConverter#convert(DataContext, String...)}.
 	 */
-	public static final ValueConverter<Expression> CONVERTER = new ValueConverter<Expression>() {
+	public static final ValueConverter<SVExpression> CONVERTER = new ValueConverter<SVExpression>() {
 
 		@Override
-		public Expression convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVExpression convert(DataContext context, @NotNull String... values) throws Exception {
 			Env env = DataKeys.ENV.get(context);
 			if (env == null) {
 				throw new IllegalArgumentException("context key is missing:" + DataKeys.ENV);
 			}
-			return new Expression(values[0], env);
+			return new SVExpression(values[0], env);
 		}
 	};
 
 	private final Env env;
 
-	public Expression(@NotNull String exp, @NotNull Env env) throws ExpressionEvaluationException {
+	public SVExpression(@NotNull String exp, @NotNull Env env) throws ExpressionEvaluationException {
 		super(exp);
 		this.env = env;
 		setExpression(exp);
@@ -93,7 +93,7 @@ public class Expression extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new Expression(valuesAsArray[0], env);
+		return new SVExpression(valuesAsArray[0], env);
 	}
 
 	@NotNull
@@ -112,8 +112,8 @@ public class Expression extends SerializableValue {
 		if (o == this) {
 			return true;
 		}
-		if (o instanceof Expression) {
-			Expression other = (Expression) o;
+		if (o instanceof SVExpression) {
+			SVExpression other = (SVExpression) o;
 			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
 		}
 		return false;

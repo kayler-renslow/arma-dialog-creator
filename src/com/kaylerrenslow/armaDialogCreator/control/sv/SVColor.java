@@ -14,13 +14,13 @@ import java.util.Arrays;
  Defines a color.
  @author Kayler
  @since 05/22/2016. */
-public class AColor extends SerializableValue {
+public class SVColor extends SerializableValue {
 	private static final DecimalFormat format = new DecimalFormat("#.####");
 
-	public static final ValueConverter<AColor> CONVERTER = new ValueConverter<AColor>() {
+	public static final ValueConverter<SVColor> CONVERTER = new ValueConverter<SVColor>() {
 		@Override
-		public AColor convert(DataContext context, @NotNull String... values) {
-			return new AColor(values);
+		public SVColor convert(DataContext context, @NotNull String... values) {
+			return new SVColor(values);
 		}
 	};
 	
@@ -41,7 +41,7 @@ public class AColor extends SerializableValue {
 	 @param a alpha (range 0-1.0)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
 	 */
-	public AColor(double r, double g, double b, double a) {
+	public SVColor(double r, double g, double b, double a) {
 		super(new String[]{format.format(r), format.format(g), format.format(b), format.format(a)});
 		setRed(r);
 		setGreen(g);
@@ -58,7 +58,7 @@ public class AColor extends SerializableValue {
 	 @param a alpha (range 0-255)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
 	 */
-	public AColor(int r, int g, int b, int a) {
+	public SVColor(int r, int g, int b, int a) {
 		this(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
 	}
 	
@@ -68,13 +68,13 @@ public class AColor extends SerializableValue {
 	 @param c the color array that must have length=4
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when c.length != 4
 	 */
-	public AColor(double[] c) {
+	public SVColor(double[] c) {
 		this(0, 0, 0, 0);
 		setColor(c);
 	}
 	
 	/** Set the color from a JavaFX Color instance */
-	public AColor(@NotNull Color newValue) {
+	public SVColor(@NotNull Color newValue) {
 		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
 		this.javafxColor = newValue;
 		updateJavafxColor = false;
@@ -86,7 +86,7 @@ public class AColor extends SerializableValue {
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public AColor(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
+	public SVColor(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
 		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 	
@@ -194,7 +194,7 @@ public class AColor extends SerializableValue {
 	public SerializableValue deepCopy() {
 		double[] copy = new double[color.length];
 		System.arraycopy(color, 0, copy, 0, copy.length);
-		return new AColor(copy);
+		return new SVColor(copy);
 	}
 
 	@NotNull
@@ -246,8 +246,8 @@ public class AColor extends SerializableValue {
 		if(o == this){
 			return true;
 		}
-		if(o instanceof AColor){
-			AColor other = (AColor) o;
+		if (o instanceof SVColor) {
+			SVColor other = (SVColor) o;
 			return Arrays.equals(this.color, other.color);
 		}
 		return false;

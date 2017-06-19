@@ -5,9 +5,9 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
@@ -84,15 +84,15 @@ public class BasicTextRenderer {
 			}
 		});
 		ControlProperty textColorProp = control.findProperty(colorText);
-		if (textColorProp.getValue() != null && textColorProp.getValue() instanceof AColor) {
-			textColor = ((AColor) textColorProp.getValue()).toJavaFXColor();
+		if (textColorProp.getValue() != null && textColorProp.getValue() instanceof SVColor) {
+			textColor = ((SVColor) textColorProp.getValue()).toJavaFXColor();
 		}
-		textColorProp.setValueIfAbsent(true, new AColor(renderer.getBackgroundColor().invert()));
+		textColorProp.setValueIfAbsent(true, new SVColor(renderer.getBackgroundColor().invert()));
 		textColorProp.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof AColor) {
-					setTextColor(((AColor) newValue).toJavaFXColor());
+				if (newValue instanceof SVColor) {
+					setTextColor(((SVColor) newValue).toJavaFXColor());
 				}
 				renderer.requestRender();
 			}
@@ -100,8 +100,8 @@ public class BasicTextRenderer {
 		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof ControlStyleGroup) {
-					ControlStyleGroup group = (ControlStyleGroup) newValue;
+				if (newValue instanceof SVControlStyleGroup) {
+					SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 					for (ControlStyle style : group.getValues()) {
 						if (style == ControlStyle.LEFT) {
 							textObj.setTextAlignment(TextAlignment.LEFT);
@@ -122,15 +122,15 @@ public class BasicTextRenderer {
 		sizeExProperty.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof Expression) {
-					Expression ex = (Expression) newValue;
+				if (newValue instanceof SVExpression) {
+					SVExpression ex = (SVExpression) newValue;
 					updateFont(ex);
 				}
 			}
 		});
 
-		if (sizeExProperty.getValue() instanceof Expression) {
-			updateFont((Expression) sizeExProperty.getValue());
+		if (sizeExProperty.getValue() instanceof SVExpression) {
+			updateFont((SVExpression) sizeExProperty.getValue());
 		}
 
 		renderer.getResolutionUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
@@ -192,7 +192,7 @@ public class BasicTextRenderer {
 		return textColor;
 	}
 
-	public void updateFont(@NotNull Expression sizeEx) {
+	public void updateFont(@NotNull SVExpression sizeEx) {
 		textObj.setFont(Font.font(fontSize(sizeEx.getNumVal())));
 		renderer.requestRender();
 	}
@@ -209,8 +209,8 @@ public class BasicTextRenderer {
 	}
 
 	public void resolutionUpdate() {
-		if (sizeExProperty.getValue() instanceof Expression) {
-			updateFont((Expression) sizeExProperty.getValue());
+		if (sizeExProperty.getValue() instanceof SVExpression) {
+			updateFont((SVExpression) sizeExProperty.getValue());
 		}
 	}
 }

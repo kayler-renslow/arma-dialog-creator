@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionEvaluationException;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
@@ -13,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/15/2016. */
-public class ExpressionChecker implements InputFieldDataChecker<Expression> {
+public class ExpressionChecker implements InputFieldDataChecker<SVExpression> {
 	public static final int TYPE_INT = 0;
 	public static final int TYPE_FLOAT = 1;
 	private final Env env;
@@ -36,8 +36,8 @@ public class ExpressionChecker implements InputFieldDataChecker<Expression> {
 
 	@Nullable
 	@Override
-	public Expression parse(@NotNull String data) {
-		return new Expression(data, env);
+	public SVExpression parse(@NotNull String data) {
+		return new SVExpression(data, env);
 	}
 
 	@Override

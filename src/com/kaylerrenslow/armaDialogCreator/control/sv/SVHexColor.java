@@ -10,12 +10,12 @@ import org.jetbrains.annotations.NotNull;
  Class used to depict a hex color string.
  @author Kayler
  @since 05/23/2016. */
-public class AHexColor extends AColor {
-	
-	public static final ValueConverter<AHexColor> CONVERTER = new ValueConverter<AHexColor>() {
+public class SVHexColor extends SVColor {
+
+	public static final ValueConverter<SVHexColor> CONVERTER = new ValueConverter<SVHexColor>() {
 		@Override
-		public AHexColor convert(DataContext context, @NotNull String... values) {
-			return new AHexColor(values[0]);
+		public SVHexColor convert(DataContext context, @NotNull String... values) {
+			return new SVHexColor(values[0]);
 		}
 	};
 
@@ -26,14 +26,14 @@ public class AHexColor extends AColor {
 
 	 @throws IllegalArgumentException for when the hex color is formatted wrong
 	 */
-	public AHexColor(String hex) {
+	public SVHexColor(String hex) {
 		super(0, 0, 0, 0);
 		setColor(convertToColorArray(hex));
 		this.hex = hex;
 	}
 
-	/** @see AColor#AColor(Color) */
-	public AHexColor(Color value) {
+	/** @see SVColor#SVColor(Color) */
+	public SVHexColor(Color value) {
 		super(value);
 		updateHex();
 	}
@@ -166,8 +166,8 @@ public class AHexColor extends AColor {
 		if(o == this){
 			return true;
 		}
-		if(o instanceof AHexColor){
-			AHexColor other = (AHexColor) o;
+		if (o instanceof SVHexColor) {
+			SVHexColor other = (SVHexColor) o;
 			return this.hex.equals(other.hex);
 		}
 		return false;

@@ -49,7 +49,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 	private boolean showingConsole = false;
 	private Task activeEvaluateTask;
 	private final Button btnEval, btnTerminate;
-	private AtomicLong evaluateStartTime = new AtomicLong();
+	private final AtomicLong evaluateStartTime = new AtomicLong();
+	private final AtomicLong evaluateEndTime = new AtomicLong();
 
 	public ExpressionEvaluatorPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), null);
@@ -145,7 +146,6 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 
 			@Override
 			protected Boolean call() throws Exception {
-				evaluateStartTime.set(System.currentTimeMillis());
 
 				SimpleEnv env = new SimpleEnv();
 
@@ -153,7 +153,9 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 				String consoleString;
 
 				try {
+					evaluateStartTime.set(System.currentTimeMillis());
 					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env).get();
+					evaluateEndTime.set(System.currentTimeMillis());
 					interpreter.shutdownAndDisable();
 					returnValueString = getValueAsString(returnValue);
 					consoleString = bundle.getString("CodeArea.success");
@@ -185,7 +187,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 								footerValueLabel(
 										String.format(
 												"%d %s",
-												(System.currentTimeMillis() - evaluateStartTime.get()),
+												(evaluateEndTime.get() - evaluateStartTime.get()),
 												bundle.getString("CodeArea.milliseconds")
 										)
 								)

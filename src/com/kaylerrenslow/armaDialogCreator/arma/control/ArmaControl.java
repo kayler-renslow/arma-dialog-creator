@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
@@ -43,7 +43,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
 	 @param rendererLookup renderer of the control
-	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
+	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
 	private ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env,
 						@NotNull SpecificationRegistry registry) {
@@ -74,7 +74,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param resolution resolution to use
 	 @param rendererLookup renderer of the control
-	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
+	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
 	protected ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
 						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
@@ -91,7 +91,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	 @param idc control id (-1 if doesn't matter)
 	 @param resolution resolution to use
 	 @param rendererLookup renderer for the control
-	 @param env the environment used to calculate the control's position and other {@link Expression} instances stored inside this control's {@link ControlProperty}'s.
+	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
 	 */
 	public ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc,
 					   @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
@@ -120,22 +120,22 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
-	public void defineX(Expression x) {
+	public void defineX(SVExpression x) {
 		renderer.defineX(x);
 	}
 
 	/** Set y and define the y control property. This will also update the renderer's position. */
-	public void defineY(Expression y) {
+	public void defineY(SVExpression y) {
 		renderer.defineY(y);
 	}
 
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
-	public void defineW(Expression width) {
+	public void defineW(SVExpression width) {
 		renderer.defineW(width);
 	}
 
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
-	public void defineH(Expression height) {
+	public void defineH(SVExpression height) {
 		renderer.defineH(height);
 	}
 

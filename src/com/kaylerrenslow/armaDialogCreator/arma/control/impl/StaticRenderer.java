@@ -63,23 +63,23 @@ public class StaticRenderer extends ArmaControlRenderer {
 		colorBackground.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof AColor) {
-					getBackgroundColorObserver().updateValue((AColor) newValue);
+				if (newValue instanceof SVColor) {
+					getBackgroundColorObserver().updateValue((SVColor) newValue);
 					useBackgroundColor = true;
 				} else {
 					useBackgroundColor = false;
 				}
 			}
 		});
-		colorBackground.setValueIfAbsent(true, new AColor(getBackgroundColor()));
+		colorBackground.setValueIfAbsent(true, new SVColor(getBackgroundColor()));
 
-		if (colorBackground.getValue() instanceof AColor) {
-			setBackgroundColor(((AColor) colorBackground.getValue()).toJavaFXColor());
+		if (colorBackground.getValue() instanceof SVColor) {
+			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
 		} else {
 			useBackgroundColor = false;
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new AColor(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColor(getTextColor()));
 
 		styleProperty = myControl.findProperty(ControlPropertyLookup.STYLE);
 		styleProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {
@@ -98,7 +98,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, AFont.DEFAULT);
+		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
 		renderTypeForStyle = getRenderTypeFromStyle();
@@ -223,16 +223,16 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (value == styleValue) {
 			return renderTypeForStyle;
 		}
-		if (value instanceof ControlStyleGroup) {
-			ControlStyleGroup group = (ControlStyleGroup) value;
+		if (value instanceof SVControlStyleGroup) {
+			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getValues()) {
 				if (style == pictureStyle()) {
 					return RenderType.Image;
 				}
 			}
 		}
-		//		if (value instanceof Expression) {
-		//			Expression expr = (Expression) value;
+		//		if (value instanceof SVExpression) {
+		//			SVExpression expr = (SVExpression) value;
 		//			//check if bits required for ControlStyle.Picture.styleValue are 1's
 		//			int v = (int) expr.getNumVal();
 		//			int styleV = pictureStyle().styleValue;

@@ -290,9 +290,9 @@ public class ControlProperty {
 	}
 
 	/**
-	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger} or {@link Expression}, this method will succeed.
+	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger} or {@link SVExpression}, this method will succeed.
 
-	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger} or {@link Expression}
+	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger} or {@link SVExpression}
 	 */
 	public int getIntValue() {
 		if (getValue() == null) {
@@ -301,16 +301,16 @@ public class ControlProperty {
 		if (getValue() instanceof SVInteger) {
 			return ((SVInteger) getValue()).getInt();
 		}
-		if (getValue() instanceof Expression) {
-			return (int) ((Expression) getValue()).getNumVal();
+		if (getValue() instanceof SVExpression) {
+			return (int) ((SVExpression) getValue()).getNumVal();
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}
 
 	/**
-	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble} or {@link Expression}, this method will succeed.
+	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble} or {@link SVExpression}, this method will succeed.
 
-	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble} or {@link Expression}
+	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble} or {@link SVExpression}
 	 */
 	public double getFloatValue() {
 		if (getValue() == null) {
@@ -319,8 +319,8 @@ public class ControlProperty {
 		if (getValue() instanceof SVDouble) {
 			return ((SVDouble) getValue()).getDouble();
 		}
-		if (getValue() instanceof Expression) {
-			return ((Expression) getValue()).getNumVal();
+		if (getValue() instanceof SVExpression) {
+			return ((SVExpression) getValue()).getNumVal();
 		}
 		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
 	}

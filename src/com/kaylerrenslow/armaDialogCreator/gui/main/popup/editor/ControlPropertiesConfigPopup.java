@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
@@ -50,9 +50,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private Label lblClassName;
 	private ComboBoxMenuButton<ControlClass> menuButtonExtendControls;
 	private CheckBox checkBoxIsBackgroundControl;
-	private final ValueListener<AColor> backgroundColorListener = new ValueListener<AColor>() {
+	private final ValueListener<SVColor> backgroundColorListener = new ValueListener<SVColor>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+		public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 			if (newValue != null) {
 				setBorderColor(newValue.toJavaFXColor()); //update the popup's border color
 			}

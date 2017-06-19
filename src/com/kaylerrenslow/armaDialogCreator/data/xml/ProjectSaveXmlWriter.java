@@ -136,7 +136,7 @@ public class ProjectSaveXmlWriter {
 			if (property.getValue() == null) {
 				continue;
 			}
-			stm.write(String.format("<display-property lookup-id='%s'>", property.getPropertyLookup().getPropertyId()));
+			stm.write(String.format("<display-property id='%s'>", property.getPropertyLookup().getPropertyId()));
 			writeValue(stm, property.getValue());
 			stm.write("</display-property>");
 		}

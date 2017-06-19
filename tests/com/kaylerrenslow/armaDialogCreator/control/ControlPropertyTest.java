@@ -114,7 +114,7 @@ public class ControlPropertyTest {
 
 	@Test
 	public void deepCopy_succeed() throws Exception {
-		AColor color = new AColor(0, 0, 0, 1);
+		SVColor color = new SVColor(0, 0, 0, 1);
 		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, color);
 		ControlProperty pCopy = p.deepCopy();
 		assertEquals(true, p != pCopy && p.equals(pCopy));
@@ -122,7 +122,7 @@ public class ControlPropertyTest {
 
 	@Test
 	public void deepCopy_fail() throws Exception {
-		AColor color = new AColor(0, 0, 0, 1);
+		SVColor color = new SVColor(0, 0, 0, 1);
 		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, color);
 		ControlProperty pCopy = p.deepCopy();
 		pCopy.setValue(new SVString("Why so serious?"));

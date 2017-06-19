@@ -166,9 +166,9 @@ class ControlPropertyValueEditors {
 	static class ControlStyleEditor extends ControlStyleValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<ControlStyleGroup> editorValueListener = new ReadOnlyValueListener<ControlStyleGroup>() {
+		private final ReadOnlyValueListener<SVControlStyleGroup> editorValueListener = new ReadOnlyValueListener<SVControlStyleGroup>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlStyleGroup> observer, ControlStyleGroup oldValue, ControlStyleGroup newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVControlStyleGroup> observer, SVControlStyleGroup oldValue, SVControlStyleGroup newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -178,7 +178,7 @@ class ControlPropertyValueEditors {
 				if (newValue == null) {
 					menuButton.clearSelection();
 				} else {
-					setValue((ControlStyleGroup) newValue);
+					setValue((SVControlStyleGroup) newValue);
 				}
 			}
 		};
@@ -193,7 +193,7 @@ class ControlPropertyValueEditors {
 				}
 			}
 			this.controlProperty = controlProperty;
-			setValue((ControlStyleGroup) controlProperty.getValue());
+			setValue((SVControlStyleGroup) controlProperty.getValue());
 			initListeners();
 		}
 
@@ -227,7 +227,7 @@ class ControlPropertyValueEditors {
 		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
-			return ControlStyleGroup.class;
+			return SVControlStyleGroup.class;
 		}
 
 		@Override
@@ -244,13 +244,13 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((ControlStyleGroup) controlProperty.getValue());
+			setValue((SVControlStyleGroup) controlProperty.getValue());
 		}
 	}
 
 	/**
 	 Used for when the input is in a text field. The InputField class also allows for input verifying so that if something entered is wrong, the user will be notified.
-	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link Expression}
+	 Used for {@link SVDouble}, {@link SVInteger}, {@link SVString}, {@link SVExpression}
 	 */
 	@SuppressWarnings("unchecked")
 	private static abstract class InputFieldEditor<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyValueEditor {
@@ -341,18 +341,18 @@ class ControlPropertyValueEditors {
 		}
 	}
 
-	static class FloatEditor extends InputFieldEditor<Expression> {
+	static class FloatEditor extends InputFieldEditor<SVExpression> {
 		FloatEditor(ControlClass control, ControlProperty controlProperty) {
-			super(Expression.class, control, controlProperty,
+			super(SVExpression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_FLOAT),
 					Lang.LookupBundle().getString("PropertyType.float")
 			);
 		}
 	}
 
-	static class IntegerEditor extends InputFieldEditor<Expression> {
+	static class IntegerEditor extends InputFieldEditor<SVExpression> {
 		IntegerEditor(ControlClass control, ControlProperty controlProperty) {
-			super(Expression.class, control, controlProperty,
+			super(SVExpression.class, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_INT),
 					Lang.LookupBundle().getString("PropertyType.int")
 			);
@@ -361,14 +361,14 @@ class ControlPropertyValueEditors {
 
 	/**
 	 Used for when control property requires color input.
-	 Use this only when the ControlProperty's value is of type {@link AColor}
+	 Use this only when the ControlProperty's value is of type {@link SVColor}
 	 */
 	static class ColorPickerEditor extends ColorValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<AColor> valueEditorListener = new ReadOnlyValueListener<AColor>() {
+		private final ReadOnlyValueListener<SVColor> valueEditorListener = new ReadOnlyValueListener<SVColor>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -376,7 +376,7 @@ class ControlPropertyValueEditors {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
 				if (controlProperty.getValue() != null) { //maybe wasn't updated
-					colorPicker.setValue(((AColor) controlProperty.getValue()).toJavaFXColor());
+					colorPicker.setValue(((SVColor) controlProperty.getValue()).toJavaFXColor());
 				} else {
 					colorPicker.setValue(null);
 				}
@@ -388,7 +388,7 @@ class ControlPropertyValueEditors {
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
-				AColor value = (AColor) controlProperty.getValue();
+				SVColor value = (SVColor) controlProperty.getValue();
 				colorPicker.setValue(value.toJavaFXColor());
 			} else {
 				colorPicker.setValue(null);
@@ -421,7 +421,7 @@ class ControlPropertyValueEditors {
 		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
-			return AColor.class;
+			return SVColor.class;
 		}
 
 		@Override
@@ -438,7 +438,7 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((AColor) controlProperty.getValue());
+			setValue((SVColor) controlProperty.getValue());
 		}
 	}
 
@@ -604,21 +604,21 @@ class ControlPropertyValueEditors {
 
 	/**
 	 Used for control property font picking
-	 Used for ControlProperty instances where it's value is {@link AFont}
+	 Used for ControlProperty instances where it's value is {@link SVFont}
 	 */
 	static class FontChoiceBoxEditor extends FontValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<AFont> editorValueListener = new ReadOnlyValueListener<AFont>() {
+		private final ReadOnlyValueListener<SVFont> editorValueListener = new ReadOnlyValueListener<SVFont>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<AFont> observer, AFont oldValue, AFont newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVFont> observer, SVFont oldValue, SVFont newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				comboBox.setValue((AFont) controlProperty.getValue());
+				comboBox.setValue((SVFont) controlProperty.getValue());
 			}
 		};
 
@@ -626,7 +626,7 @@ class ControlPropertyValueEditors {
 			this.controlProperty = controlProperty;
 			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
-			setValue((AFont) controlProperty.getValue());
+			setValue((SVFont) controlProperty.getValue());
 			initListeners();
 		}
 
@@ -655,7 +655,7 @@ class ControlPropertyValueEditors {
 		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
-			return AFont.class;
+			return SVFont.class;
 		}
 
 		@Override
@@ -672,7 +672,7 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((AFont) controlProperty.getValue());
+			setValue((SVFont) controlProperty.getValue());
 		}
 	}
 
@@ -750,20 +750,20 @@ class ControlPropertyValueEditors {
 		}
 	}
 
-	/** Use this editor for {@link ASound} ControlProperty values */
+	/** Use this editor for {@link SVSound} ControlProperty values */
 	static class SoundEditor extends SoundValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<ASound> editorValueListener = new ReadOnlyValueListener<ASound>() {
+		private final ReadOnlyValueListener<SVSound> editorValueListener = new ReadOnlyValueListener<SVSound>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<ASound> observer, ASound oldValue, ASound newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVSound> observer, SVSound oldValue, SVSound newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				setValue((ASound) newValue);
+				setValue((SVSound) newValue);
 			}
 		};
 
@@ -800,7 +800,7 @@ class ControlPropertyValueEditors {
 		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
-			return ASound.class;
+			return SVSound.class;
 		}
 
 		@Override
@@ -817,7 +817,7 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((ASound) controlProperty.getValue());
+			setValue((SVSound) controlProperty.getValue());
 		}
 	}
 }

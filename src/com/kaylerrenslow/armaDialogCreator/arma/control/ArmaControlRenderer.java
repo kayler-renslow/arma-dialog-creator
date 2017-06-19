@@ -5,8 +5,8 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.Expression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
@@ -33,7 +33,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
-	private final ValueObserver<AColor> globalBackgroundColorObserver;
+	private final ValueObserver<SVColor> globalBackgroundColorObserver;
 	/** A simple value listener that will only invoke {@link #requestRender()} when update is received */
 	protected final ValueListener<SerializableValue> renderValueUpdateListener = new ValueListener<SerializableValue>() {
 		@Override
@@ -54,10 +54,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		globalBackgroundColorObserver = new ValueObserver<>(new AColor(backgroundColor));
-		globalBackgroundColorObserver.addListener(new ValueListener<AColor>() {
+		globalBackgroundColorObserver = new ValueObserver<>(new SVColor(backgroundColor));
+		globalBackgroundColorObserver.addListener(new ValueListener<SVColor>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
 					requestRender();
@@ -81,22 +81,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 					if (xProperty.getValue() == null) {
 						return;
 					}
-					setXSilent((Expression) xProperty.getValue());
+					setXSilent((SVExpression) xProperty.getValue());
 				} else if (yProperty.getValueObserver() == observer) {
 					if (yProperty.getValue() == null) {
 						return;
 					}
-					setYSilent((Expression) yProperty.getValue());
+					setYSilent((SVExpression) yProperty.getValue());
 				} else if (wProperty.getValueObserver() == observer) {
 					if (wProperty.getValue() == null) {
 						return;
 					}
-					setWSilent((Expression) wProperty.getValue());
+					setWSilent((SVExpression) wProperty.getValue());
 				} else if (hProperty.getValueObserver() == observer) {
 					if (hProperty.getValue() == null) {
 						return;
 					}
-					setHSilent((Expression) hProperty.getValue());
+					setHSilent((SVExpression) hProperty.getValue());
 				} else {
 					throw new IllegalStateException("unmatched observer");
 				}
@@ -116,24 +116,24 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		});
 
 		if (xProperty.getValue() == null) {
-			defineX(new Expression("0", env));
+			defineX(new SVExpression("0", env));
 		} else {
-			setXSilent((Expression) xProperty.getValue());
+			setXSilent((SVExpression) xProperty.getValue());
 		}
 		if (yProperty.getValue() == null) {
-			defineY(new Expression("0", env));
+			defineY(new SVExpression("0", env));
 		} else {
-			setYSilent((Expression) yProperty.getValue());
+			setYSilent((SVExpression) yProperty.getValue());
 		}
 		if (wProperty.getValue() == null) {
-			defineW(new Expression("1", env));
+			defineW(new SVExpression("1", env));
 		} else {
-			setWSilent((Expression) wProperty.getValue());
+			setWSilent((SVExpression) wProperty.getValue());
 		}
 		if (hProperty.getValue() == null) {
-			defineH(new Expression("1", env));
+			defineH(new SVExpression("1", env));
 		} else {
-			setHSilent((Expression) hProperty.getValue());
+			setHSilent((SVExpression) hProperty.getValue());
 		}
 
 	}
@@ -156,27 +156,27 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
-	public void defineX(Expression x) {
+	public void defineX(SVExpression x) {
 		xProperty.setValue(x);
 	}
 
 	/** Set y and define the y control property. This will also update the renderer's position. */
-	public void defineY(Expression y) {
+	public void defineY(SVExpression y) {
 		yProperty.setValue(y);
 	}
 
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
-	public void defineW(Expression width) {
+	public void defineW(SVExpression width) {
 		wProperty.setValue(width);
 	}
 
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
-	public void defineH(Expression height) {
+	public void defineH(SVExpression height) {
 		hProperty.setValue(height);
 	}
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
-	protected void setXSilent(Expression x) {
+	protected void setXSilent(SVExpression x) {
 		if (x == null) {
 			return;
 		}
@@ -188,7 +188,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
-	protected void setYSilent(Expression y) {
+	protected void setYSilent(SVExpression y) {
 		if (y == null) {
 			return;
 		}
@@ -200,7 +200,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
-	protected void setWSilent(Expression width) {
+	protected void setWSilent(SVExpression width) {
 		if (width == null) {
 			return;
 		}
@@ -209,7 +209,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
-	protected void setHSilent(Expression height) {
+	protected void setHSilent(SVExpression height) {
 		if (height == null) {
 			return;
 		}
@@ -219,22 +219,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	@Override
 	public void setPercentX(double percentX) {
-		defineX(new Expression(ArmaPrecision.format(percentX), env));
+		defineX(new SVExpression(ArmaPrecision.format(percentX), env));
 	}
 
 	@Override
 	public void setPercentY(double percentY) {
-		defineY(new Expression(ArmaPrecision.format(percentY), env));
+		defineY(new SVExpression(ArmaPrecision.format(percentY), env));
 	}
 
 	@Override
 	public void setPercentW(double percentW) {
-		defineW(new Expression(ArmaPrecision.format(percentW), env));
+		defineW(new SVExpression(ArmaPrecision.format(percentW), env));
 	}
 
 	@Override
 	public void setPercentH(double percentH) {
-		defineH(new Expression(ArmaPrecision.format(percentH), env));
+		defineH(new SVExpression(ArmaPrecision.format(percentH), env));
 	}
 
 	@Override
@@ -291,10 +291,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		if (disableRecalc) {
 			return;
 		}
-		final Expression x = new Expression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
-		final Expression y = new Expression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
-		final Expression w = new Expression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
-		final Expression h = new Expression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
+		final SVExpression x = new SVExpression(PositionCalculator.getSafeZoneExpressionX(resolution, getX1()), env);
+		final SVExpression y = new SVExpression(PositionCalculator.getSafeZoneExpressionY(resolution, getY1()), env);
+		final SVExpression w = new SVExpression(PositionCalculator.getSafeZoneExpressionW(resolution, getWidth()), env);
+		final SVExpression h = new SVExpression(PositionCalculator.getSafeZoneExpressionH(resolution, getHeight()), env);
 		this.disablePositionPropertyListener = true;
 		xProperty.setValue(x);
 		yProperty.setValue(y);
@@ -322,7 +322,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	@NotNull
-	public ValueObserver<AColor> getBackgroundColorObserver() {
+	public ValueObserver<SVColor> getBackgroundColorObserver() {
 		return globalBackgroundColorObserver;
 	}
 
@@ -415,10 +415,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		setXSilent((Expression) xProperty.getValue());
-		setYSilent((Expression) yProperty.getValue());
-		setWSilent((Expression) wProperty.getValue());
-		setHSilent((Expression) hProperty.getValue());
+		setXSilent((SVExpression) xProperty.getValue());
+		setYSilent((SVExpression) yProperty.getValue());
+		setWSilent((SVExpression) wProperty.getValue());
+		setHSilent((SVExpression) hProperty.getValue());
 
 		resolutionUpdateGroup.update(newResolution);
 	}

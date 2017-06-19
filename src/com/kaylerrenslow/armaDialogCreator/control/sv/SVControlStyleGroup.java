@@ -10,18 +10,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- A {@link ControlStyleGroup} has a 1 length {@link #getAsStringArray()}.
+ A {@link SVControlStyleGroup} has a 1 length {@link #getAsStringArray()}.
  @author Kayler
  @since 08/05/2016
  */
-public class ControlStyleGroup extends SerializableValue {
+public class SVControlStyleGroup extends SerializableValue {
 	private ControlStyle[] values;
 
 	public static final String DEFAULT_DELIMITER = "+";
 
-	public static final ValueConverter<ControlStyleGroup> CONVERTER = new ValueConverter<ControlStyleGroup>() {
+	public static final ValueConverter<SVControlStyleGroup> CONVERTER = new ValueConverter<SVControlStyleGroup>() {
 		@Override
-		public ControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
 			String[] split = values[0].split("\\+");
 			ArrayList<ControlStyle> styles = new ArrayList<>(split.length);
 			for (String s : split) {
@@ -41,11 +41,11 @@ public class ControlStyleGroup extends SerializableValue {
 					}
 				}
 			}
-			return new ControlStyleGroup(styles.toArray(new ControlStyle[styles.size()]));
+			return new SVControlStyleGroup(styles.toArray(new ControlStyle[styles.size()]));
 		}
 	};
 
-	public ControlStyleGroup(@NotNull String[] values) {
+	public SVControlStyleGroup(@NotNull String[] values) {
 		super(values);
 		try {
 			this.values = CONVERTER.convert(null, values).values;
@@ -54,7 +54,7 @@ public class ControlStyleGroup extends SerializableValue {
 		}
 	}
 
-	public ControlStyleGroup(@NotNull ControlStyle[] values) {
+	public SVControlStyleGroup(@NotNull ControlStyle[] values) {
 		super(toString(values));
 		this.values = values;
 	}
@@ -74,7 +74,7 @@ public class ControlStyleGroup extends SerializableValue {
 	public SerializableValue deepCopy() {
 		ControlStyle[] copy = new ControlStyle[values.length];
 		System.arraycopy(values, 0, copy, 0, copy.length);
-		return new ControlStyleGroup(copy);
+		return new SVControlStyleGroup(copy);
 	}
 
 	@NotNull
@@ -101,8 +101,8 @@ public class ControlStyleGroup extends SerializableValue {
 		if (o == this) {
 			return true;
 		}
-		if (o instanceof ControlStyleGroup) {
-			ControlStyleGroup other = (ControlStyleGroup) o;
+		if (o instanceof SVControlStyleGroup) {
+			SVControlStyleGroup other = (SVControlStyleGroup) o;
 			return Arrays.equals(this.values, other.values);
 		}
 		return false;

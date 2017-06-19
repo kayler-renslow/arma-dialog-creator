@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.ControlStyleGroup;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,7 +71,7 @@ public enum ControlStyle {
 	public final String displayName;
 	public final String documentation;
 
-	private ControlStyleGroup styleGroup;
+	private SVControlStyleGroup styleGroup;
 
 	ControlStyle(int styleId, int styleValue, String displayName, String documentation) {
 		if (StyleIdVerifier.usedIds.contains(styleId)) {
@@ -85,10 +85,10 @@ public enum ControlStyle {
 
 	}
 
-	/** A ControlStyleGroup instance with only this instance's ControlStyle inside */
-	public ControlStyleGroup getStyleGroup() {
+	/** A SVControlStyleGroup instance with only this instance's ControlStyle inside */
+	public SVControlStyleGroup getStyleGroup() {
 		if (styleGroup == null) {
-			styleGroup = new ControlStyleGroup(new ControlStyle[]{this});
+			styleGroup = new SVControlStyleGroup(new ControlStyle[]{this});
 		}
 		return styleGroup;
 	}

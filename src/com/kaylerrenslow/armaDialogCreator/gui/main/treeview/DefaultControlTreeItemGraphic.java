@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.treeview;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.AColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.BorderedImageView;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -48,9 +48,9 @@ public class DefaultControlTreeItemGraphic extends HBox {
 				updateVisibilityRadioButton(!entry.getMyArmaControl().getRenderer().isGhost());
 			}
 		});
-		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addListener(new ValueListener<AColor>() {
+		entry.getMyArmaControl().getRenderer().getBackgroundColorObserver().addListener(new ValueListener<SVColor>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<AColor> observer, AColor oldValue, AColor newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				if (newValue == null) {
 					fillBox(Color.TRANSPARENT);
 				} else {

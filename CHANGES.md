@@ -1,12 +1,11 @@
 **Added:**
-* for missing control properties popup, made ok button close the config popup
-* static control now attempts to locate a converted .paa if the image path is a .paa
+* 
 
 **Changed:**
-* project save files and now load property values into types that aren't the initial types specified in the lookup 
+* added SV prefix to SerializableValue subclasses' names
 
 **Fixed:**
-* 
+* display property not loading from project correctly
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
