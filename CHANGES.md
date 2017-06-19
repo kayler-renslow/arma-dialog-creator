@@ -1,11 +1,11 @@
 **Added:**
-* 
+* more ControlList tests
 
 **Changed:**
 * 
 
 **Fixed:**
-* one of the ControlList tests was wrong
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

@@ -10,6 +10,13 @@ import org.jetbrains.annotations.Nullable;
 public class Reference<E> {
 	private E value;
 
+	public Reference(@Nullable E value) {
+		this.value = value;
+	}
+
+	public Reference() {
+	}
+
 	@Nullable
 	public E getValue() {
 		return value;

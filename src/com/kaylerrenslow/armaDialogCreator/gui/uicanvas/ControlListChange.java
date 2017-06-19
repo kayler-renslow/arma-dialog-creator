@@ -3,8 +3,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/12/2016.
- */
+ @author Kayler
+ @see ControlList
+ @see ControlList#addChangeListener(ControlListChangeListener)
+ @since 08/12/2016 */
 public class ControlListChange<C extends CanvasControl> {
 	private final ControlList<C> modifiedList;
 	private ControlAdd<C> added;
@@ -62,31 +64,66 @@ public class ControlListChange<C extends CanvasControl> {
 		return changeType == ControlListChangeType.SET;
 	}
 
+	/** @return {@link #getChangeType()}=={@link ControlListChangeType#ADD} */
 	public boolean wasAdded() {
 		return changeType == ControlListChangeType.ADD;
 	}
 
+	/** @return {@link #getChangeType()}=={@link ControlListChangeType#REMOVE} */
 	public boolean wasRemoved() {
 		return changeType == ControlListChangeType.REMOVE;
 	}
 
+	/** @return {@link #getChangeType()}=={@link ControlListChangeType#MOVE} */
 	public boolean wasMoved() {
 		return changeType == ControlListChangeType.MOVE;
 	}
 
+	/**
+	 @return the {@link ControlSet} update
+	 @throws IllegalStateException when {@link #wasSet()}==false
+	 */
+	@NotNull
 	public ControlSet<C> getSet() {
+		if (!wasSet()) {
+			throw new IllegalStateException("not a set change");
+		}
 		return set;
 	}
 
+	/**
+	 @return the {@link ControlAdd} update
+	 @throws IllegalStateException when {@link #wasAdded()}==false
+	 */
+	@NotNull
 	public ControlAdd<C> getAdded() {
+		if (!wasAdded()) {
+			throw new IllegalStateException("not an add change");
+		}
 		return added;
 	}
 
+	/**
+	 @return the {@link ControlRemove} update
+	 @throws IllegalStateException when {@link #wasRemoved()}==false
+	 */
+	@NotNull
 	public ControlRemove<C> getRemoved() {
+		if (!wasRemoved()) {
+			throw new IllegalStateException("not a remove change");
+		}
 		return removed;
 	}
 
+	/**
+	 @return the {@link ControlMove} update
+	 @throws IllegalStateException when {@link #wasMoved()}==false
+	 */
+	@NotNull
 	public ControlMove<C> getMoved() {
+		if (!wasMoved()) {
+			throw new IllegalStateException("not a move change");
+		}
 		return moved;
 	}
 }

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
+import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -13,7 +14,258 @@ import static org.junit.Assert.assertEquals;
  @since 06/18/2017 */
 public class ControlListTest {
 
-	//todo add change listener tests
+	@Test
+	public void changeListener_remove() throws Exception {
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+
+		list.add(control0);
+		list.add(control1);
+		list.add(control2);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (controlList != list) {
+					assertEquals(list, controlList);
+					return;
+				}
+				if (!change.wasRemoved()) {
+					assertEquals(true, false);
+					return;
+				}
+				ControlRemove<TestCanvasControl> removed = change.getRemoved();
+				if (removed.getControl() != control0) {
+					assertEquals("Expected the removed control to be control0", control0, removed.getControl());
+					return;
+				}
+				if (removed.getIndex() != 0) {
+					assertEquals("Expected the removal index to be 0", 0, removed.getIndex());
+					return;
+				}
+
+				visited.setValue(true);
+			}
+		});
+
+		list.remove(control0);
+
+		assertEquals(true, visited.getValue());
+	}
+
+	@Test
+	public void changeListener_set() throws Exception {
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+
+		list.add(control0);
+		list.add(control1);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (controlList != list) {
+					assertEquals(list, controlList);
+					return;
+				}
+				if (!change.wasSet()) {
+					assertEquals(true, false);
+					return;
+				}
+				ControlSet<TestCanvasControl> set = change.getSet();
+				if (set.getIndex() != 0) {
+					assertEquals("Expected the set index to be 0", 0, set.getIndex());
+					return;
+				}
+				if (set.getNewControl() != control2) {
+					assertEquals("Expected control2 to be the new control", control2, set.getNewControl());
+					return;
+				}
+				if (set.getOldControl() != control0) {
+					assertEquals("Expected control0 to be the old control", control0, set.getOldControl());
+					return;
+				}
+
+				visited.setValue(true);
+			}
+		});
+
+		list.set(0, control2);
+
+		assertEquals(true, visited.getValue());
+	}
+
+	@Test
+	public void changeListener_add() throws Exception {
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+
+		list.add(control0);
+		list.add(control1);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (controlList != list) {
+					assertEquals(list, controlList);
+					return;
+				}
+				if (!change.wasAdded()) {
+					assertEquals(true, false);
+					return;
+				}
+				ControlAdd<TestCanvasControl> added = change.getAdded();
+				if (added.getControl() != control2) {
+					assertEquals(control2, added.getControl());
+					return;
+				}
+				if (added.getIndex() != 2) {
+					assertEquals("Expected destination index to be 1", 2, added.getIndex());
+					return;
+				}
+
+				visited.setValue(true);
+			}
+		});
+
+		list.add(control2);
+
+		assertEquals(true, visited.getValue());
+	}
+
+	@Test
+	public void changeListener_move1() throws Exception {
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+
+		list.add(control0);
+		list.add(control1);
+		list.add(control2);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (controlList != list) {
+					assertEquals(list, controlList);
+					return;
+				}
+				if (!change.wasMoved()) {
+					assertEquals(true, false);
+					return;
+				}
+				ControlMove<TestCanvasControl> moved = change.getMoved();
+				if (moved.getDestinationHolder() != holder) {
+					assertEquals(holder, moved.getDestinationHolder());
+					return;
+				}
+				if (moved.getDestinationIndex() != 1) {
+					assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
+					return;
+				}
+				if (moved.getMovedControl() != control0) {
+					assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
+					return;
+				}
+				if (moved.getOldHolder() != holder) {
+					assertEquals(holder, moved.getOldHolder());
+					return;
+				}
+				if (moved.getOldIndex() != 0) {
+					assertEquals("Expected old index to be 0", 0, moved.getOldIndex());
+					return;
+				}
+				visited.setValue(true);
+			}
+		});
+
+		list.move(0, 1);
+
+		assertEquals(true, visited.getValue());
+	}
+
+	@Test
+	public void changeListener_move2() throws Exception {
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+		TestCanvasHolder holder2 = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list2 = holder2.getControls();
+
+		list2.add(new TestCanvasControl("list2 control"));
+
+		list.add(control0);
+		list.add(control1);
+		list.add(control2);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (controlList != list) {
+					assertEquals(list, controlList);
+					return;
+				}
+				if (!change.wasMoved()) {
+					assertEquals(true, false);
+					return;
+				}
+				ControlMove<TestCanvasControl> moved = change.getMoved();
+				if (moved.getDestinationHolder() != holder2) {
+					assertEquals(holder2, moved.getDestinationHolder());
+					return;
+				}
+				if (moved.getDestinationIndex() != 1) {
+					assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
+					return;
+				}
+				if (moved.getMovedControl() != control0) {
+					assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
+					return;
+				}
+				if (moved.getOldHolder() != holder) {
+					assertEquals(holder, moved.getOldHolder());
+					return;
+				}
+				if (moved.getOldIndex() != 0) {
+					assertEquals("Expected old index to be 0", 0, moved.getOldIndex());
+					return;
+				}
+				visited.setValue(true);
+			}
+		});
+
+		list.move(control0, list2);
+
+		assertEquals(true, visited.getValue());
+	}
 
 	@Test
 	public void clear() throws Exception {
