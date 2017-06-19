@@ -116,13 +116,13 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		/*set export directory*/
 		final Label lblExportDirectory = new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_directory"));
 		final FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-				Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.locate_export_directory"), configuration.getExportLocation());
+				Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
 		Tooltip.install(chooserPane, new Tooltip(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_directory_tooltip")));
-		chooserPane.setChosenFile(configuration.getExportLocation());
+		chooserPane.setChosenFile(configuration.getExportDirectory());
 		chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
-				configuration.setExportLocation(newValue);
+				configuration.setExportDirectory(newValue);
 			}
 		});
 		tabRoot.getChildren().add(new VBox(5, lblExportDirectory, chooserPane));

@@ -32,7 +32,7 @@ public enum PropertyType {
 	/** Is font name */
 	Font(9, SVFont.CONVERTER, getString("PropertyType.font"), true),
 	/** Denotes a file name inside a String */
-	FileName(10, SVString.CONVERTER, getString("PropertyType.file_name"), true),
+	FileName(10, SVFileName.CONVERTER, getString("PropertyType.file_name"), true),
 	/** Color is set to a hex string like #ffffff or #ffffffff */
 	HexColorString(11, SVHexColor.CONVERTER, getString("PropertyType.hex_color_string"), true),
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */

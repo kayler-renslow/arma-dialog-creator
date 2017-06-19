@@ -98,7 +98,7 @@ public class ProjectSaveXmlWriter {
 	private void writeProjectExportConfiguration(XmlWriterOutputStream stm, @NotNull ProjectExportConfiguration configuration) throws IOException {
 		stm.write("<export-config>");
 		writeProjectExportConfigurationAttribute(stm, "export-class-name", configuration.getExportClassName());
-		writeProjectExportConfigurationAttribute(stm, "export-location", configuration.getExportLocation().getPath());
+		writeProjectExportConfigurationAttribute(stm, "export-location", configuration.getExportDirectory().getPath());
 		writeProjectExportConfigurationAttribute(stm, "place-adc-notice", configuration.shouldPlaceAdcNotice() + "");
 		writeProjectExportConfigurationAttribute(stm, "export-macros-to-file", configuration.shouldExportMacrosToFile() + "");
 		writeProjectExportConfigurationAttribute(stm, "export-file-type-ext", configuration.getHeaderFileType().getExtension());

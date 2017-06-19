@@ -7,8 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 /**
- Used for storing controls. This is an alternative to {@link javafx.collections.ObservableList}. Advantages of this over the other is this supports moving. In the other one, in order to "move"
- something, you would have to remove it and then add it back. This would fire 2 events: remove and add. Although this implementation functionally does the same thing, only one event is fired for
+ Used for storing controls. This is an alternative to {@link javafx.collections.ObservableList}.
+ Advantages of this over the other is this supports moving. In the other one, in order to "move"
+ something, you would have to remove it and then add it back. This would fire 2 events: remove and add.
+ Although this implementation functionally does the same thing, only one event is fired for
  moving and thus makes it easier to detect and manage.
 
  @author Kayler
@@ -31,6 +33,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/** Listeners for when the list is cleared. */
+	@NotNull
 	public UpdateListenerGroup<Object> getOnClear() {
 		return onClear;
 	}
@@ -41,7 +44,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	@Override
-	public C set(int index, @Flow(targetIsContainer = true) C element) {
+	public C set(int index, @NotNull @Flow(targetIsContainer = true) C element) {
 		boundTest(index);
 		C old = controls.set(index, element);
 		ControlListChange<C> change = new ControlListChange<>(this);
@@ -51,14 +54,14 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/** Add a control to end of list. Returns true. */
-	public boolean add(C control) {
+	public boolean add(@NotNull C control) {
 		controls.add(control);
 		afterAdd(controls.size() - 1, control);//size -1 because control was already added and size of list has changed
 		return true;
 	}
 
 	/** Add a control at index */
-	public void add(int index, C control) {
+	public void add(int index, @NotNull C control) {
 		if (index != controls.size()) {
 			boundTest(index);
 		}
@@ -66,7 +69,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 		afterAdd(index, control);
 	}
 
-	private void afterAdd(int index, C control) {
+	private void afterAdd(int index, @NotNull C control) {
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setAdded(new ControlAdd<>(control, index));
 		notifyListeners(change);
@@ -74,7 +77,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 
 	/** Remove a control. Returns true if control could be located and removed, false otherwise. */
 	@Override
-	public boolean remove(Object control) {
+	public boolean remove(@NotNull Object control) {
 		int index = controls.indexOf(control);
 		if (index < 0) {
 			return false;
@@ -100,7 +103,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	 @param newIndex new index to place the control in this list
 	 @return true if the operation succeeded, false if it didn't (occurs when control couldn't be found)
 	 */
-	public boolean move(C toMove, int newIndex) {
+	public boolean move(@NotNull C toMove, int newIndex) {
 		int index = controls.indexOf(toMove);
 		if (index < 0) {
 			return false;
@@ -127,7 +130,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	 @param newIndex index of the new holder's control list to move to
 	 @return true if the operation was successful, false if it wasn't (happens when the control to move wasn't located).
 	 */
-	public boolean move(C toMove, ControlList<C> newList, int newIndex) {
+	public boolean move(@NotNull C toMove, @NotNull ControlList<C> newList, int newIndex) {
 		int index = controls.indexOf(toMove);
 		if (index < 0) {
 			return false;
@@ -145,7 +148,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	 @param newList list to move the control to
 	 @param newParentIndex index of the new holder's control list to move to
 	 */
-	public void move(int indexOfControlToMove, ControlList<C> newList, int newParentIndex) {
+	public void move(int indexOfControlToMove, @NotNull ControlList<C> newList, int newParentIndex) {
 		boundTest(indexOfControlToMove);
 		if (indexOfControlToMove == newParentIndex && newList == this) { //not actually moving
 			return;
@@ -173,7 +176,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to (will move control to end of list)
 	 */
-	public void move(int indexOfControlToMove, ControlList<C> newList) {
+	public void move(int indexOfControlToMove, @NotNull ControlList<C> newList) {
 		move(indexOfControlToMove, newList, newList.size());
 	}
 
@@ -184,12 +187,12 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	 @param newList list to move the control to (will move control to end of list)
 	 @return true if the operation succeed, or false if it didn't (happens when control couldn't be located)
 	 */
-	public boolean move(C control, ControlList<C> newList) {
+	public boolean move(@NotNull C control, @NotNull ControlList<C> newList) {
 		return move(control, newList, newList.size());
 	}
 
 	/** Adds a listener. If the listener already has been added, will not be added again */
-	public void addChangeListener(ControlListChangeListener<C> l) {
+	public void addChangeListener(@NotNull ControlListChangeListener<C> l) {
 		if (listeners.contains(l)) {
 			return;
 		}
@@ -197,11 +200,11 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/** Removes a listener. Returns true if the listener was added and not removed, false otherwise */
-	public boolean removeChangeListener(ControlListChangeListener<C> l) {
+	public boolean removeChangeListener(@NotNull ControlListChangeListener<C> l) {
 		return listeners.remove(l);
 	}
 
-	private void notifyListeners(ControlListChange<C> change) {
+	private void notifyListeners(@NotNull ControlListChange<C> change) {
 		for (ControlListChangeListener<C> l : listeners) {
 			l.onChanged(this, change);
 		}
@@ -229,7 +232,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	@Override
-	public boolean contains(Object o) {
+	public boolean contains(@NotNull Object o) {
 		return controls.contains(o);
 	}
 

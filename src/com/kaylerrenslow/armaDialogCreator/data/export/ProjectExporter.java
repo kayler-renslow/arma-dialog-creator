@@ -4,10 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -19,6 +16,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.file.Paths;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -50,14 +49,20 @@ public class ProjectExporter {
 	}
 
 	@NotNull
-	public static String getExportValueString(@NotNull SerializableValue value, @NotNull PropertyType type) {
+	public static String getExportValueString(@NotNull SerializableValue value, @NotNull PropertyType type, @NotNull String exportDir) {
 		String[] arr = value.getAsStringArray();
 		StringBuilder ret = new StringBuilder();
 		String v;
+		int[] convertToFilePath = value instanceof FilePathUser ? ((FilePathUser) value).getIndicesThatUseFilePaths() : new int[0];
 		for (int i = 0; i < arr.length; i++) {
 			v = arr[i];
 			for (int quoteIndex : type.getIndexesWithQuotes()) {
 				if (quoteIndex == i) {
+					for (int c : convertToFilePath) {
+						if (c == i) {
+							v = Paths.get(exportDir).relativize(Paths.get(v)).toString();
+						}
+					}
 					v = "\"" + v + "\"";
 					break;
 				}
@@ -87,7 +92,7 @@ public class ProjectExporter {
 	}
 
 	private final Project project;
-	private final ProjectExportConfiguration configuration;
+	private final ProjectExportConfiguration conf;
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	private CachedIndentedStringBuilder displayStringBuilder;
@@ -95,30 +100,30 @@ public class ProjectExporter {
 	private CachedIndentedStringBuilder macrosStringBuilder;
 
 	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
-		this.configuration = configuration;
+		this.conf = configuration;
 		this.project = configuration.getProject();
 
 	}
 
 	public void export() throws IOException {
-		if (!configuration.getExportLocation().exists()) {
-			configuration.getExportLocation().mkdirs();
+		if (!conf.getExportDirectory().exists()) {
+			conf.getExportDirectory().mkdirs();
 		}
-		if (!configuration.getExportLocation().isDirectory()) {
-			throw new IllegalArgumentException("exportLocation ('" + configuration.getExportLocation().getPath() + "') is not a directory");
+		if (!conf.getExportDirectory().isDirectory()) {
+			throw new IllegalArgumentException("exportLocation ('" + conf.getExportDirectory().getPath() + "') is not a directory");
 		}
-		final String exportDirectoryPath = configuration.getExportLocation().getPath() + "/";
-		final File exportDirectory = configuration.getExportLocation();
+		final String exportDirectoryPath = conf.getExportDirectory().getPath() + "/";
+		final File exportDirectory = conf.getExportDirectory();
 
 		exportDirectory.mkdir();
 
-		final File exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(configuration));
+		final File exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(conf));
 		exportDisplayFile.createNewFile();
 		final FileOutputStream fosDisplay = new FileOutputStream(exportDisplayFile);
 
 		FileOutputStream fosMacros = null;
-		if (configuration.shouldExportMacrosToFile()) {
-			final File macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(configuration));
+		if (conf.shouldExportMacrosToFile()) {
+			final File macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(conf));
 			macrosExportFile.createNewFile();
 			fosMacros = new FileOutputStream(macrosExportFile);
 		}
@@ -132,7 +137,7 @@ public class ProjectExporter {
 	}
 
 	public void export(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
-		if (macrosOutputStream == null || !configuration.shouldExportMacrosToFile()) {
+		if (macrosOutputStream == null || !conf.shouldExportMacrosToFile()) {
 			macrosOutputStream = displayOutputStream; //save the macros inside the display header file
 		}
 
@@ -142,11 +147,6 @@ public class ProjectExporter {
 		exportMacros(macrosStringBuilder);
 		//write remainder stuff
 		macrosOutputStream.write(macrosStringBuilder.toString().getBytes());
-
-		if (configuration.shouldPlaceAdcNotice()) {
-			writelnComment(displayStringBuilder, bundle.getString("Misc.adc_export_notice"));
-			writeln(displayStringBuilder, "");
-		}
 
 		exportDisplay(displayStringBuilder);
 
@@ -165,24 +165,32 @@ public class ProjectExporter {
 
 
 	private void exportMacros(@NotNull IndentedStringBuilder stringBuilder) throws IOException {
-		if (configuration.shouldPlaceAdcNotice()) {
-			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
-			writeln(stringBuilder, "");
-		}
-
-		for (Macro macro : project.getMacroRegistry().getMacros()) {
+		List<Macro> macros = project.getMacroRegistry().getMacros();
+		for (Macro macro : macros) {
 			if (macro.getComment() != null && macro.getComment().length() != 0) {
 				writelnComment(stringBuilder, macro.getComment());
 			}
-			writeln(stringBuilder, "#define " + macro.getKey() + " " + getExportValueString(macro.getValue(), macro.getPropertyType()));
+			writeln(stringBuilder, "#define ");
+			writeln(stringBuilder, macro.getKey());
+			writeln(stringBuilder, " ");
+			writeln(stringBuilder, getExportValueString(
+					macro.getValue(),
+					macro.getPropertyType(), conf.getExportDirectory().getAbsolutePath())
+			);
 		}
-
-		stringBuilder.append('\n');
+		if (macros.size() > 0) {
+			stringBuilder.append('\n');
+		}
 	}
 
 	private void exportDisplay(@NotNull IndentedStringBuilder stringBuilder) throws IOException {
-		if (configuration.shouldExportMacrosToFile()) {
-			writeln(stringBuilder, "#include \"" + getMacrosFileName(configuration) + "\"");
+		if (conf.shouldPlaceAdcNotice()) {
+			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
+			writeln(stringBuilder, "");
+		}
+		
+		if (conf.shouldExportMacrosToFile()) {
+			writeln(stringBuilder, "#include \"" + getMacrosFileName(conf) + "\"");
 			writeln(stringBuilder, "");
 		}
 		if (project.getProjectDescription() != null && project.getProjectDescription().length() > 0) {
@@ -190,7 +198,7 @@ public class ProjectExporter {
 		}
 		ArmaDisplay display = project.getEditingDisplay();
 
-		writeClass(stringBuilder, configuration.getExportClassName(), null, stringBuilderCopy -> {
+		writeClass(stringBuilder, conf.getExportClassName(), null, stringBuilderCopy -> {
 			//write display properties
 
 			writeControlProperties(displayStringBuilder, display.getDisplayProperties());
@@ -290,9 +298,21 @@ public class ProjectExporter {
 				stringBuilder.append(String.format(itemFormatString, property.getName(), stringKey != null ? stringKey.getHeaderMacroId() : property.getMacro().getKey()));
 			} else {
 				if (property.getValue().getAsStringArray().length == 1) {
-					stringBuilder.append(String.format(itemFormatString, property.getName(), getExportValueString(property.getValue(), property.getPropertyType())));
+					stringBuilder.append(
+							String.format(
+									itemFormatString,
+									property.getName(),
+									getExportValueString(property.getValue(), property.getPropertyType(), conf.getExportDirectory().getAbsolutePath())
+							)
+					);
 				} else {
-					stringBuilder.append(String.format(itemArrayFormatString, property.getName(), getExportValueString(property.getValue(), property.getPropertyType())));
+					stringBuilder.append(
+							String.format(
+									itemArrayFormatString,
+									property.getName(),
+									getExportValueString(property.getValue(), property.getPropertyType(), conf.getExportDirectory().getAbsolutePath())
+							)
+					);
 				}
 			}
 			stringBuilder.append('\n');

@@ -16,7 +16,7 @@ public class ProjectExportConfiguration {
 	private static final String UNSET_EXPORT_CONFIG_NAME = "Untitled config";
 
 	private String exportClassName;
-	private File exportLocation;
+	private File exportDirectory;
 	private Project project;
 	private boolean placeAdcNotice;
 	private boolean exportMacrosToFile;
@@ -25,18 +25,18 @@ public class ProjectExportConfiguration {
 
 	public ProjectExportConfiguration(
 			@NotNull String exportClassName,
-			@NotNull File exportLocation,
+			@NotNull File exportDirectory,
 			@NotNull Project project,
 			boolean placeAdcNotice,
 			boolean exportMacrosToFile,
 			@NotNull HeaderFileType fileType
 	) {
-		this(exportClassName, exportLocation, project, placeAdcNotice, exportMacrosToFile, fileType, null);
+		this(exportClassName, exportDirectory, project, placeAdcNotice, exportMacrosToFile, fileType, null);
 	}
 
 	public ProjectExportConfiguration(
 			@NotNull String exportClassName,
-			@NotNull File exportLocation,
+			@NotNull File exportDirectory,
 			@NotNull Project project,
 			boolean placeAdcNotice,
 			boolean exportMacrosToFile,
@@ -44,7 +44,7 @@ public class ProjectExportConfiguration {
 			@Nullable String exportConfigName
 	) {
 		this.exportClassName = exportClassName;
-		this.exportLocation = exportLocation;
+		setExportDirectory(exportDirectory);
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
 		this.exportMacrosToFile = exportMacrosToFile;
@@ -69,11 +69,13 @@ public class ProjectExportConfiguration {
 		return placeAdcNotice;
 	}
 
+	/** @return the directory to which to export the project to */
 	@NotNull
-	public File getExportLocation() {
-		return exportLocation;
+	public File getExportDirectory() {
+		return exportDirectory;
 	}
 
+	/**@return the dialog's export class name*/
 	@NotNull
 	public String getExportClassName() {
 		return exportClassName;
@@ -100,13 +102,13 @@ public class ProjectExportConfiguration {
 	/**
 	 Sets the export location
 
-	 @throws IllegalArgumentException when exportLocation isn't a directory
+	 @throws IllegalArgumentException when exportDirectory isn't a directory
 	 */
-	public void setExportLocation(@NotNull File exportLocation) {
-		if (!exportLocation.isDirectory()) {
-			throw new IllegalArgumentException("exportLocation ('" + exportLocation.getPath() + "') is not a directory");
+	public void setExportDirectory(@NotNull File exportDirectory) {
+		if (!exportDirectory.isDirectory()) {
+			throw new IllegalArgumentException("exportDirectory ('" + exportDirectory.getPath() + "') is not a directory");
 		}
-		this.exportLocation = exportLocation;
+		this.exportDirectory = exportDirectory;
 	}
 
 	public void setProject(@NotNull Project project) {
@@ -136,7 +138,7 @@ public class ProjectExportConfiguration {
 
 	@NotNull
 	public ProjectExportConfiguration copy() {
-		return new ProjectExportConfiguration(this.exportClassName, exportLocation, project, placeAdcNotice, exportMacrosToFile, fileType, exportConfigName);
+		return new ProjectExportConfiguration(this.exportClassName, exportDirectory, project, placeAdcNotice, exportMacrosToFile, fileType, exportConfigName);
 	}
 
 	@Override
@@ -159,7 +161,7 @@ public class ProjectExportConfiguration {
 		if (!exportClassName.equals(that.exportClassName)) {
 			return false;
 		}
-		if (!exportLocation.equals(that.exportLocation)) {
+		if (!exportDirectory.equals(that.exportDirectory)) {
 			return false;
 		}
 		if (project != that.project) {

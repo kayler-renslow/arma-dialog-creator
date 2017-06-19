@@ -122,7 +122,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					if (!exportLocationFile.isDirectory()) {
 						return;
 					}
-					exportConfiguration.setExportLocation(exportLocationFile);
+					exportConfiguration.setExportDirectory(exportLocationFile);
 					break;
 				}
 				case "place-adc-notice": {

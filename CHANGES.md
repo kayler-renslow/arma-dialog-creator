@@ -1,8 +1,9 @@
 **Added:**
-* more ControlList tests
+* A SerializableValue that uses PropertyType.FileName (SVFile)
+* project export will now export the absolute file paths relative to the export directory
 
 **Changed:**
-* 
+* removed the useless FilePath class
 
 **Fixed:**
 * 

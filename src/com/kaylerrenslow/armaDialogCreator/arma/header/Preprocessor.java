@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
-import com.kaylerrenslow.armaDialogCreator.data.FilePath;
 import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
@@ -338,7 +337,7 @@ class Preprocessor {
 
 					String filePath = macroContent.substring(1, macroContent.length() - 1);
 
-					File f = FilePath.findFileByPath(filePath, processFile.getParentFile());
+					File f = processFile.getParentFile().toPath().resolve(filePath).toFile();
 					if (f == null) {
 						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 					}

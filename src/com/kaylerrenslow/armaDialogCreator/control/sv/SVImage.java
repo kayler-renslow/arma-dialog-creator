@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.FilePathUser;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
@@ -13,7 +14,7 @@ import java.io.File;
 
  @author Kayler
  @since 07/16/2016. */
-public class SVImage extends SerializableValue {
+public class SVImage extends SerializableValue implements FilePathUser {
 
 	public static final ValueConverter<SVImage> CONVERTER = new ValueConverter<SVImage>() {
 		@Override
@@ -71,5 +72,11 @@ public class SVImage extends SerializableValue {
 			return this.imageFile.equals(other.imageFile);
 		}
 		return false;
+	}
+
+	@NotNull
+	@Override
+	public int[] getIndicesThatUseFilePaths() {
+		return new int[]{0};
 	}
 }
