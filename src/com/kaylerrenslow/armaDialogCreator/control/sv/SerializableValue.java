@@ -44,6 +44,9 @@ public abstract class SerializableValue {
 	 @see #convert(DataContext, SerializableValue, PropertyType)
 	 */
 	public static boolean isConvertible(@NotNull PropertyType fromType, @NotNull PropertyType toType) {
+		if (fromType == toType) {
+			return true;
+		}
 		switch (fromType) {
 			case Int: {
 				return false;
@@ -98,6 +101,7 @@ public abstract class SerializableValue {
 
 	/**
 	 A safe way of converting a {@link SerializableValue} into a different one, i.e. {@link SVString} to {@link AFont}.
+	 If <code>newPropertyType</code> is equal to the current type, <code>convertMe</code> will be returned.
 
 	 @param dataContext context to use
 	 @param convertMe value to convert
@@ -109,6 +113,9 @@ public abstract class SerializableValue {
 	 */
 	@NotNull
 	public static SerializableValue convert(@Nullable DataContext dataContext, @NotNull SerializableValue convertMe, @NotNull PropertyType newPropertyType) throws SerializableValueConversionException {
+		if (convertMe.getPropertyType() == newPropertyType) {
+			return convertMe;
+		}
 		if (!isConvertible(convertMe.getPropertyType(), newPropertyType)) {
 			throw new IllegalArgumentException("types are not convertible:" + convertMe.getPropertyType() + ", " + newPropertyType);
 		}

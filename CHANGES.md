@@ -1,9 +1,9 @@
 **Added:**
 * for missing control properties popup, made ok button close the config popup
-* static control now attempts to locate a converted .paa if the image path is a .paa 
+* static control now attempts to locate a converted .paa if the image path is a .paa
 
 **Changed:**
-* 
+* project save files and now load property values into types that aren't the initial types specified in the lookup 
 
 **Fixed:**
 * 

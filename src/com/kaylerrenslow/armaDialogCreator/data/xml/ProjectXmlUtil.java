@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConversionException;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
@@ -110,7 +111,7 @@ public class ProjectXmlUtil {
 				list.add(p);
 			}
 		}
-		final String lookupId = "lookup-id";
+		final String lookupId = "id";
 		final String macroKey = "macro-key";
 		for (Element missingPropertyElement : missingPropertyElements) {
 			String idAttr = missingPropertyElement.getAttribute(lookupId);
@@ -226,13 +227,13 @@ public class ProjectXmlUtil {
 	 @throws IOException
 	 */
 	public static void writeInheritControlPropertyLookup(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup) throws IOException {
-		stm.write("<inherit-property lookup-id='" + lookup.getPropertyId() + "' />");
+		stm.write("<inherit-property id='" + lookup.getPropertyId() + "' />");
 	}
 
 	public static List<ControlPropertyLookup> loadInheritedControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
 		List<Element> inheritPropertyElements = XmlUtil.getChildElementsWithTagName(parent, "inherit-property");
 		List<ControlPropertyLookup> list = new LinkedList<>();
-		final String lookupId = "lookup-id";
+		final String lookupId = "id";
 		for (Element inheritPropertyElement : inheritPropertyElements) {
 			ControlPropertyLookup lookup = getLookup(inheritPropertyElement.getAttribute(lookupId), inheritPropertyElement, recorder);
 			if (lookup != null) {
@@ -243,7 +244,7 @@ public class ProjectXmlUtil {
 	}
 
 	private static void writeMissingControlPropertyValue(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification property) throws IOException {
-		stm.write("<undefined lookup-id='" + property.getPropertyLookup().getPropertyId() + "'");
+		stm.write("<undefined id='" + property.getPropertyLookup().getPropertyId() + "'");
 		if (property.getMacroKey() != null) {
 			stm.write(" macro-key='" + property.getMacroKey() + "'");
 		}
@@ -264,11 +265,13 @@ public class ProjectXmlUtil {
 		if (value == null) {
 			return;
 		}
-		stm.writeBeginTag(String.format("property lookup-id='%d'%s",
+		stm.writeBeginTag(String.format("property id='%d'%s%s",
 				lookup.getPropertyId(),
-				macroKey == null ? "" : String.format(" macro-key='%s'", macroKey)
+				macroKey == null ? "" : String.format(" macro-key='%s'", macroKey),
+				value.getPropertyType() != lookup.getPropertyType() ? String.format(" ptype='%s'", value.getPropertyType().getId()) : ""
 				)
 		);
+		
 		writeValue(stm, value);
 		stm.writeCloseTag("property");
 	}
@@ -284,9 +287,18 @@ public class ProjectXmlUtil {
 	 */
 	@Nullable
 	public static ControlPropertySpecification loadControlProperty(@NotNull Element controlPropertyElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
-		String lookupIdStr = controlPropertyElement.getAttribute("lookup-id");
-		String macroKey = controlPropertyElement.getAttribute("macro-key");
-		ControlPropertyLookup lookup = getLookup(lookupIdStr, controlPropertyElement.getParentNode(), recorder);
+		String lookupIdAttr = controlPropertyElement.getAttribute("id");
+		String macroKeyAttr = controlPropertyElement.getAttribute("macro-key");
+		String propertyTypeAttr = controlPropertyElement.getAttribute("ptype");
+		PropertyType convertToPropertyType = null;
+		if (propertyTypeAttr.length() != 0) {
+			try {
+				convertToPropertyType = PropertyType.findById(Integer.parseInt(propertyTypeAttr));
+			} catch (IllegalArgumentException ignore) {
+
+			}
+		}
+		ControlPropertyLookup lookup = getLookup(lookupIdAttr, controlPropertyElement.getParentNode(), recorder);
 		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
@@ -294,7 +306,23 @@ public class ProjectXmlUtil {
 		if (value == null) {
 			return null;
 		}
-		return new ControlPropertySpecification(lookup, value, macroKey);
+		if (convertToPropertyType != null) {
+			try {
+				value = SerializableValue.convert(context, value, convertToPropertyType);
+			} catch (SerializableValueConversionException e) {
+				recorder.addError(
+						new ParseError(
+								String.format(
+										bundle.getString("ProjectLoad.ptype_bad_f"),
+										value.toStringDebug(),
+										convertToPropertyType
+								),
+								String.format(bundle.getString("ProjectLoad.ptype_bad_recover_f"), value)
+						)
+				);
+			}
+		}
+		return new ControlPropertySpecification(lookup, value, macroKeyAttr);
 	}
 
 	/**

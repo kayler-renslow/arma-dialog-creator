@@ -237,7 +237,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		List<Element> displayPropertyElements = XmlUtil.getChildElementsWithTagName(displayElement, "display-property");
 		for (Element displayPropertyElement : displayPropertyElements) {
-			String lookupId = displayPropertyElement.getAttribute("lookup-id");
+			String lookupId = displayPropertyElement.getAttribute("id");
 			try {
 				int id = Integer.parseInt(lookupId);
 				DisplayPropertyLookup lookup = DisplayPropertyLookup.findById(id);
