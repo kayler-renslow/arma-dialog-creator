@@ -605,6 +605,7 @@ public class ControlListTest {
 		toVisit.add(control1);
 		toVisit.add(control2);
 		toVisit.add(controlGroup);
+		toVisit.add(list2Control);
 
 		list.deepIterator().forEach(new Consumer<TestCanvasControl>() {
 			@Override

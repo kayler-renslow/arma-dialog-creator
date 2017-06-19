@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author Kayler
  @since 06/18/2017 */
-public class TestCanvasControlGroup extends TestCanvasControl implements CanvasControl<TestCanvasControl>, ControlHolder<TestCanvasControl> {
+public class TestCanvasControlGroup extends TestCanvasControl implements CanvasControlGroup<TestCanvasControl> {
 	private final ValueObserver<CanvasDisplay<TestCanvasControlGroup>> displayObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlHolder<TestCanvasControlGroup>> holderObserver = new ValueObserver<>(null);
 	private ControlList<TestCanvasControl> controlList = new ControlList<>(this);
