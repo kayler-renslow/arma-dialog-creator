@@ -48,6 +48,7 @@ public class TestCanvasControl extends SimpleCanvasComponent implements CanvasCo
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public DataContext getUserData() {
 		return null;

@@ -3,7 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/12/2016.
+ @see ControlList#set(int, CanvasControl)
+ @author Kayler
+ @since 08/12/2016
  */
 public class ControlSet<C extends CanvasControl> {
 	private final C oldControl;

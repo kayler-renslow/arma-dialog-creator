@@ -18,6 +18,7 @@ public class ADCExecutors {
 
 	public static synchronized void registerExecutorService(@NotNull ExecutorService service) {
 		//synchronized to prevent terminating and register happening at same time
+		//because we want to terminate everything before accepting new executors
 
 		executors.add(service);
 	}
@@ -27,6 +28,7 @@ public class ADCExecutors {
 	 */
 	public static synchronized void terminateAll() {
 		//synchronized to prevent terminating and register happening at same time
+		//because we want to terminate everything before accepting new executors
 
 		for (ExecutorService executorService : executors) {
 			executorService.shutdownNow();

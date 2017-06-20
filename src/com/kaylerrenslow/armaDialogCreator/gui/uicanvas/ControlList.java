@@ -12,22 +12,27 @@ import java.util.*;
  something, you would have to remove it and then add it back. This would fire 2 events: remove and add.
  Although this implementation functionally does the same thing, only one event is fired for
  moving and thus makes it easier to detect and manage.
+ <p>
+ This will also manage the {@link CanvasControl#getHolder()} to be equal to this list's {@link #getHolder()}
 
  @author Kayler
  @since 08/12/2016. */
 public class ControlList<C extends CanvasControl> implements List<C> {
-	private final ArrayList<C> controls = new ArrayList<>();
+	private final List<C> controls = new ArrayList<>();
 	private final LinkedList<ControlListChangeListener<C>> listeners = new LinkedList<>();
 	private final ControlHolder<C> holder;
 	private final UpdateListenerGroup<Object> onClear = new UpdateListenerGroup<>();
-
 
 	public ControlList(@NotNull ControlHolder<C> holder) {
 		this.holder = holder;
 	}
 
+	/** Remove all controls. Also set {@link CanvasControl#getHolder()} to null on each control */
 	@Override
 	public void clear() {
+		for (C c : controls) {
+			c.getHolderObserver().updateValue(null);
+		}
 		controls.clear();
 		onClear.update(null);
 	}
@@ -43,39 +48,80 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 		return controls.get(index);
 	}
 
+	/**
+	 Create a {@link ControlSet} update. This will clear the old {@link CanvasControl}'s holder
+	 ({@link CanvasControl#getHolder()}) and set the replacement's holder to be {@link #getHolder()}
+
+	 @param index were to set
+	 @param replacementControl replacement
+	 @return the old control at the index
+	 */
 	@Override
-	public C set(int index, @NotNull @Flow(targetIsContainer = true) C element) {
+	public C set(int index, @NotNull @Flow(targetIsContainer = true) C replacementControl) {
 		boundTest(index);
-		C old = controls.set(index, element);
+		C old = controls.set(index, replacementControl);
+
+		//update holders
+		old.getHolderObserver().updateValue(null);
+		replacementControl.getHolderObserver().updateValue(this.holder);
+
 		ControlListChange<C> change = new ControlListChange<>(this);
-		change.setSet(new ControlSet<>(old, element, index));
+		change.setSet(new ControlSet<>(old, replacementControl, index));
 		notifyListeners(change);
 		return old;
 	}
 
-	/** Add a control to end of list. Returns true. */
+	/**
+	 Add a control to end of list. Creates a {@link ControlAdd} update.
+	 <p>
+	 This will set the given control's {@link CanvasControl#getHolder()} to {@link #getHolder()}.
+
+	 @return true
+	 */
 	public boolean add(@NotNull C control) {
 		controls.add(control);
-		afterAdd(controls.size() - 1, control);//size -1 because control was already added and size of list has changed
+
+		//update holder
+		control.getHolderObserver().updateValue(this.holder);
+
+		ControlListChange<C> change = new ControlListChange<>(this);
+		//size -1 because control was already added and size of list has changed
+		change.setAdded(new ControlAdd<>(control, controls.size() - 1));
+		notifyListeners(change);
 		return true;
 	}
 
-	/** Add a control at index */
+
+	/**
+	 Adds a control at an index. Creates a {@link ControlAdd} update.
+	 <p>
+	 This will set the given control's {@link CanvasControl#getHolder()} to {@link #getHolder()}.
+
+	 @param index where to insert
+	 @param control the control
+	 */
 	public void add(int index, @NotNull C control) {
 		if (index != controls.size()) {
 			boundTest(index);
 		}
 		controls.add(index, control);
-		afterAdd(index, control);
-	}
 
-	private void afterAdd(int index, @NotNull C control) {
+		//update holder
+		control.getHolderObserver().updateValue(this.holder);
+
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setAdded(new ControlAdd<>(control, index));
 		notifyListeners(change);
 	}
 
-	/** Remove a control. Returns true if control could be located and removed, false otherwise. */
+
+	/**
+	 Remove a control. Creates a {@link ControlRemove} update.
+	 <p>
+	 Will also set the {@link CanvasControl#getHolder()} for the removed control to null
+
+	 @return true if control could be located and removed, false otherwise.
+	 */
 	@Override
 	public boolean remove(@NotNull Object control) {
 		int index = controls.indexOf(control);
@@ -86,10 +132,21 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 		return true;
 	}
 
-	/** Removes a control at index */
+	/**
+	 Remove a control at an index. Creates a {@link ControlRemove} update.
+	 <p>
+	 Will also set the {@link CanvasControl#getHolder()} for the removed control to null
+
+	 @param index where to remove
+	 @return the control removed
+	 */
 	public C remove(int index) {
 		boundTest(index);
 		C removedControl = controls.remove(index);
+
+		//update the holder
+		removedControl.getHolderObserver().updateValue(null);
+
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setRemoved(new ControlRemove<>(removedControl, index));
 		notifyListeners(change);
@@ -97,7 +154,8 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/**
-	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)} with the index of toMove and this list's control holder as the new parent
+	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)} with the
+	 index of toMove and this list's control holder as the new parent
 
 	 @param toMove control to move in this list
 	 @param newIndex new index to place the control in this list
@@ -113,7 +171,8 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/**
-	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)} with the index and this list's control holder as the new parent
+	 Performs a move operation on this list. This calls {@link #move(int, ControlList, int)}
+	 with the index and this list's control holder as the new parent
 
 	 @param index index of control to move in this list
 	 @param newIndex new index to place the control in this list
@@ -123,7 +182,8 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/**
-	 Moves a control from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
+	 Moves a control from this list into another ControlList. This method will result in
+	 {@link ControlListChange#getMoved()} not being null.
 
 	 @param toMove control to move
 	 @param newList list to move control to
@@ -141,8 +201,12 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 
 
 	/**
-	 Moves a control at index indexOfControlToMove from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null. When the internal
+	 Moves a control at index indexOfControlToMove from this list into another ControlList.
+	 This method will result in {@link ControlListChange#getMoved()} not being null. When the internal
 	 operation is completed, this list's change listeners will be notified and then newList's listeners.
+	 <p>
+	 Creates a {@link ControlMove} update. Will set the moved control's {@link CanvasControl#getHolder()}
+	 to {@link #getHolder()}
 
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to
@@ -162,16 +226,20 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 			newList.controls.add(toMove);
 		}
 
+		//update the holder
+		toMove.getHolderObserver().updateValue(newList.holder);
+
 		ControlListChange<C> change = new ControlListChange<>(this);
 		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex));
-		change.getMoved().setOriginalUpdate(true);
+		change.getMoved().setEntryUpdate(true);
 		notifyListeners(change);
-		change.getMoved().setOriginalUpdate(false);
+		change.getMoved().setEntryUpdate(false);
 		newList.notifyListeners(change);
 	}
 
 	/**
-	 Moves a control at index indexOfControlToMove from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
+	 Moves a control at index indexOfControlToMove from this list into another ControlList.
+	 This method will result in {@link ControlListChange#getMoved()} not being null.
 
 	 @param indexOfControlToMove index of control to move inside this ControlList
 	 @param newList list to move the control to (will move control to end of list)
@@ -181,7 +249,8 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 	}
 
 	/**
-	 Moves a control from this list into another ControlList. This method will result in {@link ControlListChange#getMoved()} not being null.
+	 Moves a control from this list into another ControlList.
+	 This method will result in {@link ControlListChange#getMoved()} not being null.
 
 	 @param control control to move inside this ControlList
 	 @param newList list to move the control to (will move control to end of list)
@@ -216,6 +285,7 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 		}
 	}
 
+	/** @return the {@link ControlHolder} that uses this list */
 	@NotNull
 	public ControlHolder<C> getHolder() {
 		return holder;

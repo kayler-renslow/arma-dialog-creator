@@ -57,6 +57,7 @@ public class ControlListTest {
 		list.remove(control0);
 
 		assertEquals(true, visited.getValue());
+		assertEquals(null, control0.getHolder());
 	}
 
 	@Test
@@ -105,6 +106,8 @@ public class ControlListTest {
 		list.set(0, control2);
 
 		assertEquals(true, visited.getValue());
+		assertEquals(null, control0.getHolder());
+		assertEquals(holder, control2.getHolder());
 	}
 
 	@Test
@@ -149,6 +152,7 @@ public class ControlListTest {
 		list.add(control2);
 
 		assertEquals(true, visited.getValue());
+		assertEquals(holder, control2.getHolder());
 	}
 
 	@Test
@@ -205,6 +209,8 @@ public class ControlListTest {
 		list.move(0, 1);
 
 		assertEquals(true, visited.getValue());
+		assertEquals(holder, control0.getHolder());
+		assertEquals(holder, control1.getHolder());
 	}
 
 	@Test
@@ -265,6 +271,7 @@ public class ControlListTest {
 		list.move(control0, list2);
 
 		assertEquals(true, visited.getValue());
+		assertEquals(list2.getHolder(), control0.getHolder());
 	}
 
 	@Test
@@ -282,6 +289,9 @@ public class ControlListTest {
 
 		list.clear();
 		assertEquals(0, list.size());
+		assertEquals(null, control0.getHolder());
+		assertEquals(null, control1.getHolder());
+		assertEquals(null, control2.getHolder());
 	}
 
 	@Test
@@ -317,6 +327,8 @@ public class ControlListTest {
 
 		list.set(0, replacement);
 		assertEquals(replacement, list.get(0));
+		assertEquals(null, control0.getHolder());
+		assertEquals(holder, replacement.getHolder());
 	}
 
 	@Test
@@ -333,8 +345,10 @@ public class ControlListTest {
 		list.add(control1);
 		list.add(control2);
 
-		list.set(2, replacement);
-		assertEquals(replacement, list.get(2));
+		list.set(1, replacement);
+		assertEquals(replacement, list.get(1));
+		assertEquals(null, control1.getHolder());
+		assertEquals(holder, replacement.getHolder());
 	}
 
 	@Test
@@ -353,6 +367,7 @@ public class ControlListTest {
 
 		list.add(added);
 		assertEquals(added, list.get(list.size() - 1));
+		assertEquals(holder, added.getHolder());
 	}
 
 	@Test
@@ -371,6 +386,7 @@ public class ControlListTest {
 
 		list.add(0, added);
 		assertEquals(added, list.get(0));
+		assertEquals(holder, added.getHolder());
 	}
 
 	@Test
@@ -389,6 +405,7 @@ public class ControlListTest {
 
 		list.add(1, added);
 		assertEquals(added, list.get(1));
+		assertEquals(holder, added.getHolder());
 	}
 
 	@Test
@@ -406,6 +423,7 @@ public class ControlListTest {
 
 		TestCanvasControl removed = list.remove(0);
 		assertEquals(control0, removed);
+		assertEquals(null, removed.getHolder());
 	}
 
 	@Test
@@ -423,6 +441,7 @@ public class ControlListTest {
 
 		boolean removed = list.remove(control0);
 		assertEquals(true, removed && !list.contains(control0));
+		assertEquals(null, control0.getHolder());
 	}
 
 	@Test
@@ -473,6 +492,7 @@ public class ControlListTest {
 		list.move(0, 1);
 
 		assertEquals(control0, list.get(1));
+		assertEquals(holder, control0.getHolder());
 	}
 
 	@Test
@@ -491,6 +511,7 @@ public class ControlListTest {
 		list.move(2, 0);
 
 		assertEquals(control2, list.get(0));
+		assertEquals(holder, control2.getHolder());
 	}
 
 	@Test
@@ -509,6 +530,7 @@ public class ControlListTest {
 		list.move(0, 1);
 
 		assertEquals(control2, list.get(2));
+		assertEquals(holder, control2.getHolder());
 	}
 
 	@Test
@@ -527,6 +549,7 @@ public class ControlListTest {
 		list.move(0, 1);
 
 		assertEquals(control1, list.get(0));
+		assertEquals(holder, control1.getHolder());
 	}
 
 	//
@@ -549,6 +572,7 @@ public class ControlListTest {
 		list.move(control0, 1);
 
 		assertEquals(control0, list.get(1));
+		assertEquals(holder, control0.getHolder());
 	}
 
 	@Test
@@ -567,6 +591,7 @@ public class ControlListTest {
 		list.move(control2, 0);
 
 		assertEquals(control2, list.get(0));
+		assertEquals(holder, control2.getHolder());
 	}
 
 	@Test
@@ -585,6 +610,8 @@ public class ControlListTest {
 		list.move(control0, 1);
 
 		assertEquals(control2, list.get(2));
+		assertEquals(holder, control0.getHolder());
+		assertEquals(holder, control1.getHolder());
 	}
 
 	@Test
@@ -603,6 +630,8 @@ public class ControlListTest {
 		list.move(control0, 1);
 
 		assertEquals(control1, list.get(0));
+		assertEquals(holder, control0.getHolder());
+		assertEquals(holder, control1.getHolder());
 	}
 
 	//
@@ -627,6 +656,7 @@ public class ControlListTest {
 		list.move(control0, list2);
 
 		assertEquals(control1, list.get(0));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	@Test
@@ -647,6 +677,7 @@ public class ControlListTest {
 		list.move(control2, list2);
 
 		assertEquals(control2, list2.get(0));
+		assertEquals(holder2, control2.getHolder());
 	}
 
 	@Test
@@ -667,6 +698,7 @@ public class ControlListTest {
 		list.move(control0, list2);
 
 		assertEquals(control2, list.get(1));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	@Test
@@ -689,6 +721,7 @@ public class ControlListTest {
 		list.move(control0, list2);
 
 		assertEquals(control0, list2.get(1));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	//
@@ -713,6 +746,7 @@ public class ControlListTest {
 		list.move(control0, list2, 0);
 
 		assertEquals(control1, list.get(0));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	@Test
@@ -735,6 +769,7 @@ public class ControlListTest {
 		list.move(control2, list2, 0);
 
 		assertEquals(control2, list2.get(0));
+		assertEquals(holder2, control2.getHolder());
 	}
 
 	@Test
@@ -759,6 +794,7 @@ public class ControlListTest {
 		list.move(control0, list2, 0);
 
 		assertEquals(list2Control, list2.get(1));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	//
@@ -783,6 +819,7 @@ public class ControlListTest {
 		list.move(0, list2, 0);
 
 		assertEquals(control1, list.get(0));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 	@Test
@@ -805,6 +842,7 @@ public class ControlListTest {
 		list.move(2, list2, 0);
 
 		assertEquals(control2, list2.get(0));
+		assertEquals(holder2, control2.getHolder());
 	}
 
 	@Test
@@ -829,6 +867,7 @@ public class ControlListTest {
 		list.move(0, list2, 0);
 
 		assertEquals(list2Control, list2.get(1));
+		assertEquals(holder2, control0.getHolder());
 	}
 
 

@@ -21,6 +21,7 @@ public class TestCanvasControlGroup extends TestCanvasControl implements CanvasC
 		return controlList;
 	}
 
+	@NotNull
 	@Override
 	public DataContext getUserData() {
 		return null;

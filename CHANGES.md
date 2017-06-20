@@ -1,9 +1,11 @@
 **Added:**
-* A SerializableValue that uses PropertyType.FileName (SVFile)
-* project export will now export the absolute file paths relative to the export directory
+* DisplayControlList tests
+* better documentation to ControlList
+* more assertions to ControlList tests
 
 **Changed:**
-* removed the useless FilePath class
+* DisplayControlList is a lot less messy
+* ControlList now manage's CanvasControl's holder
 
 **Fixed:**
 * 
@@ -18,4 +20,3 @@
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
 * June 13: ControlPropertiesEditorPane doesn't properly initialize inheritted/overridden properties (inherited properties have option to be inherited)
 * June 13: We need to not save temporary properties when saving project
-    

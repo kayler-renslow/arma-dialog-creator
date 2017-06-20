@@ -59,5 +59,5 @@ public interface CanvasControl<C extends CanvasControl> {
 		}
 	}
 
-	DataContext getUserData();
+	@NotNull DataContext getUserData();
 }

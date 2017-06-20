@@ -398,7 +398,7 @@ public abstract class UICanvas extends AnchorPane {
 			} else if (data.wasAdded()) {
 				data.getAdded().getControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
 			} else if (data.wasMoved()) {
-				if (data.getMoved().isOriginalUpdate()) {
+				if (data.getMoved().isEntryUpdate()) {
 					data.getMoved().getMovedControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
 				} else {
 					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);

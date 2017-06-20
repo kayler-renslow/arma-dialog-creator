@@ -3,7 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/12/2016.
+ @see ControlList#remove(int)
+ @author Kayler
+ @since 08/12/2016
  */
 public class ControlRemove<C extends CanvasControl> {
 	private final C removed;

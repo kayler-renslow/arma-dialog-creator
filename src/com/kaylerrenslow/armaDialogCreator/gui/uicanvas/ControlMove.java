@@ -3,7 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Created by Kayler on 08/12/2016.
+ @see ControlList#move(int, ControlList, int)
+ @author Kayler
+ @since 08/12/2016
  */
 public class ControlMove<C extends CanvasControl> {
 	private final C controlMoved;
@@ -11,9 +13,9 @@ public class ControlMove<C extends CanvasControl> {
 	private final int oldIndex;
 	private final ControlList<C> newList;
 	private final int newParentIndex;
-	private boolean isOriginalUpdate;
+	private boolean isEntryUpdate;
 
-	public ControlMove(C controlMoved, ControlList<C> oldList, int oldIndex, ControlList<C> newList, int newParentIndex) {
+	public ControlMove(@NotNull C controlMoved, @NotNull ControlList<C> oldList, int oldIndex, @NotNull ControlList<C> newList, int newParentIndex) {
 		this.controlMoved = controlMoved;
 		this.oldList = oldList;
 		this.oldIndex = oldIndex;
@@ -60,16 +62,18 @@ public class ControlMove<C extends CanvasControl> {
 	}
 
 	/**
-	 Return true if this update comes from the moved control being moved into it's new list via {@link ControlList#move(int, ControlList, int)}, or false if this update captures the moved
+	 Return true if this update comes from the moved control being moved into it's new
+	 list via {@link ControlList#move(int, ControlList, int)},
+	 or false if this update captures the moved
 	 control leaving the old list.
 
 	 @see ControlList#move(int, ControlList, int)
 	 */
-	public boolean isOriginalUpdate() {
-		return isOriginalUpdate;
+	public boolean isEntryUpdate() {
+		return isEntryUpdate;
 	}
 
-	void setOriginalUpdate(boolean firstUpdate) {
-		isOriginalUpdate = firstUpdate;
+	void setEntryUpdate(boolean entryUpdate) {
+		isEntryUpdate = entryUpdate;
 	}
 }

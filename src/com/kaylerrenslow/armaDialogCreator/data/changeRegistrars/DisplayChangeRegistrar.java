@@ -27,7 +27,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 				if (disableListener) {
 					return;
 				}
-				if (change.wasMoved() && change.getMoved().isOriginalUpdate()) {
+				if (change.wasMoved() && change.getMoved().isEntryUpdate()) {
 					return; //only register the change once (register the change when the old list is notified and not the destination list)
 				}
 				changelog.addChange(new DisplayControlChange(DisplayChangeRegistrar.this, change));
