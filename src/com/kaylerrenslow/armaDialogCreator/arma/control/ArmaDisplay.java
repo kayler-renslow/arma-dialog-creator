@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.DisplayControlList;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ListMergeIterator;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
@@ -32,6 +33,7 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 	private final ArrayList<List<ArmaControl>> controlsMerged = new ArrayList(2);
 
 	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
+	private final UpdateListenerGroup<ArmaControl> renderUpdateGroup = new UpdateListenerGroup<>();
 
 	public ArmaDisplay() {
 		controlsMerged.add(getBackgroundControls());
@@ -88,6 +90,7 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 		return displayProperties;
 	}
 
+	@NotNull
 	@Override
 	public DisplayControlList<ArmaControl> getBackgroundControls() {
 		return bgControlsList;
@@ -107,6 +110,12 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 		for (ArmaControl control : controlsList) {
 			control.resolutionUpdate(newResolution);
 		}
+	}
+
+	@NotNull
+	@Override
+	public UpdateListenerGroup<ArmaControl> getReRenderUpdateGroup() {
+		return renderUpdateGroup;
 	}
 
 	/** Search all controls inside the display (including controls inside {@link ArmaControlGroup} instances) */

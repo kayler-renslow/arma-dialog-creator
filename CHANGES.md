@@ -5,8 +5,9 @@
 * 
 
 **Fixed:**
-* ProjectExporter wasn't writing control group classes in right spot
-* EditorComponentTreeView not handling control groups properly
+* canvas editor not automatically repainting
+    * moved the rerender group out of individual controls and just made them reference the group in the display
+    * then made the canvas listen to the display's render group
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -18,4 +19,3 @@
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
 * June 13: ControlPropertiesEditorPane doesn't properly initialize inheritted/overridden properties (inherited properties have option to be inherited)
 * June 13: We need to not save temporary properties when saving project
-* June 19: EditorComponentTreeView is broken when moving controls with items in them

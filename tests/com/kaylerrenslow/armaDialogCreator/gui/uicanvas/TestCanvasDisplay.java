@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 
@@ -16,23 +18,32 @@ public class TestCanvasDisplay implements CanvasDisplay<TestCanvasControl> {
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public DisplayControlList<TestCanvasControl> getBackgroundControls() {
 		return backgroundControls;
 	}
 
+	@NotNull
 	@Override
 	public DisplayControlList<TestCanvasControl> getControls() {
 		return controls;
 	}
 
+	@NotNull
 	@Override
 	public Iterator<TestCanvasControl> iteratorForAllControls(boolean backwards) {
 		return null;
 	}
 
 	@Override
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 
+	}
+
+	@NotNull
+	@Override
+	public UpdateListenerGroup<TestCanvasControl> getReRenderUpdateGroup() {
+		return null;
 	}
 }

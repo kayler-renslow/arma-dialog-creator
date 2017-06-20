@@ -11,7 +11,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ControlHolder;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +32,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	protected ArmaControlRenderer renderer;
 
 	private ControlProperty idcProperty, accessProperty;
-	private final UpdateListenerGroup<ArmaControl> rerenderUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<CanvasDisplay<ArmaControl>> displayObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
 
@@ -188,12 +186,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return allowedStyles;
 	}
 
-	@Override
-	public UpdateListenerGroup<ArmaControl> getRenderUpdateGroup() {
-		return rerenderUpdateGroup;
-	}
-
-
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
 											@NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
@@ -203,6 +195,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		return new ArmaControl(type, name, provider, resolution, rendererLookup, env, registry);
 	}
 
+	@NotNull
 	public static ArmaControl createControl(@NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
 	}

@@ -41,8 +41,14 @@ public interface CanvasControl<C extends CanvasControl> {
 	@NotNull
 	ValueObserver<ControlHolder<C>> getHolderObserver();
 
-	/** Get the update group that will update anytime the control needs to be re-rendered */
-	UpdateListenerGroup<C> getRenderUpdateGroup();
+	/**
+	 @return the update group that will update anytime the control needs to be re-rendered
+	 @throws NullPointerException when {@link #getDisplay()} is null
+	 */
+	@NotNull
+	default UpdateListenerGroup<C> getRenderUpdateGroup() {
+		return getDisplay().getReRenderUpdateGroup();
+	}
 
 	/**
 	 Return true if the control is a background control (inside {@link CanvasDisplay#getBackgroundControls()}), false otherwise.<br>

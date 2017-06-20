@@ -2,7 +2,9 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.editor;
 
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
+import com.kaylerrenslow.armaDialogCreator.util.Point;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -77,21 +79,6 @@ public class UICanvasEditor extends UICanvas {
 	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
 
-		this.controlListListener.updateGroup.addListener(new UpdateGroupListener<ControlListChange<CanvasControl>>() {
-			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
-				if (data.wasRemoved() || data.wasSet()) {
-					scaleControl = null;
-					mouseOverControl = null;
-					if (data.wasRemoved()) {
-						selection.removeFromSelection(data.getRemoved().getControl());
-					} else {
-						selection.removeFromSelection(data.getSet().getOldControl());
-					}
-				}
-			}
-		});
-
 		setConfig(configuration);
 
 		gc.setTextBaseline(VPos.CENTER);
@@ -110,6 +97,13 @@ public class UICanvasEditor extends UICanvas {
 			@Override
 			public void onChanged(Change<? extends CanvasControl> c) {
 				requestPaint();
+			}
+		});
+
+		getTimer().getRunnables().add(new Runnable() {
+			@Override
+			public void run() {
+				prepaint();
 			}
 		});
 	}
@@ -144,7 +138,7 @@ public class UICanvasEditor extends UICanvas {
 		this.canvasContextMenu = contextMenu;
 	}
 
-
+	@Nullable
 	public CanvasControl getMouseOverControl() {
 		return mouseOverControl;
 	}
@@ -171,6 +165,20 @@ public class UICanvasEditor extends UICanvas {
 		if (showing != -1) {
 			absRegionComponent.setGhost(!(showing == 1));
 		}
+	}
+
+	private void prepaint() {
+		if (scaleControl != null) {
+			if (scaleControl.getDisplay() == null) {
+				scaleControl = null;
+			}
+		}
+		if (mouseOverControl != null) {
+			if (mouseOverControl.getDisplay() == null) {
+				mouseOverControl = null;
+			}
+		}
+		selection.getSelected().removeIf(next -> next.getDisplay() != this.display);
 	}
 
 	/** Paint the canvas */

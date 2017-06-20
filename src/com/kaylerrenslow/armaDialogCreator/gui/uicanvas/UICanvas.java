@@ -22,7 +22,9 @@ import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  @author Kayler
@@ -36,11 +38,11 @@ public abstract class UICanvas extends AnchorPane {
 	/** {@link DataContext} for the canvas */
 	protected final DataContext dataContext = new DataContext();
 	/** The timer that handles repainting */
-	protected final AnimationTimer timer;
+	protected final CanvasAnimationTimer timer;
 
 	protected final Resolution resolution;
 
-	protected @NotNull CanvasDisplay<CanvasControl> display;
+	protected @NotNull CanvasDisplay<? extends CanvasControl> display;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -56,17 +58,13 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new LinkedList<>());
 
-	/** Get listener that is attached to both {@link CanvasDisplay#getBackgroundControls()} and {@link CanvasDisplay#getControls()} */
-	protected final DisplayControlListUpdateGroupListener controlListListener = new DisplayControlListUpdateGroupListener(this);
-
-	private final UpdateGroupListener<Object> controlUpdateListener = new UpdateGroupListener<Object>() {
+	private boolean needPaint;
+	private final UpdateGroupListener renderUpdateGroupListener = new UpdateGroupListener() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<Object> group, Object data) {
+		public void update(@NotNull UpdateListenerGroup group, @Nullable Object data) {
 			requestPaint();
 		}
 	};
-
-	private boolean needPaint;
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		this.resolution = resolution;
@@ -100,18 +98,10 @@ public abstract class UICanvas extends AnchorPane {
 		});
 
 		//do this last
-		this.display = (CanvasDisplay<CanvasControl>) display;
-		setDisplayListeners();
+		this.display = display;
+		setDisplayListeners(true);
 
-		timer = new AnimationTimer() {
-			@Override
-			public void handle(long now) {
-				if (needPaint) {
-					needPaint = false;
-					paint();
-				}
-			}
-		};
+		timer = new CanvasAnimationTimer();
 		timer.start();
 
 	}
@@ -124,31 +114,20 @@ public abstract class UICanvas extends AnchorPane {
 		return (int) this.canvas.getHeight();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void setDisplay(@NotNull CanvasDisplay<? extends CanvasControl> display) {
-		this.display.getControls().getUpdateGroup().removeListener(controlListListener);
-		this.display.getBackgroundControls().getUpdateGroup().removeListener(controlListListener);
-		this.display = (CanvasDisplay<CanvasControl>) display;
-		setDisplayListeners();
+		setDisplayListeners(false);
+		this.display = display;
+		setDisplayListeners(true);
 		requestPaint();
 	}
 
-	private void setDisplayListeners() {
-		//todo we should need all of this commented code
-		//		this.display.getControls().deepIterator().forEach(new Consumer<CanvasControl>() {
-		//			@Override
-		//			public void accept(CanvasControl control) {
-		//				control.getRenderUpdateGroup().addListener(controlUpdateListener);
-		//			}
-		//		});
-		//		this.display.getBackgroundControls().deepIterator().forEach(new Consumer<CanvasControl>() {
-		//			@Override
-		//			public void accept(CanvasControl control) {
-		//				control.getRenderUpdateGroup().addListener(controlUpdateListener);
-		//			}
-		//		});
-		this.display.getControls().getUpdateGroup().addListener(controlListListener);
-		this.display.getBackgroundControls().getUpdateGroup().addListener(controlListListener);
+	@SuppressWarnings("unchecked")
+	private void setDisplayListeners(boolean add) {
+		if (add) {
+			this.display.getReRenderUpdateGroup().addListener(renderUpdateGroupListener);
+		} else {
+			this.display.getReRenderUpdateGroup().removeListener(renderUpdateGroupListener);
+		}
 	}
 
 	/** Adds a component to the canvas and repaints the canvas */
@@ -247,6 +226,17 @@ public abstract class UICanvas extends AnchorPane {
 		this.backgroundColor = color;
 	}
 
+	/** @return the background image, or null if not set */
+	@Nullable
+	public ImagePattern getBackgroundImage() {
+		return backgroundImage;
+	}
+
+	/** @return the background color */
+	@NotNull
+	public Color getBackgroundColor() {
+		return backgroundColor;
+	}
 
 	/**
 	 This is called when the mouse listener is invoked and a mouse press was the event. Default implementation does nothing.
@@ -297,7 +287,7 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	@NotNull
-	public AnimationTimer getTimer() {
+	public CanvasAnimationTimer getTimer() {
 		return timer;
 	}
 
@@ -377,35 +367,25 @@ public abstract class UICanvas extends AnchorPane {
 
 	}
 
-	public static class DisplayControlListUpdateGroupListener implements UpdateGroupListener<ControlListChange<CanvasControl>> {
+	public class CanvasAnimationTimer extends AnimationTimer {
 
-		private final UICanvas canvas;
-
-		public final UpdateListenerGroup<ControlListChange<CanvasControl>> updateGroup = new UpdateListenerGroup<>();
-
-		public DisplayControlListUpdateGroupListener(@NotNull UICanvas canvas) {
-			this.canvas = canvas;
-		}
+		private final List<Runnable> runnables = new ArrayList<>();
 
 		@Override
-		@SuppressWarnings("unchecked")
-		public void update(@NotNull UpdateListenerGroup<ControlListChange<CanvasControl>> group, ControlListChange<CanvasControl> data) {
-			if (data.wasRemoved()) {
-				data.getRemoved().getControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
-			} else if (data.wasSet()) {
-				data.getSet().getOldControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
-				data.getSet().getNewControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
-			} else if (data.wasAdded()) {
-				data.getAdded().getControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
-			} else if (data.wasMoved()) {
-				if (data.getMoved().isEntryUpdate()) {
-					data.getMoved().getMovedControl().getRenderUpdateGroup().removeListener(canvas.controlUpdateListener);
-				} else {
-					data.getMoved().getMovedControl().getRenderUpdateGroup().addListener(canvas.controlUpdateListener);
-				}
+		public void handle(long now) {
+			for (Runnable r : runnables) {
+				r.run();
 			}
-			updateGroup.update(data);
-			canvas.requestPaint();
+			if (needPaint) {
+				needPaint = false;
+				paint();
+			}
+		}
+
+		/** @return a list of runnables to run on each timer update */
+		@NotNull
+		public List<Runnable> getRunnables() {
+			return runnables;
 		}
 	}
 

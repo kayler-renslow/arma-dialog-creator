@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.util;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
 import java.util.LinkedList;
 
 /**
@@ -32,7 +33,13 @@ public class UpdateListenerGroup<T> {
 
 	public void update(@Nullable T data) {
 		iterating = true;
-		for (UpdateGroupListener<T> updateListener : updateListeners) {
+		Iterator<UpdateGroupListener<T>> iter = updateListeners.iterator();
+		while (iter.hasNext()) {
+			UpdateGroupListener<T> updateListener = iter.next();
+			if (updateListener.hasExpired()) {
+				iter.remove();
+				continue;
+			}
 			updateListener.update(this, data);
 		}
 		for (UpdateListenerGroup<T> group : chain) {

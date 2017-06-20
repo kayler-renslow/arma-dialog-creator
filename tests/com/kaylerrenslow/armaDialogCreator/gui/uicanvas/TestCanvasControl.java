@@ -43,6 +43,7 @@ public class TestCanvasControl extends SimpleCanvasComponent implements CanvasCo
 		return holderObserver;
 	}
 
+	@NotNull
 	@Override
 	public UpdateListenerGroup<TestCanvasControl> getRenderUpdateGroup() {
 		return null;

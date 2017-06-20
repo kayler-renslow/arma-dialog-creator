@@ -14,13 +14,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface CanvasView {
 
-	@NotNull
-	UICanvasConfiguration getConfiguration();
+	@NotNull UICanvasConfiguration getConfiguration();
 
 	/**
 	 Set the background image of the canvas
 
-	 @param imgPath the path to the image
+	 @param imgPath the path to the image, or null to remove the image
 	 */
 	void setCanvasBackgroundToImage(@Nullable String imgPath);
 
@@ -35,7 +34,7 @@ public interface CanvasView {
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
 
-	void setTreeStructure(boolean backgroundTree, TreeStructure<ArmaControl> treeStructure);
+	void setTreeStructure(boolean backgroundTree, @Nullable TreeStructure<ArmaControl> treeStructure);
 
 	@NotNull GUITreeStructure<ArmaControl> getMainControlsTreeStructure();
 
@@ -44,4 +43,9 @@ public interface CanvasView {
 	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getMainControlTreeView();
 
 	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getBackgroundControlTreeView();
+
+	/** @return true if treeView == {@link #getBackgroundControlTreeView()}, false otherwise */
+	default boolean isBackgroundTreeView(@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> treeView) {
+		return treeView == getBackgroundControlTreeView();
+	}
 }

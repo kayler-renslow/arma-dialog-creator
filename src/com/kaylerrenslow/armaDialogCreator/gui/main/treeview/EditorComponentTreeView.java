@@ -417,11 +417,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		setDisplayListener(false);
 		if (removeControl.getHolder() == removeControl.getDisplay()) {
-			if (backgroundControlEditor) {
-				removeControl.getDisplay().getBackgroundControls().remove(removeControl);
-			} else {
-				removeControl.getDisplay().getControls().remove(removeControl);
-			}
+			getTargetControlList().remove(removeControl);
 		} else {
 			removeControl.getHolder().getControls().remove(removeControl);
 		}
