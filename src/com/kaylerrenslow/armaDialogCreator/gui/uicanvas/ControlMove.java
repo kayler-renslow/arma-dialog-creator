@@ -13,14 +13,16 @@ public class ControlMove<C extends CanvasControl> {
 	private final int oldIndex;
 	private final ControlList<C> newList;
 	private final int newParentIndex;
-	private boolean isEntryUpdate;
+	private final boolean isEntryUpdate;
 
-	public ControlMove(@NotNull C controlMoved, @NotNull ControlList<C> oldList, int oldIndex, @NotNull ControlList<C> newList, int newParentIndex) {
+	public ControlMove(@NotNull C controlMoved, @NotNull ControlList<C> oldList, int oldIndex, @NotNull
+			ControlList<C> newList, int newParentIndex, boolean isEntryUpdate) {
 		this.controlMoved = controlMoved;
 		this.oldList = oldList;
 		this.oldIndex = oldIndex;
 		this.newList = newList;
 		this.newParentIndex = newParentIndex;
+		this.isEntryUpdate = isEntryUpdate;
 	}
 
 	/** The control that was moved from one list to another */
@@ -73,7 +75,4 @@ public class ControlMove<C extends CanvasControl> {
 		return isEntryUpdate;
 	}
 
-	void setEntryUpdate(boolean entryUpdate) {
-		isEntryUpdate = entryUpdate;
-	}
 }

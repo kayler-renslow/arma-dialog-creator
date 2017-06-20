@@ -96,7 +96,7 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 			private void doHandle(DragEvent event) {
 				TreeItem<Td> dragging = getDragging();
 				// not dragging on the tree
-				if (getTreeItem() == null) {
+				if (getTreeItem() == null || getTreeItem().getValue() == null || getTreeView().getSelectionModel().isEmpty()) {
 					return;
 				}
 				// trying to drag into itself

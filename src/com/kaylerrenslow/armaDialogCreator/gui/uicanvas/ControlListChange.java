@@ -15,7 +15,7 @@ public class ControlListChange<C extends CanvasControl> {
 	private ControlSet<C> set;
 	private ControlListChangeType changeType = null;
 
-	protected ControlListChange(ControlList<C> modifiedList) {
+	protected ControlListChange(@NotNull ControlList<C> modifiedList) {
 		this.modifiedList = modifiedList;
 	}
 

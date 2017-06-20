@@ -230,10 +230,10 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 		toMove.getHolderObserver().updateValue(newList.holder);
 
 		ControlListChange<C> change = new ControlListChange<>(this);
-		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex));
-		change.getMoved().setEntryUpdate(true);
+		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex, true));
 		notifyListeners(change);
-		change.getMoved().setEntryUpdate(false);
+		change = new ControlListChange<>(newList);
+		change.setMoved(new ControlMove<>(toMove, this, indexOfControlToMove, newList, newParentIndex, false));
 		newList.notifyListeners(change);
 	}
 

@@ -1,11 +1,8 @@
 **Added:**
-* DisplayControlList tests
-* better documentation to ControlList
-* more assertions to ControlList tests
+* 
 
 **Changed:**
-* DisplayControlList is a lot less messy
-* ControlList now manage's CanvasControl's holder
+* optimized EditorComponentTreeView
 
 **Fixed:**
 * 
@@ -20,3 +17,4 @@
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
 * June 13: ControlPropertiesEditorPane doesn't properly initialize inheritted/overridden properties (inherited properties have option to be inherited)
 * June 13: We need to not save temporary properties when saving project
+* June 19: EditorComponentTreeView is broken when moving controls with items in them

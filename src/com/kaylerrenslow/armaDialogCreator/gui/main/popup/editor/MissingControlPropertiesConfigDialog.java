@@ -31,6 +31,7 @@ class MissingControlPropertiesConfigDialog extends StageDialog<VBox> {
 			listView.getItems().add(controlProperty.getName());
 		}
 		getFooter().getBtnOk().setText(bundle.getString("MissingControlPropertiesConfig.close_anyway"));
+		getFooter().getBtnOk().setPrefWidth(180);
 		myRootElement.getChildren().addAll(new Label(bundle.getString("MissingControlPropertiesConfig.missing_properties_message")), listView);
 		myRootElement.setFillWidth(true);
 		setStageSize(500, 300);

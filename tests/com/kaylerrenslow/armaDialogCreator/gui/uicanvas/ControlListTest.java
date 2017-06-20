@@ -235,36 +235,21 @@ public class ControlListTest {
 		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
-				if (controlList != list) {
-					assertEquals(list, controlList);
-					return;
-				}
-				if (!change.wasMoved()) {
-					assertEquals(true, false);
-					return;
-				}
+				assertEquals(list, controlList);
+				assertEquals(true, change.wasMoved());
 				ControlMove<TestCanvasControl> moved = change.getMoved();
-				if (moved.getDestinationHolder() != holder2) {
-					assertEquals(holder2, moved.getDestinationHolder());
-					return;
-				}
-				if (moved.getDestinationIndex() != 1) {
-					assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
-					return;
-				}
-				if (moved.getMovedControl() != control0) {
-					assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
-					return;
-				}
-				if (moved.getOldHolder() != holder) {
-					assertEquals(holder, moved.getOldHolder());
-					return;
-				}
-				if (moved.getOldIndex() != 0) {
-					assertEquals("Expected old index to be 0", 0, moved.getOldIndex());
-					return;
-				}
+				assertEquals(holder2, moved.getDestinationHolder());
+				assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
+				assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
+				assertEquals(holder, moved.getOldHolder());
+				assertEquals("Expected old index to be 0", 0, moved.getOldIndex());
 				visited.setValue(true);
+			}
+		});
+		list2.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				assertEquals(list2, controlList);
 			}
 		});
 
@@ -272,6 +257,36 @@ public class ControlListTest {
 
 		assertEquals(true, visited.getValue());
 		assertEquals(list2.getHolder(), control0.getHolder());
+	}
+
+	@Test
+	public void changeListener_move_testUpdateOrder() throws Exception {
+		//make sure that the entry update happens first
+
+		TestCanvasControl control0 = new TestCanvasControl("control0");
+		TestCanvasControl control1 = new TestCanvasControl("control1");
+		TestCanvasControl control2 = new TestCanvasControl("control2");
+
+		TestCanvasHolder holder = new TestCanvasHolder();
+		ControlList<TestCanvasControl> list = holder.getControls();
+
+		list.add(control0);
+		list.add(control1);
+		list.add(control2);
+
+		Reference<Boolean> visited = new Reference<>(false);
+
+		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+			@Override
+			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+				if (!visited.getValue() && !change.getMoved().isEntryUpdate()) {
+					throw new IllegalStateException("expected the entry update to happen first");
+				}
+				visited.setValue(change.getMoved().isEntryUpdate());
+			}
+		});
+
+		list.move(control0, 1);
 	}
 
 	@Test
