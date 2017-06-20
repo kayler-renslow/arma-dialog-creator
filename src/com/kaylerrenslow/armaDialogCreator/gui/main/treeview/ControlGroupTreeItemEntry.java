@@ -18,6 +18,7 @@ public class ControlGroupTreeItemEntry extends ControlTreeItemEntry {
 		this.controlGroup = group;
 	}
 
+	@NotNull
 	public ArmaControlGroup getControlGroup() {
 		return controlGroup;
 	}

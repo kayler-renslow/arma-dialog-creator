@@ -75,7 +75,7 @@ public class ProjectExporter {
 	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull OutputStream stream) throws IOException {
 		ProjectExporter exporter = new ProjectExporter(configuration);
 		CachedIndentedStringBuilder builder = getBuilder(stream);
-		exporter.writeControlClass(builder, controlClass);
+		exporter.writeControlClass(builder, controlClass, null);
 		stream.flush();
 	}
 
@@ -188,7 +188,7 @@ public class ProjectExporter {
 			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
 			writeln(stringBuilder, "");
 		}
-		
+
 		if (conf.shouldExportMacrosToFile()) {
 			writeln(stringBuilder, "#include \"" + getMacrosFileName(conf) + "\"");
 			writeln(stringBuilder, "");
@@ -228,25 +228,31 @@ public class ProjectExporter {
 	}
 
 	private void writeControl(@NotNull IndentedStringBuilder stringBuilder, @NotNull ArmaControl control) {
-		if (control instanceof ArmaControlGroup) {
-			//write group's "Controls" class
-			writeClass(stringBuilder, CONTROLS, null, sb -> {
-				for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
-					writeControl(sb, subControl);
-				}
-				return null;
-			});
-
-		}
 		//write control body
-		writeControlClass(stringBuilder, control);
+		writeControlClass(stringBuilder, control, sb -> {
+			if (control instanceof ArmaControlGroup) {
+				//write group's "Controls" class
+				writeClass(sb, CONTROLS, null, sb2 -> {
+					for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
+						writeControl(sb2, subControl);
+					}
+					return null;
+				});
+
+			}
+			return null;
+		});
 	}
 
-	private void writeControlClass(@NotNull IndentedStringBuilder stringBuilder, @NotNull ControlClass controlClass) {
+	private void writeControlClass(@NotNull IndentedStringBuilder stringBuilder, @NotNull ControlClass controlClass,
+								   @Nullable Function<IndentedStringBuilder, Void> insertBodyFunc) {
 		writeClass(stringBuilder, controlClass.getClassName(), controlClass.getExtendClass() == null ? null : controlClass.getExtendClass().getClassName(), sb -> {
 			writeControlProperties(sb, controlClass.getAllChildProperties());
 			for (ControlClass nested : controlClass.getAllNestedClasses()) {
-				writeControlClass(stringBuilder, nested);
+				writeControlClass(stringBuilder, nested, null);
+			}
+			if (insertBodyFunc != null) {
+				insertBodyFunc.apply(stringBuilder);
 			}
 			return null;
 		});

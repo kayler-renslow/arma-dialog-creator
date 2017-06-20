@@ -9,6 +9,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeDataToValu
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -33,12 +35,12 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
-	private final ControlListChangeListener<ArmaControl> controlListChangeListener = new ControlListChangeListener<ArmaControl>() {
+	private final UpdateGroupListener<ControlListChange<ArmaControl>> controlListChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
 
 		@Override
-		public void onChanged(ControlList<ArmaControl> controlList, ControlListChange<ArmaControl> change) {
-			if (change.getModifiedList() != getTargetControlList()) {
-				throw new IllegalStateException("shouldn't be listening to a list that isn't the target list!");
+		public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, @Nullable ControlListChange<ArmaControl> change) {
+			if (change == null) {
+				throw new IllegalArgumentException("change is null");
 			}
 			if (change.wasSet()) {
 				handleSet(change);
@@ -96,7 +98,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					throw new IllegalStateException(group.getClassName());
 				}
 				groupTreeItem.getChildren().add(added.getIndex(), newControlTreeItem);
-				setControlListListener(group.getControls(), true);
 			} else {
 				//add to root
 				getRoot().getChildren().add(added.getIndex(), newControlTreeItem);
@@ -112,9 +113,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 			removedTreeItem.getParent().getChildren().remove(removedTreeItem);
 			removedControl.getUserData().put(TREE_ITEM_KEY, null);
-			if (removedControl instanceof ArmaControlGroup) {
-				setControlListListener(((ArmaControlGroup) removedControl).getControls(), false);
-			}
 		}
 
 		private void handleSet(ControlListChange<ArmaControl> change) {
@@ -128,9 +126,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 			oldControlTreeItem.getParent().getChildren().remove(oldControlTreeItem);
 			oldControl.getUserData().put(TREE_ITEM_KEY, null);
-			if (oldControl instanceof ArmaControlGroup) {
-				setControlListListener(((ArmaControlGroup) oldControl).getControls(), false);
-			}
 
 			//insert new tree item
 			ArmaControl newControl = set.getNewControl();
@@ -143,7 +138,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					throw new IllegalStateException(group.getClassName());
 				}
 				groupTreeItem.getChildren().add(set.getIndex(), newControlTreeItem);
-				setControlListListener(group.getControls(), true);
 			} else {
 				//add to root
 				getRoot().getChildren().add(set.getIndex(), newControlTreeItem);
@@ -208,7 +202,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	 or the display main controls ({@link #backgroundControlEditor} == false).
 	 */
 	@NotNull
-	private ControlList<ArmaControl> getTargetControlList() {
+	private DisplayControlList<ArmaControl> getTargetControlList() {
 		return backgroundControlEditor ? editingDisplay.getBackgroundControls() : editingDisplay.getControls();
 	}
 
@@ -218,25 +212,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	 because if it wasn't, the tree view would get 2 tree items inserted
 	 */
 	private void setDisplayListener(boolean activate) {
-		setControlListListener(getTargetControlList(), activate);
-	}
-
-	/** Set whether or not the given {@link ControlList} controls listener is activated */
-	private void setControlListListener(@NotNull ControlList<ArmaControl> list, boolean activate) {
-		list.deepIterator().forEach(control -> {
-			if (control instanceof ArmaControlGroup) {
-				ArmaControlGroup group = (ArmaControlGroup) control;
-				if (activate) {
-					group.getControls().addChangeListener(controlListChangeListener);
-				} else {
-					group.getControls().removeChangeListener(controlListChangeListener);
-				}
-			}
-		});
 		if (activate) {
-			list.addChangeListener(controlListChangeListener);
+			getTargetControlList().getUpdateGroup().addListener(controlListChangeListener);
 		} else {
-			list.removeChangeListener(controlListChangeListener);
+			getTargetControlList().getUpdateGroup().removeListener(controlListChangeListener);
 		}
 	}
 
@@ -282,24 +261,12 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 	}
 
-	/** Removes the control list listener from the list */
-	private void removeListeners(@NotNull ControlList<ArmaControl> controls) {
-		controls.removeChangeListener(controlListChangeListener);
-		for (ArmaControl control : controls) {
-			if (control instanceof ArmaControlGroup) {
-				ArmaControlGroup group = ((ArmaControlGroup) control);
-				removeListeners(group.getControls());
-			}
-		}
-	}
-
 
 	@SuppressWarnings("unchecked")
 	private TreeItem<T> createTreeItemForControl(@NotNull ArmaControl control) {
 		TreeItem<T> ti;
 		if (control instanceof ArmaControlGroup) {
 			ArmaControlGroup group = (ArmaControlGroup) control;
-			setControlListListener(group.getControls(), true);
 			ti = new TreeItem<>((T) new ControlGroupTreeItemEntry(group));
 			for (ArmaControl c : group.getControls()) {
 				ti.getChildren().add(createTreeItemForControl(c));
@@ -342,9 +309,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		if (group != null) {
 			if (!group.getControlGroup().getControls().contains(childControlEntry.getMyArmaControl())) {
 				correctedIndex = getCorrectedIndex(groupTreeItem, child);
-				setControlListListener(group.getControlGroup().getControls(), false);
+				setDisplayListener(false);
 				group.getControlGroup().getControls().add(correctedIndex, childControlEntry.getMyArmaControl());
-				setControlListListener(group.getControlGroup().getControls(), true);
+				setDisplayListener(true);
 			}
 		} else { //didn't go into a control group, so it is in a folder or in the root's children.
 			if (!getTargetControlList().contains(childControlEntry.getMyArmaControl())) {
@@ -399,30 +366,39 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 		ControlTreeItemEntry controlEntry = (ControlTreeItemEntry) toMove.getValue();
 
-		ControlGroupTreeItemEntry group = null;
-		TreeItem<ControlGroupTreeItemEntry> groupTreeItem;
+		ControlGroupTreeItemEntry newGroupEntry = null;
+		TreeItem<ControlGroupTreeItemEntry> groupTreeItem = null;
 		if (newParent.getValue() instanceof ControlGroupTreeItemEntry) {
 			groupTreeItem = (TreeItem<ControlGroupTreeItemEntry>) newParent;
-			group = (ControlGroupTreeItemEntry) newParent.getValue();
+			newGroupEntry = groupTreeItem.getValue();
 		} else {
 			groupTreeItem = getAncestorOfEntryType(newParent, ControlGroupTreeItemEntry.class);
 			if (groupTreeItem != null) {
-				group = groupTreeItem.getValue();
+				newGroupEntry = groupTreeItem.getValue();
 			}
 		}
-		if (group == null) {
-			setDisplayListener(false);
-			int correctedIndex = getCorrectedIndex(getRoot(), toMove);
-			getTargetControlList().move(controlEntry.getMyArmaControl(), correctedIndex);
+		ControlGroupTreeItemEntry newParentEntry = newParent == getRoot()
+				? null : newGroupEntry;
+		//if newGroupEntry is null, then it is in the display
 
-			setDisplayListener(true);
-		} else {
-			int correctedIndex = getCorrectedIndex(groupTreeItem, toMove);
-			setControlListListener(group.getControlGroup().getControls(), false);
-			group.getControlGroup().getControls().move(controlEntry.getMyArmaControl(), correctedIndex);
-			setControlListListener(group.getControlGroup().getControls(), true);
-		}
+		ArmaControl armaControl = controlEntry.getMyArmaControl();
+		ControlList holderList = armaControl.getHolder() == armaControl.getDisplay() ?
+				(
+						//is in display
+						getTargetControlList()
+				)
+				: armaControl.getHolder().getControls();
+		ControlList destinationList = newParentEntry == null ?
+				(
+						//is display
+						getTargetControlList()
+				)
+				: newParentEntry.getControlGroup().getControls();
 
+		setDisplayListener(false);
+		int correctedIndex = getCorrectedIndex(groupTreeItem == null ? getRoot() : groupTreeItem, toMove);
+		holderList.move(armaControl, destinationList, correctedIndex);
+		setDisplayListener(true);
 	}
 
 	@Override
@@ -433,32 +409,24 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			return;
 		}
 		ControlTreeItemEntry toRemoveControlEntry = (ControlTreeItemEntry) toRemove.getValue();
-		toRemoveControlEntry.getMyArmaControl().getUserData().put(TREE_ITEM_KEY, null);
 
-		ControlGroupTreeItemEntry group = null;
-		TreeItem<ControlGroupTreeItemEntry> groupTreeItem;
-		if (parent.getValue() instanceof ControlGroupTreeItemEntry) {
-			group = (ControlGroupTreeItemEntry) parent.getValue();
-		} else {
-			groupTreeItem = getAncestorOfEntryType(parent, ControlGroupTreeItemEntry.class);
-			if (groupTreeItem != null) {
-				group = groupTreeItem.getValue();
+		ArmaControl removeControl = toRemoveControlEntry.getMyArmaControl();
+		TreeItem<T> removeControlTreeItem = TREE_ITEM_KEY.get(removeControl.getUserData());
+		if (removeControlTreeItem == null) {
+			throw new IllegalStateException(removeControl.getClassName());
+		}
+		setDisplayListener(false);
+		if (removeControl.getHolder() == removeControl.getDisplay()) {
+			if (backgroundControlEditor) {
+				removeControl.getDisplay().getBackgroundControls().remove(removeControl);
+			} else {
+				removeControl.getDisplay().getControls().remove(removeControl);
 			}
-		}
-		if (group != null) {
-			setControlListListener(group.getControlGroup().getControls(), false);
-			group.getControlGroup().getControls().remove(toRemoveControlEntry.getMyArmaControl());
-			setControlListListener(group.getControlGroup().getControls(), true);
 		} else {
-			setDisplayListener(false);
-			getTargetControlList().remove(toRemoveControlEntry.getMyArmaControl());
-			setDisplayListener(true);
+			removeControl.getHolder().getControls().remove(removeControl);
 		}
-		if (toRemoveControlEntry instanceof ControlGroupTreeItemEntry) {
-			ControlGroupTreeItemEntry groupTreeItemEntry = (ControlGroupTreeItemEntry) toRemoveControlEntry;
-			removeListeners(groupTreeItemEntry.getControlGroup().getControls());
-		}
-
+		removeControl.getUserData().put(TREE_ITEM_KEY, null);
+		setDisplayListener(true);
 	}
 	//@formatter:off
 	/**

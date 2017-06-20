@@ -38,7 +38,6 @@ Bugs
 -----------------------------------
 * ControlPropertiesEditorPane ARRAY editor is broken (not implemented)
 * select many things in tree view and drag into folder
-* moving control group in display throws exception
 * square scaling: doesn't scale up and back down with same snap amount
 * in StringTableEditorPopup, going to configuration tab and clicking on preview language combobox will freeze application
 * convert font to String type. Make font invalid. Convert back to font type

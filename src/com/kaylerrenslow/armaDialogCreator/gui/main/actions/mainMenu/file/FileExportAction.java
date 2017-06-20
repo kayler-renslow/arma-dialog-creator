@@ -33,7 +33,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration());
 		dialog.show();
-		if (dialog.getConfiguration() == null) {
+		if (dialog.getConfiguration() == null || dialog.wasCancelled()) {
 			return;
 		}
 		try {

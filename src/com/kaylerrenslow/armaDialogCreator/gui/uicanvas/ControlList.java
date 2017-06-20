@@ -425,4 +425,9 @@ public class ControlList<C extends CanvasControl> implements List<C> {
 			}
 		}
 	}
+
+	@Override
+	public String toString() {
+		return controls.toString();
+	}
 }
