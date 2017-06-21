@@ -88,7 +88,7 @@ class ControlPropertyEditorContainer extends HBox {
 				/*,miCustomData*/
 		);
 
-		if (SerializableValue.getTypesCanConvertTo(controlProperty.getInitialPropertyType()).size() == 0) {
+		if (SerializableValue.getTypesCanConvertTo(controlProperty.getInitialPropertyType()).size() == 1) {
 			menuButtonOptions.getItems().remove(miConvert);
 		}
 

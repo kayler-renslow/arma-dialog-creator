@@ -430,6 +430,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			jobs.add(new ControlExtendJob(extendClassName, control, inheritControlProperties));
 		}
 
+		//must set ghost state first since ghost=!visible && !enabled
+		//and we don't want to overwrite enabled when ghost is set
 		control.getRenderer().setGhost(ghost);
 		control.getRenderer().setEnabled(enabled);
 

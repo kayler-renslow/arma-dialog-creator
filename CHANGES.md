@@ -1,9 +1,8 @@
 **Added:**
-* 
+* editing export configuration popup
 
 **Changed:**
-* preview now uses background image & color from editor
-* will now save/load visible and enabled states in/from project save
+* 
 
 **Fixed:**
 * 

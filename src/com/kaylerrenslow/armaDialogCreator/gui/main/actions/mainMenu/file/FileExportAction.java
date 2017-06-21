@@ -42,8 +42,8 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 			Notifications.showNotification(
 					new BoxNotification(
-							bundle.getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_success"),
-							String.format(bundle.getString("Popups.ExportProject.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
+							bundle.getString("Popups.ExportAftermathPopup.dialog_title_success"),
+							String.format(bundle.getString("Popups.ExportAftermathPopup.export_complete_f"), exportDir.getPath()),
 							8 * 1000
 					)
 			);
@@ -62,10 +62,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			myStage.setMinWidth(300d);
 			myStage.setMinHeight(100d);
 
-			setTitle(bundle.getString("Popups.ExportProject.ExportAftermathPopup.dialog_title_failed"));
-			myRootElement.getChildren().add(new Label(bundle.getString("Popups.ExportProject.ExportAftermathPopup.export_failed")));
+			setTitle(bundle.getString("Popups.ExportAftermathPopup.dialog_title_failed"));
+			myRootElement.getChildren().add(new Label(bundle.getString("Popups.ExportAftermathPopup.export_failed")));
 			myRootElement.getChildren().add(new Label(error.getMessage()));
-			final ToggleButton toggleButton = new ToggleButton(bundle.getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+			final ToggleButton toggleButton = new ToggleButton(bundle.getString("Popups.ExportAftermathPopup.show_error_message"));
 			myRootElement.getChildren().add(toggleButton);
 
 			toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -75,10 +75,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 				@Override
 				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
 					if (selected) {
-						toggleButton.setText(bundle.getString("Popups.ExportProject.ExportAftermathPopup.hide_error_message"));
+						toggleButton.setText(bundle.getString("Popups.ExportAftermathPopup.hide_error_message"));
 						myRootElement.getChildren().add(taErrorMessage);
 					} else {
-						toggleButton.setText(bundle.getString("Popups.ExportProject.ExportAftermathPopup.show_error_message"));
+						toggleButton.setText(bundle.getString("Popups.ExportAftermathPopup.show_error_message"));
 						myRootElement.getChildren().remove(taErrorMessage);
 					}
 					if (firstExpansion) {

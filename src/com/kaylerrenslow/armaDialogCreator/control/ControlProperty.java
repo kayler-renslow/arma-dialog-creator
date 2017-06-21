@@ -245,7 +245,6 @@ public class ControlProperty {
 
 	 @return the current {@link PropertyType} of the current value,
 	 or null if <code>{@link #getValue()}==null</code>
-
 	 @see SerializableValue#getPropertyType()
 	 */
 	@Nullable
@@ -270,8 +269,9 @@ public class ControlProperty {
 	}
 
 	/**
-	 Return true if the data may not match the type of the control property (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#Int}). This is set by
-	 invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
+	 Return true if the data may not match the type of the control property
+	 (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#Int}).
+	 This is set by invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
 	 */
 	public boolean isUsingCustomData() {
 		return usingCustomData;
@@ -290,7 +290,8 @@ public class ControlProperty {
 	}
 
 	/**
-	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger} or {@link SVExpression}, this method will succeed.
+	 Get the ControlProperty's value as an int. If the value is of type {@link SVInteger} or {@link SVExpression},
+	 this method will succeed.
 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger} or {@link SVExpression}
 	 */
@@ -308,7 +309,8 @@ public class ControlProperty {
 	}
 
 	/**
-	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble} or {@link SVExpression}, this method will succeed.
+	 Get the ControlProperty's value as an double. If the value is of type {@link SVDouble} or {@link SVExpression},
+	 this method will succeed.
 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble} or {@link SVExpression}
 	 */
@@ -341,14 +343,18 @@ public class ControlProperty {
 	}
 
 
-	/** Get the observer that observers the values inside this property. Whenever the values get updated, the observer and it's listener will be told so. */
+	/**
+	 Get the observer that observers the values inside this property.
+	 Whenever the values get updated, the observer and it's listener will be told so.
+	 */
 	@NotNull
 	public ValueObserver<SerializableValue> getValueObserver() {
 		return valueObserver;
 	}
 
 	/**
-	 Get an {@link UpdateListenerGroup} instance that invokes {@link UpdateListenerGroup#update(Object)} whenever one of these operations have been done:<br>
+	 Get an {@link UpdateListenerGroup} instance that invokes {@link UpdateListenerGroup#update(Object)}
+	 whenever one of these operations have been done:<br>
 	 <ul>
 	 <li>Value update</li>
 	 <li>Custom data update</li>
@@ -458,9 +464,12 @@ public class ControlProperty {
 	 Sets this {@link ControlProperty} to the given update.
 
 	 @param update update to use
-	 @param deepCopyValue if <code>update</code> is an instance of {@link ControlPropertyValueUpdate} and if <code>deepCopyValue</code> is true, the value returned by
-	 {@link ControlPropertyValueUpdate#getNewValue()} will be copied via {@link SerializableValue#deepCopy()}, otherwise if <code>deepCopyValue</code> == false, the value will not be deep copied.
-	 If <code>update</code> is <b>not</b> an instance of {@link ControlPropertyValueUpdate}, <code>deepCopyValue</code> will have no effect.
+	 @param deepCopyValue if <code>update</code> is an instance of {@link ControlPropertyValueUpdate}
+	 and if <code>deepCopyValue</code> is true, the value returned by
+	 {@link ControlPropertyValueUpdate#getNewValue()} will be copied via {@link SerializableValue#deepCopy()},
+	 otherwise if <code>deepCopyValue</code> == false, the value will not be deep copied.
+	 If <code>update</code> is <b>not</b> an instance of {@link ControlPropertyValueUpdate},
+	 <code>deepCopyValue</code> will have no effect.
 	 */
 	public void update(@NotNull ControlPropertyUpdate update, boolean deepCopyValue) {
 		if (update instanceof ControlPropertyValueUpdate) {
@@ -487,7 +496,8 @@ public class ControlProperty {
 		}
 	}
 
-	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value. The macro and custom data will also be shallow copied over */
+	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value.
+	 The macro and custom data will also be shallow copied over */
 	@NotNull
 	public ControlProperty deepCopy() {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
@@ -499,9 +509,11 @@ public class ControlProperty {
 	}
 
 	/**
-	 Will set this property equal to the given one only if {@link #getPropertyLookup()} matches with this and <code>property</code>.
+	 Will set this property equal to the given one only if {@link #getPropertyLookup()}
+	 matches with this and <code>property</code>.
 	 This method is used in conjunction with {@link #inherit(ControlProperty)}.
-	 Note: {@link ControlProperty#getValue()} will not be deep copied. If the desire is to deep copy the given property, use {@link ControlProperty#deepCopy()}.
+	 Note: {@link ControlProperty#getValue()} will not be deep copied.
+	 If the desire is to deep copy the given property, use {@link ControlProperty#deepCopy()}.
 
 	 @param property property to set to
 	 */
@@ -521,8 +533,10 @@ public class ControlProperty {
 	}
 
 	/**
-	 Will set this property equal to the given specification only if {@link #getPropertyLookup()} matches with this and <code>property</code>. Note: {@link ControlPropertySpecification#getValue()} will not be
-	 deep copied. The value returned by {@link ControlPropertySpecification#getValue()} will also become the default value ({@link #getDefaultValue()})
+	 Will set this property equal to the given specification only if {@link #getPropertyLookup()} matches with this
+	 and <code>property</code>. Note: {@link ControlPropertySpecification#getValue()} will not be
+	 deep copied. The value returned by {@link ControlPropertySpecification#getValue()}
+	 will also become the default value ({@link #getDefaultValue()})
 
 	 @param specification specification to set to
 	 @param registry registry that contains the {@link Macro} instances
@@ -540,7 +554,8 @@ public class ControlProperty {
 	}
 
 	/**
-	 Inherit values, macro, and custom data from the given {@link ControlProperty}. If the property is inherited and then this method is invoked again with <code>inherit</code>==null, the
+	 Inherit values, macro, and custom data from the given {@link ControlProperty}.
+	 If the property is inherited and then this method is invoked again with <code>inherit</code>==null, the
 	 previous values, macro, and custom data will be given back to this property
 
 	 @param inherit property to inherit, or null to remove any inheritance
@@ -630,7 +645,11 @@ public class ControlProperty {
 			SerializableValue old = this.getValue();
 			super.updateValue(newValue);
 			if (!disableUpdate) {
-				property.controlPropertyUpdateGroup.update(new ControlPropertyValueUpdate(property, old, newValue, ControlPropertyValueUpdate.ValueOrigin.OTHER));
+				property.controlPropertyUpdateGroup.update(
+						new ControlPropertyValueUpdate(
+								property, old, newValue, ControlPropertyValueUpdate.ValueOrigin.OTHER
+						)
+				);
 			}
 		}
 

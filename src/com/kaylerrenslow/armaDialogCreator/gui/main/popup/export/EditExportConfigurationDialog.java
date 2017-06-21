@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ResourceBundle;
 
 /**
  A dialog used for editing a {@link ProjectExportConfiguration}
@@ -46,23 +47,32 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	/** observer to detect when the macros are being exported to their own file, or being placed in the display's header file */
 	private final ValueObserver<Boolean> exportMacrosToFileObserver = new ValueObserver<>(false);
 
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
+
+	/**
+	 Edits the given configuration's copy
+
+	 @param configuration configuration to make a copy of and edit
+	 @see ProjectExportConfiguration#copy()
+	 */
 	public EditExportConfigurationDialog(@NotNull ProjectExportConfiguration configuration) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), Lang.ApplicationBundle().getString("Popups.ExportProject.dialog_title"), true, true, true);
-		btnOk.setText(Lang.ApplicationBundle().getString("Popups.ExportProject.ok_button_export"));
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null, true, true, true);
+		setTitle(bundle.getString("Popups.EditProjectExportConfig.dialog_title"));
+		btnOk.setText(bundle.getString("Popups.EditProjectExportConfig.ok_button_export"));
 		this.configuration = configuration.copy();
 
 		setStageSize(720, 480);
 		myRootElement.setPadding(new Insets(10d));
 
-		final Label lblTitle = new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.title_label"));
+		final Label lblTitle = new Label(bundle.getString("Popups.EditProjectExportConfig.title_label"));
 		lblTitle.setFont(Font.font(17));
 		myRootElement.getChildren().add(lblTitle);
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
-		final Tab tabDisplayProperties = new Tab(Lang.ApplicationBundle().getString("Popups.ExportProject.display_properties"));
+		final Tab tabDisplayProperties = new Tab(bundle.getString("Popups.EditProjectExportConfig.display_properties"));
 		tabDisplayProperties.setClosable(false);
-		final Tab tabExportParameters = new Tab(Lang.ApplicationBundle().getString("Popups.ExportProject.export_parameters"));
+		final Tab tabExportParameters = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_parameters"));
 		tabExportParameters.setClosable(false);
-		final Tab tabExportPreview = new Tab(Lang.ApplicationBundle().getString("Popups.ExportProject.export_preview"));
+		final Tab tabExportPreview = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_preview"));
 		tabExportPreview.setClosable(false);
 
 		final TabPane tabPane = new TabPane(tabDisplayProperties, tabExportParameters, tabExportPreview);
@@ -95,7 +105,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 			}
 		});
 		HBox.setHgrow(inputFieldClassName, Priority.ALWAYS);
-		final HBox hboxClassName = new HBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.DisplayProperties.class_name")), inputFieldClassName);
+		final HBox hboxClassName = new HBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.DisplayProperties.class_name")), inputFieldClassName);
 		tabRoot.getChildren().add(hboxClassName);
 
 		/*display properties*/
@@ -114,10 +124,10 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		tabExportParameters.setContent(tabRoot);
 
 		/*set export directory*/
-		final Label lblExportDirectory = new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_directory"));
+		final Label lblExportDirectory = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory"));
 		final FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-				Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
-		Tooltip.install(chooserPane, new Tooltip(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_directory_tooltip")));
+				bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
+		Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
 		chooserPane.setChosenFile(configuration.getExportDirectory());
 		chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
 			@Override
@@ -129,8 +139,8 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 
 		/*export macros to own file*/
-		final CheckBox checkBoxExportMacrosToFile = new CheckBox(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_macros_to_file"));
-		checkBoxExportMacrosToFile.setTooltip(new Tooltip(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_macros_to_file_tooltip")));
+		final CheckBox checkBoxExportMacrosToFile = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file"));
+		checkBoxExportMacrosToFile.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file_tooltip")));
 		checkBoxExportMacrosToFile.setSelected(configuration.shouldExportMacrosToFile());
 		checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -159,13 +169,13 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				configuration.setFileType((HeaderFileType) newValue.getUserData());
 			}
 		});
-		tabRoot.getChildren().add(new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.export_file_extension")), flowPaneFileExt));
+		tabRoot.getChildren().add(new VBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_file_extension")), flowPaneFileExt));
 
 
 		/*place adc notice*/
-		final CheckBox checkBoxPlaceAdcNotice = new CheckBox(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.place_adc_notice"));
+		final CheckBox checkBoxPlaceAdcNotice = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice"));
 		checkBoxPlaceAdcNotice.setSelected(configuration.shouldPlaceAdcNotice());
-		checkBoxPlaceAdcNotice.setTooltip(new Tooltip(Lang.ApplicationBundle().getString("Popups.ExportProject.ExportParameters.place_adc_notice_tooltip")));
+		checkBoxPlaceAdcNotice.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice_tooltip")));
 		checkBoxPlaceAdcNotice.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -262,6 +272,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		BrowserUtil.browse(HelpUrls.EXPORT);
 	}
 
+	/** @return the new configuration, or null if was cancelled */
 	@Nullable
 	public ProjectExportConfiguration getConfiguration() {
 		return cancel ? null : configuration;

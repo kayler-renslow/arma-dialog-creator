@@ -162,7 +162,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
 			if (!descriptor.getValueEditor().hasValidData() && !descriptor.isOptional()) {
-				System.out.printf("%-20s: validData:%b optional:%b valuesSet:%b\n", descriptor.getControlProperty().getName(), descriptor.hasValidData(), descriptor.isOptional(), descriptor.getControlProperty() != null);
 				properties.add(descriptor.getControlProperty());
 			}
 		}

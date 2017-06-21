@@ -14,11 +14,6 @@ Ideas
 
 General
 -----------------------------------
-* create documentation for all java classes and **well** document it
-* ............................................
-* for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
-    * also, we need to save display's class name and make sure that is put inside the export dialog
-* ............................................
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
 * when loading keys from stringtable, check for improper key ids (missing str_ or duplicate ids) 

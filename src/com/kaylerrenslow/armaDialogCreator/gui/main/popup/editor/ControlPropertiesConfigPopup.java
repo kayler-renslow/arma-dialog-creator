@@ -139,9 +139,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
 				CanvasDisplay<ArmaControl> display = control.getDisplay();
 				if (control.getHolder() instanceof ArmaControlGroup) {
-					MoveOutOfControlGroupDialog popup = new MoveOutOfControlGroupDialog(control);
-					popup.show();
-					if (popup.isMoveOut()) {
+					MoveOutOfControlGroupDialog dialog = new MoveOutOfControlGroupDialog(control);
+					dialog.show();
+					if (dialog.isMoveOut()) {
 						ArmaControlGroup group = (ArmaControlGroup) control.getHolder();
 						group.getControls().move(control, (isBackground ? display.getBackgroundControls() : display.getControls()));
 						return;

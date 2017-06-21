@@ -21,7 +21,7 @@ public abstract class SerializableValue {
 	 Get a list that the given {@link PropertyType} can convert to
 
 	 @param type the type to check
-	 @return the list of types, or an empty list if can't convert into anything
+	 @return the list of types, or a list of size 1 if can't convert into anything, except itself
 	 @see #isConvertible(PropertyType, PropertyType)
 	 */
 	@NotNull
@@ -77,6 +77,7 @@ public abstract class SerializableValue {
 						|| toType == PropertyType.FileName
 						|| toType == PropertyType.Image
 						|| toType == PropertyType.Font
+						|| toType == PropertyType.SQF
 						;
 			}
 			case FileName: {
