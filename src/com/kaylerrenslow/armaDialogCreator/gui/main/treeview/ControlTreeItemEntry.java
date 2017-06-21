@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -82,12 +83,19 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		return myArmaControl.getRenderer().getBackgroundColor();
 	}
 
-	/** Return the control's enabled state that this tree item entry represents */
+	/**
+	 @return the control's enabled state that this tree item entry represents
+	 @see ArmaControlRenderer#isEnabled()
+	 */
 	public boolean isEnabled() {
 		return myArmaControl.getRenderer().isEnabled();
 	}
 
-	public boolean isVisible() {
-		return !myArmaControl.getRenderer().isGhost();
+	/**
+	 @return the control's ghost state that this tree item entry represents
+	 @see ArmaControlRenderer#isGhost()
+	 */
+	public boolean isGhost() {
+		return myArmaControl.getRenderer().isGhost();
 	}
 }

@@ -138,7 +138,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	@Override
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		renderer.resolutionUpdate(newResolution);
 	}
 

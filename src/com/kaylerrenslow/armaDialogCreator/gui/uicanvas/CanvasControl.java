@@ -12,10 +12,10 @@ import java.util.Comparator;
  */
 public interface CanvasControl<C extends CanvasControl> {
 	/** Get the {@link CanvasComponent} instance used for rendering the control is a {@link com.kaylerrenslow.armaDialogCreator.gui.uicanvas.UICanvas} */
-	CanvasComponent getRenderer();
+	@NotNull CanvasComponent getRenderer();
 
 	/** Invoked when the resolution is changed */
-	void resolutionUpdate(Resolution newResolution);
+	void resolutionUpdate(@NotNull Resolution newResolution);
 
 	Comparator<CanvasControl> RENDER_PRIORITY_COMPARATOR = new Comparator<CanvasControl>() {
 		@Override
@@ -34,12 +34,9 @@ public interface CanvasControl<C extends CanvasControl> {
 		return getDisplayObserver().getValue();
 	}
 
+	@NotNull ValueObserver<CanvasDisplay<C>> getDisplayObserver();
 
-	@NotNull
-	ValueObserver<CanvasDisplay<C>> getDisplayObserver();
-
-	@NotNull
-	ValueObserver<ControlHolder<C>> getHolderObserver();
+	@NotNull ValueObserver<ControlHolder<C>> getHolderObserver();
 
 	/**
 	 @return the update group that will update anytime the control needs to be re-rendered

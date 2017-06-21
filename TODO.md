@@ -15,24 +15,16 @@ Ideas
 General
 -----------------------------------
 * create documentation for all java classes and **well** document it
-* Arma 3 won't allow .png images. All images must be .paa, or .jpg. When we do an export, convert all .png to .paa
-    * it would be convenient to store the original url to the converted.paa so that the .png won't need to be re-converted
-    * [https://resources.bisimulations.com/wiki/Dialogs_Static#Images](https://resources.bisimulations.com/wiki/Dialogs_Static#Images)
-* preview's resolution should be independent from the editor.
-* preview should have background image
 * ............................................
 * for display properties, should be able to set them somewhere. Also, in export dialog, a way to apply changes to display properties
     * also, we need to save display's class name and make sure that is put inside the export dialog
 * ............................................
 * ControlProperty custom data isn't saved to file
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
-* doesn't save nested classes in control xml writing and also doesn't load them
 * when loading keys from stringtable, check for improper key ids (missing str_ or duplicate ids) 
-* save enabled and visible states for control saving to xml, and load them back!
 * stringtable editor: reload and save to file need error dialogs
 * save stringtable langauge (adc menu bar) to project.xml file
 * string table editor: edit containers
-* ............................................
 
 Bugs
 -----------------------------------

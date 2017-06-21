@@ -23,7 +23,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public abstract class UICanvas extends AnchorPane {
 	protected Keys keys = new Keys();
 
 	/** All components added */
-	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new LinkedList<>());
+	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
 
 	private boolean needPaint;
 	private final UpdateGroupListener renderUpdateGroupListener = new UpdateGroupListener() {
@@ -162,13 +161,18 @@ public abstract class UICanvas extends AnchorPane {
 		gc.restore();
 	}
 
-	/** Request a repaint. The paint operation won't happen until {@link #getTimer()} discovers the paint request. */
+	/**
+	 Request a repaint.
+	 The paint operation won't happen until {@link #getTimer()} discovers the paint request.
+	 Therefore, multiple requests can be made and not have any performance impacts.
+	 */
 	public void requestPaint() {
 		needPaint = true;
 	}
 
 	/**
-	 Paints all controls inside the display set {@link #display}. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
+	 Paints all controls inside the display set {@link #display}.
+	 Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
 	 The background controls are painted first, then controls are painted
 	 */
 	protected void paintControls() {
@@ -181,7 +185,8 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	/**
-	 Paints all components. Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
+	 Paints all components. Each component will get an individual render space
+	 (GraphicsContext attributes will not bleed through each component).
 	 Before the paint, the components are sorted with {@link CanvasComponent#RENDER_PRIORITY_COMPARATOR}
 	 */
 	protected void paintComponents() {
@@ -239,7 +244,8 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	/**
-	 This is called when the mouse listener is invoked and a mouse press was the event. Default implementation does nothing.
+	 This is called when the mouse listener is invoked and a mouse press was the event.
+	 Default implementation does nothing.
 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
@@ -249,7 +255,8 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 	/**
-	 This is called when the mouse listener is invoked and a mouse release was the event. Default implementation does nothing.
+	 This is called when the mouse listener is invoked and a mouse release was the event.
+	 Default implementation does nothing.
 
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
@@ -281,7 +288,8 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 
-	/** This is called after mouseMove is called. This will ensure that no matter how mouse move exits, the last mouse position will be updated */
+	/** This is called after mouseMove is called.
+	 This will ensure that no matter how mouse move exits, the last mouse position will be updated */
 	private void setLastMousePosition(int mousex, int mousey) {
 		lastMousePosition.set(mousex, mousey);
 	}
@@ -326,6 +334,7 @@ public abstract class UICanvas extends AnchorPane {
 		return super.computeMaxHeight(width);
 	}
 
+	@NotNull
 	public Canvas getCanvas() {
 		return canvas;
 	}

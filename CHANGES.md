@@ -2,12 +2,11 @@
 * 
 
 **Changed:**
-* 
+* preview now uses background image & color from editor
+* will now save/load visible and enabled states in/from project save
 
 **Fixed:**
-* canvas editor not automatically repainting
-    * moved the rerender group out of individual controls and just made them reference the group in the display
-    * then made the canvas listen to the display's render group
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

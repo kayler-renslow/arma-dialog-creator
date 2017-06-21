@@ -163,13 +163,18 @@ public class ProjectSaveXmlWriter {
 		final String controlGroupStr = "control-group";
 		final String controlStr = "control";
 		boolean controlGroup = control instanceof ArmaControlGroup;
+		boolean enabled = control.getRenderer().isEnabled();
+		boolean ghost = control.getRenderer().isGhost();
 
-		stm.write(String.format("<%s renderer-id='%d' control-id='%d' class-name='%s'%s>",
+		stm.write(String.format("<%s renderer-id='%d' control-id='%d' class-name='%s'%s%s%s>",
 				controlGroup ? controlGroupStr : controlStr,
 				control.getRendererLookup().id,
 				control.getControlType().getTypeId(),
 				control.getClassName(),
-				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass().getClassName()) : ""
+				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass()
+						.getClassName()) : "",
+				!enabled ? " enabled='f'" : "",
+				ghost ? " ghost='t'" : ""
 				)
 		);
 

@@ -21,13 +21,14 @@ public class TestCanvasControl extends SimpleCanvasComponent implements CanvasCo
 		this.name = name;
 	}
 
+	@NotNull
 	@Override
 	public CanvasComponent getRenderer() {
 		return this;
 	}
 
 	@Override
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 
 	}
 

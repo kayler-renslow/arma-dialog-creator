@@ -54,7 +54,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	 */
 	@Override
 	public boolean isGhost() {
-		return !isVisible && !isEnabled();
+		return !isVisible && !isEnabled;
 	}
 
 

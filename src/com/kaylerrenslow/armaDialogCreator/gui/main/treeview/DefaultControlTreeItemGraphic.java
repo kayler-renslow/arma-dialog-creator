@@ -36,6 +36,8 @@ public class DefaultControlTreeItemGraphic extends HBox {
 
 	public void init(@NotNull ControlTreeItemEntry entry) {
 		this.entry = entry;
+
+
 		rbSelected.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -67,6 +69,12 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		boxBorder.setStyle(BORDER_STYLE);
 		HBox.setMargin(boxBorder, margin);
 		getChildren().addAll(imageView, boxBorder, rbSelected);
+
+		if (entry.isGhost()) {
+			updateVisibilityRadioButton(!entry.isGhost());
+		} else {
+			setGraphicIsEnabled(entry.isEnabled());
+		}
 	}
 
 	private void fillBox(Color color) {

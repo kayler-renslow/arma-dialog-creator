@@ -330,6 +330,24 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	private ArmaControl getControl(Element controlElement, List<Macro> macros) {
+		//enabled setup
+		boolean enabled = true;
+		{
+			String enabledAttr = controlElement.getAttribute("enabled").trim();
+			if (enabledAttr.length() != 0) {
+				enabled = enabledAttr.equals("t");
+			}
+		}
+
+		//ghost setup
+		boolean ghost = false;
+		{
+			String ghostAttr = controlElement.getAttribute("ghost").trim();
+			if (ghostAttr.length() != 0) {
+				ghost = ghostAttr.equals("t");
+			}
+		}
+
 		//class name
 		String controlClassName = controlElement.getAttribute("class-name");
 		if (controlClassName.trim().length() == 0) {
@@ -411,6 +429,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		if (extendClassName.length() > 0) {
 			jobs.add(new ControlExtendJob(extendClassName, control, inheritControlProperties));
 		}
+
+		control.getRenderer().setGhost(ghost);
+		control.getRenderer().setEnabled(enabled);
 
 		return control;
 	}

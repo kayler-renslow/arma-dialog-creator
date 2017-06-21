@@ -6,6 +6,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeVi
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.GUITreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasConfiguration;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,6 +27,12 @@ public interface CanvasView {
 
 	/** Fetches the new ui colors and repaints the canvas */
 	void updateCanvas();
+
+	/** @return the background image of the canvas, or null if not set */
+	@Nullable ImagePattern getCanvasBackgroundImage();
+
+	/** @return the background color of the canvas */
+	@NotNull Color getCanvasBackgroundColor();
 
 	/**
 	 Update the Absolute region box. For each parameter: -1 to leave unchanged, 0 for false, 1 for true

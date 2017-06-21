@@ -88,7 +88,7 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 	}
 
 	@Override
-	public void resolutionUpdate(Resolution newResolution) {
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		super.resolutionUpdate(newResolution);
 		for (ArmaControl control : controlsList) {
 			control.resolutionUpdate(newResolution);

@@ -29,8 +29,8 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 	private final DisplayControlList<ArmaControl> controlsList = new DisplayControlList<>(this);
 	private final DisplayControlList<ArmaControl> bgControlsList = new DisplayControlList<>(this);
 	private final DataContext userdata = new DataContext();
-	@SuppressWarnings("unchecked")
-	private final ArrayList<List<ArmaControl>> controlsMerged = new ArrayList(2);
+
+	private final ArrayList<List<ArmaControl>> controlsMerged = new ArrayList<>(2);
 
 	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
 	private final UpdateListenerGroup<ArmaControl> renderUpdateGroup = new UpdateListenerGroup<>();

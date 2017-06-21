@@ -32,6 +32,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -178,6 +179,18 @@ class ADCCanvasView extends HBox implements CanvasView {
 	public void updateCanvas() {
 		uiCanvasEditor.updateColors();
 		uiCanvasEditor.requestPaint();
+	}
+
+	@Override
+	@Nullable
+	public ImagePattern getCanvasBackgroundImage() {
+		return uiCanvasEditor.getBackgroundImage();
+	}
+
+	@Override
+	@NotNull
+	public Color getCanvasBackgroundColor() {
+		return uiCanvasEditor.getBackgroundColor();
 	}
 
 	@Override
