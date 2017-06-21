@@ -1,11 +1,11 @@
 **Added:**
-* editing export configuration popup
+* support for duplicating controls and folders
 
 **Changed:**
 * 
 
 **Fixed:**
-* 
+* display not searching all controls in findControlClassByName
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

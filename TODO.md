@@ -18,7 +18,6 @@ General
 * when creating a new custom control, we should have option to set what the custom control will extend (if any)
 * when loading keys from stringtable, check for improper key ids (missing str_ or duplicate ids) 
 * stringtable editor: reload and save to file need error dialogs
-* save stringtable langauge (adc menu bar) to project.xml file
 * string table editor: edit containers
 
 Bugs

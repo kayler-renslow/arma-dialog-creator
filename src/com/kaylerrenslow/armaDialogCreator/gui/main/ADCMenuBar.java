@@ -140,7 +140,7 @@ class ADCMenuBar extends MenuBar {
 
 	final Menu menuFile = new Menu(
 			bundle.getString("file"), null,
-			file_open,
+			/*file_open,*/
 			file_save,
 			file_export,
 			new SeparatorMenuItem(),

@@ -32,7 +32,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 	private final Key<TreeItem<T>> TREE_ITEM_KEY = new Key<>("EditorComponentTreeView.TreeItemKey");
 
-	private final ContextMenu controlCreationContextMenu = new ControlCreationContextMenu(this);
+	private final ContextMenu controlCreationContextMenu = new EditorTreeViewContextMenu(this);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
 	private final UpdateGroupListener<ControlListChange<ArmaControl>> controlListChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
@@ -59,7 +59,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			ControlMove<ArmaControl> moved = change.getMoved();
 			ArmaControl movedControl = moved.getMovedControl();
 			if (!moved.isEntryUpdate()) {
-				System.out.println("EditorComponentTreeView.handleMove ENTRY bg=" + backgroundControlEditor);
 				//add to this tree view
 				TreeItem<T> movedControlTreeItem = createTreeItemForControl(movedControl);
 				if (movedControl.getHolder() instanceof ArmaControlGroup) {
@@ -75,7 +74,6 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					getRoot().getChildren().add(moved.getDestinationIndex(), movedControlTreeItem);
 				}
 			} else {
-				System.out.println("EditorComponentTreeView.handleMove EXIT bg=" + backgroundControlEditor);
 				//remove from this tree view
 				TreeItem<T> movedControlTreeItem = TREE_ITEM_KEY.get(movedControl.getUserData());
 				if (movedControlTreeItem == null) {

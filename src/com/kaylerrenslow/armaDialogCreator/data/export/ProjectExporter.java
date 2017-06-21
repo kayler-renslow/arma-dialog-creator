@@ -53,14 +53,17 @@ public class ProjectExporter {
 		String[] arr = value.getAsStringArray();
 		StringBuilder ret = new StringBuilder();
 		String v;
-		int[] convertToFilePath = value instanceof FilePathUser ? ((FilePathUser) value).getIndicesThatUseFilePaths() : new int[0];
+		int[] convertToFilePath = value instanceof FilePathUser ? ((FilePathUser) value).getIndicesThatUseFilePaths()
+				: null;
 		for (int i = 0; i < arr.length; i++) {
 			v = arr[i];
 			for (int quoteIndex : type.getIndexesWithQuotes()) {
 				if (quoteIndex == i) {
-					for (int c : convertToFilePath) {
-						if (c == i) {
-							v = Paths.get(exportDir).relativize(Paths.get(v)).toString();
+					if (convertToFilePath != null) {
+						for (int c : convertToFilePath) {
+							if (c == i) {
+								v = Paths.get(exportDir).relativize(Paths.get(v)).toString();
+							}
 						}
 					}
 					v = "\"" + v + "\"";

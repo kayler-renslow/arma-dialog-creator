@@ -22,9 +22,9 @@ import static com.kaylerrenslow.armaDialogCreator.gui.main.treeview.EditorCompon
 
  @author Kayler
  @since 06/20/2016. */
-public class ControlCreationContextMenu extends ContextMenu {
+public class EditorTreeViewContextMenu extends ContextMenu {
 
-	public ControlCreationContextMenu(EditorComponentTreeView treeView) {
+	public EditorTreeViewContextMenu(@NotNull EditorComponentTreeView treeView) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		MenuItem newFolder = new MenuItem(bundle.getString("ContextMenu.ComponentTreeView.new_folder"), createFolderIcon());
 		getItems().add(newFolder);

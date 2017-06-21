@@ -181,7 +181,6 @@ public class Project implements SpecificationRegistry {
 		if (controlClass != null) {
 			return controlClass;
 		}
-
 		return getEditingDisplay().findControlByClassName(className);
 	}
 

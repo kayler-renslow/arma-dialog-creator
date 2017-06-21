@@ -2,11 +2,13 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.Node;
+import javafx.scene.control.TreeView;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,10 +77,7 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 		myArmaControl.getRenderer().setGhost(!visible);
 	}
 
-	public String getControlTypeText() {
-		return myArmaControl.getControlType().getDisplayName();
-	}
-
+	@NotNull
 	public Color getPrimaryColor() {
 		return myArmaControl.getRenderer().getBackgroundColor();
 	}
@@ -97,5 +96,18 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	 */
 	public boolean isGhost() {
 		return myArmaControl.getRenderer().isGhost();
+	}
+
+	@Override
+	public void duplicate(@NotNull TreeView<? extends TreeItemEntry> treeView) {
+		String newName = myArmaControl.getClassName() + "_copy1";
+		int i = 2;
+		Project p = Project.getCurrentProject();
+		while (p.findControlClassByName(newName) != null) {
+			newName = myArmaControl.getClassName() + "_copy" + i;
+			i++;
+		}
+		ArmaControl dup = myArmaControl.duplicate(newName, p);
+		myArmaControl.getHolder().getControls().add(dup);
 	}
 }

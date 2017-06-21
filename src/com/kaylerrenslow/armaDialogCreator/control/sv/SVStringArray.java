@@ -36,11 +36,11 @@ public final class SVStringArray extends SerializableValue {
 	
 	@Override
 	public String toString() {
-		String ret = "{";
+		StringBuilder ret = new StringBuilder("{");
 		for (int i = 0; i < valuesAsArray.length; i++) {
-			ret += valuesAsArray[i] + (i != valuesAsArray.length - 1 ? ", " : "}");
+			ret.append(valuesAsArray[i]).append(i != valuesAsArray.length - 1 ? ", " : "}");
 		}
-		return ret;
+		return ret.toString();
 	}
 	
 	@Override

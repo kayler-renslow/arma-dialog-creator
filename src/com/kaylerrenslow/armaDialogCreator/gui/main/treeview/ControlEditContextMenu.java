@@ -20,7 +20,8 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 07/13/2016. */
 public class ControlEditContextMenu extends ContextMenu {
-	public ControlEditContextMenu(EditorComponentTreeView<? extends TreeItemEntry> treeView, @NotNull ControlTreeItemEntry entryClicked) {
+	public ControlEditContextMenu(@NotNull EditorComponentTreeView<? extends TreeItemEntry> treeView,
+								  @NotNull ControlTreeItemEntry entryClicked) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		CheckMenuItem checkMenuItemEnable = new CheckMenuItem(bundle.getString("ContextMenu.ControlEdit.enable"));
 		checkMenuItemEnable.setSelected(entryClicked.isEnabled());
@@ -74,5 +75,16 @@ public class ControlEditContextMenu extends ContextMenu {
 			}
 		});
 		getItems().add(menuItemRemoveControl);
+
+
+		MenuItem miDuplicate = new MenuItem(bundle.getString("ContextMenu.ControlEdit.duplicate"));
+		getItems().add(miDuplicate);
+		miDuplicate.setOnAction(e -> {
+			TreeItem<? extends TreeItemEntry> selected = treeView.getSelectionModel().getSelectedItem();
+			if (selected == null) {
+				return;
+			}
+			selected.getValue().duplicate(treeView);
+		});
 	}
 }

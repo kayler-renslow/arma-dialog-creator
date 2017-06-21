@@ -121,18 +121,14 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 	/** Search all controls inside the display (including controls inside {@link ArmaControlGroup} instances) */
 	@Nullable
 	public ArmaControl findControlByClassName(@NotNull String className) {
-		Iterator<ArmaControl> iterator = iteratorForAllControls(false);
-		while (iterator.hasNext()) {
-			ArmaControl control = iterator.next();
+		for (ArmaControl control : getBackgroundControls().deepIterator()) {
 			if (className.equals(control.getClassName())) {
 				return control;
 			}
-			if (control instanceof ArmaControlGroup) {
-				ArmaControlGroup group = (ArmaControlGroup) control;
-				ArmaControl found = group.findControlByClassName(className);
-				if (found != null) {
-					return found;
-				}
+		}
+		for (ArmaControl control : getControls().deepIterator()) {
+			if (className.equals(control.getClassName())) {
+				return control;
 			}
 		}
 		return null;

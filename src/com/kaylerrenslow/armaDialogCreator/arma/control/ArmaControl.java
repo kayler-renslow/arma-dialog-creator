@@ -26,7 +26,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;
 	/** Type of the control */
-	private ControlType type = ControlType.Static;
+	private ControlType controlType = ControlType.Static;
 
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
@@ -59,7 +59,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		}
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setValueIfAbsent(true, new SVInteger(-1));
-		defineType(type);
+		defineType(controlType);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 		this.allowedStyles = provider.getAllowedStyles();
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
@@ -108,7 +108,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	private void defineType(@NotNull ControlType type) {
 		findRequiredProperty(ControlPropertyLookup.TYPE).setDefaultValue(true, type.getTypeId());
-		this.type = type;
+		this.controlType = type;
 	}
 
 	private void checkControlType(@NotNull ControlType type) {
@@ -168,7 +168,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	@NotNull
 	public final ControlType getControlType() {
-		return type;
+		return controlType;
 	}
 
 	@NotNull
@@ -184,6 +184,20 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@NotNull
 	public final ControlStyle[] getAllowedStyles() {
 		return allowedStyles;
+	}
+
+	@NotNull
+	public ArmaControl duplicate(@NotNull String controlName, @NotNull SpecificationRegistry registry) {
+		ArmaControl dup = ArmaControl.createControl(
+				controlName,
+				ArmaControlLookup.findByControlType(this.controlType),
+				renderer.getResolution(),
+				renderer.env,
+				registry
+		);
+		dup.setTo(new ControlClassSpecification(this).constructNewControlClass(registry));
+		dup.setClassName(controlName);
+		return dup;
 	}
 
 	@NotNull

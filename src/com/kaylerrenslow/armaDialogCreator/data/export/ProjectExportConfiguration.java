@@ -44,6 +44,9 @@ public class ProjectExportConfiguration {
 			@Nullable String exportConfigName
 	) {
 		this.exportClassName = exportClassName;
+		if (!exportDirectory.exists()) {
+			exportDirectory.mkdirs();
+		}
 		setExportDirectory(exportDirectory);
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
@@ -75,7 +78,7 @@ public class ProjectExportConfiguration {
 		return exportDirectory;
 	}
 
-	/**@return the dialog's export class name*/
+	/** @return the dialog's export class name */
 	@NotNull
 	public String getExportClassName() {
 		return exportClassName;
