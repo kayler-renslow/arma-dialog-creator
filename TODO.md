@@ -22,4 +22,3 @@ General
 Bugs
 -----------------------------------
 * select many things in tree view and drag into folder
-* convert font to String type. Make font invalid. Convert back to font type

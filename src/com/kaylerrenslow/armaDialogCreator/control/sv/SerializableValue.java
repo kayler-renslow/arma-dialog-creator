@@ -48,11 +48,11 @@ public abstract class SerializableValue {
 	 @see #convert(DataContext, SerializableValue, PropertyType)
 	 */
 	public static boolean isConvertible(@NotNull PropertyType fromType, @NotNull PropertyType toType) {
-		if (fromType == PropertyType.Raw) {
-			return false;
-		}
 		if (fromType == toType) {
 			return true;
+		}
+		if (fromType == PropertyType.Raw) {
+			return false;
 		}
 		switch (fromType) {
 			case Int: {

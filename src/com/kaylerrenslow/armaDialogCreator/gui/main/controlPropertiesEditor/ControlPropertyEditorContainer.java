@@ -8,7 +8,6 @@ import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -166,24 +165,34 @@ class ControlPropertyEditorContainer extends HBox {
 		miConvert.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				ChooseNewPropertyTypeDialog dialog = new ChooseNewPropertyTypeDialog(controlProperty);
-				dialog.show();
-				PropertyType type = dialog.getSelectedType();
+				PropertyType type;
+				{
+					ChooseNewPropertyTypeDialog dialog = new ChooseNewPropertyTypeDialog(controlProperty);
+					dialog.show();
+					type = dialog.getSelectedType();
+				}
 				if (type == null) {
 					return;
 				}
-				if (controlProperty.getValue() == null) {
+				SerializableValue value = controlProperty.getValue();
+				if (value == null) {
 					throw new IllegalStateException("shouldn't be able to convert a null value");
 				}
+				propertyValueEditor.clearListeners();
 				try {
-					propertyValueEditor.clearListeners();
-					controlProperty.setValue(SerializableValue.convert(ApplicationData.getManagerInstance(), controlProperty.getValue(), type));
-					updatePropertyValueEditor();
+					controlProperty.setValue(
+							SerializableValue.convert(ApplicationData.getManagerInstance(), value, type)
+					);
 				} catch (SerializableValueConversionException e) {
-					ExceptionHandler.error(e);
-					//todo have convert fail dialog
-					//do it for raw option too
+					ConvertValueDialog convertDialog = new ConvertValueDialog(value, type,
+							ApplicationData.getManagerInstance().getGlobalExpressionEnvironment());
+					convertDialog.show();
+					SerializableValue newValue = convertDialog.getConvertedValue();
+					if (!convertDialog.wasCancelled()) {
+						controlProperty.setValue(newValue);
+					}
 				}
+				updatePropertyValueEditor();
 			}
 		});
 		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -235,9 +244,19 @@ class ControlPropertyEditorContainer extends HBox {
 					try {
 						controlProperty.setValue(raw.newSubstituteTypeValue(ApplicationData.getManagerInstance()));
 					} catch (Exception e) {
-						ExceptionHandler.error(e);
-						//todo have convert failure dialog
-						//do it for convert option too
+						PropertyType newType = raw.getSubstituteType() == null ?
+								controlProperty.getInitialPropertyType() :
+								raw.getSubstituteType();
+						ConvertValueDialog dialog = new ConvertValueDialog(raw, newType,
+								ApplicationData.getManagerInstance().getGlobalExpressionEnvironment());
+						dialog.show();
+						SerializableValue newValue = dialog.getConvertedValue();
+						if (dialog.wasCancelled()) {
+							//set the menuItem's selected state back to its previous state
+							miRaw.setSelected(true);
+							return;
+						}
+						controlProperty.setValue(newValue);
 					}
 				} else {
 					throw new IllegalStateException("control property should have raw value");

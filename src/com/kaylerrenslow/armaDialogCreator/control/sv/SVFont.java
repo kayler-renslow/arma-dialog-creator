@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  All avaialable Arma 3 fonts
+
  @author Kayler
  @since 05/22/2016. */
 public class SVFont extends SerializableValue {
@@ -19,7 +20,7 @@ public class SVFont extends SerializableValue {
 	public static final SVFont ETELKA_MONOSPACE_PRO_BOLD = new SVFont("EtelkaMonospaceProBold");
 	public static final SVFont ETELKA_NARROW_MEDIUM_PRO = new SVFont("EtelkaNarrowMediumPro");
 	public static final SVFont TAHOMA_B = new SVFont("TahomaB");
-	
+
 	/** Default Arma 3 font */
 	public static SVFont DEFAULT = PURISTA_MEDIUM;
 
@@ -29,7 +30,7 @@ public class SVFont extends SerializableValue {
 			return get(values[0]);
 		}
 	};
-	
+
 	private final String name;
 
 	private static final SVFont[] values = {PURISTA_LIGHT, PURISTA_MEDIUM, PURISTA_SEMI_BOLD, PURISTA_BOLD, LUCIDA_CONSOLE_B, ETELKA_MONOSPACE_PRO, ETELKA_MONOSPACE_PRO_BOLD, ETELKA_NARROW_MEDIUM_PRO, TAHOMA_B};
@@ -38,12 +39,12 @@ public class SVFont extends SerializableValue {
 		super(name);
 		this.name = name;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name();
 	}
-	
+
 	public String name() {
 		return this.name;
 	}
@@ -60,18 +61,23 @@ public class SVFont extends SerializableValue {
 		return PropertyType.Font;
 	}
 
+	@NotNull
 	public static SVFont[] values() {
 		return values;
 	}
 
-	/** Return the SVFont instance where name.equals({@link #name()}) from any of {@link #values()}. If no match found, returns null */
-	public static SVFont get(String name) {
+	/**
+	 @return the instance where name.equals({@link #name()}) from any of {@link #values()}
+	 @throws IllegalArgumentException if no match found
+	 */
+	@NotNull
+	public static SVFont get(@NotNull String name) {
 		for (SVFont font : values()) {
 			if (font.name().equals(name)) {
 				return font;
 			}
 		}
-		return null;
+		throw new IllegalArgumentException("name is not a font. name=" + name);
 	}
 
 	@Override
