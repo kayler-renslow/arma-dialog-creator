@@ -2,8 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVBoolean;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.BooleanChoiceBox;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -17,7 +15,6 @@ import org.jetbrains.annotations.NotNull;
 public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	protected final BooleanChoiceBox choiceBox = new BooleanChoiceBox();
 	private final StackPane masterPane = new StackPane(choiceBox);
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final ValueObserver<SVBoolean> svBooleanValueObserver = new ValueObserver<>(null);
 
 	public BooleanValueEditor() {
@@ -49,23 +46,9 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 		return masterPane;
 	}
 
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(choiceBox);
-		}
-	}
-
 	@Override
 	public boolean displayFullWidth() {
 		return false;
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
 	}
 	
 	@Override

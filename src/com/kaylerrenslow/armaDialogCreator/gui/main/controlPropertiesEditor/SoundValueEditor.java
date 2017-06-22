@@ -4,7 +4,6 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVSound;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -29,7 +28,6 @@ public class SoundValueEditor implements ValueEditor<SVSound> {
 	protected InputField<DoubleChecker, Double> inPitch = new InputField<>(new DoubleChecker());
 	private final GridPane gridPaneEditors = new GridPane();
 
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(gridPaneEditors);
 	private final ValueObserver<SVSound> valueObserver = new ValueObserver<>(null);
 
@@ -102,20 +100,6 @@ public class SoundValueEditor implements ValueEditor<SVSound> {
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
-	}
-
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(gridPaneEditors);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
 	}
 
 	@Override

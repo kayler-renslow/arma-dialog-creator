@@ -342,9 +342,9 @@ class ControlPropertyEditorContainer extends HBox {
 	protected void updatePropertyValueEditor() {
 		stackPanePropertyInput.getChildren().clear();
 		propertyValueEditor = constructNewPropertyValueEditor();
-		if (propertyValueEditor.displayFullWidth()) {
-			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
-		}
+		HBox.setHgrow(stackPanePropertyInput, propertyValueEditor.displayFullWidth() ?
+				Priority.ALWAYS : Priority.NEVER
+		);
 		stackPanePropertyInput.getChildren().add(propertyValueEditor.getRootNode());
 		if (controlProperty.getValue() instanceof SVRaw) {
 			stackPanePropertyInput.setPadding(new Insets(1));
@@ -386,7 +386,7 @@ class ControlPropertyEditorContainer extends HBox {
 			case Array:
 				return new ArrayEditor(controlClass, controlProperty, 2);
 			case Color:
-				return new ColorPickerEditor(controlClass, controlProperty);
+				return new ColorArrayEditor(controlClass, controlProperty);
 			case Sound:
 				return new SoundEditor(controlClass, controlProperty);
 			case Font:
@@ -396,7 +396,7 @@ class ControlPropertyEditorContainer extends HBox {
 			case Image:
 				return new ImageEditor(controlClass, controlProperty);
 			case HexColorString:
-				return new ColorPickerEditor(controlClass, controlProperty);
+				return new HexColorEditor(controlClass, controlProperty);
 			case Texture:
 				return new StringEditor(controlClass, controlProperty);
 			case SQF:
@@ -460,9 +460,15 @@ class ControlPropertyEditorContainer extends HBox {
 			lbl.setWrapText(true);
 			myRootElement.getChildren().add(lbl);
 
+			PropertyType fromType;
+			if (property.getValue() == null) {
+				fromType = property.getInitialPropertyType();
+			} else {
+				fromType = property.getPropertyType();
+			}
 
 			for (PropertyType type : PropertyType.values()) {
-				if (SerializableValue.isConvertible(property.getPropertyType(), type)) {
+				if (SerializableValue.isConvertible(fromType, type)) {
 					comboBoxType.getItems().add(type);
 				}
 			}

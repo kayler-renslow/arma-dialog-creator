@@ -71,7 +71,7 @@ public class ControlClassInheritanceTests {
 
 		//make sure this value is not equal to what the merge method returns
 		//so that we can assert that the value actually changed
-		tcc2.findRequiredProperty(constant).setValue(SVFont.LUCIDA_CONSOLE_B);
+		tcc2.findRequiredProperty(constant).setValue(SVFont.LucidaConsoleB);
 
 		tcc.inheritProperty(constant);
 

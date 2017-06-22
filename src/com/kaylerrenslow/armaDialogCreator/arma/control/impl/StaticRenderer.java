@@ -71,7 +71,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				}
 			}
 		});
-		colorBackground.setValueIfAbsent(true, new SVColor(getBackgroundColor()));
+		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
 
 		if (colorBackground.getValue() instanceof SVColor) {
 			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
@@ -79,7 +79,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 			useBackgroundColor = false;
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColor(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 
 		styleProperty = myControl.findProperty(ControlPropertyLookup.STYLE);
 		styleProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {

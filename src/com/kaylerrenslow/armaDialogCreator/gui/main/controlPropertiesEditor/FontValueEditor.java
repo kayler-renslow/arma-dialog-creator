@@ -1,8 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVFont;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -25,7 +23,6 @@ public class FontValueEditor implements ValueEditor<SVFont> {
 	private final Button btnChooseDefault = new Button(Lang.ApplicationBundle().getString("ValueEditors.FontValueEditor.default_font"));
 	protected final ComboBox<SVFont> comboBox = new ComboBox<>(FXCollections.observableArrayList(SVFont.values()));
 	private final HBox editorHbox = new HBox(5, comboBox, btnChooseDefault);
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final StackPane masterPane = new StackPane(editorHbox);
 	private final ValueObserver<SVFont> valueObserver = new ValueObserver<>(null);
 
@@ -64,20 +61,6 @@ public class FontValueEditor implements ValueEditor<SVFont> {
 		return masterPane;
 	}
 
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if(override){
-			masterPane.getChildren().add(overrideField);
-		}else{
-			masterPane.getChildren().add(editorHbox);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
-	}
-	
 	@Override
 	public void focusToEditor() {
 		comboBox.requestFocus();

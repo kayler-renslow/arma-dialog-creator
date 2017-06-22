@@ -360,14 +360,14 @@ class ControlPropertyValueEditors {
 
 	/**
 	 Used for when control property requires color input.
-	 Use this only when the ControlProperty's value is of type {@link SVColor}
+	 Use this only when the ControlProperty's value is of type {@link SVColorArray}
 	 */
-	static class ColorPickerEditor extends ColorValueEditor implements ControlPropertyValueEditor {
+	static class ColorArrayEditor extends ColorArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVColor> valueEditorListener = new ReadOnlyValueListener<SVColor>() {
+		private final ReadOnlyValueListener<SVColorArray> valueEditorListener = new ReadOnlyValueListener<SVColorArray>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVColorArray> observer, SVColorArray oldValue, SVColorArray newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -375,14 +375,14 @@ class ControlPropertyValueEditors {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
 				if (controlProperty.getValue() != null) { //maybe wasn't updated
-					colorPicker.setValue(((SVColor) controlProperty.getValue()).toJavaFXColor());
+					colorPicker.setValue(((SVColorArray) controlProperty.getValue()).toJavaFXColor());
 				} else {
 					colorPicker.setValue(null);
 				}
 			}
 		};
 
-		ColorPickerEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ColorArrayEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -418,7 +418,7 @@ class ControlPropertyValueEditors {
 		@NotNull
 		@Override
 		public Class<? extends SerializableValue> getMacroClass() {
-			return SVColor.class;
+			return SVColorArray.class;
 		}
 
 		@Override
@@ -435,7 +435,89 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((SVColor) controlProperty.getValue());
+			setValue((SVColorArray) controlProperty.getValue());
+		}
+	}
+
+	/**
+	 Used for when control property requires color input.
+	 Use this only when the ControlProperty's value is of type {@link SVHexColor}
+	 */
+	static class HexColorEditor extends HexColorValueEditor implements ControlPropertyValueEditor {
+
+		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<SVHexColor> valueEditorListener = new ReadOnlyValueListener<SVHexColor>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVHexColor> observer, SVHexColor oldValue,
+									 SVHexColor newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
+				if (controlProperty.getValue() != null) { //maybe wasn't updated
+					setValue((SVHexColor) controlProperty.getValue());
+				} else {
+					setValue(null);
+				}
+			}
+		};
+
+		HexColorEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			this.controlProperty = controlProperty;
+			boolean validData = controlProperty.getValue() != null;
+			if (validData) {
+				SVHexColor value = (SVHexColor) controlProperty.getValue();
+				setValue(value);
+			} else {
+				setValue(null);
+			}
+			initListeners();
+		}
+
+		@Override
+		public boolean hasValidData() {
+			return getValue() != null;
+		}
+
+		@NotNull
+		@Override
+		public ControlProperty getControlProperty() {
+			return controlProperty;
+		}
+
+		@Override
+		public void disableEditing(boolean disable) {
+			getRootNode().setDisable(disable);
+		}
+
+
+		@Override
+		public void setToMode(@NotNull EditMode mode) {
+		}
+
+		@NotNull
+		@Override
+		public Class<? extends SerializableValue> getMacroClass() {
+			return SVHexColor.class;
+		}
+
+		@Override
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(valueEditorListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addListener(valueEditorListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refresh() {
+			setValue((SVHexColor) controlProperty.getValue());
 		}
 	}
 

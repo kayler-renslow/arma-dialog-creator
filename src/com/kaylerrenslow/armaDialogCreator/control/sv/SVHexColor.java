@@ -8,9 +8,10 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  Class used to depict a hex color string.
+
  @author Kayler
  @since 05/23/2016. */
-public class SVHexColor extends SVColor {
+public class SVHexColor extends SerializableValue implements SVColor {
 
 	public static final ValueConverter<SVHexColor> CONVERTER = new ValueConverter<SVHexColor>() {
 		@Override
@@ -19,116 +20,43 @@ public class SVHexColor extends SVColor {
 		}
 	};
 
-	private String hex;
+	private double[] colorArray = new double[3];
 
 	/**
 	 Creates a HexColor object based off a hex string (#fffff for example)
 
 	 @throws IllegalArgumentException for when the hex color is formatted wrong
 	 */
-	public SVHexColor(String hex) {
-		super(0, 0, 0, 0);
-		setColor(convertToColorArray(hex));
-		this.hex = hex;
+	public SVHexColor(@NotNull String hex) {
+		super(hex);
+		this.valuesAsArray[0] = hex;
+		colorArray = getColorArray(colorArray, Integer.decode(hex));
 	}
 
-	/** @see SVColor#SVColor(Color) */
-	public SVHexColor(Color value) {
-		super(value);
-		updateHex();
-	}
-
-	private void updateHex() {
-		final double f = 255.0;
-		int r = (int) (getRed() * f);
-		int g = (int) (getGreen() * f);
-		int b = (int) (getBlue() * f);
-		int a = (int) (getAlpha() * f);
-		int argb = (a << 24) | (r << 16) | (g << 8) | b;
-		this.hex = Integer.toHexString(argb);
-	}
-
-	@Override
-	public void setRed(double r) {
-		super.setRed(r);
+	public SVHexColor(@NotNull Color color) {
+		super("");
+		colorArray[0] = color.getRed();
+		colorArray[1] = color.getGreen();
+		colorArray[2] = color.getBlue();
 		updateHex();
 	}
 
 	@Override
-	public void setGreen(double g) {
-		super.setGreen(g);
-		updateHex();
+	@NotNull
+	public SerializableValue deepCopy() {
+		return new SVHexColor(this.valuesAsArray[0]);
 	}
 
-	@Override
-	public void setBlue(double b) {
-		super.setBlue(b);
-		updateHex();
-	}
-
-	@Override
-	public void setAlpha(double a) {
-		super.setAlpha(a);
-		updateHex();
-	}
-
-	@Override
-	public void setColor(double[] c) {
-		super.setColor(c);
-		updateHex();
-	}
-
-	/** Get the hex color String */
+	/** return the hex color String */
+	@NotNull
 	public String getHexColor() {
-		return this.hex;
+		return this.valuesAsArray[0];
 	}
 
 	/**
-	 sets the hex color string to the given string
+	 Gets color array. Ignores alpha
 
-	 @throws IllegalArgumentException for when the hex color is formatted wrong
-	 */
-	public void setHexColor(String hex) {
-		setColor(convertToColorArray(this.color, hex));
-		this.hex = hex;
-	}
-
-	/**
-	 Returns a color array like: {r,g,b,a} where r,g,b,a are from 0.0 to 1.0 inclusively
-
-	 @throws IllegalArgumentException for when the hex color is formatted wrong
-	 */
-	public static double[] convertToColorArray(String hex) {
-		int color;
-		try {
-			color = Integer.decode(hex);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Hex string was formatted wrong.");
-		}
-		return getColorArray(color);
-	}
-
-	/**
-	 Returns a color array like: {r,g,b,a} where r,g,b,a are from 0.0 to 1.0 inclusively
-
-	 @param arr stores values in given array (array must be length 4)
-	 @throws IllegalArgumentException for when the hex color is formatted wrong
-	 */
-	public static double[] convertToColorArray(double[] arr, String hex) {
-		if (arr.length != 4) {
-			throw new IllegalArgumentException("arr.length != 4");
-		}
-		int color;
-		try {
-			color = Integer.decode(hex);
-		} catch (NumberFormatException e) {
-			throw new IllegalArgumentException("Hex string was formatted wrong.");
-		}
-		return getColorArray(arr, color);
-	}
-
-	/** Gets color array
-	 @param arr stores values in given array (array must be length 4)
+	 @param arr stores values in given array (array must be length 3) (r,g,b)
 	 */
 	public static double[] getColorArray(double[] arr, int color) {
 		if (arr.length != 4) {
@@ -137,22 +65,16 @@ public class SVHexColor extends SVColor {
 		int r = (color) & 0xFF;
 		int g = (color >> 8) & 0xFF;
 		int b = (color >> 16) & 0xFF;
-		int a = (color >> 24) & 0xFF;
 		final double f = 255.0;
 		arr[0] = r / f;
 		arr[1] = g / f;
 		arr[2] = b / f;
-		arr[3] = a / f;
 		return arr;
 	}
 
-	public static double[] getColorArray(int color) {
-		return getColorArray(new double[4], color);
-	}
-	
 	@Override
 	public String toString() {
-		return hex;
+		return getHexColor();
 	}
 
 	@NotNull
@@ -162,14 +84,80 @@ public class SVHexColor extends SVColor {
 	}
 
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
 		if (o instanceof SVHexColor) {
 			SVHexColor other = (SVHexColor) o;
-			return this.hex.equals(other.hex);
+			return getHexColor().equals(other.getHexColor());
 		}
 		return false;
+	}
+
+	@Override
+	public double getRed() {
+		return colorArray[0];
+	}
+
+	@Override
+	public void setRed(double r) {
+		colorArray[0] = r;
+		updateHex();
+	}
+
+	@Override
+	public double getGreen() {
+		return colorArray[1];
+	}
+
+	@Override
+	public void setGreen(double g) {
+		colorArray[1] = g;
+	}
+
+	@Override
+	public double getBlue() {
+		return colorArray[2];
+	}
+
+	@Override
+	public void setBlue(double b) {
+		colorArray[2] = b;
+	}
+
+	/** @return always 1 */
+	@Override
+	public double getAlpha() {
+		return 1;
+	}
+
+	/** Does nothing */
+	@Override
+	public void setAlpha(double a) {
+
+	}
+
+	@Override
+	public void setColor(double[] c) {
+		colorArray[0] = c[0];
+		colorArray[1] = c[1];
+		colorArray[2] = c[2];
+		updateHex();
+	}
+
+	private void updateHex() {
+		final double f = 255.0;
+		int r = (int) (getRed() * f);
+		int g = (int) (getGreen() * f);
+		int b = (int) (getBlue() * f);
+		int argb = (r << 16) | (g << 8) | b;
+		valuesAsArray[0] = "#" + Integer.toHexString(argb);
+	}
+
+	@Override
+	@NotNull
+	public Color toJavaFXColor() {
+		return Color.color(getRed(), getGreen(), getBlue());
 	}
 }

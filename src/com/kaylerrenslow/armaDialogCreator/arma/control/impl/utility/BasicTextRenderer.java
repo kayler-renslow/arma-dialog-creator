@@ -5,10 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
@@ -87,7 +84,7 @@ public class BasicTextRenderer {
 		if (textColorProp.getValue() != null && textColorProp.getValue() instanceof SVColor) {
 			textColor = ((SVColor) textColorProp.getValue()).toJavaFXColor();
 		}
-		textColorProp.setValueIfAbsent(true, new SVColor(renderer.getBackgroundColor().invert()));
+		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
 		textColorProp.getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {

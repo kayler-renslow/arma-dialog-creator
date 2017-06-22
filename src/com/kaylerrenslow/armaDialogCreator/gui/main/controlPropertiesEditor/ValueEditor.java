@@ -3,8 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
@@ -29,9 +27,6 @@ public interface ValueEditor<V extends SerializableValue> {
 
 	/** Get the root node used to display the entire editor */
 	@NotNull Node getRootNode();
-
-	/** Get the TextField used for entering the raw text */
-	InputField<StringChecker, String> getCustomDataTextField();
 
 	/** Used for {@link Node#requestFocus()} but should target the specific editor (TextField, ColorPicker, etc) */
 	void focusToEditor();
@@ -69,7 +64,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case Array:
 				return new ArrayValueEditor(2);
 			case Color:
-				return new ColorValueEditor();
+				return new ColorArrayValueEditor();
 			case Sound:
 				return new SoundValueEditor();
 			case Font:

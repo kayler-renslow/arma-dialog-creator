@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVStringArray;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -37,7 +36,6 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	private final double tfPrefWidth = 100d;
 	protected final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
-	private final InputField<StringChecker, String> customDataField = new InputField<>(new StringChecker());
 
 	private final ValueObserver<SVStringArray> valueObserver = new ValueObserver<>(null);
 
@@ -158,19 +156,5 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	@Override
 	public boolean displayFullWidth() {
 		return false;
-	}
-
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(customDataField);
-		} else {
-			masterPane.getChildren().add(editorsPane);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return customDataField;
 	}
 }

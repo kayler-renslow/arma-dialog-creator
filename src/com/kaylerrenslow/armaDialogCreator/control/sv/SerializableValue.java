@@ -85,6 +85,7 @@ public abstract class SerializableValue {
 						|| toType == PropertyType.Image
 						|| toType == PropertyType.Font
 						|| toType == PropertyType.SQF
+						|| toType == PropertyType.HexColorString
 						;
 			}
 			case FileName: {
@@ -102,6 +103,9 @@ public abstract class SerializableValue {
 			}
 			case Boolean: {
 				return false;
+			}
+			case HexColorString: {
+				return toType == PropertyType.String;
 			}
 		}
 		return false;
@@ -153,7 +157,6 @@ public abstract class SerializableValue {
 			}
 		} catch (Exception e1) {
 			e = e1;
-			e1.printStackTrace(System.out);
 		}
 		throw new SerializableValueConstructionException(e != null ? e.getMessage() : "");
 	}

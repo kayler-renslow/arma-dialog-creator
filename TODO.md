@@ -22,3 +22,4 @@ General
 Bugs
 -----------------------------------
 * select many things in tree view and drag into folder
+* extendControlClass doesn't append inherited nested classes

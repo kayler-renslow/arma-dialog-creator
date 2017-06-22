@@ -3,8 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckMenuButton;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -28,7 +26,6 @@ import java.util.List;
 public class ControlStyleValueEditor extends HBox implements ValueEditor<SVControlStyleGroup> {
 	protected final CheckMenuButton<ControlStyle> menuButton = new CheckMenuButton<>(Lang.ApplicationBundle().getString("ValueEditors.ControlStyleGroupEditor.select_styles"), null);
 	private final TextField textField = new TextField();
-	private final InputField<StringChecker, String> tfOverride = new InputField<>(new StringChecker());
 	protected final ValueObserver<SVControlStyleGroup> valueObserver = new ValueObserver<>(null);
 
 	public ControlStyleValueEditor() {
@@ -82,21 +79,6 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 	@Override
 	public @NotNull Node getRootNode() {
 		return this;
-	}
-
-	public void setToCustomData(boolean override) {
-		getChildren().clear();
-		if (override) {
-			getChildren().add(this.tfOverride);
-		} else {
-			getChildren().add(menuButton);
-			getChildren().add(textField);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return tfOverride;
 	}
 
 	@Override

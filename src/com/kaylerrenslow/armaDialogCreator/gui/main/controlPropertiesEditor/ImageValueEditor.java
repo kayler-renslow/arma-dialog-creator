@@ -3,8 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaTools;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
 import com.kaylerrenslow.armaDialogCreator.data.*;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.SelectSaveLocationPopup;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
@@ -50,7 +48,6 @@ import java.util.ResourceBundle;
 public class ImageValueEditor implements ValueEditor<SVImage> {
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private final Button btnChooseImage = new Button(bundle.getString("ValueEditors.ImageValueEditor.locate_image"));
 
 	protected final TextField tfFilePath = new TextField("");
@@ -130,20 +127,6 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
-	}
-
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(hBox);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
 	}
 
 	@Override

@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 public class ConvertValueDialog extends StageDialog<VBox> {
 
 	private final ValueEditor convertedValueEditor;
-	private SerializableValue value;
 
 	/**
 	 Create the dialog with the given value to convert. The values will not be mutated and will use the

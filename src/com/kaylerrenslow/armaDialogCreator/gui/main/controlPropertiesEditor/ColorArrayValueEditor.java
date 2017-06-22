@@ -1,8 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
@@ -16,22 +14,22 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class ColorValueEditor implements ValueEditor<SVColor> {
+public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 	protected final ColorPicker colorPicker = new ColorPicker();
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 	private StackPane masterPane = new StackPane(colorPicker);
-	private final ValueObserver<SVColor> valueObserver = new ValueObserver<>(null);
+	private final ValueObserver<SVColorArray> valueObserver = new ValueObserver<>(null);
 
-	public ColorValueEditor() {
+	public ColorArrayValueEditor() {
+		colorPicker.setValue(null);
 		colorPicker.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
 				Color newValue = colorPicker.getValue();
-				SVColor color;
+				SVColorArray color;
 				if (newValue == null) {
 					color = null;
 				} else {
-					color = new SVColor(newValue);
+					color = new SVColorArray(newValue);
 
 				}
 				valueObserver.updateValue(color);
@@ -45,12 +43,12 @@ public class ColorValueEditor implements ValueEditor<SVColor> {
 	}
 
 	@Override
-	public SVColor getValue() {
+	public SVColorArray getValue() {
 		return valueObserver.getValue();
 	}
 	
 	@Override
-	public void setValue(SVColor val) {
+	public void setValue(SVColorArray val) {
 		if (val == null) {
 			colorPicker.setValue(null);
 		} else {
@@ -61,20 +59,6 @@ public class ColorValueEditor implements ValueEditor<SVColor> {
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
-	}
-	
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(colorPicker);
-		}
-	}
-	
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
 	}
 
 	@Override
@@ -88,7 +72,7 @@ public class ColorValueEditor implements ValueEditor<SVColor> {
 	}
 
 	@Override
-	public ReadOnlyValueObserver<SVColor> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVColorArray> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 }

@@ -5,7 +5,10 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.RawChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -17,7 +20,6 @@ import org.jetbrains.annotations.NotNull;
 public abstract class InputFieldValueEditor<V extends SerializableValue> implements ValueEditor<V> {
 	protected final InputField<? extends InputFieldDataChecker, V> inputField;
 	private final StackPane masterPane;
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
 
 	public InputFieldValueEditor(@NotNull InputFieldDataChecker<V> dataChecker) {
 		this.inputField = new InputField<>(dataChecker);
@@ -42,20 +44,6 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	@Override
 	public @NotNull Node getRootNode() {
 		return masterPane;
-	}
-
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(inputField);
-		}
-	}
-
-	@Override
-	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
 	}
 
 	@Override

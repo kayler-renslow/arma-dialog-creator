@@ -1,8 +1,9 @@
 **Added:**
-* Convert value dialog
+* Hex color string editor
 
 **Changed:**
-*  
+* made SVColor an interface
+    * SVColorArray is now the old SVColor
 
 **Fixed:**
 * 

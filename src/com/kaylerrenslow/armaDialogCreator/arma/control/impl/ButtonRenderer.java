@@ -40,7 +40,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		});
 		shadowProperty = myControl.findProperty(ControlPropertyLookup.BTN_COLOR_SHADOW);
 		shadowProperty.getValueObserver().addListener(renderValueUpdateListener);
-		shadowProperty.setValueIfAbsent(true, new SVColor(0d, 0d, 0d, 1d));
+		shadowProperty.setValueIfAbsent(true, new SVColorArray(0d, 0d, 0d, 1d));
 
 		offsetXProperty = myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X);
 		offsetXProperty.getValueObserver().addListener(renderValueUpdateListener);
@@ -49,8 +49,8 @@ public class ButtonRenderer extends ArmaControlRenderer {
 
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setValueIfAbsent(true, new SVColor(getBackgroundColor()));
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColor(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
 		myControl.findProperty(ControlPropertyLookup.BTN_OFFSET_X).setValueIfAbsent(true, new SVDouble(0.01));

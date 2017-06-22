@@ -23,7 +23,7 @@ public class TestSpecRegistry implements SpecificationRegistry {
 		StringMacro(Macro.newMacro("STRING_MACRO", new SVString("String Macro"))),
 		IntMacro(Macro.newMacro("INT_MACRO", new SVInteger(3))),
 		DoubleMacro(Macro.newMacro("DOUBLE_MACRO", new SVDouble(3.14))),
-		ColorMacro(Macro.newMacro("COLOR_MACRO", new SVColor(255, 255, 255, 255)));
+		ColorMacro(Macro.newMacro("COLOR_MACRO", new SVColorArray(255, 255, 255, 255)));
 
 		private final Macro<?> macro;
 

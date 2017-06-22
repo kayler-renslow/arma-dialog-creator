@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -54,7 +55,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		globalBackgroundColorObserver = new ValueObserver<>(new SVColor(backgroundColor));
+		globalBackgroundColorObserver = new ValueObserver<>(new SVColorArray(backgroundColor));
 		globalBackgroundColorObserver.addListener(new ValueListener<SVColor>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {

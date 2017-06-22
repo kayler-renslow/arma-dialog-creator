@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.header.preprocessorTest;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
-import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParseException;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserHelpers;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderTestUtil;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static junit.framework.Assert.assertEquals;
@@ -563,35 +564,32 @@ public class PreprocessorTest {
 
 	@Test
 	public void __evalInfiniteLoop() throws Exception {
+		//make sure that the preprocessor terminates automatically after a while in an infinite loop
 		String base = "__EVAL(for[{},{true},{}] do{})";
 		String expect = "";
 
-		AtomicBoolean done = new AtomicBoolean(false);
+		BlockingQueue<Boolean> done = new LinkedBlockingDeque<>(1);
+
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				try {
-					Thread.sleep(12 * 1000);
-					if (!done.get()) {
-						throw new RuntimeException("Expected the __Eval to run forever and then error.");
-					}
-				} catch (InterruptedException e) {
-					throw new RuntimeException(e);
+					HeaderParserHelpers.assertPreprocessLine(
+							expect,
+							createFileFromText(base),
+							null
+					);
+				} catch (Exception e) {
+					e.printStackTrace();
+					done.add(true);
 				}
 			}
 		});
+
 		t.setDaemon(true);
 		t.start();
-		try {
-			HeaderParserHelpers.assertPreprocessLine(
-					expect,
-					createFileFromText(base),
-					null
-			);
-			done.set(true);
-		} catch (HeaderParseException e) {
-			assertEquals(true, true);
-		}
+		Boolean success = done.poll(14, TimeUnit.SECONDS);
+		assertEquals("Expected infinite loop to run forever and automatically terminate ", Boolean.TRUE, success);
 	}
 
 	@Test
