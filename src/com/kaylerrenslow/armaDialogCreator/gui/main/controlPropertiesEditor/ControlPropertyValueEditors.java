@@ -5,10 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
@@ -61,7 +58,6 @@ class ControlPropertyValueEditors {
 		ControlPropertyOptionEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(rawInput, controlProperty);
 			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
 			RadioButton radioButton, toSelect = null;
@@ -124,11 +120,9 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void setToMode(EditMode mode) {
+		public void setToMode(@NotNull EditMode mode) {
 			getChildren().clear();
-			if (mode == EditMode.CUSTOM_DATA) {
-				getChildren().add(rawInput);
-			} else if (mode == EditMode.DEFAULT) {
+			if (mode == EditMode.DEFAULT) {
 				getChildren().addAll(radioButtons);
 			}
 		}
@@ -184,7 +178,6 @@ class ControlPropertyValueEditors {
 		};
 
 		public ControlStyleEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			if (control instanceof ArmaControl) {
 				menuButton.getItems().clear();
 				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
@@ -214,8 +207,7 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -280,7 +272,6 @@ class ControlPropertyValueEditors {
 			this.macroTypeClass = macroTypeClass;
 
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			inputField.setValue((C) controlProperty.getValue());
 			if (promptText != null) {
@@ -307,8 +298,7 @@ class ControlPropertyValueEditors {
 
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -359,6 +349,15 @@ class ControlPropertyValueEditors {
 		}
 	}
 
+	static class RawEditor extends InputFieldEditor<SVRaw> {
+		RawEditor(ControlClass control, ControlProperty controlProperty) {
+			super(SVRaw.class, control, controlProperty,
+					new RawChecker(controlProperty.getInitialPropertyType()),
+					Lang.LookupBundle().getString("PropertyType.raw")
+			);
+		}
+	}
+
 	/**
 	 Used for when control property requires color input.
 	 Use this only when the ControlProperty's value is of type {@link SVColor}
@@ -385,7 +384,6 @@ class ControlPropertyValueEditors {
 
 		ColorPickerEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
 				SVColor value = (SVColor) controlProperty.getValue();
@@ -414,8 +412,7 @@ class ControlPropertyValueEditors {
 
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -464,7 +461,6 @@ class ControlPropertyValueEditors {
 
 		BooleanChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -491,8 +487,7 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -542,11 +537,8 @@ class ControlPropertyValueEditors {
 
 		ArrayEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
-			if (true) {
-				throw new RuntimeException("review this code to check for correctness");
-			}
+
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			setValue((SVStringArray) controlProperty.getValue());
 			initListeners();
@@ -574,8 +566,7 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -624,7 +615,6 @@ class ControlPropertyValueEditors {
 
 		FontChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			setValue((SVFont) controlProperty.getValue());
 			initListeners();
@@ -648,8 +638,7 @@ class ControlPropertyValueEditors {
 
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -698,7 +687,6 @@ class ControlPropertyValueEditors {
 
 		ImageEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
 
 			setValue((SVImage) controlProperty.getValue());
 			initListeners();
@@ -722,8 +710,7 @@ class ControlPropertyValueEditors {
 
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull
@@ -769,11 +756,7 @@ class ControlPropertyValueEditors {
 
 		public SoundEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-
-			ControlPropertyValueEditor.modifyRawInput(getCustomDataTextField(), controlProperty);
-
 			initListeners();
-
 		}
 
 		@NotNull
@@ -793,8 +776,7 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void setToMode(EditMode mode) {
-			setToCustomData(mode == EditMode.CUSTOM_DATA);
+		public void setToMode(@NotNull EditMode mode) {
 		}
 
 		@NotNull

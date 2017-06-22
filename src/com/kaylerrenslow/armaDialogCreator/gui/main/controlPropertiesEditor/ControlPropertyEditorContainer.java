@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConversionException;
 import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
@@ -14,13 +15,12 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.NotNull;
@@ -70,22 +70,22 @@ class ControlPropertyEditorContainer extends HBox {
 		final MenuItem miResetToInitial = new MenuItem(bundle.getString("reset_to_initial"));
 		final MenuItem miConvert = new MenuItem(bundle.getString("convert_value"));
 		final MenuItem miMacro = new MenuItem(bundle.getString("set_to_macro"));
-		final MenuItem miCustomData = new MenuItem(bundle.getString("value_custom_data"));//broken. Maybe fix it later. Don't delete this in case you change your mind
 		inheritanceMenuItem = new MenuItem(
 				controlProperty.isInherited() ? bundle.getString("override") :
 						bundle.getString("inherit")
 		);
 		final MenuItem miClearValue = new MenuItem(bundle.getString("clear_value"));
+		final CheckMenuItem miRaw = new CheckMenuItem(bundle.getString("raw"));
 		menuButtonOptions.setText(controlProperty.getName());
 		menuButtonOptions.getItems().setAll(
 				miDefaultEditor,
 				miConvert,
+				miRaw,
 				new SeparatorMenuItem(),
 				miResetToInitial,
 				miMacro,
 				inheritanceMenuItem,
 				miClearValue
-				/*,miCustomData*/
 		);
 
 		if (SerializableValue.getTypesCanConvertTo(controlProperty.getInitialPropertyType()).size() == 1) {
@@ -111,15 +111,6 @@ class ControlPropertyEditorContainer extends HBox {
 					}
 					break;
 				}
-				//intentional fallthrough for all below properties in case statements
-				case STYLE:
-				case X:
-				case Y:
-				case W:
-				case H: {
-					miCustomData.setDisable(true);//NEVER allow custom input
-					break;
-				}
 			}
 		}
 
@@ -131,11 +122,11 @@ class ControlPropertyEditorContainer extends HBox {
 
 					boolean disable = update.wasInherited();
 					stackPanePropertyInput.setDisable(disable);
-					miCustomData.setDisable(disable);
 					miDefaultEditor.setDisable(disable);
 					miResetToInitial.setDisable(disable);
 					miMacro.setDisable(disable);
 					miClearValue.setDisable(disable);
+					miRaw.setDisable(disable);
 					miConvert.setDisable(disable || update.getControlProperty().getValue() == null);
 
 					if (update.wasInherited()) {
@@ -190,13 +181,9 @@ class ControlPropertyEditorContainer extends HBox {
 					updatePropertyValueEditor();
 				} catch (SerializableValueConversionException e) {
 					ExceptionHandler.error(e);
+					//todo have convert fail dialog
+					//do it for raw option too
 				}
-			}
-		});
-		miCustomData.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 			}
 		});
 		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -236,16 +223,38 @@ class ControlPropertyEditorContainer extends HBox {
 				getControlProperty().setValue((SerializableValue) null);
 			}
 		});
+		miRaw.setSelected(controlProperty.getValue() instanceof SVRaw);
+		miRaw.setOnAction(event -> {
+			propertyValueEditor.clearListeners();
+			if (miRaw.isSelected()) {
+				String val = controlProperty.getValue() == null ? "" : controlProperty.getValue().toString();
+				controlProperty.setValue(new SVRaw(val, controlProperty.getPropertyType()));
+			} else {
+				if (controlProperty.getValue() instanceof SVRaw) {
+					SVRaw raw = (SVRaw) controlProperty.getValue();
+					try {
+						controlProperty.setValue(raw.newSubstituteTypeValue(ApplicationData.getManagerInstance()));
+					} catch (Exception e) {
+						ExceptionHandler.error(e);
+						//todo have convert failure dialog
+						//do it for convert option too
+					}
+				} else {
+					throw new IllegalStateException("control property should have raw value");
+				}
+			}
+			updatePropertyValueEditor();
+		});
 
 		updateContainer();
 	}
 
 	private void updateContainer() {
 		inheritanceMenuItem.setVisible(controlClass.getExtendClass() != null);
-		if (getControlProperty().isUsingCustomData()) {
-			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
-		} else if (getControlProperty().getMacro() != null) {
+		if (getControlProperty().getMacro() != null) {
 			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
+		} else {
+			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.DEFAULT);
 		}
 	}
 
@@ -276,7 +285,6 @@ class ControlPropertyEditorContainer extends HBox {
 			stackPanePropertyInput.getChildren().clear();
 			stackPanePropertyInput.getChildren().add(currentValueEditor().getRootNode());
 			currentValueEditor().setToMode(mode);
-			currentValueEditor().getControlProperty().setUsingCustomData(mode == ControlPropertyValueEditor.EditMode.CUSTOM_DATA);
 		}
 	}
 
@@ -319,7 +327,22 @@ class ControlPropertyEditorContainer extends HBox {
 			HBox.setHgrow(stackPanePropertyInput, Priority.ALWAYS);
 		}
 		stackPanePropertyInput.getChildren().add(propertyValueEditor.getRootNode());
-
+		if (controlProperty.getValue() instanceof SVRaw) {
+			stackPanePropertyInput.setPadding(new Insets(1));
+			stackPanePropertyInput.setBorder(
+					new Border(
+							new BorderStroke(
+									Color.DARKORANGE,
+									BorderStrokeStyle.DASHED,
+									CornerRadii.EMPTY,
+									BorderStroke.THIN
+							)
+					)
+			);
+		} else {
+			stackPanePropertyInput.setBorder(null);
+			stackPanePropertyInput.setPadding(Insets.EMPTY);
+		}
 	}
 
 	/** Get node that holds the controls to input data. */
@@ -359,6 +382,8 @@ class ControlPropertyEditorContainer extends HBox {
 				return new StringEditor(controlClass, controlProperty);
 			case SQF:
 				return new StringEditor(controlClass, controlProperty);
+			case Raw:
+				return new RawEditor(controlClass, controlProperty);
 		}
 		throw new IllegalStateException("Should have made a match");
 	}

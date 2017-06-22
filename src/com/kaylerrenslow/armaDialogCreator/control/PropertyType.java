@@ -38,7 +38,9 @@ public enum PropertyType {
 	/** example: #(argb,8,8,3)color(1,1,1,1) however there is more than one way to set texture */
 	Texture(12, SVString.CONVERTER, getString("PropertyType.texture"), true),
 	/** SQF code String */
-	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true);
+	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true),
+	/** Raw value */
+	Raw(14, SVRaw.CONVERTER, getString("PropertyType.raw"));
 
 	private final int propertyValuesSize;
 	private final String displayName;

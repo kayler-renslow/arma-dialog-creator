@@ -11,6 +11,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -36,10 +37,10 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private final C dataChecker;
 	private final ValueObserver<V> observer = new ValueObserver<>(null);
 	private final TextField textField = new TextField();
-	private final HBox hboxTextField = new HBox(2, textField);
 	private final Button button = new Button();
 	private final ErrorMsgPopup errorMsgPopup = new ErrorMsgPopup(this);
 	private final Button btnSubmit = new Button("");
+	private final HBox hboxTextField = new HBox(2, textField, btnSubmit);
 
 	private @Nullable String valueString = null;
 	private boolean valid = false;
@@ -87,7 +88,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			}
 		});
 		btnSubmit.setTooltip(new Tooltip(Lang.FxControlBundle().getString("InputField.submit_btn_tooltip")));
-		this.hboxTextField.getChildren().add(btnSubmit);
+
 		textField.setStyle("-fx-background-radius:0px");
 
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
@@ -387,6 +388,27 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	/** A programmatically way of submitting the data (will do the same operations as actually pressing the submit button) */
 	public void submitValue() {
 		setValueFromText(getText(), true, false);
+	}
+
+	/**
+	 Set the graphic, which appears on the left side of the text field
+
+	 @param graphic the graphic, or null to remove it
+	 */
+	public void setGraphic(@Nullable Node graphic) {
+		if (hboxTextField.getChildren().get(0) == textField) {
+			if (graphic == null) {
+				return;
+			}
+			hboxTextField.getChildren().add(0, graphic);
+		} else {
+			if (graphic == null) {
+				hboxTextField.getChildren().remove(0);
+				return;
+			}
+			hboxTextField.getChildren().set(0, graphic);
+		}
+
 	}
 
 

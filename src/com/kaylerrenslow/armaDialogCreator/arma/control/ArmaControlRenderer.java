@@ -78,22 +78,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 				}
 
 				if (xProperty.getValueObserver() == observer) {
-					if (xProperty.getValue() == null) {
+					if (xProperty.getValue() == null || !(xProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setXSilent((SVExpression) xProperty.getValue());
 				} else if (yProperty.getValueObserver() == observer) {
-					if (yProperty.getValue() == null) {
+					if (yProperty.getValue() == null || !(yProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setYSilent((SVExpression) yProperty.getValue());
 				} else if (wProperty.getValueObserver() == observer) {
-					if (wProperty.getValue() == null) {
+					if (wProperty.getValue() == null || !(wProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setWSilent((SVExpression) wProperty.getValue());
 				} else if (hProperty.getValueObserver() == observer) {
-					if (hProperty.getValue() == null) {
+					if (hProperty.getValue() == null || !(hProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setHSilent((SVExpression) hProperty.getValue());
@@ -417,10 +417,18 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		setXSilent((SVExpression) xProperty.getValue());
-		setYSilent((SVExpression) yProperty.getValue());
-		setWSilent((SVExpression) wProperty.getValue());
-		setHSilent((SVExpression) hProperty.getValue());
+		if (xProperty.getValue() instanceof SVExpression) {
+			setXSilent((SVExpression) xProperty.getValue());
+		}
+		if (yProperty.getValue() instanceof SVExpression) {
+			setYSilent((SVExpression) yProperty.getValue());
+		}
+		if (wProperty.getValue() instanceof SVExpression) {
+			setWSilent((SVExpression) wProperty.getValue());
+		}
+		if (hProperty.getValue() instanceof SVExpression) {
+			setHSilent((SVExpression) hProperty.getValue());
+		}
 
 		resolutionUpdateGroup.update(newResolution);
 	}

@@ -23,17 +23,6 @@ public final class SVStringArray extends SerializableValue {
 		super(strings);
 	}
 	
-	/** Set the string at index equal to s */
-	public void setString(String s, int index) {
-		this.valuesAsArray[index] = s;
-	}
-	
-	public void setStrings(String[] strings) {
-		for (int i = 0; i < strings.length; i++) {
-			valuesAsArray[i] = strings[i];
-		}
-	}
-	
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder("{");

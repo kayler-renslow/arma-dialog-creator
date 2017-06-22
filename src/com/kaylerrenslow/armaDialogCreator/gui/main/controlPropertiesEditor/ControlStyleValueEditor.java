@@ -84,7 +84,6 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 		return this;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		getChildren().clear();
 		if (override) {

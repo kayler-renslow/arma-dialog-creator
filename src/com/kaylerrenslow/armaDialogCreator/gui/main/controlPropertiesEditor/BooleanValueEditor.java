@@ -49,7 +49,6 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 		return masterPane;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {

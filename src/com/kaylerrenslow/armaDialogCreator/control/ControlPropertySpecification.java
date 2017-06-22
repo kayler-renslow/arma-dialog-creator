@@ -13,8 +13,6 @@ public class ControlPropertySpecification {
 	private ControlPropertyLookup lookup;
 	private SerializableValue value;
 	private String macroKey;
-	private Object customData;
-	private boolean usingCustomData;
 
 	/**
 	 Construct a specification with the given lookup, value, and macro key
@@ -68,21 +66,6 @@ public class ControlPropertySpecification {
 		} else {
 			this.macroKey = null;
 		}
-		this.customData = property.getCustomData();
-		this.usingCustomData = property.isUsingCustomData();
-	}
-
-	/**
-	 Set the custom data (will not deep copy!).
-
-	 @param customData custom data to use
-	 */
-	public void setCustomData(@Nullable Object customData) {
-		this.customData = customData;
-	}
-
-	public void setUsingCustomData(boolean usingCustomData) {
-		this.usingCustomData = usingCustomData;
 	}
 
 	/**
@@ -101,15 +84,6 @@ public class ControlPropertySpecification {
 	 */
 	public void setMacroKey(@Nullable String macroKey) {
 		this.macroKey = macroKey;
-	}
-
-	@Nullable
-	public Object getCustomData() {
-		return customData;
-	}
-
-	public boolean isCustomData() {
-		return usingCustomData;
 	}
 
 	@Nullable
@@ -143,9 +117,6 @@ public class ControlPropertySpecification {
 		return "ControlPropertySpecification{" +
 				"lookup=" + lookup.debugToString() +
 				", value=" + value +
-				", macroKey='" + macroKey + '\'' +
-				", customData=" + customData +
-				", usingCustomData=" + usingCustomData +
-				'}';
+				", macroKey='" + macroKey + "\'}";
 	}
 }

@@ -19,21 +19,6 @@ public class ControlPropertyTest {
 	}
 
 	@Test
-	public void setCustomDataValue() throws Exception {
-		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, (SerializableValue) null);
-		Object c = "custom data";
-		p.setCustomDataValue(c);
-		assertEquals(p.getCustomData(), c);
-	}
-
-	@Test
-	public void setUsingCustomData() throws Exception {
-		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, (SerializableValue) null);
-		p.setUsingCustomData(true);
-		assertEquals(p.isUsingCustomData(), true);
-	}
-
-	@Test
 	public void setDefaultValue() throws Exception {
 		ControlProperty p = new ControlProperty(ControlPropertyLookup.IDC, (SerializableValue) null);
 		SerializableValue v = new SVString("hello");

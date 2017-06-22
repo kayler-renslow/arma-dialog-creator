@@ -132,7 +132,6 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		return masterPane;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {

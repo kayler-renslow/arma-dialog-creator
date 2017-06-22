@@ -9,6 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConstructionException;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
@@ -328,8 +329,7 @@ public class HeaderToProject {
 			if (v != null) {
 				property.setValue(v);
 			} else {
-				property.setCustomDataValue(assignment.getValue().getContent());
-				property.setUsingCustomData(true);
+				property.setValue(new SVRaw(assignment.getAsString(), property.getInitialPropertyType()));
 			}
 
 			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);

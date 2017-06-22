@@ -64,7 +64,6 @@ public class FontValueEditor implements ValueEditor<SVFont> {
 		return masterPane;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if(override){

@@ -1,7 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,12 +29,6 @@ public class ControlProperty {
 	private final ControlPropertyLookupConstant propertyLookup;
 	private final ControlPropertyValueObserver valueObserver;
 	private SerializableValue defaultValue;
-
-	/** The custom data instance for when {@link #setCustomDataValue(Object)} is invoked */
-	private Object customData;
-	/** True when {@link #setUsingCustomData(boolean)} with true passed in parameter, false otherwise. */
-	private boolean usingCustomData = false;
-	private ValueObserver<Object> customDataValueObserver;
 
 	/** Value to switch to when the set macro becomes null. */
 	private SerializableValue beforeMacroValue;
@@ -122,33 +119,6 @@ public class ControlProperty {
 	}
 
 	/**
-	 Set the custom data value.
-
-	 @see #isUsingCustomData()
-	 */
-	public void setCustomDataValue(@Nullable Object customData) {
-		if (customData == this.customData || (customData != null && customData.equals(this.customData))) {
-			//either both null (or same references for that matter) or customData is potentially null, but may still equal this.customData
-			return;
-		}
-		Object oldData = this.customData;
-		this.customData = customData;
-		if (this.customDataValueObserver == null) {
-			customDataValueObserver = new ValueObserver<>(customData);
-		}
-		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, oldData, customData, true, this.isUsingCustomData()));
-	}
-
-	/** Does nothing except mark that the {@link ControlProperty} is/ins't using custom data. @see #isCustomData() */
-	public void setUsingCustomData(boolean custom) {
-		if (custom == this.usingCustomData) {
-			return;
-		}
-		this.usingCustomData = custom;
-		controlPropertyUpdateGroup.update(new ControlPropertyCustomDataUpdate(this, customData, customData, false, this.isUsingCustomData()));
-	}
-
-	/**
 	 Set the default value.
 
 	 @param setValue if true, the ControlProperty value will also be set to the given defaultValue
@@ -212,18 +182,6 @@ public class ControlProperty {
 		controlPropertyUpdateGroup.update(new ControlPropertyMacroUpdate(this, oldMacro, newMacro));
 	}
 
-	/** Get the custom data set from {@link #setCustomDataValue(Object)} */
-	@Nullable
-	public Object getCustomData() {
-		return customData;
-	}
-
-	/** Get the {@link ValueObserver} instance for the {@link #getCustomData()} value. Will be null when the custom data is never set. */
-	@Nullable
-	public ReadOnlyValueObserver<Object> getCustomDataValueObserver() {
-		return customDataValueObserver.getReadOnlyValueObserver();
-	}
-
 	/** Return {@link ControlPropertyLookupConstant#getPropertyName()} with instance {@link #getPropertyLookup()} */
 	@NotNull
 	public String getName() {
@@ -266,15 +224,6 @@ public class ControlProperty {
 	@NotNull
 	public ControlPropertyLookupConstant getPropertyLookup() {
 		return propertyLookup;
-	}
-
-	/**
-	 Return true if the data may not match the type of the control property
-	 (i.e. placing a String in the property when {@link #getPropertyType()} is {@link PropertyType#Int}).
-	 This is set by invoking {@link #setCustomDataValue(Object)}. This will not affect {@link #getValue()}.
-	 */
-	public boolean isUsingCustomData() {
-		return usingCustomData;
 	}
 
 	/** Get the default value for the property */
@@ -431,25 +380,7 @@ public class ControlProperty {
 			eq = getDefaultValue().equals(other.getDefaultValue());
 		}
 
-		if (!eq) {
-			return false;
-		}
-
-		if (isUsingCustomData()) {
-			eq = other.isUsingCustomData();
-		} else {
-			eq = !other.isUsingCustomData();
-		}
-
-		if (!eq) {
-			return false;
-		}
-
-		if (getCustomData() == null) {
-			return other.getCustomData() == null;
-		} else {
-			return getCustomData().equals(other.getCustomData());
-		}
+		return eq;
 	}
 
 	@Override
@@ -484,10 +415,6 @@ public class ControlProperty {
 		} else if (update instanceof ControlPropertyMacroUpdate) {
 			ControlPropertyMacroUpdate update1 = (ControlPropertyMacroUpdate) update;
 			setValueToMacro(update1.getNewMacro());
-		} else if (update instanceof ControlPropertyCustomDataUpdate) {
-			ControlPropertyCustomDataUpdate update1 = (ControlPropertyCustomDataUpdate) update;
-			setCustomDataValue(update1.getNewCustomData());
-			setUsingCustomData(update1.isUsingCustomData());
 		} else if (update instanceof ControlPropertyInheritUpdate) {
 			ControlPropertyInheritUpdate update1 = (ControlPropertyInheritUpdate) update;
 			inherit(update1.getInheritedProperty());
@@ -501,8 +428,6 @@ public class ControlProperty {
 	@NotNull
 	public ControlProperty deepCopy() {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
-		copy.setCustomDataValue(getCustomData());
-		copy.setUsingCustomData(isUsingCustomData());
 		copy.setDefaultValue(false, getDefaultValue());
 		copy.setValueToMacro(getMacro());
 		return copy;
@@ -527,8 +452,6 @@ public class ControlProperty {
 		}
 		setValue(property.getValue(), origin);
 		setValueToMacro(property.getMacro()); //do after set value
-		setUsingCustomData(property.isUsingCustomData());
-		setCustomDataValue(property.getCustomData());
 		setDefaultValue(false, property.getDefaultValue());
 	}
 
@@ -549,8 +472,6 @@ public class ControlProperty {
 		if (specification.getMacroKey() != null) {
 			setValueToMacro(registry.findMacroByKey(specification.getMacroKey())); //do after set value
 		}
-		setUsingCustomData(specification.isCustomData());
-		setCustomDataValue(specification.getCustomData());
 	}
 
 	/**

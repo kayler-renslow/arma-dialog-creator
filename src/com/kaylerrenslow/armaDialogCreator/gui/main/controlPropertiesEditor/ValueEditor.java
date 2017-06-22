@@ -30,9 +30,6 @@ public interface ValueEditor<V extends SerializableValue> {
 	/** Get the root node used to display the entire editor */
 	@NotNull Node getRootNode();
 
-	/** Set to override mode. Override mode is used for allowing the user to enter whatever they want, even if it appears invalid to the normal editor. Use this with caution. */
-	void setToCustomData(boolean override);
-
 	/** Get the TextField used for entering the raw text */
 	InputField<StringChecker, String> getCustomDataTextField();
 
@@ -56,7 +53,8 @@ public interface ValueEditor<V extends SerializableValue> {
 	 @param propertyType type of property to get editor for
 	 @param env environment
 	 */
-	static ValueEditor getEditor(PropertyType propertyType, Env env) {
+	@NotNull
+	static ValueEditor getEditor(@NotNull PropertyType propertyType, @NotNull Env env) {
 		switch (propertyType) {
 			case Int:
 				return new InputFieldValueEditor.IntegerEditor(env);
@@ -86,6 +84,8 @@ public interface ValueEditor<V extends SerializableValue> {
 				return new InputFieldValueEditor.ArmaStringEditor();
 			case SQF:
 				return new InputFieldValueEditor.ArmaStringEditor();
+			case Raw:
+				return new InputFieldValueEditor.RawEditor();
 		}
 		throw new IllegalStateException("Should have made a match");
 	}

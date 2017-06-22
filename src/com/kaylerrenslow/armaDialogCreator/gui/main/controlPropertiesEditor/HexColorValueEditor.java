@@ -61,16 +61,6 @@ public class HexColorValueEditor implements ValueEditor<SVHexColor> {
 	}
 
 	@Override
-	public void setToCustomData(boolean override) {
-		masterPane.getChildren().clear();
-		if (override) {
-			masterPane.getChildren().add(overrideField);
-		} else {
-			masterPane.getChildren().add(colorPicker);
-		}
-	}
-
-	@Override
 	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}

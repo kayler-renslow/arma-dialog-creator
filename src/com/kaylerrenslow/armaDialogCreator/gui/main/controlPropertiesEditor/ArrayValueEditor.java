@@ -23,9 +23,9 @@ import java.util.ArrayList;
  */
 public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 
-	private final ValueListener editorValueUpdateListener = new ValueListener() {
+	private final ValueListener<String> editorValueUpdateListener = new ValueListener<String>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
+		public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 			valueObserver.updateValue(createValue());
 		}
 	};
@@ -37,7 +37,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	private final double tfPrefWidth = 100d;
 	protected final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
-	private final InputField<StringChecker, String> overrideField = new InputField<>(new StringChecker());
+	private final InputField<StringChecker, String> customDataField = new InputField<>(new StringChecker());
 
 	private final ValueObserver<SVStringArray> valueObserver = new ValueObserver<>(null);
 
@@ -61,7 +61,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		btnIncreaseSize.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				InputField in = getTextField();
+				InputField<ArmaStringChecker, String> in = getTextField();
 				editors.add(in);
 				editorsPane.getChildren().add(in);
 				editorsPane.autosize();
@@ -69,7 +69,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 				addEditorValueUpdateListener();
 			}
 		});
-		InputField in;
+		InputField<ArmaStringChecker, String> in;
 		for (int i = 0; i < numInitialFields; i++) {
 			in = getTextField();
 			editors.add(in);
@@ -81,13 +81,16 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	}
 
 	private void addEditorValueUpdateListener() {
-		for (InputField inf : editors) {
+		for (InputField<ArmaStringChecker, String> inf : editors) {
 			inf.getValueObserver().addListener(editorValueUpdateListener);
 		}
 	}
 
 	@Override
 	public void focusToEditor() {
+		if (editors.size() == 0) {
+			return;
+		}
 		for (InputField tf : editors) {
 			if (tf.getValue() == null) {
 				tf.requestFocus();
@@ -157,11 +160,10 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		return false;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
-			masterPane.getChildren().add(overrideField);
+			masterPane.getChildren().add(customDataField);
 		} else {
 			masterPane.getChildren().add(editorsPane);
 		}
@@ -169,6 +171,6 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 
 	@Override
 	public InputField<StringChecker, String> getCustomDataTextField() {
-		return overrideField;
+		return customDataField;
 	}
 }

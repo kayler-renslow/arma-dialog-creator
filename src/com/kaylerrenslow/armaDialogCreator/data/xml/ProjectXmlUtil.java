@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValueConversionException;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
@@ -271,7 +271,7 @@ public class ProjectXmlUtil {
 				value.getPropertyType() != lookup.getPropertyType() ? String.format(" ptype='%s'", value.getPropertyType().getId()) : ""
 				)
 		);
-		
+
 		writeValue(stm, value);
 		stm.writeCloseTag("property");
 	}
@@ -302,25 +302,28 @@ public class ProjectXmlUtil {
 		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
-		SerializableValue value = loadValue(lookup.getPropertyName(), controlPropertyElement, lookup.getPropertyType(), context, recorder);
+		SerializableValue value;
+		if (convertToPropertyType != null) {
+			if (convertToPropertyType == PropertyType.Raw) {
+				value = loadRawValue(lookup.getPropertyType(), controlPropertyElement, recorder);
+			} else {
+				value = loadValue(lookup.getPropertyName(), controlPropertyElement, convertToPropertyType, context, recorder);
+				if (value == null) {
+					recorder.addError(
+							new ParseError(
+									String.format(
+											bundle.getString("ProjectLoad.ptype_bad_f"),
+											convertToPropertyType
+									)
+							)
+					);
+				}
+			}
+		} else {
+			value = loadValue(lookup.getPropertyName(), controlPropertyElement, lookup.getPropertyType(), context, recorder);
+		}
 		if (value == null) {
 			return null;
-		}
-		if (convertToPropertyType != null) {
-			try {
-				value = SerializableValue.convert(context, value, convertToPropertyType);
-			} catch (SerializableValueConversionException e) {
-				recorder.addError(
-						new ParseError(
-								String.format(
-										bundle.getString("ProjectLoad.ptype_bad_f"),
-										value.toStringDebug(),
-										convertToPropertyType
-								),
-								String.format(bundle.getString("ProjectLoad.ptype_bad_recover_f"), value)
-						)
-				);
-			}
 		}
 		return new ControlPropertySpecification(lookup, value, macroKeyAttr);
 	}
@@ -382,6 +385,26 @@ public class ProjectXmlUtil {
 			return null;
 		}
 		return value;
+	}
+
+
+	@Nullable
+	public static SVRaw loadRawValue(@Nullable PropertyType substituteType, @NotNull Element parentElement,
+									 @NotNull XmlErrorRecorder recorder) {
+		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
+		if (valueElements.size() < 1) {
+			recorder.addError(
+					new ParseError(
+							String.format(
+									bundle.getString("ProjectLoad.bad_value_creation_count_f"),
+									parentElement.getTagName(),
+									valueElements.size())
+					)
+			);
+			return null;
+		}
+
+		return new SVRaw(XmlUtil.getImmediateTextContent(valueElements.get(0)), substituteType);
 	}
 
 	@Nullable

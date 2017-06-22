@@ -385,63 +385,6 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				//
 				//
 				//
-			} else if (propertyUpdate instanceof ControlPropertyCustomDataUpdate) {
-				//
-				//custom data
-				//
-				ControlPropertyCustomDataUpdate update = (ControlPropertyCustomDataUpdate) propertyUpdate;
-				if (update.isSetValueUpdate()) {
-					shortName = bundle.getString("ControlClassChange.Property.CustomData.Value.short_name");
-					if (update.getNewCustomData() == null) {
-						description = String.format(
-								bundle.getString("ControlClassChange.Property.CustomData.Value.null_description_f"), propertyName
-						);
-					} else {
-						description = String.format(
-								bundle.getString("ControlClassChange.Property.CustomData.Value.non_null_description_f"), propertyName,
-								update.getNewCustomData().toString()
-						);
-					}
-				} else {
-					shortName = bundle.getString("ControlClassChange.Property.CustomData.Usage.short_name");
-					if (update.isUsingCustomData()) {
-						description = String.format(
-								bundle.getString("ControlClassChange.Property.CustomData.Usage.using_description_f"), propertyName
-						);
-					} else {
-						description = String.format(
-								bundle.getString("ControlClassChange.Property.CustomData.Usage.not_using_description_f"), propertyName
-						);
-					}
-				}
-				changeAction = new ChangeAction() {
-					@Override
-					public void undo() {
-						if (update.isSetValueUpdate()) {
-							updatedProperty.setCustomDataValue(update.getOldCustomData());
-						} else {
-							updatedProperty.setUsingCustomData(!update.isUsingCustomData());
-						}
-					}
-
-					@Override
-					public void redo() {
-						if (update.isSetValueUpdate()) {
-							updatedProperty.setCustomDataValue(update.getNewCustomData());
-						} else {
-							updatedProperty.setUsingCustomData(update.isUsingCustomData());
-						}
-					}
-
-					@Override
-					@NotNull
-					public String getDebugName() {
-						return "ControlPropertyCustomDataUpdate_ChangeAction";
-					}
-				};
-				changeType = ControlClassChangeType.PropertyCustomData;
-
-
 			} else if (propertyUpdate instanceof ControlPropertyInheritUpdate) {
 				//
 				//inherit

@@ -1,13 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.StringChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.*;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
@@ -46,7 +44,6 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		return masterPane;
 	}
 
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {
@@ -60,12 +57,12 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 	public InputField<StringChecker, String> getCustomDataTextField() {
 		return overrideField;
 	}
-	
+
 	@Override
 	public void focusToEditor() {
 		inputField.requestFocus();
 	}
-		
+
 	@Override
 	public boolean displayFullWidth() {
 		return true;
@@ -88,10 +85,15 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		}
 	}
 
-	public static class ArmaStringEditor extends InputFieldValueEditor<SVString>{
+	public static class ArmaStringEditor extends InputFieldValueEditor<SVString> {
 		public ArmaStringEditor() {
 			super(new SVArmaStringChecker());
 		}
 	}
 
+	public static class RawEditor extends InputFieldValueEditor<SVRaw> {
+		public RawEditor() {
+			super(new RawChecker(null));
+		}
+	}
 }

@@ -1,11 +1,15 @@
 **Added:**
-* support for duplicating controls and folders
+* option to clear selection while a folder is selected
+* "Toggle Raw Value" menu option in ControlPropertyEditorContainer that can toggle between Raw Value and other value
 
 **Changed:**
-* 
+* removed "custom data" from ControlProperty and instead added a new PropertyType called Raw
+    * SerializableValue class: SVRaw 
 
 **Fixed:**
-* display not searching all controls in findControlClassByName
+* stringtable search field wasn't handling +language correctly
+    * was matching keys that didn't have the specified language despite the '+' requiring matching keys that
+      have said specified language
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

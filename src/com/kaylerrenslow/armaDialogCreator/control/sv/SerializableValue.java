@@ -36,7 +36,11 @@ public abstract class SerializableValue {
 	}
 
 	/**
-	 Check if one {@link PropertyType} is convertible to another.
+	 Check if one {@link PropertyType} is convertible to another.<p>
+	 <p>
+	 In the case that <code>fromType</code> is {@link PropertyType#Raw},
+	 will always return false if <code>toType</code> is not {@link PropertyType} itself.
+	 To convert {@link PropertyType#Raw}, use {@link SVRaw#newSubstituteTypeValue(DataContext)}.
 
 	 @param fromType from
 	 @param toType to
@@ -44,6 +48,9 @@ public abstract class SerializableValue {
 	 @see #convert(DataContext, SerializableValue, PropertyType)
 	 */
 	public static boolean isConvertible(@NotNull PropertyType fromType, @NotNull PropertyType toType) {
+		if (fromType == PropertyType.Raw) {
+			return false;
+		}
 		if (fromType == toType) {
 			return true;
 		}

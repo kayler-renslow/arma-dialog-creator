@@ -63,7 +63,6 @@ public class ColorValueEditor implements ValueEditor<SVColor> {
 		return masterPane;
 	}
 	
-	@Override
 	public void setToCustomData(boolean override) {
 		masterPane.getChildren().clear();
 		if (override) {

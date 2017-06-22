@@ -70,6 +70,7 @@ class StringTableSearchField extends SearchTextField {
 									}
 								}
 							}
+							break;
 						}
 						case '/': { //search by package name and container name
 							handleSearchSlash(searchTextAfter);

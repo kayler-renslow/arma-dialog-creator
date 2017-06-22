@@ -873,13 +873,12 @@ public class ControlClass {
 
 	/**
 	 Check if the given property is defined. A property is defined if {@link ControlProperty#getValue()} != null
-	 or if {@link ControlProperty#isUsingCustomData()} and {@link ControlProperty#getCustomData()} != null;
 
 	 @param property property to check
 	 @return true if the property is defined, false otherwise
 	 */
 	public static boolean propertyIsDefined(@NotNull ControlProperty property) {
-		return property.getValue() != null || (property.isUsingCustomData() && property.getCustomData() != null);
+		return property.getValue() != null;
 	}
 
 	@Override

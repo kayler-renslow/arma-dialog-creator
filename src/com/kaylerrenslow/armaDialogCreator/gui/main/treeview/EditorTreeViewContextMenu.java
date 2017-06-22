@@ -70,5 +70,11 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 			//				groupMenu.getItems().add(miNone);
 			//			}
 		}
+
+		MenuItem miClearSelection = new MenuItem(bundle.getString("ContextMenu.ControlEdit.clear_selection"));
+		miClearSelection.setOnAction(e -> {
+			treeView.getSelectionModel().clearSelection();
+		});
+		getItems().add(miClearSelection);
 	}
 }
