@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 
@@ -35,8 +35,8 @@ interface ControlPropertyValueEditor extends ControlPropertyEditor {
 	/** @return the JavaFX Node that the editor is placed on. The entire editor should be contained within this node. */
 	@NotNull Node getRootNode();
 
-	/** @return the Class type that will be used to match {@link Macro} instances */
-	@NotNull Class<? extends SerializableValue> getMacroClass();
+	/** @return the {@link PropertyType} type that will be used to match {@link Macro} instances */
+	@NotNull PropertyType getMacroPropertyType();
 
 	/**
 	 Return true if the {@link #getRootNode()}'s width should fill the parent's width.

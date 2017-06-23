@@ -4,8 +4,12 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.RawChecker;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
@@ -26,7 +30,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-/**All editors for {@link ControlPropertiesEditorPane}
+/**
+ All editors for {@link ControlPropertiesEditorPane}
+
  @author Kayler
  @since 01/29/2017 */
 class ControlPropertyValueEditors {
@@ -35,7 +41,6 @@ class ControlPropertyValueEditors {
 		private final ControlProperty controlProperty;
 		private ToggleGroup toggleGroup;
 		private List<RadioButton> radioButtons;
-		private final InputField<StringChecker, String> rawInput = new InputField<>(new StringChecker());
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
@@ -49,7 +54,7 @@ class ControlPropertyValueEditors {
 				if (newValue == null) {
 					controlProperty.setValue((SerializableValue) null);
 				} else {
-					controlProperty.setValue(newValue.getUserData().toString());
+					controlProperty.setValue(new SVRaw(newValue.getUserData().toString(), controlProperty.getInitialPropertyType()));
 				}
 
 			}
@@ -135,8 +140,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVString.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Raw;
 		}
 
 		@Override
@@ -218,8 +223,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVControlStyleGroup.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.ControlStyle;
 		}
 
 		@Override
@@ -248,7 +253,7 @@ class ControlPropertyValueEditors {
 	private static abstract class InputFieldEditor<C extends SerializableValue> extends InputFieldValueEditor<C> implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final Class<C> macroTypeClass;
+		private final PropertyType macroType;
 		private final ReadOnlyValueListener<C> editorValueListener = new ReadOnlyValueListener<C>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<C> observer, C oldValue, C newValue) {
@@ -267,9 +272,10 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		InputFieldEditor(@NotNull Class<C> macroTypeClass, @Nullable ControlClass control, @NotNull ControlProperty controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
+		InputFieldEditor(@NotNull PropertyType macroType, @Nullable ControlClass control, @NotNull ControlProperty
+				controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
-			this.macroTypeClass = macroTypeClass;
+			this.macroType = macroType;
 
 			this.controlProperty = controlProperty;
 
@@ -303,8 +309,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return this.macroTypeClass;
+		public PropertyType getMacroPropertyType() {
+			return macroType;
 		}
 
 		@Override
@@ -327,13 +333,14 @@ class ControlPropertyValueEditors {
 
 	static class StringEditor extends InputFieldEditor<SVString> {
 		StringEditor(ControlClass control, ControlProperty controlProperty) {
-			super(SVString.class, control, controlProperty, new SVArmaStringChecker(), Lang.LookupBundle().getString("PropertyType.string"));
+			super(PropertyType.String, control, controlProperty, new SVArmaStringChecker(),
+					Lang.LookupBundle().getString("PropertyType.string"));
 		}
 	}
 
 	static class FloatEditor extends InputFieldEditor<SVExpression> {
 		FloatEditor(ControlClass control, ControlProperty controlProperty) {
-			super(SVExpression.class, control, controlProperty,
+			super(PropertyType.Float, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_FLOAT),
 					Lang.LookupBundle().getString("PropertyType.float")
 			);
@@ -342,7 +349,7 @@ class ControlPropertyValueEditors {
 
 	static class IntegerEditor extends InputFieldEditor<SVExpression> {
 		IntegerEditor(ControlClass control, ControlProperty controlProperty) {
-			super(SVExpression.class, control, controlProperty,
+			super(PropertyType.Int, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_INT),
 					Lang.LookupBundle().getString("PropertyType.int")
 			);
@@ -351,7 +358,7 @@ class ControlPropertyValueEditors {
 
 	static class RawEditor extends InputFieldEditor<SVRaw> {
 		RawEditor(ControlClass control, ControlProperty controlProperty) {
-			super(SVRaw.class, control, controlProperty,
+			super(PropertyType.Raw, control, controlProperty,
 					new RawChecker(controlProperty.getInitialPropertyType()),
 					Lang.LookupBundle().getString("PropertyType.raw")
 			);
@@ -417,8 +424,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVColorArray.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Color;
 		}
 
 		@Override
@@ -499,8 +506,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVHexColor.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.HexColorString;
 		}
 
 		@Override
@@ -574,8 +581,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVBoolean.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Boolean;
 		}
 
 		@Override
@@ -653,8 +660,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVStringArray.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Array;
 		}
 
 		@Override
@@ -725,8 +732,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVFont.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Font;
 		}
 
 		@Override
@@ -797,8 +804,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVImage.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Image;
 		}
 
 		@Override
@@ -838,6 +845,7 @@ class ControlPropertyValueEditors {
 
 		public SoundEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
+			setValue((SVSound) controlProperty.getValue());
 			initListeners();
 		}
 
@@ -863,8 +871,8 @@ class ControlPropertyValueEditors {
 
 		@NotNull
 		@Override
-		public Class<? extends SerializableValue> getMacroClass() {
-			return SVSound.class;
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.Sound;
 		}
 
 		@Override

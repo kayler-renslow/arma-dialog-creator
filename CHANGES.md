@@ -1,12 +1,13 @@
 **Added:**
-* extend control class to custom control class editor 
+* for macro getter button, added the filter to the display
 
 **Changed:**
-* optimized ControlClass editor to take waaaay less memory
-* added a better inheritance loop check for ControlClass
+* 
 
 **Fixed:**
-* 
+* custom control class editor was breaking a lot
+* control property options were exporting incorrectly
+    * was writing as a string rather than a raw
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

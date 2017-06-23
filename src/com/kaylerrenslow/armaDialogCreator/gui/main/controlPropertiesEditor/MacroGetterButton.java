@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseMacroDialog;
@@ -11,6 +12,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -20,28 +22,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.ResourceBundle;
 
 /**
- A menu button that will make a popup to choose a macro. There is also a drop down menu of recently used macros of the same type to save time.
+ A menu button that will make a popup to choose a macro.
+ There is also a drop down menu of recently used macros of the same type to save time.
 
  @author Kayler
  @since 07/09/2016. */
 public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
-	private static HashMap<Class<?>, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
+	private static HashMap<PropertyType, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
 
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final Hyperlink hyplinkChosenMacro = new Hyperlink();
-	private final Label lblNoChosenMacro = new Label(Lang.ApplicationBundle().getString("Macros.no_macro_set"));
-	private final HBox hboxMacroLbl = new HBox(0, new Label(Lang.ApplicationBundle().getString("Macros.macro") + "="), hyplinkChosenMacro);
+	private final Label lblNoChosenMacro = new Label(bundle.getString("Macros.no_macro_set"));
+	private final HBox hboxMacroLbl = new HBox(0, new Label(bundle.getString("Macros.macro") + "="), hyplinkChosenMacro);
 	private final StackPane stackPaneChosenMacroText = new StackPane(hboxMacroLbl);
 
-	private final MenuItem miChooseMacro = new MenuItem(Lang.ApplicationBundle().getString("Macros.choose_macro"));
-	private final MenuItem miClearMacro = new MenuItem(Lang.ApplicationBundle().getString("Macros.clear_macro"));
+	private final MenuItem miChooseMacro = new MenuItem(bundle.getString("Macros.choose_macro"));
+	private final MenuItem miClearMacro = new MenuItem(bundle.getString("Macros.clear_macro"));
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
 
 	private ValueObserver<Macro<V>> macroValueObserver;
 
-	public MacroGetterButton(@NotNull Class<V> clazz, @Nullable Macro<V> currentMacro) {
+	public MacroGetterButton(@Nullable PropertyType filter, @Nullable Macro<V> currentMacro) {
 		super(5);
 		hyplinkChosenMacro.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -64,26 +69,23 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		macroValueObserver = new ValueObserver<>(null);
 		setToMacro(currentMacro);
 		SplitMenuButton menuButton = new SplitMenuButton();
-		menuButton.setText(Lang.ApplicationBundle().getString("Macros.choose_macro"));
+		menuButton.setText(bundle.getString("Macros.choose_macro"));
 		setAlignment(Pos.CENTER_LEFT);
 		hboxMacroLbl.setAlignment(Pos.CENTER_LEFT);
-		getChildren().addAll(menuButton, stackPaneChosenMacroText);
+		Label lblNeedType = new Label(filter == null ? "*" : filter.getDisplayName());
+		getChildren().addAll(menuButton, stackPaneChosenMacroText, new Separator(Orientation.VERTICAL), lblNeedType);
 
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				ChooseMacroDialog<V> popup = new ChooseMacroDialog<>(clazz);
+				ChooseMacroDialog<V> popup = new ChooseMacroDialog<>(filter);
 				popup.showAndWait();
 				Macro<V> chosenMacro = popup.getChosenItem();
 				if (chosenMacro == null) {
 					return;
 				}
 				setToMacro(chosenMacro);
-				LinkedList<Macro<?>> recentMacros = recentMacrosMap.get(clazz);
-				if (recentMacros == null) {
-					recentMacros = new LinkedList<>();
-					recentMacrosMap.put(clazz, recentMacros);
-				}
+				LinkedList<Macro<?>> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
 				if (recentMacros.size() + 1 >= MAX_RECENT_MACROS) {
 					recentMacros.removeLast();
 				}
@@ -98,11 +100,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 				setToMacro(null);
 			}
 		});
-		LinkedList<Macro<?>> recentMacros = recentMacrosMap.get(clazz);
-		if (recentMacros == null) {
-			recentMacros = new LinkedList<>();
-			recentMacrosMap.put(clazz, recentMacros);
-		}
+		LinkedList<Macro<?>> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
 		updateRecentMacrosList(menuButton, recentMacros);
 	}
 
@@ -111,7 +109,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		menuButton.getItems().addAll(miChooseMacro, miClearMacro, miSeparator);
 
 		if (recentMacros.size() == 0) {
-			MenuItem miNoRecentMacros = new MenuItem(Lang.ApplicationBundle().getString("Macros.no_recent_macros"));
+			MenuItem miNoRecentMacros = new MenuItem(bundle.getString("Macros.no_recent_macros"));
 			miNoRecentMacros.setDisable(true);
 			menuButton.getItems().add(miNoRecentMacros);
 		} else {
@@ -142,6 +140,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		macroValueObserver.updateValue(macro);
 	}
 
+	@NotNull
 	public ValueObserver<Macro<V>> getChosenMacroValueObserver() {
 		return macroValueObserver;
 	}

@@ -18,6 +18,8 @@ import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ResourceBundle;
+
 /**
  Created by Kayler on 07/13/2016.
  */
@@ -32,9 +34,11 @@ public class SoundValueEditor implements ValueEditor<SVSound> {
 	private final ValueObserver<SVSound> valueObserver = new ValueObserver<>(null);
 
 	public SoundValueEditor() {
-		gridPaneEditors.addRow(0, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.sound_name")), inSoundName);
-		gridPaneEditors.addRow(1, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.db") + " "), inDb);
-		gridPaneEditors.addRow(2, new Label(Lang.ApplicationBundle().getString("ValueEditors.SoundValueEditor.pitch")), inPitch);
+		ResourceBundle bundle = Lang.ApplicationBundle();
+
+		gridPaneEditors.addRow(0, new Label(bundle.getString("ValueEditors.SoundValueEditor.sound_name")), inSoundName);
+		gridPaneEditors.addRow(1, new Label(bundle.getString("ValueEditors.SoundValueEditor.db") + " "), inDb);
+		gridPaneEditors.addRow(2, new Label(bundle.getString("ValueEditors.SoundValueEditor.pitch")), inPitch);
 		gridPaneEditors.getColumnConstraints().add(new ColumnConstraints(-1, -1, Double.MAX_VALUE, Priority.NEVER, HPos.LEFT, true));
 		gridPaneEditors.getColumnConstraints().add(new ColumnConstraints(-1, -1, Double.MAX_VALUE, Priority.ALWAYS, HPos.LEFT, true));
 

@@ -222,8 +222,9 @@ class ControlPropertyEditorContainer extends HBox {
 						bundle.getString("ClearValuePopup.popup_title"),
 						bundle.getString("ClearValuePopup.body"), true, true, false
 				);
-				dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
-				dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
+				ResourceBundle appBundle = Lang.ApplicationBundle();
+				dialog.getFooter().getBtnCancel().setText(appBundle.getString("Confirmation.no"));
+				dialog.getFooter().getBtnOk().setText(appBundle.getString("Confirmation.yes"));
 				dialog.setStageSize(300, 120);
 				dialog.show();
 				if (dialog.wasCancelled()) {
@@ -265,6 +266,9 @@ class ControlPropertyEditorContainer extends HBox {
 			}
 			updatePropertyValueEditor();
 		});
+		if (controlProperty.getPropertyLookup().getOptions() != null) {
+			menuButtonOptions.getItems().remove(miRaw);
+		}
 
 		updateContainer();
 	}
@@ -283,7 +287,7 @@ class ControlPropertyEditorContainer extends HBox {
 		if (mode == ControlPropertyValueEditor.EditMode.MACRO) {
 			stackPanePropertyInput.getChildren().clear();
 
-			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(currentValueEditor().getMacroClass(), currentValueEditor().getControlProperty().getMacro());
+			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(currentValueEditor().getMacroPropertyType(), currentValueEditor().getControlProperty().getMacro());
 
 			macroGetterButton.getChosenMacroValueObserver().updateValue(getControlProperty().getMacro());
 
@@ -427,7 +431,7 @@ class ControlPropertyEditorContainer extends HBox {
 			if (prop != null && prop.getInitialPropertyType() == PropertyType.Int) {
 				try {
 					type = ControlType.findById(prop.getIntValue());
-				} catch (IllegalArgumentException ignore) {
+				} catch (IllegalArgumentException | NullPointerException ignore) {
 
 				}
 			}

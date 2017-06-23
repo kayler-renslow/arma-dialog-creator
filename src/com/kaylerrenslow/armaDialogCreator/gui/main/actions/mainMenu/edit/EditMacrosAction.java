@@ -14,7 +14,7 @@ import javafx.event.EventHandler;
 public class EditMacrosAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ChooseMacroDialog<SerializableValue> chooseMacroPopup = new ChooseMacroDialog<>(SerializableValue.class);
+		ChooseMacroDialog<SerializableValue> chooseMacroPopup = new ChooseMacroDialog<>(null);
 		chooseMacroPopup.showAndWait();
 		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenItem();
 		if (chosenMacro == null) {

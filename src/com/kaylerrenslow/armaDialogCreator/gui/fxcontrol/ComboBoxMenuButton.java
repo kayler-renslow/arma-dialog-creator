@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.fxcontrol;
 
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
@@ -86,7 +85,6 @@ public class ComboBoxMenuButton<V> extends StackPane {
 
 		if (allowClear) {
 			initializeClearMenuItem();
-
 		}
 		clearSelectedValue();
 		menuButton.setMnemonicParsing(false);
@@ -105,7 +103,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 	}
 
 	private void initializeClearMenuItem() {
-		final MenuItem clearMenuItem = new MenuItem(Lang.FxControlBundle().getString("ComboBoxMenuButton.select_none"));
+		final MenuItem clearMenuItem = new MenuItem("----");
 		clearMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {

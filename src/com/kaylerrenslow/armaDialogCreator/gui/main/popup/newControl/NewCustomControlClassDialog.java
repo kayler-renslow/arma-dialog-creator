@@ -1,7 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.newControl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyUpdate;
+import com.kaylerrenslow.armaDialogCreator.control.ControlType;
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExporter;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.BorderedImageView;
@@ -139,12 +142,13 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 						ControlType.BETA_SUPPORTED.length
 				);
 				CBMBMenuItem<String> toSelect = null;
-				for (int i = 0; i < controlTypeControlClasses.size(); i++) {
+				for (int i = 0; i < ControlType.BETA_SUPPORTED.length; i++) {
 					ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.BETA_SUPPORTED[i]);
 					CBMBMenuItem<String> menuItem = new CBMBMenuItem<>(
 							lookup.controlType.getDisplayName(),
 							new BorderedImageView(lookup.controlType.getIcon())
 					);
+					menuItem.setUserData(lookup);
 					controlTypeControlClasses.add(menuItem);
 					if (lookup.controlType == ControlType.Static) {
 						toSelect = menuItem;
@@ -155,20 +159,34 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 						new CBMBGroupMenu<>(
 								bundle.getString("Popups.NewCustomControl.control_types"),
 								controlTypeControlClasses
-						),
-						new CBMBGroupMenu<>(
-								bundle.getString("Popups.NewCustomControl.custom_controls"),
-								getCustomControlClassesNamesItems()
 						)
 				);
-				templateControlMenuButton.getSelectedValueObserver().addListener(new ReadOnlyValueListener<String>() {
-					@Override
-					public void valueUpdated(@NotNull ReadOnlyValueObserver<String> observer, String oldValue, String newValue) {
-						ControlClass cc = project.findControlClassByName(newValue);
-						if (cc == null) {
-							throw new IllegalStateException("cc should not be null");
-						}
-						setToControlClass(new ControlClassSpecification(cc).constructNewControlClass(project));
+				{
+					CBMBGroupMenu<String> customControlsMenu = new CBMBGroupMenu<>(
+							bundle.getString("Popups.NewCustomControl.custom_controls"),
+							getCustomControlClassesNamesItems()
+					);
+					if (customControlsMenu.getItems().size() > 0) {
+						templateControlMenuButton.addGroup(customControlsMenu);
+					}
+				}
+				templateControlMenuButton.getSelectedItemObserver().addListener((observer, oldValue, selectedItem) -> {
+					if (selectedItem == null) {
+						throw new IllegalStateException("selectedItem shouldn't be null");
+					}
+					if (selectedItem.getUserData() instanceof ArmaControlLookup) {
+						ArmaControlLookup lookup = (ArmaControlLookup) selectedItem.getUserData();
+						ControlClass cc = new ControlClass(
+								"Custom_" + lookup.controlType.getNameAsClassName(),
+								lookup.specProvider,
+								project
+						);
+						setToControlClass(cc);
+					} else if (selectedItem.getUserData() instanceof CustomControlClass) {
+						CustomControlClass ccc = (CustomControlClass) selectedItem.getUserData();
+						setToControlClass(ccc.newSpecification().constructNewControlClass(project));
+					} else {
+						throw new IllegalStateException("unknown user data");
 					}
 				});
 
@@ -236,7 +254,9 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		ReadOnlyList<CustomControlClass> cccList = project.getCustomControlClassRegistry().getControlClassList();
 		List<CBMBMenuItem<String>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
-			items.add(new CBMBMenuItem<>(ccc.getControlClass().getClassName()));
+			CBMBMenuItem<String> menuItem = new CBMBMenuItem<>(ccc.getControlClass().getClassName());
+			menuItem.setUserData(ccc);
+			items.add(menuItem);
 		}
 		return items;
 	}
@@ -269,14 +289,9 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		stackPaneProperties.getChildren().add(editorPane);
 
 		controlClass.getPropertyUpdateGroup().addListener(controlClassListener);
-
-		boolean updatePreview = inClassName.getValue() != null && inClassName.getValue().equals(controlClass.getClassName()); //won't be triggered by class name update
 		inClassName.setValue(controlClass.getClassName());
-		if (updatePreview) {
-			updatePreview();
-		}
-
 		extendClassMenuButton.chooseItem(controlClass.getExtendClass());
+		updatePreview();
 	}
 
 	@NotNull
@@ -306,6 +321,11 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void ok() {
+		if (inClassName.getValue() == null) {
+			beep();
+			inClassName.requestFocus();
+			return;
+		}
 		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
 		customControlClass.setComment(taComment.getText());
 		project.getCustomControlClassRegistry().addControlClass(customControlClass);

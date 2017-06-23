@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 /**
  Specifies a sound
+
  @author Kayler
  @since 05/22/2016. */
 public class SVSound extends SerializableValue {
@@ -53,20 +54,13 @@ public class SVSound extends SerializableValue {
 		setPitch(pitch);
 	}
 
+	@NotNull
 	public String getSoundName() {
 		return soundName;
 	}
 
-	public void setSoundName(String soundName) {
-		this.soundName = soundName;
-	}
-
 	public double getDb() {
 		return db;
-	}
-
-	public void setDb(double db) {
-		this.db = db;
 	}
 
 	public double getPitch() {
@@ -85,7 +79,11 @@ public class SVSound extends SerializableValue {
 		this.pitch = pitch;
 	}
 
-	/** Serializes the sound array into a String. Example: "hello.ogg", 0 db, and 1 pitch alpha becomes "{"hello",db-0,1}" */
+	/**
+	 @return the sound array as a String.
+	 Example: "hello.ogg", 0 db, and 1 pitch alpha becomes "{"hello",db-0,1}"
+	 */
+	@NotNull
 	public String toArrayString() {
 		String str = "{\"" + soundName + "\"";
 		str += "db-" + db;
@@ -120,8 +118,8 @@ public class SVSound extends SerializableValue {
 	}
 
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
 		if (o instanceof SVSound) {

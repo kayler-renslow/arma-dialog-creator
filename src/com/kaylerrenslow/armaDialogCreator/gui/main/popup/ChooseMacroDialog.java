@@ -1,9 +1,11 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.MacroType;
+import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
@@ -49,16 +51,17 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <V extends SerializableValue> List<Macro<V>> getMacrosOfType(@NotNull Class<V> macroClassType) {
+	private static <V extends SerializableValue> List<Macro<V>> getMacrosOfType(@Nullable PropertyType filter) {
 		List<Macro<V>> macros = new ArrayList<>();
 		for (Macro macro : Project.getCurrentProject().getMacroRegistry().getMacros()) {
-			if (macroClassType.isInstance(macro.getValue())) {
+			if (filter == null || macro.getValue().getPropertyType() == filter) {
 				macros.add(macro);
 			}
 		}
-		if (macroClassType.isInstance(new SVString())) {
-			if (Project.getCurrentProject().getStringTable() != null) {
-				for (Macro macro : Project.getCurrentProject().getStringTable().getKeys()) {
+		if (filter == PropertyType.String) {
+			StringTable table = Project.getCurrentProject().getStringTable();
+			if (table != null) {
+				for (Macro macro : table.getKeys()) {
 					macros.add(macro);
 				}
 			}
@@ -67,8 +70,8 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 	}
 
 	@SuppressWarnings("unchecked")
-	public ChooseMacroDialog(@NotNull Class<V> macroClassType) {
-		super(getCategories(), getMacrosOfType(macroClassType),
+	public ChooseMacroDialog(@Nullable PropertyType filter) {
+		super(getCategories(), getMacrosOfType(filter),
 				Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"),
 				Lang.ApplicationBundle().getString("Popups.ChooseMacro.choose_macro_title")
 		);
