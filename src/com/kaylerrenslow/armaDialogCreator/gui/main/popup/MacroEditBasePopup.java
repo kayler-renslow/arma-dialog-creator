@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.MacroIdentifierChecker;
@@ -26,6 +27,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ResourceBundle;
@@ -36,31 +38,30 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 07/15/2016. */
 public abstract class MacroEditBasePopup extends StageDialog<VBox> {
-	private final Env env;
 	private ValueEditor editor;
 
 	private final HBox paneEditor = new HBox();
 
 	private final TextField tfMacroDescription = new TextField();
-	private final InputField<MacroIdentifierChecker, String> inMacroKey = new InputField<>(new MacroIdentifierChecker());
+	private final InputField<MacroChecker, String> inMacroKey = new InputField<>(new MacroChecker());
 	private final ChoiceBox<PropertyType> cbMacroType = new ChoiceBox<>();
 
 	private final Label lblNoTypeChosen = new Label(null);
+
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	/**
 	 Creates a Macro editor.
 
 	 @param env instance used for evaluating {@link SVExpression} based Macros' values. The env is only used for checking that an expression evaluates properly.
 	 */
-	public MacroEditBasePopup(Env env) {
+	public MacroEditBasePopup(@NotNull Env env) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);
-		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		setTitle(bundle.getString("Popups.MacroEdit.popup_title"));
 
 		lblNoTypeChosen.setText(bundle.getString("Popups.MacroEdit.no_type_chosen"));
 
-		this.env = env;
 		myStage.initStyle(StageStyle.UTILITY);
 		myStage.setMinWidth(480d);
 		myStage.setWidth(520d);
@@ -195,4 +196,18 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 		return m;
 	}
 
+
+	private class MacroChecker extends MacroIdentifierChecker {
+		@Override
+		public String validData(@NotNull String data) {
+			String sup = super.validData(data);
+			if (sup != null) {
+				return sup;
+			}
+			if (Project.getCurrentProject().findMacroByKey(data) != null) {
+				return bundle.getString("Macros.key_already_exists");
+			}
+			return null;
+		}
+	}
 }

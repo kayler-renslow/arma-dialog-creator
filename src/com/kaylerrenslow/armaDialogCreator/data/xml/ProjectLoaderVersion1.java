@@ -212,7 +212,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					continue;
 				}
 				Macro<?> macroObj = Macro.newMacro(keyAttr, value);
-				project.getMacroRegistry().getMacros().add(macroObj);
+				project.getMacroRegistry().addMacro(macroObj);
 				macroObj.setComment(commentAttr);
 			}
 		}

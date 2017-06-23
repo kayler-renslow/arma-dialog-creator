@@ -1,13 +1,11 @@
 **Added:**
-* for macro getter button, added the filter to the display
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* custom control class editor was breaking a lot
-* control property options were exporting incorrectly
-    * was writing as a string rather than a raw
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

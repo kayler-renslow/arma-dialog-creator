@@ -22,7 +22,7 @@ public class NewMacroPopup extends MacroEditBasePopup {
 		if (checkFields()) {
 			Macro macro = getMacro();
 			if (macro != null) {
-				ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().getMacros().add(macro);
+				ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().addMacro(macro);
 			}
 			close();
 		}
