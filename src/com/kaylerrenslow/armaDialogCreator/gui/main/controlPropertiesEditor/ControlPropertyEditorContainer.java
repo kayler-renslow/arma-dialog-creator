@@ -248,7 +248,8 @@ class ControlPropertyEditorContainer extends HBox {
 								controlProperty.getInitialPropertyType() :
 								raw.getSubstituteType();
 						ConvertValueDialog dialog = new ConvertValueDialog(raw, newType,
-								ApplicationData.getManagerInstance().getGlobalExpressionEnvironment());
+								ApplicationData.getManagerInstance().getGlobalExpressionEnvironment()
+						);
 						dialog.show();
 						SerializableValue newValue = dialog.getConvertedValue();
 						if (dialog.wasCancelled()) {

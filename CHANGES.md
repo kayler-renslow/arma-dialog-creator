@@ -1,9 +1,8 @@
 **Added:**
-* Hex color string editor
+* string table editor: edit containers
 
 **Changed:**
-* made SVColor an interface
-    * SVColorArray is now the old SVColor
+* 
 
 **Fixed:**
 * 

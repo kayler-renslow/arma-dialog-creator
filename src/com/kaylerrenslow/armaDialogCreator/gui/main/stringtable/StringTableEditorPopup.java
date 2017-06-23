@@ -293,7 +293,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				}
 			});
 
-			editorPane = new StringTableKeyEditorPane(KnownLanguage.Original);
+			editorPane = new StringTableKeyEditorPane(table, KnownLanguage.Original);
 
 			lvMatch.setPlaceholder(new Label(bundle.getString("StringTableEditorPopup.Tab.Edit.Search.no_match")));
 			lvMatch.setStyle("-fx-font-family:monospace");

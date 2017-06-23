@@ -27,7 +27,7 @@ public class StringTableKeyEditorDialog extends StageDialog<VBox> {
 		this.editKey = editKey;
 		copyKey = editKey.deepCopy();
 		setResizable(false);
-		StringTableKeyEditorPane editorPane = new StringTableKeyEditorPane(copyKey.getDefaultLanguage());
+		StringTableKeyEditorPane editorPane = new StringTableKeyEditorPane(ownerTable, copyKey.getDefaultLanguage());
 		editorPane.getPaneContent().setPrefHeight(200);
 		editorPane.getPaneContent().setOrientation(Orientation.VERTICAL);
 		editorPane.setKey(copyKey, ownerTable.getKeys());

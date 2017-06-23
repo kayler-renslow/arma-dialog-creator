@@ -2,10 +2,13 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.KnownLanguage;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
+import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.DownArrowMenu;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueListener;
@@ -17,15 +20,15 @@ import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
+import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
@@ -34,8 +37,6 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 12/24/2016 */
 class StringTableKeyEditorPane extends StackPane {
-	private static final Font FONT_KEY_ID = Font.font(15);
-
 	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
 	private final LanguageSelectionPane languagePane;
 	private final String noKeySelected = bundle.getString("StringTableEditorPopup.Tab.Edit.no_selected_key");
@@ -46,7 +47,7 @@ class StringTableKeyEditorPane extends StackPane {
 	private StringTableKey key;
 	private List<StringTableKey> existingKeys;
 
-	public StringTableKeyEditorPane(@Nullable Language defaultPreviewLanguage) {
+	public StringTableKeyEditorPane(@NotNull StringTable table, @Nullable Language defaultPreviewLanguage) {
 
 		StringTableValueEditor taValue = new StringTableValueEditor(this);
 		taValue.setWrapText(true);
@@ -77,7 +78,7 @@ class StringTableKeyEditorPane extends StackPane {
 		paneContent = new FlowPane(10, 10);
 		getChildren().add(paneContent);
 
-		lblKeyId.setFont(FONT_KEY_ID);
+		lblKeyId.setFont(Font.font(15));
 
 		menuAddLanguage = new Menu(bundle.getString("StringTableEditorPopup.Tab.Edit.add_language"));
 		menuRemoveLanguage = new Menu(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_language"));
@@ -106,20 +107,16 @@ class StringTableKeyEditorPane extends StackPane {
 		miEditContainer.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				//				if (key == null) {
-				//					return;
-				//				}
-				//				NameInputDialog dialog = new NameInputDialog(
-				//						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_container_popup_title_f"), key.getId()),
-				//						bundle.getString("StringTableEditorPopup.Tab.Edit.new_container_name"),
-				//						bundle.getString("StringTable.no_container")
-				//				);
-				//				dialog.setInputText(key.getPath().getContainerName());
-				//				dialog.show();
-				//				if (dialog.wasCancelled()) {
-				//					return;
-				//				}
-				//				key.setContainerName(dialog.getInputText() != null ? dialog.getInputText() : "");
+				if (key == null) {
+					return;
+				}
+				ContainerEditorDialog dialog = new ContainerEditorDialog(ArmaDialogCreator.getPrimaryStage(), key,
+						table);
+				dialog.show();
+				if (dialog.wasCancelled()) {
+					return;
+				}
+				key.getPath().getContainers().setAll(dialog.getContainers());
 			}
 		});
 		MenuItem miRenameId = new MenuItem(bundle.getString("StringTableEditorPopup.Tab.Edit.rename"));
@@ -303,6 +300,101 @@ class StringTableKeyEditorPane extends StackPane {
 
 			this.added = added;
 
+		}
+	}
+
+	private class ContainerEditorDialog extends StageDialog<FlowPane> {
+
+		private final List<ComboBox<String>> containerComboBoxes = new ArrayList<>();
+		private final StringTable table;
+
+		public ContainerEditorDialog(@NotNull Stage parentStage, @NotNull StringTableKey key,
+									 @NotNull StringTable table) {
+			super(parentStage, new FlowPane(5, 10), null, true, true, false);
+			this.table = table;
+			setTitle(
+					String.format(
+							bundle.getString("StringTableEditorPopup.Tab.Edit.edit_container_popup_title_f"),
+							key.getId()
+					)
+			);
+			int level = 0;
+			for (String container : key.getPath().getContainers()) {
+				ComboBox<String> comboBox = getComboBox(level);
+				containerComboBoxes.add(comboBox);
+				comboBox.getSelectionModel().select(container);
+				level++;
+			}
+
+			HBox hboxInsertRemove;
+			{
+				Button btnRemove = new Button("", new ImageView(ADCImages.ICON_MINUS));
+				Button btnInsert = new Button("", new ImageView(ADCImages.ICON_PLUS));
+				hboxInsertRemove = new HBox(5, btnRemove, btnInsert);
+
+				btnRemove.setOnAction(e -> {
+					SimpleResponseDialog dialog = new SimpleResponseDialog(
+							parentStage,
+							bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_title"),
+							String.format(
+									bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_f"),
+									containerComboBoxes.get(containerComboBoxes.size() - 1).getValue()
+							),
+							true, true, false
+					);
+					dialog.show();
+					if (dialog.wasCancelled()) {
+						return;
+					}
+					ComboBox<String> removed = containerComboBoxes.remove(containerComboBoxes.size() - 1);
+					btnRemove.setDisable(containerComboBoxes.size() == 0);
+					ContainerEditorDialog.this.myRootElement.getChildren().remove(removed);
+				});
+
+				btnInsert.setOnAction(e -> {
+					btnRemove.setDisable(false);
+					ComboBox<String> cb = getComboBox(containerComboBoxes.size());
+					containerComboBoxes.add(cb);
+					ContainerEditorDialog.this.myRootElement.getChildren().add(cb);
+				});
+
+				btnRemove.setDisable(containerComboBoxes.size() == 0);
+			}
+
+			for (ComboBox<String> comboBox : containerComboBoxes) {
+				myRootElement.getChildren().add(comboBox);
+			}
+
+			myRootElement.getChildren().add(hboxInsertRemove);
+		}
+
+		@NotNull
+		private ComboBox<String> getComboBox(int level) {
+			ComboBox<String> comboBox = new ComboBox<>();
+			for (StringTableKey keyAtLevel : table.getKeys()) {
+				List<String> containersForKey = keyAtLevel.getPath().getContainers();
+				String containerAtLevel = level >= containersForKey.size() ?
+						null : containersForKey.get(level);
+				if (containerAtLevel == null) {
+					continue;
+				}
+				if (comboBox.getItems().contains(containerAtLevel)) {
+					continue;
+				}
+				comboBox.getItems().add(containerAtLevel);
+			}
+			comboBox.setEditable(true);
+			return comboBox;
+		}
+
+		/** @return the new containers list that the key should use */
+		@NotNull
+		public List<String> getContainers() {
+			List<String> ret = new ArrayList<>(containerComboBoxes.size());
+			for (ComboBox<String> cb : containerComboBoxes) {
+				ret.add(cb.getValue());
+			}
+			return ret;
 		}
 	}
 
