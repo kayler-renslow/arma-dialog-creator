@@ -1,11 +1,12 @@
 **Added:**
-* 
+* extend control class to custom control class editor 
 
 **Changed:**
-* 
+* optimized ControlClass editor to take waaaay less memory
+* added a better inheritance loop check for ControlClass
 
 **Fixed:**
-* some issues with stringtable container editing dialog
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

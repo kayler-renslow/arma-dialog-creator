@@ -13,6 +13,8 @@ import javafx.scene.layout.StackPane;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
+
 /**
  Created by Kayler on 10/19/2016.
  */
@@ -126,7 +128,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			addSeparator();
 		}
 		menuButton.getItems().add(group);
-		for (CBMBMenuItem<V> item : group.getCbmbMenuItems()) {
+		for (CBMBMenuItem<V> item : group.getCBMBMenuItems()) {
 			setupMenuItem(item);
 		}
 	}
@@ -143,7 +145,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			}
 			if (menuItem instanceof CBMBGroupMenu) {
 				CBMBGroupMenu<V> groupMenu = (CBMBGroupMenu<V>) menuItem;
-				for (CBMBMenuItem<V> item : groupMenu.getCbmbMenuItems()) {
+				for (CBMBMenuItem<V> item : groupMenu.getCBMBMenuItems()) {
 					if (item == remove) {
 						groupMenu.getItems().remove(remove);
 						break;
@@ -200,7 +202,7 @@ public class ComboBoxMenuButton<V> extends StackPane {
 			}
 			if (menuItem instanceof CBMBGroupMenu) {
 				CBMBGroupMenu<V> groupMenu = (CBMBGroupMenu<V>) menuItem;
-				for (CBMBMenuItem<V> item : groupMenu.getCbmbMenuItems()) {
+				for (CBMBMenuItem<V> item : groupMenu.getCBMBMenuItems()) {
 					if (item.getValue() == value) {
 						chooseItem(item);
 						return;
@@ -237,5 +239,9 @@ public class ComboBoxMenuButton<V> extends StackPane {
 	}
 
 
-
+	public void addItems(@NotNull List<CBMBMenuItem<V>> items) {
+		for (CBMBMenuItem<V> item : items) {
+			addItem(item);
+		}
+	}
 }

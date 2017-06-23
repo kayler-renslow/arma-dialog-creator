@@ -209,5 +209,4 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 
-
 }

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  @author Kayler
@@ -19,11 +20,28 @@ public class CBMBGroupMenu<V> extends Menu {
 	private boolean addedFromCbmbItems = false;
 
 	@SafeVarargs
-	public CBMBGroupMenu(@NotNull String groupName, CBMBMenuItem<V>... cbmbMenuItems) {
+	public CBMBGroupMenu(@NotNull String groupName, @NotNull CBMBMenuItem<V>... cbmbMenuItems) {
 		super(groupName);
 		Collections.addAll(this.cbmbMenuItems, cbmbMenuItems);
 		Collections.addAll(getItems(), cbmbMenuItems);
 
+		afterConstruct();
+	}
+
+	public CBMBGroupMenu(@NotNull String groupName, @NotNull List<CBMBMenuItem<V>> cbmbMenuItems) {
+		super(groupName);
+		this.cbmbMenuItems.addAll(cbmbMenuItems);
+		getItems().addAll(cbmbMenuItems);
+
+		afterConstruct();
+	}
+
+	public CBMBGroupMenu(@NotNull String groupName) {
+		super(groupName);
+		afterConstruct();
+	}
+
+	private void afterConstruct() {
 		this.cbmbMenuItems.addListener(new ListChangeListener<CBMBMenuItem<V>>() {
 			@Override
 			public void onChanged(Change<? extends CBMBMenuItem<V>> c) {
@@ -51,7 +69,7 @@ public class CBMBGroupMenu<V> extends Menu {
 						for (MenuItem menuItem : c.getAddedSubList()) {
 							if (menuItem instanceof CBMBMenuItem) {
 								try {
-									CBMBGroupMenu.this.getCbmbMenuItems().add((CBMBMenuItem<V>) menuItem);
+									CBMBGroupMenu.this.getCBMBMenuItems().add((CBMBMenuItem<V>) menuItem);
 									continue;
 								} catch (ClassCastException e) {
 
@@ -60,7 +78,7 @@ public class CBMBGroupMenu<V> extends Menu {
 							throw new IllegalStateException("can't add a non-CBMBMenuItem to this menu");
 						}
 					} else if (c.wasRemoved()) {
-						CBMBGroupMenu.this.getCbmbMenuItems().remove(c);
+						CBMBGroupMenu.this.getCBMBMenuItems().remove(c);
 					}
 				}
 			}
@@ -68,7 +86,7 @@ public class CBMBGroupMenu<V> extends Menu {
 	}
 
 	@NotNull
-	public ObservableList<CBMBMenuItem<V>> getCbmbMenuItems() {
+	public ObservableList<CBMBMenuItem<V>> getCBMBMenuItems() {
 		return cbmbMenuItems;
 	}
 }

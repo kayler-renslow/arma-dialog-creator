@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.edit;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseCustomControlDialog;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.newControl.EditCustomControlPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.newControl.EditCustomControlClassDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -19,6 +19,6 @@ public class EditCustomControlAction implements EventHandler<ActionEvent> {
 		if (dialog.wasCancelled() || controlClass == null) {
 			return;
 		}
-		new EditCustomControlPopup(controlClass).show();
+		new EditCustomControlClassDialog(controlClass).show();
 	}
 }

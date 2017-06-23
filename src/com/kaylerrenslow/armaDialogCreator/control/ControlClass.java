@@ -195,6 +195,26 @@ public class ControlClass {
 	}
 
 	/**
+	 Check if the given class is part of this {@link ControlClass}'s inheritance tree
+
+	 @param other other class
+	 @return true if there is a loop, false if there isn't
+	 @see #extendControlClass(ControlClass)
+	 */
+	public boolean hasInheritanceLoop(@NotNull ControlClass other) {
+		//check other's inheritance tree
+		ControlClass parent = other;
+		while (parent != null) {
+			if (parent.getClassName().equals(this.getClassName())) {
+				return true;
+			}
+			parent = parent.getExtendClass();
+		}
+
+		return false;
+	}
+
+	/**
 	 Extend the given {@link ControlClass}, or clear the extend class with null.
 	 Any properties that initially have a value in them ({@link #propertyIsDefined(ControlProperty)}) will not be inherited,
 	 unless explicitly stated with {@link #inheritProperty(ControlPropertyLookupConstant)}.
@@ -204,16 +224,16 @@ public class ControlClass {
 	 @see ControlProperty#inherit(ControlProperty)
 	 */
 	public final void extendControlClass(@Nullable ControlClass extendMe) {
-		if (extendMe == this) {
-			throw new IllegalArgumentException("Extend class can't extend itself!");
-		}
-
 		ControlClass oldExtendClass = getExtendClass();
 		if (oldExtendClass == extendMe) {
 			return;
 		}
 
 		if (extendMe != null) {
+			if (hasInheritanceLoop(extendMe)) {
+				throw new IllegalArgumentException("Extend class can't extend itself (inheritance loop)!");
+			}
+
 			//attempt to inherit all properties, if they aren't defined in this ControlClass
 			for (ControlProperty checkToInherit : extendMe.getAllChildProperties()) {
 				if (this.propertyIsOverridden(checkToInherit.getPropertyLookup())) {

@@ -16,13 +16,13 @@ import java.util.LinkedList;
 
  @author Kayler
  @since 11/14/2016. */
-public class EditCustomControlPopup extends NewCustomControlPopup {
+public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 
 	private final CustomControlClass toEdit;
 	private final LinkedList<ControlClassUpdate> updates = new LinkedList<>();
 	private final ControlClass duplicate;
 
-	public EditCustomControlPopup(@NotNull CustomControlClass toEdit) {
+	public EditCustomControlClassDialog(@NotNull CustomControlClass toEdit) {
 		this.toEdit = toEdit;
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.EditCustomControl.popup_title"));
 

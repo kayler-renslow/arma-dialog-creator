@@ -79,6 +79,7 @@ public class ProjectExporter {
 		ProjectExporter exporter = new ProjectExporter(configuration);
 		CachedIndentedStringBuilder builder = getBuilder(stream);
 		exporter.writeControlClass(builder, controlClass, null);
+		stream.write(builder.toString().getBytes());
 		stream.flush();
 	}
 
