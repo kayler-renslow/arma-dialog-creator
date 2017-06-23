@@ -17,9 +17,11 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -333,18 +335,22 @@ class StringTableKeyEditorPane extends StackPane {
 				hboxInsertRemove = new HBox(5, btnRemove, btnInsert);
 
 				btnRemove.setOnAction(e -> {
-					SimpleResponseDialog dialog = new SimpleResponseDialog(
-							parentStage,
-							bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_title"),
-							String.format(
-									bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_f"),
-									containerComboBoxes.get(containerComboBoxes.size() - 1).getValue()
-							),
-							true, true, false
-					);
-					dialog.show();
-					if (dialog.wasCancelled()) {
-						return;
+					String value = containerComboBoxes.get(containerComboBoxes.size() - 1).getValue();
+					//if value is null or empty, just remove it without confirmation
+					if (value != null && value.trim().length() != 0) {
+						SimpleResponseDialog dialog = new SimpleResponseDialog(
+								parentStage,
+								bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_title"),
+								String.format(
+										bundle.getString("StringTableEditorPopup.Tab.Edit.remove_container_confirm_f"),
+										value
+								),
+								true, true, false
+						);
+						dialog.show();
+						if (dialog.wasCancelled()) {
+							return;
+						}
 					}
 					ComboBox<String> removed = containerComboBoxes.remove(containerComboBoxes.size() - 1);
 					btnRemove.setDisable(containerComboBoxes.size() == 0);
@@ -355,7 +361,12 @@ class StringTableKeyEditorPane extends StackPane {
 					btnRemove.setDisable(false);
 					ComboBox<String> cb = getComboBox(containerComboBoxes.size());
 					containerComboBoxes.add(cb);
-					ContainerEditorDialog.this.myRootElement.getChildren().add(cb);
+					ObservableList<Node> children = ContainerEditorDialog.this.myRootElement.getChildren();
+					children.add(
+							//insert just before the hbox
+							children.indexOf(hboxInsertRemove),
+							cb
+					);
 				});
 
 				btnRemove.setDisable(containerComboBoxes.size() == 0);

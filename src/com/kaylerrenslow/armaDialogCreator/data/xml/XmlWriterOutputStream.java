@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
  @since 11/12/2016. */
 public class XmlWriterOutputStream {
 	public static final String UTF_8 = "UTF-8";
-	protected static final byte[] NEW_LINE = "\n".getBytes();
+	protected final byte[] NEW_LINE = "\n".getBytes();
 
 	private final FileOutputStream fos;
 

@@ -1,11 +1,11 @@
 **Added:**
-* string table editor: edit containers
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* 
+* some issues with stringtable container editing dialog
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
