@@ -1,12 +1,12 @@
 **Added:**
-* the control properties editor pane will now handle temp property inserts/removals
+* error dialog for stringtable refresh/save
+* better error dialog for ExceptionHandler
 
 **Changed:**
-* 
+* made dialog open to confirm saving of stringtable
 
 **Fixed:**
-* ControlPropertiesEditorPane didn't properly initialize inherited/overridden
-  properties options (inherited properties have option to be inherited)
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

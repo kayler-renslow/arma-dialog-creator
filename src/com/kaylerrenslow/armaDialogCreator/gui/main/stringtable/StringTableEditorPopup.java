@@ -125,7 +125,12 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 					getTable().setTo(parser.createStringTableInstance());
 					tabPane.setToTable(getTable());
 				} catch (IOException e) {
-					e.printStackTrace();
+					new SimpleResponseDialog(
+							ArmaDialogCreator.getPrimaryStage(),
+							bundle.getString("Error.couldnt_refresh_short"),
+							bundle.getString("Error.couldnt_refresh") + "\n" + e.getMessage(),
+							false, true, false
+					).show();
 				}
 
 			}
@@ -135,10 +140,28 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		btnSave.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				SimpleResponseDialog dialog = new SimpleResponseDialog(
+						myStage, bundle.getString("SaveDialog.dialog_title"),
+						bundle.getString("SaveDialog.body"),
+						true,
+						true,
+						false
+				);
+				dialog.setStageSize(420, 150);
+				dialog.setResizable(false);
+				dialog.show();
+				if (dialog.wasCancelled()) {
+					return;
+				}
 				try {
 					writer.writeTable(getTable());
 				} catch (IOException e) {
-					e.printStackTrace();
+					new SimpleResponseDialog(
+							ArmaDialogCreator.getPrimaryStage(),
+							bundle.getString("Error.couldnt_save_short"),
+							bundle.getString("Error.couldnt_save") + "\n" + e.getMessage(),
+							false, true, false
+					).show();
 				}
 			}
 		});

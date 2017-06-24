@@ -530,7 +530,7 @@ public class ControlProperty {
 	 @param setDefaultValue if true, will set the default value equal to <code>value</code> if default value is null
 	 @param value value to set if the value is null
 	 */
-	public void setValueIfAbsent(boolean setDefaultValue, SerializableValue value) {
+	public void setValueIfAbsent(boolean setDefaultValue, @Nullable SerializableValue value) {
 		if (getValue() == null) {
 			setValue(value);
 		}

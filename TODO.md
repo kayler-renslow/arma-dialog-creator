@@ -14,7 +14,7 @@ Ideas
 
 General
 -----------------------------------
-* stringtable editor: reload and save to file need error dialogs
+* none
 
 Bugs
 -----------------------------------

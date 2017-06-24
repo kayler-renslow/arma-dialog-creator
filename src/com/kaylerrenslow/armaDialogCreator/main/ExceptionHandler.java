@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.SimpleErrorDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import javafx.application.Platform;
 import javafx.scene.control.TextArea;
@@ -26,43 +27,75 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		return INSTANCE;
 	}
 
-	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)} */
+	/**
+	 Make an error window popup with the stack trace printed.
+	 Only use this for when the error is recoverable.
+	 If the error is non-recoverable, use {@link #fatal(Throwable)}
+	 */
 	public static void error(Throwable t) {
 		error(Thread.currentThread(), t);
 	}
 
-	/** Make an error window popup with the stack trace printed. Only use this for when the error is recoverable. If the error is non-recoverable, use {@link #fatal(Throwable)} */
+	/**
+	 Make an error window popup with the stack trace printed.
+	 Only use this for when the error is recoverable.
+	 If the error is non-recoverable, use {@link #fatal(Throwable)}
+	 */
 	public static void error(Thread threadWhereErrorOccurred, Throwable t) {
 		t.printStackTrace(System.out);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				StagePopup<TextArea> popup = new StagePopup<>(ArmaDialogCreator.getPrimaryStage(), getExceptionTextArea(threadWhereErrorOccurred, t), "An internal error occurred.");
-				popup.show();
+				SimpleErrorDialog<TextArea> errorDialog = new SimpleErrorDialog<>(
+						ArmaDialogCreator.getPrimaryStage(),
+						"An internal error occurred.",
+						t,
+						getExceptionTextArea(threadWhereErrorOccurred, t)
+				);
+				errorDialog.show();
 			}
 		});
 	}
 
-	/** Makes an error window popup with the stack trace printed. This method should be used when a <b>non-recoverable</b> error occurred. After the error window is closed, the application will also close. */
+	/**
+	 Makes an error window popup with the stack trace printed.
+	 This method should be used when a <b>non-recoverable</b> error occurred.
+	 After the error window is closed, the application will also close.
+	 */
 	public static void fatal(Throwable t) {
 		fatal(Thread.currentThread(), t);
 	}
 
-	/** Makes an error window popup with the stack trace printed. This method should be used when a <b>non-recoverable</b> error occurred. After the error window is closed, the application will also close. */
+	/**
+	 Makes an error window popup with the stack trace printed.
+	 This method should be used when a <b>non-recoverable</b> error occurred.
+	 After the error window is closed, the application will also close.
+	 */
 	public static void fatal(Thread threadWereErrorOccurred, Throwable t) {
 		t.printStackTrace(System.out);
-		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) { //can be null if this method is called when ApplicationDataManager had an error before constructor finished
+		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) {
+			//can be null if this method is called when ApplicationDataManager had an error before constructor finished
 			JOptionPane.showMessageDialog(null, getExceptionString(t), "FATAL ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				StagePopup sp = new StagePopup<TextArea>(ArmaDialogCreator.getPrimaryStage(), getExceptionTextArea(threadWereErrorOccurred, t), "A FATAL error occurred.") {
+				StagePopup sp = new StagePopup<TextArea>(
+						ArmaDialogCreator.getPrimaryStage(),
+						getExceptionTextArea(threadWereErrorOccurred, t),
+						"A FATAL error occurred."
+				) {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {
 						boolean good = ArmaDialogCreator.getApplicationDataManager().forceSave();
-						new StagePopup<TextArea>(ArmaDialogCreator.getPrimaryStage(), new TextArea(good ? "Your entry was successfully saved regardless of the error." : "Your entry couldn't be saved."), "Save notification") {
+						new StagePopup<TextArea>(
+								ArmaDialogCreator.getPrimaryStage(),
+								new TextArea(
+										good ?
+												"Your entry was successfully saved regardless of the error."
+												: "Your entry couldn't be saved."
+								), "Save notification") {
 							@Override
 							protected void onCloseRequest(WindowEvent event) {
 								ArmaDialogCreator.getPrimaryStage().close();
