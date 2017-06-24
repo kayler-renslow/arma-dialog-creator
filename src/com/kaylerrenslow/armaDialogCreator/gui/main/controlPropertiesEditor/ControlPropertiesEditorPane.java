@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassRequirementSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassTemporaryPropertyUpdate;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Insets;
@@ -195,6 +196,21 @@ public class ControlPropertiesEditorPane extends StackPane {
 				vb.getChildren().add(getControlPropertyEntry(iterator.next(), optional));
 			}
 		}
+
+		controlClass.getControlClassUpdateGroup().addListener((group, data) -> {
+			if (optional) {
+				//we are going to add the temp properties to the optional titled pane
+				if (data instanceof ControlClassTemporaryPropertyUpdate) {
+					ControlClassTemporaryPropertyUpdate update = (ControlClassTemporaryPropertyUpdate) data;
+					if (update.isAdded()) {
+						vb.getChildren().add(getControlPropertyEntry(update.getProperty(), true));
+					} else {
+						vb.getChildren().removeIf(node -> node.getUserData() == update.getProperty());
+					}
+				}
+			}
+		});
+
 		return tp;
 	}
 
@@ -204,7 +220,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(container);
 		propertyDescriptors.add(descriptor);
 		descriptor.setIsOptional(optional);
-
+		container.setUserData(property);
 		return container;
 	}
 

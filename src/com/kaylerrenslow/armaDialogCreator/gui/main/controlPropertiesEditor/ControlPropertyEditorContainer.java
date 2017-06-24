@@ -26,6 +26,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 import static com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertyValueEditors.*;
 
@@ -113,27 +114,30 @@ class ControlPropertyEditorContainer extends HBox {
 			}
 		}
 
+		Function<Void, Void> propertyInheritUpdate = (v) -> {
+			boolean inherited = controlProperty.isInherited();
+			stackPanePropertyInput.setDisable(inherited);
+			miDefaultEditor.setDisable(inherited);
+			miResetToInitial.setDisable(inherited);
+			miMacro.setDisable(inherited);
+			miClearValue.setDisable(inherited);
+			miRaw.setDisable(inherited);
+			miConvert.setDisable(inherited || controlProperty.getValue() == null);
+
+			if (inherited) {
+				inheritanceMenuItem.setText(bundle.getString("override"));
+			} else {
+				inheritanceMenuItem.setText(bundle.getString("inherit"));
+			}
+			hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
+			return null;
+		};
+
 		controlPropertyUpdateListener = new ControlPropertyUpdateListener(controlProperty) {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 				if (data instanceof ControlPropertyInheritUpdate) {
-					ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
-
-					boolean disable = update.wasInherited();
-					stackPanePropertyInput.setDisable(disable);
-					miDefaultEditor.setDisable(disable);
-					miResetToInitial.setDisable(disable);
-					miMacro.setDisable(disable);
-					miClearValue.setDisable(disable);
-					miRaw.setDisable(disable);
-					miConvert.setDisable(disable || update.getControlProperty().getValue() == null);
-
-					if (update.wasInherited()) {
-						inheritanceMenuItem.setText(bundle.getString("override"));
-					} else {
-						inheritanceMenuItem.setText(bundle.getString("inherit"));
-					}
-					hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
+					propertyInheritUpdate.apply(null);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
 					ControlPropertyMacroUpdate macroUpdate = (ControlPropertyMacroUpdate) data;
 					updatePropertyInputMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
@@ -269,6 +273,8 @@ class ControlPropertyEditorContainer extends HBox {
 		if (controlProperty.getPropertyLookup().getOptions() != null) {
 			menuButtonOptions.getItems().remove(miRaw);
 		}
+
+		propertyInheritUpdate.apply(null);
 
 		updateContainer();
 	}

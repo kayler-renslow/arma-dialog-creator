@@ -4,7 +4,10 @@ import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Consumer;
 
 /**
@@ -245,11 +248,10 @@ public class ControlClass {
 			extendMe.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 		} else {
 			//remove all temp properties
-			for (Iterator<ControlProperty> iter = tempProperties.iterator(); iter.hasNext(); ) {
-				ControlProperty tempProperty = iter.next();
-				iter.remove();
+			for (ControlProperty tempProperty : tempProperties) {
 				controlClassUpdateGroup.update(new ControlClassTemporaryPropertyUpdate(this, tempProperty, false));
 			}
+			tempProperties.clear();
 
 			for (ControlProperty property : this.getAllChildProperties()) {
 				this.overrideProperty(property.getPropertyLookup());
