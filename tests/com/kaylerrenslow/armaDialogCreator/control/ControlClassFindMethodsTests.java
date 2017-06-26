@@ -8,6 +8,7 @@ import static org.junit.Assert.assertNull;
 
 /**
  Tests for find related methods (e.g. {@link ControlClass#findProperty(ControlPropertyLookupConstant)} and {@link ControlClass#findNestedClass(String)})
+
  @author Kayler
  @since 05/30/2017 */
 public class ControlClassFindMethodsTests {
@@ -22,6 +23,7 @@ public class ControlClassFindMethodsTests {
 	public void extendControlClass() throws Exception {
 		TestControlClass tcc1 = newTestControlClass();
 		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 
 		tcc1.extendControlClass(tcc2);
 		assertEquals(true, tcc1.getExtendClass() == tcc2);
@@ -31,11 +33,13 @@ public class ControlClassFindMethodsTests {
 	public void extendControlClassUndo() throws Exception {
 		TestControlClass tcc1 = newTestControlClass();
 		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 
 		tcc1.extendControlClass(tcc2);
 		tcc1.extendControlClass(null);
 		assertEquals(null, tcc1.getExtendClass());
 	}
+
 
 	//
 	//

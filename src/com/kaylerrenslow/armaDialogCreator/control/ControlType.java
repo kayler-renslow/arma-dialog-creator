@@ -57,7 +57,8 @@ public enum ControlType {
 	MapMain(101, getString("ControlType.map_main"), ControlTypeGroup.MAP);
 	//@formatter:on
 
-	public static final ControlType[] BETA_SUPPORTED = {Static, ControlsGroup, Button};
+	/** all control types that are supported for the application */
+	public static final ControlType[] SUPPORTED = {Static, ControlsGroup, Button};
 
 	private final int typeId;
 	private final String displayName;
@@ -76,7 +77,6 @@ public enum ControlType {
 		this(typeId, displayName, group, iconPath, false);
 	}
 
-	//todo: do not add ArmaControlClasses in here. Have a different enum so that you can create custom controls and specify the same type again (like RscPicture and RscFrame both use type Static)
 	ControlType(int typeId, String displayName, ControlTypeGroup group, String iconPath, boolean deprecated) {
 		this.typeId = typeId;
 		this.displayName = displayName;
@@ -93,6 +93,7 @@ public enum ControlType {
 
 
 	/** Returns the {@link #typeId} inside a {@link SVIntegerUnmodifiable} instance. Only one instance is returned */
+	@NotNull
 	public SVIntegerUnmodifiable toSerializableValue() {
 		if (sv == null) {
 			sv = new SVIntegerUnmodifiable(getTypeId());
@@ -102,11 +103,13 @@ public enum ControlType {
 
 
 	/** Return a string formatted as such: 'displayName (typeId)'. {@link #toString()} will return this value */
+	@NotNull
 	public String fullDisplayText() {
 		return getDisplayName() + " (" + getTypeId() + ")";
 	}
 
 	/** Return the class name for the root control type */
+	@NotNull
 	public String getNameAsClassName() {
 		return "ADC_" + getDisplayName().replaceAll("\\s", "_");
 	}
@@ -116,6 +119,7 @@ public enum ControlType {
 
 	 @throws IllegalArgumentException when id couldn't be matched
 	 */
+	@NotNull
 	public static ControlType findById(int typeId) {
 		for (ControlType type : values()) {
 			if (type.getTypeId() == typeId) {
@@ -131,7 +135,7 @@ public enum ControlType {
 
 	/** Return true if ControlType's is supported in the beta */
 	public boolean betaSupported() {
-		for (ControlType type : BETA_SUPPORTED) {
+		for (ControlType type : SUPPORTED) {
 			if (this == type) {
 				return true;
 			}

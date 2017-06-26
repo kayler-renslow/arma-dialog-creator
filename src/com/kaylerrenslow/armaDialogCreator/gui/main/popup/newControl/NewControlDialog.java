@@ -42,7 +42,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 
 		for (ControlTypeGroup group : ControlTypeGroup.values()) {
 			CBMBGroupMenu<ControlType> groupMenu = new CBMBGroupMenu<>(group.getDisplayName());
-			for (ControlType controlType : ControlType.BETA_SUPPORTED) {
+			for (ControlType controlType : ControlType.SUPPORTED) {
 				if (group != controlType.getGroup()) {
 					continue;
 				}

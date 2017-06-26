@@ -1,12 +1,11 @@
 **Added:**
-* error dialog for stringtable refresh/save
-* better error dialog for ExceptionHandler
+* a few more inheritance tests for control class that test for inheritance loops
 
 **Changed:**
-* made dialog open to confirm saving of stringtable
+* ControlClass.setTo() will now append properties that don't originally exist in the control class
 
 **Fixed:**
-* 
+* hasInheritanceLoop() and classEquals() in ControlClass were wrong
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

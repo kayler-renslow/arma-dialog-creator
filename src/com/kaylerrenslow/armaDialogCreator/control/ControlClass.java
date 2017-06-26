@@ -14,16 +14,20 @@ import java.util.function.Consumer;
  A {@link ControlClass} is merely a header file (.h) class that is:<br>
  <ol>
  <li>Extend-able via {@link ControlClass#extendControlClass(ControlClass)}</li>
- <li>Required and optional {@link ControlProperty}'s (obtainable via {@link #getRequiredProperties()} and {@link #getOptionalProperties()} respectively).</li>
- <li>Required and optional nested classes (classes within this class) which can be accessed with {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} respectively.</li>
+ <li>Required and optional {@link ControlProperty}'s (obtainable via {@link #getRequiredProperties()}
+ and {@link #getOptionalProperties()} respectively).</li>
+ <li>Required and optional nested classes (classes within this class) which can be accessed with
+ {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} respectively.</li>
  <li>There should be no duplicate names across all {@link ControlProperty} instances.</li>
  </ol>
  <p>
- A required {@link ControlProperty} is a property that is necessary to fill a {@link ControlClassRequirementSpecification}. In other words, those properties' values
+ A required {@link ControlProperty} is a property that is necessary to fill a {@link ControlClassRequirementSpecification}.
+ In other words, those properties' values
  ({@link ControlProperty#getValue()}) should <b>not</b> be null. An optional property is one that can be null.
  </p>
  <p>
- A required nested class is merely a class that should also have it's required properties filled in. An optional nested class doesn't need it's required properties to be filled in.
+ A required nested class is merely a class that should also have it's required properties filled in.
+ An optional nested class doesn't need it's required properties to be filled in.
  </p>
 
  @author Kayler
@@ -47,6 +51,7 @@ public class ControlClass {
 
 	private final ValueObserver<String> classNameObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
+	private ControlClass mySubClass = null;
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
@@ -205,14 +210,30 @@ public class ControlClass {
 	 @see #extendControlClass(ControlClass)
 	 */
 	public boolean hasInheritanceLoop(@NotNull ControlClass other) {
-		//check other's inheritance tree
-		ControlClass parent = other;
-		while (parent != null) {
-			if (parent.getClassName().equals(this.getClassName())) {
+		if (this.getClassName().equals(other.getClassName())) {
+			return true;
+		}
+
+		//check upwards the inheritance tree
+		ControlClass myGreatestAncestor = this;
+		List<String> classesInTree = new ArrayList<>();
+		do {
+			if (classesInTree.contains(myGreatestAncestor.getClassName())) {
 				return true;
 			}
-			parent = parent.getExtendClass();
-		}
+			classesInTree.add(myGreatestAncestor.getClassName());
+			myGreatestAncestor = myGreatestAncestor.getExtendClass();
+		} while (myGreatestAncestor != null);
+
+		//check downwards the inheritance tree
+		ControlClass otherGreatestDescendant = other;
+		do {
+			if (classesInTree.contains(otherGreatestDescendant.getClassName())) {
+				return true;
+			}
+			classesInTree.add(otherGreatestDescendant.getClassName());
+			otherGreatestDescendant = otherGreatestDescendant.mySubClass;
+		} while (otherGreatestDescendant != null);
 
 		return false;
 	}
@@ -246,6 +267,7 @@ public class ControlClass {
 			}
 
 			extendMe.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
+			extendMe.mySubClass = this;
 		} else {
 			//remove all temp properties
 			for (ControlProperty tempProperty : tempProperties) {
@@ -258,6 +280,7 @@ public class ControlClass {
 			}
 
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
+			oldExtendClass.mySubClass = null;
 		}
 
 		extendClassObserver.updateValue(extendMe);
@@ -277,7 +300,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the instance of this provider. It is best to not return a new instance each time and store the instance for later use.
+	 Get the instance of this provider.
+	 It is best to not return a new instance each time and store the instance for later use.
 
 	 @return the spec provider
 	 */
@@ -296,7 +320,10 @@ public class ControlClass {
 	}
 
 
-	/** Return a concatenation of {@link #getRequiredNestedClasses()} and {@link #getOptionalNestedClasses()} in an iterator */
+	/**
+	 Return a concatenation of {@link #getRequiredNestedClasses()} and
+	 {@link #getOptionalNestedClasses()} in an iterator
+	 */
 	@NotNull
 	public final Iterable<ControlClass> getAllNestedClasses() {
 		ArrayList<List<ControlClass>> merge = new ArrayList<>(2);
@@ -326,7 +353,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in required properties
@@ -343,7 +371,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside the {@link ControlClass#getRequiredProperties()} return value.
 
 	 @return the ControlProperty instance, or null if couldn't be matched
 	 */
@@ -353,7 +382,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup wasn't in optional properties
@@ -370,7 +400,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside the {@link ControlClass#getOptionalProperties()} return value.
 
 	 @return the ControlProperty instance, or null if couldn't be matched
 	 @see #findOptionalProperty(ControlPropertyLookupConstant)
@@ -381,7 +412,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
 
 	 @return the ControlProperty instance
 	 @throws IllegalArgumentException when the lookup doesn't exist in the {@link ControlClass}
@@ -402,7 +434,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Get the control property instance for the given lookup item. The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
+	 Get the control property instance for the given lookup item.
+	 The search will be done inside {@link #getOptionalProperties()} and {@link #getRequiredProperties()}.
 
 	 @return the ControlProperty instance, or null if couldn't be found
 	 @see #findProperty(ControlPropertyLookupConstant)
@@ -663,7 +696,8 @@ public class ControlClass {
 	}
 
 	/**
-	 In order for a property to be overridden, the property exists in this {@link ControlClass}, the property is defined ({@link #propertyIsDefined(ControlProperty)}), and the property isn't
+	 In order for a property to be overridden, the property exists in this {@link ControlClass},
+	 the property is defined ({@link #propertyIsDefined(ControlProperty)}), and the property isn't
 	 inherited ({@link ControlProperty#isInherited()})
 
 	 @return true if the given property lookup is overridden, false if it isn't.
@@ -674,7 +708,9 @@ public class ControlClass {
 	}
 
 	/**
-	 In order for a property to be overridden, the property is not inherited ({@link ControlProperty#isInherited()}==false) and the property is defined ({@link #propertyIsDefined(ControlProperty)})
+	 In order for a property to be overridden,
+	 the property is not inherited ({@link ControlProperty#isInherited()}==false)
+	 and the property is defined ({@link #propertyIsDefined(ControlProperty)})
 
 	 @return true if the given property lookup is overridden, false if it isn't.
 	 */
@@ -709,7 +745,8 @@ public class ControlClass {
 
 
 	/**
-	 Will return all properties that are defined (excluding inherited properties that are defined). To check if property is defined, the method {@link #propertyIsDefined(ControlProperty)} will
+	 @return all properties that are defined (excluding inherited properties that are defined).
+	 To check if property is defined, the method {@link #propertyIsDefined(ControlProperty)} will
 	 be used.
 	 */
 	@NotNull
@@ -723,7 +760,10 @@ public class ControlClass {
 		return properties;
 	}
 
-	/** Returns all {@link ControlProperty} instances (concatenation of {@link #getRequiredProperties()}) and {@link #getOptionalProperties()} in an iterator */
+	/**
+	 @return all {@link ControlProperty} instances (concatenation of {@link #getRequiredProperties()})
+	 and {@link #getOptionalProperties()} in an iterator
+	 */
 	public final Iterable<ControlProperty> getAllChildProperties() {
 		ArrayList<ReadOnlyList<ControlProperty>> merge = new ArrayList<>(2);
 		merge.add(getRequiredProperties());
@@ -732,7 +772,10 @@ public class ControlClass {
 	}
 
 
-	/** Will return all properties from {@link #getInheritedProperties()} that have defined values ({@link #propertyIsDefined(ControlProperty)}) */
+	/**
+	 Will return all properties from {@link #getInheritedProperties()} that
+	 have defined values ({@link #propertyIsDefined(ControlProperty)})
+	 */
 	@NotNull
 	public final Iterable<ControlProperty> getDefinedInheritedProperties() {
 		Iterable<ControlProperty> inheritedProperties = getInheritedProperties();
@@ -747,7 +790,10 @@ public class ControlClass {
 	}
 
 
-	/** Return a list of {@link ControlProperty} that are <b>not</b> overridden via {@link #overrideProperty(ControlPropertyLookupConstant)} and are inherited from {@link #getExtendClass()} */
+	/**
+	 Return a list of {@link ControlProperty} that are <b>not</b> overridden via
+	 {@link #overrideProperty(ControlPropertyLookupConstant)} and are inherited from {@link #getExtendClass()}
+	 */
 	@NotNull
 	public final Iterable<ControlProperty> getInheritedProperties() {
 		if (getExtendClass() == null) {
@@ -765,7 +811,7 @@ public class ControlClass {
 	}
 
 	@NotNull
-	public final Iterable<ControlProperty> getEventProperties() { //todo have getOptionalPropertiesNoEvents where it returns all optional properties without event properties
+	public final Iterable<ControlProperty> getEventProperties() {
 		final List<ControlProperty> eventProperties = new LinkedList<>();
 		for (ControlProperty property : getAllChildProperties()) {
 			if (ControlPropertyEventLookup.getEventProperty(property.getPropertyLookup()) != null) {
@@ -777,7 +823,8 @@ public class ControlClass {
 	}
 
 	/**
-	 To listen for when temporary properties are added/removed, check for {@link ControlClassTemporaryPropertyUpdate} in {@link #getControlClassUpdateGroup()}
+	 To listen for when temporary properties are added/removed, check for {@link ControlClassTemporaryPropertyUpdate}
+	 in {@link #getControlClassUpdateGroup()}
 
 	 @return all {@link ControlProperty} instances that exist only because of inheritance and not temporary.
 	 @see #inheritProperty(ControlPropertyLookupConstant)
@@ -788,10 +835,14 @@ public class ControlClass {
 	}
 
 	/**
-	 Gets the update listener group that listens to all {@link ControlProperty} instances. Instead of adding listeners to all {@link ControlProperty}'s potentially hundreds of times scattered
-	 across the program, the ControlClass listens to it's own ControlProperties. Any time any of the ControlProperty's receive an update, the value inside the listener will be the
-	 {@link ControlProperty} that was updated as well as the property's old value and the updated/new value. If this ControlClass extends some ControlClass via
-	 {@link #extendControlClass(ControlClass)}, the update groups will <b>not</b> be synced. You will have to listen to each ControlClass separately.
+	 Gets the update listener group that listens to all {@link ControlProperty} instances.
+	 Instead of adding listeners to all {@link ControlProperty}'s potentially hundreds of times scattered
+	 across the program, the ControlClass listens to it's own ControlProperties.
+	 Any time any of the ControlProperty's receive an update, the value inside the listener will be the
+	 {@link ControlProperty} that was updated as well as the property's old value and the updated/new value.
+	 If this ControlClass extends some ControlClass via
+	 {@link #extendControlClass(ControlClass)}, the update groups will <b>not</b> be synced.
+	 You will have to listen to each ControlClass separately.
 	 */
 	@NotNull
 	public final UpdateListenerGroup<ControlPropertyUpdate> getPropertyUpdateGroup() {
@@ -799,7 +850,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Gets the update listener group that listens to when an update happens to this {@link ControlClass}. Things that may trigger the update:<br>
+	 Gets the update listener group that listens to when an update happens to this {@link ControlClass}.
+	 Things that may trigger the update:<br>
 	 <ul>
 	 <li>update in conjunction with {@link #getPropertyUpdateGroup()}</li>
 	 <li>{@link #setClassName(String)}</li>
@@ -817,8 +869,13 @@ public class ControlClass {
 	 Checks if the given {@link ControlClass} matches the following criteria:<br>
 	 <ul>
 	 <li>{@code this.getClassName().equals(controlClass.getClassName())}</li>
-	 <li>this class's required properties matches {@code controlClass}'s required properties</li>
-	 <li>this class's required nested classes matches {@code controlClass}'s required nested classes (recursive check with this method)</li>
+	 <li>each of this class's properties has a match with each of {@code controlClass}'s properties
+	 ({@link #getAllChildProperties()}) and the classes have the same count of properties</li>
+	 <li>each of this class's nested classes has a match with each of {@code controlClass}'s nested classes
+	 (recursive check with this method) and the nested class counts are equal</li>
+	 <li>The required/optional nested classes/properties do not need to be required/optional to match. The properties
+	 and nested classes just need to exist. </li>
+	 <li>Only the {@link ControlProperty#getName()}s are used to check equivalence</li>
 	 </ul>
 
 	 @param controlClass class to check if equals
@@ -830,28 +887,34 @@ public class ControlClass {
 			return false;
 		}
 
-		for (ControlPropertyLookupConstant lookup : specProvider.getRequiredProperties()) {
-			boolean found = false;
-			for (ControlPropertyLookupConstant lookup2 : controlClass.specProvider.getRequiredProperties()) {
-				if (lookup == lookup2) {
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
+		{
+			int mySize = this.optionalProperties.size() + this.requiredProperties.size();
+			int otherSize = controlClass.optionalProperties.size() + controlClass.requiredProperties.size();
+			if (mySize != otherSize) {
 				return false;
 			}
 		}
 
-		for (ControlClass requiredClass : getRequiredNestedClasses()) {
-			boolean found = false;
-			for (ControlClass requiredClass2 : controlClass.getRequiredNestedClasses()) {
-				if (requiredClass.classEquals(requiredClass2)) {
-					found = true;
-					break;
-				}
+		for (ControlProperty p : getAllChildProperties()) {
+			if (controlClass.findPropertyByNameNullable(p.getName()) == null) {
+				return false;
 			}
-			if (!found) {
+		}
+
+		{
+			int mySize = this.optionalNestedClasses.size() + this.requiredNestedClasses.size();
+			int otherSize = controlClass.optionalNestedClasses.size() + controlClass.requiredNestedClasses.size();
+			if (mySize != otherSize) {
+				return false;
+			}
+		}
+
+		for (ControlClass myNested : getAllNestedClasses()) {
+			ControlClass other = controlClass.findNestedClassNullable(myNested.getClassName());
+			if (other == null) {
+				return false;
+			}
+			if (!myNested.classEquals(other)) {
 				return false;
 			}
 		}
@@ -860,7 +923,8 @@ public class ControlClass {
 	}
 
 	/**
-	 Sets this {@link ControlClass} fully equal to <code>controlClass</code> (disregards {@link #getUserData()}). NOTE: nothing will be deep copied!
+	 Sets this {@link ControlClass} fully equal to <code>controlClass</code> (disregards {@link #getUserData()}).
+	 NOTE: nothing will be deep copied!
 
 	 @param controlClass class to use
 	 */
@@ -870,27 +934,29 @@ public class ControlClass {
 		for (ControlProperty property : controlClass.getAllChildProperties()) {
 			ControlProperty m = findPropertyNullable(property.getPropertyLookup());
 			if (m == null) {
-				continue;
+				optionalProperties.add(property);
+			} else {
+				m.setTo(property);
 			}
-			m.setTo(property);
 		}
 		for (ControlClass nested : controlClass.getAllNestedClasses()) {
 			ControlClass m = findNestedClassNullable(nested.getClassName());
 			if (m == null) {
-				continue;
-			}
-			m.setTo(nested);
-		}
-
-		for (ControlProperty override : controlClass.getOverriddenProperties()) {
-			try {
-				overrideProperty(override.getPropertyLookup());
-			} catch (IllegalArgumentException ignore) {
-
+				optionalNestedClasses.add(nested);
+			} else {
+				m.setTo(nested);
 			}
 		}
 
 		extendControlClass(controlClass.getExtendClass());
+
+		for (ControlProperty override : controlClass.getOverriddenProperties()) {
+			overrideProperty(override.getPropertyLookup());
+		}
+
+		for (ControlProperty inherit : controlClass.getInheritedProperties()) {
+			inheritProperty(inherit.getPropertyLookup());
+		}
 	}
 
 	/**
@@ -945,8 +1011,9 @@ public class ControlClass {
 			//This does not need to have anything handled since it happens inside overrideProperty() or inheritProperty()
 			//which will create their respective updates.
 			return;
+		} else {
+			throw new IllegalStateException("unknown handled update:" + data.getClass().getName());
 		}
-		System.err.println("WARNING: ControlClass.update(): unknown control class update:" + data);
 	}
 
 	private void update(@NotNull ControlPropertyUpdate propertyUpdate, boolean deepCopy) {

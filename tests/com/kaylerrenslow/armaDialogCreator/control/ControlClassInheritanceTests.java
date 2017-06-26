@@ -19,8 +19,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void inherit_checkNotInherited() throws Exception {
 		//set property that exists in the class, but make sure that it wasn't inherited
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
-		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = TestControlClass.requiredProperties[0];
 		tcc.findRequiredProperty(constant).setValue(new SVString("Woah"));
 
@@ -42,8 +43,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void inherit_checkInherited() throws Exception {
 		//inherit property that exists in the class
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
-		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 		tcc.extendControlClass(tcc2);
 		SerializableValue jenny = new SVInteger(867_5309);
 		ControlPropertyLookupConstant constant = TestControlClass.requiredProperties[0];
@@ -59,8 +61,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void inherit_success_exists_changeAfter() throws Exception {
 		//test value updates to inherited properties
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
-		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 		tcc.extendControlClass(tcc2);
 		ControlPropertyLookupConstant constant = TestControlClass.requiredProperties[0];
 		if (constant.getPropertyType() != PropertyType.Int) {
@@ -83,8 +86,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void inheritProperty_success_createTemp() throws Exception {
 		//inherit property that does not exist in the class, but does in the parent class
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
 		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
 		if (tcc.findPropertyNullable(constant) != null) {
 			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClass for testing purposes");
@@ -102,8 +106,9 @@ public class ControlClassInheritanceTests {
 	public void inheritProperty_success_exist_wrongLookup() throws Exception {
 		//override property that does exist in the class, but the lookups aren't equal
 
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
 		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = ControlPropertyLookup.IDC;
 		ControlPropertyLookupConstant constantLookalike = TestControlPropertyLookup.IDC;
 
@@ -119,8 +124,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void overrideProperty_success_exists() throws Exception {
 		//override property that exists in the class
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
-		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = TestControlClass.requiredProperties[0];
 		SerializableValue oldValue = new SVString("Leroy Jenkins");
 		tcc.findProperty(constant).setValue(oldValue);
@@ -140,8 +146,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void overrideProperty_success_exists_wrongLookup() throws Exception {
 		//override property that exists in the class, but lookups aren't the same
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
-		TestControlClass tcc2 = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = ControlPropertyLookup.IDC;
 		ControlPropertyLookupConstant constantLookalike = TestControlPropertyLookup.IDC;
 		SerializableValue oldValue = new SVString("Leroy Jenkins");
@@ -162,8 +169,9 @@ public class ControlClassInheritanceTests {
 	@Test
 	public void overrideProperty_success_doesNotExist() throws Exception {
 		//override property that does not exist in the class, but was inherited
-		TestControlClass tcc = new TestControlClass(new TestSpecRegistry());
+		TestControlClass tcc = newTestControlClass();
 		TestControlClass2 tcc2 = new TestControlClass2(new TestSpecRegistry());
+		tcc2.setClassName("tcc2");
 		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
 		if (tcc.findPropertyNullable(constant) != null) {
 			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClass for testing purposes");
@@ -183,6 +191,68 @@ public class ControlClassInheritanceTests {
 
 		//check if the overridden property exists after the override
 		assertEquals(constant.getPropertyName(), tcc.findProperty(constant).getName());
+	}
+
+
+	@Test
+	public void extendControlClass_inheritanceLoop() throws Exception {
+		TestControlClass tcc1 = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+
+		try {
+			tcc1.extendControlClass(tcc2);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", true, false);
+	}
+
+	@Test
+	public void extendControlClass_inheritanceLoop2() throws Exception {
+		TestControlClass tcc1 = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
+		TestControlClass tcc3 = newTestControlClass();
+
+		tcc1.extendControlClass(tcc2);
+		tcc2.extendControlClass(tcc3);
+		try {
+			tcc3.extendControlClass(tcc1);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", true, false);
+	}
+
+	@Test
+	public void extendControlClass_inheritanceLoop3() throws Exception {
+		TestControlClass tcc1 = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
+		TestControlClass tcc3 = newTestControlClass();
+
+		tcc1.extendControlClass(tcc2);
+		try {
+			tcc1.extendControlClass(tcc3);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("Expected an exception", true, false);
+	}
+
+	@Test
+	public void extendControlClass_noInheritanceLoop() throws Exception {
+		TestControlClass tcc1 = newTestControlClass();
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
+		TestControlClass tcc3 = newTestControlClass();
+
+		tcc1.extendControlClass(tcc2);
+		tcc2.extendControlClass(tcc3);
+	}
+
+	private static TestControlClass newTestControlClass() {
+		return new TestControlClass(new TestSpecRegistry());
 	}
 
 }
