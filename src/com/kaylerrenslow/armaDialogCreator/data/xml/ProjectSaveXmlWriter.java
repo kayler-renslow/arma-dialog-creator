@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguratio
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,8 +48,17 @@ public class ProjectSaveXmlWriter {
 		this.projectSaveXml = project.getProjectSaveFile();
 	}
 
-	public void write() throws IOException {
-		XmlWriterOutputStream stm = new XmlWriterOutputStream(projectSaveXml);
+	/**
+	 Write the xml.
+
+	 @param saveFile if null, will use {@link Project#getProjectSaveFile()} as the write file, otherwise will write
+	 to this file
+	 @throws IOException
+	 */
+	public void write(@Nullable File saveFile) throws IOException {
+		saveFile = saveFile == null ? projectSaveXml : saveFile;
+
+		XmlWriterOutputStream stm = new XmlWriterOutputStream(saveFile);
 
 		stm.writeDefaultProlog();
 		stm.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION));

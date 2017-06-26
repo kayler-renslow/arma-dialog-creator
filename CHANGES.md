@@ -1,11 +1,11 @@
 **Added:**
-* a few more inheritance tests for control class that test for inheritance loops
+* changed the save location for saving when application crashes
 
 **Changed:**
-* ControlClass.setTo() will now append properties that don't originally exist in the control class
+* 
 
 **Fixed:**
-* hasInheritanceLoop() and classEquals() in ControlClass were wrong
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

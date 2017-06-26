@@ -88,7 +88,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 				) {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {
-						boolean good = ArmaDialogCreator.getApplicationDataManager().forceSave();
+						boolean good = ArmaDialogCreator.getApplicationDataManager().rescueSave();
 						new StagePopup<TextArea>(
 								ArmaDialogCreator.getPrimaryStage(),
 								new TextArea(

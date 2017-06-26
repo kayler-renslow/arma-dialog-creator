@@ -27,7 +27,7 @@ public class ApplicationDataManager {
 	private ApplicationData applicationData;
 
 	public void loadWorkspace(@NotNull File workspaceDir) {
-		if(!workspaceDir.exists()){
+		if (!workspaceDir.exists()) {
 			workspaceDir.mkdirs();
 		}
 		workspace = new Workspace(workspaceDir);
@@ -87,7 +87,7 @@ public class ApplicationDataManager {
 		try {
 			propertyManager.saveApplicationProperties();
 		} catch (Exception e) {
-			e.printStackTrace(System.out);
+			ExceptionHandler.error(e);
 			return false;
 		}
 		return true;
@@ -95,6 +95,10 @@ public class ApplicationDataManager {
 
 	/** Saves the project. If exception is thrown, project wasn't successfully saved. */
 	public void saveProject() throws IOException {
+		saveProject(false);
+	}
+
+	private void saveProject(boolean rescue) throws IOException {
 		if (applicationData == null) {
 			return;
 		}
@@ -106,30 +110,14 @@ public class ApplicationDataManager {
 				project,
 				ArmaDialogCreator.getCanvasView().getMainControlsTreeStructure(),
 				ArmaDialogCreator.getCanvasView().getBackgroundControlsTreeStructure()
-		).write();
-	}
-
-	/**
-	 This should be called when the application is exiting unexpectedly and the data should be saved.
-
-	 @return true if the data could be successfully saved, false if it couldn't
-	 */
-	public boolean forceSave() {
-		saveApplicationProperties();
-		try {
-			saveProject();
-		} catch (IOException e) {
-			e.printStackTrace(System.out);
-			return false;
-		}
-		return true;
+		).write(rescue ? new File(project.getProjectSaveFile().getAbsoluteFile() + ".rescue") : null);
 	}
 
 	public void saveGlobalResources() {
 		try {
-			new ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter().writeAndClose();
+			ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose();
 		} catch (IOException e) {
-			e.printStackTrace(System.out);
+			ExceptionHandler.error(e);
 		}
 	}
 
@@ -156,6 +144,22 @@ public class ApplicationDataManager {
 	@NotNull
 	public Workspace getWorkspace() {
 		return workspace;
+	}
+
+	/**
+	 Save the project, but in a file that isn't the project file.
+	 This should be called when the application is exiting unexpectedly and the data should be saved.
+	 This will not invoke {@link #saveApplicationProperties()}.
+
+	 @return true if saved, false if it couldn't be saved
+	 */
+	public boolean rescueSave() {
+		try {
+			saveProject(true);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
 	}
 
 	private static class SaveProjectDialog extends StageDialog<VBox> {
