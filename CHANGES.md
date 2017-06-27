@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* made inherited properties in editor pane have a blue tint 
+*  
 
 **Fixed:**
-* extendControlClass doesn't append inherited nested classes
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -19,4 +19,6 @@
     - Instead of allowing user to add/remove properties, we could have "header inserts" the user can place in the
       control's exported class. Besides, why would there ever need to be custom properties? Everything you should need
       should be in the spec provider
-    
+* June 26: can't edit nested classes in editor pane. need to implement the "edit" menu item action
+        * setting HintRep's parent class to null doens't properly update the editor pane
+        * remove the nested class from static later because its for testing

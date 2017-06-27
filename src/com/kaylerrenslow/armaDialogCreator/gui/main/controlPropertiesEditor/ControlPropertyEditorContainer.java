@@ -49,14 +49,12 @@ class ControlPropertyEditorContainer extends HBox {
 	private ControlClassUpdateListener controlClassUpdateListener;
 
 	private boolean hideIfInherited;
-	private Node stackPaneTint = new StackPane();
+	private Node stackPaneTint;
 
 	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlProperty property) {
 		super(5);
 		this.controlClass = controlClass;
 		this.controlProperty = property;
-
-		stackPaneTint.setStyle("-fx-background-color:rgba(0, 132, 180, 0.23)");
 
 		updatePropertyValueEditor();
 
@@ -280,11 +278,14 @@ class ControlPropertyEditorContainer extends HBox {
 
 	private void updateContainerInheritanceTint() {
 		if (controlProperty.isInherited()) {
-			if (!stackPanePropertyInput.getChildren().contains(stackPaneTint)) {
+			if (stackPaneTint == null) {
+				stackPaneTint = new StackPane();
+				stackPaneTint.setStyle("-fx-background-color:rgba(0, 132, 180, 0.23)");
 				stackPanePropertyInput.getChildren().add(stackPaneTint);
 			}
 		} else {
 			stackPanePropertyInput.getChildren().removeIf(node -> node == stackPaneTint);
+			stackPaneTint = null;
 		}
 	}
 

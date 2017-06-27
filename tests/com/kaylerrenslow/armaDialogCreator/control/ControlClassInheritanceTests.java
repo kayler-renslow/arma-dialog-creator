@@ -213,6 +213,7 @@ public class ControlClassInheritanceTests {
 		TestControlClass tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
 		TestControlClass tcc3 = newTestControlClass();
+		tcc3.setClassName("tcc3");
 
 		tcc1.extendControlClass(tcc2);
 		tcc2.extendControlClass(tcc3);
@@ -246,9 +247,60 @@ public class ControlClassInheritanceTests {
 		TestControlClass tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
 		TestControlClass tcc3 = newTestControlClass();
+		tcc3.setClassName("tcc3");
 
 		tcc1.extendControlClass(tcc2);
 		tcc2.extendControlClass(tcc3);
+	}
+
+	@Test
+	public void extendControlClass_inheritanceLoop_multipleExtends() throws Exception {
+		//create a loop where a class has multiple sub classes
+
+		TestControlClass tcc1 = newTestControlClass();
+		tcc1.setClassName("tcc1");
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
+		TestControlClass tcc3 = newTestControlClass();
+		tcc3.setClassName("tcc3");
+		TestControlClass tcc4 = newTestControlClass();
+		tcc4.setClassName("tcc4");
+
+		tcc3.extendControlClass(tcc2);
+		tcc4.extendControlClass(tcc2);
+		tcc2.extendControlClass(tcc1);
+
+		try {
+			tcc1.extendControlClass(tcc3);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("expected an inheritance loop exception", true, false);
+	}
+
+	@Test
+	public void extendControlClass_inheritanceLoop_multipleExtends2() throws Exception {
+		//create a loop where a class has multiple sub classes
+
+		TestControlClass tcc1 = newTestControlClass();
+		tcc1.setClassName("tcc1");
+		TestControlClass tcc2 = newTestControlClass();
+		tcc2.setClassName("tcc2");
+		TestControlClass tcc3 = newTestControlClass();
+		tcc3.setClassName("tcc3");
+		TestControlClass tcc4 = newTestControlClass();
+		tcc4.setClassName("tcc4");
+
+		tcc4.extendControlClass(tcc2);
+		tcc3.extendControlClass(tcc2);
+		tcc2.extendControlClass(tcc1);
+
+		try {
+			tcc1.extendControlClass(tcc3);
+		} catch (IllegalArgumentException e) {
+			return;
+		}
+		assertEquals("expected an inheritance loop exception", true, false);
 	}
 
 	private static TestControlClass newTestControlClass() {

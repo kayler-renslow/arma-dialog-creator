@@ -4,10 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -53,7 +50,7 @@ public class ControlClass {
 
 	private final ValueObserver<String> classNameObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
-	private ControlClass mySubClass = null;
+	private final Set<ControlClass> mySubClasses = new HashSet<>();
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
@@ -230,35 +227,40 @@ public class ControlClass {
 	 Check if the given class is part of this {@link ControlClass}'s inheritance tree
 
 	 @param other other class
-	 @return true if there is a loop, false if there isn't
+	 @return true if there would be a loop if this extended other, false if there wouldn't be a loop
 	 @see #extendControlClass(ControlClass)
 	 */
 	public boolean hasInheritanceLoop(@NotNull ControlClass other) {
 		if (this.getClassName().equals(other.getClassName())) {
 			return true;
 		}
+		//Check for loops, like its a graph.
 
-		//check upwards the inheritance tree
-		ControlClass myGreatestAncestor = this;
-		List<String> classesInTree = new ArrayList<>();
-		do {
-			if (classesInTree.contains(myGreatestAncestor.getClassName())) {
+		//If we can get from this to other, there would be a loop if we extend other.
+		//Therefore, we should return true (because there would be a loop)
+		LinkedList<ControlClass> toVisit = new LinkedList<>();
+		HashSet<String> visited = new HashSet<>();
+		toVisit.add(this);
+		while (!toVisit.isEmpty()) {
+			ControlClass visit = toVisit.pop();
+			if (visit.getClassName().equals(other.getClassName())) {
 				return true;
 			}
-			classesInTree.add(myGreatestAncestor.getClassName());
-			myGreatestAncestor = myGreatestAncestor.getExtendClass();
-		} while (myGreatestAncestor != null);
+			visited.add(visit.getClassName());
 
-		//check downwards the inheritance tree
-		ControlClass otherGreatestDescendant = other;
-		do {
-			if (classesInTree.contains(otherGreatestDescendant.getClassName())) {
-				return true;
+			for (ControlClass child : visit.mySubClasses) {
+				if (visited.contains(child.getClassName())) {
+					continue;
+				}
+				toVisit.add(child);
 			}
-			classesInTree.add(otherGreatestDescendant.getClassName());
-			otherGreatestDescendant = otherGreatestDescendant.mySubClass;
-		} while (otherGreatestDescendant != null);
 
+			ControlClass extendClass = visit.getExtendClass();
+			if (extendClass == null || visited.contains(extendClass.getClassName())) {
+				continue;
+			}
+			toVisit.add(extendClass);
+		}
 		return false;
 	}
 
@@ -305,7 +307,7 @@ public class ControlClass {
 			}
 
 			extendMe.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
-			extendMe.mySubClass = this;
+			extendMe.mySubClasses.add(this);
 		} else {
 			//remove all temp properties
 			for (ControlProperty tempProperty : tempProperties) {
@@ -325,7 +327,7 @@ public class ControlClass {
 			}
 
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
-			oldExtendClass.mySubClass = null;
+			oldExtendClass.mySubClasses.remove(this);
 		}
 
 		extendClassObserver.updateValue(extendMe);
@@ -1080,5 +1082,10 @@ public class ControlClass {
 		} catch (IllegalArgumentException ignore) {
 
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return getClassName().hashCode();
 	}
 }
