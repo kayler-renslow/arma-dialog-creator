@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.main;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.SimpleErrorDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import javafx.application.Platform;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
@@ -46,11 +47,11 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				SimpleErrorDialog<TextArea> errorDialog = new SimpleErrorDialog<>(
+				SimpleErrorDialog<Label> errorDialog = new SimpleErrorDialog<>(
 						ArmaDialogCreator.getPrimaryStage(),
-						"An internal error occurred.",
+						"ADC Uncaught Error",
 						t,
-						getExceptionTextArea(threadWhereErrorOccurred, t)
+						new Label("An internal error occurred.")
 				);
 				errorDialog.show();
 			}
@@ -81,10 +82,10 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				StagePopup sp = new StagePopup<TextArea>(
+				SimpleErrorDialog<Label> sp = new SimpleErrorDialog<Label>(
 						ArmaDialogCreator.getPrimaryStage(),
-						getExceptionTextArea(threadWereErrorOccurred, t),
-						"A FATAL error occurred."
+						"ADC Uncaught Error", t,
+						new Label("A FATAL error occurred.")
 				) {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {

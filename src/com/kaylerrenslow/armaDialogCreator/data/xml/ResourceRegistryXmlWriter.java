@@ -71,13 +71,13 @@ public class ResourceRegistryXmlWriter {
 	}
 
 	private void writeResource(@NotNull XmlWriterOutputStream fos, ExternalResource resource) throws IOException {
-		String attrs = "";
+		StringBuilder attrs = new StringBuilder();
 		for (KeyValueString keyValue : resource.getProperties()) {
-			attrs += String.format("<resource-property key='%s'>%s</resource-property>", keyValue.getKey(), keyValue.getValue());
+			attrs.append(String.format("<resource-property key='%s'>%s</resource-property>", keyValue.getKey(), keyValue.getValue()));
 		}
 		fos.write("<external-resource>");
 		fos.write(resource.getExternalFile().getPath());
-		fos.write(attrs);
+		fos.write(attrs.toString());
 		fos.write("</external-resource>");
 	}
 }

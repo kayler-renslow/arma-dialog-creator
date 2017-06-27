@@ -1,11 +1,11 @@
 **Added:**
-* changed the save location for saving when application crashes
+* 
 
 **Changed:**
-* 
+* made inherited properties in editor pane have a blue tint 
 
 **Fixed:**
-* 
+* extendControlClass doesn't append inherited nested classes
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

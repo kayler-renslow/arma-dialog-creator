@@ -11,5 +11,5 @@ public interface ControlClassUpdate {
 
 	/**Get the {@link ControlClass} that was updated*/
 	@NotNull
-	ControlClass getControlClass();
+	ControlClass getOwnerControlClass();
 }

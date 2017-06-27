@@ -20,7 +20,7 @@ public class ControlClassTemporaryPropertyUpdate implements ControlClassUpdate {
 
 	@Override
 	@NotNull
-	public ControlClass getControlClass() {
+	public ControlClass getOwnerControlClass() {
 		return controlClass;
 	}
 

@@ -21,7 +21,7 @@ public class ControlClassPropertyUpdate implements ControlClassUpdate {
 	}
 
 	@Override
-	public @NotNull ControlClass getControlClass() {
+	public @NotNull ControlClass getOwnerControlClass() {
 		return controlClass;
 	}
 

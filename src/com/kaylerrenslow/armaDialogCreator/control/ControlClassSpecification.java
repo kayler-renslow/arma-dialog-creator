@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,7 +13,7 @@ import java.util.List;
  @see CustomControlClass
  @since 11/12/2016. */
 public class ControlClassSpecification implements ControlClassRequirementSpecification {
-	public static final ReadOnlyList<ControlClassSpecification> EMPTY = new ReadOnlyList<>(new ArrayList<>());
+	public static final ReadOnlyList<ControlClassSpecification> EMPTY = new ReadOnlyList<>(Collections.emptyList());
 
 	private String controlClassName;
 	private final ReadOnlyList<ControlPropertySpecification> requiredProperties;

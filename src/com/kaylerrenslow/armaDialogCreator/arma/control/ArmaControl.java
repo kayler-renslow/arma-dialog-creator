@@ -211,12 +211,12 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 
 	@NotNull
 	public static ArmaControl createControl(@NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
+		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.renderer, env, registry);
 	}
 
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType controlType, @NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 											@NotNull Env env, @NotNull SpecificationRegistry registry) {
-		return createControl(controlType, className, lookup.specProvider, resolution, lookup.defaultRenderer, env, registry);
+		return createControl(controlType, className, lookup.specProvider, resolution, lookup.renderer, env, registry);
 	}
 }

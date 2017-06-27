@@ -1,14 +1,17 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
 
 /**
  Created by Kayler on 11/12/2016.
  */
 public class ControlPropertySpecification {
-	public static final ControlPropertySpecification[] EMPTY = new ControlPropertySpecification[0];
+	public static final ReadOnlyList<ControlPropertySpecification> EMPTY = new ReadOnlyList<>(Collections.emptyList());
 
 	private ControlPropertyLookup lookup;
 	private SerializableValue value;

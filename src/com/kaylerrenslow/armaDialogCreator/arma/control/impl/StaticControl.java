@@ -9,6 +9,8 @@ import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+
 /**
  Used for a controls with type=0 (Static)
 
@@ -78,6 +80,21 @@ public class StaticControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return allowedStyles;
+		}
+
+		ReadOnlyList<ControlClassSpecification> nested_DELETE_THIS_LATER = new ReadOnlyList<>(
+				Arrays.asList(
+						new ControlClassSpecification(
+								"nested",
+								ControlPropertySpecification.EMPTY,
+								ControlPropertySpecification.EMPTY
+						)
+				)
+		);
+
+		@Override
+		public @NotNull ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
+			return nested_DELETE_THIS_LATER;
 		}
 	};
 

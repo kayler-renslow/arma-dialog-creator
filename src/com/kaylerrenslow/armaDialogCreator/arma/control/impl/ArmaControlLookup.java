@@ -60,12 +60,12 @@ public enum ArmaControlLookup {
 	public final ArmaControlSpecRequirement specProvider;
 	/** The renderer to use for the control */
 	@NotNull
-	public final RendererLookup defaultRenderer;
+	public final RendererLookup renderer;
 
 	ArmaControlLookup(@NotNull ControlType controlType, @NotNull ArmaControlSpecRequirement specProvider, @NotNull RendererLookup lookup) {
 		this.controlType = controlType;
 		this.specProvider = specProvider;
-		this.defaultRenderer = lookup;
+		this.renderer = lookup;
 	}
 
 	@NotNull

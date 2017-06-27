@@ -46,6 +46,8 @@ public class ControlClass {
 	private final List<ControlClass> optionalNestedClasses = new LinkedList<>();
 	private final ReadOnlyList<ControlClass> requiredNestedClassesReadOnly = new ReadOnlyList<>(requiredNestedClasses);
 	private final ReadOnlyList<ControlClass> optionalNestedClassesReadOnly = new ReadOnlyList<>(optionalNestedClasses);
+	private final List<ControlClass> tempNestedClasses = new LinkedList<>();
+	private final ReadOnlyList<ControlClass> tempNestedClassesReadOnly = new ReadOnlyList<>(tempNestedClasses);
 
 	private final DataContext userData = new DataContext();
 
@@ -55,12 +57,34 @@ public class ControlClass {
 
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
+	/** This listener is for handling any inheritance updates */
 	private final UpdateGroupListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateGroupListener<ControlClassUpdate>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
 			if (data instanceof ControlClassTemporaryPropertyUpdate) {
 				handleTempPropertyUpdate((ControlClassTemporaryPropertyUpdate) data);
+			} else if (data instanceof ControlClassTemporaryNestedClassUpdate) {
+				handleTempNestedClassUpdate((ControlClassTemporaryNestedClassUpdate) data);
 			}
+		}
+
+		private void handleTempNestedClassUpdate(ControlClassTemporaryNestedClassUpdate update) {
+			ControlClass mine = findNestedClassNullable(update.getNestedClass().getClassName());
+			ControlClass updateNested = update.getNestedClass();
+			if (update.isAdded()) {
+				if (mine == null) {
+					optionalNestedClasses.add(updateNested);
+					tempNestedClasses.add(updateNested);
+				}
+			} else {
+				if (mine != null) {
+					optionalNestedClasses.remove(updateNested);
+					tempNestedClasses.remove(updateNested);
+				}
+			}
+			controlClassUpdateGroup.update(
+					new ControlClassTemporaryNestedClassUpdate(ControlClass.this, updateNested, update.isAdded())
+			);
 		}
 
 		private void handleTempPropertyUpdate(ControlClassTemporaryPropertyUpdate tempPropertyUpdate) {
@@ -242,9 +266,14 @@ public class ControlClass {
 	 Extend the given {@link ControlClass}, or clear the extend class with null.
 	 Any properties that initially have a value in them ({@link #propertyIsDefined(ControlProperty)}) will not be inherited,
 	 unless explicitly stated with {@link #inheritProperty(ControlPropertyLookupConstant)}.
+	 <p>
+	 Any of {@link ControlClass#getAllNestedClasses()} that don't exist in this class will be inherited.
+	 Use the method {@link #getTempNestedClassesReadOnly()} to get such nested classes. All inherited nested classes
+	 will be appended to {@link #getOptionalNestedClasses()} as well. The inherited nested classes will <b>not</b> be
+	 deep copied.
 
 	 @param extendMe class to extend
-	 @throws IllegalArgumentException if <code>extendMe==this</code>
+	 @throws IllegalArgumentException if there is an inheritance loop ({@link #hasInheritanceLoop(ControlClass)})
 	 @see ControlProperty#inherit(ControlProperty)
 	 */
 	public final void extendControlClass(@Nullable ControlClass extendMe) {
@@ -266,6 +295,15 @@ public class ControlClass {
 				this.inheritProperty(checkToInherit.getPropertyLookup());
 			}
 
+			for (ControlClass nested : extendMe.getAllNestedClasses()) {
+				if (findNestedClassNullable(nested.getClassName()) == null) {
+					optionalNestedClasses.add(nested);
+					getControlClassUpdateGroup().update(
+							new ControlClassTemporaryNestedClassUpdate(this, nested, true)
+					);
+				}
+			}
+
 			extendMe.getControlClassUpdateGroup().addListener(controlClassUpdateExtendListener);
 			extendMe.mySubClass = this;
 		} else {
@@ -275,6 +313,13 @@ public class ControlClass {
 			}
 			tempProperties.clear();
 
+			//remove all temp nested classes
+			for (ControlClass tempNested : tempNestedClasses) {
+				controlClassUpdateGroup.update(new ControlClassTemporaryNestedClassUpdate(this, tempNested, false));
+			}
+			tempNestedClasses.clear();
+
+			//clear all inheritance
 			for (ControlProperty property : this.getAllChildProperties()) {
 				this.overrideProperty(property.getPropertyLookup());
 			}
@@ -826,13 +871,26 @@ public class ControlClass {
 	 To listen for when temporary properties are added/removed, check for {@link ControlClassTemporaryPropertyUpdate}
 	 in {@link #getControlClassUpdateGroup()}
 
-	 @return all {@link ControlProperty} instances that exist only because of inheritance and not temporary.
+	 @return all {@link ControlProperty} instances that exist only because of inheritance.
 	 @see #inheritProperty(ControlPropertyLookupConstant)
 	 */
 	@NotNull
 	public final ReadOnlyList<ControlProperty> getTempPropertiesReadOnly() {
 		return tempPropertiesReadOnly;
 	}
+
+	/**
+	 To listen for when temporary nested classes are added/removed, check for
+	 {@link ControlClassTemporaryNestedClassUpdate}
+	 in {@link #getControlClassUpdateGroup()}
+
+	 @return all {@link ControlClass} instances that exist only because of inheritance.
+	 */
+	@NotNull
+	public final ReadOnlyList<ControlClass> getTempNestedClassesReadOnly() {
+		return tempNestedClassesReadOnly;
+	}
+
 
 	/**
 	 Gets the update listener group that listens to all {@link ControlProperty} instances.

@@ -26,7 +26,7 @@ public class ControlClassRenameUpdate implements ControlClassUpdate {
 
 	@Override
 	@NotNull
-	public ControlClass getControlClass() {
+	public ControlClass getOwnerControlClass() {
 		return updated;
 	}
 

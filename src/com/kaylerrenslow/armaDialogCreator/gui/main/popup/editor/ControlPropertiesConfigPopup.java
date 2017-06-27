@@ -43,6 +43,11 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 05/31/2016. */
 public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
+	private static final Key<Boolean> KEY_HIDE_INHERITED = new Key<>(
+			ControlPropertiesConfigPopup.class.getName() + ".hide_if_inherited",
+			false
+	);
+
 	private final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
 
 	private ArmaControl control;
@@ -113,6 +118,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myScene.setFill(Color.TRANSPARENT);
 		myRootElement.setPadding(new Insets(20.0));
 		myRootElement.setMaxHeight(720d); //prevent the element from being godly large
+		myRootElement.setMinWidth(520);
 	}
 
 	private void initializeToControl() {
@@ -164,10 +170,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		final CheckBox checkBoxHideInherited = new CheckBox(bundle.getString("ControlPropertiesConfig.hide_inherited"));
 		checkBoxHideInherited.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				editorPane.hideInheritedProperties(newValue);
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean hideInherited) {
+				editorPane.hideInheritedProperties(hideInherited);
+				// KEY_HIDE_INHERITED.put(control.getUserData(), hideInherited);
+				// sizeToScene();
 			}
 		});
+
+		// checkBoxHideInherited.setSelected(KEY_HIDE_INHERITED.get(control.getUserData()));
 
 		final HBox hboxLeft = new HBox(15, checkBoxIsBackgroundControl, checkBoxHideInherited);
 
@@ -284,7 +294,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			control.getClassNameObserver().addListener(classNameListener);
 			control.getExtendClassObserver().addListener(controlClassExtendListener);
 			control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
-			editorPane.relink();
+			editorPane.link();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);

@@ -49,11 +49,14 @@ class ControlPropertyEditorContainer extends HBox {
 	private ControlClassUpdateListener controlClassUpdateListener;
 
 	private boolean hideIfInherited;
+	private Node stackPaneTint = new StackPane();
 
 	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlProperty property) {
 		super(5);
 		this.controlClass = controlClass;
 		this.controlProperty = property;
+
+		stackPaneTint.setStyle("-fx-background-color:rgba(0, 132, 180, 0.23)");
 
 		updatePropertyValueEditor();
 
@@ -62,8 +65,6 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	private void init() {
-		currentValueEditor().disableEditing(controlProperty.getPropertyLookup() == ControlPropertyLookup.TYPE);
-
 		placeTooltip(controlClass, menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
 
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
@@ -103,19 +104,9 @@ class ControlPropertyEditorContainer extends HBox {
 		};
 		controlClass.getControlClassUpdateGroup().addListener(controlClassUpdateListener);
 
-		if (controlProperty.getPropertyLookup() instanceof ControlPropertyLookup) {
-			switch ((ControlPropertyLookup) controlProperty.getPropertyLookup()) {
-				case TYPE: {
-					for (MenuItem item : menuButtonOptions.getItems()) {
-						item.setDisable(true);
-					}
-					break;
-				}
-			}
-		}
-
 		Function<Void, Void> propertyInheritUpdate = (v) -> {
 			boolean inherited = controlProperty.isInherited();
+			updateContainerInheritanceTint();
 			stackPanePropertyInput.setDisable(inherited);
 			miDefaultEditor.setDisable(inherited);
 			miResetToInitial.setDisable(inherited);
@@ -274,9 +265,27 @@ class ControlPropertyEditorContainer extends HBox {
 			menuButtonOptions.getItems().remove(miRaw);
 		}
 
-		propertyInheritUpdate.apply(null);
+
+		if (controlProperty.getPropertyLookup() == ControlPropertyLookup.TYPE) {
+			currentValueEditor().disableEditing(true);
+			menuButtonOptions.getItems().clear();
+			MenuItem miNoEdit = new MenuItem(bundle.getString("type_immutable"));
+			miNoEdit.setDisable(true);
+			menuButtonOptions.getItems().add(miNoEdit);
+		}
 
 		updateContainer();
+		propertyInheritUpdate.apply(null);
+	}
+
+	private void updateContainerInheritanceTint() {
+		if (controlProperty.isInherited()) {
+			if (!stackPanePropertyInput.getChildren().contains(stackPaneTint)) {
+				stackPanePropertyInput.getChildren().add(stackPaneTint);
+			}
+		} else {
+			stackPanePropertyInput.getChildren().removeIf(node -> node == stackPaneTint);
+		}
 	}
 
 	private void updateContainer() {
@@ -291,13 +300,11 @@ class ControlPropertyEditorContainer extends HBox {
 	@SuppressWarnings("unchecked")
 	private void updatePropertyInputMode(ControlPropertyValueEditor.EditMode mode) {
 		if (mode == ControlPropertyValueEditor.EditMode.MACRO) {
-			stackPanePropertyInput.getChildren().clear();
-
 			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(currentValueEditor().getMacroPropertyType(), currentValueEditor().getControlProperty().getMacro());
 
 			macroGetterButton.getChosenMacroValueObserver().updateValue(getControlProperty().getMacro());
 
-			stackPanePropertyInput.getChildren().add(macroGetterButton);
+			stackPanePropertyInput.getChildren().set(0, macroGetterButton);
 			macroGetterButton.getChosenMacroValueObserver().addListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
@@ -312,8 +319,7 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 				currentValueEditor().getControlProperty().setValueToMacro(null);
 			}
-			stackPanePropertyInput.getChildren().clear();
-			stackPanePropertyInput.getChildren().add(currentValueEditor().getRootNode());
+			stackPanePropertyInput.getChildren().set(0, currentValueEditor().getRootNode());
 			currentValueEditor().setToMode(mode);
 		}
 	}
@@ -351,12 +357,11 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	protected void updatePropertyValueEditor() {
-		stackPanePropertyInput.getChildren().clear();
 		propertyValueEditor = constructNewPropertyValueEditor();
 		HBox.setHgrow(stackPanePropertyInput, propertyValueEditor.displayFullWidth() ?
 				Priority.ALWAYS : Priority.NEVER
 		);
-		stackPanePropertyInput.getChildren().add(propertyValueEditor.getRootNode());
+		stackPanePropertyInput.getChildren().setAll(propertyValueEditor.getRootNode());
 		if (controlProperty.getValue() instanceof SVRaw) {
 			stackPanePropertyInput.setPadding(new Insets(1));
 			stackPanePropertyInput.setBorder(
@@ -373,6 +378,8 @@ class ControlPropertyEditorContainer extends HBox {
 			stackPanePropertyInput.setBorder(null);
 			stackPanePropertyInput.setPadding(Insets.EMPTY);
 		}
+
+		updateContainerInheritanceTint();
 	}
 
 	/** Get node that holds the controls to input data. */

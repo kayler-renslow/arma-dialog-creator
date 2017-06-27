@@ -367,18 +367,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			return null;
 		}
 
-
+		ArmaControlLookup armaControlLookup = ArmaControlLookup.findByControlType(controlType);
 
 		//renderer
-		RendererLookup rendererLookup;
-		String rendererStr = controlElement.getAttribute("renderer-id");
-		try {
-			rendererLookup = RendererLookup.getById(Integer.parseInt(rendererStr));
-		} catch (IllegalArgumentException e) {
-			addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_renderer_f"), rendererStr, controlClassName)));
-			return null;
-		}
-
+		RendererLookup rendererLookup = armaControlLookup.renderer;
 
 		//control properties
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "property");
@@ -392,7 +384,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 
 		//control construction
-		ArmaControlSpecRequirement specProvider = ArmaControlLookup.findByControlType(controlType).specProvider;
+		ArmaControlSpecRequirement specProvider = armaControlLookup.specProvider;
 
 		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, resolution, rendererLookup, env, project);
 

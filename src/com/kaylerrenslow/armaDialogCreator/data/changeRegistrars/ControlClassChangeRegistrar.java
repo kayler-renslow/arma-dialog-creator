@@ -149,8 +149,8 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		public ControlClassChange(@NotNull ControlClassChangeRegistrar registrar, @NotNull ControlClassUpdate classUpdate) throws Exception {
 			this.registrar = registrar;
 
-			className = classUpdate.getControlClass().getClassName();
-			ControlClass controlClass = classUpdate.getControlClass();
+			className = classUpdate.getOwnerControlClass().getClassName();
+			ControlClass controlClass = classUpdate.getOwnerControlClass();
 			@NotNull ChangeAction action;
 			if (classUpdate instanceof ControlClassRenameUpdate) {
 				//
@@ -177,7 +177,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					}
 				};
 				changeType = ControlClassChangeType.ClassRename;
-				stringForCheckingIfSimilar = update.getControlClass().getClassName();
+				stringForCheckingIfSimilar = update.getOwnerControlClass().getClassName();
 				//
 				//
 				//
@@ -228,7 +228,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					}
 				};
 				changeType = ControlClassChangeType.OverrideProperty;
-				stringForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + propertyName;
+				stringForCheckingIfSimilar = update.getOwnerControlClass().getClassName() + "\0" + propertyName;
 				//
 				//
 				//
@@ -261,7 +261,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					}
 				};
 				changeType = ControlClassChangeType.ClassExtend;
-				stringForCheckingIfSimilar = update.getControlClass().getClassName() + "\0" + update.getNewValue();
+				stringForCheckingIfSimilar = update.getOwnerControlClass().getClassName() + "\0" + update.getNewValue();
 				//
 				//
 				//
@@ -280,7 +280,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 
 			//Use the class name as a prefix to prevent 2 different ControlClass' updates that had the same property names conflicting with each other.
 			//Using an ending null character to separate class name from property name
-			stringForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0" + propertyName;
+			stringForCheckingIfSimilar = classUpdate.getOwnerControlClass().getClassName() + "\0" + propertyName;
 
 			@NotNull ChangeAction changeAction;
 
@@ -303,7 +303,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				changeType = ControlClassChangeType.PropertyValue;
 				if (lookup == ControlPropertyLookup.X || lookup == ControlPropertyLookup.Y || lookup == ControlPropertyLookup.W || lookup == ControlPropertyLookup.H) {
 					//inserted extra null characters to help guarantee no conflicts in property name
-					stringForCheckingIfSimilar = classUpdate.getControlClass().getClassName() + "\0POS_UPDATE\0";
+					stringForCheckingIfSimilar = classUpdate.getOwnerControlClass().getClassName() + "\0POS_UPDATE\0";
 					shortName = bundle.getString("ControlClassChange.Property.Value.control_moved_short_name");
 					description = bundle.getString("ControlClassChange.Property.Value.control_moved_description");
 
