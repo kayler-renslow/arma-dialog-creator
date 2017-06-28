@@ -121,9 +121,15 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 			this.requiredNestedClasses = new ReadOnlyList<>(requiredNested);
 
 			for (ControlClass nested : controlClass.getRequiredNestedClasses()) {
+				if (controlClass.getTempNestedClassesReadOnly().contains(nested)) {
+					continue;
+				}
 				requiredNested.add(new ControlClassSpecification(nested, true));
 			}
 			for (ControlClass nested : controlClass.getOptionalNestedClasses()) {
+				if (controlClass.getTempNestedClassesReadOnly().contains(nested)) {
+					continue;
+				}
 				optionalNested.add(new ControlClassSpecification(nested, true));
 			}
 		} else {
@@ -132,9 +138,15 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		}
 
 		for (ControlProperty property : controlClass.getRequiredProperties()) {
+			if (controlClass.getTempPropertiesReadOnly().contains(property)) {
+				continue;
+			}
 			requiredProperties.add(new ControlPropertySpecification(property, deepCopy));
 		}
 		for (ControlProperty property : controlClass.getOptionalProperties()) {
+			if (controlClass.getTempPropertiesReadOnly().contains(property)) {
+				continue;
+			}
 			optionalProperties.add(new ControlPropertySpecification(property, deepCopy));
 		}
 		this.optionalPropertiesLookup = controlClass.getSpecProvider().getOptionalProperties();

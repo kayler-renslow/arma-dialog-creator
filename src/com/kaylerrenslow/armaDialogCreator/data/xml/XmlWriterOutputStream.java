@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
-import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -15,10 +14,12 @@ import java.nio.file.StandardCopyOption;
  @author Kayler
  @since 11/12/2016. */
 public class XmlWriterOutputStream {
+	private static final int MAX_BUFFER_SIZE = 1000;
 	public static final String UTF_8 = "UTF-8";
-	protected final byte[] NEW_LINE = "\n".getBytes();
 
+	protected final byte[] NEW_LINE = "\n".getBytes();
 	private final FileOutputStream fos;
+	private int bufferSize = 0;
 
 	public XmlWriterOutputStream(@NotNull File writeXmlFile) throws IOException {
 		if (writeXmlFile.exists()) {
@@ -26,6 +27,13 @@ public class XmlWriterOutputStream {
 			Files.copy(writeXmlFile.toPath(), new File(writeXmlFile.getPath() + ".backup").toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 		fos = new FileOutputStream(writeXmlFile);
+	}
+
+	private void checkBufferSize() throws IOException {
+		if (bufferSize > MAX_BUFFER_SIZE) {
+			fos.flush();
+			bufferSize = 0;
+		}
 	}
 
 	/** Write the XML's prolog tag */
@@ -41,12 +49,16 @@ public class XmlWriterOutputStream {
 	/** Writes a byte[] to stream */
 	public void write(@NotNull byte[] bytes) throws IOException {
 		fos.write(bytes);
+		bufferSize += bytes.length;
+		checkBufferSize();
 	}
 
 	/** Writes a byte[] to stream */
 	public void writeln(@NotNull byte[] bytes) throws IOException {
 		fos.write(bytes);
 		fos.write(NEW_LINE);
+		bufferSize += bytes.length + 1;
+		checkBufferSize();
 	}
 
 	/** Writes a string to stream */
@@ -58,6 +70,8 @@ public class XmlWriterOutputStream {
 	public void writeln(@NotNull String s) throws IOException {
 		write(s);
 		fos.write(NEW_LINE);
+		bufferSize += 1;
+		checkBufferSize();
 	}
 
 	/** Writes a comment to stream */
@@ -75,25 +89,6 @@ public class XmlWriterOutputStream {
 		write("</" + tagName + ">");
 	}
 
-	/**
-	 Get String that inserts the tag name and attributes (will just return &lt;tagName&gt;). If a {@link KeyValueString#getValue()} is null, attribute will be skipped. All attribute values are
-	 escaped via {@link #esc(String)}
-	 */
-	@NotNull
-	public String getTagStart(@NotNull String tagName, @NotNull KeyValueString... attributes) {
-		String s = "<" + tagName;
-		if (attributes.length != 0) {
-			for (KeyValueString attribute : attributes) {
-				if (attribute.getValue() == null) {
-					continue;
-				}
-				s += " " + attribute.getKey() + "='" + esc(attribute.getValue()) + "'";
-			}
-		}
-		s += ">";
-		return s;
-	}
-
 	/** {@link FileOutputStream#flush()} */
 	public void flush() throws IOException {
 		fos.flush();
@@ -103,6 +98,7 @@ public class XmlWriterOutputStream {
 	public void close() throws IOException {
 		fos.close();
 	}
+
 	public static String esc(String value) {
 		return value.replaceAll("'", "&#39;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 	}

@@ -1,8 +1,10 @@
 **Added:**
-* 
+* save epoch time to project.xml
+* up/dpwn arrows for moving controls in editor tree view
 
 **Changed:**
-*  
+* polished control property option editor for when it is tinted blue for inheritance
+* removed saving of temp properties and nested classes for project.xml
 
 **Fixed:**
 * 
@@ -13,12 +15,9 @@
 * June 11: exporter doesn't write any of the custom control classes
     * should we have an additional export place for that? Like export all of them to a different file.
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
-* June 13: We need to not save temporary properties when saving project
 * June 23:
     - Header: we need tests for +=
-    - Instead of allowing user to add/remove properties, we could have "header inserts" the user can place in the
-      control's exported class. Besides, why would there ever need to be custom properties? Everything you should need
-      should be in the spec provider
 * June 26: can't edit nested classes in editor pane. need to implement the "edit" menu item action
         * setting HintRep's parent class to null doens't properly update the editor pane
         * remove the nested class from static later because its for testing
+* June 27: moving folders that have controls doesn't change the controls' order in the display

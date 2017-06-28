@@ -182,8 +182,8 @@ public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.
 	}
 
 	/**
-	 Used to move a TreeItem from it's current parent to a new parent. When toMove is removed from it's original parent, {@link #removeChild(TreeItem, TreeItem)}
-	 will be used
+	 Used to move a TreeItem from it's current parent to a new parent.
+	 When toMove is removed from it's original parent, {@link #removeChild(TreeItem, TreeItem)} will be used
 
 	 @param toMove TreeItem to move
 	 @param newParent the new parent of the TreeItem.

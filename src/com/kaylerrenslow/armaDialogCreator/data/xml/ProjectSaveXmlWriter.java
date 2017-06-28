@@ -61,7 +61,14 @@ public class ProjectSaveXmlWriter {
 		XmlWriterOutputStream stm = new XmlWriterOutputStream(saveFile);
 
 		stm.writeDefaultProlog();
-		stm.write(String.format("<project name='%s' save-version='%d'>", esc(project.getProjectName()), SAVE_VERSION));
+		stm.write(
+				String.format(
+						"<project name='%s' save-version='%d' save-time='%d'>",
+						esc(project.getProjectName()),
+						SAVE_VERSION,
+						System.currentTimeMillis()
+				)
+		);
 
 		stm.write("<project-description>");
 		stm.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : ""));
@@ -189,6 +196,9 @@ public class ProjectSaveXmlWriter {
 
 		//write control properties
 		for (ControlProperty cprop : control.getDefinedProperties()) {
+			if (control.getTempPropertiesReadOnly().contains(cprop)) {
+				continue;
+			}
 			ProjectXmlUtil.writeControlProperty(stm, cprop);
 		}
 
@@ -202,6 +212,9 @@ public class ProjectSaveXmlWriter {
 			final String reqNestedClasses = "nested-required";
 			stm.writeBeginTag(reqNestedClasses);
 			for (ControlClass nested : control.getRequiredNestedClasses()) {
+				if (control.getTempNestedClassesReadOnly().contains(nested)) {
+					continue;
+				}
 				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
 			}
 			stm.writeCloseTag(reqNestedClasses);
@@ -211,6 +224,9 @@ public class ProjectSaveXmlWriter {
 			final String optNestedClasses = "nested-optional";
 			stm.writeBeginTag(optNestedClasses);
 			for (ControlClass nested : control.getOptionalNestedClasses()) {
+				if (control.getTempNestedClassesReadOnly().contains(nested)) {
+					continue;
+				}
 				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
 			}
 			stm.writeCloseTag(optNestedClasses);

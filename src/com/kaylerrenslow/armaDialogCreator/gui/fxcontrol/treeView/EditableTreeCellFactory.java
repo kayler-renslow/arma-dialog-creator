@@ -17,6 +17,10 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> {
 	/** How long it takes for the current hovered tree item that is expandable for it to expand and show its children. Value is in milliseconds. */
 	private static final long WAIT_DURATION_TREE_VIEW_FOLDER = 500;
@@ -32,7 +36,9 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 	private long waitStartTime = 0;
 
 	/** TreeItem's being dragged */
-	private static TreeItem<?> dragging; //must be static since the factory is created for each cell and dragging takes place over more than once cell
+	// must be static since the factory is created for each cell since dragging takes place
+	// over more than once cell
+	private static final List<TreeItem<? extends TreeItemData>> dragging = new ArrayList<>();
 	private static TreeCell<?> hoveredChildParent; //static for the same reasons as dragging
 	private Effect cellEffect;
 
@@ -49,6 +55,10 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 		// first method called when the user clicks and drags a tree item
 		TreeCell<Td> myTreeCell = this;
 
+		addDragListeners(treeView, myTreeCell);
+	}
+
+	private void addDragListeners(@NotNull EditableTreeView<Tv, Td> treeView, TreeCell<Td> myTreeCell) {
 		this.setOnDragDetected(new EventHandler<MouseEvent>() {
 
 			@Override
@@ -75,7 +85,7 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 
 				Dragboard dragboard = view.startDragAndDrop(TransferMode.MOVE);
 				ClipboardContent content;
-				dragging = getTreeItem();
+				dragging.add(getTreeItem());
 				content = new ClipboardContent();
 				content.putString("");// don't remove. drag and drop doesn't work if this doesn't happen for a strange reason
 				dragboard.setContent(content);
@@ -94,7 +104,6 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 			}
 
 			private void doHandle(DragEvent event) {
-				TreeItem<Td> dragging = getDragging();
 				// not dragging on the tree
 				if (getTreeItem() == null || getTreeItem().getValue() == null || getTreeView().getSelectionModel().isEmpty()) {
 					return;
@@ -103,68 +112,74 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 				if (getTreeItem().getValue().equals(getTreeView().getSelectionModel().getSelectedItem().getValue())) {
 					return;
 				}
-				// if tree item can have children, we need to make sure it doesn't drag itself into its children
-				if (dragging.getValue().canHaveChildren()) {
-					if (TreeUtil.hasDescendant(dragging, getTreeItem())) {
-						return;
-					}
-				}
-				final Point2D sceneCoordinates = EditableTreeCellFactory.this.localToScene(0d, 0d);
-				final double cellHeight = EditableTreeCellFactory.this.getHeight();
-				final double margin = cellHeight * 0.3;
-				final double effectHeight = 2.0;
-				final double innerShadowEffectRadius = 1.0;
 
-				// get the y coordinate within the control
-				final double y = event.getSceneY() - (sceneCoordinates.getY());
-
-				final boolean canHaveChildren = getTreeItem().getValue().canHaveChildren();
-				//near the center
-				if (y > margin && y < cellHeight - margin && canHaveChildren) {
-					// auto expands the hovered tree item if it has children after a period of time.
-					// timer is reset when the mouse moves away from the current hovered item
-					if (!getTreeItem().isExpanded()) {
-						if (waitStartTime == 0) {
-							waitStartTime = System.currentTimeMillis();
-						} else {
-							long now = System.currentTimeMillis();
-							// wait a while before the tree item is expanded
-							if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
-								getTreeItem().setExpanded(true);
-								waitStartTime = 0;
-							}
+				Iterator<TreeItem<? extends TreeItemData>> iter = EditableTreeCellFactory.dragging.iterator();
+				while (iter.hasNext()) {
+					TreeItem<? extends TreeItemData> dragging = iter.next();
+					// if tree item can have children, we need to make sure it doesn't drag itself into its children
+					if (dragging.getValue().canHaveChildren()) {
+						if (TreeUtil.hasDescendant(dragging, getTreeItem())) {
+							iter.remove();
+							continue;
 						}
 					}
-					hoveredChildParent = myTreeCell;
-					cellEffect = null;
-					if (!hoveredChildParent.getStyleClass().contains(HOVER_TREE_CELL)) { //don't add multiple times
-						hoveredChildParent.getStyleClass().add(HOVER_TREE_CELL);
+					final Point2D sceneCoordinates = EditableTreeCellFactory.this.localToScene(0d, 0d);
+					final double cellHeight = EditableTreeCellFactory.this.getHeight();
+					final double margin = cellHeight * 0.3;
+					final double effectHeight = 2.0;
+					final double innerShadowEffectRadius = 1.0;
+
+					// get the y coordinate within the control
+					final double y = event.getSceneY() - (sceneCoordinates.getY());
+
+					final boolean canHaveChildren = getTreeItem().getValue().canHaveChildren();
+					//near the center
+					if (y > margin && y < cellHeight - margin && canHaveChildren) {
+						// auto expands the hovered tree item if it has children after a period of time.
+						// timer is reset when the mouse moves away from the current hovered item
+						if (!getTreeItem().isExpanded()) {
+							if (waitStartTime == 0) {
+								waitStartTime = System.currentTimeMillis();
+							} else {
+								long now = System.currentTimeMillis();
+								// wait a while before the tree item is expanded
+								if (waitStartTime + WAIT_DURATION_TREE_VIEW_FOLDER <= now) {
+									getTreeItem().setExpanded(true);
+									waitStartTime = 0;
+								}
+							}
+						}
+						hoveredChildParent = myTreeCell;
+						cellEffect = null;
+						if (!hoveredChildParent.getStyleClass().contains(HOVER_TREE_CELL)) { //don't add multiple times
+							hoveredChildParent.getStyleClass().add(HOVER_TREE_CELL);
+						}
+						location = MouseTreeCellLocation.MIDDLE;
+					} else if (!canHaveChildren || y <= margin) { //near the top of cell
+						if (location != MouseTreeCellLocation.TOP) {
+							cellEffect = new InnerShadow(innerShadowEffectRadius, 0, effectHeight, COLOR_TREE_VIEW_DRAG);
+						}
+						location = MouseTreeCellLocation.TOP;
+					} else if (y >= cellHeight - margin) {//near bottom of cell
+						if (location != MouseTreeCellLocation.BOTTOM) {
+							cellEffect = new InnerShadow(innerShadowEffectRadius, 0, -effectHeight, COLOR_TREE_VIEW_DRAG);
+						}
+						location = MouseTreeCellLocation.BOTTOM;
+					} else {
+						cellEffect = null;
+						location = MouseTreeCellLocation.UNKNOWN;
 					}
-					location = MouseTreeCellLocation.MIDDLE;
-				} else if (!canHaveChildren || y <= margin) { //near the top of cell
-					if (location != MouseTreeCellLocation.TOP) {
-						cellEffect = new InnerShadow(innerShadowEffectRadius, 0, effectHeight, COLOR_TREE_VIEW_DRAG);
+					if (location != MouseTreeCellLocation.MIDDLE) {
+						clearChildParentStyle();
 					}
-					location = MouseTreeCellLocation.TOP;
-				} else if (y >= cellHeight - margin) {//near bottom of cell
-					if (location != MouseTreeCellLocation.BOTTOM) {
-						cellEffect = new InnerShadow(innerShadowEffectRadius, 0, -effectHeight, COLOR_TREE_VIEW_DRAG);
-					}
-					location = MouseTreeCellLocation.BOTTOM;
-				} else {
-					cellEffect = null;
-					location = MouseTreeCellLocation.UNKNOWN;
+					setEffect(cellEffect);
+					// when it reaches this point, the tree item is okay to move
+					event.acceptTransferModes(TransferMode.MOVE);
 				}
-				if (location != MouseTreeCellLocation.MIDDLE) {
-					clearChildParentStyle();
-				}
-				setEffect(cellEffect);
-				// when it reaches this point, the tree item is okay to move
-				event.acceptTransferModes(TransferMode.MOVE);
+
 			}
 
 		});
-
 		this.setOnDragDropped(new EventHandler<DragEvent>() {
 
 			@Override
@@ -177,35 +192,36 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 			}
 
 			private void doHandle(DragEvent event) {
-				TreeItem<Td> dragging = getDragging();
 				event.acceptTransferModes(TransferMode.MOVE);
-				switch (location) {
-					case TOP: //intentional fall through
-					case MIDDLE: {
-						if (location == MouseTreeCellLocation.MIDDLE && getTreeItem().getValue().canHaveChildren()) {
-							treeView.moveTreeItem(dragging, getTreeItem(), getTreeItem().getChildren().size());
-						} else {
-							int index = getTreeItem().getParent().getChildren().indexOf(getTreeItem());
-							treeView.moveTreeItem(dragging, getTreeItem().getParent(), index);
+				for (TreeItem<? extends TreeItemData> draggingItem : EditableTreeCellFactory.dragging) {
+					TreeItem<Td> dragging = (TreeItem<Td>) draggingItem;
+					switch (location) {
+						case TOP: //intentional fall through
+						case MIDDLE: {
+							if (location == MouseTreeCellLocation.MIDDLE && getTreeItem().getValue().canHaveChildren()) {
+								treeView.moveTreeItem(dragging, getTreeItem(), getTreeItem().getChildren().size());
+							} else {
+								int index = getTreeItem().getParent().getChildren().indexOf(getTreeItem());
+								treeView.moveTreeItem(dragging, getTreeItem().getParent(), index);
+							}
+							break;
 						}
-						break;
-					}
-					case BOTTOM: {
-						int index = getTreeItem().getParent().getChildren().indexOf(getTreeItem());
-						treeView.moveTreeItem(dragging, getTreeItem().getParent(), index + 1);
-						break;
-					}
-					case UNKNOWN: {
-						break;
+						case BOTTOM: {
+							int index = getTreeItem().getParent().getChildren().indexOf(getTreeItem());
+							treeView.moveTreeItem(dragging, getTreeItem().getParent(), index + 1);
+							break;
+						}
+						case UNKNOWN: {
+							break;
+						}
 					}
 				}
 				clearChildParentStyle();
-				EditableTreeCellFactory.dragging = null;
+				EditableTreeCellFactory.dragging.clear();
 				getTreeView().getSelectionModel().clearSelection();
 			}
 
 		});
-
 		this.setOnDragExited(new EventHandler<DragEvent>() {
 
 			@Override
@@ -240,11 +256,6 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 
 	EditableTreeCellFactory<Tv, Td> getNewInstance() {
 		return new EditableTreeCellFactory<>(this.treeView, this.treeCellSelectionUpdate);
-	}
-
-	@SuppressWarnings("unchecked")
-	private TreeItem<Td> getDragging() {
-		return (TreeItem<Td>) EditableTreeCellFactory.dragging;
 	}
 
 	@Override

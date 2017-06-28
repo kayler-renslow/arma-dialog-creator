@@ -357,7 +357,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 	@Override
 	@SuppressWarnings("unchecked")
-	protected void moveTreeItem(@NotNull TreeItem<T> toMove, @NotNull TreeItem<T> newParent, int index) {
+	public void moveTreeItem(@NotNull TreeItem<T> toMove, @NotNull TreeItem<T> newParent, int index) {
 		super.moveTreeItem(toMove, newParent, index);
 		if (toMove.getValue().getCellType() == CellType.FOLDER) {
 			return;

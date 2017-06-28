@@ -18,6 +18,8 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
@@ -62,6 +64,9 @@ class ControlPropertyValueEditors {
 
 		ControlPropertyOptionEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
+			setAlignment(Pos.CENTER_LEFT);
+			setPadding(new Insets(2));
+
 			this.controlProperty = controlProperty;
 			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
 			toggleGroup = new ToggleGroup();
