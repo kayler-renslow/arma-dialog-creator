@@ -51,7 +51,10 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 						ArmaDialogCreator.getPrimaryStage(),
 						"ADC Uncaught Error",
 						t,
-						new Label("An internal error occurred.")
+						new Label(
+								"An internal error occurred. " +
+										(t.getMessage() == null ? "" : t.getMessage())
+						)
 				);
 				errorDialog.show();
 			}
@@ -85,7 +88,10 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 				SimpleErrorDialog<Label> sp = new SimpleErrorDialog<Label>(
 						ArmaDialogCreator.getPrimaryStage(),
 						"ADC Uncaught Error", t,
-						new Label("A FATAL error occurred.")
+						new Label(
+								"A FATAL error occurred. " +
+										(t.getMessage() == null ? "" : t.getMessage())
+						)
 				) {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {

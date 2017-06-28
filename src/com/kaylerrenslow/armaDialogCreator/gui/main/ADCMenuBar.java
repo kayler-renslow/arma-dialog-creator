@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.TestAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
+import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.edit.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.file.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.help.WikiUrlAction;
@@ -123,15 +124,28 @@ class ADCMenuBar extends MenuBar {
 		view_bg_toggleGroup.selectToggle(view_bg_noImage);
 	}
 
-	final Menu backgroundAll = new Menu(bundle.getString("view_background_image"), null, view_bg_img1, view_bg_img2, view_bg_img3, view_bg_custom, view_bg_noImage);
+	final Menu backgroundAll = new Menu(
+			bundle.getString("view_background_image"), null,
+			view_bg_img1,
+			view_bg_img2,
+			view_bg_img3,
+			view_bg_custom,
+			view_bg_noImage
+	);
 
 	/*settings*/
-	final MenuItem settings_configureDirs = addOnAction(new MenuItem(bundle.getString("settings_configure_dirs")), new SettingsChangeSaveDirAction());
+	final MenuItem settings_configureDirs = addOnAction(
+			new MenuItem(bundle.getString("settings_configure_dirs")), new SettingsChangeSaveDirAction()
+	);
 
 	/*create*/
 	final MenuItem create_macro = addOnAction(new MenuItem(bundle.getString("create_macro")), new CreateMacroAction());
 	final MenuItem create_control_class = addOnAction(new MenuItem(bundle.getString("create_control_class")), new CreateNewCustomControlAction());
 	final MenuItem create_new_control = addOnAction(new MenuItem(bundle.getString("create_control")), new CreateNewControlAction());
+	final MenuItem create_new_folder = addOnAction(
+			new MenuItem(bundle.getString("create_folder")),
+			new CreateNewFolderAction()
+	);
 
 	/*help*/
 	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
@@ -178,7 +192,8 @@ class ADCMenuBar extends MenuBar {
 			bundle.getString("create"), null,
 			create_macro,
 			create_control_class,
-			create_new_control
+			create_new_control,
+			create_new_folder
 	);
 	final Menu menuHelp = new Menu(
 			bundle.getString("help"), null,

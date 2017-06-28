@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeDataToValueConverter;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeUtil;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
@@ -360,6 +361,25 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	public void moveTreeItem(@NotNull TreeItem<T> toMove, @NotNull TreeItem<T> newParent, int index) {
 		super.moveTreeItem(toMove, newParent, index);
 		if (toMove.getValue().getCellType() == CellType.FOLDER) {
+			setDisplayListener(false);
+			TreeUtil.stepThroughDescendants(getRoot(), found -> {
+				if (!(found.getValue() instanceof ControlTreeItemEntry)) {
+					return false;
+				}
+				ControlTreeItemEntry controlTreeItemEntry = (ControlTreeItemEntry) found.getValue();
+				ArmaControl control = controlTreeItemEntry.getMyArmaControl();
+				ControlList holderList = control.getHolder() == control.getDisplay() ?
+						(
+								//is in display
+								getTargetControlList()
+						)
+						: control.getHolder().getControls();
+				holderList.move(control, getCorrectedIndex(null, found));
+				getSelectionModel().clearSelection();
+				getSelectionModel().select(toMove);
+				return false;
+			});
+			setDisplayListener(true);
 			return;
 		}
 		ControlTreeItemEntry controlEntry = (ControlTreeItemEntry) toMove.getValue();

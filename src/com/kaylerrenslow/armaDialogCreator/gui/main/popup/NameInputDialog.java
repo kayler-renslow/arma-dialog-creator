@@ -67,8 +67,10 @@ public class NameInputDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void ok() {
-		if (canOkProperty.get()) {
-			super.ok();
+		if (!canOkProperty.get()) {
+			beepFocus();
+			return;
 		}
+		super.ok();
 	}
 }
