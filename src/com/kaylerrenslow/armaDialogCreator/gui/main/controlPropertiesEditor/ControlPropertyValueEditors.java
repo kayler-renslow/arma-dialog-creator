@@ -125,11 +125,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void disableEditing(boolean disable) {
-			setDisable(disable);
-		}
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 			getChildren().clear();
 			if (mode == EditMode.DEFAULT) {
@@ -167,6 +162,67 @@ class ControlPropertyValueEditors {
 		}
 	}
 
+	static class FileNameEditor extends FileNameValueEditor implements ControlPropertyValueEditor {
+
+		private final ControlProperty controlProperty;
+		private final ReadOnlyValueListener<SVFileName> editorValueListener = new ReadOnlyValueListener<SVFileName>() {
+			@Override
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVFileName> observer, SVFileName oldValue, SVFileName newValue) {
+				controlProperty.setValue(newValue);
+			}
+		};
+		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
+			@Override
+			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+				setValue((SVFileName) newValue);
+			}
+		};
+
+		public FileNameEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+			this.controlProperty = controlProperty;
+			setValue((SVFileName) controlProperty.getValue());
+			initListeners();
+		}
+
+		@NotNull
+		@Override
+		public ControlProperty getControlProperty() {
+			return controlProperty;
+		}
+
+		@Override
+		public boolean hasValidData() {
+			return getValue() != null;
+		}
+
+		@Override
+		public void setToMode(@NotNull EditMode mode) {
+		}
+
+		@NotNull
+		@Override
+		public PropertyType getMacroPropertyType() {
+			return PropertyType.ControlStyle;
+		}
+
+		@Override
+		public void clearListeners() {
+			getReadOnlyObserver().removeListener(editorValueListener);
+			controlProperty.getValueObserver().removeListener(controlPropertyListener);
+		}
+
+		@Override
+		public void initListeners() {
+			getReadOnlyObserver().addListener(editorValueListener);
+			controlProperty.getValueObserver().addListener(controlPropertyListener);
+		}
+
+		@Override
+		public void refresh() {
+			setValue((SVFileName) controlProperty.getValue());
+		}
+	}
+
 	static class ControlStyleEditor extends ControlStyleValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
@@ -179,11 +235,7 @@ class ControlPropertyValueEditors {
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue == null) {
-					menuButton.clearSelection();
-				} else {
-					setValue((SVControlStyleGroup) newValue);
-				}
+				setValue((SVControlStyleGroup) newValue);
 			}
 		};
 
@@ -209,11 +261,6 @@ class ControlPropertyValueEditors {
 		@Override
 		public boolean hasValidData() {
 			return menuButton.getSelectedItems().size() > 0;
-		}
-
-		@Override
-		public void disableEditing(boolean disable) {
-			setDisable(disable);
 		}
 
 		@Override
@@ -301,12 +348,6 @@ class ControlPropertyValueEditors {
 		public ControlProperty getControlProperty() {
 			return controlProperty;
 		}
-
-		@Override
-		public void disableEditing(boolean disable) {
-			inputField.setDisable(disable);
-		}
-
 
 		@Override
 		public void setToMode(@NotNull EditMode mode) {
@@ -418,12 +459,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
-		}
-
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 		}
 
@@ -500,12 +535,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
-		}
-
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 		}
 
@@ -573,11 +602,6 @@ class ControlPropertyValueEditors {
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
 		}
 
 		@Override
@@ -655,11 +679,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
-		}
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 		}
 
@@ -724,12 +743,6 @@ class ControlPropertyValueEditors {
 		public ControlProperty getControlProperty() {
 			return controlProperty;
 		}
-
-		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
-		}
-
 
 		@Override
 		public void setToMode(@NotNull EditMode mode) {
@@ -798,12 +811,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
-		}
-
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 		}
 
@@ -863,11 +870,6 @@ class ControlPropertyValueEditors {
 		@Override
 		public boolean hasValidData() {
 			return getValue() != null;
-		}
-
-		@Override
-		public void disableEditing(boolean disable) {
-			getRootNode().setDisable(disable);
 		}
 
 		@Override

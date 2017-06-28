@@ -29,6 +29,7 @@ public class CreateNewFolderAction implements EventHandler<ActionEvent> {
 		dialog.getTextField().textProperty().addListener((observable, oldValue, newValue) -> {
 			dialog.getCanOkProperty().set(newValue != null && newValue.trim().length() > 0);
 		});
+		dialog.getTextField().setText("folder");
 		dialog.getTextField().requestFocus();
 		dialog.show();
 		if (dialog.wasCancelled()) {

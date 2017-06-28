@@ -411,7 +411,7 @@ class ControlPropertyEditorContainer extends HBox {
 			case Font:
 				return new FontChoiceBoxEditor(controlClass, controlProperty);
 			case FileName:
-				return new StringEditor(controlClass, controlProperty);
+				return new FileNameEditor(controlClass, controlProperty);
 			case Image:
 				return new ImageEditor(controlClass, controlProperty);
 			case HexColorString:

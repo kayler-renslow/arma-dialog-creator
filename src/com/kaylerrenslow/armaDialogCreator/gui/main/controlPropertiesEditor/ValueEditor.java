@@ -70,7 +70,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case Font:
 				return new FontValueEditor();
 			case FileName:
-				return new InputFieldValueEditor.ArmaStringEditor();
+				return new FileNameValueEditor();
 			case Image:
 				return new ImageValueEditor();
 			case HexColorString:

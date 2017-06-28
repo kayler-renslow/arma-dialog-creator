@@ -27,6 +27,11 @@ public class SVFileName extends SerializableValue implements FilePathUser {
 		this.f = f;
 	}
 
+	@NotNull
+	public File getFile() {
+		return f;
+	}
+
 	@Override
 	@NotNull
 	public SerializableValue deepCopy() {
@@ -36,6 +41,13 @@ public class SVFileName extends SerializableValue implements FilePathUser {
 	@Override
 	public @NotNull PropertyType getPropertyType() {
 		return PropertyType.FileName;
+	}
+
+	@Override
+	public String toString() {
+		//don't use absolute path because new File("") would return
+		//the working directory in the string
+		return getFile().getPath();
 	}
 
 	@NotNull

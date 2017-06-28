@@ -26,14 +26,17 @@ public class FileChooserPane extends HBox {
 	protected final Button btnLocate = new Button(Lang.FxControlBundle().getString("FileChooserPane.locate"));
 	protected final TextField tfFile = new TextField();
 
-	private ValueObserver<File> chosenFileObserver = new ValueObserver<>(null);
+	private final ValueObserver<File> chosenFileObserver = new ValueObserver<>(null);
 
 	public enum ChooserType {
 		DIRECTORY, FILE
 	}
 
+	private File defaultLocation;
+
 	public FileChooserPane(Window chooserPopupWindowOwner, ChooserType chooserType, String fileChooserPopupTitle, File defaultChooserPopupLocation, FileChooser.ExtensionFilter... filters) {
 		super(5);
+		this.defaultLocation = defaultChooserPopupLocation;
 		HBox.setHgrow(tfFile, Priority.ALWAYS);
 		this.getChildren().addAll(btnLocate, tfFile);
 		chosenFileObserver.addListener(new ValueListener<File>() {
@@ -49,8 +52,8 @@ public class FileChooserPane extends HBox {
 					case DIRECTORY: {
 						DirectoryChooser chooser = new DirectoryChooser();
 						chooser.setTitle(fileChooserPopupTitle);
-						if (defaultChooserPopupLocation.exists()) {
-							chooser.setInitialDirectory(defaultChooserPopupLocation);
+						if (defaultLocation != null && defaultLocation.exists()) {
+							chooser.setInitialDirectory(defaultLocation);
 						}
 						File f = chooser.showDialog(chooserPopupWindowOwner);
 						if (f == null) {
@@ -63,8 +66,8 @@ public class FileChooserPane extends HBox {
 						FileChooser chooser = new FileChooser();
 						chooser.setTitle(fileChooserPopupTitle);
 						chooser.getExtensionFilters().addAll(filters);
-						if (defaultChooserPopupLocation.exists()) {
-							chooser.setInitialDirectory(defaultChooserPopupLocation);
+						if (defaultLocation != null && defaultLocation.exists()) {
+							chooser.setInitialDirectory(defaultLocation);
 						}
 						File f = chooser.showOpenDialog(chooserPopupWindowOwner);
 						if (f == null) {
@@ -82,13 +85,17 @@ public class FileChooserPane extends HBox {
 		tfFile.setEditable(false);
 	}
 
-	public void setChosenFile(File f) {
+	public void setChosenFile(@Nullable File f) {
 		chosenFileObserver.updateValue(f);
 		if (f == null) {
 			tfFile.setText("");
 		} else {
 			tfFile.setText(f.getPath());
 		}
+	}
+
+	public void setDefaultLocation(@Nullable File defaultLocation) {
+		this.defaultLocation = defaultLocation;
 	}
 
 	@NotNull

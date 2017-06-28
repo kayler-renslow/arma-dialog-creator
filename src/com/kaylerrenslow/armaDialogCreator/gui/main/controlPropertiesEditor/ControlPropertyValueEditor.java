@@ -54,4 +54,9 @@ interface ControlPropertyValueEditor extends ControlPropertyEditor {
 
 	/** Set the editor to the {@link #getControlProperty()} value. */
 	void refresh();
+
+	@Override
+	default void disableEditing(boolean disable) {
+		getRootNode().setDisable(disable);
+	}
 }

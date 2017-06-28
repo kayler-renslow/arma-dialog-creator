@@ -1,11 +1,11 @@
 **Added:**
-* "new folder" to create menu in main menu
+* file name control property editor
 
 **Changed:**
 * 
 
 **Fixed:**
-* moving folders that have controls didn't change the controls' order in the display
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -16,5 +16,5 @@
 * June 23:
     - Header: we need tests for +=
 * June 26: can't edit nested classes in editor pane. need to implement the "edit" menu item action
-        * setting HintRep's parent class to null doens't properly update the editor pane
-        * remove the nested class from static later because its for testing
+    * setting HintRep's parent class to null doens't properly update the editor pane
+    * remove the nested class from static later because its for testing

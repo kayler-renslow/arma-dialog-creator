@@ -24,12 +24,17 @@ public interface CanvasControl<C extends CanvasControl> {
 		}
 	};
 
-	/** Get the parent of the control. */
+	/**
+	 Will equal {@link #getDisplay()} if the control is not inside a {@link CanvasControlGroup}.
+	 If not equal to {@link #getDisplay()}, then the control is inside a {@link CanvasControlGroup}.
+
+	 @return the parent of the control.
+	 */
 	default ControlHolder<C> getHolder() {
 		return getHolderObserver().getValue();
 	}
 
-	/** Get the display that the control is associated with */
+	/** @return the display that the control is associated with */
 	default CanvasDisplay<C> getDisplay() {
 		return getDisplayObserver().getValue();
 	}
