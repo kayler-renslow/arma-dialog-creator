@@ -94,7 +94,6 @@ public final class ArmaDialogCreator extends Application {
 
 	@Override
 	public void stop() throws Exception {
-		ApplicationDataManager.getInstance().askSaveAll();
 		ADCExecutors.terminateAll();
 	}
 
@@ -145,6 +144,9 @@ public final class ArmaDialogCreator extends Application {
 
 	/** Closes the application after asking if user wants to save. */
 	public static void closeApplication() {
+		if (!ApplicationDataManager.getInstance().askSaveAll()) {
+			return;
+		}
 		//do not execute window closing event
 		Platform.exit();
 	}
@@ -182,7 +184,9 @@ public final class ArmaDialogCreator extends Application {
 
 	private static void loadNewProject(boolean askToSave) {
 		if (askToSave) {
-			ApplicationDataManager.getInstance().askSaveAll();
+			if (!ApplicationDataManager.getInstance().askSaveAll()) {
+				return;
+			}
 		}
 
 		getPrimaryStage().close();

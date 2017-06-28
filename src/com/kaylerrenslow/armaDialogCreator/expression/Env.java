@@ -32,4 +32,7 @@ public interface Env extends Iterable<KeyValue<String, Value>> {
 	 */
 	@Nullable
 	Value remove(@NotNull String identifier);
+
+	/** @return the instance, or null if unary commands should not be handled */
+	@Nullable UnaryCommandValueProvider getUnaryCommandValueProvider();
 }

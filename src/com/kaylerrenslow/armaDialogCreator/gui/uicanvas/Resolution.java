@@ -47,6 +47,11 @@ public interface Resolution {
 
 	/** Get the viewport screen height as a floating point number */
 	double getViewportHeightF();
-	
+
 	UpdateListenerGroup<Resolution> getUpdateGroup();
+
+	/** @return the screen's aspect ratio */
+	default double getAspectRatio() {
+		return getScreenWidth() * 1d / getScreenHeight();
+	}
 }

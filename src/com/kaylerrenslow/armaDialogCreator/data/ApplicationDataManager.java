@@ -7,6 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -121,19 +122,31 @@ public class ApplicationDataManager {
 		}
 	}
 
-	/** Will save everything only if user agrees to save (however, global resources will always be saved no matter the response) */
-	public void askSaveAll() {
-		SaveProjectDialog popup = new SaveProjectDialog();
-		popup.show();
-		boolean saveProgress = popup.isSaveProgress();
-		if (saveProgress) {
+	/**
+	 Will save everything only if user agrees to save.
+
+	 @return <ul>
+	 <li>If user responds "yes" to save, returns true</li>
+	 <li>If user responds "no" to save, returns true</li>
+	 <li>If user cancels the save process, returns false</li>
+	 </ul>
+	 */
+	public boolean askSaveAll() {
+		SaveProjectDialog dialog = new SaveProjectDialog();
+		dialog.show();
+		if (dialog.wasCancelled()) {
+			return false;
+		}
+		if (dialog.saveProgress()) {
+			saveGlobalResources();
 			try {
 				saveProject();
 			} catch (IOException e) {
 				ExceptionHandler.error(e);
 			}
 		}
-		saveGlobalResources();
+
+		return true;
 	}
 
 	/** Get an {@link ApplicationProperty} from {@link #getApplicationProperties()} */
@@ -173,7 +186,12 @@ public class ApplicationDataManager {
 
 			myRootElement.getChildren().add(new Label(bundle.getString("Popups.SaveProject.message")));
 			btnOk.setText(bundle.getString("Confirmation.yes"));
-			btnCancel.setText(bundle.getString("Confirmation.no"));
+			Button btnNo = new Button(bundle.getString("Confirmation.no"));
+			btnNo.setOnAction(event -> {
+				close();
+			});
+			btnNo.setPrefWidth(btnOk.getPrefWidth());
+			getFooter().getRightContainer().getChildren().add(1, btnNo);
 
 			myStage.setResizable(false);
 		}
@@ -184,8 +202,8 @@ public class ApplicationDataManager {
 			super.ok();
 		}
 
-		/** Returns true if the user responded yes for saving, false if no progress should be saved */
-		public boolean isSaveProgress() {
+		/** @return true if the user responded yes for saving, false if no progress should be saved */
+		public boolean saveProgress() {
 			return saveProgress;
 		}
 	}

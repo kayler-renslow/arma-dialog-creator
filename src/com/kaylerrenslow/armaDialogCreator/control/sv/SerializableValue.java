@@ -158,7 +158,7 @@ public abstract class SerializableValue {
 		} catch (Exception e1) {
 			e = e1;
 		}
-		throw new SerializableValueConstructionException(e != null ? e.getMessage() : "");
+		throw new SerializableValueConstructionException(e != null ? e.getMessage() : "", e);
 	}
 
 	private static SerializableValue doConstructNew(@Nullable DataContext dataContext, @NotNull PropertyType type, @NotNull String[] values) throws Exception {

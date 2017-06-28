@@ -71,6 +71,7 @@ public class FontValueEditor implements ValueEditor<SVFont> {
 		return false;
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVFont> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

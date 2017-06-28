@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
+import com.kaylerrenslow.armaDialogCreator.expression.UnaryCommandValueProvider;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
@@ -31,28 +32,9 @@ public class ApplicationData extends DataContext {
 		put(DataKeys.ENV, globalEnv);
 	}
 
-	private final SimpleEnv globalEnv = new SimpleEnv() {
+	private final SimpleEnv globalEnv = new SimpleEnv(new UnaryCommandValueProviderImpl(this)) {
 		@Override
 		public @Nullable Value getValue(@NotNull String identifier) {
-			ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ApplicationData.this);
-			if (resolution == null) {
-				throw new IllegalStateException("resolution shouldn't be null");
-			}
-
-			//update the environment
-			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X) || identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_X_ABS)) {
-				return new Value.NumVal(resolution.getSafeZoneX());
-			}
-			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_Y)) {
-				return new Value.NumVal(resolution.getSafeZoneY());
-			}
-			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_W) || identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_W_ABS)) {
-				return new Value.NumVal(resolution.getSafeZoneW());
-			}
-			if (identifier.equalsIgnoreCase(PositionCalculator.SAFE_ZONE_H)) {
-				return new Value.NumVal(resolution.getSafeZoneH());
-			}
-
 			Value v = super.getValue(identifier);
 			if (v == null) {
 				v = getCurrentProject().getMacroRegistry().getMacroValue(identifier);
@@ -104,5 +86,78 @@ public class ApplicationData extends DataContext {
 	 */
 	public void setCurrentProject(@NotNull Project project) {
 		this.currentProject = project;
+	}
+
+	/**
+	 An implementation of {@link UnaryCommandValueProvider} that
+	 uses {@link ApplicationData} for certain command values.
+	 <p>
+	 This class will not mutate {@link ApplicationData}.
+
+	 @since 6/28/2017
+	 */
+	public static class UnaryCommandValueProviderImpl implements UnaryCommandValueProvider {
+
+		//Note: DO NOT cache any of the values. The values can change without notice!
+
+		private final ApplicationData applicationData;
+
+		public UnaryCommandValueProviderImpl(@NotNull ApplicationData applicationData) {
+			this.applicationData = applicationData;
+		}
+
+		private ArmaResolution armaResolution() {
+			return DataKeys.ARMA_RESOLUTION.get(applicationData);
+		}
+
+		@Override
+		public @NotNull Value safeZoneX() {
+			return new Value.NumVal(armaResolution().getSafeZoneX());
+		}
+
+		@Override
+		public @NotNull Value safeZoneY() {
+			return new Value.NumVal(armaResolution().getSafeZoneY());
+		}
+
+		@Override
+		public @NotNull Value safeZoneW() {
+			return new Value.NumVal(armaResolution().getSafeZoneW());
+		}
+
+		@Override
+		public @NotNull Value safeZoneH() {
+			return new Value.NumVal(armaResolution().getSafeZoneH());
+		}
+
+		@Override
+		public @NotNull Value safeZoneXAbs() {
+			return safeZoneX();
+		}
+
+		@Override
+		public @NotNull Value safeZoneWAbs() {
+			return safeZoneW();
+		}
+
+		@Override
+		public @NotNull Value getResolution() {
+			ArmaResolution resolution = armaResolution();
+			Value.NumVal width = new Value.NumVal(resolution.getScreenWidth());
+			Value.NumVal height = new Value.NumVal(resolution.getScreenHeight());
+			Value.NumVal viewportWidth = new Value.NumVal(resolution.getViewportWidth());
+			Value.NumVal viewportHeight = new Value.NumVal(resolution.getViewportHeight());
+			Value.NumVal aspectRatio = new Value.NumVal(resolution.getAspectRatio());
+			Value.NumVal uiScale = new Value.NumVal(resolution.getUIScale().getValue());
+
+			return new Value.Array(
+					width,
+					height,
+					viewportWidth,
+					viewportHeight,
+					aspectRatio,
+					uiScale
+			);
+		}
 	}
 }

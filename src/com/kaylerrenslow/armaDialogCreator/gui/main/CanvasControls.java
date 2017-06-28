@@ -91,14 +91,19 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
+			int index = item.getParent().getChildren().indexOf(item);
 			int newIndex = Math.max(
-					item.getParent().getChildren().indexOf(item) - 1,
+					index - 1,
 					0
 			);
+			if (index == newIndex) {
+				return null;
+			}
 			treeView.moveTreeItem(item, item.getParent(), newIndex);
 
 			//the selection index needs to be updated
-			treeView.getSelectionModel().selectIndices(newIndex);
+			treeView.getSelectionModel().clearSelection();
+			treeView.getSelectionModel().select(item);
 			return null;
 		};
 
@@ -108,14 +113,19 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
+			int index = item.getParent().getChildren().indexOf(item);
 			int newIndex = Math.min(
-					item.getParent().getChildren().indexOf(item) + 1,
+					index + 1,
 					item.getParent().getChildren().size() - 1
 			);
+			if (index == newIndex) {
+				return null;
+			}
 			treeView.moveTreeItem(item, item.getParent(), newIndex);
 
 			//the selection index needs to be updated
-			treeView.getSelectionModel().selectIndices(newIndex);
+			treeView.getSelectionModel().clearSelection();
+			treeView.getSelectionModel().select(item);
 			return null;
 		};
 
@@ -127,12 +137,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				funcMoveUpHandler.apply(treeViewBg);
 			});
 			btnBgControlMoveUp.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
 			btnBgControlMoveDown = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW));
 			btnBgControlMoveDown.setOnAction(event -> {
 				funcMoveDownHandler.apply(treeViewBg);
 			});
 			btnBgControlMoveDown.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
 			treeViewBg.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				boolean disable = newValue == null;
@@ -143,6 +155,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 		HBox bgControlsHbox = new HBox(10,
 				new Label(bundle.getString("CanvasControls.background_controls")),
+				new Separator(Orientation.VERTICAL),
 				cbShowBackgroundControls,
 				btnBgControlMoveDown,
 				btnBgControlMoveUp
@@ -159,12 +172,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				funcMoveUpHandler.apply(treeViewMain);
 			});
 			btnControlMoveUp.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
 			btnControlMoveDown = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW));
 			btnControlMoveDown.setOnAction(event -> {
 				funcMoveDownHandler.apply(treeViewMain);
 			});
 			btnControlMoveDown.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
 			treeViewMain.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				boolean disable = newValue == null;
@@ -176,6 +191,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 		HBox controlsHbox = new HBox(10,
 				new Label(bundle.getString("CanvasControls.controls")),
+				new Separator(Orientation.VERTICAL),
 				cbShowControls,
 				btnControlMoveDown,
 				btnControlMoveUp

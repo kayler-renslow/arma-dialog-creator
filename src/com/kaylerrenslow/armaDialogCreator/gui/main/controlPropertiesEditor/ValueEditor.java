@@ -40,7 +40,7 @@ public interface ValueEditor<V extends SerializableValue> {
 	}
 
 	/** Get the observer that observes the value. */
-	ReadOnlyValueObserver<V> getReadOnlyObserver();
+	@NotNull ReadOnlyValueObserver<V> getReadOnlyObserver();
 
 	/**
 	 Get a new ValueEditor instance associated with the given property type.

@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -161,6 +162,11 @@ public interface Value {
 		/** Construct an array with the internal data equal to items */
 		public Array(@NotNull List<Value> items) {
 			this.items = items;
+		}
+
+		/** Construct an array with the internal data equal to items */
+		public Array(@NotNull Value... items) {
+			this.items = Arrays.asList(items);
 		}
 
 		/** Construct an array with the internal data equal to a new, empty {@link ArrayList} */

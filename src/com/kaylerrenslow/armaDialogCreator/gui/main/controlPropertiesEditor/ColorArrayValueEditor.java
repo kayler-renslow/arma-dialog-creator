@@ -71,6 +71,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 		colorPicker.requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVColorArray> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

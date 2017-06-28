@@ -56,6 +56,7 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 		choiceBox.requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVBoolean> getReadOnlyObserver() {
 		return svBooleanValueObserver.getReadOnlyValueObserver();

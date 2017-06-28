@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.expression.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SyntaxTextArea;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
@@ -147,7 +148,11 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 			@Override
 			protected Boolean call() throws Exception {
 
-				SimpleEnv env = new SimpleEnv();
+				SimpleEnv env = new SimpleEnv(
+						new ApplicationData.UnaryCommandValueProviderImpl(
+								ApplicationData.getManagerInstance()
+						)
+				);
 
 				String returnValueString;
 				String consoleString;

@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -22,8 +23,13 @@ public class ExpressionInterpreter {
 
 	private static final String[] supportedCommands = new String[]{
 			"min", "max", "if", "then", "exitWith", "do", "true", "false",
-			"select", "for", "from", "to", "step", "count", "str"
+			"select", "for", "from", "to", "step", "count", "str",
+			"safeZoneX", "safeZoneY", "safeZoneW", "safeZoneH", "safeZoneXAbs", "safeZoneWAbs", "getResolution"
 	};
+
+	static {
+		Arrays.sort(supportedCommands);
+	}
 
 	/**
 	 Will return an array of all supported commands. This array is used to make sure the user isn't

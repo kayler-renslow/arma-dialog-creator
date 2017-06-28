@@ -134,6 +134,7 @@ public class ImageValueEditor implements ValueEditor<SVImage> {
 		btnChooseImage.requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVImage> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

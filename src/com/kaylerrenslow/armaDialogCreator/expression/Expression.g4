@@ -42,6 +42,7 @@ expression returns [AST.Expr ast]:
     | ifexp=if_expression {$ast = $ifexp.ast;}
     | forexp=for_expression {$ast = $forexp.ast;}
     | codeExp=code {$ast = new AST.CodeExpr($codeExp.ast);}
+    | unaryC=unary_command {$ast = new AST.UnaryCommand($unaryC.text);}
     | ll=literal_expression {$ast = $ll.ast;}
     ;
 
@@ -108,6 +109,18 @@ float_value returns [Double d]:
     fl=FloatLiteral {$d = new Double($fl.text);}
     ;
 
+unary_command :
+    (
+    SafeZoneX
+    | SafeZoneY
+    | SafeZoneW
+    | SafeZoneH
+    | SafeZoneWAbs
+    | SafeZoneHAbs
+    | GetResolution
+    )
+    ;
+
 String : (Quote ~('\'')* Quote)+ | (DQuote ~('"')* DQuote)+ ;
 Quote : '\'';
 DQuote : '"';
@@ -148,6 +161,17 @@ Gt : '>' ;
 GtEq : '>=' ;
 Equal : '=' ;
 Semicolon : ';';
+Or : O R;
+And : A N D;
+
+//unary commands
+SafeZoneX : S A F E Z O N E X;
+SafeZoneY : S A F E Z O N E Y;
+SafeZoneW : S A F E Z O N E W;
+SafeZoneH : S A F E Z O N E H;
+SafeZoneXAbs : S A F E Z O N E X A B S;
+SafeZoneWAbs : S A F E Z O N E W A B S;
+GetResolution : G E T R E S O L U T I O N;
 
 
 Identifier :  Letter LetterOrDigit*;

@@ -226,6 +226,16 @@ public class ExpressionInterpreterTest2 {
 	}
 
 	@Test
+	public void selectArrayAtIndex() throws Exception {
+		ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
+		String eval = "[1,2] select 0";
+		Value expected = new Value.NumVal(1);
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+		interpreter.shutdownAndDisable();
+	}
+
+	@Test
 	public void selectWithCondition1() throws Exception {
 		ExpressionInterpreter interpreter = ExpressionInterpreter.newInstance();
 		String eval = "[1,2] select {true}";

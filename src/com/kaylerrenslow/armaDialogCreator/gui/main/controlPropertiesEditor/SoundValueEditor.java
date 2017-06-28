@@ -119,6 +119,7 @@ public class SoundValueEditor implements ValueEditor<SVSound> {
 		}
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVSound> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

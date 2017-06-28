@@ -70,9 +70,10 @@ public class FileNameValueEditor implements ValueEditor<SVFileName> {
 
 	@Override
 	public void focusToEditor() {
-
+		chooserPane.requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVFileName> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

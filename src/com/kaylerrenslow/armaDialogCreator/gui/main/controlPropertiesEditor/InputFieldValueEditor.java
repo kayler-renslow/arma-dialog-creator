@@ -56,6 +56,7 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		return true;
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<V> getReadOnlyObserver() {
 		return inputField.getValueObserver().getReadOnlyValueObserver();

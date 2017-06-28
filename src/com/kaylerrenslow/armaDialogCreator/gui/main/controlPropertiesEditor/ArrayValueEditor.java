@@ -98,6 +98,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 		editors.get(0).requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVStringArray> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

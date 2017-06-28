@@ -17,6 +17,15 @@ import java.util.Map;
 public class SimpleEnv implements Env {
 	/** Map for identifiers to values */
 	protected final HashMap<String, Value> map = new HashMap<>();
+	private UnaryCommandValueProvider unaryCommandProvider;
+
+	public SimpleEnv() {
+
+	}
+
+	public SimpleEnv(@Nullable UnaryCommandValueProvider unaryCommandProvider) {
+		this.unaryCommandProvider = unaryCommandProvider;
+	}
 
 	@Override
 	public Value put(@NotNull String identifier, Value v) {
@@ -26,6 +35,16 @@ public class SimpleEnv implements Env {
 	@Override
 	public Value remove(@NotNull String identifier) {
 		return map.remove(identifier.toLowerCase());
+	}
+
+	public void setUnaryCommandProvider(@Nullable UnaryCommandValueProvider unaryCommandProvider) {
+		this.unaryCommandProvider = unaryCommandProvider;
+	}
+
+	@Override
+	@Nullable
+	public UnaryCommandValueProvider getUnaryCommandValueProvider() {
+		return unaryCommandProvider;
 	}
 
 	@Override

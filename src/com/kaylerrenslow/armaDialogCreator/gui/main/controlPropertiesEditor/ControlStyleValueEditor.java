@@ -91,6 +91,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 		return true;
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVControlStyleGroup> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();

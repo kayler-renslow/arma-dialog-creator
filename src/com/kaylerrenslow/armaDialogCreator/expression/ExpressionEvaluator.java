@@ -248,9 +248,18 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		if (var.equalsIgnoreCase("false")) {
 			return Value.False;
 		}
+		Value v = getValueForIdentifier(expr, env, var);
+		return v;
+	}
+
+	@NotNull
+	private Value getValueForIdentifier(@NotNull AST.Expr expr, @NotNull Env env, @NotNull String var) {
 		Value v = env.getValue(var);
 		if (v == null) {
-			throw new ExpressionEvaluationException(expr, String.format(Lang.ApplicationBundle().getString("Expression.identifier_not_set_f"), expr.getIdentifier()));
+			throw new ExpressionEvaluationException(
+					expr,
+					String.format(Lang.ApplicationBundle().getString("Expression.identifier_not_set_f"), var)
+			);
 		}
 		return v;
 	}
@@ -487,7 +496,16 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 
 				return new Value.Array(leftArr.getItems().subList(start, Math.min(count, leftArr.length())));
 			}
-			unexpectedValueException(expr, right, expr.getRight(), codeTypeName() + "," + boolTypeName() + "," + arrayTypeName());
+			if (right instanceof Value.NumVal) {
+				int rightIndex = (int) ((Value.NumVal) right).v();
+				if (rightIndex < 0 || rightIndex >= leftArr.length()) {
+					indexOutOfBounds(expr, leftArr.toString(), "index", rightIndex, 0, leftArr.length() - 1);
+				}
+				return leftArr.getItems().get(rightIndex);
+			}
+			unexpectedValueException(expr, right, expr.getRight(),
+					codeTypeName() + "," + boolTypeName() + "," + arrayTypeName() + "," + numberTypeName()
+			);
 		}
 		return unexpectedValueException(expr, left, expr.getLeft(), stringTypeName() + "," + arrayTypeName());
 	}
@@ -698,6 +716,15 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			return v;
 		}
 		return new Value.StringLiteral(v.toString());
+	}
+
+	@Override
+	public Value visit(@NotNull AST.UnaryCommand expr, @NotNull Env env) {
+		UnaryCommandValueProvider provider = env.getUnaryCommandValueProvider();
+		if (provider == null) {
+			return getValueForIdentifier(expr, env, expr.getCommand());
+		}
+		return UnaryCommandTranslator.executeUnaryCommand(expr.getCommand(), provider);
 	}
 
 	private double getNumValValue(@NotNull Value v) {

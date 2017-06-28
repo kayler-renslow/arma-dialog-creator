@@ -9,6 +9,10 @@ public class SerializableValueConstructionException extends RuntimeException {
 	public SerializableValueConstructionException() {
 	}
 
+	public SerializableValueConstructionException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
 	public SerializableValueConstructionException(@NonNls String message) {
 		super(message);
 	}

@@ -147,4 +147,14 @@ public interface ExpressionListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFloat_value(ExpressionParser.Float_valueContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ExpressionParser#unary_command}.
+	 * @param ctx the parse tree
+	 */
+	void enterUnary_command(ExpressionParser.Unary_commandContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ExpressionParser#unary_command}.
+	 * @param ctx the parse tree
+	 */
+	void exitUnary_command(ExpressionParser.Unary_commandContext ctx);
 }

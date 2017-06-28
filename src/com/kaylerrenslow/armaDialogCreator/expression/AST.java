@@ -65,6 +65,7 @@ interface AST {
 
 		T visit(@NotNull StrExpr expr, @NotNull Env env);
 
+		T visit(@NotNull UnaryCommand expr, @NotNull Env env);
 	}
 
 	abstract class ASTNode implements AST {
@@ -937,6 +938,30 @@ interface AST {
 				getAssignment().toString(sb);
 			}
 			sb.append(";");
+		}
+	}
+
+	class UnaryCommand extends Expr {
+
+		private final String command;
+
+		public UnaryCommand(@NotNull String command) {
+			this.command = command;
+		}
+
+		@NotNull
+		public String getCommand() {
+			return command;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append(command);
 		}
 	}
 }

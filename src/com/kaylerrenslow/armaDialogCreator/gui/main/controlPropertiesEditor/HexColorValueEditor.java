@@ -75,6 +75,7 @@ public class HexColorValueEditor implements ValueEditor<SVHexColor> {
 		colorPicker.requestFocus();
 	}
 
+	@NotNull
 	@Override
 	public ReadOnlyValueObserver<SVHexColor> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
