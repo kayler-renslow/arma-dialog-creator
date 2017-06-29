@@ -66,13 +66,16 @@ public class ArmaTools {
 	 */
 	public static boolean imageToPAA(@NotNull File arma3ToolsDirectory, @NotNull File toConvert, @NotNull File saveTo, long timeout) throws IOException {
 		if (!arma3ToolsDirectory.exists()) {
-			throw new FileNotFoundException("Arma 3 Tools Directory doesn't exist.");
+			throw new FileNotFoundException("Arma Tools: Arma 3 Tools Directory doesn't exist. Dir=" +
+					arma3ToolsDirectory.getPath());
 		}
 		if (!isValidA3ToolsDirectory(arma3ToolsDirectory)) {
-			throw new FileNotFoundException("Path to Arma 3 Tools directory is incorrect.");
+			throw new FileNotFoundException("Arma Tools: Path to Arma 3 Tools directory is incorrect. Dir=" +
+					arma3ToolsDirectory.getPath());
 		}
 		if (!toConvert.exists()) {
-			throw new FileNotFoundException("The file to be converted doesn't exist.");
+			throw new FileNotFoundException("Arma Tools: The paa image to be converted doesn't exist. File=" +
+					toConvert.getPath());
 		}
 
 		String commandLine = String.format("\"%s\\\\%s\" \"%s\" \"%s\"", arma3ToolsDirectory.getPath(), IMAGE_TO_PAA_EXE, toConvert.getPath(), saveTo.getPath());

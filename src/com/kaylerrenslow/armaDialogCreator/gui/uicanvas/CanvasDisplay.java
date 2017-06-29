@@ -28,7 +28,11 @@ public interface CanvasDisplay<C extends CanvasControl> extends ControlHolder<C>
 
 	void resolutionUpdate(@NotNull Resolution newResolution);
 
-	/** Get an update group that will notify a change when a render is required */
+	/**
+	 Get an update group that will notify a change when a render is required on a {@link UICanvas}
+	 <p>
+	 This method should be invoked on the JavaFX thread.
+	 */
 	@NotNull UpdateListenerGroup<C> getReRenderUpdateGroup();
 
 }

@@ -14,7 +14,6 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -44,11 +43,11 @@ public class StaticRenderer extends ArmaControlRenderer {
 	 */
 	private boolean useBackgroundColor = true;
 
-	private RenderType renderType = RenderType.Text;
+	private volatile RenderType renderType = RenderType.Text;
+	/** The image to paint, or null if not set */
+	private volatile Image imageToPaint = null;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
-	/** The image to paint, or null if not set */
-	private Image imageToPaint = null;
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
@@ -106,16 +105,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (renderTypeForStyle == RenderType.Image) {
 
 			ImageHelper.getImageAsync(textValue, image -> {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
-						imageToPaint = image;
-						requestRender();
-					}
-				});
 				synchronized (StaticRenderer.this) {
-
+					renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
+					imageToPaint = image;
+					requestRender();
 				}
 				return null;
 			});

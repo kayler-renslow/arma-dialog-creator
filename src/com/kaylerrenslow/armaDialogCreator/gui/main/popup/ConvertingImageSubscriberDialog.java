@@ -24,8 +24,8 @@ import java.util.ResourceBundle;
  A dialog that automatically appears when {@link ImagesTool#getImageFile(String, ImagesTool.ImageConversionCallback)}
  is invoked.
  <p>
- This differs from {@link ConvertImageTask} because this has no user input. This dialog is used for
- {@link ImagesTool#subscribeToConversion(ImagesTool.ImageConversionSubscriber)}
+ This differs from {@link ConvertImageTask} because this has no user input and doesn't convert anything. This dialog is
+ used for {@link ImagesTool#subscribeToConversion(ImagesTool.ImageConversionSubscriber)}.
 
  @author Kayler
  @since 06/29/2017 */
@@ -106,7 +106,7 @@ public class ConvertingImageSubscriberDialog extends StagePopup<VBox>
 				try {
 					//wait for the dialog to at least appear before closing it
 					if (System.currentTimeMillis() - shownTime < 100) {
-						Thread.sleep(1000);
+						Thread.sleep(500);
 					}
 
 					if (wait) {

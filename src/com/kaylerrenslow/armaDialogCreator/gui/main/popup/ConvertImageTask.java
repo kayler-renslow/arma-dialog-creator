@@ -9,7 +9,6 @@ import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -38,6 +37,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  This task is not closable, however, if the conversion takes too long, the task will shutdown automatically.
 
  @author Kayler
+ @see ConvertingImageSubscriberDialog
  @since 06/29/2017 */
 public class ConvertImageTask {
 
@@ -57,6 +57,7 @@ public class ConvertImageTask {
 	private final Callback<KeyValue<File, File>, Void> callback;
 
 	private final LinkedBlockingQueue q = new LinkedBlockingQueue();
+	private final Object closeTask = new Object();
 
 	/**
 	 @param paaImageFile paa image to convert
@@ -71,17 +72,15 @@ public class ConvertImageTask {
 	}
 
 	public void start() {
-		Thread thread = new Thread(convertPaaTask);
+		Thread thread = new Thread(convertPaaTask, "ADC - ConvertImageTask.java");
 		thread.setDaemon(true);
 		thread.start();
 	}
 
 
-	private class ConvertPaaTask extends Task<KeyValue<File, File>>
-			implements ImagesTool.ImageConversionCallback {
+	private class ConvertPaaTask implements Runnable, ImagesTool.ImageConversionCallback {
 
 		private final File toConvert;
-		private Exception exception;
 		private KeyValue<File, File> value;
 
 		public ConvertPaaTask(@NotNull File toConvert) {
@@ -90,19 +89,10 @@ public class ConvertImageTask {
 		}
 
 		@Override
-		protected KeyValue<File, File> call() throws Exception {
+		public void run() {
 			ImagesTool.getImageFile(toConvert.getPath(), this);
 
-			if (exception != null) {
-				throw exception;
-			}
-
-			if (isCancelled()) {
-				return null;
-			}
-
 			callback.call(value);
-			return value;
 		}
 
 		@Override
@@ -116,9 +106,13 @@ public class ConvertImageTask {
 			});
 
 			try {
-				Option take = (Option) q.take();
+				Object take = q.take();
+				if (take == closeTask) {
+					return null;
+				}
+				Option option = (Option) take;
 
-				switch (take) {
+				switch (option) {
 					case CANCEL: {
 						return null;
 					}
@@ -129,11 +123,11 @@ public class ConvertImageTask {
 						return destination.getName();
 					}
 					default: {
-						throw new IllegalStateException("unexpected option (bug):" + take);
+						throw new IllegalStateException("unexpected option (bug):" + option);
 					}
 				}
-			} catch (InterruptedException e) {
-				exception = e;
+			} catch (InterruptedException ignore) {
+
 			}
 			return null;
 		}
@@ -153,32 +147,35 @@ public class ConvertImageTask {
 				}
 			});
 			try {
-				return (File) q.take();
-			} catch (InterruptedException e) {
-				exception = e;
+				Object take = q.take();
+				if (take == closeTask) {
+					return null;
+				}
+				return (File) take;
+			} catch (InterruptedException ignore) {
+
 			}
 			return null;
 		}
 
 		@Override
 		public void conversionStarted(@NotNull File image) {
-			updateProgress(-1, 1);
+
 		}
 
 		@Override
 		public void conversionFailed(@NotNull File image, @Nullable Exception e) {
-			this.exception = e;
+
 		}
 
 		@Override
 		public void conversionSucceeded(@NotNull File image, @Nullable File resultFile) {
 			value = new KeyValue<>(image, resultFile);
-			updateProgress(1, 1);
 		}
 
 		@Override
 		public void conversionCancelled(@NotNull File image) {
-			cancel();
+
 		}
 	}
 
@@ -211,7 +208,12 @@ public class ConvertImageTask {
 
 		@Override
 		protected void closing() {
-			q.add(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory());
+			File f = ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory();
+			if (f == null) {
+				q.add(closeTask);
+			} else {
+				q.add(f);
+			}
 		}
 	}
 

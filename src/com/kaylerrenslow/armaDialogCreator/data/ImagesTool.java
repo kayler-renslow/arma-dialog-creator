@@ -37,8 +37,10 @@ public class ImagesTool {
 	 This method will also automatically insert any converted paa images into
 	 {@link Workspace#getGlobalResourceRegistry()} with a {@link PaaImageExternalResource} instance.
 	 Because of this, a given image file could be a .paa image that was already converted. If the converted image
-	 already exists in {@link Workspace#getGlobalResourceRegistry()}, that converted file will be used.
+	 already exists in {@link Workspace#getGlobalResourceRegistry()}, that converted file will be returned.
 	 <p>
+	 If at any point the conversion is cancelled or fails, <code>imageFilePath</code>'s file will be returned.
+
 	 Note: if the conversion fails or is cancelled, the returned file may be a .paa image!
 
 	 @param imageFilePath the path to the image
@@ -79,15 +81,17 @@ public class ImagesTool {
 				}
 			} else {
 				String convertedPaaPath = resource.getPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE);
-				File oldImageFile = imageFile;
-				imageFile = convertedPaaPath == null ? imageFile : new File(convertedPaaPath);
-				if (!imageFile.exists() && imageFile != oldImageFile) {
+				File convertedImageFile = convertedPaaPath == null ? imageFile : new File(convertedPaaPath);
+				if (!convertedImageFile.exists() || convertedImageFile == imageFile) {
 					ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
 					PaaImageExternalResource r = tool.convert();
 					if (r != null) {
-						resource.setPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE, r.getConvertedImage().getAbsolutePath());
+						File newConvertedFile = r.getConvertedImage();
+						resource.setPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE, newConvertedFile.getAbsolutePath());
+						return newConvertedFile;
 					}
 				}
+				return convertedImageFile;
 			}
 		}
 
@@ -163,7 +167,7 @@ public class ImagesTool {
 		@Nullable String replaceExistingConvertedImage(@NotNull File image, @NotNull File destination);
 
 		/**
-		 Get the Arma 3 Tools directory.
+		 Get the Arma 3 Tools directory. If returns null, the conversion will be cancelled.
 
 		 @return the directory to Arma 3 tools, or null if to cancel the conversion
 		 */
@@ -236,7 +240,7 @@ public class ImagesTool {
 					}
 				}
 			}
-		}, "ADC - ImagesTool Sub Thread");
+		}, "ADC - ImagesTool Subscriber Thread");
 
 		public ImageConversionCallbackWrapper(@NotNull ImageConversionCallback callback) {
 			this.callback = callback;

@@ -2,14 +2,10 @@
 * 
 
 **Changed:**
-* modularized how converting paa images works.
-    * now have a method for returning and converting image files
-    * since we can listen for conversions, we can now have control renderers convert on the fly without a preset conversion
-        * a dialog will appear if an on the fly conversion happens in a renderer
-* made getCurrentProject() and getCurrentWorkspace() blocking calls
+* 
 
 **Fixed:**
-* 
+* some issues with paa image converting
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

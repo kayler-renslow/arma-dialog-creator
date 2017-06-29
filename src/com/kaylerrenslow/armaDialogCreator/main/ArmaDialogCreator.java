@@ -35,6 +35,7 @@ public final class ArmaDialogCreator extends Application {
 	private static ArmaDialogCreator INSTANCE;
 	private static Locale locale = ApplicationProperty.LOCALE.getDefaultValue();
 	private static Manifest adcManifest;
+	private static Thread JavaFXThread;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -97,6 +98,8 @@ public final class ArmaDialogCreator extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		JavaFXThread = Thread.currentThread();
+
 		//load this stuff first
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
@@ -298,6 +301,11 @@ public final class ArmaDialogCreator extends Application {
 		ApplicationDataManager.getInstance().saveApplicationProperties();
 	}
 
+	/** Gets the JavaFX thread */
+	@NotNull
+	public static Thread getJavaFXThread() {
+		return JavaFXThread;
+	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
 

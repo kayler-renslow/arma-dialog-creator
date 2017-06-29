@@ -16,7 +16,8 @@ import java.util.function.Function;
  @since 06/28/2017 */
 public class ImageHelper {
 	/**
-	 Get an {@link Image} from a {@link SerializableValue}. This method is asynchronous.
+	 Get an {@link Image} from a {@link SerializableValue}. This method is asynchronous. The provided callback will
+	 be executed on a different thread than the thread that invoked this method
 
 	 @param pathValue the {@link SerializableValue} to get the image from
 	 @param imageGetFunc the "callback" function. The function can return any value. The parameter of the function
@@ -49,6 +50,10 @@ public class ImageHelper {
 						FileInputStream fis = new FileInputStream(f);
 						Image imageToPaint = new Image(fis);
 						fis.close();
+						if (imageToPaint.isError()) {
+							imageGetFunc.apply(null);
+							return;
+						}
 						imageGetFunc.apply(imageToPaint);
 						return;
 					} catch (Exception ignore) {
@@ -57,7 +62,7 @@ public class ImageHelper {
 				}
 				imageGetFunc.apply(null);
 			}
-		});
+		}, "ADC - ImageHelper.java");
 		t.setDaemon(true);
 		t.start();
 

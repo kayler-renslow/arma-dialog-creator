@@ -14,7 +14,9 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.SimpleCanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ViewportCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.*;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -49,6 +51,14 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	protected final Env env;
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
+	private final Runnable runnableRequestRender = new Runnable() {
+		@Override
+		public void run() {
+			if (myControl.getDisplay() != null) {
+				myControl.getRenderUpdateGroup().update(getMyControl());
+			}
+		}
+	};
 
 	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
@@ -140,12 +150,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Since the control's update group will update before the renderer's control property value listeners get notified, the re-render must occur AFTER the renderer's internal values change. Invoke
+	 Since the control's update group will update before the renderer's control property value listeners get notified,
+	 the re-render must occur AFTER the renderer's internal values change. Invoke
 	 this whenever a new render needs to happen.
+	 <p>
+	 This method can be invoked on any thread.
 	 */
 	public final void requestRender() {
-		if (myControl.getDisplay() != null) {
-			myControl.getRenderUpdateGroup().update(this.getMyControl());
+		if (Thread.currentThread() != ArmaDialogCreator.getJavaFXThread()) {
+			Platform.runLater(runnableRequestRender);
+		} else {
+			runnableRequestRender.run();
 		}
 	}
 

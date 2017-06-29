@@ -44,6 +44,9 @@ public interface CanvasControl<C extends CanvasControl> {
 	@NotNull ValueObserver<ControlHolder<C>> getHolderObserver();
 
 	/**
+	 Used for letting a {@link UICanvas} know that a render needs to happen.
+	 This method should be invoked on the JavaFX thread.
+
 	 @return the update group that will update anytime the control needs to be re-rendered
 	 @throws NullPointerException when {@link #getDisplay()} is null
 	 */
