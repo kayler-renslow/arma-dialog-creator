@@ -2,7 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.notification;
 
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
@@ -66,31 +65,32 @@ public class Notifications {
 	}
 
 
+	private final List<NotificationDescriptor> toShowNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final List<NotificationDescriptor> showingNotifications = Collections.synchronizedList(new LinkedList<>());
-	private final NotificationsVisibilityTask visibilityTask = new NotificationsVisibilityTask(this);
+	private final NotificationsVisibilityTask visibilityRunnable = new NotificationsVisibilityTask(this);
+	private volatile Thread visibilityThread;
 	private final List<NotificationDescriptor> pastNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final ReadOnlyList<NotificationDescriptor> pastNotificationsReadOnly = new ReadOnlyList<>(pastNotifications);
 	private NotificationPane notificationPane;
 
-	private void doShowNotification(@NotNull Notification notification, @NotNull NotificationPane notificationPane) {
-		NotificationDescriptor descriptor = new NotificationDescriptor(notification, System.currentTimeMillis());
+	private synchronized void doShowNotification(@NotNull Notification notification, @NotNull NotificationPane notificationPane) {
+		NotificationDescriptor descriptor = new NotificationDescriptor(notification, System.currentTimeMillis(), notificationPane);
 		if (notification.saveToHistory()) {
 			pastNotifications.add(descriptor);
 			while (pastNotifications.size() >= MAX_HISTORY_NOTIFICATIONS) {
 				pastNotifications.remove(0);
 			}
 		}
-		showingNotifications.add(descriptor);
-		notificationPane.addNotification(notification);
-		if (!visibilityTask.isRunning()) {
-			Thread thread = new Thread(visibilityTask);
-			thread.setName("ADC - Notifications Thread");
-			thread.setDaemon(true);
-			thread.start();
+		toShowNotifications.add(descriptor);
+		if (visibilityThread == null || !visibilityThread.isAlive()) {
+			visibilityThread = new Thread(visibilityRunnable);
+			visibilityThread.setName("ADC - Notifications Thread");
+			visibilityThread.setDaemon(true);
+			visibilityThread.start();
 		}
 	}
 
-	private static class NotificationsVisibilityTask extends Task<Boolean> {
+	private static class NotificationsVisibilityTask implements Runnable {
 
 		private final Notifications notifications;
 		private final List<NotificationDescriptor> tohide = Collections.synchronizedList(new LinkedList<>());
@@ -99,8 +99,7 @@ public class Notifications {
 			this.notifications = notifications;
 		}
 
-		@Override
-		protected Boolean call() throws Exception {
+		public void run() {
 			while (true) {
 				long now = System.currentTimeMillis();
 				for (int i = 0; i < notifications.showingNotifications.size(); ) {
@@ -111,10 +110,18 @@ public class Notifications {
 					}
 					i++;
 				}
-				if (tohide.size() > 0) {
+				if (tohide.size() > 0 || !notifications.toShowNotifications.isEmpty()) {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
+							synchronized (notifications.toShowNotifications) {
+								for (NotificationDescriptor d : notifications.toShowNotifications) {
+									d.getPane().addNotification(d.getNotification());
+									notifications.showingNotifications.add(d);
+								}
+								notifications.toShowNotifications.clear();
+							}
+
 							while (tohide.size() > 0) {
 								tohide.remove(0).getNotification().setShowing(false);
 							}
@@ -123,7 +130,7 @@ public class Notifications {
 				}
 				if (notifications.showingNotifications.size() == 0) {
 					try {
-						Thread.sleep(2000);
+						Thread.sleep(300);
 					} catch (Exception ignore) {
 					}
 				} else {

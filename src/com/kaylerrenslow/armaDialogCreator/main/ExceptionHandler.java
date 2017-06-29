@@ -20,6 +20,8 @@ import java.io.StringWriter;
  @since 07/06/2016. */
 public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	private static final ExceptionHandler INSTANCE = new ExceptionHandler();
+	private static volatile Throwable lastThrowable = null;
+	private static long lastReportTime = -1;
 
 	private ExceptionHandler() {
 	}
@@ -28,13 +30,19 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		return INSTANCE;
 	}
 
-	/**
-	 Make an error window popup with the stack trace printed.
-	 Only use this for when the error is recoverable.
-	 If the error is non-recoverable, use {@link #fatal(Throwable)}
-	 */
-	public static void error(Throwable t) {
-		error(Thread.currentThread(), t);
+	private static boolean checkRepeat(Throwable t) {
+		long lastReportTime = ExceptionHandler.lastReportTime;
+		ExceptionHandler.lastReportTime = System.currentTimeMillis();
+
+		if (lastThrowable != null) {
+			if (t.getClass().getName().equals(lastThrowable.getClass().getName())
+					&& (System.currentTimeMillis() - lastReportTime < 300)) {
+				System.err.println(t.getClass().getName());
+				return true;
+			}
+		}
+		lastThrowable = t;
+		return false;
 	}
 
 	/**
@@ -42,7 +50,11 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	 Only use this for when the error is recoverable.
 	 If the error is non-recoverable, use {@link #fatal(Throwable)}
 	 */
-	public static void error(Thread threadWhereErrorOccurred, Throwable t) {
+	public static void error(Throwable t) {
+		if (checkRepeat(t)) {
+			return;
+		}
+
 		t.printStackTrace(System.out);
 		Platform.runLater(new Runnable() {
 			@Override
@@ -67,15 +79,10 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	 After the error window is closed, the application will also close.
 	 */
 	public static void fatal(Throwable t) {
-		fatal(Thread.currentThread(), t);
-	}
+		if (checkRepeat(t)) {
+			return;
+		}
 
-	/**
-	 Makes an error window popup with the stack trace printed.
-	 This method should be used when a <b>non-recoverable</b> error occurred.
-	 After the error window is closed, the application will also close.
-	 */
-	public static void fatal(Thread threadWereErrorOccurred, Throwable t) {
 		t.printStackTrace(System.out);
 		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) {
 			//can be null if this method is called when ApplicationDataManager had an error before constructor finished
@@ -169,7 +176,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 	@Override
 	public void uncaughtException(Thread t, Throwable e) {
 		try {
-			error(t, e);
+			error(e);
 		} catch (Throwable t1) {
 			t1.printStackTrace(System.out);
 		}

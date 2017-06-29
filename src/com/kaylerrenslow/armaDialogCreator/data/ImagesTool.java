@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -17,7 +18,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  @author Kayler
  @since 06/28/2017 */
 public class ImagesTool {
-	private static final List<ImageConversionSubscriber> subs = new ArrayList<>();
+	private static final List<ImageConversionSubscriber> subs = Collections.synchronizedList(new ArrayList<>());
 
 	/**
 	 @param subscriber the subscriber

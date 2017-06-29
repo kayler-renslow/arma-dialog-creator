@@ -9,10 +9,12 @@ import org.jetbrains.annotations.NotNull;
 public class NotificationDescriptor {
 	private final Notification notification;
 	private final long timeShown;
+	private final NotificationPane pane;
 
-	NotificationDescriptor(@NotNull Notification notification, long timeShown) {
+	NotificationDescriptor(@NotNull Notification notification, long timeShown, @NotNull NotificationPane pane) {
 		this.notification = notification;
 		this.timeShown = timeShown;
+		this.pane = pane;
 	}
 
 	@NotNull
@@ -22,6 +24,11 @@ public class NotificationDescriptor {
 
 	public long getTimeShown() {
 		return timeShown;
+	}
+
+	@NotNull
+	NotificationPane getPane() {
+		return pane;
 	}
 
 	@Override

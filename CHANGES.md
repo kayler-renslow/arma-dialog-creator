@@ -1,11 +1,11 @@
 **Added:**
-* 
+* paa conversion subscriber notification
 
 **Changed:**
-* 
+* made ExceptionHandler not repeat
 
 **Fixed:**
-* some issues with paa image converting
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
