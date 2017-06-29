@@ -1,7 +1,10 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
-import com.kaylerrenslow.armaDialogCreator.data.*;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
+import com.kaylerrenslow.armaDialogCreator.data.Project;
+import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
+import com.kaylerrenslow.armaDialogCreator.data.Workspace;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
@@ -97,7 +100,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		public WorkspaceSelectionStep() {
 			super(new VBox(20));
-			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.get(ApplicationDataManager.getApplicationProperties());
+			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.getValue();
 			if (workspaceDirectory == null) {
 				workspaceDirectory = Workspace.DEFAULT_WORKSPACE_DIRECTORY;
 			}

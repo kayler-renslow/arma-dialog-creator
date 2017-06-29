@@ -24,6 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  @author Kayler
@@ -57,7 +58,7 @@ public abstract class UICanvas extends AnchorPane {
 	/** All components added */
 	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
 
-	private boolean needPaint;
+	private final AtomicBoolean needPaint = new AtomicBoolean();
 	private final UpdateGroupListener renderUpdateGroupListener = new UpdateGroupListener() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup group, @Nullable Object data) {
@@ -165,9 +166,11 @@ public abstract class UICanvas extends AnchorPane {
 	 Request a repaint.
 	 The paint operation won't happen until {@link #getTimer()} discovers the paint request.
 	 Therefore, multiple requests can be made and not have any performance impacts.
+	 <p>
+	 This method can be used across multiple threads.
 	 */
 	public void requestPaint() {
-		needPaint = true;
+		needPaint.set(true);
 	}
 
 	/**
@@ -288,8 +291,10 @@ public abstract class UICanvas extends AnchorPane {
 	}
 
 
-	/** This is called after mouseMove is called.
-	 This will ensure that no matter how mouse move exits, the last mouse position will be updated */
+	/**
+	 This is called after mouseMove is called.
+	 This will ensure that no matter how mouse move exits, the last mouse position will be updated
+	 */
 	private void setLastMousePosition(int mousex, int mousey) {
 		lastMousePosition.set(mousex, mousey);
 	}
@@ -385,8 +390,8 @@ public abstract class UICanvas extends AnchorPane {
 			for (Runnable r : runnables) {
 				r.run();
 			}
-			if (needPaint) {
-				needPaint = false;
+			if (needPaint.get()) {
+				needPaint.set(false);
 				paint();
 			}
 		}

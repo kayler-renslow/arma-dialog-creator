@@ -26,4 +26,9 @@ public class PaaImageExternalResource extends ExternalResource {
 	public PaaImageExternalResource(@NotNull File paaImage, @NotNull File convertedImage) {
 		super(paaImage, new KeyValueString[]{new KeyValueString(KEY_CONVERTED_IMAGE, convertedImage.getAbsolutePath())});
 	}
+
+	@NotNull
+	public File getConvertedImage() {
+		return new File(getPropertyValue(KEY_CONVERTED_IMAGE));
+	}
 }

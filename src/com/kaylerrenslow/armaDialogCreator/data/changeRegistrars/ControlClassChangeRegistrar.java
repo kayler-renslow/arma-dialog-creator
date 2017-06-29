@@ -31,7 +31,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 	private static final ResourceBundle bundle = Lang.EditChangeBundle();
 
 	public ControlClassChangeRegistrar(@NotNull ApplicationData data) {
-		final Changelog changelog = Changelog.getInstance();
+		final Changelog changelog = data.getChangelog();
 
 		UpdateGroupListener<ControlClassUpdate> classUpdateListener = new UpdateGroupListener<ControlClassUpdate>() {
 			@Override

@@ -1,0 +1,288 @@
+package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
+
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
+import com.kaylerrenslow.armaDialogCreator.data.ImagesTool;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
+import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.util.Callback;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.ResourceBundle;
+import java.util.concurrent.LinkedBlockingQueue;
+
+/**
+ A task that converts a .paa image to a .png.
+ This class uses {@link ImagesTool#getImageFile(String, ImagesTool.ImageConversionCallback)} for converting images.
+ <p>
+ This class properly handles retrieving Arma 3 tools directory if not set by presenting a GUI to the user.
+ <p>
+ This task is not closable, however, if the conversion takes too long, the task will shutdown automatically.
+
+ @author Kayler
+ @since 06/29/2017 */
+public class ConvertImageTask {
+
+	private enum Option {
+		CANCEL(""),
+		OVERWRITE(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.overwrite")),
+		NEW_NAME(Lang.ApplicationBundle().getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.new_name"));
+
+		private final String displayName;
+
+		Option(String displayName) {
+			this.displayName = displayName;
+		}
+	}
+
+	private final ConvertPaaTask convertPaaTask;
+	private final Callback<KeyValue<File, File>, Void> callback;
+
+	private final LinkedBlockingQueue q = new LinkedBlockingQueue();
+
+	/**
+	 @param paaImageFile paa image to convert
+	 @param callback callback to use when conversion completes, errors, or cancels
+	 The key is the file that was requested to be converted.
+	 The value is the resulted file. The key will not be null, however, the value may be null.
+	 */
+	public ConvertImageTask(@NotNull File paaImageFile, @NotNull Callback<KeyValue<File, File>, Void> callback) {
+		this.callback = callback;
+
+		convertPaaTask = new ConvertPaaTask(paaImageFile);
+	}
+
+	public void start() {
+		Thread thread = new Thread(convertPaaTask);
+		thread.setDaemon(true);
+		thread.start();
+	}
+
+
+	private class ConvertPaaTask extends Task<KeyValue<File, File>>
+			implements ImagesTool.ImageConversionCallback {
+
+		private final File toConvert;
+		private Exception exception;
+		private KeyValue<File, File> value;
+
+		public ConvertPaaTask(@NotNull File toConvert) {
+			this.toConvert = toConvert;
+			value = new KeyValue<>(toConvert, null);
+		}
+
+		@Override
+		protected KeyValue<File, File> call() throws Exception {
+			ImagesTool.getImageFile(toConvert.getPath(), this);
+
+			if (exception != null) {
+				throw exception;
+			}
+
+			if (isCancelled()) {
+				return null;
+			}
+
+			callback.call(value);
+			return value;
+		}
+
+		@Override
+		public @Nullable String replaceExistingConvertedImage(@NotNull File image, @NotNull File destination) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					ImageAlreadyExistsDialog dialog = new ImageAlreadyExistsDialog(destination);
+					dialog.show();
+				}
+			});
+
+			try {
+				Option take = (Option) q.take();
+
+				switch (take) {
+					case CANCEL: {
+						return null;
+					}
+					case NEW_NAME: {
+						return destination.getName() + ".new.png";
+					}
+					case OVERWRITE: {
+						return destination.getName();
+					}
+					default: {
+						throw new IllegalStateException("unexpected option (bug):" + take);
+					}
+				}
+			} catch (InterruptedException e) {
+				exception = e;
+			}
+			return null;
+		}
+
+		@Override
+		public @Nullable File arma3ToolsDirectory() {
+			File a3Tools = ApplicationProperty.A3_TOOLS_DIR.getValue();
+			if (a3Tools != null) {
+				return a3Tools;
+			}
+
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					Arma3ToolsDirNotSetPopup popup = new Arma3ToolsDirNotSetPopup();
+					popup.show();
+				}
+			});
+			try {
+				return (File) q.take();
+			} catch (InterruptedException e) {
+				exception = e;
+			}
+			return null;
+		}
+
+		@Override
+		public void conversionStarted(@NotNull File image) {
+			updateProgress(-1, 1);
+		}
+
+		@Override
+		public void conversionFailed(@NotNull File image, @Nullable Exception e) {
+			this.exception = e;
+		}
+
+		@Override
+		public void conversionSucceeded(@NotNull File image, @Nullable File resultFile) {
+			value = new KeyValue<>(image, resultFile);
+			updateProgress(1, 1);
+		}
+
+		@Override
+		public void conversionCancelled(@NotNull File image) {
+			cancel();
+		}
+	}
+
+	private class Arma3ToolsDirNotSetPopup extends StagePopup<VBox> {
+
+		public Arma3ToolsDirNotSetPopup() {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
+			setTitle(bundle.getString("Popups.generic_popup_title"));
+
+			myStage.initModality(Modality.APPLICATION_MODAL);
+			myStage.setResizable(false);
+
+			Button btnLocate = new Button(bundle.getString("ValueEditors.ImageValueEditor.set_a3_tools_btn"));
+			btnLocate.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
+					close();
+				}
+			});
+
+			myRootElement.setPadding(new Insets(10));
+			myRootElement.getChildren().add(new Label(bundle.getString("ValueEditors.ImageValueEditor.a3_tools_dir_not_set")));
+			myRootElement.getChildren().add(btnLocate);
+
+			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(true, true, false));
+		}
+
+		@Override
+		protected void closing() {
+			q.add(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory());
+		}
+	}
+
+	private class ImageAlreadyExistsDialog extends StageDialog<VBox> {
+
+
+		private final ToggleGroup toggleGroup = new ToggleGroup();
+		private Option selectedOption = Option.OVERWRITE;
+
+		/**
+		 @param existingImage the .png image file that already exists
+		 */
+		public ImageAlreadyExistsDialog(@NotNull File existingImage) {
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, false);
+			if (!existingImage.getName().endsWith(".png")) {
+				throw new IllegalArgumentException("not a png image");
+			}
+
+			ResourceBundle bundle = Lang.ApplicationBundle();
+
+			setTitle(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.dialog_title"));
+
+			myRootElement.getChildren().add(new Label(String.format(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.message_f"), existingImage.getName())));
+
+			final ImageView imageViewPreviewImage;
+			try {
+				imageViewPreviewImage = new ImageView(new Image(new FileInputStream(existingImage.getPath())));
+			} catch (FileNotFoundException e) {
+				ExceptionHandler.error(e);
+				return;
+			}
+			myRootElement.getChildren().add(new VBox(5, new Label(bundle.getString("ValueEditors.ImageValueEditor.ImageAlreadyExistsDialog.existing_image")), imageViewPreviewImage));
+			imageViewPreviewImage.setFitWidth(400d);
+			imageViewPreviewImage.setFitHeight(400d);
+
+			final VBox vboxOptions = new VBox(5);
+			myRootElement.getChildren().add(vboxOptions);
+
+			for (Option option : Option.values()) {
+				if (option == Option.CANCEL) {
+					continue;
+				}
+				RadioButton radioButton = new RadioButton(option.displayName);
+				radioButton.setToggleGroup(toggleGroup);
+				vboxOptions.getChildren().add(radioButton);
+				radioButton.setUserData(option);
+			}
+			for (Toggle toggle : toggleGroup.getToggles()) {
+				if (toggle.getUserData() == selectedOption) {
+					toggleGroup.selectToggle(toggle);
+					break;
+				}
+			}
+		}
+
+		@Override
+		protected void ok() {
+			selectedOption = (Option) toggleGroup.getSelectedToggle().getUserData();
+			super.ok();
+		}
+
+		@Override
+		protected void cancel() {
+			selectedOption = Option.CANCEL;
+			super.cancel();
+		}
+
+		@Override
+		protected void closing() {
+			q.add(selectedOption);
+		}
+	}
+
+}

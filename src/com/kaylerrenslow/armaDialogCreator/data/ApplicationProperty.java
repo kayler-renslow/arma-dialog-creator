@@ -46,4 +46,8 @@ public class ApplicationProperty<T> extends Key<T> {
 	public static ApplicationProperty[] values() {
 		return values;
 	}
+
+	public T getValue() {
+		return this.get(ApplicationDataManager.getApplicationProperties());
+	}
 }

@@ -1,15 +1,15 @@
 **Added:**
-* getResolution command to expr evaluator
-    * changed how safeZoneX,..., and safeZoneH values are retrieved
-        * uses reflection on an interface that returns the values for the commands
+* 
 
 **Changed:**
-* added a little visual polish to canvas controls
-* can cancel "close project" dialog
+* modularized how converting paa images works.
+    * now have a method for returning and converting image files
+    * since we can listen for conversions, we can now have control renderers convert on the fly without a preset conversion
+        * a dialog will appear if an on the fly conversion happens in a renderer
+* made getCurrentProject() and getCurrentWorkspace() blocking calls
 
 **Fixed:**
-* select command was missing "[] select number"
-    * added test case for this as well
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -26,3 +26,4 @@
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
     * we need binary logical operators like || and && for expression
+	* Preprocessor should have its own UnaryCommandValueProvider instance in its env

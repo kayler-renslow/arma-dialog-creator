@@ -416,7 +416,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				if (!(startVal instanceof Value.NumVal)) {
 					unexpectedValueException(expr, startVal, expr.getRight(), numberTypeName());
 				}
-				int start = (int) getNumValValue(startVal);
+				int start = (int) Math.round(getNumValValue(startVal));
 				if (start < 0 || start >= string.length()) {
 					indexOutOfBounds(expr, string.getValue(), "start", start, 0, string.length() - 1);
 				}
@@ -426,7 +426,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					if (!(lengthVal instanceof Value.NumVal)) {
 						unexpectedValueException(expr, lengthVal, expr.getRight(), numberTypeName());
 					}
-					length = (int) getNumValValue(lengthVal);
+					length = (int) Math.round(getNumValValue(lengthVal));
 					if (length < 0 || start + length >= string.length()) {
 						indexOutOfBounds(expr, string.getValue(), "length", length, 0, string.length() - 1);
 					}
@@ -478,13 +478,13 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				if (!(startVal instanceof Value.NumVal)) {
 					unexpectedValueException(expr, startVal, expr.getRight(), numberTypeName());
 				}
-				int start = (int) getNumValValue(startVal);
+				int start = (int) Math.round(getNumValValue(startVal));
 
 				Value countVal = rightArr.get(1);
 				if (!(countVal instanceof Value.NumVal)) {
 					unexpectedValueException(expr, countVal, expr.getRight(), numberTypeName());
 				}
-				int count = (int) getNumValValue(countVal);
+				int count = (int) Math.round(getNumValValue(countVal));
 
 				if (start < 0 || start >= leftArr.length()) {
 					indexOutOfBounds(expr, leftArr.toString(), "start", start, 0, leftArr.length() - 1);
@@ -497,7 +497,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 				return new Value.Array(leftArr.getItems().subList(start, Math.min(count, leftArr.length())));
 			}
 			if (right instanceof Value.NumVal) {
-				int rightIndex = (int) ((Value.NumVal) right).v();
+				int rightIndex = (int) Math.round(((Value.NumVal) right).v());
 				if (rightIndex < 0 || rightIndex >= leftArr.length()) {
 					indexOutOfBounds(expr, leftArr.toString(), "index", rightIndex, 0, leftArr.length() - 1);
 				}

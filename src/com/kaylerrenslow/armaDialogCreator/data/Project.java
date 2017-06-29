@@ -89,7 +89,7 @@ public class Project implements SpecificationRegistry {
 	}
 
 	/**
-	 Get the path for the fileName that is based inside the Project path
+	 Get the path for the fileName that is based inside the {@link #getProjectSaveDirectory()}
 
 	 @param fileName name of the file
 	 @return File instance that is project_path\fileName

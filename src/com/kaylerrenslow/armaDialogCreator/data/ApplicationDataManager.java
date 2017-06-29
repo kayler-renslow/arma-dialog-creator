@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectSaveXmlWriter;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlWriter;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -16,6 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 
 /**
  Manages save data
@@ -24,8 +26,9 @@ import java.util.ResourceBundle;
  @since 05/26/2016. */
 public class ApplicationDataManager {
 	private final ApplicationPropertyManager propertyManager = new ApplicationPropertyManager();
-	private Workspace workspace;
-	private ApplicationData applicationData;
+	private volatile Workspace workspace;
+	private volatile ApplicationData applicationData;
+	private volatile CountDownLatch waitForInitialize;
 
 	public void loadWorkspace(@NotNull File workspaceDir) {
 		if (!workspaceDir.exists()) {
@@ -34,6 +37,31 @@ public class ApplicationDataManager {
 		workspace = new Workspace(workspaceDir);
 		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceDir);
 		saveApplicationProperties();
+	}
+
+	public void beginInitializing() {
+		waitForInitialize = new CountDownLatch(1);
+	}
+
+	/** @return the newly created {@link ApplicationData} */
+	@NotNull
+	public ApplicationData initializeApplicationData() {
+		this.applicationData = new ApplicationData();
+		return applicationData;
+	}
+
+	public void initializeDone() {
+		try {
+			WorkspaceResourceRegistry globalResourceRegistry = workspace.getGlobalResourceRegistry();
+			new ResourceRegistryXmlLoader(globalResourceRegistry.getResourcesFile(), null)
+					.load(globalResourceRegistry);
+		} catch (Exception e) {
+			ExceptionHandler.error(e);
+		}
+
+		waitForInitialize.countDown();
+
+		new ChangeRegistrars(applicationData);
 	}
 
 	@NotNull
@@ -47,43 +75,67 @@ public class ApplicationDataManager {
 		return getInstance().propertyManager.getApplicationProperties();
 	}
 
-	public void initializeApplicationData() {
-		this.applicationData = new ApplicationData();
-	}
-
-	public void initializeChangeRegistrars() {
-		ChangeRegistrars changeRegistrars = new ChangeRegistrars(applicationData);
-	}
-
-	/** Calls {@code getApplicationData().getCurrentProject()} */
+	/** Calls {@code {@link #getApplicationData()}.getCurrentProject()} */
 	@NotNull
 	public Project getCurrentProject() {
-		if (applicationData == null) {
-			throw new IllegalStateException("can't get current project when ApplicationData hasn't been initialized");
-		}
 		return getApplicationData().getCurrentProject();
 	}
 
+	/**
+	 This method is a blocking call and will not finish until the underlying {@link Workspace}
+	 instance is set.
+
+	 @return the current {@link Workspace} instance.
+	 */
+	@NotNull
+	public Workspace getWorkspace() {
+		//do not make this method synchronized
+		try {
+			waitForInitialize.await();
+		} catch (InterruptedException ignore) {
+		}
+		return workspace;
+	}
+
+
+	/**
+	 This method is a blocking call and will not finish until the underlying {@link ApplicationData}
+	 instance is set.
+
+	 @return the current {@link ApplicationData} instance.
+	 */
 	@NotNull
 	public ApplicationData getApplicationData() {
-		if (applicationData == null) {
-			throw new IllegalStateException("application data should be set before accessed");
+		//do not make this method synchronized
+		try {
+			waitForInitialize.await();
+		} catch (InterruptedException ignore) {
 		}
 		return applicationData;
 	}
 
-	/** Set the arma 3 tools directory to a new one (can be null). Automatically updates application properties. */
+	/**
+	 Set the arma 3 tools directory to a new one (can be null).
+	 Automatically updates application properties.
+	 */
 	public void setArma3ToolsLocation(@Nullable File file) {
 		propertyManager.setArma3ToolsLocation(file);
 	}
 
-	/** Get the directory for where Arma 3 tools is saved. If the directory hasn't been set or doesn't exist or the file that is set isn't a directory, will return null. */
+	/**
+	 Get the directory for where Arma 3 tools is saved.
+	 If the directory hasn't been set or doesn't exist or the file that is set isn't a directory, will return null.
+	 */
 	@Nullable
 	public File getArma3ToolsDirectory() {
 		return propertyManager.getArma3ToolsDirectory();
 	}
 
-	/** Saves the application properties. Returns true if the application properties were saved successfully, false if they weren't */
+	/**
+	 Saves the application properties.
+
+	 @return true if the application properties were saved successfully, false if they weren't
+	 */
 	public boolean saveApplicationProperties() {
 		try {
 			propertyManager.saveApplicationProperties();
@@ -147,16 +199,6 @@ public class ApplicationDataManager {
 		}
 
 		return true;
-	}
-
-	/** Get an {@link ApplicationProperty} from {@link #getApplicationProperties()} */
-	public Object getApplicationProperty(@NotNull ApplicationProperty property) {
-		return property.get(propertyManager.getApplicationProperties());
-	}
-
-	@NotNull
-	public Workspace getWorkspace() {
-		return workspace;
 	}
 
 	/**

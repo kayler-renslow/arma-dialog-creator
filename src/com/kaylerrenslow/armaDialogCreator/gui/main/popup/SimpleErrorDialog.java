@@ -48,7 +48,6 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 
 		toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
-			boolean firstExpansion = true;
 
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
@@ -59,10 +58,7 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 					toggleButton.setText(showStackTraceLblStr);
 					myRootElement.getChildren().remove(taErrorMessage);
 				}
-				if (firstExpansion) {
-					firstExpansion = false;
-					SimpleErrorDialog.this.sizeToScene();
-				}
+				SimpleErrorDialog.this.sizeToScene();
 			}
 		});
 

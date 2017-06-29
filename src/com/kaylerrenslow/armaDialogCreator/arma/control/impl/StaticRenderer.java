@@ -4,26 +4,22 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageHelper;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.PaaImageExternalResource;
-import com.kaylerrenslow.armaDialogCreator.data.Workspace;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.File;
-import java.io.FileInputStream;
 
 /**
  A renderer for {@link StaticControl}
@@ -108,44 +104,23 @@ public class StaticRenderer extends ArmaControlRenderer {
 	private void checkAndSetRenderType() {
 		SerializableValue textValue = textProperty.getValue();
 		if (renderTypeForStyle == RenderType.Image) {
-			renderType = RenderType.Image;
 
-			File f;
-			if (textValue instanceof SVImage) {
-				SVImage image = (SVImage) textValue;
-				if (image.getNonPaaImageFile() != null) {
-					f = image.getNonPaaImageFile();
-				} else {
-					f = image.getImageFile(); //use this file anyways
-				}
-			} else if (textValue == null) {
-				f = null;
-			} else {
-				f = new File(textValue.toString());
-			}
-
-			if (f != null) {
-				if (f.getName().endsWith(".paa")) {
-					ExternalResource resource = Workspace.getWorkspace().getGlobalResourceRegistry().getResourceByFile(f);
-					if (resource != null) {
-						String convertedPaaPath = resource.getPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE);
-						f = convertedPaaPath == null ? f : new File(convertedPaaPath);
+			ImageHelper.getImageAsync(textValue, image -> {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
+						imageToPaint = image;
+						requestRender();
 					}
-				}
-			}
-
-			if (f != null && f.exists()) {
-				try {
-					FileInputStream fis = new FileInputStream(f);
-					imageToPaint = new Image(fis);
-					fis.close();
-					requestRender();
-					return;
-				} catch (Exception ignore) {
+				});
+				synchronized (StaticRenderer.this) {
 
 				}
-			}
-			renderType = RenderType.ErrorImage;
+				return null;
+			});
+
+			return;
 		} else {
 			imageToPaint = null;
 			renderType = renderTypeForStyle;
@@ -153,8 +128,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		requestRender();
 	}
 
-
-	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+	public synchronized void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
 		if (paintPreview(dataContext)) {
 			blinkControlHandler.paint(gc, dataContext);
 		}

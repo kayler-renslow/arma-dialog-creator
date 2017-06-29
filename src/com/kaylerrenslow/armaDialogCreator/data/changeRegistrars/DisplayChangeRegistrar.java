@@ -18,7 +18,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 	private boolean disableListener = false;
 
 	public DisplayChangeRegistrar(@NotNull ApplicationData data) {
-		final Changelog changelog = Changelog.getInstance();
+		final Changelog changelog = data.getChangelog();
 
 		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
 		UpdateGroupListener<ControlListChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {

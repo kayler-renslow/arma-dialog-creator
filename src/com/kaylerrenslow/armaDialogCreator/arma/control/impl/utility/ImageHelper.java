@@ -1,0 +1,65 @@
+package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
+
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.ImagesTool;
+import javafx.scene.image.Image;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.function.Function;
+
+/**
+ @author Kayler
+ @since 06/28/2017 */
+public class ImageHelper {
+	/**
+	 Get an {@link Image} from a {@link SerializableValue}. This method is asynchronous.
+
+	 @param pathValue the {@link SerializableValue} to get the image from
+	 @param imageGetFunc the "callback" function. The function can return any value. The parameter of the function
+	 is the resulted image, which may be null
+	 */
+	public static void getImageAsync(@Nullable SerializableValue pathValue, @NotNull Function<Image, Void> imageGetFunc) {
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				File f;
+				if (pathValue instanceof SVImage) {
+					SVImage image = (SVImage) pathValue;
+					if (image.getNonPaaImageFile() != null) {
+						f = image.getNonPaaImageFile();
+					} else {
+						f = image.getImageFile(); //use this file anyways
+					}
+				} else if (pathValue == null) {
+					f = null;
+				} else {
+					f = new File(pathValue.toString());
+				}
+
+				if (f != null) {
+					f = ImagesTool.getImageFile(f.getPath(), new ImagesTool.SimpleImageConversionCallback());
+				}
+
+				if (f != null && f.exists()) {
+					try {
+						FileInputStream fis = new FileInputStream(f);
+						Image imageToPaint = new Image(fis);
+						fis.close();
+						imageGetFunc.apply(imageToPaint);
+						return;
+					} catch (Exception ignore) {
+
+					}
+				}
+				imageGetFunc.apply(null);
+			}
+		});
+		t.setDaemon(true);
+		t.start();
+
+	}
+}

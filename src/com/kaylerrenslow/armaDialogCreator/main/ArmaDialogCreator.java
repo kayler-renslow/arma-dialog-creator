@@ -2,8 +2,6 @@ package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
-import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlLoader;
-import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
@@ -112,8 +110,6 @@ public final class ArmaDialogCreator extends Application {
 		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
 
 		loadNewProject(false);
-
-		getApplicationDataManager().initializeChangeRegistrars();
 	}
 
 	@NotNull
@@ -189,27 +185,22 @@ public final class ArmaDialogCreator extends Application {
 			}
 		}
 
+		ApplicationDataManager.getInstance().beginInitializing();
+
 		getPrimaryStage().close();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
 
-		try {
-			new ResourceRegistryXmlLoader(WorkspaceResourceRegistry.getInstance().getResourcesFile(), null).load(WorkspaceResourceRegistry.getInstance());
-		} catch (XmlParseException e) {
-			ExceptionHandler.error(e);
-		}
-
-		getApplicationDataManager().initializeApplicationData();
+		ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
 
 		ProjectXmlLoader.ProjectParseResult result = null;
-		ApplicationData data = ApplicationData.getManagerInstance();
 		if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
 			try {
-				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), ApplicationData.getManagerInstance());
+				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
 
-				ApplicationData.getManagerInstance().setCurrentProject(result.getProject());
+				applicationData.setCurrentProject(result.getProject());
 
 			} catch (Exception e) {
-				ApplicationData.getManagerInstance().setCurrentProject(new Project(data, config.getProjectInfo()));
+				applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
 				INSTANCE.showLater.add(new Runnable() {
 					@Override
 					public void run() {
@@ -218,9 +209,10 @@ public final class ArmaDialogCreator extends Application {
 				});
 			}
 		} else {
-			ApplicationData.getManagerInstance().setCurrentProject(new Project(data, config.getProjectInfo()));
+			applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
 		}
 
+		ApplicationDataManager.getInstance().initializeDone();
 
 		getMainWindow().initialize(result != null ? result.getTreeStructureBg() : null, result != null ? result.getTreeStructureMain() : null);
 		getMainWindow().show();

@@ -2,8 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.gui.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
+import com.kaylerrenslow.armaDialogCreator.data.ImagesTool;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.gui.FXUtil;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ConvertingImageSubscriberDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
@@ -45,6 +47,8 @@ public class ADCWindow {
 		Scene scene = new Scene(rootElement);
 		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/misc.css");
 		this.primaryStage.setScene(scene);
+
+		ImagesTool.subscribeToConversion(new ConvertingImageSubscriberDialog());
 	}
 
 	public void initialize(@Nullable TreeStructure<ArmaControl> backgroundTreeStructure, @Nullable TreeStructure<ArmaControl> mainTreeStructure) {

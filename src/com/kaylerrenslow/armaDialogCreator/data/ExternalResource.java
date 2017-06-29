@@ -76,6 +76,15 @@ public class ExternalResource {
 		return null;
 	}
 
+	public final void setPropertyValue(@NotNull String keyName, @NotNull String value) {
+		for (KeyValueString keyValue : properties) {
+			if (keyValue.getKey().equals(keyName)) {
+				keyValue.setValue(value);
+				break;
+			}
+		}
+	}
+
 	@NotNull
 	public KeyValueString[] getProperties() {
 		return properties;

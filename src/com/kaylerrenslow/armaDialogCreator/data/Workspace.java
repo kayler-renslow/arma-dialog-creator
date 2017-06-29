@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.filechooser.FileSystemView;
@@ -47,7 +46,6 @@ public class Workspace {
 
 	/**
 	 Get the current {@link Workspace} instance that is saved in {@link ApplicationDataManager#getWorkspace()}.
-	 Be careful not to use this method during project initialization ({@link ArmaDialogCreator#loadNewProject()})
 
 	 @return instance
 	 */

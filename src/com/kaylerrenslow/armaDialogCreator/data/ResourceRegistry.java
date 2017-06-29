@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,9 +15,9 @@ import java.util.List;
  @since 07/19/2016. */
 public class ResourceRegistry {
 	private final List<ExternalResource> resourceList = new ArrayList<>();
+	private ReadOnlyList<ExternalResource> resourceListReadOnly = new ReadOnlyList<>(resourceList);
 
 	public static final String RESOURCES_FILE_NAME = ".adc_resources";
-
 	private final File resourcesFile;
 
 	protected ResourceRegistry(@NotNull Project project) {
@@ -45,8 +46,8 @@ public class ResourceRegistry {
 	}
 
 	@NotNull
-	public List<ExternalResource> getResourceList() {
-		return resourceList;
+	public ReadOnlyList<ExternalResource> getResourceList() {
+		return resourceListReadOnly;
 	}
 
 	@Nullable
@@ -57,5 +58,13 @@ public class ResourceRegistry {
 			}
 		}
 		return null;
+	}
+
+	public void addResource(@NotNull ExternalResource resource) {
+		resourceList.add(resource);
+	}
+
+	public void removeResource(@NotNull ExternalResource resource) {
+		resourceList.remove(resource);
 	}
 }
