@@ -2,10 +2,9 @@ package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
@@ -370,7 +369,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		ArmaControlLookup armaControlLookup = ArmaControlLookup.findByControlType(controlType);
 
 		//renderer
-		RendererLookup rendererLookup = armaControlLookup.renderer;
+		Class<? extends ArmaControlRenderer> rendererLookup = armaControlLookup.renderer;
 
 		//control properties
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "property");
@@ -384,9 +383,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 
 		//control construction
-		ArmaControlSpecRequirement specProvider = armaControlLookup.specProvider;
-
-		ArmaControl control = ArmaControl.createControl(controlType, controlClassName, specProvider, resolution, rendererLookup, env, project);
+		ArmaControl control = ArmaControl.createControl(controlClassName, armaControlLookup, resolution, env, project);
 
 
 		//property matching and value setting

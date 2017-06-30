@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
@@ -23,7 +22,6 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControl extends ControlClass implements CanvasControl<ArmaControl> {
-	private RendererLookup rendererLookup;
 	private ControlStyle[] allowedStyles;
 	/** Type of the control */
 	private ControlType controlType = ControlType.Static;
@@ -34,76 +32,46 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	private ControlProperty idcProperty, accessProperty;
 	private final ValueObserver<CanvasDisplay<ArmaControl>> displayObserver = new ValueObserver<>(null);
 	private final ValueObserver<ControlHolder<ArmaControl>> holderObserver = new ValueObserver<>(null);
+	private final ArmaControlLookup armaControlLookup;
 
 	/**
 	 Create a control where the position is to be determined
 
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
+	 @param lookup lookup to use
 	 @param resolution resolution to use
-	 @param rendererLookup renderer of the control
 	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
+	 @param registry registry to use
 	 */
-	private ArmaControl(@NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env,
-						@NotNull SpecificationRegistry registry) {
-		super(name, provider, registry);
-		construct(provider, resolution, rendererLookup, env);
+	protected ArmaControl(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
+						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(name, lookup.specProvider, registry);
+		this.armaControlLookup = lookup;
+		construct(lookup, resolution, env);
 	}
 
-	private void construct(@NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env) {
+	private void construct(@NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env) {
+		defineType(lookup.controlType);
+		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
 		try {
-			this.rendererLookup = rendererLookup;
-			this.renderer = rendererLookup.rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);
+			this.renderer = rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
-			throw new RuntimeException("Class " + rendererLookup.rendererClass.getName() + " couldn't be instantiated.");
+			throw new RuntimeException("Class " + rendererClass.getName() + " couldn't be instantiated.");
 		}
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setValueIfAbsent(true, new SVInteger(-1));
-		defineType(controlType);
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
-		this.allowedStyles = provider.getAllowedStyles();
+		this.allowedStyles = lookup.specProvider.getAllowedStyles();
 		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
 	}
 
-	/**
-	 Create a control where the position is to be determined
-
-	 @param type control type
-	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
-	 @param resolution resolution to use
-	 @param rendererLookup renderer of the control
-	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
-	 */
-	protected ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
-						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		this(name, provider, resolution, rendererLookup, env, registry);
-		checkControlType(type);
-		defineType(type);
-	}
-
-	/**
-	 Create a control where the position is known
-
-	 @param type type of the control
-	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
-	 @param idc control id (-1 if doesn't matter)
-	 @param resolution resolution to use
-	 @param rendererLookup renderer for the control
-	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
-	 */
-	public ArmaControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, int idc,
-					   @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		this(name, provider, resolution, rendererLookup, env, registry);
-		checkControlType(type);
-
-		defineType(type);
-		idcProperty.setDefaultValue(false, idc);
-	}
-
-	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution, @NotNull RendererLookup rendererLookup,
-						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
+	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
+						  @NotNull ArmaResolution resolution, @NotNull Env env,
+						  @NotNull SpecificationRegistry registry) {
 		super(specification, registry);
-		construct(provider, resolution, rendererLookup, env);
+		this.armaControlLookup = lookup;
+		construct(lookup, resolution, env);
 	}
 
 	private void defineType(@NotNull ControlType type) {
@@ -111,11 +79,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		this.controlType = type;
 	}
 
-	private void checkControlType(@NotNull ControlType type) {
-		if (type == ControlType.ControlsGroup && !(this instanceof ArmaControlGroup)) {
-			throw new IllegalStateException("Do not use ArmaControl for ControlType.ControlsGroup");
-		}
-	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
 	public void defineX(SVExpression x) {
@@ -177,11 +140,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	@NotNull
-	public final RendererLookup getRendererLookup() {
-		return rendererLookup;
-	}
-
-	@NotNull
 	public final ControlStyle[] getAllowedStyles() {
 		return allowedStyles;
 	}
@@ -201,22 +159,20 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	}
 
 	@NotNull
-	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
-											@NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		if (type == ControlType.ControlsGroup) {
-			return new ArmaControlGroup(name, resolution, rendererLookup, env, registry);
-		}
-		return new ArmaControl(type, name, provider, resolution, rendererLookup, env, registry);
+	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name,
+											@NotNull ArmaResolution resolution, @NotNull Env env,
+											@NotNull SpecificationRegistry registry) {
+		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(type);
+		return createControl(name, lookup, resolution, env, registry);
 	}
 
 	@NotNull
-	public static ArmaControl createControl(@NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		return createControl(lookup.controlType, className, lookup.specProvider, resolution, lookup.renderer, env, registry);
-	}
-
-	@NotNull
-	public static ArmaControl createControl(@NotNull ControlType controlType, @NotNull String className, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
+	public static ArmaControl createControl(@NotNull String name, @NotNull ArmaControlLookup lookup,
+											@NotNull ArmaResolution resolution,
 											@NotNull Env env, @NotNull SpecificationRegistry registry) {
-		return createControl(controlType, className, lookup.specProvider, resolution, lookup.renderer, env, registry);
+		if (lookup.controlType == ControlType.ControlsGroup) {
+			return new ArmaControlGroup(name, lookup, resolution, env, registry);
+		}
+		return new ArmaControl(name, lookup, resolution, env, registry);
 	}
 }

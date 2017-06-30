@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -48,21 +48,15 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 		}
 	};
 
-
-	protected ArmaControlGroup(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.ControlsGroup, name, SPEC_PROVIDER, resolution, renderer, env, registry);
+	public ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
+							@NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(specification, lookup, resolution, env, registry);
 	}
 
-	protected ArmaControlGroup(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull RendererLookup renderer,
-							   @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.ControlsGroup, name, SPEC_PROVIDER, idc, resolution, renderer, env, registry);
+	public ArmaControlGroup(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
+							@NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(name, lookup, resolution, env, registry);
 	}
-
-	protected ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlSpecRequirement provider, @NotNull ArmaResolution resolution,
-							   @NotNull RendererLookup rendererLookup, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(specification, provider, resolution, rendererLookup, env, registry);
-	}
-
 
 	@Override
 	public ControlList<ArmaControl> getControls() {

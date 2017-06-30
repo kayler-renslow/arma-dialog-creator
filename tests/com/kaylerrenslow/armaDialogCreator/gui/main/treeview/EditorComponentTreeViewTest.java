@@ -12,12 +12,14 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.treeview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.RendererLookup;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
+import com.kaylerrenslow.armaDialogCreator.control.Macro;
+import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
@@ -74,14 +76,16 @@ public class EditorComponentTreeViewTest extends Application {
 	private static class TestArmaControlClass extends ArmaControl {
 
 		public TestArmaControlClass() {
-			super(ControlType.Static, "", ArmaControlSpecRequirement.TRIVIAL, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
+			super("", ArmaControlLookup._Test, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT),
+					new SimpleEnv(), SpecReg.INSTANCE);
 		}
 	}
 
 	private static class TestArmaControlGroupClass extends ArmaControlGroup {
 
 		public TestArmaControlGroupClass() {
-			super("", new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT), RendererLookup.TEST, new SimpleEnv(), SpecReg.INSTANCE);
+			super("", ArmaControlLookup._Test, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT),
+					new SimpleEnv(), SpecReg.INSTANCE);
 		}
 	}
 

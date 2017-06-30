@@ -1,9 +1,9 @@
 **Added:**
-* abs command
-    * added tests for it as well
+* 
 
 **Changed:**
-* 
+* removed RendererLookup
+* major refactor to how ArmaControl's are created
 
 **Fixed:**
 * 

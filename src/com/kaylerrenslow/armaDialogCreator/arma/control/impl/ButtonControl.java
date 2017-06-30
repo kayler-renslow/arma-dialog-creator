@@ -3,7 +3,10 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
+import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -81,7 +84,8 @@ public class ButtonControl extends ArmaControl {
 	};
 
 	public ButtonControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(ControlType.Button, name, SPEC_PROVIDER, idc, resolution, RendererLookup.Button, env, registry);
+		super(name, ArmaControlLookup.Button, resolution, env, registry);
 		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
+		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
 	}
 }

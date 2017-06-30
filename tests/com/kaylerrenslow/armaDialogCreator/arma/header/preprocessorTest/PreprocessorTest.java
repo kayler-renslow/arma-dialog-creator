@@ -580,7 +580,6 @@ public class PreprocessorTest {
 							null
 					);
 				} catch (Exception e) {
-					e.printStackTrace();
 					done.add(true);
 				}
 			}

@@ -54,7 +54,10 @@ public enum ControlType {
 	ObjectContAnim(83, getString("ControlType.object_cont_anim"), ControlTypeGroup.OBJECT),
 	
 	Map(100, getString("ControlType.map"), ControlTypeGroup.MAP),
-	MapMain(101, getString("ControlType.map_main"), ControlTypeGroup.MAP);
+	MapMain(101, getString("ControlType.map_main"), ControlTypeGroup.MAP),
+
+	/**To be used for TESTING only. Do not use for client code.*/
+	_Test(Integer.MIN_VALUE, "ADC TEST", ControlTypeGroup.TEXT);
 	//@formatter:on
 
 	/** all control types that are supported for the application */

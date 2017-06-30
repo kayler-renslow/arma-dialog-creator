@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
@@ -11,8 +12,10 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ControlGroupControl extends ArmaControlGroup {
 
-	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, idc, resolution, RendererLookup.ControlGroup, env, registry);
+	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env,
+							   @NotNull SpecificationRegistry registry) {
+		super(name, ArmaControlLookup.ControlsGroup, resolution, env, registry);
+		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
 	}
 
 }

@@ -156,7 +156,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 <p>
 	 This method can be invoked on any thread.
 	 */
-	public final void requestRender() {
+	public void requestRender() {
 		if (Thread.currentThread() != ArmaDialogCreator.getJavaFXThread()) {
 			Platform.runLater(runnableRequestRender);
 		} else {
