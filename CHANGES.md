@@ -1,12 +1,12 @@
 **Added:**
-* binary logical operators like || and && for expression
-    * added tests for these as well
+* abs command
+    * added tests for it as well
 
 **Changed:**
-* made Notifications automatically close the handler thread after a while of no notifications appearing
+* 
 
 **Fixed:**
-* Preprocessor didn't have its own UnaryCommandValueProvider instance in its env
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

@@ -24,7 +24,9 @@ public class ExpressionInterpreter {
 	private static final String[] supportedCommands = new String[]{
 			"min", "max", "if", "then", "exitWith", "do", "true", "false",
 			"select", "for", "from", "to", "step", "count", "str",
-			"safeZoneX", "safeZoneY", "safeZoneW", "safeZoneH", "safeZoneXAbs", "safeZoneWAbs", "getResolution"
+			"safeZoneX", "safeZoneY", "safeZoneW", "safeZoneH", "safeZoneXAbs", "safeZoneWAbs", "getResolution",
+			"not", "or", "and",
+			"abs"
 	};
 
 	static {

@@ -194,7 +194,7 @@ public class ConvertImageTask {
 			btnLocate.setOnAction(new EventHandler<ActionEvent>() {
 				@Override
 				public void handle(ActionEvent event) {
-					new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
+					new ChangeDirectoriesDialog(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
 					close();
 				}
 			});

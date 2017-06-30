@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu;
 
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.SelectSaveLocationPopup;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChangeDirectoriesDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +12,6 @@ public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		new SelectSaveLocationPopup(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+		new ChangeDirectoriesDialog(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
 	}
 }

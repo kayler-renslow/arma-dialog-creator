@@ -723,4 +723,18 @@ public class ExpressionInterpreterTest {
 		Value ret = interpreter.evaluate(eval, env).get();
 		assertEquals(Value.False, ret);
 	}
+
+	@Test
+	public void absPositive() throws Exception {
+		String eval = "abs 1";
+		Value ret = interpreter.evaluate(eval, env).get();
+		assertEquals(new Value.NumVal(1), ret);
+	}
+
+	@Test
+	public void absNegative() throws Exception {
+		String eval = "abs -1";
+		Value ret = interpreter.evaluate(eval, env).get();
+		assertEquals(new Value.NumVal(1), ret);
+	}
 }

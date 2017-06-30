@@ -71,6 +71,7 @@ interface AST {
 
 		T visit(@NotNull NotExpr expr, @NotNull Env env);
 
+		T visit(@NotNull AbsExpr expr, @NotNull Env env);
 	}
 
 	abstract class ASTNode implements AST {
@@ -126,6 +127,31 @@ interface AST {
 
 	abstract class Expr extends ASTNode {
 
+	}
+
+	class AbsExpr extends Expr {
+
+		private final Expr expr;
+
+		public AbsExpr(@NotNull Expr expr) {
+			this.expr = expr;
+		}
+
+		@NotNull
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("abs ");
+			expr.toString(sb);
+		}
 	}
 
 	class MaxExpr extends BinaryCommandExpr {

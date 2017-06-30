@@ -731,10 +731,8 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	@Override
 	public Value visit(@NotNull AST.BinLogicalExpr expr, @NotNull Env env) {
 		//This function is used to evaluate only whats needed (short circuit the expression).
-
 		//For instance, false && true is short circuited because the expression is immediately false
 		//do to the left predicate being false
-
 		Function<AST.ASTNode, Value.BoolVal> boolFunc = boolExpr -> {
 			Value v = (Value) boolExpr.accept(this, env);
 			if (v instanceof Value.Code) {
@@ -772,6 +770,16 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			unexpectedValueException(expr, v, expr.getExpr(), boolTypeName());
 		}
 		return ((Value.BoolVal) v).not();
+	}
+
+	@Override
+	public Value visit(@NotNull AST.AbsExpr expr, @NotNull Env env) {
+		Value v = (Value) expr.getExpr().accept(this, env);
+		if (!(v instanceof Value.NumVal)) {
+			unexpectedValueException(expr, v, expr.getExpr(), numberTypeName());
+		}
+		double absV = Math.abs(((Value.NumVal) v).v());
+		return new Value.NumVal(absV);
 	}
 
 	private double getNumValValue(@NotNull Value v) {

@@ -20,23 +20,26 @@ import javafx.stage.StageStyle;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
+import java.util.ResourceBundle;
 
 /**
  Used for setting Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}. All changes will be set once popup is closed.
 
  @author Kayler
  @since 05/26/2016. */
-public class SelectSaveLocationPopup extends StageDialog<VBox> {
+public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 
 	private final TextField tfA3ToolsDir = new TextField();
 
 	private BadArma3ToolsDirectoryPopup badArma3ToolsDirectoryPopup;
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	/**
 	 Creates the "change directories" popup
 	 */
-	public SelectSaveLocationPopup(@Nullable File a3ToolsDir) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.popup_title"), true, true, true);
+	public ChangeDirectoriesDialog(@Nullable File a3ToolsDir) {
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);
+		setTitle(bundle.getString("Popups.SelectSaveLocation.popup_title"));
 		initialize(a3ToolsDir);
 		myStage.setMinWidth(600d);
 		myStage.initStyle(StageStyle.UTILITY);
@@ -49,9 +52,9 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
 
-		final Label lblA3ToolsDir = new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
-		final Button btnChangeA3Tools = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_change"));
-		final Button btnClearA3ToolsDir = new Button(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.btn_clear"));
+		final Label lblA3ToolsDir = new Label(bundle.getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
+		final Button btnChangeA3Tools = new Button(bundle.getString("Popups.SelectSaveLocation.btn_change"));
+		final Button btnClearA3ToolsDir = new Button(bundle.getString("Popups.SelectSaveLocation.btn_clear"));
 		
 		btnChangeA3Tools.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -122,10 +125,10 @@ public class SelectSaveLocationPopup extends StageDialog<VBox> {
 	}
 
 
-	private static class BadArma3ToolsDirectoryPopup extends StageDialog<VBox> {
+	private class BadArma3ToolsDirectoryPopup extends StageDialog<VBox> {
 
 		public BadArma3ToolsDirectoryPopup() {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new Label(Lang.ApplicationBundle().getString("Popups.SelectSaveLocation.bad_a3_tools_dir"))), Lang.ApplicationBundle().getString
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5, new Label(bundle.getString("Popups.SelectSaveLocation.bad_a3_tools_dir"))), bundle.getString
 					("Popups.generic_popup_title"), false, true, false);
 			myStage.setWidth(300d);
 		}

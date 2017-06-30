@@ -22,6 +22,7 @@ code returns [AST.Code ast] locals[List<AST.Statement> lst] @init{ $lst = new Ar
 
 expression returns [AST.Expr ast]:
     (Not | Excl) notexp=expression {$ast = new AST.NotExpr($notexp.ast);}
+    | Abs absexp=expression {$ast = new AST.AbsExpr($absexp.ast);}
     //count
     | Count count_r=expression {$ast = new AST.CountExpr(null, $count_r.ast);}
     | count_l=expression Count count_r=expression {$ast = new AST.CountExpr($count_l.ast, $count_r.ast);}
@@ -155,6 +156,7 @@ To : T O;
 Step : S T E P;
 Do : D O;
 Str: S T R;
+Abs :A B S;
 EqEq : '==' ;
 NotEq : '!=' ;
 Lt : '<' ;
