@@ -192,7 +192,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		}
 		if (value instanceof SVControlStyleGroup) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
-			for (ControlStyle style : group.getValues()) {
+			for (ControlStyle style : group.getStyleArray()) {
 				if (style == pictureStyle()) {
 					return RenderType.Image;
 				}

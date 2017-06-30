@@ -1,9 +1,9 @@
 **Added:**
-* format command
-    * format interpreter tests
+* edit nested classes in editor pane.
 
 **Changed:**
-* 
+* removed the nested class from static because it was for testing
+* moved getAllowedStyles() into a different interface
 
 **Fixed:**
 * 
@@ -16,9 +16,8 @@
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
 * June 23:
     - Header: we need tests for +=
-* June 26: can't edit nested classes in editor pane. need to implement the "edit" menu item action
+* June 26: 
     * setting HintRep's parent class to null doens't properly update the editor pane
-    * remove the nested class from static later because its for testing
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug

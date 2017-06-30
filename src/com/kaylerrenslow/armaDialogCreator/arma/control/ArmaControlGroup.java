@@ -19,33 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<ArmaControl> {
 	private final ControlList<ArmaControl> controlsList = new ControlList<>(this);
 
-	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
-
-		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-				defaultRequiredProperties, new ControlPropertyLookup[]{
-				}));
-
-		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-				defaultOptionalProperties, new ControlPropertyLookup[]{
-				}));
-
-		@NotNull
-		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
-			return requiredProperties;
-		}
-
-		@NotNull
-		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
-			return optionalProperties;
-		}
-
-		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return ControlStyle.NA.getStyleGroup().getValues();
-		}
-	};
+	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
 	public ArmaControlGroup(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
 							@NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
@@ -67,6 +41,37 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 		super.resolutionUpdate(newResolution);
 		for (ArmaControl control : controlsList) {
 			control.resolutionUpdate(newResolution);
+		}
+	}
+
+	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+
+		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+						defaultRequiredProperties, new ControlPropertyLookup[]{
+						}));
+
+		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+						defaultOptionalProperties, new ControlPropertyLookup[]{
+						}));
+
+		@NotNull
+		@Override
+		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+			return requiredProperties;
+		}
+
+		@NotNull
+		@Override
+		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+			return optionalProperties;
+		}
+
+		@NotNull
+		@Override
+		public ControlStyle[] getAllowedStyles() {
+			return ControlStyle.NA.getStyleGroup().getStyleArray();
 		}
 	}
 }

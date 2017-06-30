@@ -9,8 +9,6 @@ import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-
 /**
  Used for a controls with type=0 (Static)
 
@@ -18,32 +16,41 @@ import java.util.Arrays;
  @since 05/25/2016. */
 public class StaticControl extends ArmaControl {
 
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
+	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
-				new ControlPropertyLookup[]{
-						ControlPropertyLookup.COLOR_BACKGROUND,
-						ControlPropertyLookup.COLOR_TEXT,
-						ControlPropertyLookup.TEXT,
-						ControlPropertyLookup.FONT,
-						ControlPropertyLookup.SIZE_EX
-				},
-				ControlPropertyLookupConstant.PRIORITY_SORT)
+	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(name, ArmaControlLookup.Static, resolution, env, registry);
+		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
+		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
+	}
+
+	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
+						new ControlPropertyLookup[]{
+								ControlPropertyLookup.COLOR_BACKGROUND,
+								ControlPropertyLookup.COLOR_TEXT,
+								ControlPropertyLookup.TEXT,
+								ControlPropertyLookup.FONT,
+								ControlPropertyLookup.SIZE_EX
+						},
+						ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
 
-		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
-				new ControlPropertyLookup[]{
-						ControlPropertyLookup.MOVING,
-						ControlPropertyLookup.SHADOW,
-						ControlPropertyLookup.TOOLTIP,
-						ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-						ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-						ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-						ControlPropertyLookup.STATIC_FIXED_WIDTH,
-						ControlPropertyLookup.STATIC_LINE_SPACING,
-						ControlPropertyLookup.BLINKING_PERIOD
-				},
-				ControlPropertyLookupConstant.PRIORITY_SORT)
+		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+						new ControlPropertyLookup[]{
+								ControlPropertyLookup.MOVING,
+								ControlPropertyLookup.SHADOW,
+								ControlPropertyLookup.TOOLTIP,
+								ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
+								ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+								ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
+								ControlPropertyLookup.STATIC_FIXED_WIDTH,
+								ControlPropertyLookup.STATIC_LINE_SPACING,
+								ControlPropertyLookup.BLINKING_PERIOD
+						},
+						ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
 
 		@NotNull
@@ -77,31 +84,11 @@ public class StaticControl extends ArmaControl {
 				ControlStyle.KEEP_ASPECT_RATIO
 		};
 
+		@NotNull
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return allowedStyles;
 		}
-
-		ReadOnlyList<ControlClassSpecification> nested_DELETE_THIS_LATER = new ReadOnlyList<>(
-				Arrays.asList(
-						new ControlClassSpecification(
-								"nested",
-								ControlPropertySpecification.EMPTY,
-								ControlPropertySpecification.EMPTY
-						)
-				)
-		);
-
-		@Override
-		public @NotNull ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
-			return nested_DELETE_THIS_LATER;
-		}
-	};
-
-	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Static, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
-		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
 	}
 
 }

@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClassRequirementSpecification;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
@@ -43,7 +42,4 @@ public interface ArmaControlSpecRequirement extends ControlClassRequirementSpeci
 		return defaultOptionalPropertiesReadOnly;
 	}
 
-	default ControlStyle[] getAllowedStyles() {
-		return ControlStyle.EMPTY;
-	}
 }

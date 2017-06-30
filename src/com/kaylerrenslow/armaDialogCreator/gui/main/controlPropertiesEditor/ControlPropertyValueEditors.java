@@ -1,10 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
@@ -62,7 +58,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyOptionEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ControlPropertyOptionEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			setAlignment(Pos.CENTER_LEFT);
 			setPadding(new Insets(2));
@@ -178,7 +174,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public FileNameEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		public FileNameEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			setValue((SVFileName) controlProperty.getValue());
 			initListeners();
@@ -239,10 +235,11 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public ControlStyleEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
-			if (control instanceof ArmaControl) {
+		public ControlStyleEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+			if (control.getSpecProvider() instanceof AllowedStyleProvider) {
+				AllowedStyleProvider specProvider = (AllowedStyleProvider) control.getSpecProvider();
 				menuButton.getItems().clear();
-				menuButton.getItems().addAll(((ArmaControl) control).getAllowedStyles());
+				menuButton.getItems().addAll(specProvider.getAllowedStyles());
 				for (com.kaylerrenslow.armaDialogCreator.control.ControlStyle style : menuButton.getItems()) {
 					menuButton.bindTooltip(style, style.documentation);
 				}
@@ -324,7 +321,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		InputFieldEditor(@NotNull PropertyType macroType, @Nullable ControlClass control, @NotNull ControlProperty
+		InputFieldEditor(@NotNull PropertyType macroType, @NotNull ControlClass control, @NotNull ControlProperty
 				controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
 			this.macroType = macroType;
@@ -435,7 +432,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ColorArrayEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ColorArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -511,7 +508,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		HexColorEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		HexColorEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -582,7 +579,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		BooleanChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		BooleanChoiceBoxEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			boolean validData = controlProperty.getValue() != null;
@@ -653,7 +650,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ArrayEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
+		ArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
 			super(defaultNumFields);
 
 			this.controlProperty = controlProperty;
@@ -726,7 +723,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		FontChoiceBoxEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		FontChoiceBoxEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVFont) controlProperty.getValue());
@@ -792,7 +789,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ImageEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		ImageEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVImage) controlProperty.getValue());
@@ -855,7 +852,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public SoundEditor(@Nullable ControlClass control, @NotNull ControlProperty controlProperty) {
+		public SoundEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			setValue((SVSound) controlProperty.getValue());
 			initListeners();

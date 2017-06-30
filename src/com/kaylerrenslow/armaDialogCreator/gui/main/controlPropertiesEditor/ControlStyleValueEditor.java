@@ -72,7 +72,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 		if (val == null) {
 			menuButton.clearSelection();
 		} else {
-			menuButton.setSelected(val.getValues());
+			menuButton.setSelected(val.getStyleArray());
 		}
 	}
 

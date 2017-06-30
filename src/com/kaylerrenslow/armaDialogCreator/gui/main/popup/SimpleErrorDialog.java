@@ -5,10 +5,13 @@ import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
@@ -35,14 +38,21 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 		final String hideStackTraceLblStr = bundle.getString("Popups.SimpleErrorDialog.hide_detail");
 
 		myStage.setMinWidth(300d);
-		myStage.setMinHeight(100d);
+		myStage.setMinHeight(200d);
 		myStage.setMaxWidth(720);
 
 		if (body != null) {
-			myRootElement.getChildren().add(body);
+			StackPane stackPane = new StackPane(body);
+			stackPane.setAlignment(Pos.TOP_LEFT);
+			stackPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+			myRootElement.getChildren().add(stackPane);
+			VBox.setVgrow(stackPane, Priority.ALWAYS);
+			body.autosize();
 		}
 
-		myRootElement.getChildren().add(new Label(error.getMessage()));
+		Label lblErrMsg = new Label(error.getMessage());
+		lblErrMsg.setWrapText(true);
+		myRootElement.getChildren().add(lblErrMsg);
 		ToggleButton toggleButton = new ToggleButton(showStackTraceLblStr);
 		myRootElement.getChildren().add(toggleButton);
 
@@ -61,7 +71,11 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 				SimpleErrorDialog.this.sizeToScene();
 			}
 		});
+	}
 
-
+	@Override
+	public void show() {
+		super.show();
+		sizeToScene();
 	}
 }

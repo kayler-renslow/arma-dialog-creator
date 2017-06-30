@@ -60,7 +60,7 @@ public class SVControlStyleGroup extends SerializableValue {
 	}
 
 	@NotNull
-	public ControlStyle[] getValues() {
+	public ControlStyle[] getStyleArray() {
 		return values;
 	}
 

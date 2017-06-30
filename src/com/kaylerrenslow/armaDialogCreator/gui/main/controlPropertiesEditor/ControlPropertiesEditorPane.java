@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.EditNestedControlClassDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
@@ -125,7 +126,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 			menuButton.getItems().add(miEdit);
 
 			miEdit.setOnAction(event -> {
-				//todo
+				EditNestedControlClassDialog dialog = new EditNestedControlClassDialog(cc);
+				dialog.show();
 			});
 
 			controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {

@@ -99,7 +99,7 @@ public class BasicTextRenderer {
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue instanceof SVControlStyleGroup) {
 					SVControlStyleGroup group = (SVControlStyleGroup) newValue;
-					for (ControlStyle style : group.getValues()) {
+					for (ControlStyle style : group.getStyleArray()) {
 						if (style == ControlStyle.LEFT) {
 							textObj.setTextAlignment(TextAlignment.LEFT);
 							break;

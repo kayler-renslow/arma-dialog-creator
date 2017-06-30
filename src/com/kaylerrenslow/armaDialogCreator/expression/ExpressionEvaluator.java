@@ -791,7 +791,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		}
 		Value.Array array = (Value.Array) v;
 		if (array.length() == 0) {
-			badArrayLength(expr, array, 1, "format [\"\", ...]");
+			badArrayLength(expr, array, 1, "format [\"\", arg, ...]");
 		}
 
 		if (!(array.get(0) instanceof Value.StringLiteral)) {
@@ -863,10 +863,6 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 					sb.append('%');
 					continue;
 				}
-				//				if (end - start == 1 && reader.canPeekAhead(1) && reader.peekAhead(1) == '%') {
-				//					sb.append('%');
-				//					continue;
-				//				}
 
 				String argString = armaFormatString.substring(start, end);
 				int arg = -1;

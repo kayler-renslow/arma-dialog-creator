@@ -3,10 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -16,9 +13,17 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 11/21/2016 */
 public class ButtonControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new ArmaControlSpecRequirement() {
+	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
+	public ButtonControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+		super(name, ArmaControlLookup.Button, resolution, env, registry);
+		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
+		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
+	}
+
+	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
 				new ControlPropertyLookup[]{
 						ControlPropertyLookup.COLOR_BACKGROUND,
 						ControlPropertyLookup.SOUND_ENTER,
@@ -44,7 +49,8 @@ public class ButtonControl extends ArmaControl {
 				ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
 
-		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
+				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
 				new ControlPropertyLookup[]{
 						ControlPropertyLookup.BTN_DEFAULT,
 						ControlPropertyLookup.BTN_ACTION,
@@ -77,15 +83,10 @@ public class ButtonControl extends ArmaControl {
 				ControlStyle.CENTER
 		};
 
+		@NotNull
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return allowedStyles;
 		}
-	};
-
-	public ButtonControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Button, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
-		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
 	}
 }
