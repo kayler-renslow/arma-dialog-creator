@@ -61,7 +61,7 @@ public enum ControlType {
 	//@formatter:on
 
 	/** all control types that are supported for the application */
-	public static final ControlType[] SUPPORTED = {Static, ControlsGroup, Button};
+	public static final ControlType[] AVAILABLE_TYPES = {Static, ControlsGroup, Button};
 
 	private final int typeId;
 	private final String displayName;
@@ -138,7 +138,7 @@ public enum ControlType {
 
 	/** Return true if ControlType's is supported in the beta */
 	public boolean betaSupported() {
-		for (ControlType type : SUPPORTED) {
+		for (ControlType type : AVAILABLE_TYPES) {
 			if (this == type) {
 				return true;
 			}

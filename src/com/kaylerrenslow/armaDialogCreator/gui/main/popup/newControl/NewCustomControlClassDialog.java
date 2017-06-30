@@ -139,11 +139,11 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 			//templates
 			{
 				List<CBMBMenuItem<String>> controlTypeControlClasses = new ArrayList<>(
-						ControlType.SUPPORTED.length
+						ControlType.AVAILABLE_TYPES.length
 				);
 				CBMBMenuItem<String> toSelect = null;
-				for (int i = 0; i < ControlType.SUPPORTED.length; i++) {
-					ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.SUPPORTED[i]);
+				for (int i = 0; i < ControlType.AVAILABLE_TYPES.length; i++) {
+					ArmaControlLookup lookup = ArmaControlLookup.findByControlType(ControlType.AVAILABLE_TYPES[i]);
 					CBMBMenuItem<String> menuItem = new CBMBMenuItem<>(
 							lookup.controlType.getDisplayName(),
 							new BorderedImageView(lookup.controlType.getIcon())

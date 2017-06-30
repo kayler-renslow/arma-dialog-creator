@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.expression;
 
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.CharSequenceReader;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -782,6 +783,28 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		return new Value.NumVal(absV);
 	}
 
+	@Override
+	public Value visit(@NotNull AST.FormatExpr expr, @NotNull Env env) {
+		Value v = (Value) expr.getExpr().accept(this, env);
+		if (!(v instanceof Value.Array)) {
+			unexpectedValueException(expr, v, expr.getExpr(), arrayTypeName());
+		}
+		Value.Array array = (Value.Array) v;
+		if (array.length() == 0) {
+			badArrayLength(expr, array, 1, "format [\"\", ...]");
+		}
+
+		if (!(array.get(0) instanceof Value.StringLiteral)) {
+			unexpectedValueException(expr, array.get(0), expr.getExpr(), stringTypeName());
+		}
+
+		Value.StringLiteral formatString = (Value.StringLiteral) array.get(0);
+
+		String result = getStringFromFormat(expr, formatString.getValue(), array.getItems());
+
+		return new Value.StringLiteral(result);
+	}
+
 	private double getNumValValue(@NotNull Value v) {
 		return ((Value.NumVal) v).v();
 	}
@@ -811,6 +834,85 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 		return bundle.getString("boolean");
 	}
 
+	@NotNull
+	private String getStringFromFormat(@NotNull AST.ASTNode requesterNode, @NotNull String armaFormatString,
+									   @NotNull List<Value> args) {
+
+		if (!armaFormatString.contains("%")) {
+			return armaFormatString;
+		}
+		StringBuilder sb = new StringBuilder(armaFormatString.length());
+		CharSequenceReader reader = new CharSequenceReader(armaFormatString);
+		boolean inArg = false;
+		while (reader.hasAvailable()) {
+			char c = reader.read();
+			if (inArg) {
+				int start = reader.getIndex();
+				int end = start + 1;
+				while (reader.canPeekAhead(1)) {
+					char cc = reader.peekAhead(1);
+					if (!Character.isDigit(cc)) {
+						end = reader.getPos();
+						break;
+					}
+					reader.read();
+				}
+				inArg = false;
+				if (armaFormatString.charAt(end - 1) == '%') {
+					//is something like this: %%1
+					sb.append('%');
+					continue;
+				}
+				//				if (end - start == 1 && reader.canPeekAhead(1) && reader.peekAhead(1) == '%') {
+				//					sb.append('%');
+				//					continue;
+				//				}
+
+				String argString = armaFormatString.substring(start, end);
+				int arg = -1;
+				try {
+					arg = Integer.parseInt(argString);
+				} catch (NumberFormatException ignore) {
+					formatStringInvalidException(requesterNode, armaFormatString,
+							String.format(bundle.getString("format_string_invalid_arg_f"), argString)
+					);
+				}
+				if (arg < 0 || arg >= args.size()) {
+					formatStringInvalidException(requesterNode, armaFormatString,
+							String.format(bundle.getString("format_string_arg_out_of_bounds_f"), argString)
+					);
+				}
+				Value argValue = args.get(arg);
+				if (argValue instanceof Value.StringLiteral) {
+					sb.append(((Value.StringLiteral) argValue).getValue());
+				} else {
+					sb.append(argValue.toString());
+				}
+				if (reader.canPeekAhead(1) && reader.peekAhead(1) == '%') {
+					sb.append('%');
+					reader.read();
+					continue;
+				}
+				continue;
+			} else {
+				if (c == '%') {
+					inArg = true;
+					continue;
+				}
+				sb.append(c);
+			}
+		}
+
+		return sb.toString();
+	}
+
+	private void formatStringInvalidException(@NotNull AST.@NotNull ASTNode requesterNode,
+											  @NotNull String armaFormatString, @NotNull String errorReason) {
+		throw new ExpressionEvaluationException(requesterNode,
+				String.format(bundle.getString("format_string_invalid_f"), armaFormatString, errorReason)
+		);
+	}
+
 	/**
 	 Create and throw {@link ExpressionEvaluationException} with the given information
 
@@ -829,7 +931,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 	}
 
 	private void indexOutOfBounds(@NotNull AST.ASTNode errorNode, @NotNull String source, @NotNull String varName, int index, int lowerBound, int upperBound) {
-		throw new ExpressionEvaluationException(errorNode, String.format(bundle.getString("index_out_of_bounds"), varName, source, index, lowerBound, upperBound));
+		throw new ExpressionEvaluationException(errorNode, String.format(bundle.getString("index_out_of_bounds_f"), varName, source, index, lowerBound, upperBound));
 	}
 
 	private final Pattern stringPattern = Pattern.compile("(\"\")|('')");

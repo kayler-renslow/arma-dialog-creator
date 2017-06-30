@@ -10,7 +10,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Generic implementation of a control that can house many controls. This is not the implementation for control type 15 (CT_CONTROLS_GROUP).
@@ -61,24 +60,6 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 	@Override
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;
-	}
-
-	/** Search all controls inside {@link #getControls()} (including controls inside {@link ArmaControlGroup} instances) */
-	@Nullable
-	public ArmaControl findControlByClassName(@NotNull String className) {
-		for (ArmaControl control : getControls()) {
-			if (className.equals(control.getClassName())) {
-				return control;
-			}
-			if (control instanceof ArmaControlGroup) {
-				ArmaControlGroup group = (ArmaControlGroup) control;
-				ArmaControl found = group.findControlByClassName(className);
-				if (found != null) {
-					return found;
-				}
-			}
-		}
-		return null;
 	}
 
 	@Override

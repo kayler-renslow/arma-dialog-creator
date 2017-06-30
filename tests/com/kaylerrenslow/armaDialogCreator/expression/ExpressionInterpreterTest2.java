@@ -371,6 +371,88 @@ public class ExpressionInterpreterTest2 {
 		assertEquals(expected, ret);
 	}
 
+	@Test
+	public void format_empty1() throws Exception {
+		String eval = "format[\"\"]";
+		Value expected = new Value.StringLiteral("");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_empty2() throws Exception {
+		String eval = "format[\"hello\"]";
+		Value expected = new Value.StringLiteral("hello");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg1() throws Exception {
+		String eval = "format[\"hello %1\", \"world!\"]";
+		Value expected = new Value.StringLiteral("hello world!");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg2() throws Exception {
+		String eval = "format[\"hello %1!\", \"world\"]";
+		Value expected = new Value.StringLiteral("hello world!");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg3() throws Exception {
+		String eval = "format[\"hello %1! %2\", \"world\", 69]";
+		Value expected = new Value.StringLiteral("hello world! 69");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg4() throws Exception {
+		String eval = "format[\"hello %1! %2%%\", \"world\", 69]";
+		Value expected = new Value.StringLiteral("hello world! 69%");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg5() throws Exception {
+		String eval = "format[\"Money=$%1, Interest=%2%%\", 100, 0.05]";
+		Value expected = new Value.StringLiteral("Money=$100, Interest=0.05%");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg6() throws Exception {
+		String eval = "format[\"%%1\"]";
+		Value expected = new Value.StringLiteral("%1");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_arg7() throws Exception {
+		String eval = "format [\"%1\", [\"my\",\"array\",\"of\",\"strings\"]]";
+		Value expected = new Value.StringLiteral("[\"my\", \"array\", \"of\", \"strings\"]");
+		Value ret = interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		assertEquals(expected, ret);
+	}
+
+	@Test
+	public void format_exception() throws Exception {
+		String eval = "format [\"%1\"]";
+		try {
+			interpreter.evaluateStatements(eval, new SimpleEnv()).get();
+		} catch (ExpressionEvaluationException e) {
+			return;
+		}
+		assertEquals("Expected an exception.", true, false);
+	}
 
 	@Test
 	public void terminateEvaluator() throws Exception {

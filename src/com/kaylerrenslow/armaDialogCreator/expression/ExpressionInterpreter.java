@@ -25,8 +25,7 @@ public class ExpressionInterpreter {
 			"min", "max", "if", "then", "exitWith", "do", "true", "false",
 			"select", "for", "from", "to", "step", "count", "str",
 			"safeZoneX", "safeZoneY", "safeZoneW", "safeZoneH", "safeZoneXAbs", "safeZoneWAbs", "getResolution",
-			"not", "or", "and",
-			"abs"
+			"not", "or", "and", "abs", "format"
 	};
 
 	static {

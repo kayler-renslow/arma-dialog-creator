@@ -305,7 +305,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 			return optional;
 		}
 
-		/** Return true if the {@link ControlProperty} returned from {@link #getControlProperty()} is optional (not in required list returned from {@link ControlClassRequirementSpecification#getRequiredProperties()}) */
+		/**
+		 Return true if the {@link ControlProperty} returned from {@link #getControlProperty()}
+		 is optional (not in required list returned from
+		 {@link ControlClassRequirementSpecification#getRequiredProperties()})
+		 */
 		public void setIsOptional(boolean optional) {
 			this.optional = optional;
 		}

@@ -22,9 +22,22 @@ public class CharSequenceReader {
 		return pos < cs.length();
 	}
 
-	/** Get the current position inside the CharSequence */
+	/**
+	 The pos is incremented after each {@link #read()} call. Pos starts at 0.
+
+	 @return the current position inside the CharSequence
+	 */
 	public int getPos() {
 		return pos;
+	}
+
+	/**
+	 The pos is incremented after each {@link #read()} call. Index starts at -1.
+
+	 @return the current position inside the CharSequence
+	 */
+	public int getIndex() {
+		return pos - 1;
 	}
 
 	/**

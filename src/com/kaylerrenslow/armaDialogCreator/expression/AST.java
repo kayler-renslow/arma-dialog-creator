@@ -72,6 +72,9 @@ interface AST {
 		T visit(@NotNull NotExpr expr, @NotNull Env env);
 
 		T visit(@NotNull AbsExpr expr, @NotNull Env env);
+
+		T visit(@NotNull FormatExpr expr, @NotNull Env env);
+
 	}
 
 	abstract class ASTNode implements AST {
@@ -745,6 +748,31 @@ interface AST {
 		@Override
 		void toString(@NotNull IndentedStringBuilder sb) {
 			sb.append("str ");
+			expr.toString(sb);
+		}
+	}
+
+	class FormatExpr extends Expr {
+
+		private final Expr expr;
+
+		public FormatExpr(@NotNull Expr expr) {
+			this.expr = expr;
+		}
+
+		@NotNull
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("format ");
 			expr.toString(sb);
 		}
 	}
