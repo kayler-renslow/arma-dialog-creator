@@ -223,7 +223,7 @@ public interface Value {
 		}
 	}
 
-	/**Only instance of {@link Void}*/
+	/** Only instance of {@link Void} */
 	Void Void = new Void();
 
 	/**
@@ -247,9 +247,9 @@ public interface Value {
 		}
 	}
 
-	/**Only instance of {@link BoolVal} that is equal to true*/
+	/** Only instance of {@link BoolVal} that is equal to true */
 	BoolVal True = new BoolVal(true);
-	/**Only instance of {@link BoolVal} that is equal to false*/
+	/** Only instance of {@link BoolVal} that is equal to false */
 	BoolVal False = new BoolVal(false);
 
 	class BoolVal implements Value {
@@ -281,6 +281,12 @@ public interface Value {
 		@NotNull
 		public static BoolVal get(boolean b) {
 			return b ? True : False;
+		}
+
+		/** @return if true, return false, otherwise return true */
+		@NotNull
+		public BoolVal not() {
+			return bool ? False : True;
 		}
 	}
 }

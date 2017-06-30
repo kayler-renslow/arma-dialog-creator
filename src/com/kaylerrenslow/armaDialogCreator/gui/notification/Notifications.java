@@ -67,7 +67,6 @@ public class Notifications {
 
 	private final List<NotificationDescriptor> toShowNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final List<NotificationDescriptor> showingNotifications = Collections.synchronizedList(new LinkedList<>());
-	private final NotificationsVisibilityTask visibilityRunnable = new NotificationsVisibilityTask(this);
 	private volatile Thread visibilityThread;
 	private final List<NotificationDescriptor> pastNotifications = Collections.synchronizedList(new LinkedList<>());
 	private final ReadOnlyList<NotificationDescriptor> pastNotificationsReadOnly = new ReadOnlyList<>(pastNotifications);
@@ -83,7 +82,7 @@ public class Notifications {
 		}
 		toShowNotifications.add(descriptor);
 		if (visibilityThread == null || !visibilityThread.isAlive()) {
-			visibilityThread = new Thread(visibilityRunnable);
+			visibilityThread = new Thread(new NotificationsVisibilityTask(this));
 			visibilityThread.setName("ADC - Notifications Thread");
 			visibilityThread.setDaemon(true);
 			visibilityThread.start();
@@ -94,13 +93,14 @@ public class Notifications {
 
 		private final Notifications notifications;
 		private final List<NotificationDescriptor> tohide = Collections.synchronizedList(new LinkedList<>());
+		private int doNothingIterations = 0;
 
 		public NotificationsVisibilityTask(@NotNull Notifications notifications) {
 			this.notifications = notifications;
 		}
 
 		public void run() {
-			while (true) {
+			while (doNothingIterations < 10) {
 				long now = System.currentTimeMillis();
 				for (int i = 0; i < notifications.showingNotifications.size(); ) {
 					NotificationDescriptor wrapper = notifications.showingNotifications.get(i);
@@ -129,6 +129,7 @@ public class Notifications {
 					});
 				}
 				if (notifications.showingNotifications.size() == 0) {
+					doNothingIterations++;
 					try {
 						Thread.sleep(300);
 					} catch (Exception ignore) {

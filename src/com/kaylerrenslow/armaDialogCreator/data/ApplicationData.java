@@ -8,6 +8,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.expression.UnaryCommandValueProvider;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
@@ -131,18 +132,8 @@ public class ApplicationData extends DataContext {
 		}
 
 		@Override
-		public @NotNull Value safeZoneXAbs() {
-			return safeZoneX();
-		}
-
-		@Override
-		public @NotNull Value safeZoneWAbs() {
-			return safeZoneW();
-		}
-
-		@Override
 		public @NotNull Value getResolution() {
-			ArmaResolution resolution = armaResolution();
+			Resolution resolution = armaResolution();
 			Value.NumVal width = new Value.NumVal(resolution.getScreenWidth());
 			Value.NumVal height = new Value.NumVal(resolution.getScreenHeight());
 			Value.NumVal viewportWidth = new Value.NumVal(resolution.getViewportWidth());
@@ -150,7 +141,7 @@ public class ApplicationData extends DataContext {
 			Value.NumVal aspectRatio = new Value.NumVal(resolution.getAspectRatio());
 			Value.NumVal uiScale = new Value.NumVal(resolution.getUIScale().getValue());
 
-			return new Value.Array(
+			return _getResolution(
 					width,
 					height,
 					viewportWidth,

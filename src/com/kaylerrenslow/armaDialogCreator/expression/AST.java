@@ -66,6 +66,11 @@ interface AST {
 		T visit(@NotNull StrExpr expr, @NotNull Env env);
 
 		T visit(@NotNull UnaryCommand expr, @NotNull Env env);
+
+		T visit(@NotNull AST.BinLogicalExpr expr, @NotNull Env env);
+
+		T visit(@NotNull NotExpr expr, @NotNull Env env);
+
 	}
 
 	abstract class ASTNode implements AST {
@@ -228,6 +233,59 @@ interface AST {
 			getRight().toString(sb);
 		}
 
+	}
+
+	class BinLogicalExpr extends BinaryExpr {
+		public enum Type {
+			And, Or
+		}
+
+		private final Type type;
+
+		public BinLogicalExpr(@NotNull Type type, @NotNull Expr left, @NotNull Expr right) {
+			super(left, right);
+			this.type = type;
+		}
+
+		@NotNull
+		public Type getType() {
+			return type;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		protected @NotNull String operatorForToString() {
+			return type == Type.And ? "&&" : "||";
+		}
+	}
+
+	class NotExpr extends Expr {
+
+		private final Expr expr;
+
+		public NotExpr(@NotNull Expr expr) {
+			this.expr = expr;
+		}
+
+		@NotNull
+		public Expr getExpr() {
+			return expr;
+		}
+
+		@Override
+		public Object accept(@NotNull AST.Visitor visitor, @NotNull Env env) {
+			return visitor.visit(this, env);
+		}
+
+		@Override
+		void toString(@NotNull IndentedStringBuilder sb) {
+			sb.append("!");
+			expr.toString(sb);
+		}
 	}
 
 	class AddExpr extends BinaryExpr {

@@ -21,9 +21,9 @@ code returns [AST.Code ast] locals[List<AST.Statement> lst] @init{ $lst = new Ar
     ;
 
 expression returns [AST.Expr ast]:
-//todo binary logical operators and !expression
+    (Not | Excl) notexp=expression {$ast = new AST.NotExpr($notexp.ast);}
     //count
-    Count count_r=expression {$ast = new AST.CountExpr(null, $count_r.ast);}
+    | Count count_r=expression {$ast = new AST.CountExpr(null, $count_r.ast);}
     | count_l=expression Count count_r=expression {$ast = new AST.CountExpr($count_l.ast, $count_r.ast);}
     //end count
     | Str str_exp=expression {$ast = new AST.StrExpr($str_exp.ast);}
@@ -36,6 +36,8 @@ expression returns [AST.Expr ast]:
     | la=expression Plus ra=expression {$ast = new AST.AddExpr($la.ast, $ra.ast);}
     | lm=expression Minus rm=expression {$ast = new AST.SubExpr($lm.ast, $rm.ast);}
     | lcomp=expression compOp=(EqEq | NotEq | LtEq | Lt | GtEq | Gt) rcomp=expression {$ast = new AST.CompExpr($lcomp.ast, $rcomp.ast, $compOp.text);}
+    | land=expression (And | AmpAmp) rand = expression {$ast = new AST.BinLogicalExpr(AST.BinLogicalExpr.Type.And, $land.ast, $rand.ast);}
+    | lor=expression (Or | BarBar) ror = expression {$ast = new AST.BinLogicalExpr(AST.BinLogicalExpr.Type.Or, $lor.ast, $ror.ast);}
     | lmax=expression Max rmax=expression {$ast = new AST.MaxExpr($lmax.ast, $rmax.ast);}
     | lmin=expression Min rmin=expression {$ast = new AST.MinExpr($lmin.ast, $rmin.ast);}
     | select_e=expression Select select_i=expression {$ast = new AST.SelectExpr($select_e.ast, $select_i.ast);}
@@ -115,8 +117,8 @@ unary_command :
     | SafeZoneY
     | SafeZoneW
     | SafeZoneH
+    | SafeZoneXAbs
     | SafeZoneWAbs
-    | SafeZoneHAbs
     | GetResolution
     )
     ;
@@ -161,8 +163,13 @@ Gt : '>' ;
 GtEq : '>=' ;
 Equal : '=' ;
 Semicolon : ';';
+
 Or : O R;
+BarBar :'||';
+AmpAmp :'&&';
 And : A N D;
+Not : N O T;
+Excl : '!';
 
 //unary commands
 SafeZoneX : S A F E Z O N E X;

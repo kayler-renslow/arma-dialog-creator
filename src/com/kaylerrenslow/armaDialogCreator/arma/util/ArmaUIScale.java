@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.arma.util;
 
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.UIScale;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Constant values for Arma 3's UI scale
@@ -16,8 +17,9 @@ public enum ArmaUIScale implements UIScale {
 		this.label = label;
 		this.value = value;
 	}
-	
-	
+
+
+	@NotNull
 	@Override
 	public String getLabel() {
 		return label;

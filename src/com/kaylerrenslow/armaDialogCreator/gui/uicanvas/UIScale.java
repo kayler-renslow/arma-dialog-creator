@@ -1,9 +1,14 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
- Created by Kayler on 06/18/2016.
- */
+ @author Kayler
+ @since 06/18/2016 */
 public interface UIScale {
-	String getLabel();
+	/** @return a user friendly name to present to user */
+	@NotNull String getLabel();
+
+	/** @return the value constant for the scale */
 	double getValue();
 }

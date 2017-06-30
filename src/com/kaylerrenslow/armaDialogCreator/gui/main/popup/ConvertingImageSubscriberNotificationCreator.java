@@ -77,7 +77,7 @@ public class ConvertingImageSubscriberNotificationCreator implements ImagesTool.
 	private class MyNotification extends BoxNotification {
 
 		public MyNotification(@NotNull String msg, boolean isError) {
-			super(bundle.getString("Notifications.ConvertingImage.title"), msg, 5 * 1000, isError);
+			super(bundle.getString("Notifications.ConvertingImage.title"), msg, 10 * 1000, isError);
 		}
 	}
 }

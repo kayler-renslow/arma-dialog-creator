@@ -1,11 +1,12 @@
 **Added:**
-* paa conversion subscriber notification
+* binary logical operators like || and && for expression
+    * added tests for these as well
 
 **Changed:**
-* made ExceptionHandler not repeat
+* made Notifications automatically close the handler thread after a while of no notifications appearing
 
 **Fixed:**
-* 
+* Preprocessor didn't have its own UnaryCommandValueProvider instance in its env
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -21,5 +22,3 @@
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
-    * we need binary logical operators like || and && for expression
-	* Preprocessor should have its own UnaryCommandValueProvider instance in its env

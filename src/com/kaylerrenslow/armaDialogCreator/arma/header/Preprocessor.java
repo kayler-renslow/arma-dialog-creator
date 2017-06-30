@@ -2,11 +2,11 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.ParameterDefineValue;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
 import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
-import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.expression.ExpressionInterpreter;
-import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
-import com.kaylerrenslow.armaDialogCreator.expression.Value;
+import com.kaylerrenslow.armaDialogCreator.expression.*;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
@@ -28,10 +28,10 @@ import java.util.regex.Pattern;
  @since 03/21/2017 */
 class Preprocessor {
 
-	private final @RegExp
-	String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
-	private final @RegExp
-	String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
+	@RegExp
+	private final String beforeMacro = "^|##|#|[^#a-zA-Z_0-9$]";
+	@RegExp
+	private final String afterMacro = "$|##|#|[^#a-zA-Z_0-9$]";
 	private final Pattern macroReferencePattern = Pattern.compile(
 			String.format(
 					//using ?= so that the pattern doesn't consume tokens (consuming will prevent a future pattern match)
@@ -793,6 +793,10 @@ class Preprocessor {
 		/** Instead of constantly computing a macro's body as an expression, cache the values calculated. */
 		private HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
 
+		public PreprocessorEnv() {
+			super(new UnaryCommandValueProviderImpl());
+		}
+
 		@Override
 		public Value put(@NotNull String identifier, Value v) {
 			return super.put(identifier, v);
@@ -817,7 +821,7 @@ class Preprocessor {
 			return super.getValue(identifier);
 		}
 
-		private Value getValueFromDefined(@Nullable String identifier) {
+		private Value getValueFromDefined(@NotNull String identifier) {
 			for (Entry<String, DefineValue> defined : defined.entrySet()) {
 				if (identifier.equals(defined.getKey())) {
 					Value value = cachedValues.computeIfAbsent(
@@ -954,6 +958,53 @@ class Preprocessor {
 		@Override
 		public int read() throws IOException {
 			return fis.read();
+		}
+	}
+
+	private static class UnaryCommandValueProviderImpl implements UnaryCommandValueProvider {
+		private final ArmaResolution resolution;
+
+		public UnaryCommandValueProviderImpl() {
+			this.resolution = new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT);
+		}
+
+		@Override
+		public @NotNull Value safeZoneX() {
+			return new Value.NumVal(resolution.getSafeZoneX());
+		}
+
+		@Override
+		public @NotNull Value safeZoneY() {
+			return new Value.NumVal(resolution.getSafeZoneY());
+		}
+
+		@Override
+		public @NotNull Value safeZoneW() {
+			return new Value.NumVal(resolution.getSafeZoneW());
+		}
+
+		@Override
+		public @NotNull Value safeZoneH() {
+			return new Value.NumVal(resolution.getSafeZoneH());
+		}
+
+		@Override
+		public @NotNull Value getResolution() {
+			Value.NumVal width = new Value.NumVal(resolution.getScreenWidth());
+			Value.NumVal height = new Value.NumVal(resolution.getScreenHeight());
+			Value.NumVal viewportWidth = new Value.NumVal(resolution.getViewportWidth());
+			Value.NumVal viewportHeight = new Value.NumVal(resolution.getViewportHeight());
+			Value.NumVal aspectRatio = new Value.NumVal(resolution.getAspectRatio());
+			Value.NumVal uiScale = new Value.NumVal(resolution.getUIScale().getValue());
+
+			return _getResolution(
+					width,
+					height,
+					viewportWidth,
+					viewportHeight,
+					aspectRatio,
+					uiScale
+			);
 		}
 	}
 }

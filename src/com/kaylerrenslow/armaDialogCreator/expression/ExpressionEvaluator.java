@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
@@ -725,6 +726,52 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 			return getValueForIdentifier(expr, env, expr.getCommand());
 		}
 		return UnaryCommandTranslator.executeUnaryCommand(expr.getCommand(), provider);
+	}
+
+	@Override
+	public Value visit(@NotNull AST.BinLogicalExpr expr, @NotNull Env env) {
+		//This function is used to evaluate only whats needed (short circuit the expression).
+
+		//For instance, false && true is short circuited because the expression is immediately false
+		//do to the left predicate being false
+
+		Function<AST.ASTNode, Value.BoolVal> boolFunc = boolExpr -> {
+			Value v = (Value) boolExpr.accept(this, env);
+			if (v instanceof Value.Code) {
+				Value.Code code = (Value.Code) v;
+				v = code.exec(env);
+			}
+			if (!(v instanceof Value.BoolVal)) {
+				unexpectedValueException(expr, v, boolExpr, boolTypeName());
+			}
+			return (Value.BoolVal) v;
+		};
+
+		if (expr.getType() == AST.BinLogicalExpr.Type.And) {
+			Value left = boolFunc.apply(expr.getLeft());
+			if (left == Value.False) {
+				return Value.False;
+			}
+			return Value.BoolVal.get(boolFunc.apply(expr.getRight()) == Value.True);
+		} else if (expr.getType() == AST.BinLogicalExpr.Type.Or) {
+			Value left = boolFunc.apply(expr.getLeft());
+			if (left == Value.True) {
+				return Value.True;
+			}
+			return Value.BoolVal.get(boolFunc.apply(expr.getRight()) == Value.True);
+
+		} else {
+			throw new IllegalStateException("unknown type: " + expr.getType());
+		}
+	}
+
+	@Override
+	public Value visit(@NotNull AST.NotExpr expr, @NotNull Env env) {
+		Value v = (Value) expr.getExpr().accept(this, env);
+		if (!(v instanceof Value.BoolVal)) {
+			unexpectedValueException(expr, v, expr.getExpr(), boolTypeName());
+		}
+		return ((Value.BoolVal) v).not();
 	}
 
 	private double getNumValValue(@NotNull Value v) {
