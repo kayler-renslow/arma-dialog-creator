@@ -463,7 +463,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		}
 
 		public void showPopup() {
-			Point2D p = inputField.localToScreen(0, -inputField.getHeight());
+			Point2D p = inputField.textField.localToScreen(0, -inputField.textField.getHeight());
 			show(inputField, p.getX(), p.getY());
 		}
 	}

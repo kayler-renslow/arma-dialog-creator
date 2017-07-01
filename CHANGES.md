@@ -1,12 +1,11 @@
 **Added:**
-* ColorArray editor has the option to insert values from an actual percentage array ({1.0,0.5,0.5,1} for example)
+* 
 
 **Changed:**
-* moved CanvasControls reordered up/down arrows
-* made SerializableValue not store the internal String[] in an effort to reduce memory usage
+* ExpressionEvaluatorPopup will not color commands regardless of case
 
 **Fixed:**
-* Hint still says its extending itself
+* input field error popup not always appearing directly above the text field
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

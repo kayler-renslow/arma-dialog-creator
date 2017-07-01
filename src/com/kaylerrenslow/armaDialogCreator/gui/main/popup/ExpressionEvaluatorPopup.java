@@ -253,7 +253,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 				String s;
 				if ((s = matcher.group("IDENTIFIER")) != null) {
 					for (String command : ExpressionInterpreter.getSupportedCommands()) {
-						if (s.equals(command)) {
+						if (s.equalsIgnoreCase(command)) {
 							styleClass = "command";
 							break;
 						}
