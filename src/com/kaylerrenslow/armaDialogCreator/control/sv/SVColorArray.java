@@ -37,7 +37,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		}
 	};
 
-	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
+	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. */
 	private double r, g, b, a;
 
 

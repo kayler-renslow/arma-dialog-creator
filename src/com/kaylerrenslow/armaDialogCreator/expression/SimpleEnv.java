@@ -47,6 +47,17 @@ public class SimpleEnv implements Env {
 		return unaryCommandProvider;
 	}
 
+	@NotNull
+	@Override
+	public String[] getMappedIdentifiers() {
+		String[] idents = new String[map.size()];
+		int i = 0;
+		for (String ident : map.keySet()) {
+			idents[i++] = ident;
+		}
+		return idents;
+	}
+
 	@Override
 	@Nullable
 	public Value getValue(@NotNull String identifier) {

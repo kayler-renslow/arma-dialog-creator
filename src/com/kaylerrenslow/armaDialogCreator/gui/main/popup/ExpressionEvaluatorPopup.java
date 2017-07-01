@@ -24,7 +24,6 @@ import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -50,8 +49,8 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 	private boolean showingConsole = false;
 	private Task activeEvaluateTask;
 	private final Button btnEval, btnTerminate;
-	private final AtomicLong evaluateStartTime = new AtomicLong();
-	private final AtomicLong evaluateEndTime = new AtomicLong();
+	private volatile long evaluateStartTime;
+	private volatile long evaluateEndTime;
 
 	public ExpressionEvaluatorPopup() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), null);
@@ -158,13 +157,14 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 				String consoleString;
 
 				try {
-					evaluateStartTime.set(System.currentTimeMillis());
+					evaluateStartTime = System.currentTimeMillis();
 					Value returnValue = interpreter.evaluateStatements(codeAreaPane.getText(), env).get();
-					evaluateEndTime.set(System.currentTimeMillis());
+					evaluateEndTime = System.currentTimeMillis();
 					interpreter.shutdownAndDisable();
 					returnValueString = getValueAsString(returnValue);
 					consoleString = bundle.getString("CodeArea.success");
 				} catch (ExpressionEvaluationException e) {
+					evaluateEndTime = System.currentTimeMillis();
 					if (e instanceof TerminateEvaluationException) {
 						returnValueString = bundle.getString("CodeArea.terminated");
 						consoleString = returnValueString;
@@ -192,7 +192,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 								footerValueLabel(
 										String.format(
 												"%d %s",
-												(evaluateEndTime.get() - evaluateStartTime.get()),
+												(evaluateEndTime - evaluateStartTime),
 												bundle.getString("CodeArea.milliseconds")
 										)
 								)

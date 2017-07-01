@@ -35,4 +35,7 @@ public interface Env extends Iterable<KeyValue<String, Value>> {
 
 	/** @return the instance, or null if unary commands should not be handled */
 	@Nullable UnaryCommandValueProvider getUnaryCommandValueProvider();
+
+	/** @return all current mapped identifiers (identifiers that have non null values) */
+	@NotNull String[] getMappedIdentifiers();
 }

@@ -243,7 +243,7 @@ public class ControlProperty {
 	 this method will succeed.
 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVInteger} or {@link SVExpression}
-	 @throws NullPointerException when {@link #getValue()} is null
+	 @throws NullPointerException  when {@link #getValue()} is null
 	 */
 	public int getIntValue() {
 		if (getValue() == null) {
@@ -263,7 +263,7 @@ public class ControlProperty {
 	 this method will succeed.
 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVDouble} or {@link SVExpression}
-	 @throws NullPointerException when {@link #getValue()} is null
+	 @throws NullPointerException  when {@link #getValue()} is null
 	 */
 	public double getFloatValue() {
 		if (getValue() == null) {
@@ -282,7 +282,7 @@ public class ControlProperty {
 	 Get the ControlProperty's value as an boolean. If the value is of type {@link SVBoolean}, this method will succeed.
 
 	 @throws IllegalStateException when ControlProperty's value isn't of type {@link SVBoolean}
-	 @throws NullPointerException when {@link #getValue()} is null
+	 @throws NullPointerException  when {@link #getValue()} is null
 	 */
 	public boolean getBooleanValue() {
 		if (getValue() == null) {
@@ -426,8 +426,10 @@ public class ControlProperty {
 		}
 	}
 
-	/** Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value.
-	 The macro and custom data will also be shallow copied over */
+	/**
+	 Construct a new {@link ControlProperty} that will copy the lookup and deep copy the value.
+	 The macro and custom data will also be shallow copied over
+	 */
 	@NotNull
 	public ControlProperty deepCopy() {
 		ControlProperty copy = new ControlProperty(getPropertyLookup(), getValue() != null ? getValue().deepCopy() : null);
@@ -542,6 +544,11 @@ public class ControlProperty {
 	@Override
 	public int hashCode() {
 		return getName().hashCode();
+	}
+
+	/** @return true if the {@link ControlProperty#getName()} matches */
+	public boolean nameEquals(@NotNull ControlProperty other) {
+		return this.getName().equals(other.getName());
 	}
 
 	/**

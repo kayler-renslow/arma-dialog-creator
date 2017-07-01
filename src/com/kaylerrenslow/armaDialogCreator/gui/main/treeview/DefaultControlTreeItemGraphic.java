@@ -91,10 +91,10 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		int r = (int) (color.getRed() * f);
 		int g = (int) (color.getGreen() * f);
 		int b = (int) (color.getBlue() * f);
-		String opacity = DecimalFormat.getNumberInstance().format(color.getOpacity());
+		String opacity = DecimalFormat.getNumberInstance().format(color.getOpacity() * 100);
 
 		Tooltip.install(box, new Tooltip(String.format(
-				"red:%d, green:%d, blue:%d, opacity:%s", r, g, b, opacity))
+				"red:%d, green:%d, blue:%d, opacity:%s%%", r, g, b, opacity))
 		);
 	}
 

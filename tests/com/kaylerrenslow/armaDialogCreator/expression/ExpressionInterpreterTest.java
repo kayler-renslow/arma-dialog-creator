@@ -247,6 +247,14 @@ public class ExpressionInterpreterTest {
 	}
 
 	@Test
+	public void evaluateString7() throws Exception {
+		String expected = "\"hello \"\"world\"\"\"";
+		String eval = "\"hello \" + \"\"\"world\"\"\"";
+		Value.StringLiteral ret = (Value.StringLiteral) interpreter.evaluate(eval, env).get();
+		assertEquals("", expected, ret.toString());
+	}
+
+	@Test
 	public void evaluate_trick() throws Exception {
 		String eval = "e134";//will return whatever the env returns since this isn't a valid number itself
 		Value.NumVal ret = (Value.NumVal) interpreter.evaluate(eval, env).get();

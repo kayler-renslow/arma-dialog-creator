@@ -69,9 +69,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setText(newValue);
 		}
 	};
-	private final ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
+	private final ReadOnlyValueListener<ControlClass> controlClassExtendListener = new ReadOnlyValueListener<ControlClass>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+		public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 			if (newValue == null) {
 				menuButtonExtendControls.chooseItem((ControlClass) null);
 			} else {
@@ -237,9 +237,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		menuButtonExtendControls.getSelectedValueObserver().addListener(new ReadOnlyValueListener<ControlClass>() {
 			@Override
 			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
-				if (selected != null) {
-					control.extendControlClass(selected);
-				}
+				control.extendControlClass(selected);
 			}
 		});
 
@@ -292,13 +290,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (add) {
 			control.getRenderer().getBackgroundColorObserver().addListener(backgroundColorListener);
 			control.getClassNameObserver().addListener(classNameListener);
-			control.getExtendClassObserver().addListener(controlClassExtendListener);
+			control.getExtendClassReadOnlyObserver().addListener(controlClassExtendListener);
 			control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
 			editorPane.link();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);
-			control.getExtendClassObserver().removeListener(controlClassExtendListener);
+			control.getExtendClassReadOnlyObserver().removeListener(controlClassExtendListener);
 			if (control.getDisplay() != null) { //might have been removed from display
 				control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
 			}

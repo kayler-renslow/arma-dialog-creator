@@ -52,6 +52,9 @@ public class ControlClass {
 	private final ValueObserver<ControlClass> extendClassObserver = new ValueObserver<>(null);
 	private final Set<ControlClass> mySubClasses = new HashSet<>();
 
+	/** set to true when {@link #extendControlClass(ControlClass)} is invoked, false after the method has completed */
+	private boolean updatingExtendClass = false;
+
 	private final UpdateListenerGroup<ControlPropertyUpdate> propertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<ControlClassUpdate> controlClassUpdateGroup = new UpdateListenerGroup<>();
 	/** This listener is for handling any inheritance updates */
@@ -103,7 +106,11 @@ public class ControlClass {
 		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 			if (data instanceof ControlPropertyInheritUpdate) {
 				ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
-				controlClassUpdateGroup.update(new ControlClassOverridePropertyUpdate(ControlClass.this, update.getControlProperty(), !update.wasInherited()));
+				controlClassUpdateGroup.update(
+						new ControlClassInheritPropertyUpdate(ControlClass.this,
+								update.getControlProperty(), update.wasInherited(), updatingExtendClass
+						)
+				);
 			}
 			propertyUpdateGroup.update(data);
 			controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
@@ -180,12 +187,6 @@ public class ControlClass {
 					throw new IllegalArgumentException("class name can't be null");
 				}
 				controlClassUpdateGroup.update(new ControlClassRenameUpdate(ControlClass.this, oldValue, newValue));
-			}
-		});
-		extendClassObserver.addListener(new ValueListener<ControlClass>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
-				controlClassUpdateGroup.update(new ControlClassExtendUpdate(ControlClass.this, oldValue, newValue));
 			}
 		});
 	}
@@ -270,8 +271,11 @@ public class ControlClass {
 
 	/**
 	 Extend the given {@link ControlClass}, or clear the extend class with null.
-	 Any properties that initially have a value in them ({@link #propertyIsDefined(ControlProperty)}) will not be inherited,
-	 unless explicitly stated with {@link #inheritProperty(ControlPropertyLookupConstant)}.
+	 <p>
+	 For each property in this {@link ControlClass}: if it initially has a value in it
+	 ({@link #propertyIsDefined(ControlProperty)}), it will not be inherited, otherwise it will be by this method.
+	 You can explicitly invoke {@link #inheritProperty(ControlPropertyLookupConstant)} and
+	 {@link #overrideProperty(ControlPropertyLookupConstant)} at a later time.
 	 <p>
 	 Any of {@link ControlClass#getAllNestedClasses()} that don't exist in this class will be inherited.
 	 Use the method {@link #getTempNestedClassesReadOnly()} to get such nested classes. All inherited nested classes
@@ -288,10 +292,16 @@ public class ControlClass {
 			return;
 		}
 
+		Iterable<ControlProperty> oldInherits = getInheritedProperties();
+
 		if (extendMe != null) {
 			if (hasInheritanceLoop(extendMe)) {
 				throw new IllegalArgumentException("Extend class can't extend itself (inheritance loop)!");
 			}
+		}
+		updatingExtendClass = true;
+
+		if (extendMe != null) {
 
 			//attempt to inherit all properties, if they aren't defined in this ControlClass
 			for (ControlProperty checkToInherit : extendMe.getAllChildProperties()) {
@@ -335,19 +345,26 @@ public class ControlClass {
 		}
 
 		extendClassObserver.updateValue(extendMe);
+		controlClassUpdateGroup.update(
+				new ControlClassExtendUpdate(this, oldExtendClass, extendMe, oldInherits)
+		);
+
+		updatingExtendClass = false;
 
 	}
 
-	/** @return the {@link ControlClass} that this instance is extending, or null if extending nothing */
+	/**
+	 @return the {@link ControlClass} that this instance is extending, or null if extending nothing
+	 @see #extendControlClass(ControlClass)
+	 */
 	@Nullable
 	public final ControlClass getExtendClass() {
 		return extendClassObserver.getValue();
 	}
 
-	/** @return a {@link ValueObserver} for {@link #getExtendClass()} */
-	@NotNull
-	public final ValueObserver<ControlClass> getExtendClassObserver() {
-		return extendClassObserver;
+	/** @return a {@link ReadOnlyValueObserver} for {@link #getExtendClass()} */
+	public final ReadOnlyValueObserver<ControlClass> getExtendClassReadOnlyObserver() {
+		return extendClassObserver.getReadOnlyValueObserver();
 	}
 
 	/**
@@ -672,7 +689,9 @@ public class ControlClass {
 	/**
 	 Override's a property that may exist inside {@link #getExtendClass()}. When a property is "overridden",
 	 the property's value will never be inherited until it is no longer overridden
-	 (achievable with {@link #inheritProperty(ControlPropertyLookupConstant)}).<p>
+	 (achievable with {@link #inheritProperty(ControlPropertyLookupConstant)}). If the property is overridden but
+	 doesn't have a value, it will be automatically inherited by {@link #extendControlClass(ControlClass)} invocations
+	 or any other inheritance related updates.
 	 <p>
 	 If the given property is a temporary property (doesn't actually exist in the {@link ControlClass},
 	 but does in {@link #extendControlClass(ControlClass)} and was inherited), the temporary property
@@ -722,16 +741,17 @@ public class ControlClass {
 	 invoked, the properties should react accordingly due to {@link ControlClass#getControlClassUpdateGroup()}
 	 listeners.
 
+	 @return true if the property was inherited, false if nothing happened because of a reason described above
 	 @see #propertyIsOverridden(ControlPropertyLookupConstant)
 	 @see #overrideProperty(ControlPropertyLookupConstant)
 	 */
-	public final void inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
+	public final boolean inheritProperty(@NotNull ControlPropertyLookupConstant lookup) {
 		if (getExtendClass() == null) {
-			return;
+			return false;
 		}
 		ControlProperty inherit = getExtendClass().findPropertyByNameNullable(lookup.getPropertyName());
 		if (inherit == null) {
-			return;
+			return false;
 		}
 
 		ControlProperty mine = findPropertyByNameNullable(lookup.getPropertyName());
@@ -744,6 +764,8 @@ public class ControlClass {
 			optionalProperties.add(mine);
 		}
 		mine.inherit(inherit);
+
+		return true;
 	}
 
 	/**
@@ -842,8 +864,7 @@ public class ControlClass {
 
 
 	/**
-	 Return a list of {@link ControlProperty} that are <b>not</b> overridden via
-	 {@link #overrideProperty(ControlPropertyLookupConstant)} and are inherited from {@link #getExtendClass()}
+	 @return an iterable of {@link ControlProperty} that are inherited from {@link #getExtendClass()}
 	 */
 	@NotNull
 	public final Iterable<ControlProperty> getInheritedProperties() {
@@ -852,10 +873,8 @@ public class ControlClass {
 		}
 		List<ControlProperty> list = new LinkedList<>();
 		for (ControlProperty c : getAllChildProperties()) {
-			if (!propertyIsOverridden(c.getPropertyLookup())) {
-				if (!list.contains(c)) {
-					list.add(c);
-				}
+			if (c.isInherited()) {
+				list.add(c);
 			}
 		}
 		return list;
@@ -1059,17 +1078,17 @@ public class ControlClass {
 		} else if (data instanceof ControlClassPropertyUpdate) {
 			update(((ControlClassPropertyUpdate) data).getPropertyUpdate(), deepCopy);
 			return;
-		} else if (data instanceof ControlClassOverridePropertyUpdate) {
-			ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) data;
+		} else if (data instanceof ControlClassInheritPropertyUpdate) {
+			ControlClassInheritPropertyUpdate update = (ControlClassInheritPropertyUpdate) data;
 			if (update.wasOverridden()) {
-				overrideProperty(update.getOveridden().getPropertyLookup());
+				overrideProperty(update.getControlProperty().getPropertyLookup());
 			} else {
-				inheritProperty(update.getOveridden().getPropertyLookup());
+				inheritProperty(update.getControlProperty().getPropertyLookup());
 			}
 			return;
 		} else if (data instanceof ControlClassExtendUpdate) {
 			ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
-			extendControlClass(update.getNewValue());
+			extendControlClass(update.getNewExtendClass());
 			return;
 		} else if (data instanceof ControlClassTemporaryPropertyUpdate) {
 			//This does not need to have anything handled since it happens inside overrideProperty() or inheritProperty()

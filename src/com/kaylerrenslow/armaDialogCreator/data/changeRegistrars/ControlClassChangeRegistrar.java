@@ -19,8 +19,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
- Tracks changes made to {@link Project#getEditingDisplay()} and its {@link ArmaDisplay#getControls()} and {@link ArmaDisplay#getBackgroundControls()} lists. For each {@link ArmaControl} in those
- two lists, {@link ControlClass#getControlClassUpdateGroup()} will be used to get {@link com.kaylerrenslow.armaDialogCreator.data.Change} instances to undo/redo.
+ Tracks changes made to {@link Project#getEditingDisplay()} and its {@link ArmaDisplay#getControls()} and
+ {@link ArmaDisplay#getBackgroundControls()} lists. For each {@link ArmaControl} in those
+ two lists, {@link ControlClass#getControlClassUpdateGroup()} will be used to get
+ {@link com.kaylerrenslow.armaDialogCreator.data.Change} instances to undo/redo.
 
  @author Kayler
  @since 11/21/2016 */
@@ -120,6 +122,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		private final ControlClassChangeRegistrar registrar;
 		/** {@link ControlClass} name that triggered the change */
 		private final String className;
+		private final ControlClassUpdate classUpdate;
 		private String shortName, description;
 		private List<ChangeAction> actions = new ArrayList<>();
 		/**
@@ -141,6 +144,12 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			PropertyValue, PropertyMacro, PropertyCustomData
 		}
 
+		@NotNull
+		private Function<ControlClassChange, Boolean> checkIfSimilarFunc = change -> {
+			return this.changeType == change.changeType &&
+					this.stringForCheckingIfSimilar.equals(change.stringForCheckingIfSimilar);
+		};
+
 		private final long timeCreated = System.currentTimeMillis();
 
 		/**
@@ -148,8 +157,9 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		 */
 		public ControlClassChange(@NotNull ControlClassChangeRegistrar registrar, @NotNull ControlClassUpdate classUpdate) throws Exception {
 			this.registrar = registrar;
-
 			className = classUpdate.getOwnerControlClass().getClassName();
+			this.classUpdate = classUpdate;
+
 			ControlClass controlClass = classUpdate.getOwnerControlClass();
 			@NotNull ChangeAction action;
 			if (classUpdate instanceof ControlClassRenameUpdate) {
@@ -189,12 +199,15 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				//
 				//
 				//
-			} else if (classUpdate instanceof ControlClassOverridePropertyUpdate) {
+			} else if (classUpdate instanceof ControlClassInheritPropertyUpdate) {
 				//
 				// Override
 				//
-				ControlClassOverridePropertyUpdate update = (ControlClassOverridePropertyUpdate) classUpdate;
-				String propertyName = update.getOveridden().getName();
+				ControlClassInheritPropertyUpdate update = (ControlClassInheritPropertyUpdate) classUpdate;
+				if (update.isUpdatingExtendClass()) {
+					throw new Exception();
+				}
+				String propertyName = update.getControlProperty().getName();
 				if (update.wasOverridden()) {
 					shortName = bundle.getString("ControlClassChange.Override.override_short_name");
 					description = String.format(bundle.getString("ControlClassChange.Override.override_description_f"), propertyName, className);
@@ -206,18 +219,18 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					@Override
 					public void undo() {
 						if (update.wasOverridden()) {
-							controlClass.inheritProperty(update.getOveridden().getPropertyLookup());
+							controlClass.inheritProperty(update.getControlProperty().getPropertyLookup());
 						} else {
-							controlClass.overrideProperty(update.getOveridden().getPropertyLookup());
+							controlClass.overrideProperty(update.getControlProperty().getPropertyLookup());
 						}
 					}
 
 					@Override
 					public void redo() {
 						if (update.wasOverridden()) {
-							controlClass.overrideProperty(update.getOveridden().getPropertyLookup());
+							controlClass.overrideProperty(update.getControlProperty().getPropertyLookup());
 						} else {
-							controlClass.inheritProperty(update.getOveridden().getPropertyLookup());
+							controlClass.inheritProperty(update.getControlProperty().getPropertyLookup());
 						}
 					}
 
@@ -238,20 +251,29 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				//
 				ControlClassExtendUpdate update = (ControlClassExtendUpdate) classUpdate;
 				shortName = bundle.getString("ControlClassChange.Extend.short_name");
-				if (update.getNewValue() == null) {
-					description = String.format(bundle.getString("ControlClassChange.Extend.remove_extend_description_f"), className, update.getOldValue().getClassName());
+				if (update.getNewExtendClass() == null) {
+					description = String.format(
+							bundle.getString("ControlClassChange.Extend.remove_extend_description_f"),
+							className, update.getOldExtendClass().getClassName()
+					);
 				} else {
-					description = String.format(bundle.getString("ControlClassChange.Extend.extend_description_f"), className, update.getNewValue().getClassName());
+					description = String.format(
+							bundle.getString("ControlClassChange.Extend.extend_description_f"),
+							className, update.getNewExtendClass().getClassName()
+					);
 				}
 				action = new ChangeAction() {
 					@Override
 					public void undo() {
-						controlClass.extendControlClass(update.getOldValue());
+						controlClass.extendControlClass(update.getOldExtendClass());
+						for (ControlProperty property : update.getOldInherits()) {
+							controlClass.inheritProperty(property.getPropertyLookup());
+						}
 					}
 
 					@Override
 					public void redo() {
-						controlClass.extendControlClass(update.getNewValue());
+						controlClass.extendControlClass(update.getNewExtendClass());
 					}
 
 					@Override
@@ -261,12 +283,45 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					}
 				};
 				changeType = ControlClassChangeType.ClassExtend;
-				stringForCheckingIfSimilar = update.getOwnerControlClass().getClassName() + "\0" + update.getNewValue();
+				stringForCheckingIfSimilar = update.getOwnerControlClass().getClassName() + "\0" + update.getNewExtendClass();
+				mergeActionsFunction = controlClassChange -> {
+					return this.actions; //do nothing to this.actions
+				};
+				checkIfSimilarFunc = oldChange -> {
+					if (!this.className.equals(oldChange.className)) {
+						return false;
+					}
+					if (oldChange.changeType == ControlClassChangeType.OverrideProperty) {
+						ControlClassInheritPropertyUpdate oldUpdate = (ControlClassInheritPropertyUpdate) oldChange.classUpdate;
+						for (ControlProperty property : update.getOldInherits()) {
+							if (oldUpdate.getControlProperty().nameEquals(property)) {
+								if (update.getNewExtendClass() == null) {
+									/*
+									* For this type of merge, we want to combine all individual override property updates
+									* into the control class extend update. With the merge, only 1 change will be needed to
+									* re-inherit the properties that were in place when the extend change is undone.
+									*
+									* The reason why we only want to merge when the new extend class is null is because
+									* no properties are inherited at the time of extending, except the properties
+									* that are undefined (value is null). Since property value updates handle setting
+									* properties to null or not, it is not necessary to re-inherit/re-override
+									* inherited properties that were undefined at the time of extending because its
+									* handled implicitly by ControlClass.extendControlClass().
+									*/
+									return oldUpdate.wasOverridden();
+								}
+							}
+						}
+					}
+					return false;
+				};
 				//
 				//
 				//
 			} else {
-				throw new IllegalArgumentException("WARNING: ControlClassChangeRegistrar.ControlClassChangeRegistrar(): unknown control class update:" + classUpdate);
+				System.err.println("WARNING: ControlClassChangeRegistrar.ControlClassChangeRegistrar():" +
+						"unknown control class update:" + classUpdate);
+				throw new Exception();
 
 			}
 
@@ -408,8 +463,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 
 		/** @return true if the change is similar, false if it isn't */
 		public boolean isSimilar(@NotNull ControlClassChange change) {
-			return this.changeType == change.changeType &&
-					this.stringForCheckingIfSimilar.equals(change.stringForCheckingIfSimilar);
+			return checkIfSimilarFunc.apply(change);
 		}
 
 		public void mergeChanges(@NotNull ControlClassChange change) {

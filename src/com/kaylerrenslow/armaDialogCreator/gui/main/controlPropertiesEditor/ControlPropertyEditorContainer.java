@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -22,6 +23,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.Popup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -96,7 +98,7 @@ class ControlPropertyEditorContainer extends HBox {
 			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
 				if (data instanceof ControlClassExtendUpdate) {
 					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
-					inheritanceMenuItem.setVisible(update.getNewValue() != null);
+					inheritanceMenuItem.setVisible(update.getNewExtendClass() != null);
 				}
 			}
 		};
@@ -194,7 +196,24 @@ class ControlPropertyEditorContainer extends HBox {
 				if (getControlProperty().isInherited()) {
 					getControlProperty().inherit(null);
 				} else {
-					controlClass.inheritProperty(getControlProperty().getPropertyLookup());
+					boolean inherited = controlClass.inheritProperty(getControlProperty().getPropertyLookup());
+					if (!inherited) {
+						Popup popup = new Popup();
+						Label lbl = new Label(bundle.getString("nothing_to_inherit"));
+						StackPane container = new StackPane(lbl);
+						container.setBackground(new Background(new BackgroundFill(
+								Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
+						));
+						lbl.setFont(Font.font(15));
+						lbl.setTextFill(Color.WHITE);
+						container.setPadding(new Insets(4));
+						popup.getContent().add(container);
+						Control ownerNode = menuButtonOptions;
+						Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight());
+						popup.setAutoHide(true);
+						
+						popup.show(ownerNode, p.getX(), p.getY());
+					}
 				}
 			}
 		});

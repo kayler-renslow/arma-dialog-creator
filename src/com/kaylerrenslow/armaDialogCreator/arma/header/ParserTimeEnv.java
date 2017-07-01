@@ -28,11 +28,6 @@ public class ParserTimeEnv extends SimpleEnv {
 	}
 
 	@Override
-	public Value remove(@NotNull String identifier) {
-		return super.remove(identifier);
-	}
-
-	@Override
 	@Nullable
 	public Value getValue(@NotNull String identifier) {
 		Value v = providedPreprocessorEnv.getValue(identifier);

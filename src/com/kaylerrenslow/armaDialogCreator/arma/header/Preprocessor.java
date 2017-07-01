@@ -797,16 +797,6 @@ class Preprocessor {
 			super(new UnaryCommandValueProviderImpl());
 		}
 
-		@Override
-		public Value put(@NotNull String identifier, Value v) {
-			return super.put(identifier, v);
-		}
-
-		@Override
-		public Value remove(@NotNull String identifier) {
-			return super.remove(identifier);
-		}
-
 		/**
 		 Search all defined macros and use their keys as Identifiers. Will also check for any values created from __EXEC.
 		 No parameter macros should be allowed to be used as identifiers inside __EVAL!

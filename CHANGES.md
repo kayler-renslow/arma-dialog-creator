@@ -1,11 +1,13 @@
 **Added:**
-* 
+* popup that appears when control prop editor config tried to inherit a property and nothing was inherited
+* merge ControlClass.extendControlClass(null) with the override Changelog updates so that we can undo the extend
+      change and also reinherit all the properties
 
 **Changed:**
-* ExpressionEvaluatorPopup will not color commands regardless of case
+* 
 
 **Fixed:**
-* input field error popup not always appearing directly above the text field
+* setting HintRep's parent class to null doesn't properly update the editor pane
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -15,8 +17,6 @@
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
 * June 23:
     - Header: we need tests for +=
-* June 26: 
-    * setting HintRep's parent class to null doens't properly update the editor pane
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
