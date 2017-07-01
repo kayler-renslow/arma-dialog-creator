@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  @since 05/31/2016. */
 public class DoubleChecker implements InputFieldDataChecker<Double> {
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		try {
 			Double.parseDouble(data);
 			return null;

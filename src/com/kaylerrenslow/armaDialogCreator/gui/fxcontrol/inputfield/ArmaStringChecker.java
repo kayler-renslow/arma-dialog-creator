@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  @since 05/31/2016. */
 public class ArmaStringChecker implements InputFieldDataChecker<String> {
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		if (data.length() == 0) {
 			return null;
 		}

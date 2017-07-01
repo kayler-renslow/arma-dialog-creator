@@ -23,13 +23,18 @@ public class SVFileName extends SerializableValue implements FilePathUser {
 	private final File f;
 
 	public SVFileName(@NotNull File f) {
-		super(f.getAbsolutePath());
 		this.f = f;
 	}
 
 	@NotNull
 	public File getFile() {
 		return f;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{f.getAbsolutePath()};
 	}
 
 	@Override
@@ -46,8 +51,8 @@ public class SVFileName extends SerializableValue implements FilePathUser {
 	@Override
 	public String toString() {
 		//don't use absolute path because new File("") would return
-		//the working directory in the string
-		return getFile().getPath();
+		//the working directory in the string, which isn't useful information
+		return f.getPath();
 	}
 
 	@NotNull

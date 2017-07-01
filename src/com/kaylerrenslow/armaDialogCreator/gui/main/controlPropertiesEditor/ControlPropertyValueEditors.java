@@ -3,7 +3,6 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ExpressionChecker;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.RawChecker;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -109,11 +108,6 @@ class ControlPropertyValueEditors {
 			}
 		}
 
-		@Override
-		public boolean hasValidData() {
-			return toggleGroup.getSelectedToggle() != null;
-		}
-
 		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
@@ -187,11 +181,6 @@ class ControlPropertyValueEditors {
 		}
 
 		@Override
-		public boolean hasValidData() {
-			return getValue() != null;
-		}
-
-		@Override
 		public void setToMode(@NotNull EditMode mode) {
 		}
 
@@ -253,11 +242,6 @@ class ControlPropertyValueEditors {
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return menuButton.getSelectedItems().size() > 0;
 		}
 
 		@Override
@@ -333,11 +317,6 @@ class ControlPropertyValueEditors {
 				inputField.setPromptText(promptText);
 			}
 			initListeners();
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return inputField.hasValidData();
 		}
 
 		@NotNull
@@ -424,29 +403,15 @@ class ControlPropertyValueEditors {
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				if (controlProperty.getValue() != null) { //maybe wasn't updated
-					colorPicker.setValue(((SVColorArray) controlProperty.getValue()).toJavaFXColor());
-				} else {
-					colorPicker.setValue(null);
-				}
+				setValue(((SVColorArray) controlProperty.getValue()));
 			}
 		};
 
 		ColorArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
-			boolean validData = controlProperty.getValue() != null;
-			if (validData) {
-				SVColor value = (SVColor) controlProperty.getValue();
-				colorPicker.setValue(value.toJavaFXColor());
-			} else {
-				colorPicker.setValue(null);
-			}
+			SVColorArray value = (SVColorArray) controlProperty.getValue();
+			setValue(value);
 			initListeners();
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return colorPicker.getValue() != null;
 		}
 
 		@NotNull
@@ -500,11 +465,7 @@ class ControlPropertyValueEditors {
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				if (controlProperty.getValue() != null) { //maybe wasn't updated
-					setValue((SVHexColor) controlProperty.getValue());
-				} else {
-					setValue(null);
-				}
+				setValue((SVHexColor) controlProperty.getValue());
 			}
 		};
 
@@ -518,11 +479,6 @@ class ControlPropertyValueEditors {
 				setValue(null);
 			}
 			initListeners();
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return getValue() != null;
 		}
 
 		@NotNull
@@ -590,11 +546,6 @@ class ControlPropertyValueEditors {
 
 		}
 
-		@Override
-		public boolean hasValidData() {
-			return choiceBox.getValue() != null;
-		}
-
 		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
@@ -659,16 +610,6 @@ class ControlPropertyValueEditors {
 			initListeners();
 		}
 
-		@Override
-		public boolean hasValidData() {
-			for (InputField inputField : editors) {
-				if (!inputField.hasValidData()) {
-					return false;
-				}
-			}
-			return true;
-		}
-
 		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
@@ -728,11 +669,6 @@ class ControlPropertyValueEditors {
 
 			setValue((SVFont) controlProperty.getValue());
 			initListeners();
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return !comboBox.getSelectionModel().isEmpty();
 		}
 
 		@NotNull
@@ -796,11 +732,6 @@ class ControlPropertyValueEditors {
 			initListeners();
 		}
 
-		@Override
-		public boolean hasValidData() {
-			return true;
-		}
-
 		@NotNull
 		@Override
 		public ControlProperty getControlProperty() {
@@ -862,11 +793,6 @@ class ControlPropertyValueEditors {
 		@Override
 		public ControlProperty getControlProperty() {
 			return controlProperty;
-		}
-
-		@Override
-		public boolean hasValidData() {
-			return getValue() != null;
 		}
 
 		@Override

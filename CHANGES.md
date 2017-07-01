@@ -1,12 +1,12 @@
 **Added:**
-* edit nested classes in editor pane.
+* ColorArray editor has the option to insert values from an actual percentage array ({1.0,0.5,0.5,1} for example)
 
 **Changed:**
-* removed the nested class from static because it was for testing
-* moved getAllowedStyles() into a different interface
+* moved CanvasControls reordered up/down arrows
+* made SerializableValue not store the internal String[] in an effort to reduce memory usage
 
 **Fixed:**
-* 
+* Hint still says its extending itself
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

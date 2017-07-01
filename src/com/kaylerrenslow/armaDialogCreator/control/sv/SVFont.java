@@ -38,7 +38,6 @@ public class SVFont extends SerializableValue {
 	};
 
 	private SVFont(String name) {
-		super(name);
 		this.name = name;
 	}
 
@@ -49,6 +48,12 @@ public class SVFont extends SerializableValue {
 
 	public String name() {
 		return this.name;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{this.name};
 	}
 
 	@NotNull

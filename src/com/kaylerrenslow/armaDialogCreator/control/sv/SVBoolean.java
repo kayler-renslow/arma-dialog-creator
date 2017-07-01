@@ -24,12 +24,17 @@ public final class SVBoolean extends SerializableValue {
 	public static final SVBoolean FALSE = new SVBoolean(false);
 	
 	private SVBoolean(boolean b) {
-		super(b + "");
 		this.b = b;
 	}
 	
 	public boolean isTrue() {
 		return b;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{b ? "true" : "false"};
 	}
 
 	@NotNull

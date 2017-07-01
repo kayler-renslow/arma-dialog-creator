@@ -14,8 +14,8 @@ public class SVIntegerChecker implements InputFieldDataChecker<SVInteger> {
 	private static final IntegerChecker checker = new IntegerChecker();
 
 	@Override
-	public String validData(@NotNull String data) {
-		return checker.validData(data);
+	public String errorMsgOnData(@NotNull String data) {
+		return checker.errorMsgOnData(data);
 	}
 
 	@Override

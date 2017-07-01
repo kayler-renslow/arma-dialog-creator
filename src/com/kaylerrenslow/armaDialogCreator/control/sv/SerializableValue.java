@@ -169,25 +169,9 @@ public abstract class SerializableValue {
 	//end static
 	//
 
-	protected final String[] valuesAsArray;
-
-	/**
-	 Equivalent of doing:<code>new SerializableValue(new String[]{onlyValue})</code>
-	 */
-	public SerializableValue(@NotNull String onlyValue) {
-		this(new String[]{onlyValue});
-	}
-
-	/** Construct the SerializableValue from the given String values. Each value corresponds to a value in {@link #getAsStringArray()} */
-	public SerializableValue(@NotNull String[] values) {
-		this.valuesAsArray = values;
-	}
-
-	/** Return the value as a String array */
+	/** @return the value as a String array */
 	@NotNull
-	public String[] getAsStringArray() {
-		return valuesAsArray;
-	}
+	public abstract String[] getAsStringArray();
 
 	/**
 	 Returns {@link Arrays#toString(Object[])} with {@link #getAsStringArray()} as the parameter.
@@ -195,7 +179,7 @@ public abstract class SerializableValue {
 	 */
 	@NotNull
 	public String toStringDebug() {
-		return Arrays.toString(valuesAsArray) + ", propertyType:" + getPropertyType();
+		return Arrays.toString(getAsStringArray()) + ", propertyType:" + getPropertyType();
 	}
 
 	/** Return the instance as a deep copy */
@@ -224,7 +208,7 @@ public abstract class SerializableValue {
 				 Some SerializableValue instances may be exported with quotes and we don't want those to be equal to those without quotes, even if the values are the same.
 				 Example: 1 != "1"
 				 */
-				return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+				return Arrays.equals(this.getAsStringArray(), other.getAsStringArray());
 			}
 		}
 		return false;

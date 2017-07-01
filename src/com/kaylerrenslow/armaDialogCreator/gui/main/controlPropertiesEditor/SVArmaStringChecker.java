@@ -15,8 +15,8 @@ public class SVArmaStringChecker implements InputFieldDataChecker<SVString> {
 	private static final ArmaStringChecker checker = new ArmaStringChecker();
 
 	@Override
-	public String validData(@NotNull String data) {
-		return checker.validData(data);
+	public String errorMsgOnData(@NotNull String data) {
+		return checker.errorMsgOnData(data);
 	}
 
 	@Override

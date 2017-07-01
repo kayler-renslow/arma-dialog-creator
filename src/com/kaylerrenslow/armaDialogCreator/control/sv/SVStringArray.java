@@ -18,25 +18,30 @@ public final class SVStringArray extends SerializableValue {
 			return new SVStringArray(values);
 		}
 	};
-	
+	private final String[] strings;
+
 	public SVStringArray(String... strings) {
-		super(strings);
+		this.strings = strings;
 	}
 	
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder("{");
-		for (int i = 0; i < valuesAsArray.length; i++) {
-			ret.append(valuesAsArray[i]).append(i != valuesAsArray.length - 1 ? ", " : "}");
+		for (int i = 0; i < strings.length; i++) {
+			ret.append(strings[i]).append(i != strings.length - 1 ? ", " : "}");
 		}
 		return ret.toString();
 	}
-	
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return strings;
+	}
+
 	@Override
 	public SerializableValue deepCopy() {
-		String[] copy = new String[valuesAsArray.length];
-		System.arraycopy(valuesAsArray, 0, copy, 0, copy.length);
-		return new SVStringArray(copy);
+		return new SVStringArray(strings);
 	}
 
 	@NotNull
@@ -52,7 +57,7 @@ public final class SVStringArray extends SerializableValue {
 		}
 		if(o instanceof SVStringArray){
 			SVStringArray other = (SVStringArray) o;
-			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+			return Arrays.equals(this.strings, other.strings);
 		}
 		return false;
 	}

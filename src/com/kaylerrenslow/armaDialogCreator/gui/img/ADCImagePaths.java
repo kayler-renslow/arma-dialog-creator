@@ -23,6 +23,7 @@ public abstract class ADCImagePaths {
 	public static final String ICON_MINUS = pathPrefix + "icons/minus.png";
 	public static final String ICON_DOWN_ARROW = pathPrefix + "icons/down_arrow.png";
 	public static final String ICON_UP_ARROW = pathPrefix + "icons/up_arrow.png";
+	public static final String ICON_BRACKETS = pathPrefix + "icons/brackets.png";
 
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";
 	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";

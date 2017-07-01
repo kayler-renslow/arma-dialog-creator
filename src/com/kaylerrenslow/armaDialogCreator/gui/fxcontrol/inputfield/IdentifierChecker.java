@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
  @since 07/08/2016. */
 public class IdentifierChecker implements InputFieldDataChecker<String> {
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		boolean match = data.length() > 0 && data.matches("[a-zA-Z_][a-zA-Z_0-9]*");
 		if (match) {
 			return null;

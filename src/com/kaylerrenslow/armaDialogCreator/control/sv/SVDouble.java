@@ -35,11 +35,16 @@ public class SVDouble extends SVNumber {
 	
 	public void setDouble(double d) {
 		this.d = d;
-		valuesAsArray[0] = format(d);
 	}
 	
 	public double getDouble() {
 		return d;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{format(d)};
 	}
 
 	@NotNull
@@ -56,7 +61,7 @@ public class SVDouble extends SVNumber {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return format(d);
 	}
 	
 	@Override

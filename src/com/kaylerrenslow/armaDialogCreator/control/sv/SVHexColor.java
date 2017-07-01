@@ -20,7 +20,9 @@ public class SVHexColor extends SerializableValue implements SVColor {
 		}
 	};
 
-	private double[] colorArray = new double[3];
+	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
+	private double r, g, b, a;
+	private String hex;
 
 	/**
 	 Creates a HexColor object based off a hex string (#fffff for example)
@@ -28,29 +30,35 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	 @throws IllegalArgumentException for when the hex color is formatted wrong
 	 */
 	public SVHexColor(@NotNull String hex) {
-		super(hex);
-		this.valuesAsArray[0] = hex;
-		colorArray = getColorArray(colorArray, Integer.decode(hex));
+		this.hex = hex;
+		double[] colorArray = new double[4];
+		getColorArray(colorArray, Integer.decode(hex));
+		setColor(colorArray);
 	}
 
 	public SVHexColor(@NotNull Color color) {
-		super("");
-		colorArray[0] = color.getRed();
-		colorArray[1] = color.getGreen();
-		colorArray[2] = color.getBlue();
+		r = color.getRed();
+		g = color.getGreen();
+		b = color.getBlue();
 		updateHex();
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{hex};
 	}
 
 	@Override
 	@NotNull
 	public SerializableValue deepCopy() {
-		return new SVHexColor(this.valuesAsArray[0]);
+		return new SVHexColor(hex);
 	}
 
 	/** return the hex color String */
 	@NotNull
 	public String getHexColor() {
-		return this.valuesAsArray[0];
+		return hex;
 	}
 
 	/**
@@ -95,35 +103,46 @@ public class SVHexColor extends SerializableValue implements SVColor {
 		return false;
 	}
 
+	private void boundCheck(double c) {
+		if (c < 0.0 || c > 1.0) {
+			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=1): " + c);
+		}
+	}
+
 	@Override
 	public double getRed() {
-		return colorArray[0];
+		return r;
 	}
 
 	@Override
 	public void setRed(double r) {
-		colorArray[0] = r;
+		boundCheck(r);
+		this.r = r;
 		updateHex();
 	}
 
 	@Override
 	public double getGreen() {
-		return colorArray[1];
+		return g;
 	}
 
 	@Override
 	public void setGreen(double g) {
-		colorArray[1] = g;
+		boundCheck(g);
+		this.g = g;
+		updateHex();
 	}
 
 	@Override
 	public double getBlue() {
-		return colorArray[2];
+		return b;
 	}
 
 	@Override
 	public void setBlue(double b) {
-		colorArray[2] = b;
+		boundCheck(b);
+		this.b = b;
+		updateHex();
 	}
 
 	/** @return always 1 */
@@ -132,17 +151,19 @@ public class SVHexColor extends SerializableValue implements SVColor {
 		return 1;
 	}
 
-	/** Does nothing */
+	/** does nothing */
 	@Override
 	public void setAlpha(double a) {
-
 	}
 
 	@Override
 	public void setColor(double[] c) {
-		colorArray[0] = c[0];
-		colorArray[1] = c[1];
-		colorArray[2] = c[2];
+		if (c.length != 4) {
+			throw new IllegalArgumentException("array length must be 4");
+		}
+		this.r = c[0];
+		this.g = c[1];
+		this.b = c[2];
 		updateHex();
 	}
 
@@ -152,7 +173,7 @@ public class SVHexColor extends SerializableValue implements SVColor {
 		int g = (int) (getGreen() * f);
 		int b = (int) (getBlue() * f);
 		int argb = (r << 16) | (g << 8) | b;
-		valuesAsArray[0] = "#" + Integer.toHexString(argb);
+		hex = "#" + Integer.toHexString(argb);
 	}
 
 	@Override

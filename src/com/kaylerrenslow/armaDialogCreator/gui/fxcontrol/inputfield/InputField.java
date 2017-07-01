@@ -47,13 +47,14 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	private boolean buttonState = true;
 	private String errMsg;
 	private boolean isError;
+	private boolean autoSubmit = false;
 
 	/**
 	 Creates a new InputField (TextField with additional features). The InputField has two states: "Input State" and "Button State".
 	 <br><b>"Input State":</b>
 	 <ul>
 	 <li>A normal {@link TextField} is used as the underlying text input. Whatever {@link InputFieldDataChecker#getTypeName()} returns is what will be passed in {@link TextField#setPromptText(String)}</li>
-	 <li>User can enter any text. When enter key is pressed, the text is checked to see if valid (via {@link InputFieldDataChecker#validData(String)}). If not valid, the text field will turn red
+	 <li>User can enter any text. When enter key is pressed, the text is checked to see if valid (via {@link InputFieldDataChecker#errorMsgOnData(String)}). If not valid, the text field will turn red
 	 and an error popup will appear with the error message and the {@link ValueObserver} will not be notified of a value update.</li>
 	 <li>If the inner TextField instance loses focus, the TextField has no data (no text), and {@link InputFieldDataChecker#allowEmptyData()} is false, and {@link InputFieldDataChecker#getDefaultValue()}==null, the text field will enter Button State.<br>
 	 The scenario where {@link InputFieldDataChecker#getDefaultValue()}!=null, TextField has no data, and the TextField loses focus, the InputField will not enter the Button State and the
@@ -74,10 +75,14 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	 <li>no data entered and text field loses focus and data is not allowed to be empty</li>
 	 </ul>
 
-	 @param fieldDataChecker the {@link InputFieldDataChecker} instance to use
+	 @param dataChecker the {@link InputFieldDataChecker} instance to use
 	 */
-	public InputField(@NotNull C fieldDataChecker) {
-		this.dataChecker = fieldDataChecker;
+	public InputField(@NotNull C dataChecker) {
+		this.dataChecker = dataChecker;
+
+		setAlignment(Pos.CENTER_LEFT);
+		hboxTextField.setAlignment(Pos.CENTER_LEFT);
+
 		HBox.setHgrow(textField, Priority.ALWAYS);
 		btnSubmit.setPrefWidth(10d);
 		btnSubmit.setOnAction(new EventHandler<ActionEvent>() {
@@ -94,6 +99,18 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		EventHandler<KeyEvent> keyEvent = new EventHandler<javafx.scene.input.KeyEvent>() {
 			@Override
 			public void handle(javafx.scene.input.KeyEvent event) {
+				if (autoSubmit) {
+					String t = textField.getText();
+					if (dataChecker.errorMsgOnData(t) == null) {
+						V v = dataChecker.parse(t);
+						if (v != null && v.equals(observer.getValue())) {
+							error(false);
+							return;
+						}
+					}
+					submitValue();
+					return;
+				}
 				if (event.getCode() == KeyCode.ENTER) {
 					//do not update value observer since value may be invalid
 					submitValue();
@@ -110,8 +127,8 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 				}
 			}
 		});
-		setPromptText(fieldDataChecker.getTypeName());
-		setTooltip(new Tooltip(fieldDataChecker.getTypeName()));
+		setPromptText(dataChecker.getTypeName());
+		setTooltip(new Tooltip(dataChecker.getTypeName()));
 		this.setOnKeyReleased(keyEvent);
 		this.setOnKeyTyped(keyEvent);
 
@@ -126,9 +143,9 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		textField.focusedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean focused) {
-				if (!focused && (getText().length() == 0 && !dataChecker.allowEmptyData())) {
-					if (dataChecker.getDefaultValue() != null) {
-						getValueObserver().updateValue(dataChecker.getDefaultValue());
+				if (!focused && (getText().length() == 0 && !InputField.this.dataChecker.allowEmptyData())) {
+					if (InputField.this.dataChecker.getDefaultValue() != null) {
+						getValueObserver().updateValue(InputField.this.dataChecker.getDefaultValue());
 					} else {
 						clear();
 					}
@@ -146,7 +163,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 			public void handle(ActionEvent event) {
 				setText("");
 				setToButton(false);
-				if (dataChecker.allowEmptyData()) { //show that the field can be submitted as is
+				if (InputField.this.dataChecker.allowEmptyData()) { //show that the field can be submitted as is
 					valueSubmitted(false);
 				}
 			}
@@ -180,9 +197,21 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		setValue(defaultValue);
 	}
 
+	public InputField(@NotNull C fieldDataChecker, @Nullable V defaultValue, boolean autoSubmit) {
+		this(fieldDataChecker);
+		this.autoSubmit = autoSubmit;
+		setValue(defaultValue);
+		if (autoSubmit) {
+			hboxTextField.getChildren().remove(btnSubmit);
+		}
+	}
+
 	/**
-	 Get the text parsed and converted into type V. This will only return whatever the generic type E outputs from {@link InputFieldDataChecker#parse(String)}.
-	 If no text was inputted and the InputFieldDataChecker doesn't allow empty data, will return null. Also, if the InputField is in Button State, will return null.
+	 Get the text parsed and converted into type V.
+	 This will only return whatever the generic type E outputs from {@link InputFieldDataChecker#parse(String)}.
+	 If no text was inputted and the InputFieldDataChecker doesn't allow empty data, will return null.
+	 Also, if the InputField is in Button State, will return null.
+	 @return the parsed text
 	 */
 	@Nullable
 	public V getValue() {
@@ -221,7 +250,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 
 	/**
 	 Set the value from text. If text==null, the InputField will be set to the Button State and the InputField's {@link ValueObserver#getValue()} will be null.<br>
-	 If text != null, the text will be checked to see if valid (via {@link InputFieldDataChecker#validData(String)}.<br>
+	 If text != null, the text will be checked to see if valid (via {@link InputFieldDataChecker#errorMsgOnData(String)}.<br>
 	 If the text is valid, the value will be set to whatever {@link InputFieldDataChecker#parse(String)} returns with text passed as the parameter.<br>
 	 If the text is not valid, the inner {@link TextField} instance will turn red and a popup will appear with the error message and the {@link ValueObserver} will update value to null
 	 */
@@ -280,7 +309,8 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		textField.selectAll();
 	}
 
-	/** Get the value observer */
+	/** @return the value observer */
+	@NotNull
 	public ValueObserver<V> getValueObserver() {
 		return observer;
 	}
@@ -329,7 +359,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 	}
 
 	private boolean checkIfValid(@NotNull String text) {
-		errMsg = dataChecker.validData(text);
+		errMsg = dataChecker.errorMsgOnData(text);
 		valid = (errMsg == null);
 		return valid;
 	}

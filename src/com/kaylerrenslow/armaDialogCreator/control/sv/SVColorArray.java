@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
@@ -7,7 +8,6 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
-import java.util.Arrays;
 
 /**
  Defines a color as an array.
@@ -15,7 +15,20 @@ import java.util.Arrays;
  @author Kayler
  @since 05/22/2016. */
 public class SVColorArray extends SerializableValue implements SVColor {
-	private static final DecimalFormat format = new DecimalFormat("#.####");
+
+	private static final double EPSILON = 0.0001;
+
+	/** @return the rounded result that has decimal places count equal to what {@link #format} would output */
+	public static double round(double d) {
+		return Math.round(d * 10000) / 10000.0;
+	}
+
+	/** @return if the doubles are equal to one another */
+	public static boolean equalTo(double d1, double d2) {
+		return d1 == d2 || Math.abs(d1 - d2) < EPSILON;
+	}
+
+	public static final DecimalFormat format = new DecimalFormat("#.####");
 
 	public static final ValueConverter<SVColorArray> CONVERTER = new ValueConverter<SVColorArray>() {
 		@Override
@@ -24,12 +37,8 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		}
 	};
 
-	/** cache the javaFX color */
-	private Color javafxColor;
-	private boolean updateJavafxColor = false;
-
-	/** Color array where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
-	protected double[] color = new double[4];
+	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
+	private double r, g, b, a;
 
 
 	/**
@@ -42,7 +51,6 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
 	 */
 	public SVColorArray(double r, double g, double b, double a) {
-		super(new String[]{format.format(r), format.format(g), format.format(b), format.format(a)});
 		setRed(r);
 		setGreen(g);
 		setBlue(b);
@@ -76,8 +84,6 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	/** Set the color from a JavaFX Color instance */
 	public SVColorArray(@NotNull Color newValue) {
 		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
-		this.javafxColor = newValue;
-		updateJavafxColor = false;
 	}
 
 	/**
@@ -99,50 +105,46 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	@Override
 	public double getRed() {
-		return color[0];
+		return r;
 	}
 
 	@Override
 	public void setRed(double r) {
 		boundCheck(r);
-		color[0] = r;
-		updateJavafxColor = true;
+		this.r = r;
 	}
 
 	@Override
 	public double getGreen() {
-		return color[1];
+		return g;
 	}
 
 	@Override
 	public void setGreen(double g) {
 		boundCheck(g);
-		color[1] = g;
-		updateJavafxColor = g != color[1];
+		this.g = g;
 	}
 
 	@Override
 	public double getBlue() {
-		return color[2];
+		return b;
 	}
 
 	@Override
 	public void setBlue(double b) {
 		boundCheck(b);
-		updateJavafxColor = b != color[2];
-		color[2] = b;
+		this.b = b;
 	}
 
 	@Override
 	public double getAlpha() {
-		return color[3];
+		return a;
 	}
 
 	@Override
 	public void setAlpha(double a) {
 		boundCheck(a);
-		color[3] = a;
-		updateJavafxColor = a != color[3];
+		this.a = a;
 	}
 
 	@Override
@@ -160,19 +162,18 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	@Override
 	@NotNull
 	public String[] getAsStringArray() {
-		valuesAsArray[0] = format.format(color[0]);
-		valuesAsArray[1] = format.format(color[1]);
-		valuesAsArray[2] = format.format(color[2]);
-		valuesAsArray[3] = format.format(color[3]);
+		String[] valuesAsArray = new String[4];
+		valuesAsArray[0] = format.format(r);
+		valuesAsArray[1] = format.format(g);
+		valuesAsArray[2] = format.format(b);
+		valuesAsArray[3] = format.format(a);
 		return valuesAsArray;
 	}
 
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		double[] copy = new double[color.length];
-		System.arraycopy(color, 0, copy, 0, copy.length);
-		return new SVColorArray(copy);
+		return new SVColorArray(this.r, this.g, this.b, this.a);
 	}
 
 	@NotNull
@@ -187,17 +188,16 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 */
 	@NotNull
 	public String toString() {
-		return "{" + format.format(color[0]) + "," + format.format(color[1]) + "," + format.format(color[2]) + "," + format.format(color[3]) + "}";
+		return "{" + format.format(r) + ","
+				+ format.format(g) + ","
+				+ format.format(b) + ","
+				+ format.format(a) + "}";
 	}
 
 	/** Convert this color into a JavaFX color */
 	@NotNull
 	public Color toJavaFXColor() {
-		if (updateJavafxColor || javafxColor == null) {
-			updateJavafxColor = false;
-			javafxColor = Color.color(getRed(), getGreen(), getBlue(), getAlpha());
-		}
-		return javafxColor;
+		return Color.color(getRed(), getGreen(), getBlue(), getAlpha());
 	}
 
 	@Override
@@ -207,7 +207,10 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		}
 		if (o instanceof SVColorArray) {
 			SVColorArray other = (SVColorArray) o;
-			return Arrays.equals(this.color, other.color);
+			return ArmaPrecision.isEqualTo(this.r, other.r)
+					&& ArmaPrecision.isEqualTo(this.g, other.g)
+					&& ArmaPrecision.isEqualTo(this.b, other.b)
+					&& ArmaPrecision.isEqualTo(this.a, other.a);
 		}
 		return false;
 	}

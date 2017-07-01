@@ -15,7 +15,7 @@ public class MacroIdentifierChecker implements InputFieldDataChecker<String> {
 	private static final Pattern p = Pattern.compile("[$a-zA-Z_0-9]+");
 
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		boolean match = data.length() > 0 && p.matcher(data).matches();
 		if (match) {
 			return null;

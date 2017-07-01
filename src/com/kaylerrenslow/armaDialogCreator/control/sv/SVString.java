@@ -15,10 +15,11 @@ public final class SVString extends SerializableValue {
 			return new SVString(values[0]);
 		}
 	};
+	private String s;
 
 	/** If s==null, "" (empty string) will be used */
 	public SVString(@Nullable String s) {
-		super(s == null ? "" : s);
+		this.s = s == null ? "" : s;
 	}
 
 	/** Involves {@link #SVString(String)} with "" (empty String) */
@@ -26,17 +27,24 @@ public final class SVString extends SerializableValue {
 		this("");
 	}
 
+	@NotNull
 	public String getString() {
-		return valuesAsArray[0];
+		return s;
 	}
 
-	public void setString(String s) {
-		this.valuesAsArray[0] = s;
+	public void setString(@Nullable String s) {
+		this.s = s == null ? "" : s;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{s};
 	}
 
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVString(valuesAsArray[0]);
+		return new SVString(s);
 	}
 
 	@NotNull
@@ -47,7 +55,7 @@ public final class SVString extends SerializableValue {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return s;
 	}
 
 	@Override
@@ -57,7 +65,7 @@ public final class SVString extends SerializableValue {
 		}
 		if (o instanceof SVString) {
 			SVString other = (SVString) o;
-			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
+			return this.s.equals(other.s);
 		}
 		return false;
 	}

@@ -27,10 +27,8 @@ public class SVImage extends SerializableValue implements FilePathUser {
 	private File nonPaaImageFile;
 
 	public SVImage(@NotNull File imageFile, @Nullable File nonPaaImageFile) {
-		super(imageFile.getPath());
 		this.nonPaaImageFile = nonPaaImageFile;
 		this.imageFile = imageFile;
-		valuesAsArray[0] = imageFile.getPath();
 	}
 
 	/** @return the file that is displayed to the user (may be a .paa image file) */
@@ -47,7 +45,13 @@ public class SVImage extends SerializableValue implements FilePathUser {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return imageFile.getPath();
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{toString()};
 	}
 
 	@NotNull

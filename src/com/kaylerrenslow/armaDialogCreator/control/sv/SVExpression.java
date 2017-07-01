@@ -44,30 +44,29 @@ public class SVExpression extends SerializableValue {
 	};
 
 	private final Env env;
+	private String exp;
 
 	public SVExpression(@NotNull String exp, @NotNull Env env) throws ExpressionEvaluationException {
-		super(exp);
 		this.env = env;
 		setExpression(exp);
 	}
 
 	public void setExpression(@NotNull String exp) throws ExpressionEvaluationException {
-		valuesAsArray[0] = exp;
-
+		this.exp = exp;
 		//check if valid
 		getValue();
 	}
 
 	@NotNull
 	public String getExpression() {
-		return valuesAsArray[0];
+		return exp;
 	}
 
 	@NotNull
 	public Value getValue() {
 		Value v = null; //do not cache because the environment may change;
 		try {
-			v = SHARED_INTERPRETER.evaluate(valuesAsArray[0], env).get(4, TimeUnit.SECONDS);
+			v = SHARED_INTERPRETER.evaluate(exp, env).get(4, TimeUnit.SECONDS);
 		} catch (InterruptedException ignore) {
 
 		}
@@ -75,7 +74,7 @@ public class SVExpression extends SerializableValue {
 			return v;
 		}
 		throw new ExpressionEvaluationException(null,
-				String.format(bundle.getString("unexpected_value_expected_f"), valuesAsArray[0], bundle.getString("number"))
+				String.format(bundle.getString("unexpected_value_expected_f"), exp, bundle.getString("number"))
 		);
 	}
 
@@ -93,7 +92,7 @@ public class SVExpression extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVExpression(valuesAsArray[0], env);
+		return new SVExpression(exp, env);
 	}
 
 	@NotNull
@@ -104,7 +103,7 @@ public class SVExpression extends SerializableValue {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return exp;
 	}
 
 	@Override
@@ -114,8 +113,14 @@ public class SVExpression extends SerializableValue {
 		}
 		if (o instanceof SVExpression) {
 			SVExpression other = (SVExpression) o;
-			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
+			return this.exp.equals(other.exp);
 		}
 		return false;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{exp};
 	}
 }

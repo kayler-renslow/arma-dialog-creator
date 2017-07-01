@@ -1,11 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 /**
  Specifies a sound
@@ -31,7 +30,6 @@ public class SVSound extends SerializableValue {
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 3)
 	 */
 	public SVSound(String[] values) throws NumberFormatException, IndexOutOfBoundsException {
-		super(values);
 		init(values[0], Double.valueOf(values[1]), Double.valueOf(values[2]));
 	}
 
@@ -44,7 +42,6 @@ public class SVSound extends SerializableValue {
 	 @throws IllegalArgumentException when pitch is less than 0 or greater than 1
 	 */
 	public SVSound(String soundName, double db, double pitch) {
-		super(new String[]{soundName, db + "", pitch + ""});
 		init(soundName, db, pitch);
 	}
 
@@ -94,10 +91,7 @@ public class SVSound extends SerializableValue {
 	/** Get the colors as a string array formatted like so: {soundName, db, pitch} */
 	@NotNull
 	public String[] getAsStringArray() {
-		valuesAsArray[0] = soundName;
-		valuesAsArray[1] = db + "";
-		valuesAsArray[2] = pitch + "";
-		return valuesAsArray;
+		return new String[]{soundName, db + "", pitch + ""};
 	}
 
 	@NotNull
@@ -124,7 +118,9 @@ public class SVSound extends SerializableValue {
 		}
 		if (o instanceof SVSound) {
 			SVSound other = (SVSound) o;
-			return Arrays.equals(this.valuesAsArray, other.valuesAsArray);
+			return ArmaPrecision.isEqualTo(this.db, other.db)
+					&& ArmaPrecision.isEqualTo(this.pitch, other.pitch)
+					&& this.soundName.equals(other.soundName);
 		}
 		return false;
 	}

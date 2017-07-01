@@ -224,13 +224,17 @@ public class ControlClass {
 	}
 
 	/**
-	 Check if the given class is part of this {@link ControlClass}'s inheritance tree
+	 Check if the given class is part of this {@link ControlClass}'s inheritance tree.
+	 If <code>other=={@link #getExtendClass()}</code>, then will return false.
 
 	 @param other other class
 	 @return true if there would be a loop if this extended other, false if there wouldn't be a loop
 	 @see #extendControlClass(ControlClass)
 	 */
 	public boolean hasInheritanceLoop(@NotNull ControlClass other) {
+		if (other == getExtendClass()) {
+			return false;
+		}
 		if (this.getClassName().equals(other.getClassName())) {
 			return true;
 		}

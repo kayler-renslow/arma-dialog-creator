@@ -303,6 +303,20 @@ public class ControlClassInheritanceTests {
 		assertEquals("expected an inheritance loop exception", true, false);
 	}
 
+	@Test
+	public void extendControlClass_hasInheritanceLoop() throws Exception {
+		TestControlClass rscText = newTestControlClass();
+		rscText.setClassName("RscText");
+		TestControlClass hint = newTestControlClass();
+		hint.setClassName("Hint");
+		TestControlClass hintRep = newTestControlClass();
+		hintRep.setClassName("HintRep");
+
+		hint.extendControlClass(rscText);
+		hintRep.extendControlClass(hint);
+		assertEquals(false, hint.hasInheritanceLoop(rscText));
+	}
+
 	private static TestControlClass newTestControlClass() {
 		return new TestControlClass(new TestSpecRegistry());
 	}

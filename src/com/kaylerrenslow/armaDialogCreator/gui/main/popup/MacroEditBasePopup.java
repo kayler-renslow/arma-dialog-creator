@@ -199,8 +199,8 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 
 	private class MacroChecker extends MacroIdentifierChecker {
 		@Override
-		public String validData(@NotNull String data) {
-			String sup = super.validData(data);
+		public String errorMsgOnData(@NotNull String data) {
+			String sup = super.errorMsgOnData(data);
 			if (sup != null) {
 				return sup;
 			}

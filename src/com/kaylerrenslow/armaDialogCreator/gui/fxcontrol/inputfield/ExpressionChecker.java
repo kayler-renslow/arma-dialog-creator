@@ -25,7 +25,7 @@ public class ExpressionChecker implements InputFieldDataChecker<SVExpression> {
 	}
 
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		try {
 			parse(data);
 			return null;

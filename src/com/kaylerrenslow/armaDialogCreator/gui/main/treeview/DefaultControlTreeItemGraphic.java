@@ -17,6 +17,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
+import java.text.DecimalFormat;
+
 /**
  Graphic for tree items that represent a control
 
@@ -89,9 +91,11 @@ public class DefaultControlTreeItemGraphic extends HBox {
 		int r = (int) (color.getRed() * f);
 		int g = (int) (color.getGreen() * f);
 		int b = (int) (color.getBlue() * f);
-		int a = (int) (color.getOpacity() * f);
+		String opacity = DecimalFormat.getNumberInstance().format(color.getOpacity());
 
-		Tooltip.install(box, new Tooltip(String.format("red:%d, green:%d, blue:%d, alpha:%d", r, g, b, a)));
+		Tooltip.install(box, new Tooltip(String.format(
+				"red:%d, green:%d, blue:%d, opacity:%s", r, g, b, opacity))
+		);
 	}
 
 	public void updateVisibilityRadioButton(boolean visible) {

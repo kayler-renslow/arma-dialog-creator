@@ -23,22 +23,23 @@ public final class SVRaw extends SerializableValue {
 			throw new IllegalStateException();
 		}
 	};
+	private final String s;
 	private final PropertyType substituteType;
 
 	/** If s==null, "" (empty string) will be used */
 	public SVRaw(@Nullable String s, @Nullable PropertyType substituteType) {
-		super(s == null ? "" : s);
+		this.s = s;
 		this.substituteType = substituteType;
 	}
 
 	@NotNull
 	public String getString() {
-		return valuesAsArray[0];
+		return s;
 	}
 
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVRaw(valuesAsArray[0], substituteType);
+		return new SVRaw(s, substituteType);
 	}
 
 	/**
@@ -57,7 +58,7 @@ public final class SVRaw extends SerializableValue {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return s;
 	}
 
 	@Override
@@ -67,9 +68,15 @@ public final class SVRaw extends SerializableValue {
 		}
 		if (o instanceof SVRaw) {
 			SVRaw other = (SVRaw) o;
-			return this.valuesAsArray[0].equals(other.valuesAsArray[0]);
+			return this.s.equals(other.s);
 		}
 		return false;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{s};
 	}
 
 	/**
@@ -83,7 +90,7 @@ public final class SVRaw extends SerializableValue {
 		if (substituteType == null) {
 			return null;
 		}
-		return substituteType.getConverter().convert(context, valuesAsArray);
+		return substituteType.getConverter().convert(context, getAsStringArray());
 	}
 
 }

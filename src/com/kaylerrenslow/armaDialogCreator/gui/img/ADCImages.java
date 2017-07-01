@@ -18,5 +18,6 @@ public class ADCImages {
 	public static final Image ICON_MINUS = new Image(ADCImagePaths.ICON_MINUS);
 	public static final Image ICON_DOWN_ARROW = new Image(ADCImagePaths.ICON_DOWN_ARROW);
 	public static final Image ICON_UP_ARROW = new Image(ADCImagePaths.ICON_UP_ARROW);
+	public static final Image ICON_BRACKETS = new Image(ADCImagePaths.ICON_BRACKETS);
 
 }

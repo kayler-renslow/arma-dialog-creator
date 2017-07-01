@@ -45,17 +45,7 @@ public class SVControlStyleGroup extends SerializableValue {
 		}
 	};
 
-	public SVControlStyleGroup(@NotNull String[] values) {
-		super(values);
-		try {
-			this.values = CONVERTER.convert(null, values).values;
-		} catch (Exception e) {
-			throw new RuntimeException("conversion failed when it shouldn't have");
-		}
-	}
-
 	public SVControlStyleGroup(@NotNull ControlStyle[] values) {
-		super(toString(values));
 		this.values = values;
 	}
 
@@ -66,7 +56,12 @@ public class SVControlStyleGroup extends SerializableValue {
 
 	public void setValues(@NotNull ControlStyle[] values) {
 		this.values = values;
-		valuesAsArray[0] = toString(values);
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{toString()};
 	}
 
 	@NotNull

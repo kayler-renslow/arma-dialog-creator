@@ -10,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface InputFieldDataChecker<V> {
 	/** Return null if the text inputted can correctly be parsed into the generic type E. Return a String containing the message as to why the data inputted is incorrect */
-	String validData(@NotNull String data);
+	String errorMsgOnData(@NotNull String data);
 	
 	/** Parses the given data and returns an instance of type E */
 	@Nullable V parse(@NotNull String data);

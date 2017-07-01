@@ -157,8 +157,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				new Label(bundle.getString("CanvasControls.background_controls")),
 				new Separator(Orientation.VERTICAL),
 				cbShowBackgroundControls,
-				btnBgControlMoveDown,
-				btnBgControlMoveUp
+				btnBgControlMoveUp,
+				btnBgControlMoveDown
 		);
 		bgControlsHbox.setAlignment(Pos.CENTER_LEFT);
 		VBox vbBgControls = new VBox(vertSpacing, bgControlsHbox, treeViewBg);
@@ -193,8 +193,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				new Label(bundle.getString("CanvasControls.controls")),
 				new Separator(Orientation.VERTICAL),
 				cbShowControls,
-				btnControlMoveDown,
-				btnControlMoveUp
+				btnControlMoveUp,
+				btnControlMoveDown
 		);
 		controlsHbox.setAlignment(Pos.CENTER_LEFT);
 		VBox vbControls = new VBox(vertSpacing, controlsHbox, treeViewMain);

@@ -14,8 +14,8 @@ public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
 	private static final DoubleChecker checker = new DoubleChecker();
 
 	@Override
-	public String validData(@NotNull String data) {
-		return checker.validData(data);
+	public String errorMsgOnData(@NotNull String data) {
+		return checker.errorMsgOnData(data);
 	}
 
 	@Override

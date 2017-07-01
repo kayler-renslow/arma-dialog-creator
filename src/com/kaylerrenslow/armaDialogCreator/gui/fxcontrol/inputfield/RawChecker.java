@@ -19,7 +19,7 @@ public class RawChecker implements InputFieldDataChecker<SVRaw> {
 	}
 
 	@Override
-	public String validData(@NotNull String data) {
+	public String errorMsgOnData(@NotNull String data) {
 		return null;
 	}
 

@@ -11,9 +11,6 @@ public interface ControlPropertyEditor {
 	@NotNull
 	ControlProperty getControlProperty();
 
-	/** @return true if all data entered is valid, false if the data is not valid */
-	boolean hasValidData();
-
 	/** Set whether or not the property can be edited by the user. */
 	void disableEditing(boolean disable);
 

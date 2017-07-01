@@ -11,7 +11,6 @@ public abstract class SVNumber extends SerializableValue {
 	}
 		
 	public SVNumber(String value){
-		super(value);
 		setValue(value);
 	}
 	

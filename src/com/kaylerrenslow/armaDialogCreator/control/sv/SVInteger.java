@@ -7,14 +7,14 @@ import org.jetbrains.annotations.NotNull;
 
 /** A generic wrapper implementation for an int. */
 public class SVInteger extends SVNumber {
-	
+
 	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
 		@Override
 		public SVInteger convert(DataContext context, @NotNull String... values) throws Exception {
 			return new SVInteger(Integer.parseInt(values[0]));
 		}
 	};
-	
+
 	private int i;
 
 	public SVInteger(int i) {
@@ -24,11 +24,16 @@ public class SVInteger extends SVNumber {
 
 	public void setInt(int i) {
 		this.i = i;
-		valuesAsArray[0] = this.i + "";
 	}
 
 	public int getInt() {
 		return i;
+	}
+
+	@NotNull
+	@Override
+	public String[] getAsStringArray() {
+		return new String[]{i + ""};
 	}
 
 	@NotNull
@@ -45,26 +50,26 @@ public class SVInteger extends SVNumber {
 
 	@Override
 	public String toString() {
-		return valuesAsArray[0];
+		return i + "";
 	}
-	
+
 	@Override
 	protected void setValue(String value) {
 		setInt(Integer.parseInt(value));
 	}
-	
+
 	@Override
 	public double getNumber() {
 		return i;
 	}
-	
-	
+
+
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
-		if(o instanceof SVInteger){
+		if (o instanceof SVInteger) {
 			SVInteger other = (SVInteger) o;
 			return this.i == other.i;
 		}

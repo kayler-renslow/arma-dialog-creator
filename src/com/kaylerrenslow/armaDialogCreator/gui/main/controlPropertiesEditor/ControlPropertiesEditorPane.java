@@ -97,7 +97,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	public List<ControlProperty> getMissingProperties() {
 		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			if (!descriptor.getValueEditor().hasValidData() && !descriptor.isOptional()) {
+			if (descriptor.getControlProperty().getValue() == null && !descriptor.isOptional()) {
 				properties.add(descriptor.getControlProperty());
 			}
 		}
@@ -319,11 +319,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 		/** Does same thing as {@link #getValueEditor()}.getControlProperty() */
 		public ControlProperty getControlProperty() {
 			return getValueEditor().getControlProperty();
-		}
-
-		/** Does same thing as {@link #getValueEditor()}.hasValidData() */
-		public boolean hasValidData() {
-			return getValueEditor().hasValidData();
 		}
 
 		public void unlink() {
