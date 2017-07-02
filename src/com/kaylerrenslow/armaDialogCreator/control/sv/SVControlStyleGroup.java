@@ -11,11 +11,11 @@ import java.util.Arrays;
 
 /**
  A {@link SVControlStyleGroup} has a 1 length {@link #getAsStringArray()}.
+
  @author Kayler
- @since 08/05/2016
- */
+ @since 08/05/2016 */
 public class SVControlStyleGroup extends SerializableValue {
-	private ControlStyle[] values;
+	private final ControlStyle[] styles;
 
 	public static final String DEFAULT_DELIMITER = "+";
 
@@ -45,17 +45,13 @@ public class SVControlStyleGroup extends SerializableValue {
 		}
 	};
 
-	public SVControlStyleGroup(@NotNull ControlStyle[] values) {
-		this.values = values;
+	public SVControlStyleGroup(@NotNull ControlStyle[] styles) {
+		this.styles = styles;
 	}
 
 	@NotNull
 	public ControlStyle[] getStyleArray() {
-		return values;
-	}
-
-	public void setValues(@NotNull ControlStyle[] values) {
-		this.values = values;
+		return styles;
 	}
 
 	@NotNull
@@ -67,8 +63,8 @@ public class SVControlStyleGroup extends SerializableValue {
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		ControlStyle[] copy = new ControlStyle[values.length];
-		System.arraycopy(values, 0, copy, 0, copy.length);
+		ControlStyle[] copy = new ControlStyle[styles.length];
+		System.arraycopy(styles, 0, copy, 0, copy.length);
 		return new SVControlStyleGroup(copy);
 	}
 
@@ -88,7 +84,7 @@ public class SVControlStyleGroup extends SerializableValue {
 
 	@Override
 	public String toString() {
-		return toString(values);
+		return toString(styles);
 	}
 
 	@Override
@@ -98,7 +94,20 @@ public class SVControlStyleGroup extends SerializableValue {
 		}
 		if (o instanceof SVControlStyleGroup) {
 			SVControlStyleGroup other = (SVControlStyleGroup) o;
-			return Arrays.equals(this.values, other.values);
+			return Arrays.equals(this.styles, other.styles);
+		}
+		return false;
+	}
+
+	/**
+	 @param s style to search for
+	 @return true if this group has the provided {@link ControlStyle}, false if doesn't have it
+	 */
+	public boolean hasStyle(@NotNull ControlStyle s) {
+		for (ControlStyle style : styles) {
+			if (style == s) {
+				return true;
+			}
 		}
 		return false;
 	}

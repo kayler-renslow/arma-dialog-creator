@@ -27,11 +27,7 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 		}
 		gc.save();
 		gc.beginPath();
-		gc.moveTo(getX1(), getY1());
-		gc.lineTo(getX2(), getY1()); //top left to top right
-		gc.lineTo(getX2(), getY2()); //top right to bottom right
-		gc.lineTo(getX1(), getY2()); //bottom right to bottom left
-		gc.lineTo(getX1(), getY1()); //bottom left to top left
+		gc.rect(getLeftX(), getTopY(), getWidth(), getHeight());
 		gc.closePath();
 		gc.clip();
 		ArmaControlGroup controlGroup = (ArmaControlGroup) getMyControl();

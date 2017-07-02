@@ -53,6 +53,7 @@ public class BasicTextRenderer {
 	}
 
 	private TextShadow textShadow = TextShadow.None;
+	private TextShadow textShadowFromProperty = TextShadow.None;
 	/** if true, {@link #textShadow} will always be set to {@link TextShadow#DropShadow} */
 	private boolean forceTextShadow = false;
 
@@ -117,19 +118,18 @@ public class BasicTextRenderer {
 		});
 		control.findProperty(shadow).getValueObserver().addListener((observer, oldValue, newValue) -> {
 			if (newValue != null) {
-				if (forceTextShadow) {
-					return;
-				}
 				String v = newValue.toString();
 				if (v.contains("0")) {
-					textShadow = TextShadow.None;
+					textShadowFromProperty = TextShadow.None;
 				} else if (v.contains("1")) {
-					textShadow = TextShadow.DropShadow;
+					textShadowFromProperty = TextShadow.DropShadow;
 				} else if (v.contains("2")) {
-					textShadow = TextShadow.Stroke;
+					textShadowFromProperty = TextShadow.Stroke;
 				}
-				renderer.requestRender();
+			} else {
+				textShadowFromProperty = TextShadow.None;
 			}
+			renderer.requestRender();
 		});
 		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
@@ -143,7 +143,6 @@ public class BasicTextRenderer {
 					for (ControlStyle style : group.getStyleArray()) {
 						if (style == ControlStyle.SHADOW) {
 							forceTextShadow = true;
-							textShadow = TextShadow.DropShadow;
 							continue;
 						}
 						if (style == ControlStyle.LEFT) {
@@ -224,6 +223,14 @@ public class BasicTextRenderer {
 
 		gc.setFont(getFont());
 		gc.setFill(textColor);
+
+		TextShadow textShadow;
+
+		if (forceTextShadow) {
+			textShadow = TextShadow.DropShadow;
+		} else {
+			textShadow = textShadowFromProperty;
+		}
 
 		switch (textShadow) {
 			case None: {

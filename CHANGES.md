@@ -1,10 +1,10 @@
 **Added:**
-* ogv placeholder image
-* drop shadow and stroke work for text now
-    * Shadow control style will now force the drop shadow effect
+* line style for static
+* keep aspect ratio for static
 
 **Changed:**
-* commented out some of the seemingly useless Control styles
+* the method for painting an image with a non white background was wrong
+    * the background color was supposed to be multiplied over the image
 
 **Fixed:**
 * 

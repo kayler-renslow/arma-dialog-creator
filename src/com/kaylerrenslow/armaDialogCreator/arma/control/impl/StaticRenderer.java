@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -48,6 +49,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 	private volatile Image imageToPaint = null;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
+	private boolean keepImageAspectRatio = false;
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
@@ -82,6 +84,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 		styleProperty = myControl.findProperty(ControlPropertyLookup.STYLE);
 		styleProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {
+			if (newValue instanceof SVControlStyleGroup) {
+				SVControlStyleGroup group = (SVControlStyleGroup) newValue;
+				keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
+			}
 			renderTypeForStyle = getRenderTypeFromStyle();
 			styleValue = newValue;
 			checkAndSetRenderType();
@@ -148,15 +154,39 @@ public class StaticRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case Frame: {
-					//if the text is empty, draw a border
+					break;
 				}
 				case Image: {
-					//paint the background color
-					super.paint(gc, dataContext);
 					if (imageToPaint == null) {
 						throw new IllegalStateException("imageToPaint is null");
 					}
-					gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+					if (keepImageAspectRatio) {
+						int imgWidth = (int) imageToPaint.getWidth();
+						int imgHeight = (int) imageToPaint.getHeight();
+						double aspectRatio = imgWidth * 1.0 / imgHeight;
+
+						//We want to make sure that the image doesn't surpass the bounds of the control
+						//while also maintaining the aspect ratio. In arma 3, the height of the image will
+						//never surpass the height of the control.
+
+						int drawHeight = getHeight();
+						int drawWidth = (int) Math.round(drawHeight * aspectRatio);
+
+						//after the image as been resized to aspect ratio, center the image
+						int centerX = getX1() + (getWidth() - drawWidth) / 2;
+
+						gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
+
+						//paint the background color over where the image is
+						gc.beginPath();
+						gc.rect(centerX, getY1(), drawWidth, drawHeight);
+						gc.closePath();
+						gc.clip();
+						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+						super.paint(gc, dataContext);
+					} else {
+						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+					}
 					break;
 				}
 				case ErrorImage: {
@@ -206,6 +236,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 			for (ControlStyle style : group.getStyleArray()) {
 				if (style == ControlStyle.PICTURE) {
 					return RenderType.Image;
+				}
+				if (style == ControlStyle.LINE) {
+					return RenderType.Line;
+				}
+				if (style == ControlStyle.FRAME) {
+					return RenderType.Frame;
 				}
 			}
 		}
