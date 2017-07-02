@@ -37,7 +37,7 @@ public enum ControlStyle {
 	WITH_RECT(21, 160, getString("ControlStyle.with_rect"), getString("ControlStyle.Doc.with_rect")),
 	LINE(22, 176, getString("ControlStyle.line"), getString("ControlStyle.Doc.line")),
 
-	SHADOW(23, 0x100, getString("ControlStyle.shadow"), getString("ControlStyle.Doc.shadow")),
+	//SHADOW(23, 0x100, getString("ControlStyle.shadow"), getString("ControlStyle.Doc.shadow")),
 	NO_RECT(24, 0x200, getString("ControlStyle.no_rect"), getString("ControlStyle.Doc.no_rect")),
 	KEEP_ASPECT_RATIO(25, 0x800, getString("ControlStyle.keep_aspect_ratio"), getString("ControlStyle.Doc.keep_aspect_ratio")),
 	//TITLE(26, TITLE_BAR.styleValue + CENTER.styleValue, getString("ControlStyle.title"), getString("ControlStyle.Doc.title")),

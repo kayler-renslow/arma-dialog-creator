@@ -53,9 +53,6 @@ public class BasicTextRenderer {
 	}
 
 	private TextShadow textShadow = TextShadow.None;
-	private TextShadow textShadowFromProperty = TextShadow.None;
-	/** if true, {@link #textShadow} will always be set to {@link TextShadow#DropShadow} */
-	private boolean forceTextShadow = false;
 
 	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text,
 							 ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style,
@@ -120,14 +117,14 @@ public class BasicTextRenderer {
 			if (newValue != null) {
 				String v = newValue.toString();
 				if (v.contains("0")) {
-					textShadowFromProperty = TextShadow.None;
+					textShadow = TextShadow.None;
 				} else if (v.contains("1")) {
-					textShadowFromProperty = TextShadow.DropShadow;
+					textShadow = TextShadow.DropShadow;
 				} else if (v.contains("2")) {
-					textShadowFromProperty = TextShadow.Stroke;
+					textShadow = TextShadow.Stroke;
 				}
 			} else {
-				textShadowFromProperty = TextShadow.None;
+				textShadow = TextShadow.None;
 			}
 			renderer.requestRender();
 		});
@@ -137,14 +134,9 @@ public class BasicTextRenderer {
 				if (newValue instanceof SVControlStyleGroup) {
 					SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
-					forceTextShadow = false;
 					textObj.setTextAlignment(TextAlignment.LEFT);
 
 					for (ControlStyle style : group.getStyleArray()) {
-						if (style == ControlStyle.SHADOW) {
-							forceTextShadow = true;
-							continue;
-						}
 						if (style == ControlStyle.LEFT) {
 							textObj.setTextAlignment(TextAlignment.LEFT);
 							continue;
@@ -223,14 +215,6 @@ public class BasicTextRenderer {
 
 		gc.setFont(getFont());
 		gc.setFill(textColor);
-
-		TextShadow textShadow;
-
-		if (forceTextShadow) {
-			textShadow = TextShadow.DropShadow;
-		} else {
-			textShadow = textShadowFromProperty;
-		}
 
 		switch (textShadow) {
 			case None: {

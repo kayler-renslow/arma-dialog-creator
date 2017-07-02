@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 public interface Region {
 
 	int getRenderPriority();
-	
+
 	void setRenderPriority(int priority);
-		
+
 	int getLeftX();
 
 	int getRightX();
@@ -63,12 +63,15 @@ public interface Region {
 	int getCenterY();
 
 	/** Draw this region as a rectangle without filling it */
-	default void drawRectangle(GraphicsContext gc){
+	default void drawRectangle(GraphicsContext gc) {
 		drawRectangle(gc, getX1(), getY1(), getX2(), getY2());
 	}
 
-	/** Draw this region as a rectangle and fills it */
-	default void fillRectangle(GraphicsContext gc){
+	/**
+	 Draw this region as a rectangle and fills it.
+	 Uses {@link GraphicsContext#getStroke()} as fill color
+	 */
+	default void fillRectangle(GraphicsContext gc) {
 		fillRectangle(gc, getX1(), getY1(), getX2(), getY2());
 	}
 
@@ -107,7 +110,9 @@ public interface Region {
 	/** Return true if the point is inside the region, false otherwise */
 	boolean containsPoint(int x, int y);
 
-	/** Gets the edge(s) that the given point is closest to.
+	/**
+	 Gets the edge(s) that the given point is closest to.
+
 	 @param x x coord relative to this's position
 	 @param y y coord relative to this's position
 	 @param leeway how close the point needs to be to get the edge (strictly positive)

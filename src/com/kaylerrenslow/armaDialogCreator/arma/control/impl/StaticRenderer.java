@@ -11,6 +11,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -177,13 +178,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 						gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
 
-						//paint the background color over where the image is
-						gc.beginPath();
-						gc.rect(centerX, getY1(), drawWidth, drawHeight);
-						gc.closePath();
-						gc.clip();
+						//paint the text color over where the image is
 						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-						super.paint(gc, dataContext);
+						gc.setStroke(getTextColor()); //for some reason, Arma 3 uses text color as the overlay color
+						Region.fillRectangle(gc, centerX, getY1(), centerX + drawWidth, getY1() + drawHeight);
 					} else {
 						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
 					}

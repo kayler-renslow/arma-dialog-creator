@@ -79,7 +79,6 @@ public class StaticControl extends ArmaControl {
 				ControlStyle.HUD_BACKGROUND,
 				ControlStyle.WITH_RECT,
 				ControlStyle.LINE,
-				ControlStyle.SHADOW,
 				ControlStyle.NO_RECT,
 				ControlStyle.KEEP_ASPECT_RATIO
 		};

@@ -1,13 +1,11 @@
 **Added:**
-* line style for static
-* keep aspect ratio for static
+* more control style documentation
 
 **Changed:**
-* the method for painting an image with a non white background was wrong
-    * the background color was supposed to be multiplied over the image
+* 
 
 **Fixed:**
-* 
+* static renderer: was using wrong multiply color for image
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -20,3 +18,4 @@
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
+July 2: added frame style to renderer
