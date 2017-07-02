@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
@@ -38,14 +39,34 @@ public class BasicTextRenderer {
 	private Text textObj = new Text();
 	private ControlProperty sizeExProperty;
 
-	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style,
-							 ControlPropertyLookupConstant sizeEx) {
-		this.control = control;
-		this.renderer = renderer;
-		init(text, colorText, style, sizeEx);
+	private enum TextShadow {
+		/** Has no shadow */
+		None,
+		/**
+		 Text is rendered twice: once at the original position,
+		 but slightly offset with black text and second time is normally
+		 at the original position.
+		 */
+		DropShadow,
+		/** The text has a black stroke to it */
+		Stroke
 	}
 
-	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx) {
+	private TextShadow textShadow = TextShadow.None;
+	/** if true, {@link #textShadow} will always be set to {@link TextShadow#DropShadow} */
+	private boolean forceTextShadow = false;
+
+	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text,
+							 ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style,
+							 ControlPropertyLookupConstant sizeEx, ControlPropertyLookup shadow) {
+		this.control = control;
+		this.renderer = renderer;
+		init(text, colorText, style, sizeEx, shadow);
+	}
+
+	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText,
+					  ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx,
+					  ControlPropertyLookup shadow) {
 		textObj.setTextOrigin(VPos.TOP);
 		textObj.setBoundsType(TextBoundsType.VISUAL);
 
@@ -94,21 +115,48 @@ public class BasicTextRenderer {
 				renderer.requestRender();
 			}
 		});
+		control.findProperty(shadow).getValueObserver().addListener((observer, oldValue, newValue) -> {
+			if (newValue != null) {
+				if (forceTextShadow) {
+					return;
+				}
+				String v = newValue.toString();
+				if (v.contains("0")) {
+					textShadow = TextShadow.None;
+				} else if (v.contains("1")) {
+					textShadow = TextShadow.DropShadow;
+				} else if (v.contains("2")) {
+					textShadow = TextShadow.Stroke;
+				}
+				renderer.requestRender();
+			}
+		});
 		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue instanceof SVControlStyleGroup) {
 					SVControlStyleGroup group = (SVControlStyleGroup) newValue;
+
+					forceTextShadow = false;
+					textObj.setTextAlignment(TextAlignment.LEFT);
+
 					for (ControlStyle style : group.getStyleArray()) {
+						if (style == ControlStyle.SHADOW) {
+							forceTextShadow = true;
+							textShadow = TextShadow.DropShadow;
+							continue;
+						}
 						if (style == ControlStyle.LEFT) {
 							textObj.setTextAlignment(TextAlignment.LEFT);
-							break;
-						} else if (style == ControlStyle.CENTER) {
+							continue;
+						}
+						if (style == ControlStyle.CENTER) {
 							textObj.setTextAlignment(TextAlignment.CENTER);
-							break;
-						} else if (style == ControlStyle.RIGHT) {
+							continue;
+						}
+						if (style == ControlStyle.RIGHT) {
 							textObj.setTextAlignment(TextAlignment.RIGHT);
-							break;
+							continue;
 						}
 					}
 					renderer.requestRender();
@@ -138,8 +186,16 @@ public class BasicTextRenderer {
 		});
 	}
 
+	private int getTextWidth() {
+		return (int) textObj.getLayoutBounds().getWidth();
+	}
+
+	private int getTextHeight() {
+		return (int) (textObj.getLayoutBounds().getHeight());
+	}
+
 	private int getTextX() {
-		int textWidth = (int) textObj.getLayoutBounds().getWidth();
+		int textWidth = getTextWidth();
 		switch (textObj.getTextAlignment()) {
 			case LEFT: {
 				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.02);
@@ -155,18 +211,45 @@ public class BasicTextRenderer {
 	}
 
 	private int getTextY() {
-		int textHeight = (int) (textObj.getLayoutBounds().getHeight());
+		int textHeight = getTextHeight();
 		return renderer.getTopY() + (renderer.getHeight() + textHeight) / 2;
 	}
 
 	public void paint(GraphicsContext gc) {
 		gc.beginPath();
+		//don't let the text render past the control's bounds
 		gc.rect(renderer.getLeftX(), renderer.getTopY(), renderer.getWidth(), renderer.getHeight());
+		gc.closePath();
 		gc.clip();
+
 		gc.setFont(getFont());
 		gc.setFill(textColor);
-		gc.fillText(getText(), getTextX(), getTextY());
-		gc.closePath();
+
+		switch (textShadow) {
+			case None: {
+				gc.fillText(getText(), getTextX(), getTextY());
+				break;
+			}
+			case DropShadow: {
+				final double offset = 2.0;
+				gc.setFill(Color.BLACK);
+				gc.fillText(getText(), getTextX() + offset, getTextY() + offset);
+				gc.setFill(textColor);
+				gc.fillText(getText(), getTextX(), getTextY());
+				break;
+			}
+			case Stroke: {
+				gc.setLineWidth(2);
+				gc.setStroke(Color.BLACK);
+				gc.strokeText(getText(), getTextX(), getTextY());
+				gc.fillText(getText(), getTextX(), getTextY());
+				break;
+			}
+			default: {
+				throw new IllegalStateException("unknown textShadow=" + textShadow);
+			}
+		}
+
 	}
 
 	private Font getFont() {

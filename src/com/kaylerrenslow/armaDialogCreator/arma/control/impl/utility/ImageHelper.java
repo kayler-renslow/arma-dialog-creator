@@ -15,6 +15,8 @@ import java.util.function.Function;
  @author Kayler
  @since 06/28/2017 */
 public class ImageHelper {
+	private static final Image OGV = new Image("/com/kaylerrenslow/armaDialogCreator/gui/img/ogv.jpg");
+
 	/**
 	 Get an {@link Image} from a {@link SerializableValue}. This method is asynchronous. The provided callback will
 	 be executed on a different thread than the thread that invoked this method
@@ -39,6 +41,11 @@ public class ImageHelper {
 					f = null;
 				} else {
 					f = new File(pathValue.toString());
+				}
+
+				if (f != null && f.getName().endsWith(".ogv")) {
+					imageGetFunc.apply(OGV);
+					return;
 				}
 
 				if (f != null) {

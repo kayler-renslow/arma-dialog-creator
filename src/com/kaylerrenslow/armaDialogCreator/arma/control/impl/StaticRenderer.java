@@ -28,7 +28,7 @@ import org.jetbrains.annotations.Nullable;
 public class StaticRenderer extends ArmaControlRenderer {
 
 	private enum RenderType {
-		Text, Image, Error, ErrorImage
+		Text, Image, Error, ErrorImage, Line, Frame
 	}
 
 	private final BlinkControlHandler blinkControlHandler;
@@ -51,7 +51,11 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
-		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX);
+		textRenderer = new BasicTextRenderer(control, this,
+				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
+				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
+				ControlPropertyLookup.SHADOW
+		);
 
 		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 
@@ -102,21 +106,23 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 	private void checkAndSetRenderType() {
 		SerializableValue textValue = textProperty.getValue();
-		if (renderTypeForStyle == RenderType.Image) {
-
-			ImageHelper.getImageAsync(textValue, image -> {
-				synchronized (StaticRenderer.this) {
-					renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
-					imageToPaint = image;
-					requestRender();
-				}
-				return null;
-			});
-
-			return;
-		} else {
-			imageToPaint = null;
-			renderType = renderTypeForStyle;
+		switch (renderTypeForStyle) {
+			case Image: {
+				ImageHelper.getImageAsync(textValue, image -> {
+					synchronized (StaticRenderer.this) {
+						renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
+						imageToPaint = image;
+						requestRender();
+					}
+					return null;
+				});
+				//nothing left to do since its async
+				return;
+			}
+			default: {
+				imageToPaint = null;
+				renderType = renderTypeForStyle;
+			}
 		}
 		requestRender();
 	}
@@ -133,6 +139,16 @@ public class StaticRenderer extends ArmaControlRenderer {
 					super.paint(gc, dataContext);
 					textRenderer.paint(gc);
 					break;
+				}
+				case Line: {
+					//draw line from top left of control to bottom right of control
+					//the text color is the color of the line
+					gc.setStroke(getTextColor());
+					gc.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
+					break;
+				}
+				case Frame: {
+					//if the text is empty, draw a border
 				}
 				case Image: {
 					//paint the background color
@@ -167,11 +183,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), Color.RED, getBackgroundColor());
 	}
 
-
-	public void setTextColor(@NotNull Color color) {
-		this.textRenderer.setTextColor(color);
-	}
-
 	@NotNull
 	public Color getTextColor() {
 		return textRenderer.getTextColor();
@@ -193,32 +204,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (value instanceof SVControlStyleGroup) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {
-				if (style == pictureStyle()) {
+				if (style == ControlStyle.PICTURE) {
 					return RenderType.Image;
 				}
 			}
 		}
-		//		if (value instanceof SVExpression) {
-		//			SVExpression expr = (SVExpression) value;
-		//			//check if bits required for ControlStyle.Picture.styleValue are 1's
-		//			int v = (int) expr.getNumVal();
-		//			int styleV = pictureStyle().styleValue;
-		//			if ((v & styleV) == styleV) {
-		//				return RenderType.Image;
-		//			}
-		//		}
-		//		String[] values = value.getAsStringArray();
-		//		for (String s : values) {
-		//			if (s.contains(pictureStyle().styleValue + "")) {
-		//				return RenderType.Image;
-		//			}
-		//		}
 		return RenderType.Text;
-	}
-
-	@NotNull
-	private static ControlStyle pictureStyle() {
-		return ControlStyle.PICTURE;
 	}
 
 }

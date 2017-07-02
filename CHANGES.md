@@ -1,13 +1,13 @@
 **Added:**
-* popup that appears when control prop editor config tried to inherit a property and nothing was inherited
-* merge ControlClass.extendControlClass(null) with the override Changelog updates so that we can undo the extend
-      change and also reinherit all the properties
+* ogv placeholder image
+* drop shadow and stroke work for text now
+    * Shadow control style will now force the drop shadow effect
 
 **Changed:**
-* 
+* commented out some of the seemingly useless Control styles
 
 **Fixed:**
-* setting HintRep's parent class to null doesn't properly update the editor pane
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
