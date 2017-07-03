@@ -1,9 +1,13 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
 
 /**
  A place to store all event control properties
+
  @author Kayler
  @since 08/21/2016. */
 public enum ControlPropertyEventLookup {
@@ -27,7 +31,7 @@ public enum ControlPropertyEventLookup {
 	EventOnMouseButtonDblClick(ControlPropertyLookup.EVENT_ON_MOUSE_BUTTON_DBL_CLICK, 2, "Control"),
 	EventOnMouseMoving(ControlPropertyLookup.EVENT_ON_MOUSE_MOVING, 2, "Control"),
 	EventOnMouseHolding(ControlPropertyLookup.EVENT_ON_MOUSE_HOLDING, 2, "Display"),
-	EventOnMouseZchanged(ControlPropertyLookup.EVENT_ON_MOUSE_ZCHANGED, 2, "Control"),
+	EventOnMouseZChanged(ControlPropertyLookup.EVENT_ON_MOUSE_ZCHANGED, 2, "Control"),
 	EventOnCanDestroy(ControlPropertyLookup.EVENT_ON_CAN_DESTROY, 3, "Control only"),
 	EventOnDestroy(ControlPropertyLookup.EVENT_ON_DESTROY, 3, "Control"),
 	EventOnButtonClick(ControlPropertyLookup.EVENT_ON_BUTTON_CLICK, 1, "Control"),
@@ -41,7 +45,7 @@ public enum ControlPropertyEventLookup {
 	EventOnLbDragging(ControlPropertyLookup.EVENT_ON_LB_DRAGGING, 2, "ListBox"),
 	EventOnLbDrop(ControlPropertyLookup.EVENT_ON_LB_DROP, 2, "ListBox"),
 	EventOnTreeSelChanged(ControlPropertyLookup.EVENT_ON_TREE_SEL_CHANGED, 2, "ListBox, ComboBox, TextBox, ActiveText, Button"),
-	EventOnTreeLbuttonDown(ControlPropertyLookup.EVENT_ON_TREE_LBUTTON_DOWN, 2, "Tree"),
+	EventOnTreeLButtonDown(ControlPropertyLookup.EVENT_ON_TREE_LBUTTON_DOWN, 2, "Tree"),
 	EventOnTreeDblClick(ControlPropertyLookup.EVENT_ON_TREE_DBL_CLICK, 2, "Tree"),
 	EventOnTreeExpanded(ControlPropertyLookup.EVENT_ON_TREE_EXPANDED, 3, "Tree"),
 	EventOnTreeCollapsed(ControlPropertyLookup.EVENT_ON_TREE_COLLAPSED, 3, "Tree"),
@@ -59,11 +63,13 @@ public enum ControlPropertyEventLookup {
 	EventOnDraw(ControlPropertyLookup.EVENT_ON_DRAW, -1, "Context menu"),
 	EventOnVideoStopped(ControlPropertyLookup.EVENT_ON_VIDEO_STOPPED, 2, "Map");
 
+	@NotNull
 	public final ControlPropertyLookup lookup;
 	public final int priority;
+	@NotNull
 	public final String scope;
 
-	ControlPropertyEventLookup(ControlPropertyLookup lookup, int priority, String scope) {
+	ControlPropertyEventLookup(@NotNull ControlPropertyLookup lookup, int priority, @NotNull String scope) {
 		this.lookup = lookup;
 		this.priority = priority;
 		this.scope = scope;
@@ -73,7 +79,7 @@ public enum ControlPropertyEventLookup {
 		return priority < 0 ? "unknown" : priority + "";
 	}
 
-	/**Return the {@link ControlPropertyEventLookup} instance that is associated with the given lookup. If no correlation exists, will return null. */
+	/** Return the {@link ControlPropertyEventLookup} instance that is associated with the given lookup. If no correlation exists, will return null. */
 	@Nullable
 	public static ControlPropertyEventLookup getEventProperty(ControlPropertyLookupConstant lookup) {
 		for (ControlPropertyEventLookup eventLookup : values()) {
@@ -82,5 +88,22 @@ public enum ControlPropertyEventLookup {
 			}
 		}
 		return null;
+	}
+
+	private static ControlPropertyLookup[] allWithControlPriority;
+
+	@NotNull
+	public static ControlPropertyLookup[] allWithControlScope() {
+		if (allWithControlPriority == null) {
+			ArrayList<ControlPropertyLookup> lookups = new ArrayList<>(values().length);
+			for (ControlPropertyEventLookup lookup : values()) {
+				if (lookup.scope.toLowerCase().contains("control")) {
+					lookups.add(lookup.lookup);
+				}
+			}
+			allWithControlPriority = lookups.toArray(new ControlPropertyLookup[lookups.size()]);
+		}
+
+		return allWithControlPriority;
 	}
 }

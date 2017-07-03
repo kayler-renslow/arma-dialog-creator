@@ -880,6 +880,30 @@ public class ControlClass {
 		return list;
 	}
 
+	/**
+	 @return an iterable of all optional {@link ControlProperty} instances inside
+	 {@link #getOptionalProperties()} excluding ones that are event {@link ControlProperty}
+	 @see #getEventProperties()
+	 */
+	@NotNull
+	public final Iterable<ControlProperty> getOptionalPropertiesWithoutEvents() {
+		LinkedList<ControlProperty> noEvents = new LinkedList<>();
+		for (ControlProperty property : getOptionalProperties()) {
+			if (ControlPropertyEventLookup.getEventProperty(property.getPropertyLookup()) != null) {
+				continue;
+			}
+			noEvents.add(property);
+		}
+		return noEvents;
+	}
+
+	/**
+	 To determine if a {@link ControlProperty} is an event or not, you check its
+	 {@link ControlProperty#getPropertyLookup()}. If that lookup results in a non null match from
+	 {@link ControlPropertyEventLookup#getEventProperty(ControlPropertyLookupConstant)}, then it is an event property.
+
+	 @return all event properties
+	 */
 	@NotNull
 	public final Iterable<ControlProperty> getEventProperties() {
 		final List<ControlProperty> eventProperties = new LinkedList<>();

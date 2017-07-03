@@ -56,20 +56,32 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 
 	/**
-	 Creates the accordion according to the control class's specification. For the inputted values in the accordion, they are fetched from {@link ControlClass#getRequiredProperties()}, {@link ControlClass#getOptionalProperties()}, and {@link ControlClass#getEventProperties()}<br>
-	 It is important to note that when the control properties inside the control are edited, they will be updated in the control class as well. There is no copying of the controlClass's control properties and everything is passed by reference.
+	 Creates the accordion according to the control class's specification.
+	 For the inputted values in the accordion, they are fetched from {@link ControlClass#getRequiredProperties()},
+	 {@link ControlClass#getOptionalPropertiesWithoutEvents()}, and {@link ControlClass#getEventProperties()}
+	 <p>
+	 It is important to note that when the control properties inside the control are edited,
+	 they will be updated in the control class as well. There is no copying of the controlClass's
+	 control properties and everything is passed by reference.
 
 	 @param controlClass control class that has the properties to edit
 	 */
 	public ControlPropertiesEditorPane(@NotNull ControlClass controlClass) {
 		this();
 		this.controlClass = controlClass;
-		setupAccordion(controlClass.getRequiredProperties(), controlClass.getOptionalProperties(), controlClass.getEventProperties());
-	}
 
-	/** Return true if all values entered for all properties are good/valid, false if at least one is bad. */
-	public boolean allValuesAreGood() {
-		return getMissingProperties().size() == 0;
+		accordion.getPanes().add(
+				getPropertiesTitledPane(bundle.getString("required"), controlClass.getRequiredProperties(), false)
+		);
+		accordion.getPanes().add(
+				getPropertiesTitledPane(bundle.getString("optional"), controlClass.getOptionalPropertiesWithoutEvents(), true)
+		);
+		accordion.getPanes().add(
+				getPropertiesTitledPane(bundle.getString("events"), controlClass.getEventProperties(), true)
+		);
+		accordion.getPanes().add(getNestedClassesTitledPane());
+
+		accordion.setExpandedPane(accordion.getPanes().get(0));
 	}
 
 	/** Show only the editors with property names containing <code>name</code>. If length of <code>name</code>.trim() is 0 (), will show all editors */
@@ -93,7 +105,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return controlClass;
 	}
 
-	/** Get all missing properties (control properties that are required by have no valid data entered). */
+	/** @return all missing properties (control properties that are required by have no valid data entered). */
+	@NotNull
 	public List<ControlProperty> getMissingProperties() {
 		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
@@ -102,16 +115,6 @@ public class ControlPropertiesEditorPane extends StackPane {
 			}
 		}
 		return properties;
-	}
-
-	private void setupAccordion(Iterable<ControlProperty> requiredProperties, Iterable<ControlProperty> optionalProperties, Iterable<ControlProperty> eventProperties) {
-		accordion.getPanes().add(getPropertiesTitledPane(bundle.getString("required"), requiredProperties, false));
-		accordion.getPanes().add(getPropertiesTitledPane(bundle.getString("optional"), optionalProperties, true));
-		accordion.getPanes().add(getPropertiesTitledPane(bundle.getString("events"), eventProperties, true));
-		accordion.getPanes().add(getNestedClassesTitledPane());
-
-		accordion.setExpandedPane(accordion.getPanes().get(0));
-
 	}
 
 	@NotNull

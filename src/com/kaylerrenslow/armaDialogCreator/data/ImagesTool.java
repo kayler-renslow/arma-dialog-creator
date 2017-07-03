@@ -52,6 +52,8 @@ public class ImagesTool {
 	public static File getImageFile(@NotNull String imageFilePath, @NotNull ImageConversionCallback callback) {
 		Project project = Project.getCurrentProject();
 
+		imageFilePath = imageFilePath.trim(); //need to trim or Paths.get() will throw exception
+
 		Path imagePath;
 		try {
 			imagePath = Paths.get(imageFilePath);

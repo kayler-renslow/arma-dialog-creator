@@ -39,18 +39,23 @@ public class StaticControl extends ArmaControl {
 
 		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
 				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
-						new ControlPropertyLookup[]{
-								ControlPropertyLookup.MOVING,
-								ControlPropertyLookup.SHADOW,
-								ControlPropertyLookup.TOOLTIP,
-								ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-								ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-								ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-								ControlPropertyLookup.STATIC_FIXED_WIDTH,
-								ControlPropertyLookup.STATIC_LINE_SPACING,
-								ControlPropertyLookup.BLINKING_PERIOD
-						},
-						ControlPropertyLookupConstant.PRIORITY_SORT)
+						ArmaControlSpecRequirement.mergeArrays(
+								new ControlPropertyLookup[]{
+										ControlPropertyLookup.MOVING,
+										ControlPropertyLookup.SHADOW,
+										ControlPropertyLookup.TOOLTIP,
+										ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
+										ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+										ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
+										ControlPropertyLookup.FIXED_WIDTH,
+										ControlPropertyLookup.LINE_SPACING,
+										ControlPropertyLookup.BLINKING_PERIOD,
+								},
+								//events
+								ControlPropertyEventLookup.allWithControlScope()
+						),
+						ControlPropertyLookupConstant.PRIORITY_SORT
+				)
 		);
 
 		@NotNull

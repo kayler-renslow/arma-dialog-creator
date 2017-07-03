@@ -186,9 +186,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 					} else {
 						Region.strokeLine(gc, x1, y1, x2, y1);
 					}
-					gc.strokeLine(x2, y1, x2, y2); //right line
+					//+0.5 to make the line start crisp
+					gc.strokeLine(x2, y1 + 0.5, x2, y2); //right line
 					gc.strokeLine(x1, y2, x2, y2); //bottom line
-					gc.strokeLine(x1, y1, x1, y2); //left line
+					gc.strokeLine(x1, y1 + 0.5, x1, y2); //left line
 
 					break;
 				}
@@ -223,7 +224,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case ErrorImage: {
-					//paint the background color
 					paintBadImageError(gc);
 					break;
 				}

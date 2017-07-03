@@ -32,19 +32,19 @@ public class ButtonControl extends ArmaControl {
 						ControlPropertyLookup.SOUND_ESCAPE,
 						ControlPropertyLookup.TEXT,
 						ControlPropertyLookup.COLOR_TEXT,
-						ControlPropertyLookup.BTN_COLOR_DISABLED,
+						ControlPropertyLookup.COLOR_DISABLED,
 						ControlPropertyLookup.FONT,
 						ControlPropertyLookup.SIZE_EX,
-						ControlPropertyLookup.BTN_COLOR_BACKGROUND_ACTIVE,
-						ControlPropertyLookup.BTN_COLOR_BACKGROUND_DISABLED,
-						ControlPropertyLookup.BTN_COLOR_FOCUSED,
-						ControlPropertyLookup.BTN_OFFSET_X,
-						ControlPropertyLookup.BTN_OFFSET_Y,
-						ControlPropertyLookup.BTN_OFFSET_PRESSED_X,
-						ControlPropertyLookup.BTN_OFFSET_PRESSED_Y,
-						ControlPropertyLookup.BTN_COLOR_SHADOW,
-						ControlPropertyLookup.BTN_COLOR_BORDER,
-						ControlPropertyLookup.BTN_BORDER_SIZE
+						ControlPropertyLookup.COLOR_BACKGROUND_ACTIVE,
+						ControlPropertyLookup.COLOR_BACKGROUND_DISABLED,
+						ControlPropertyLookup.COLOR_FOCUSED,
+						ControlPropertyLookup.OFFSET_X,
+						ControlPropertyLookup.OFFSET_Y,
+						ControlPropertyLookup.OFFSET_PRESSED_X,
+						ControlPropertyLookup.OFFSET_PRESSED_Y,
+						ControlPropertyLookup.COLOR_SHADOW,
+						ControlPropertyLookup.COLOR_BORDER,
+						ControlPropertyLookup.BORDER_SIZE
 				},
 				ControlPropertyLookupConstant.PRIORITY_SORT)
 		);
@@ -52,8 +52,8 @@ public class ButtonControl extends ArmaControl {
 		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
 				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
 				new ControlPropertyLookup[]{
-						ControlPropertyLookup.BTN_DEFAULT,
-						ControlPropertyLookup.BTN_ACTION,
+						ControlPropertyLookup.DEFAULT,
+						ControlPropertyLookup.ACTION,
 						ControlPropertyLookup.SHADOW,
 						ControlPropertyLookup.TOOLTIP,
 						ControlPropertyLookup.TOOLTIP_COLOR_SHADE,

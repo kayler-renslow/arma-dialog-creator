@@ -42,4 +42,20 @@ public interface ArmaControlSpecRequirement extends ControlClassRequirementSpeci
 		return defaultOptionalPropertiesReadOnly;
 	}
 
+	static ControlPropertyLookup[] mergeArrays(@NotNull ControlPropertyLookup[]... arrays) {
+		int totalLengths = 0;
+		for (ControlPropertyLookup[] array : arrays) {
+			totalLengths += array.length;
+		}
+		ControlPropertyLookup[] neww = new ControlPropertyLookup[totalLengths];
+		int i = 0;
+		for (ControlPropertyLookup[] array : arrays) {
+			for (ControlPropertyLookup lookup : array) {
+				neww[i++] = lookup;
+			}
+		}
+
+		return neww;
+	}
+
 }
