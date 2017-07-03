@@ -1,9 +1,9 @@
 **Added:**
-* tile image support
-* autosize button to config popup to resize any squeezed javafx controls
+* ability to rename control in config popup
+* ability to set the TreeItemData's TreeItem text from the TreeItemData class
 
 **Changed:**
-* 
+* made font size bigger for control properties config popup
 
 **Fixed:**
 * 

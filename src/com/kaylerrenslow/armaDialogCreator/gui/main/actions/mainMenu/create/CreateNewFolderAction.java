@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create;
 
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameTextFieldDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -46,7 +46,7 @@ public class CreateNewFolderAction implements EventHandler<ActionEvent> {
 		treeView.addChildDataToRoot(new FolderTreeItemEntry(folderName));
 	}
 
-	private static class NewFolderDialog extends NameInputDialog {
+	private static class NewFolderDialog extends NameTextFieldDialog {
 		private final CheckBox checkBoxBackground = new CheckBox();
 
 		public NewFolderDialog(@NotNull String title, @NotNull String message, @NotNull String backgroundLbl) {

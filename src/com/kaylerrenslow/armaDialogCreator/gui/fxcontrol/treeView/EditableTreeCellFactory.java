@@ -319,7 +319,9 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 						getStyleClass().removeAll(c.getRemoved());
 					}
 				}
-
+			});
+			node.getTextObservable().addListener((observable, oldValue, newValue) -> {
+				setText(newValue);
 			});
 		}
 	}

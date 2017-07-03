@@ -22,6 +22,9 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, @NotNull ArmaControl control) {
 		super(control.getClassName(), cellType, graphic);
 		this.myArmaControl = control;
+		myArmaControl.getClassNameObserver().addListener((observer, oldValue, newValue) -> {
+			setText(newValue);
+		});
 		myArmaControl.getRenderer().getEnabledObserver().addListener(new ValueListener<Boolean>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {

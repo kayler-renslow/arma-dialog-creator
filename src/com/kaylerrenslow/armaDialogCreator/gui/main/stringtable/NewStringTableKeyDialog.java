@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.impl.StringTableKeyImpl;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.CheckMenuButton;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameTextFieldDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 /**
  @author Kayler
  @since 12/26/2016 */
-class NewStringTableKeyDialog extends NameInputDialog {
+class NewStringTableKeyDialog extends NameTextFieldDialog {
 
 	private final StringTableKey key = new StringTableKeyImpl("str_tag_name", FXCollections.observableHashMap());
 	private final StringTable table;

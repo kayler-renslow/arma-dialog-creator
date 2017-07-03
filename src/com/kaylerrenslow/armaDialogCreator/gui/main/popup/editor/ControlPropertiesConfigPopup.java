@@ -8,8 +8,10 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputFieldDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopupUndecorated;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
@@ -23,16 +25,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
@@ -251,8 +251,29 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		});
 
-		lblClassName = new Label(control.getClassName());
-		final HBox hboxLeft = new HBox(5, lblClassName, new Label(":"), menuButtonExtendControls);
+		{
+			lblClassName = new Label(control.getClassName());
+			lblClassName.setFont(Font.font(16));
+			MenuItem miRename = new MenuItem(bundle.getString("rename_control"));
+			miRename.setOnAction(event -> {
+				NameInputFieldDialog<IdentifierChecker, String> dialog = new NameInputFieldDialog<>(
+						miRename.getText(), bundle.getString("new_control_name"),
+						new IdentifierChecker()
+				);
+				dialog.getInputField().getValueObserver().updateValue(control.getClassName());
+				dialog.getInputField().selectAll();
+				dialog.show();
+				String value = dialog.getInputField().getValue();
+				if (dialog.wasCancelled() || value == null) {
+					return;
+				}
+				control.setClassName(value);
+			});
+			lblClassName.setContextMenu(new ContextMenu(miRename));
+		}
+		Label lblColon = new Label(":");
+		lblColon.setFont(lblClassName.getFont());
+		final HBox hboxLeft = new HBox(5, lblClassName, lblColon, menuButtonExtendControls);
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 
 		final SearchTextField tfSearch = new SearchTextField();

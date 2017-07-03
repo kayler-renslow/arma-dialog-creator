@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.DownArrowMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameInputDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.NameTextFieldDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -92,7 +92,7 @@ class StringTableKeyEditorPane extends StackPane {
 				if (key == null) {
 					return;
 				}
-				NameInputDialog dialog = new NameInputDialog(
+				NameTextFieldDialog dialog = new NameTextFieldDialog(
 						String.format(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_package_popup_title_f"), key.getId()),
 						bundle.getString("StringTableEditorPopup.Tab.Edit.new_package_name"),
 						bundle.getString("StringTable.no_package")
@@ -128,7 +128,7 @@ class StringTableKeyEditorPane extends StackPane {
 				if (key == null) {
 					return;
 				}
-				NameInputDialog dialog = new NameInputDialog(
+				NameTextFieldDialog dialog = new NameTextFieldDialog(
 						miRenameId.getText(),
 						bundle.getString("StringTableEditorPopup.Tab.Edit.new_id")
 				);

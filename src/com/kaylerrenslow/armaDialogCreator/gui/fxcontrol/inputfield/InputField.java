@@ -174,7 +174,7 @@ public class InputField<C extends InputFieldDataChecker<V>, V> extends StackPane
 		button.setMaxWidth(Double.MAX_VALUE);
 		getChildren().add(button);
 
-		getValueObserver().addListener(new ValueListener<V>() {
+		observer.addListener(new ValueListener<V>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
 				setValue(newValue);
