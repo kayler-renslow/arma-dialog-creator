@@ -33,6 +33,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	private ControlPropertiesEditorPane() {
 		getChildren().add(accordion);
+		setMaxWidth(Double.MAX_VALUE);
 	}
 
 	/**
@@ -82,6 +83,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 		accordion.getPanes().add(getNestedClassesTitledPane());
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
+		accordion.expandedPaneProperty().addListener((observable, oldValue, newValue) -> {
+			accordion.autosize();
+		});
+		accordion.setMaxWidth(Double.MAX_VALUE);
 	}
 
 	/** Show only the editors with property names containing <code>name</code>. If length of <code>name</code>.trim() is 0 (), will show all editors */
@@ -221,6 +226,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		TitledPane tp = new TitledPane(bundle.getString("nested_classes"), scrollPane);
 		tp.setAnimated(false);
+		vboxClassCategories.setFillWidth(true);
 
 		return tp;
 	}
@@ -228,6 +234,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	/** Get a titled pane for the accordion that holds all control properties */
 	private TitledPane getPropertiesTitledPane(String title, Iterable<ControlProperty> properties, boolean optional) {
 		final VBox vb = new VBox(10);
+		vb.setFillWidth(true);
 		vb.setPadding(new Insets(5));
 		final ScrollPane scrollPane = new ScrollPane(vb);
 		scrollPane.setFitToWidth(true);

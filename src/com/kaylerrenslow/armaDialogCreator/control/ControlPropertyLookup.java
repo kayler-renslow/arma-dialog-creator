@@ -11,6 +11,8 @@ import java.util.List;
  A place to find ALL known control properties for all controls.
  This is where the name of the property, property type, description, and options (if allowed) are listed.
 
+ *****DO NOT MODIFY THE ID'S.*****
+
  @author Kayler
  @since 05/22/2016. */
 public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
@@ -41,17 +43,12 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString), //default shadow color
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.Float),
 
-	/*Static*/
 	AUTO_PLAY(24, "autoPlay", PropertyType.Boolean),
 	KEY(25, "key", PropertyType.String),
 	LOOPS(26, "loops", PropertyType.Int),
 	LINE_SPACING(27, "lineSpacing", PropertyType.Float),
 	FIXED_WIDTH(28, "fixedWidth", PropertyType.Boolean),
-
-	/*Structured Text*/
 	SIZE(29, "size", PropertyType.Float),
-
-	/*HTML*/
 	CYCLE_LINKS(30, "cycleLinks", PropertyType.Boolean),
 	FILE_NAME(31, "filename", PropertyType.FileName),
 	COLOR_BOLD(32, "colorBold", PropertyType.Color),
@@ -63,8 +60,6 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	COLOR_PICTURE_SELECTED(38, "colorPictureSelected", PropertyType.Color),
 	PREV_PAGE(39, "prevPage", PropertyType.Image),
 	NEXT_PAGE(40, "nextPage", PropertyType.Image),
-
-	/*Button*/
 	ACTION(41, "action", PropertyType.SQF),
 	BORDER_SIZE(42, "borderSize", PropertyType.Float),
 	COLOR_BACKGROUND_ACTIVE(43, "colorBackgroundActive", PropertyType.Color),
@@ -82,6 +77,8 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	SOUND_ENTER(55, "soundEnter", PropertyType.Sound),
 	SOUND_ESCAPE(56, "soundEscape", PropertyType.Sound),
 	SOUND_PUSH(57, "soundPush", PropertyType.Sound),
+	TILE_W(58, "tileW", PropertyType.Int),
+	TILE_H(59, "tileH", PropertyType.Int),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

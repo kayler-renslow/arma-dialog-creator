@@ -16,7 +16,9 @@ public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 
 
 	/**
-	 Creates a new JavaFX Stage based popup window that has not "decoration" (not minimize button, maximize button, or close button). The window is move-able by dragging the root element, however.
+	 Creates a new JavaFX Stage based popup window that has not "decoration"
+	 (not minimize button, maximize button, or close button).
+	 The window is move-able by dragging the root element, however.
 
 	 @see StagePopup
 	 */
@@ -26,6 +28,9 @@ public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 		rootElement.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				if (event.isSecondaryButtonDown()) {
+					return;
+				}
 				xOffset = event.getSceneX();
 				yOffset = event.getSceneY();
 			}
@@ -33,6 +38,9 @@ public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 		rootElement.setOnMouseDragged(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				if (event.isSecondaryButtonDown()) {
+					return;
+				}
 				myStage.setX(event.getScreenX() - xOffset);
 				myStage.setY(event.getScreenY() - yOffset);
 				stageMoved();
@@ -41,6 +49,7 @@ public class StagePopupUndecorated<E extends Parent> extends StagePopup<E> {
 	}
 
 	/** Invoked whenever the stage is moved by user. Default implementation does nothing. */
-	protected void stageMoved() {}
+	protected void stageMoved() {
+	}
 
 }

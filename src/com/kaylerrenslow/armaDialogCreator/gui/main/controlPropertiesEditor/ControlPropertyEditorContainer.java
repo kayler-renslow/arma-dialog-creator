@@ -61,6 +61,7 @@ class ControlPropertyEditorContainer extends HBox {
 		updatePropertyValueEditor();
 
 		setAlignment(Pos.TOP_LEFT);
+		setMaxWidth(Double.MAX_VALUE);
 		init();
 	}
 

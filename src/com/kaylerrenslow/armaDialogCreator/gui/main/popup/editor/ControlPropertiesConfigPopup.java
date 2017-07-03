@@ -8,6 +8,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
+import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopupUndecorated;
@@ -25,6 +26,8 @@ import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -119,6 +122,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		myRootElement.setPadding(new Insets(20.0));
 		myRootElement.setMaxHeight(720d); //prevent the element from being godly large
 		myRootElement.setMinWidth(520);
+		myRootElement.setFillWidth(true);
 	}
 
 	private void initializeToControl() {
@@ -193,6 +197,12 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 	private void addHeader(ArmaControl control) {
+		Button btnAutoSize = new Button("", new ImageView(ADCImages.ICON_AUTO_SIZE));
+		btnAutoSize.setTooltip(new Tooltip(bundle.getString("auto_size")));
+		btnAutoSize.setOnAction(event1 -> {
+			myStage.sizeToScene();
+		});
+
 		Button btnClose = new Button("x");
 		btnClose.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -253,7 +263,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				editorPane.showPropertiesWithNameContaining(newValue);
 			}
 		});
-		final HBox hboxRight = new HBox(10, tfSearch, btnClose);
+		final HBox hboxRight = new HBox(10, btnAutoSize, tfSearch, btnClose);
 		hboxRight.setAlignment(Pos.CENTER_RIGHT);
 		myRootElement.getChildren().add(
 				new BorderPane(
@@ -274,6 +284,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	@Override
 	public void show() {
 		handleListeners(true);
+		sizeToScene();
 		super.show();
 	}
 

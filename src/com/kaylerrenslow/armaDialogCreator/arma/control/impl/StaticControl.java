@@ -50,6 +50,8 @@ public class StaticControl extends ArmaControl {
 										ControlPropertyLookup.FIXED_WIDTH,
 										ControlPropertyLookup.LINE_SPACING,
 										ControlPropertyLookup.BLINKING_PERIOD,
+										ControlPropertyLookup.TILE_W,
+										ControlPropertyLookup.TILE_H
 								},
 								//events
 								ControlPropertyEventLookup.allWithControlScope()
@@ -85,7 +87,8 @@ public class StaticControl extends ArmaControl {
 				ControlStyle.WITH_RECT,
 				ControlStyle.LINE,
 				ControlStyle.NO_RECT,
-				ControlStyle.KEEP_ASPECT_RATIO
+				ControlStyle.KEEP_ASPECT_RATIO,
+				ControlStyle.TILE_PICTURE
 		};
 
 		@NotNull

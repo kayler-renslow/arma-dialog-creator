@@ -50,7 +50,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 	private volatile Image imageToPaint = null;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
-	private boolean keepImageAspectRatio = false;
+	private boolean keepImageAspectRatio = false, tileImage = false;
+	private int tileW = 0, tileH = 0;
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
@@ -83,11 +84,29 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 
+		myControl.findProperty(ControlPropertyLookup.TILE_H).getValueObserver().addListener((observer, oldValue,
+																							 newValue) -> {
+			if (newValue instanceof SVExpression) {
+				SVExpression expr = (SVExpression) newValue;
+				tileH = (int) expr.getNumVal();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.TILE_W).getValueObserver().addListener((observer, oldValue,
+																							 newValue) -> {
+			if (newValue instanceof SVExpression) {
+				SVExpression expr = (SVExpression) newValue;
+				tileW = (int) expr.getNumVal();
+				requestRender();
+			}
+		});
+
 		styleProperty = myControl.findProperty(ControlPropertyLookup.STYLE);
 		styleProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVControlStyleGroup) {
 				SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 				keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
+				tileImage = group.hasStyle(ControlStyle.TILE_PICTURE);
 			}
 			renderTypeForStyle = getRenderTypeFromStyle();
 			styleValue = newValue;
@@ -197,7 +216,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 					if (imageToPaint == null) {
 						throw new IllegalStateException("imageToPaint is null");
 					}
-					if (keepImageAspectRatio) {
+					int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
+					if (keepImageAspectRatio && !tileImage) {
 						int imgWidth = (int) imageToPaint.getWidth();
 						int imgHeight = (int) imageToPaint.getHeight();
 						double aspectRatio = imgWidth * 1.0 / imgHeight;
@@ -213,14 +233,38 @@ public class StaticRenderer extends ArmaControlRenderer {
 						int centerX = getX1() + (getWidth() - drawWidth) / 2;
 
 						gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
-
-						//multiply the text color on the image
-						gc.setStroke(getTextColor());
-						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-						Region.fillRectangle(gc, centerX, getY1(), centerX + drawWidth, getY1() + drawHeight);
+						imageDrawX1 = centerX;
+						imageDrawY1 = y1;
+						imageDrawX2 = centerX + drawWidth;
+						imageDrawY2 = y1 + drawHeight;
 					} else {
-						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+						imageDrawX1 = x1;
+						imageDrawY1 = y1;
+						imageDrawX2 = x2;
+						imageDrawY2 = y2;
+
+						if (tileImage) {
+							int tileW = Math.max(1, this.tileW);
+							int tileH = Math.max(1, this.tileH);
+							int controlWidth = getWidth();
+							int controlHeight = getHeight();
+							int tileWidth = controlWidth / tileW;
+							int tileHeight = controlHeight / tileH;
+
+							for (int y = 0; y < tileH; y++) {
+								for (int x = 0; x < tileW; x++) {
+									gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
+								}
+							}
+						} else {
+							gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+						}
 					}
+
+					//multiply the text color on the image
+					gc.setStroke(getTextColor());
+					gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+					Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
 					break;
 				}
 				case ErrorImage: {
@@ -267,6 +311,9 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (value instanceof SVControlStyleGroup) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {
+				if (style == ControlStyle.TILE_PICTURE) {
+					return RenderType.Image;
+				}
 				if (style == ControlStyle.PICTURE) {
 					return RenderType.Image;
 				}

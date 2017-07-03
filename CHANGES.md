@@ -1,12 +1,12 @@
 **Added:**
-* event properties to static
-* event properties documentation
+* tile image support
+* autosize button to config popup to resize any squeezed javafx controls
 
 **Changed:**
-* cleaned up ControlPropertyLookup
+* 
 
 **Fixed:**
-* error when fileName for getting image had a trailing space
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
