@@ -60,6 +60,7 @@ public class BasicTextRenderer {
 		this.control = control;
 		this.renderer = renderer;
 		init(text, colorText, style, sizeEx, shadow);
+
 	}
 
 	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText,
@@ -177,11 +178,11 @@ public class BasicTextRenderer {
 		});
 	}
 
-	private int getTextWidth() {
+	public int getTextWidth() {
 		return (int) textObj.getLayoutBounds().getWidth();
 	}
 
-	private int getTextHeight() {
+	public int getTextHeight() {
 		return (int) (textObj.getLayoutBounds().getHeight());
 	}
 
@@ -206,6 +207,12 @@ public class BasicTextRenderer {
 		return renderer.getTopY() + (renderer.getHeight() + textHeight) / 2;
 	}
 
+	/**
+	 Will paint the text where there renderer wants to. This will also create a clip for the text.
+	 The text will be clipped if it exceeds the width of the control.
+
+	 @param gc context to use
+	 */
 	public void paint(GraphicsContext gc) {
 		gc.beginPath();
 		//don't let the text render past the control's bounds
@@ -213,34 +220,47 @@ public class BasicTextRenderer {
 		gc.closePath();
 		gc.clip();
 
+		paint(gc, getTextX(), getTextY());
+	}
+
+	/**
+	 Paint the text where designated. The text will not be clipped anywhere
+
+	 @param gc context to use
+	 @param textX x position of text
+	 @param textY y position of text
+	 */
+	public void paint(GraphicsContext gc, int textX, int textY) {
+		gc.save();
+
 		gc.setFont(getFont());
 		gc.setFill(textColor);
 
 		switch (textShadow) {
 			case None: {
-				gc.fillText(getText(), getTextX(), getTextY());
+				gc.fillText(getText(), textX, textY);
 				break;
 			}
 			case DropShadow: {
 				final double offset = 2.0;
 				gc.setFill(Color.BLACK);
-				gc.fillText(getText(), getTextX() + offset, getTextY() + offset);
+				gc.fillText(getText(), textX + offset, textY + offset);
 				gc.setFill(textColor);
-				gc.fillText(getText(), getTextX(), getTextY());
+				gc.fillText(getText(), textX, textY);
 				break;
 			}
 			case Stroke: {
 				gc.setLineWidth(2);
 				gc.setStroke(Color.BLACK);
-				gc.strokeText(getText(), getTextX(), getTextY());
-				gc.fillText(getText(), getTextX(), getTextY());
+				gc.strokeText(getText(), textX, textY);
+				gc.fillText(getText(), textX, textY);
 				break;
 			}
 			default: {
 				throw new IllegalStateException("unknown textShadow=" + textShadow);
 			}
 		}
-
+		gc.restore();
 	}
 
 	private Font getFont() {

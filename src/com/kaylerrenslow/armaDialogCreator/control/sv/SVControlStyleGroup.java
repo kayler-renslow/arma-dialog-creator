@@ -23,6 +23,9 @@ public class SVControlStyleGroup extends SerializableValue {
 		@Override
 		public SVControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
 			String[] split = values[0].split("\\+");
+			for (int i = 0; i < split.length; i++) {
+				split[i] = split[i].trim();
+			}
 			ArrayList<ControlStyle> styles = new ArrayList<>(split.length);
 			for (String s : split) {
 				int num;

@@ -1,11 +1,11 @@
 **Added:**
-* more control style documentation
+* frame render support
 
 **Changed:**
 * 
 
 **Fixed:**
-* static renderer: was using wrong multiply color for image
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

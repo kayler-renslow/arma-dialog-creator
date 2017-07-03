@@ -155,6 +155,41 @@ public class StaticRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case Frame: {
+					gc.setStroke(getTextColor());
+
+					int controlWidth = getWidth();
+
+					int textWidth = 0;
+					double padding = controlWidth * .02;
+					int xLeftOfText = (int) Math.round(x1 + padding);
+
+					//draw the text, if the length is > 0
+					if (textRenderer.getText().length() > 0) {
+						textWidth = textRenderer.getTextWidth();
+						if (textWidth < controlWidth - (2 * padding)) {
+							//text will paint within the bounds of the frame
+							textRenderer.paint(gc, xLeftOfText, y1 + textRenderer.getTextHeight() / 2);
+						} else {
+							//don't paint any text if the text is longer than the frame's width
+							textWidth = 0;
+						}
+					}
+
+
+					//draw the frame itself
+					//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
+
+					//draw top line
+					if (textWidth > 0) {
+						Region.strokeLine(gc, x1, y1, xLeftOfText, y1);
+						Region.strokeLine(gc, xLeftOfText + textWidth, y1, x2, y1);
+					} else {
+						Region.strokeLine(gc, x1, y1, x2, y1);
+					}
+					gc.strokeLine(x2, y1, x2, y2); //right line
+					gc.strokeLine(x1, y2, x2, y2); //bottom line
+					gc.strokeLine(x1, y1, x1, y2); //left line
+
 					break;
 				}
 				case Image: {
@@ -168,7 +203,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 						//We want to make sure that the image doesn't surpass the bounds of the control
 						//while also maintaining the aspect ratio. In arma 3, the height of the image will
-						//never surpass the height of the control.
+						//never surpass the height of the control. The width is allowed to surpass the bounds though.
 
 						int drawHeight = getHeight();
 						int drawWidth = (int) Math.round(drawHeight * aspectRatio);
@@ -178,9 +213,9 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 						gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
 
-						//paint the text color over where the image is
+						//multiply the text color on the image
+						gc.setStroke(getTextColor());
 						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-						gc.setStroke(getTextColor()); //for some reason, Arma 3 uses text color as the overlay color
 						Region.fillRectangle(gc, centerX, getY1(), centerX + drawWidth, getY1() + drawHeight);
 					} else {
 						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());

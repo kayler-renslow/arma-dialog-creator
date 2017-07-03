@@ -89,6 +89,17 @@ public interface Region {
 		gc.strokeLine(x1a, y2a, x1a, y1a); //bottom left to top left
 	}
 
+	/** Draw a line */
+	static void strokeLine(GraphicsContext gc, int x1, int y1, int x2, int y2) {
+		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
+		double x1a = x1 + antiAlias;
+		double y1a = y1 + antiAlias;
+		double x2a = x2 - antiAlias;
+		double y2a = y2 + antiAlias;
+
+		gc.strokeLine(x1a, y1a, x2a, y2a);
+	}
+
 	/** Fills a rectangle (will use {@link GraphicsContext#getStroke()}) as fill color */
 	static void fillRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
