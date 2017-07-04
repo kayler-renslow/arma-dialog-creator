@@ -5,7 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,8 +20,8 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 	}
 	
 	@Override
-	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
-		super.paint(gc, dataContext);
+	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
+		super.paint(gc, canvasContext);
 		if (getArea() < 2) {
 			return;
 		}
@@ -35,7 +35,7 @@ public class ControlGroupRenderer extends ArmaControlRenderer {
 			if (control.getRenderer().isGhost()) {
 				continue;
 			}
-			control.getRenderer().paint(gc, dataContext);
+			control.getRenderer().paint(gc, canvasContext);
 		}
 		gc.restore();
 	}

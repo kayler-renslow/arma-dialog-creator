@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +13,7 @@ import java.util.Comparator;
  Created on 06/18/2016. */
 public interface CanvasComponent extends Region {
 
-	void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext);
+	void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext);
 	
 	void setBackgroundColor(@NotNull Color paint);
 

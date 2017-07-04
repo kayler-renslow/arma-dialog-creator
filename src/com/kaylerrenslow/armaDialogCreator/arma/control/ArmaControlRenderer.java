@@ -10,12 +10,11 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
-import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
-import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.SimpleCanvasComponent;
-import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ViewportCanvasComponent;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.util.*;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
+import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -27,12 +26,6 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
-	/**
-	 Key used for determining if {@link #paint(GraphicsContext, DataContext)} will paint the control for Arma Preview.
-	 If key value is true, will paint preview. If key is false, will paint editor version.
-	 */
-	public static final Key<Boolean> KEY_PAINT_PREVIEW = new Key<>("ArmaControlRenderer.PaintPreview", false);
-
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
@@ -174,12 +167,13 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Return true if {@link #paint(GraphicsContext, DataContext)} should paint in preview form, false if should paint in editor form.
+	 Return true if {@link CanvasComponent#paint(GraphicsContext, CanvasContext)} should paint in preview form,
+	 false if should paint in editor form.
 
-	 @param dataContext context from {@link #paint(GraphicsContext, DataContext)}
+	 @param cc context from {@link CanvasComponent#paint(GraphicsContext, CanvasContext)}
 	 */
-	protected boolean paintPreview(@NotNull DataContext dataContext) {
-		return KEY_PAINT_PREVIEW.get(dataContext);
+	protected boolean paintPreview(@NotNull CanvasContext cc) {
+		return !cc.paintPartial();
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
@@ -471,7 +465,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	/**
 	 Used by Arma Preview to let this renderer know that the user's mouse is over the control in the preview.
-	 When this control is requested to be rendered in preview mode ({@link #paintPreview(DataContext)} returns true),
+	 When this control is requested to be rendered in preview mode ({@link #paintPreview(CanvasContext)} returns true),
 	 this renderer will determine what to do with this information.
 
 	 @param mousex mouse x position on the canvas (irrelevant if mouseOver is false)

@@ -1,8 +1,8 @@
 **Added:**
-* tooltip renderer utility class
+* ability to paint the tooltips after everything else was painted
 
 **Changed:**
-* 
+* made some optimizations to preview and some renderers
 
 **Fixed:**
 * 

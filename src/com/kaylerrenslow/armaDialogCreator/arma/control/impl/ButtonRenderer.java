@@ -9,8 +9,8 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -62,8 +62,8 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	}
 
 	@Override
-	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
-		if (paintPreview(dataContext)) {
+	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
+		if (paintPreview(canvasContext)) {
 			blinkControlHandler.paint(gc);
 		}
 		Paint old = gc.getStroke();
@@ -74,7 +74,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		int h = (int) (getHeight() * offsety);
 		Region.fillRectangle(gc, getLeftX() + w, getTopY() + h, getRightX() + w, getBottomY() + h);
 		gc.setStroke(old);
-		super.paint(gc, dataContext);
+		super.paint(gc, canvasContext);
 		textRenderer.paint(gc);
 
 	}

@@ -12,8 +12,8 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -22,6 +22,8 @@ import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 /**
  A renderer for {@link StaticControl}
@@ -40,6 +42,11 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 	private BasicTextRenderer textRenderer;
 	private TooltipRenderer tooltipRenderer;
+
+	private final Function<GraphicsContext, Void> tooltipRenderFunc = graphicsContext -> {
+		tooltipRenderer.paint(graphicsContext, this.mouseOverX, this.mouseOverY);
+		return null;
+	};
 
 	/**
 	 If false, the background color can't be determined so there will be a checkerboard rendered.
@@ -146,6 +153,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 			case Image: {
 				ImageHelper.getImageAsync(textValue, image -> {
 					synchronized (StaticRenderer.this) {
+						//synchronized so that the renderType and imageToPaint are set at the same time
+
 						renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
 						imageToPaint = image;
 						requestRender();
@@ -163,8 +172,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 		requestRender();
 	}
 
-	public synchronized void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
-		boolean preview = paintPreview(dataContext);
+	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
+		boolean preview = paintPreview(canvasContext);
 		if (preview) {
 			blinkControlHandler.paint(gc);
 		}
@@ -173,7 +182,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		} else {
 			switch (renderType) {
 				case Text: {
-					super.paint(gc, dataContext);
+					super.paint(gc, canvasContext);
 					textRenderer.paint(gc);
 					break;
 				}
@@ -294,8 +303,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		}
 		if (preview) {
 			if (this.mouseOver) {
-				gc.setGlobalAlpha(1); //disable blink's alpha change
-				tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
+				canvasContext.paintLast(tooltipRenderFunc);
 			}
 		}
 	}

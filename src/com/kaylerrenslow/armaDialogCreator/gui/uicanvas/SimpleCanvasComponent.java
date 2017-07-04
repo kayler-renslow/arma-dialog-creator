@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
 
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -67,7 +66,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		setEnabled(!ghost);
 	}
 
-	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
 		if (border != null) {
 			gc.save();
 			gc.setStroke(border.getColor());

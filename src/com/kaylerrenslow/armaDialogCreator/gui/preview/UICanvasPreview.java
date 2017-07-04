@@ -1,9 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.preview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.UICanvas;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -24,7 +24,13 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	public UICanvasPreview(@NotNull Resolution resolution, @NotNull ArmaDisplay display) {
 		super(resolution, display);
-		dataContext.put(ArmaControlRenderer.KEY_PAINT_PREVIEW, true);
+		this.canvasContext = new CanvasContext() {
+			@Override
+			public boolean paintPartial() {
+				return false;
+			}
+		};
+		this.alwaysPaint = true;
 	}
 
 	@Override
@@ -33,7 +39,6 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 		this.backgroundImage = canvasView.getCanvasBackgroundImage();
 
 		super.paint();
-		requestPaint();
 	}
 
 	@Override

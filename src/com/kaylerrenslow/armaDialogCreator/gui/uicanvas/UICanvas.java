@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
@@ -24,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
 
 /**
  @author Kayler
@@ -35,8 +34,8 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
-	/** {@link DataContext} for the canvas */
-	protected final DataContext dataContext = new DataContext();
+	/** {@link CanvasContext} for the canvas */
+	protected CanvasContext canvasContext = new CanvasContext();
 	/** The timer that handles repainting */
 	protected final CanvasAnimationTimer timer;
 
@@ -58,7 +57,12 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	/** All components added */
 	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
 
-	private final AtomicBoolean needPaint = new AtomicBoolean();
+	private volatile boolean needPaint = false;
+	/** A synchronization lock for {@link #needPaint} to help prevent data races */
+	private final Object needPaintLock = new Object();
+	/** Set to true if {@link #requestPaint()} is not necessary and will always paint when {@link #timer} wants to */
+	protected boolean alwaysPaint = false;
+
 	private final UpdateGroupListener renderUpdateGroupListener = new UpdateGroupListener() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup group, @Nullable Object data) {
@@ -159,6 +163,10 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		paintBackground();
 		paintControls();
 		paintComponents();
+		for (Function<GraphicsContext, Void> f : canvasContext.getPaintLast()) {
+			f.apply(gc);
+		}
+		canvasContext.getPaintLast().clear();
 		gc.restore();
 	}
 
@@ -170,7 +178,9 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	 This method can be used across multiple threads.
 	 */
 	public void requestPaint() {
-		needPaint.set(true);
+		synchronized (needPaintLock) {
+			needPaint = true;
+		}
 	}
 
 	/**
@@ -220,7 +230,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 			return;
 		}
 		gc.save();
-		component.paint(gc, dataContext);
+		component.paint(gc, canvasContext);
 		gc.restore();
 	}
 
@@ -304,11 +314,6 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		return timer;
 	}
 
-	@NotNull
-	public DataContext getDataContext() {
-		return dataContext;
-	}
-
 	@Override
 	protected double computeMinWidth(double height) {
 		return getCanvasWidth();
@@ -390,10 +395,15 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 			for (Runnable r : runnables) {
 				r.run();
 			}
-			if (needPaint.get()) {
-				needPaint.set(false);
-				paint();
+			if (!alwaysPaint) {
+				synchronized (needPaintLock) {
+					//synchronize to prevent data race
+					if (needPaint) {
+						needPaint = false;
+					}
+				}
 			}
+			paint();
 		}
 
 		/** @return a list of runnables to run on each timer update */
