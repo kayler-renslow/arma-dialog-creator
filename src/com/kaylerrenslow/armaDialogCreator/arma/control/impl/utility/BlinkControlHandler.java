@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,7 @@ public class BlinkControlHandler {
 		this.blinkProperty = blinkProperty;
 	}
 
-	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
+	public void paint(@NotNull GraphicsContext gc) {
 		long now = System.currentTimeMillis();
 
 		if (blinkingDuration() != -1) {

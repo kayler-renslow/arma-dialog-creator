@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageHelper;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
@@ -38,6 +39,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 	private final ControlProperty textProperty;
 
 	private BasicTextRenderer textRenderer;
+	private TooltipRenderer tooltipRenderer;
 
 	/**
 	 If false, the background color can't be determined so there will be a checkerboard rendered.
@@ -126,6 +128,14 @@ public class StaticRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
+		tooltipRenderer = new TooltipRenderer(
+				this.myControl,
+				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+				ControlPropertyLookup.TOOLTIP
+		);
+
 		renderTypeForStyle = getRenderTypeFromStyle();
 		checkAndSetRenderType();
 	}
@@ -154,8 +164,9 @@ public class StaticRenderer extends ArmaControlRenderer {
 	}
 
 	public synchronized void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
-		if (paintPreview(dataContext)) {
-			blinkControlHandler.paint(gc, dataContext);
+		boolean preview = paintPreview(dataContext);
+		if (preview) {
+			blinkControlHandler.paint(gc);
 		}
 		if (!useBackgroundColor) {
 			paintBackgroundError(gc);
@@ -279,6 +290,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 				default: {
 					throw new IllegalStateException("unhandled renderType:" + renderType);
 				}
+			}
+		}
+		if (preview) {
+			if (this.mouseOver) {
+				gc.setGlobalAlpha(1); //disable blink's alpha change
+				tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 			}
 		}
 	}

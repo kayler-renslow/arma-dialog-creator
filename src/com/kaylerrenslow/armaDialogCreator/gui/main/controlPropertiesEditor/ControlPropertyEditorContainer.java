@@ -277,10 +277,8 @@ class ControlPropertyEditorContainer extends HBox {
 			updatePropertyValueEditor();
 		});
 		if (controlProperty.getPropertyLookup().getOptions() != null) {
-			System.out.println("ControlPropertyEditorContainer.init controlProperty.getPropertyLookup()=" + controlProperty.getPropertyLookup());
 			menuButtonOptions.getItems().remove(miRaw);
 		}
-
 
 		if (controlProperty.getPropertyLookup() == ControlPropertyLookup.TYPE) {
 			currentValueEditor().disableEditing(true);

@@ -34,7 +34,7 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
 		gc.save();
 		gc.setStroke(backgroundColor);
-		Region.drawRectangle(gc, resolution.getViewportX(), resolution.getViewportY(), resolution.getViewportX() + resolution.getViewportWidth(), resolution.getViewportY() + resolution.getViewportHeight());
+		Region.strokeRectangle(gc, resolution.getViewportX(), resolution.getViewportY(), resolution.getViewportX() + resolution.getViewportWidth(), resolution.getViewportY() + resolution.getViewportHeight());
 		gc.restore();
 	}
 	

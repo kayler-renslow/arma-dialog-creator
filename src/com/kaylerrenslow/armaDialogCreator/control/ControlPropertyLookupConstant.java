@@ -17,7 +17,7 @@ import java.util.Comparator;
 public interface ControlPropertyLookupConstant {
 	ReadOnlyList<ControlPropertyLookupConstant> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
-	/** All values that the property can be, or null if not using options. */
+	/** @return all values that the property can be, or null if not using options. */
 	@Nullable
 	ControlPropertyOption[] getOptions();
 

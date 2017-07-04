@@ -63,8 +63,8 @@ public interface Region {
 	int getCenterY();
 
 	/** Draw this region as a crisp rectangle without filling it */
-	default void drawRectangle(GraphicsContext gc) {
-		drawRectangle(gc, getX1(), getY1(), getX2(), getY2());
+	default void strokeRectangle(GraphicsContext gc) {
+		strokeRectangle(gc, getX1(), getY1(), getX2(), getY2());
 	}
 
 	/**
@@ -76,7 +76,7 @@ public interface Region {
 	}
 
 	/** Draw the crisp border of a rectangle without filling it */
-	static void drawRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
+	static void strokeRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		double x1a = x1 + antiAlias;
 		double y1a = y1 + antiAlias;

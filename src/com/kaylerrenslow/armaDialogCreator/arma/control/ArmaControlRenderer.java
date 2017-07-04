@@ -28,8 +28,8 @@ import org.jetbrains.annotations.NotNull;
  @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
 	/**
-	 Key used for determining if {@link #paint(GraphicsContext, DataContext)} will paint the control for Arma Preview. If key value is true, will paint preview. If key is false, will paint editor
-	 version.
+	 Key used for determining if {@link #paint(GraphicsContext, DataContext)} will paint the control for Arma Preview.
+	 If key value is true, will paint preview. If key is false, will paint editor version.
 	 */
 	public static final Key<Boolean> KEY_PAINT_PREVIEW = new Key<>("ArmaControlRenderer.PaintPreview", false);
 
@@ -59,6 +59,15 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		}
 	};
+	/** Set by {@link #setMouseOver(int, int, boolean)} */
+	protected int mouseOverX,
+	/** Set by {@link #setMouseOver(int, int, boolean)} */
+	mouseOverY;
+	/**
+	 True if the mouse is over this control in preview mode. False if the user's mouse isn't over this control in
+	 preview mode. Set by {@link #setMouseOver(int, int, boolean)}
+	 */
+	protected boolean mouseOver;
 
 	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
@@ -459,6 +468,21 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		return resolutionUpdateGroup;
 	}
 
+
+	/**
+	 Used by Arma Preview to let this renderer know that the user's mouse is over the control in the preview.
+	 When this control is requested to be rendered in preview mode ({@link #paintPreview(DataContext)} returns true),
+	 this renderer will determine what to do with this information.
+
+	 @param mousex mouse x position on the canvas (irrelevant if mouseOver is false)
+	 @param mousey mouse y position on the canvas (irrelevant if mouseOver is false)
+	 @param mouseOver true if the mouse is over this control, false if it isn't
+	 */
+	public void setMouseOver(int mousex, int mousey, boolean mouseOver) {
+		this.mouseOverX = mousex;
+		this.mouseOverY = mousey;
+		this.mouseOver = mouseOver;
+	}
 
 	/**
 	 Paint a checkerboard with the given {@link GraphicsContext} and coordinates

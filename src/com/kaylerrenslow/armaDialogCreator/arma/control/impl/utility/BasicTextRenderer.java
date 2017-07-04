@@ -168,6 +168,7 @@ public class BasicTextRenderer {
 	 @param gc context to use
 	 */
 	public void paint(GraphicsContext gc) {
+		gc.save();
 		gc.beginPath();
 		//don't let the text render past the control's bounds
 		gc.rect(renderer.getLeftX(), renderer.getTopY(), renderer.getWidth(), renderer.getHeight());
@@ -175,6 +176,8 @@ public class BasicTextRenderer {
 		gc.clip();
 
 		paint(gc, getTextX(), getTextY());
+
+		gc.restore();
 	}
 
 	/**

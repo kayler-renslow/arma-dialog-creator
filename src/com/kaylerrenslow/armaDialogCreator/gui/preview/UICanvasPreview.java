@@ -10,14 +10,17 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Iterator;
+
 /**
  A {@link UICanvas} instance that will paint {@link ArmaControl} instances in "preview mode"
 
  @author Kayler
  @since 06/14/2016 */
-public class UICanvasPreview extends UICanvas {
+public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	private final CanvasView canvasView = ArmaDialogCreator.getCanvasView();
+	private ArmaControl mouseOverControl;
 
 	public UICanvasPreview(@NotNull Resolution resolution, @NotNull ArmaDisplay display) {
 		super(resolution, display);
@@ -45,6 +48,22 @@ public class UICanvasPreview extends UICanvas {
 
 	@Override
 	protected void mouseMoved(int mousex, int mousey) {
+		Iterator<ArmaControl> controlIter = display.iteratorForAllControls(true);
+		if (mouseOverControl != null) {
+			setMouseOver(mouseOverControl, 0, 0, false);
+		}
+		mouseOverControl = null;
+		while (controlIter.hasNext()) {
+			ArmaControl control = controlIter.next();
+			if (control.getRenderer().containsPoint(mousex, mousey)) {
+				mouseOverControl = control;
+				setMouseOver(mouseOverControl, mousex, mousey, true);
+				break;
+			}
+		}
+	}
 
+	private void setMouseOver(@NotNull ArmaControl armaControl, int mousex, int mousey, boolean mouseOver) {
+		armaControl.getRenderer().setMouseOver(mousex, mousey, mouseOver);
 	}
 }

@@ -64,7 +64,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	@Override
 	public void paint(@NotNull GraphicsContext gc, @NotNull DataContext dataContext) {
 		if (paintPreview(dataContext)) {
-			blinkControlHandler.paint(gc, dataContext);
+			blinkControlHandler.paint(gc);
 		}
 		Paint old = gc.getStroke();
 		gc.setStroke(getShadowColor());

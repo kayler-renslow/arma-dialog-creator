@@ -29,7 +29,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  @author Kayler
  @since 05/11/2016. */
-public abstract class UICanvas extends AnchorPane {
+public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 
 	/** javafx Canvas */
 	protected final Canvas canvas;
@@ -42,7 +42,7 @@ public abstract class UICanvas extends AnchorPane {
 
 	protected final Resolution resolution;
 
-	protected @NotNull CanvasDisplay<? extends CanvasControl> display;
+	protected @NotNull CanvasDisplay<C> display;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -66,7 +66,7 @@ public abstract class UICanvas extends AnchorPane {
 		}
 	};
 
-	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<? extends CanvasControl> display) {
+	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<C> display) {
 		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
@@ -114,7 +114,7 @@ public abstract class UICanvas extends AnchorPane {
 		return (int) this.canvas.getHeight();
 	}
 
-	public void setDisplay(@NotNull CanvasDisplay<? extends CanvasControl> display) {
+	public void setDisplay(@NotNull CanvasDisplay<C> display) {
 		setDisplayListeners(false);
 		this.display = display;
 		setDisplayListeners(true);

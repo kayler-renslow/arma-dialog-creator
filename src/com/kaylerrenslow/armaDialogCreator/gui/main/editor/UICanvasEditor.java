@@ -188,7 +188,7 @@ public class UICanvasEditor extends UICanvas {
 			gc.save();
 			gc.setStroke(selectionColor);
 			gc.setLineWidth(2);
-			selection.drawRectangle(gc);
+			selection.strokeRectangle(gc);
 			gc.restore();
 		}
 		if (absRegionComponent.alwaysRenderAtFront()) {
@@ -205,7 +205,7 @@ public class UICanvasEditor extends UICanvas {
 		gc.save();
 		for (CanvasControl control : selection.getSelected()) {
 			gc.setStroke(control.getRenderer().getBackgroundColor());
-			control.getRenderer().drawRectangle(gc);
+			control.getRenderer().strokeRectangle(gc);
 		}
 		gc.restore();
 	}

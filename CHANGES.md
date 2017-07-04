@@ -1,12 +1,11 @@
 **Added:**
-* 
+* tooltip renderer utility class
 
 **Changed:**
-* made event lookup documentation actually be useful
-* small tweak to frame style in static render
+* 
 
 **Fixed:**
-* Toggle Raw Value menu item wasn't appearing for c prop editor
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

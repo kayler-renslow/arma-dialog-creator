@@ -72,7 +72,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 			gc.save();
 			gc.setStroke(border.getColor());
 			gc.setLineWidth(border.getThickness());
-			drawRectangle(gc);
+			strokeRectangle(gc);
 			gc.restore();
 		}
 		gc.setFill(backgroundColor);
