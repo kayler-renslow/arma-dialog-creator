@@ -63,21 +63,21 @@ class NewStringTableKeyDialog extends NameTextFieldDialog {
 				if (!StringTableKey.idIsProper(newValue)) {
 					if (!added) {
 						added = true;
-						textField.getStyleClass().add(badInput);
+						myNode.getStyleClass().add(badInput);
 						getCanOkProperty().setValue(false);
 					}
 				} else {
 					added = false;
-					textField.getStyleClass().remove(badInput);
+					myNode.getStyleClass().remove(badInput);
 					getCanOkProperty().setValue(true);
 					key.setId(newValue);
 				}
 			}
 		});
 
-		textField.requestFocus();
-		textField.positionCaret(textField.getText().indexOf('_'));
-		textField.selectEnd();
+		myNode.requestFocus();
+		myNode.positionCaret(myNode.getText().indexOf('_'));
+		myNode.selectEnd();
 
 	}
 
@@ -91,7 +91,7 @@ class NewStringTableKeyDialog extends NameTextFieldDialog {
 		if (key.idIsProper()) {
 			super.ok();
 		} else {
-			textField.requestFocus();
+			myNode.requestFocus();
 			beep();
 		}
 	}

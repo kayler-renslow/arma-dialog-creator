@@ -7,7 +7,6 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -92,11 +91,6 @@ public class XmlUtil {
 
 	}
 
-	/** Get an iterator that will iterate all descendants (equivalent to doing {@link List#iterator()} with List {@link #getDescendantElementsWithTagName(Element, String)}) and a null tag name. */
-	public static Iterable<Element> getDescendantsIterator(@NotNull Element element) {
-		return new DescendantsIterator(element);
-	}
-
 	/** Get the text content of the given node but not the node's descendant nodes' text concatenated with it. */
 	@NotNull
 	public static String getImmediateTextContent(@NotNull Node node) {
@@ -115,48 +109,5 @@ public class XmlUtil {
 		return textContent.toString();
 	}
 
-	private static class DescendantsIterator implements Iterable<Element>, Iterator<Element> {
 
-		private final List<Element> list = new LinkedList<>();
-		private final Iterator<Element> iterator;
-
-		public DescendantsIterator(@NotNull Element element) {
-			XmlUtil.getDescendantElementsWithTagName(element, null, list);
-			iterator = list.iterator();
-		}
-
-		@Override
-		public Iterator<Element> iterator() {
-			return list.iterator();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return iterator.hasNext();
-		}
-
-		@Override
-		public Element next() {
-			return iterator.next();
-		}
-	}
-
-	private static class SimpleNodeList implements NodeList {
-
-		private final List<Node> nodes;
-
-		public SimpleNodeList(List<Node> nodes) {
-			this.nodes = nodes;
-		}
-
-		@Override
-		public Node item(int index) {
-			return nodes.get(index);
-		}
-
-		@Override
-		public int getLength() {
-			return nodes.size();
-		}
-	}
 }

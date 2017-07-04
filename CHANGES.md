@@ -1,12 +1,12 @@
 **Added:**
-* ability to rename control in config popup
-* ability to set the TreeItemData's TreeItem text from the TreeItemData class
+* Structured Text parser
+    * added tests for it
 
 **Changed:**
-* made font size bigger for control properties config popup
+* 
 
 **Fixed:**
-* 
+* Import dialog didnt disable the next button while it was parsing
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -19,4 +19,4 @@
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
-July 2: added frame style to renderer
+* July 3: serious issues with import. A lot of values are strings

@@ -242,6 +242,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			vboxBody.getChildren().add(lblHeader);
 			vboxBody.getChildren().add(lblMessage);
 			content.setAlignment(Pos.CENTER);
+			this.stepIsCompleteProperty.set(false);
 		}
 
 
