@@ -101,6 +101,57 @@ public class StructuredTextParserTest {
 		assertEquals(sections, parser.parse());
 	}
 
+	@Test
+	public void parseT4() throws Exception {
+		String parsedText = "hello <t color='#ff0000'>from the<br /><t color='#00ff00'>other</t><br />side</t>";
+		StructuredTextParser parser = new StructuredTextParser(parsedText);
+		assertEquals(parsedText, parser.getParsedText());
+		ArrayList<TextSection> sections = new ArrayList<>();
+		sections.add(new TextSection(TextSection.TagName.Root, "hello ", new HashMap<>()));
+		sections.add(new TextSection(TextSection.TagName.T, "from the", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.Br, "", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.T, "other", createAttributes(
+				strArr("color", "#00ff00")
+		)));
+		sections.add(new TextSection(TextSection.TagName.Br, "", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.T, "side", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		assertEquals(sections, parser.parse());
+	}
+
+	@Test
+	public void parseT5() throws Exception {
+		String parsedText =
+				"hello <t color='#ff0000'>from the<br /><t color='#00ff00' size='2'>other</t><br />side</t>";
+		StructuredTextParser parser = new StructuredTextParser(parsedText);
+		assertEquals(parsedText, parser.getParsedText());
+		ArrayList<TextSection> sections = new ArrayList<>();
+		sections.add(new TextSection(TextSection.TagName.Root, "hello ", new HashMap<>()));
+		sections.add(new TextSection(TextSection.TagName.T, "from the", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.Br, "", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.T, "other", createAttributes(
+				strArr("color", "#00ff00", "size", "2")
+		)));
+		sections.add(new TextSection(TextSection.TagName.Br, "", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		sections.add(new TextSection(TextSection.TagName.T, "side", createAttributes(
+				strArr("color", "#ff0000")
+		)));
+		assertEquals(sections, parser.parse());
+	}
+
 	private String[] strArr(@NotNull String... strings) {
 		return strings;
 	}

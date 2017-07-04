@@ -39,19 +39,6 @@ public class BasicTextRenderer {
 	private Text textObj = new Text();
 	private ControlProperty sizeExProperty;
 
-	private enum TextShadow {
-		/** Has no shadow */
-		None,
-		/**
-		 Text is rendered twice: once at the original position,
-		 but slightly offset with black text and second time is normally
-		 at the original position.
-		 */
-		DropShadow,
-		/** The text has a black stroke to it */
-		Stroke
-	}
-
 	private TextShadow textShadow = TextShadow.None;
 
 	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text,
@@ -72,32 +59,8 @@ public class BasicTextRenderer {
 		control.findProperty(text).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue == null) {
-					setText("");
-				} else {
-					String tostring = newValue.toString();
-					if (tostring.length() < 2) {
-						//isn't a string literal like "HELLO ""World"""
-						setText(cancelQuotes(tostring));
-					} else {
-						char first = tostring.charAt(0);
-						char last = tostring.charAt(tostring.length() - 1);
-						if (first == last && (first == '"' || first == '\'')) {
-							if (tostring.length() > 2) { //isn't an empty string like "" or ''
-								tostring = tostring.substring(1, tostring.length());
-							} else {
-								tostring = ""; //empty string
-							}
-						}
-						setText(cancelQuotes(tostring));
-					}
-				}
+				setText(TextHelper.getText(newValue));
 				renderer.requestRender();
-			}
-
-			private String cancelQuotes(@NotNull String s) {
-				s = s.replaceAll("([\"'])\\1", "$1"); //remove any "" or '' and convert to " and '
-				return s;
 			}
 		});
 		ControlProperty textColorProp = control.findProperty(colorText);
@@ -115,18 +78,7 @@ public class BasicTextRenderer {
 			}
 		});
 		control.findProperty(shadow).getValueObserver().addListener((observer, oldValue, newValue) -> {
-			if (newValue != null) {
-				String v = newValue.toString();
-				if (v.contains("0")) {
-					textShadow = TextShadow.None;
-				} else if (v.contains("1")) {
-					textShadow = TextShadow.DropShadow;
-				} else if (v.contains("2")) {
-					textShadow = TextShadow.Stroke;
-				}
-			} else {
-				textShadow = TextShadow.None;
-			}
+			textShadow = TextHelper.getTextShadow(newValue);
 			renderer.requestRender();
 		});
 		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
@@ -231,46 +183,16 @@ public class BasicTextRenderer {
 	 @param textY y position of text
 	 */
 	public void paint(GraphicsContext gc, int textX, int textY) {
-		gc.save();
-
-		gc.setFont(getFont());
-		gc.setFill(textColor);
-
-		switch (textShadow) {
-			case None: {
-				gc.fillText(getText(), textX, textY);
-				break;
-			}
-			case DropShadow: {
-				final double offset = 2.0;
-				gc.setFill(Color.BLACK);
-				gc.fillText(getText(), textX + offset, textY + offset);
-				gc.setFill(textColor);
-				gc.fillText(getText(), textX, textY);
-				break;
-			}
-			case Stroke: {
-				gc.setLineWidth(2);
-				gc.setStroke(Color.BLACK);
-				gc.strokeText(getText(), textX, textY);
-				gc.fillText(getText(), textX, textY);
-				break;
-			}
-			default: {
-				throw new IllegalStateException("unknown textShadow=" + textShadow);
-			}
-		}
-		gc.restore();
+		TextHelper.paintText(
+				gc, textX, textY, getFont(), getText(), textColor, textShadow, Color.BLACK
+		);
 	}
 
-	private Font getFont() {
-		return textObj.getFont();
-	}
-
-	public void setText(String text) {
+	public void setText(@NotNull String text) {
 		this.textObj.setText(text);
 	}
 
+	@NotNull
 	public String getText() {
 		return this.textObj.getText();
 	}
@@ -279,29 +201,24 @@ public class BasicTextRenderer {
 		this.textColor = color;
 	}
 
+	@NotNull
 	public Color getTextColor() {
 		return textColor;
-	}
-
-	public void updateFont(@NotNull SVExpression sizeEx) {
-		textObj.setFont(Font.font(fontSize(sizeEx.getNumVal())));
-		renderer.requestRender();
-	}
-
-	public double fontSize(double percent) {
-		double maxPixels = renderer.getResolution().getViewportHeight();
-		return toPoints(maxPixels * percent);
-	}
-
-	public double toPoints(double pixels) {
-		final double pointsPerInch = 72;
-		final double pixelsPerInch = 96;
-		return pixels * pointsPerInch / pixelsPerInch;
 	}
 
 	public void resolutionUpdate() {
 		if (sizeExProperty.getValue() instanceof SVExpression) {
 			updateFont((SVExpression) sizeExProperty.getValue());
 		}
+	}
+
+	@NotNull
+	private Font getFont() {
+		return textObj.getFont();
+	}
+
+	private void updateFont(@NotNull SVExpression sizeEx) {
+		textObj.setFont(TextHelper.getFont(renderer.getResolution(), sizeEx.getNumVal()));
+		renderer.requestRender();
 	}
 }

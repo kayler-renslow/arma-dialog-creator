@@ -1,12 +1,11 @@
 **Added:**
-* Structured Text parser
-    * added tests for it
-
-**Changed:**
 * 
 
+**Changed:**
+* moved some text related methods into TextHelper class
+
 **Fixed:**
-* Import dialog didnt disable the next button while it was parsing
+* square scaling on top right corner creates issues when viewport snapping is disabled
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

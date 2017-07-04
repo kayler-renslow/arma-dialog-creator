@@ -525,8 +525,14 @@ public class UICanvasEditor extends UICanvas {
 			//set them equal to the biggest value
 			if (Math.abs(dx) > Math.abs(dy)) {
 				dy = dx;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					dy = -dy;
+				}
 			} else {
 				dx = dy;
+				if (scaleEdge == Edge.TOP_RIGHT || scaleEdge == Edge.BOTTOM_LEFT) {
+					dx = -dx;
+				}
 			}
 		}
 		if (scaleEdge == Edge.TOP_LEFT) {

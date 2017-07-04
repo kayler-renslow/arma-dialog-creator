@@ -150,7 +150,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 					this.stringForCheckingIfSimilar.equals(change.stringForCheckingIfSimilar);
 		};
 
-		private final long timeCreated = System.currentTimeMillis();
+		private long timeCreated = System.currentTimeMillis();
 
 		/**
 		 @throws Exception when the <code>classUpdate</code> isn't a change that should be tracked (may already have been tracked in a different form)
@@ -456,7 +456,10 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			return changeAction;
 		}
 
-		/** @return epoch that this object was created */
+		/**
+		 @return epoch that this object was created. If this change was merged with another, this value will
+		 change to the newest change of the merge
+		 */
 		public long getTimeCreated() {
 			return timeCreated;
 		}
@@ -467,6 +470,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		}
 
 		public void mergeChanges(@NotNull ControlClassChange change) {
+			this.timeCreated = change.timeCreated;
 			if (this.mergeActionsFunction == null) {
 				this.actions = change.actions;
 				return;
