@@ -196,14 +196,15 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 
 					//draw the frame itself
-					//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
 
 					//draw top line
 					if (textWidth > 0) {
+						//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
+						// and the top line is crisp only when there is text
 						Region.strokeLine(gc, x1, y1, xLeftOfText, y1);
 						Region.strokeLine(gc, xLeftOfText + textWidth, y1, x2, y1);
 					} else {
-						Region.strokeLine(gc, x1, y1, x2, y1);
+						gc.strokeLine(x1, y1, x2, y1);
 					}
 					//+0.5 to make the line start crisp
 					gc.strokeLine(x2, y1 + 0.5, x2, y2); //right line

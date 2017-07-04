@@ -150,8 +150,6 @@ public class ControlClassTest_DeepInheritance {
 					},
 					registry
 			);
-
-			findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVString("COLOR TEXT"));
 		}
 	}
 

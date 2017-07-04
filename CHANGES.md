@@ -1,13 +1,12 @@
 **Added:**
-* menu item to show control property value in editor
-* a new large ControlClass inheritance test that checks for deep inheritance
-
-**Changed:**
 * 
 
+**Changed:**
+* made event lookup documentation actually be useful
+* small tweak to frame style in static render
+
 **Fixed:**
-* serious issues with import. A lot of values were strings
-* some controlclass inheritance issues
+* Toggle Raw Value menu item wasn't appearing for c prop editor
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -20,3 +19,4 @@
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
+* July 3: inherited values aren't always setting the editor's value correctly. Sometimes, the value is present but the editor isn't displaying that value

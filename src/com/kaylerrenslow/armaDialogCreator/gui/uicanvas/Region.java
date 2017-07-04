@@ -62,20 +62,20 @@ public interface Region {
 
 	int getCenterY();
 
-	/** Draw this region as a rectangle without filling it */
+	/** Draw this region as a crisp rectangle without filling it */
 	default void drawRectangle(GraphicsContext gc) {
 		drawRectangle(gc, getX1(), getY1(), getX2(), getY2());
 	}
 
 	/**
-	 Draw this region as a rectangle and fills it.
+	 Draw this region as a crisp rectangle and fills it.
 	 Uses {@link GraphicsContext#getStroke()} as fill color
 	 */
 	default void fillRectangle(GraphicsContext gc) {
 		fillRectangle(gc, getX1(), getY1(), getX2(), getY2());
 	}
 
-	/** Draw the border of a rectangle without filling it */
+	/** Draw the crisp border of a rectangle without filling it */
 	static void drawRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		double x1a = x1 + antiAlias;
@@ -89,7 +89,7 @@ public interface Region {
 		gc.strokeLine(x1a, y2a, x1a, y1a); //bottom left to top left
 	}
 
-	/** Draw a line */
+	/** Draw a crisp line */
 	static void strokeLine(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		double x1a = x1 + antiAlias;
@@ -100,7 +100,7 @@ public interface Region {
 		gc.strokeLine(x1a, y1a, x2a, y2a);
 	}
 
-	/** Fills a rectangle (will use {@link GraphicsContext#getStroke()}) as fill color */
+	/** Fills a crisp rectangle (will use {@link GraphicsContext#getStroke()}) as fill color */
 	static void fillRectangle(GraphicsContext gc, int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		for (int y = y1; y < y2; y++) {
