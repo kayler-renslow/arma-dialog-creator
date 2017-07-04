@@ -203,7 +203,6 @@ public class HeaderToProject {
 		callback.progressUpdate(++progress, maxProgress);
 
 		//todo add macros to macro registry?
-		//todo add the stringtable
 
 		//create display, attach properties, and look for StringTable
 		{
@@ -440,16 +439,19 @@ public class HeaderToProject {
 				return null;
 			}
 			String assignmentValue = assignment.getValue().getContent();
+			boolean wasString = false;
 			if (assignmentValue.charAt(0) == '"' || assignmentValue.charAt(0) == '\'') {
-				try {
-					assignmentValue = removeQuotes(assignmentValue); //chop off quotes
-					return SerializableValue.constructNew(dataContext, PropertyType.String, assignmentValue);
-				} catch (SerializableValueConstructionException ignore) {
+				assignmentValue = removeQuotes(assignmentValue); //chop off quotes
+				wasString = true;
+			}
+			try {
+				return SerializableValue.constructNew(dataContext, initialPropertyType, assignmentValue);
+			} catch (SerializableValueConstructionException ignore) {
 
-				}
-			} else {
+			}
+			if (wasString) {
 				try {
-					return SerializableValue.constructNew(dataContext, initialPropertyType, assignmentValue);
+					return SerializableValue.constructNew(dataContext, PropertyType.String, assignmentValue);
 				} catch (SerializableValueConstructionException ignore) {
 
 				}

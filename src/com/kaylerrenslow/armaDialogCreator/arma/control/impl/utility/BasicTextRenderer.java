@@ -24,8 +24,10 @@ import org.jetbrains.annotations.NotNull;
 /**
  A utility class for rendering text with a {@link ArmaControlRenderer} which can have the following property updates:
  <ul>
- <li>Text Color</li>
- <li>Text Position (left, center, right)</li>
+ <li>Text color</li>
+ <li>Text horizontal alignment (left, center, right)</li>
+ <li>Font size</li>
+ <li>Text shadow</li>
  </ul>
 
  @author Kayler

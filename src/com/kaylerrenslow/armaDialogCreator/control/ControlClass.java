@@ -308,7 +308,7 @@ public class ControlClass {
 				if (this.propertyIsOverridden(checkToInherit.getPropertyLookup())) {
 					continue;
 				}
-				this.inheritProperty(checkToInherit.getPropertyLookup());
+				this.inheritProperty(checkToInherit.getPropertyLookup(), extendMe);
 			}
 
 			for (ControlClass nested : extendMe.getAllNestedClasses()) {
@@ -749,7 +749,11 @@ public class ControlClass {
 		if (getExtendClass() == null) {
 			return false;
 		}
-		ControlProperty inherit = getExtendClass().findPropertyByNameNullable(lookup.getPropertyName());
+		return inheritProperty(lookup, getExtendClass());
+	}
+
+	private boolean inheritProperty(@NotNull ControlPropertyLookupConstant lookup, @NotNull ControlClass extendClass) {
+		ControlProperty inherit = extendClass.findPropertyByNameNullable(lookup.getPropertyName());
 		if (inherit == null) {
 			return false;
 		}

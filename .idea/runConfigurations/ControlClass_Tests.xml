@@ -26,6 +26,7 @@
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassConstructorTests" />
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassFindMethodsTests" />
       <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassInheritanceTests" />
+      <pattern testClass="com.kaylerrenslow.armaDialogCreator.control.ControlClassTest_DeepInheritance" />
     </patterns>
     <method />
   </configuration>

@@ -1,11 +1,13 @@
 **Added:**
-* 
+* menu item to show control property value in editor
+* a new large ControlClass inheritance test that checks for deep inheritance
 
 **Changed:**
-* moved some text related methods into TextHelper class
+* 
 
 **Fixed:**
-* square scaling on top right corner creates issues when viewport snapping is disabled
+* serious issues with import. A lot of values were strings
+* some controlclass inheritance issues
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -18,4 +20,3 @@
 * BUG: select many things in tree view and drag into folder
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
-* July 3: serious issues with import. A lot of values are strings

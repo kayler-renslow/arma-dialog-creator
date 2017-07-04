@@ -68,6 +68,7 @@ class ControlPropertyEditorContainer extends HBox {
 	private void init() {
 		placeTooltip(controlClass, menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
 
+		final MenuItem miDisplayType = new MenuItem(bundle.getString("display_type"));
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
 		final MenuItem miResetToInitial = new MenuItem(bundle.getString("reset_to_initial"));
 		final MenuItem miConvert = new MenuItem(bundle.getString("convert_value"));
@@ -80,6 +81,7 @@ class ControlPropertyEditorContainer extends HBox {
 		final CheckMenuItem miRaw = new CheckMenuItem(bundle.getString("raw"));
 		menuButtonOptions.setText(controlProperty.getName());
 		menuButtonOptions.getItems().setAll(
+				miDisplayType,
 				miDefaultEditor,
 				miConvert,
 				miRaw,
@@ -140,6 +142,14 @@ class ControlPropertyEditorContainer extends HBox {
 
 		getChildren().addAll(menuButtonOptions, new Label("="), stackPanePropertyInput);
 
+		miDisplayType.setOnAction(event -> {
+			SerializableValue sv = controlProperty.getValue();
+			String valueType = sv == null ? "`NULL`" : sv.getPropertyType().getDisplayName();
+			MenuButtonPopup popup = new MenuButtonPopup(
+					String.format(bundle.getString("type_f"), valueType)
+			);
+			popup.showPopup();
+		});
 		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -199,21 +209,8 @@ class ControlPropertyEditorContainer extends HBox {
 				} else {
 					boolean inherited = controlClass.inheritProperty(getControlProperty().getPropertyLookup());
 					if (!inherited) {
-						Popup popup = new Popup();
-						Label lbl = new Label(bundle.getString("nothing_to_inherit"));
-						StackPane container = new StackPane(lbl);
-						container.setBackground(new Background(new BackgroundFill(
-								Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
-						));
-						lbl.setFont(Font.font(15));
-						lbl.setTextFill(Color.WHITE);
-						container.setPadding(new Insets(4));
-						popup.getContent().add(container);
-						Control ownerNode = menuButtonOptions;
-						Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight());
-						popup.setAutoHide(true);
-						
-						popup.show(ownerNode, p.getX(), p.getY());
+						MenuButtonPopup popup = new MenuButtonPopup(bundle.getString("nothing_to_inherit"));
+						popup.showPopup();
 					}
 				}
 			}
@@ -527,6 +524,27 @@ class ControlPropertyEditorContainer extends HBox {
 		@Nullable
 		public PropertyType getSelectedType() {
 			return wasCancelled() ? null : comboBoxType.getValue();
+		}
+	}
+
+	private class MenuButtonPopup extends Popup {
+		public MenuButtonPopup(@NotNull String text) {
+			Label lbl = new Label(text);
+			StackPane container = new StackPane(lbl);
+			container.setBackground(new Background(new BackgroundFill(
+					Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
+			));
+			lbl.setFont(Font.font(15));
+			lbl.setTextFill(Color.WHITE);
+			container.setPadding(new Insets(4));
+			this.getContent().add(container);
+		}
+
+		public void showPopup() {
+			Control ownerNode = menuButtonOptions;
+			Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight());
+			this.setAutoHide(true);
+			show(ownerNode, p.getX(), p.getY());
 		}
 	}
 
