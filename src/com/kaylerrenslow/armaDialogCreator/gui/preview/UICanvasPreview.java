@@ -21,6 +21,7 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	private final CanvasView canvasView = ArmaDialogCreator.getCanvasView();
 	private ArmaControl mouseOverControl;
+	private ArmaControl mousePressControl;
 
 	public UICanvasPreview(@NotNull Resolution resolution, @NotNull ArmaDisplay display) {
 		super(resolution, display);
@@ -42,20 +43,31 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	@Override
 	protected void mousePressed(int mousex, int mousey, @NotNull MouseButton mb) {
-
+		if (mouseOverControl == null) {
+			return;
+		}
+		mousePressControl = mouseOverControl;
+		mouseOverControl.getRenderer().mousePress(mb);
 	}
 
 	@Override
 	protected void mouseReleased(int mousex, int mousey, @NotNull MouseButton mb) {
-
+		if (mousePressControl == null) {
+			throw new IllegalStateException("mousePressControl shouldn't be null");
+		}
+		mousePressControl.getRenderer().mouseRelease();
 	}
 
 	@Override
 	protected void mouseMoved(int mousex, int mousey) {
-		Iterator<ArmaControl> controlIter = display.iteratorForAllControls(true);
 		if (mouseOverControl != null) {
+			if (mouseOverControl.getRenderer().containsPoint(mousex, mousey)) {
+				//nothing to do
+				return;
+			}
 			setMouseOver(mouseOverControl, 0, 0, false);
 		}
+		Iterator<ArmaControl> controlIter = display.iteratorForAllControls(true);
 		mouseOverControl = null;
 		while (controlIter.hasNext()) {
 			ArmaControl control = controlIter.next();

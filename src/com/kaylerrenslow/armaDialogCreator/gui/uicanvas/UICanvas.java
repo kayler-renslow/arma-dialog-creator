@@ -407,12 +407,14 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 			if (!alwaysPaint) {
 				synchronized (needPaintLock) {
 					//synchronize to prevent data race
+					paint();
 					if (needPaint) {
 						needPaint = false;
 					}
 				}
+			} else {
+				paint();
 			}
-			paint();
 		}
 
 		/** @return a list of runnables to run on each timer update */

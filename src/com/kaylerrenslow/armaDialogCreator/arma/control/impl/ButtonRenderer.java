@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import org.jetbrains.annotations.NotNull;
@@ -31,7 +32,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	private double offsetX, offsetY;
+	private double offsetX, offsetY, borderSize, offsetPressedX, offsetPressedY;
 
 	/** color of drop shadow behind button */
 	private Color colorShadow = Color.BLACK;
@@ -83,6 +84,22 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetY = ((SVNumericValue) newValue).toDouble();
+						requestRender();
+					}
+				}
+		);
+		myControl.findProperty(ControlPropertyLookup.OFFSET_PRESSED_X).getValueObserver().addListener(
+				(observer, oldValue, newValue) -> {
+					if (newValue instanceof SVNumericValue) {
+						offsetPressedX = ((SVNumericValue) newValue).toDouble();
+						requestRender();
+					}
+				}
+		);
+		myControl.findProperty(ControlPropertyLookup.OFFSET_PRESSED_Y).getValueObserver().addListener(
+				(observer, oldValue, newValue) -> {
+					if (newValue instanceof SVNumericValue) {
+						offsetPressedY = ((SVNumericValue) newValue).toDouble();
 						requestRender();
 					}
 				}
@@ -141,6 +158,24 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
+		myControl.findProperty(ControlPropertyLookup.BORDER_SIZE).getValueObserver().addListener(
+				(observer, oldValue, newValue) -> {
+					if (newValue instanceof SVNumericValue) {
+						borderSize = ((SVNumericValue) newValue).toDouble();
+					} else {
+						borderSize = -1;
+					}
+					requestRender();
+				}
+		);
+		myControl.findProperty(ControlPropertyLookup.COLOR_BORDER).getValueObserver().addListener(
+				(observer, oldValue, newValue) -> {
+					if (newValue instanceof SVColor) {
+						colorBorder = ((SVColor) newValue).toJavaFXColor();
+						requestRender();
+					}
+				}
+		);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
 		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
@@ -170,13 +205,27 @@ public class ButtonRenderer extends ArmaControlRenderer {
 			blinkControlHandler.paint(gc);
 		}
 
+		final int controlWidth = getWidth();
+		final int controlHeight = getHeight();
+
 		if (isEnabled()) {
 			//won't draw shadow if not enabled
 			Paint old = gc.getStroke();
 			gc.setStroke(colorShadow);
-			int w = (int) (getWidth() * offsetX);
-			int h = (int) (getHeight() * offsetY);
+			int w = (int) Math.round(controlWidth * offsetX);
+			int h = (int) Math.round(controlHeight * offsetY);
 			Region.fillRectangle(gc, x1 + w, y1 + h, x2 + w, y2 + h);
+			gc.setStroke(old);
+		}
+
+		if (borderSize > 0) {
+			final int trim = 1;
+			int borderWidth = (int) Math.round(controlWidth * borderSize);
+			int borderX = this.x1 - borderWidth;
+
+			Paint old = gc.getStroke();
+			gc.setStroke(colorBorder);
+			Region.fillRectangle(gc, borderX, this.y1 + trim, borderX + borderWidth, y2 - trim);
 			gc.setStroke(old);
 		}
 
@@ -199,7 +248,27 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				}
 			}
 
-			super.paint(gc, canvasContext);
+			if (mouseButtonDown == MouseButton.PRIMARY) {
+				int oldX1 = this.x1;
+				int oldX2 = this.x2;
+				int oldY1 = this.y1;
+				int oldY2 = this.y2;
+
+				this.x1 = (int) (oldX1 + Math.round(controlWidth * offsetPressedX));
+				this.y1 = (int) (oldY1 + Math.round(controlHeight * offsetPressedY));
+				this.x2 = x1 + controlWidth;
+				this.y2 = y1 + controlHeight;
+
+				super.paint(gc, canvasContext);
+
+				this.x1 = oldX1;
+				this.x2 = oldX2;
+				this.y1 = oldY1;
+				this.y2 = oldY2;
+			} else {
+				super.paint(gc, canvasContext);
+			}
+
 			textRenderer.paint(gc);
 
 			//reset the colors again

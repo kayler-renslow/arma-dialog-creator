@@ -17,8 +17,10 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Base class for JavaFX canvas rendering of arma controls
@@ -68,6 +70,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 preview mode. Set by {@link #setMouseOver(int, int, boolean)}
 	 */
 	protected boolean mouseOver;
+	/**
+	 Set by {@link #mousePress(MouseButton)}. If null, the mouse is not currently clicking on this renderer. If not
+	 null, the user's mouse is pressing down on this renderer.
+	 */
+	@Nullable
+	protected MouseButton mouseButtonDown;
 
 	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
@@ -522,5 +530,13 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		}
 
 		gc.restore();
+	}
+
+	public void mousePress(@NotNull MouseButton mb) {
+		this.mouseButtonDown = mb;
+	}
+
+	public void mouseRelease() {
+		this.mouseButtonDown = null;
 	}
 }
