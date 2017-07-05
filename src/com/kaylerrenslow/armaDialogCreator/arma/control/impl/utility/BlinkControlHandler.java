@@ -28,6 +28,9 @@ public class BlinkControlHandler {
 		});
 	}
 
+	/**
+	 Will manipulate {@link GraphicsContext#getGlobalAlpha()} based on an internal clock.
+	 */
 	public void paint(@NotNull GraphicsContext gc) {
 		long now = System.currentTimeMillis();
 		long timePast = now - lastPaint;

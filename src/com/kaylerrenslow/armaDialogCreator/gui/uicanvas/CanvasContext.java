@@ -29,6 +29,10 @@ public class CanvasContext {
 		return paintLast;
 	}
 
+	/**
+	 @return true if {@link CanvasControl} shouldn't paint all details.
+	 Return false if should paint all details.
+	 */
 	public boolean paintPartial() {
 		return true;
 	}

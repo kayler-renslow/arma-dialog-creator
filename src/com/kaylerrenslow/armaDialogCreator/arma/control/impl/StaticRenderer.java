@@ -36,15 +36,15 @@ public class StaticRenderer extends ArmaControlRenderer {
 		Text, Image, Error, ErrorImage, Line, Frame
 	}
 
-	private final BlinkControlHandler blinkControlHandler;
-	private final ControlProperty styleProperty;
-	private final ControlProperty textProperty;
+	private BlinkControlHandler blinkControlHandler;
+	private ControlProperty styleProperty;
+	private ControlProperty textProperty;
 
 	private BasicTextRenderer textRenderer;
 	private TooltipRenderer tooltipRenderer;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = graphicsContext -> {
-		tooltipRenderer.paint(graphicsContext, this.mouseOverX, this.mouseOverY);
+	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
+		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 		return null;
 	};
 

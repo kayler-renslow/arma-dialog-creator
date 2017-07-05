@@ -1,11 +1,13 @@
 **Added:**
-* ability to paint the tooltips after everything else was painted
+* tooltip renderer to button
+* text field in color array editor that shows the color as a whole array string
+* colors update for focus, disabled, active, etc for button
 
 **Changed:**
-* made some optimizations to preview and some renderers
+* button renderer got some optimizations
 
 **Fixed:**
-* 
+* preview window wasn't always changing the resolution based on the editor resolution
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

@@ -75,12 +75,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
-				if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
-					canvas.setWidth(newResolution.getScreenWidth());
-					canvas.setHeight(newResolution.getScreenHeight());
-				}
-				display.resolutionUpdate(newResolution);
-				requestPaint();
+				updateResolution(newResolution);
 			}
 		});
 
@@ -108,6 +103,15 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		timer = new CanvasAnimationTimer();
 		timer.start();
 
+	}
+
+	protected void updateResolution(@NotNull Resolution newResolution) {
+		if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
+			canvas.setWidth(newResolution.getScreenWidth());
+			canvas.setHeight(newResolution.getScreenHeight());
+		}
+		display.resolutionUpdate(newResolution);
+		requestPaint();
 	}
 
 	public int getCanvasWidth() {

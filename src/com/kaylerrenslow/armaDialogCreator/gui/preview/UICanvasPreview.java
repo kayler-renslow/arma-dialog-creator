@@ -68,6 +68,11 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 		}
 	}
 
+	@Override
+	public void updateResolution(@NotNull Resolution newResolution) {
+		super.updateResolution(newResolution);
+	}
+
 	private void setMouseOver(@NotNull ArmaControl armaControl, int mousex, int mousey, boolean mouseOver) {
 		armaControl.getRenderer().setMouseOver(mousex, mousey, mouseOver);
 	}

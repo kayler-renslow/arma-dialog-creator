@@ -26,6 +26,13 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
+	/**
+	 A shared variable across all {@link ArmaControlRenderer} instances.
+	 Set this value when you would like to define what the "focused" control is during preview render.
+	 Initial value is null.
+	 */
+	protected static ArmaControlRenderer focusedControlRenderer = null;
+
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;

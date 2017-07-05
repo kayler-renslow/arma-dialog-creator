@@ -188,10 +188,19 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 */
 	@NotNull
 	public String toString() {
-		return "{" + format.format(r) + ","
-				+ format.format(g) + ","
-				+ format.format(b) + ","
-				+ format.format(a) + "}";
+		return toString(r, g, b, a);
+	}
+
+	/**
+	 @return the given colors into a String.
+	 Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}"
+	 */
+	@NotNull
+	public static String toString(double red, double green, double blue, double alpha) {
+		return "{" + format.format(red) + ","
+				+ format.format(green) + ","
+				+ format.format(blue) + ","
+				+ format.format(alpha) + "}";
 	}
 
 	/** Convert this color into a JavaFX color */

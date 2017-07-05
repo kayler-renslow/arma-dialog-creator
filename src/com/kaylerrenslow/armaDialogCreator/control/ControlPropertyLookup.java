@@ -83,6 +83,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	SOUND_PUSH(57, "soundPush", PropertyType.Sound),
 	TILE_W(58, "tileW", PropertyType.Int),
 	TILE_H(59, "tileH", PropertyType.Int),
+	COLOR_FOCUSED2(60, "colorFocused2", PropertyType.Color),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

@@ -79,4 +79,14 @@ public class SVDouble extends SVNumber {
 	public boolean equals(Object o){
 		return super.equals(o);
 	}
+
+	@Override
+	public int toInt() {
+		return (int) Math.round(d);
+	}
+
+	@Override
+	public double toDouble() {
+		return d;
+	}
 }

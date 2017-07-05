@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit;
 
  @author Kayler
  @since 07/15/2016. */
-public class SVExpression extends SerializableValue {
+public class SVExpression extends SerializableValue implements SVNumericValue {
 
 	private static final ResourceBundle bundle = Lang.getBundle("ExpressionBundle");
 
@@ -122,5 +122,15 @@ public class SVExpression extends SerializableValue {
 	@Override
 	public String[] getAsStringArray() {
 		return new String[]{exp};
+	}
+
+	@Override
+	public int toInt() {
+		return (int) getNumVal();
+	}
+
+	@Override
+	public double toDouble() {
+		return getNumVal();
 	}
 }

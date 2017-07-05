@@ -76,4 +76,13 @@ public class SVInteger extends SVNumber {
 		return false;
 	}
 
+	@Override
+	public int toInt() {
+		return i;
+	}
+
+	@Override
+	public double toDouble() {
+		return i;
+	}
 }

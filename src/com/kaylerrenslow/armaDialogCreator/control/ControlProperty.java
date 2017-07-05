@@ -246,16 +246,14 @@ public class ControlProperty {
 	 @throws NullPointerException  when {@link #getValue()} is null
 	 */
 	public int getIntValue() {
-		if (getValue() == null) {
+		SerializableValue value = getValue();
+		if (value == null) {
 			throw new NullPointerException("value is null");
 		}
-		if (getValue() instanceof SVInteger) {
-			return ((SVInteger) getValue()).getInt();
+		if (value instanceof SVNumericValue) {
+			return ((SVNumericValue) value).toInt();
 		}
-		if (getValue() instanceof SVExpression) {
-			return (int) ((SVExpression) getValue()).getNumVal();
-		}
-		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
+		throw new IllegalStateException("Incompatible type fetching. Value class name=" + value.getClass().getName());
 	}
 
 	/**
@@ -266,16 +264,14 @@ public class ControlProperty {
 	 @throws NullPointerException  when {@link #getValue()} is null
 	 */
 	public double getFloatValue() {
-		if (getValue() == null) {
+		SerializableValue value = getValue();
+		if (value == null) {
 			throw new NullPointerException("value is null");
 		}
-		if (getValue() instanceof SVDouble) {
-			return ((SVDouble) getValue()).getDouble();
+		if (value instanceof SVNumericValue) {
+			return ((SVNumericValue) value).toDouble();
 		}
-		if (getValue() instanceof SVExpression) {
-			return ((SVExpression) getValue()).getNumVal();
-		}
-		throw new IllegalStateException("Incompatible type fetching. My serializable value class name=" + getValue().getClass().getName());
+		throw new IllegalStateException("Incompatible type fetching. Value class name=" + value.getClass().getName());
 	}
 
 	/**

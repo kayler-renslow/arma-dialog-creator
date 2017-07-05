@@ -115,6 +115,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 		private final InputField<DoubleChecker, Double> g = new InputField<>(new DoubleChecker(), 0d, true);
 		private final InputField<DoubleChecker, Double> b = new InputField<>(new DoubleChecker(), 0d, true);
 		private final InputField<DoubleChecker, Double> a = new InputField<>(new DoubleChecker(), 0d, true);
+		private final TextField tfAsArray = new TextField();
 		private boolean cancelled = true;
 
 		public ArrayEditorPopup(@Nullable Color initialColor) {
@@ -134,8 +135,14 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 			StackPane stackPaneCanvas = new StackPane(canvas);
 			stackPaneCanvas.setBorder(root.getBorder());
 			stackPaneCanvas.setMaxWidth(canvas.getWidth());
-			root.getChildren().add(stackPaneCanvas);
 			stackPaneCanvas.setAlignment(Pos.CENTER_LEFT);
+
+			HBox paneHeader = new HBox(5, stackPaneCanvas, tfAsArray);
+			root.getChildren().add(paneHeader);
+			HBox.setHgrow(tfAsArray, Priority.ALWAYS);
+
+			tfAsArray.setEditable(false);
+
 			GraphicsContext gc = canvas.getGraphicsContext2D();
 
 
@@ -148,6 +155,8 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 					gc.setGlobalAlpha(c.getOpacity());
 					gc.setFill(c);
 					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+					tfAsArray.setText(SVColorArray.toString(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
 				}
 			};
 			r.getValueObserver().addListener(valListener);

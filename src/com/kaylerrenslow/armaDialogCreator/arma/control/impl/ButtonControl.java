@@ -59,7 +59,8 @@ public class ButtonControl extends ArmaControl {
 						ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
 						ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
 						ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-						ControlPropertyLookup.BLINKING_PERIOD
+						ControlPropertyLookup.BLINKING_PERIOD,
+						ControlPropertyLookup.COLOR_FOCUSED2
 				},
 				ControlPropertyLookupConstant.PRIORITY_SORT)
 		);

@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.preview;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
+import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -38,11 +40,14 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		if (armaDisplay == null) {
 			throw new IllegalStateException("no display set");
 		}
+		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ApplicationData.getManagerInstance());
 		if (previewCanvas == null) {
-			previewCanvas = new UICanvasPreview(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), armaDisplay);
+			previewCanvas = new UICanvasPreview(resolution, armaDisplay);
 			myRootElement.getChildren().add(previewCanvas);
 		}
 		previewCanvas.setDisplay(armaDisplay);
+		previewCanvas.updateResolution(resolution);
+
 		super.show();
 	}
 	
