@@ -353,6 +353,11 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		return canvas;
 	}
 
+	/** Clear any listeners attached to {@link #display} */
+	public void clearListeners() {
+		setDisplayListeners(false);
+	}
+
 	/**
 	 Created by Kayler on 05/13/2016.
 	 */

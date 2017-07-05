@@ -387,6 +387,15 @@ class ControlPropertyValueEditors {
 		}
 	}
 
+	static class SQFEditor extends InputFieldEditor<SVString> {
+		SQFEditor(ControlClass control, ControlProperty controlProperty) {
+			super(PropertyType.SQF, control, controlProperty,
+					new SQFDataChecker(),
+					"SQF"
+			);
+		}
+	}
+
 	/**
 	 Used for when control property requires color input.
 	 Use this only when the ControlProperty's value is of type {@link SVColorArray}

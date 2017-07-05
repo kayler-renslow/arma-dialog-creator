@@ -1,13 +1,13 @@
 **Added:**
-* tooltip renderer to button
-* text field in color array editor that shows the color as a whole array string
-* colors update for focus, disabled, active, etc for button
+* the SQF value/cprop editor
 
 **Changed:**
-* button renderer got some optimizations
+* made the raw value outline in editor container not appear when the property has options
 
 **Fixed:**
-* preview window wasn't always changing the resolution based on the editor resolution
+* when changing projects, the preview window would have the wrong instance of canvas view
+    * just made the popup window appear with a new instance each time
+* background color of button control wasn't being initialized to what it actually was
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -21,3 +21,6 @@
     * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
 * July 3: inherited values aren't always setting the editor's value correctly. Sometimes, the value is present but the editor isn't displaying that value
+* July 4: file paths should be relative to the workspace, not the project!
+    * ../img/pice.jpg should be img/pice.jpg
+    * we need to do it this way because in mission files, the directory of the description.ext is the starting directory

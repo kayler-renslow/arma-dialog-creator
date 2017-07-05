@@ -78,7 +78,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case Texture:
 				return new InputFieldValueEditor.ArmaStringEditor();
 			case SQF:
-				return new InputFieldValueEditor.ArmaStringEditor();
+				return new InputFieldValueEditor.SQFEditor();
 			case Raw:
 				return new InputFieldValueEditor.RawEditor();
 		}

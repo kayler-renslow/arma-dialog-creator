@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
@@ -142,7 +143,11 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		);
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		if (colorBackground.getValue() instanceof SVColor) {
+			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
+		}
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
@@ -166,7 +171,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		}
 
 		if (isEnabled()) {
-			//won't draw shadow is not enabled
+			//won't draw shadow if not enabled
 			Paint old = gc.getStroke();
 			gc.setStroke(colorShadow);
 			int w = (int) (getWidth() * offsetX);
@@ -205,9 +210,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 			textRenderer.paint(gc);
 		}
 
-		if (preview && this.mouseOver)
-
-		{
+		if (preview && this.mouseOver) {
 			canvasContext.paintLast(tooltipRenderFunc);
 		}
 

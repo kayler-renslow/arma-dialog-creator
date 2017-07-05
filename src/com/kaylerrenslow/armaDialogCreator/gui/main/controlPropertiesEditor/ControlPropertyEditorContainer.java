@@ -380,17 +380,19 @@ class ControlPropertyEditorContainer extends HBox {
 		);
 		stackPanePropertyInput.getChildren().setAll(propertyValueEditor.getRootNode());
 		if (controlProperty.getValue() instanceof SVRaw) {
-			stackPanePropertyInput.setPadding(new Insets(1));
-			stackPanePropertyInput.setBorder(
-					new Border(
-							new BorderStroke(
-									Color.DARKORANGE,
-									BorderStrokeStyle.DASHED,
-									CornerRadii.EMPTY,
-									BorderStroke.THIN
-							)
-					)
-			);
+			if (controlProperty.getPropertyLookup().getOptions() == null) {
+				stackPanePropertyInput.setPadding(new Insets(1));
+				stackPanePropertyInput.setBorder(
+						new Border(
+								new BorderStroke(
+										Color.DARKORANGE,
+										BorderStrokeStyle.DASHED,
+										CornerRadii.EMPTY,
+										BorderStroke.THIN
+								)
+						)
+				);
+			}
 		} else {
 			stackPanePropertyInput.setBorder(null);
 			stackPanePropertyInput.setPadding(Insets.EMPTY);
@@ -435,7 +437,7 @@ class ControlPropertyEditorContainer extends HBox {
 			case Texture:
 				return new StringEditor(controlClass, controlProperty);
 			case SQF:
-				return new StringEditor(controlClass, controlProperty);
+				return new SQFEditor(controlClass, controlProperty);
 			case Raw:
 				return new RawEditor(controlClass, controlProperty);
 		}

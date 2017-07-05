@@ -37,7 +37,6 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 	protected void paint() {
 		this.backgroundColor = canvasView.getCanvasBackgroundColor();
 		this.backgroundImage = canvasView.getCanvasBackgroundImage();
-
 		super.paint();
 	}
 

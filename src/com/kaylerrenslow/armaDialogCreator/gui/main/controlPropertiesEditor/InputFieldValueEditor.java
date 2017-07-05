@@ -80,9 +80,16 @@ public abstract class InputFieldValueEditor<V extends SerializableValue> impleme
 		}
 	}
 
+	public static class SQFEditor extends InputFieldValueEditor<SVString> {
+		public SQFEditor() {
+			super(new SQFDataChecker());
+		}
+	}
+
 	public static class RawEditor extends InputFieldValueEditor<SVRaw> {
 		public RawEditor() {
 			super(new RawChecker(null));
 		}
 	}
+
 }
