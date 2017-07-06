@@ -43,7 +43,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	TOOLTIP_COLOR_BOX(18, "tooltipColorBox", PropertyType.Color),
 	ALIGN(19, "align", PropertyType.String, new ControlPropertyOption("Left", "left", "Left align."), new ControlPropertyOption("Center", "center", "Center align."), new ControlPropertyOption("Right", "right", "Right align.")),
 	VALIGN(20, "valign", PropertyType.String, new ControlPropertyOption("Top", "top", "Top align."), new ControlPropertyOption("Middle", "middle", "Middle align."), new ControlPropertyOption("Bottom", "bottom", "Bottom align.")),
-	COLOR_HEX(21, "color", PropertyType.HexColorString),
+	COLOR__HEX(21, "color", PropertyType.HexColorString),
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString), //default shadow color
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.Float),
 
@@ -84,6 +84,24 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	TILE_W(58, "tileW", PropertyType.Int),
 	TILE_H(59, "tileH", PropertyType.Int),
 	COLOR_FOCUSED2(60, "colorFocused2", PropertyType.Color),
+	ANIM_TEXTURE_NORMAL(61, "animTextureNormal", PropertyType.Texture),
+	ANIM_TEXTURE_DISABLED(62, "animTextureDisabled", PropertyType.Texture),
+	ANIM_TEXTURE_OVER(63, "animTextureOver", PropertyType.Texture),
+	ANIM_TEXTURE_PRESSED(64, "animTexturePressed", PropertyType.Texture),
+	ANIM_TEXTURE_FOCUSED(65, "animTextureFocused", PropertyType.Texture),
+	ANIM_TEXTURE_DEFAULT(66, "animTextureDefault", PropertyType.Texture),
+	TEXTURE_NO_SHORTCUT(67, "textureNoShortcut", PropertyType.Texture),
+	COLOR(68, "color", PropertyType.Color),
+	COLOR2(69, "color2", PropertyType.Color),
+	COLOR_BACKGROUND_FOCUSED(70, "colorBackgroundFocused", PropertyType.Color),
+	COLOR_BACKGROUND2(71, "colorBackground2", PropertyType.Color),
+	LEFT(72, "left", PropertyType.Float),
+	TOP(73, "top", PropertyType.Float),
+	RIGHT(74, "right", PropertyType.Float),
+	BOTTOM(75, "bottom", PropertyType.Float),
+	PERIOD_FOCUS(76, "periodFocus", PropertyType.Float),
+	PERIOD_OVER(77, "periodOver", PropertyType.Float),
+	SHORTCUTS(78, "shortcuts", PropertyType.Array),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),
@@ -136,7 +154,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	EVENT_ON_OBJECT_MOVED(1047, "onObjectMoved", PropertyType.SQF),
 	EVENT_ON_MENU_SELECTED(1048, "onMenuSelected", PropertyType.SQF),
 	EVENT_ON_DRAW(1049, "onDraw", PropertyType.SQF),
-	EVENT_ON_VIDEO_STOPPED(1050, "onVideoStopped", PropertyType.SQF),;
+	EVENT_ON_VIDEO_STOPPED(1050, "onVideoStopped", PropertyType.SQF);
 
 
 	public static final ReadOnlyList<ControlPropertyLookup> EMPTY = new ReadOnlyList<>(new ArrayList<>());

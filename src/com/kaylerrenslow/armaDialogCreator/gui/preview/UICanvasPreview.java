@@ -61,10 +61,11 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 	@Override
 	protected void mouseMoved(int mousex, int mousey) {
 		if (mouseOverControl != null) {
-			if (mouseOverControl.getRenderer().containsPoint(mousex, mousey)) {
-				//nothing to do
-				return;
-			}
+			//Do not check if mouseOverControl still contains the point
+			//because it may be wider that the control it is behind (let's call it behindControl).
+			//if mouseOverControl is wider than behindControl and the mouse moves over behindControl, the mouse would
+			//both be over mouseOverControl and behindControl, but we should set mouseOverControl to behindControl since
+			//behindControl is in front of current mouseOverControl.
 			setMouseOver(mouseOverControl, 0, 0, false);
 		}
 		Iterator<ArmaControl> controlIter = display.iteratorForAllControls(true);

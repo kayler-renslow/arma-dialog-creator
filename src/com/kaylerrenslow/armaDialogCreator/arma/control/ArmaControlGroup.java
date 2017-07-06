@@ -46,26 +46,23 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
 
-		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(
-				ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-						defaultRequiredProperties, new ControlPropertyLookup[]{
-						}));
-
-		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
-				ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-						defaultOptionalProperties, new ControlPropertyLookup[]{
-						}));
-
 		@NotNull
 		@Override
 		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
-			return requiredProperties;
+			return new ReadOnlyList<>(
+					ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+							defaultRequiredProperties, new ControlPropertyLookup[]{
+							}));
 		}
 
 		@NotNull
 		@Override
 		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
-			return optionalProperties;
+			return new ReadOnlyList<>(
+					ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
+							defaultOptionalProperties, new ControlPropertyLookup[]{
+							}));
+
 		}
 
 		@NotNull

@@ -25,76 +25,70 @@ public class StaticControl extends ArmaControl {
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
-		private final ReadOnlyList<ControlPropertyLookupConstant> requiredProperties = new ReadOnlyList<>(
-				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
-						new ControlPropertyLookup[]{
-								ControlPropertyLookup.COLOR_BACKGROUND,
-								ControlPropertyLookup.COLOR_TEXT,
-								ControlPropertyLookup.TEXT,
-								ControlPropertyLookup.FONT,
-								ControlPropertyLookup.SIZE_EX
-						},
-						ControlPropertyLookupConstant.PRIORITY_SORT)
-		);
-
-		private final ReadOnlyList<ControlPropertyLookupConstant> optionalProperties = new ReadOnlyList<>(
-				ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
-						ArmaControlSpecRequirement.mergeArrays(
-								new ControlPropertyLookup[]{
-										ControlPropertyLookup.MOVING,
-										ControlPropertyLookup.SHADOW,
-										ControlPropertyLookup.TOOLTIP,
-										ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-										ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-										ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-										ControlPropertyLookup.FIXED_WIDTH,
-										ControlPropertyLookup.LINE_SPACING,
-										ControlPropertyLookup.BLINKING_PERIOD,
-										ControlPropertyLookup.TILE_W,
-										ControlPropertyLookup.TILE_H
-								},
-								//events
-								ControlPropertyEventLookup.allWithControlScope()
-						),
-						ControlPropertyLookupConstant.PRIORITY_SORT
-				)
-		);
-
 		@NotNull
 		@Override
 		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
-			return requiredProperties;
+			return new ReadOnlyList<>(
+					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
+							new ControlPropertyLookup[]{
+									ControlPropertyLookup.COLOR_BACKGROUND,
+									ControlPropertyLookup.COLOR_TEXT,
+									ControlPropertyLookup.TEXT,
+									ControlPropertyLookup.FONT,
+									ControlPropertyLookup.SIZE_EX
+							},
+							ControlPropertyLookupConstant.PRIORITY_SORT)
+			);
 		}
 
 		@NotNull
 		@Override
 		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
-			return optionalProperties;
+			return new ReadOnlyList<>(
+					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+							ArmaControlSpecRequirement.mergeArrays(
+									new ControlPropertyLookup[]{
+											ControlPropertyLookup.MOVING,
+											ControlPropertyLookup.SHADOW,
+											ControlPropertyLookup.TOOLTIP,
+											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ControlPropertyLookup.FIXED_WIDTH,
+											ControlPropertyLookup.LINE_SPACING,
+											ControlPropertyLookup.BLINKING_PERIOD,
+											ControlPropertyLookup.TILE_W,
+											ControlPropertyLookup.TILE_H
+									},
+									//events
+									ControlPropertyEventLookup.allWithControlScope()
+							),
+							ControlPropertyLookupConstant.PRIORITY_SORT
+					)
+			);
 		}
-
-		private final ControlStyle[] allowedStyles = {
-				ControlStyle.LEFT,
-				ControlStyle.RIGHT,
-				ControlStyle.CENTER,
-				ControlStyle.MULTI,
-				ControlStyle.TITLE_BAR,
-				ControlStyle.PICTURE,
-				ControlStyle.FRAME,
-				ControlStyle.BACKGROUND,
-				ControlStyle.GROUP_BOX,
-				ControlStyle.GROUP_BOX2,
-				ControlStyle.HUD_BACKGROUND,
-				ControlStyle.WITH_RECT,
-				ControlStyle.LINE,
-				ControlStyle.NO_RECT,
-				ControlStyle.KEEP_ASPECT_RATIO,
-				ControlStyle.TILE_PICTURE
-		};
 
 		@NotNull
 		@Override
 		public ControlStyle[] getAllowedStyles() {
-			return allowedStyles;
+			return new ControlStyle[]{
+					ControlStyle.LEFT,
+					ControlStyle.RIGHT,
+					ControlStyle.CENTER,
+					ControlStyle.MULTI,
+					ControlStyle.TITLE_BAR,
+					ControlStyle.PICTURE,
+					ControlStyle.FRAME,
+					ControlStyle.BACKGROUND,
+					ControlStyle.GROUP_BOX,
+					ControlStyle.GROUP_BOX2,
+					ControlStyle.HUD_BACKGROUND,
+					ControlStyle.WITH_RECT,
+					ControlStyle.LINE,
+					ControlStyle.NO_RECT,
+					ControlStyle.KEEP_ASPECT_RATIO,
+					ControlStyle.TILE_PICTURE
+			};
 		}
 	}
 

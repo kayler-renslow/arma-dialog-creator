@@ -32,7 +32,7 @@ public enum ControlPropertyEventLookup {
 	EventOnMouseMoving(ControlPropertyLookup.EVENT_ON_MOUSE_MOVING, 2, "Control"),
 	EventOnMouseHolding(ControlPropertyLookup.EVENT_ON_MOUSE_HOLDING, 2, "Display"),
 	EventOnMouseZChanged(ControlPropertyLookup.EVENT_ON_MOUSE_ZCHANGED, 2, "Control"),
-	EventOnCanDestroy(ControlPropertyLookup.EVENT_ON_CAN_DESTROY, 3, "Control only"),
+	EventOnCanDestroy(ControlPropertyLookup.EVENT_ON_CAN_DESTROY, 3, "Control"),
 	EventOnDestroy(ControlPropertyLookup.EVENT_ON_DESTROY, 3, "Control"),
 	EventOnButtonClick(ControlPropertyLookup.EVENT_ON_BUTTON_CLICK, 1, "Control"),
 	EventOnButtonDblClick(ControlPropertyLookup.EVENT_ON_BUTTON_DBL_CLICK, -1, "Button"),
@@ -90,20 +90,32 @@ public enum ControlPropertyEventLookup {
 		return null;
 	}
 
-	private static ControlPropertyLookup[] allWithControlPriority;
+	private static ControlPropertyLookup[] allWithControlScope, allWithButtonScope;
 
 	@NotNull
 	public static ControlPropertyLookup[] allWithControlScope() {
-		if (allWithControlPriority == null) {
-			ArrayList<ControlPropertyLookup> lookups = new ArrayList<>(values().length);
-			for (ControlPropertyEventLookup lookup : values()) {
-				if (lookup.scope.toLowerCase().contains("control")) {
-					lookups.add(lookup.lookup);
-				}
-			}
-			allWithControlPriority = lookups.toArray(new ControlPropertyLookup[lookups.size()]);
+		if (allWithControlScope == null) {
+			allWithControlScope = allWith("control");
 		}
+		return allWithControlScope;
+	}
 
-		return allWithControlPriority;
+	@NotNull
+	public static ControlPropertyLookup[] allWithButtonScope() {
+		if (allWithButtonScope == null) {
+			allWithButtonScope = allWith("button");
+		}
+		return allWithButtonScope;
+	}
+
+	@NotNull
+	private static ControlPropertyLookup[] allWith(@NotNull String s) {
+		ArrayList<ControlPropertyLookup> lookups = new ArrayList<>(values().length);
+		for (ControlPropertyEventLookup lookup : values()) {
+			if (lookup.scope.toLowerCase().contains(s)) {
+				lookups.add(lookup.lookup);
+			}
+		}
+		return lookups.toArray(new ControlPropertyLookup[lookups.size()]);
 	}
 }

@@ -28,13 +28,6 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 05/20/2016. */
 public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
-	/**
-	 A shared variable across all {@link ArmaControlRenderer} instances.
-	 Set this value when you would like to define what the "focused" control is during preview render.
-	 Initial value is null.
-	 */
-	protected static ArmaControlRenderer focusedControlRenderer = null;
-
 	protected final ArmaControl myControl;
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
@@ -76,6 +69,13 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 */
 	@Nullable
 	protected MouseButton mouseButtonDown;
+	/** True if the control has focus, false if it doesn't */
+	protected boolean focused = false;
+	/**
+	 Set to true if the preview should focus to this control. The preview will decide whether or not to actually
+	 focus.
+	 */
+	protected boolean requestFocus = false;
 
 	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
@@ -538,5 +538,9 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	public void mouseRelease() {
 		this.mouseButtonDown = null;
+	}
+
+	public void setFocused(boolean focused) {
+		this.focused = focused;
 	}
 }

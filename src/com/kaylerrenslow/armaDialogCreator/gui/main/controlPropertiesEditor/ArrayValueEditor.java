@@ -1,6 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVStringArray;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVArray;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
@@ -20,7 +20,7 @@ import java.util.ArrayList;
 /**
  Created by Kayler on 07/13/2016.
  */
-public class ArrayValueEditor implements ValueEditor<SVStringArray> {
+public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	private final ValueListener<String> editorValueUpdateListener = new ValueListener<String>() {
 		@Override
@@ -37,7 +37,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	protected final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
 
-	private final ValueObserver<SVStringArray> valueObserver = new ValueObserver<>(null);
+	private final ValueObserver<SVArray> valueObserver = new ValueObserver<>(null);
 
 	public ArrayValueEditor(int numInitialFields) {
 		masterPane = new HBox(5, editorsPane);
@@ -100,7 +100,7 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 
 	@NotNull
 	@Override
-	public ReadOnlyValueObserver<SVStringArray> getReadOnlyObserver() {
+	public ReadOnlyValueObserver<SVArray> getReadOnlyObserver() {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 
@@ -118,12 +118,12 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 	}
 
 	@Override
-	public SVStringArray getValue() {
+	public SVArray getValue() {
 		return valueObserver.getValue();
 	}
 
 	@Nullable
-	private SVStringArray createValue() {
+	private SVArray createValue() {
 		String[] values = new String[editors.size()];
 		int i = 0;
 		for (InputField tf : editors) {
@@ -132,11 +132,11 @@ public class ArrayValueEditor implements ValueEditor<SVStringArray> {
 			}
 			values[i++] = tf.getText();
 		}
-		return new SVStringArray(values);
+		return new SVArray(values);
 	}
 
 	@Override
-	public void setValue(SVStringArray val) {
+	public void setValue(SVArray val) {
 		if (val == null) {
 			for (InputField<ArmaStringChecker, String> editor : editors) {
 				editor.setValue(null);

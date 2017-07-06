@@ -2,7 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.AlternatorHelper;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
@@ -143,19 +146,8 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		);
 		myControl.findProperty(ControlPropertyLookup.DEFAULT).getValueObserver().addListener(
 				(observer, oldValue, newValue) -> {
-					if (newValue == null && focusedControlRenderer == this) {
-						focusedControlRenderer = null;
-						requestRender();
-						return;
-					}
-					if (newValue instanceof SVBoolean) {
-						if (((SVBoolean) newValue).isTrue()) {
-							focusedControlRenderer = this;
-						} else {
-							focusedControlRenderer = null;
-						}
-						requestRender();
-					}
+					requestFocus = newValue instanceof SVBoolean && ((SVBoolean) newValue).isTrue();
+					requestRender();
 				}
 		);
 		myControl.findProperty(ControlPropertyLookup.BORDER_SIZE).getValueObserver().addListener(
@@ -240,10 +232,10 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				if (this.mouseOver) {
 					//if the mouse is over this control, set the background color to backgroundColorActive
 					setBackgroundColor(colorBackgroundActive);
-				} else if (focusedControlRenderer == this) {
+				} else if (focused) {
 					double ratio = focusedColorAlternator.updateAndGetRatio();
 					setBackgroundColor(
-							ColorHelper.transition(ratio, colorFocused, colorFocused2 == null ? backgroundColor : colorFocused2)
+							colorFocused.interpolate(colorFocused2 == null ? backgroundColor : colorFocused2, ratio)
 					);
 				}
 			}

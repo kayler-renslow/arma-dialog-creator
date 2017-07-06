@@ -10,17 +10,17 @@ import java.util.Arrays;
 /**
  Created by Kayler on 07/13/2016.
  */
-public final class SVStringArray extends SerializableValue {
-	
-	public static final ValueConverter<SVStringArray> CONVERTER = new ValueConverter<SVStringArray>() {
+public final class SVArray extends SerializableValue {
+
+	public static final ValueConverter<SVArray> CONVERTER = new ValueConverter<SVArray>() {
 		@Override
-		public SVStringArray convert(DataContext context, @NotNull String... values) throws Exception {
-			return new SVStringArray(values);
+		public SVArray convert(DataContext context, @NotNull String... values) throws Exception {
+			return new SVArray(values);
 		}
 	};
 	private final String[] strings;
 
-	public SVStringArray(String... strings) {
+	public SVArray(@NotNull String... strings) {
 		this.strings = strings;
 	}
 	
@@ -41,7 +41,7 @@ public final class SVStringArray extends SerializableValue {
 
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVStringArray(strings);
+		return new SVArray(strings);
 	}
 
 	@NotNull
@@ -55,8 +55,8 @@ public final class SVStringArray extends SerializableValue {
 		if(o == this){
 			return true;
 		}
-		if(o instanceof SVStringArray){
-			SVStringArray other = (SVStringArray) o;
+		if (o instanceof SVArray) {
+			SVArray other = (SVArray) o;
 			return Arrays.equals(this.strings, other.strings);
 		}
 		return false;

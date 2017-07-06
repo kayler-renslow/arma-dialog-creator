@@ -1,12 +1,12 @@
 **Added:**
-* offsetPressedX, offsetPressedY, borderSize and colorBorder properties to render for button
-* ability to click a renderer in preview
+* texture parser (untested)
 
 **Changed:**
-* 
+* tooltips in prop editor container will now have \n inserted automatically
+* removed ColorHelper and now just using Color.interpolate
 
 **Fixed:**
-* 
+* mouseMoved() in UICanvasPreview was wrong.
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -25,3 +25,7 @@
         * ../img/pice.jpg should be img/pice.jpg
         * we need to do it this way because in mission files, the directory of the description.ext is the starting directory
     * header to project change the file paths to absolute ones for things like images to work
+    * button can use style 48, but the text can only be a texture
+* July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads
+    * need tests for changing nested classes from optional to required as well
+    * need texture parser tests

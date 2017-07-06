@@ -468,7 +468,19 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 			}
 		}
-		Tooltip tp = new Tooltip(lookupDocProvider.getDocumentation(lookup, type));
+		String tooltip = lookupDocProvider.getDocumentation(lookup, type);
+		StringBuilder sb = new StringBuilder(tooltip.length());
+		int len = 0;
+		for (int i = 0; i < tooltip.length(); i++) {
+			char c = tooltip.charAt(i);
+			sb.append(c);
+			len++;
+			if (len >= 60 && Character.isWhitespace(c)) {
+				len = 0;
+				sb.append('\n');
+			}
+		}
+		Tooltip tp = new Tooltip(sb.toString());
 		tp.setFont(TOOLTIP_FONT);
 		return tp;
 	}

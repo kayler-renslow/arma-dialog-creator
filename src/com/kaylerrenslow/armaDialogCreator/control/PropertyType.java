@@ -24,7 +24,7 @@ public enum PropertyType {
 	/** Is a String */
 	String(5, SVString.CONVERTER, getString("PropertyType.string"), true),
 	/** Generic array property type */
-	Array(6, SVStringArray.CONVERTER, getString("PropertyType.array"), 2, PropertyTypeHelper.EMPTY),
+	Array(6, SVArray.CONVERTER, getString("PropertyType.array"), 2, PropertyTypeHelper.EMPTY),
 	/** Color array string ({r,g,b,a} where r,g,b,a are from 0 to 1 inclusively) */
 	Color(7, SVColorArray.CONVERTER, getString("PropertyType.color"), 4, PropertyTypeHelper.EMPTY),
 	/** Is an array that is formatted to fit a sound and its params */

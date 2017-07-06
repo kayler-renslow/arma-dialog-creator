@@ -17,7 +17,7 @@ public enum ArmaControlLookup {
 	ActiveText(ControlType.ActiveText, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 
 	Button(ControlType.Button, ButtonControl.SPEC_PROVIDER, ButtonRenderer.class),
-	ShortcutButton(ControlType.ShortcutButton, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
+	ShortcutButton(ControlType.ShortcutButton, ShortcutButtonControl.SPEC_PROVIDER, ShortcutButtonRenderer.class),
 	XButton(ControlType.XButton, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 
 	Progress(ControlType.Progress, StaticControl.SPEC_PROVIDER, StaticRenderer.class),

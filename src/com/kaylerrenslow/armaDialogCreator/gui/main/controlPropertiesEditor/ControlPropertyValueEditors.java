@@ -591,22 +591,22 @@ class ControlPropertyValueEditors {
 
 	/**
 	 Used for control properties that require more than one input
-	 This editor will use {@link SVStringArray} as the ControlProperty's value type
+	 This editor will use {@link SVArray} as the ControlProperty's value type
 	 */
 	@SuppressWarnings("unchecked")
 	static class ArrayEditor extends ArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVStringArray> editorValueListener = new ReadOnlyValueListener<SVStringArray>() {
+		private final ReadOnlyValueListener<SVArray> editorValueListener = new ReadOnlyValueListener<SVArray>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVStringArray> observer, SVStringArray oldValue, SVStringArray newValue) {
+			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVArray> observer, SVArray oldValue, SVArray newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
 		private final ValueListener<SerializableValue> controlPropertyListener = new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				setValue((SVStringArray) newValue);
+				setValue((SVArray) newValue);
 			}
 		};
 
@@ -615,7 +615,7 @@ class ControlPropertyValueEditors {
 
 			this.controlProperty = controlProperty;
 
-			setValue((SVStringArray) controlProperty.getValue());
+			setValue((SVArray) controlProperty.getValue());
 			initListeners();
 		}
 
@@ -649,7 +649,7 @@ class ControlPropertyValueEditors {
 
 		@Override
 		public void refresh() {
-			setValue((SVStringArray) controlProperty.getValue());
+			setValue((SVArray) controlProperty.getValue());
 		}
 	}
 
