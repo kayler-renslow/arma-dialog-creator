@@ -78,6 +78,7 @@ public class ShortcutButtonControl extends ArmaControl {
 									ControlPropertyLookup.SOUND_PUSH,
 									ControlPropertyLookup.SOUND_CLICK,
 									ControlPropertyLookup.SOUND_ESCAPE,
+									ControlPropertyLookup.SOUND_ENTER,
 									ControlPropertyLookup.FONT,
 									ControlPropertyLookup.SIZE,
 									ControlPropertyLookup.SIZE_EX

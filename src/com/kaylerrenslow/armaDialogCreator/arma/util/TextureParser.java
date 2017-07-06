@@ -29,12 +29,12 @@ public class TextureParser {
 	@NotNull
 	public Texture parse() {
 		Pattern p = Pattern.compile(
-				"#\\(([a-zA-Z]+),(\\d+),(\\d+),(\\d+)\\)([a-zA-Z]+)\\(.*?\\)"
+				"#\\(([a-zA-Z]+),(\\d+),(\\d+),(\\d+)\\)([a-zA-Z]+)\\((.*?)\\)"
 		);
 		Matcher m = p.matcher(textureString);
 
 		if (!m.find()) {
-			error();
+			error(null);
 		}
 
 		try {
@@ -43,80 +43,105 @@ public class TextureParser {
 			int height = Integer.parseInt(m.group(3));
 			int numMips = Integer.parseInt(m.group(4));
 
-			String textureType = m.group(5);
+			String textureName = m.group(5);
 			String[] args = m.group(6).split(",");
-			switch (textureType) {
+			switch (textureName) {
 				case "perlinNoise": {
-					if (args.length != 4) {
-						error();
-					}
-					//fallthrough
+					int xScale = Integer.parseInt(args[0]);
+					int yScale = Integer.parseInt(args[1]);
+					int min = Integer.parseInt(args[2]);
+					int max = Integer.parseInt(args[3]);
+					return new Texture.PerlinNoise(format, width, height, numMips,
+							xScale, yScale, min, max
+					);
 				}
 				case "irradiance": {
-					if (args.length != 1) {
-						error();
-					}
-					//fallthrough
+					int specPower = Integer.parseInt(args[0]);
+					return new Texture.Irradiance(format, width, height, numMips, specPower);
 				}
 				case "Fresnel": {
-					if (args.length != 2) {
-						error();
-					}
-					//fallthrough
+					double n = Double.parseDouble(args[0]);
+					double k = Double.parseDouble(args[1]);
+					return new Texture.Fresnel(format, width, height, numMips, n, k);
 				}
 				case "fresnelGlass": {
 					if (args.length != 0) {
-						error();
+						error(null);
 					}
-					//fallthrough
+					return new Texture.FresnelGlass(format, width, height, numMips);
 				}
 				case "rendertotexture": {
-					if (args.length != 3) {
-						error();
-					}
-					//fallthrough
+					String surfaceName = args[0];
+					String type = args[1];
+					double aspectRatio = Double.parseDouble(args[2]);
+					return new Texture.RenderToTexture(format, width, height, numMips, surfaceName, type, aspectRatio);
 				}
 				case "treeCrown": {
-					if (args.length != 1) {
-						error();
-					}
-					//fallthrough
+					double density = Double.parseDouble(args[0]);
+					return new Texture.TreeCrown(format, width, height, numMips, density);
 				}
 				case "waterIrradiance": {
-					if (args.length != 1) {
-						error();
-					}
-					//returns a pink color
-					return new Texture.Color(format, width, height, numMips, 1.0, 0.7529412, 0.79607844, 1);
+					int specPower = Integer.parseInt(args[0]);
+					return new Texture.WaterIrradiance(format, width, height, numMips, specPower);
+
 				}
 				case "color": {
-					double r = Double.parseDouble(args[0]);
-					double g = Double.parseDouble(args[1]);
-					double b = Double.parseDouble(args[2]);
-					double a = Double.parseDouble(args[3]);
-					return new Texture.Color(format, width, height, numMips, r, g, b, a);
+					String textureType = null;
+					if (args.length > 4) {
+						textureType = args[5];
+					}
+					if (format.equals("rgb")) {
+						double r = Double.parseDouble(args[0]);
+						double g = Double.parseDouble(args[1]);
+						double b = Double.parseDouble(args[2]);
+						double a = Double.parseDouble(args[3]);
+						return new Texture.Color(format, width, height, numMips, r, g, b, a, textureType);
+					} else if (format.equals("argb")) {
+						double a = Double.parseDouble(args[0]);
+						double r = Double.parseDouble(args[1]);
+						double g = Double.parseDouble(args[2]);
+						double b = Double.parseDouble(args[3]);
+						return new Texture.Color(format, width, height, numMips, r, g, b, a, textureType);
+					} else {
+						error(null);
+					}
 				}
 				case "colori": {
-					int r = Integer.parseInt(args[0]);
-					int g = Integer.parseInt(args[1]);
-					int b = Integer.parseInt(args[2]);
-					int a = Integer.parseInt(args[3]);
-					return new Texture.ColorI(format, width, height, numMips, r, g, b, a);
+					String textureType = null;
+					if (args.length > 4) {
+						textureType = args[5];
+					}
+					if (format.equals("rgb")) {
+						int r = Integer.parseInt(args[0]);
+						int g = Integer.parseInt(args[1]);
+						int b = Integer.parseInt(args[2]);
+						int a = Integer.parseInt(args[3]);
+						return new Texture.ColorI(format, width, height, numMips, r, g, b, a, textureType);
+					} else if (format.equals("argb")) {
+						int a = Integer.parseInt(args[0]);
+						int r = Integer.parseInt(args[1]);
+						int g = Integer.parseInt(args[2]);
+						int b = Integer.parseInt(args[3]);
+						return new Texture.ColorI(format, width, height, numMips, r, g, b, a, textureType);
+					} else {
+						error(null);
+					}
+
 				}
 				default: {
-					error();
+					error(null);
 				}
 			}
 		} catch (Exception e) {
-			error();
+			error(e);
 		}
 
-		error();
+		error(null);
 		return null;
 	}
 
-	private void error() {
-		throw new IllegalArgumentException("Couldn't parse \"" + textureString + "\"");
+	private void error(Exception e) {
+		throw new IllegalArgumentException("Couldn't parse \"" + textureString + "\"", e);
 	}
 
 }

@@ -10,13 +10,25 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 07/05/2017 */
 public class TexturePainter {
-	public static void paint(@NotNull GraphicsContext gc, @NotNull Texture texture, int x, int y, int w, int h) {
+	/**
+	 paints the given texture from area x1,y1 to x2,y2
+
+	 @param gc context
+	 @param texture texture to paint
+	 @param x1 left
+	 @param y1 top
+	 @param x2 right
+	 @param y2 bottom
+	 */
+	public static void paint(@NotNull GraphicsContext gc, @NotNull Texture texture, int x1, int y1, int x2, int y2) {
 		if (texture instanceof Texture.Color) {
 			Texture.Color tc = (Texture.Color) texture;
-			gc.setStroke(Color.color(tc.getR(), tc.getG(), tc.getB(), tc.getA()));
-			Region.fillRectangle(gc, x, y, x + w, y + h);
+			Color color = Color.color(tc.getR(), tc.getG(), tc.getB(), tc.getA());
+			gc.setStroke(color);
+			Region.fillRectangle(gc, x1, y1, x2, y2);
 		} else {
-			throw new IllegalStateException("unpainted texture class: " + texture.getClass().getName());
+			gc.setStroke(Color.PINK);
+			Region.fillRectangle(gc, x1, y1, x2, y2);
 		}
 	}
 }

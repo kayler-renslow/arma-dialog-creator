@@ -35,10 +35,9 @@ import org.jetbrains.annotations.NotNull;
 public class BasicTextRenderer {
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
+	private final Text textObj = new Text();
 
-	protected Color textColor;
-
-	private Text textObj = new Text();
+	private Color textColor = Color.BLACK;
 	private ControlProperty sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;

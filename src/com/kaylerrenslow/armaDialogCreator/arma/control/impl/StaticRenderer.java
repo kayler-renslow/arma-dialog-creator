@@ -2,11 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageHelper;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.arma.util.Texture;
+import com.kaylerrenslow.armaDialogCreator.arma.util.TextureParser;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
@@ -33,7 +32,7 @@ import java.util.function.Function;
 public class StaticRenderer extends ArmaControlRenderer {
 
 	private enum RenderType {
-		Text, Image, Error, ErrorImage, Line, Frame
+		Text, Image, ErrorImage, Texture, ErrorTexture, Line, Frame, Error
 	}
 
 	private BlinkControlHandler blinkControlHandler;
@@ -48,15 +47,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	/**
-	 If false, the background color can't be determined so there will be a checkerboard rendered.
-	 If true, the {@link #getBackgroundColor()} will be used to paint the control.
-	 */
-	private boolean useBackgroundColor = true;
-
 	private volatile RenderType renderType = RenderType.Text;
 	/** The image to paint, or null if not set */
 	private volatile Image imageToPaint = null;
+	private Texture texture;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
 	private boolean keepImageAspectRatio = false, tileImage = false;
@@ -77,9 +71,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
-					useBackgroundColor = true;
-				} else {
-					useBackgroundColor = false;
 				}
 			}
 		});
@@ -87,8 +78,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 		if (colorBackground.getValue() instanceof SVColor) {
 			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-		} else {
-			useBackgroundColor = false;
 		}
 
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
@@ -151,6 +140,19 @@ public class StaticRenderer extends ArmaControlRenderer {
 		SerializableValue textValue = textProperty.getValue();
 		switch (renderTypeForStyle) {
 			case Image: {
+				if (textValue != null && textValue.toString().charAt(0) == '#') {
+					this.texture = null;
+					try {
+						this.texture = new TextureParser(textValue.toString()).parse();
+						renderType = RenderType.Texture;
+						imageToPaint = null;
+					} catch (IllegalArgumentException ignore) {
+						renderType = RenderType.ErrorTexture;
+					}
+
+					requestRender();
+					return;
+				}
 				ImageHelper.getImageAsync(textValue, image -> {
 					synchronized (StaticRenderer.this) {
 						//synchronized so that the renderType and imageToPaint are set at the same time
@@ -177,128 +179,135 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (preview) {
 			blinkControlHandler.paint(gc);
 		}
-		if (!useBackgroundColor) {
-			paintBackgroundError(gc);
-		} else {
-			switch (renderType) {
-				case Text: {
-					super.paint(gc, canvasContext);
-					textRenderer.paint(gc);
-					break;
-				}
-				case Line: {
-					//draw line from top left of control to bottom right of control
-					//the text color is the color of the line
-					gc.setStroke(getTextColor());
-					gc.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
-					break;
-				}
-				case Frame: {
-					gc.setStroke(getTextColor());
+		switch (renderType) {
+			case Text: {
+				super.paint(gc, canvasContext);
+				textRenderer.paint(gc);
+				break;
+			}
+			case Line: {
+				//draw line from top left of control to bottom right of control
+				//the text color is the color of the line
+				gc.setStroke(getTextColor());
+				gc.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
+				break;
+			}
+			case Frame: {
+				gc.setStroke(getTextColor());
 
-					int controlWidth = getWidth();
+				int controlWidth = getWidth();
 
-					int textWidth = 0;
-					double padding = controlWidth * .02;
-					int xLeftOfText = (int) Math.round(x1 + padding);
+				int textWidth = 0;
+				double padding = controlWidth * .02;
+				int xLeftOfText = (int) Math.round(x1 + padding);
 
-					//draw the text, if the length is > 0
-					if (textRenderer.getText().length() > 0) {
-						textWidth = textRenderer.getTextWidth();
-						if (textWidth < controlWidth - (2 * padding)) {
-							//text will paint within the bounds of the frame
-							textRenderer.paint(gc, xLeftOfText, y1 + textRenderer.getTextHeight() / 2);
-						} else {
-							//don't paint any text if the text is longer than the frame's width
-							textWidth = 0;
-						}
-					}
-
-
-					//draw the frame itself
-
-					//draw top line
-					if (textWidth > 0) {
-						//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
-						// and the top line is crisp only when there is text
-						Region.strokeLine(gc, x1, y1, xLeftOfText, y1);
-						Region.strokeLine(gc, xLeftOfText + textWidth, y1, x2, y1);
+				//draw the text, if the length is > 0
+				if (textRenderer.getText().length() > 0) {
+					textWidth = textRenderer.getTextWidth();
+					if (textWidth < controlWidth - (2 * padding)) {
+						//text will paint within the bounds of the frame
+						textRenderer.paint(gc, xLeftOfText, y1 + textRenderer.getTextHeight() / 2);
 					} else {
-						gc.strokeLine(x1, y1, x2, y1);
+						//don't paint any text if the text is longer than the frame's width
+						textWidth = 0;
 					}
-					//+0.5 to make the line start crisp
-					gc.strokeLine(x2, y1 + 0.5, x2, y2); //right line
-					gc.strokeLine(x1, y2, x2, y2); //bottom line
-					gc.strokeLine(x1, y1 + 0.5, x1, y2); //left line
-
-					break;
 				}
-				case Image: {
-					if (imageToPaint == null) {
-						throw new IllegalStateException("imageToPaint is null");
-					}
-					int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
-					if (keepImageAspectRatio && !tileImage) {
-						int imgWidth = (int) imageToPaint.getWidth();
-						int imgHeight = (int) imageToPaint.getHeight();
-						double aspectRatio = imgWidth * 1.0 / imgHeight;
 
-						//We want to make sure that the image doesn't surpass the bounds of the control
-						//while also maintaining the aspect ratio. In arma 3, the height of the image will
-						//never surpass the height of the control. The width is allowed to surpass the bounds though.
 
-						int drawHeight = getHeight();
-						int drawWidth = (int) Math.round(drawHeight * aspectRatio);
+				//draw the frame itself
 
-						//after the image as been resized to aspect ratio, center the image
-						int centerX = getX1() + (getWidth() - drawWidth) / 2;
+				//draw top line
+				if (textWidth > 0) {
+					//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
+					// and the top line is crisp only when there is text
+					Region.strokeLine(gc, x1, y1, xLeftOfText, y1);
+					Region.strokeLine(gc, xLeftOfText + textWidth, y1, x2, y1);
+				} else {
+					gc.strokeLine(x1, y1, x2, y1);
+				}
+				//+0.5 to make the line start crisp
+				gc.strokeLine(x2, y1 + 0.5, x2, y2); //right line
+				gc.strokeLine(x1, y2, x2, y2); //bottom line
+				gc.strokeLine(x1, y1 + 0.5, x1, y2); //left line
 
-						gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
-						imageDrawX1 = centerX;
-						imageDrawY1 = y1;
-						imageDrawX2 = centerX + drawWidth;
-						imageDrawY2 = y1 + drawHeight;
-					} else {
-						imageDrawX1 = x1;
-						imageDrawY1 = y1;
-						imageDrawX2 = x2;
-						imageDrawY2 = y2;
+				break;
+			}
+			case Image: {
+				if (imageToPaint == null) {
+					throw new IllegalStateException("imageToPaint is null");
+				}
+				int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
+				if (keepImageAspectRatio && !tileImage) {
+					int imgWidth = (int) imageToPaint.getWidth();
+					int imgHeight = (int) imageToPaint.getHeight();
+					double aspectRatio = imgWidth * 1.0 / imgHeight;
 
-						if (tileImage) {
-							int tileW = Math.max(1, this.tileW);
-							int tileH = Math.max(1, this.tileH);
-							int controlWidth = getWidth();
-							int controlHeight = getHeight();
-							int tileWidth = controlWidth / tileW;
-							int tileHeight = controlHeight / tileH;
+					//We want to make sure that the image doesn't surpass the bounds of the control
+					//while also maintaining the aspect ratio. In arma 3, the height of the image will
+					//never surpass the height of the control. The width is allowed to surpass the bounds though.
 
-							for (int y = 0; y < tileH; y++) {
-								for (int x = 0; x < tileW; x++) {
-									gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
-								}
+					int drawHeight = getHeight();
+					int drawWidth = (int) Math.round(drawHeight * aspectRatio);
+
+					//after the image as been resized to aspect ratio, center the image
+					int centerX = getX1() + (getWidth() - drawWidth) / 2;
+
+					gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
+					imageDrawX1 = centerX;
+					imageDrawY1 = y1;
+					imageDrawX2 = centerX + drawWidth;
+					imageDrawY2 = y1 + drawHeight;
+				} else {
+					imageDrawX1 = x1;
+					imageDrawY1 = y1;
+					imageDrawX2 = x2;
+					imageDrawY2 = y2;
+
+					if (tileImage) {
+						int tileW = Math.max(1, this.tileW);
+						int tileH = Math.max(1, this.tileH);
+						int controlWidth = getWidth();
+						int controlHeight = getHeight();
+						int tileWidth = controlWidth / tileW;
+						int tileHeight = controlHeight / tileH;
+
+						for (int y = 0; y < tileH; y++) {
+							for (int x = 0; x < tileW; x++) {
+								gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
 							}
-						} else {
-							gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
 						}
+					} else {
+						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
 					}
+				}
 
-					//multiply the text color on the image
-					gc.setStroke(getTextColor());
-					gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-					Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
-					break;
+				//multiply the text color on the image
+				gc.setStroke(getTextColor());
+				gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+				Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
+				break;
+			}
+			case Texture: {
+				if (this.texture == null) {
+					throw new IllegalStateException("texture is null");
 				}
-				case ErrorImage: {
-					paintBadImageError(gc);
-					break;
-				}
-				case Error: {
-					paintBackgroundError(gc);
-					break;
-				}
-				default: {
-					throw new IllegalStateException("unhandled renderType:" + renderType);
-				}
+				TexturePainter.paint(gc, texture, x1, y1, x2, y2);
+				break;
+			}
+			case ErrorImage: {
+				paintError(gc, Color.RED);
+				break;
+			}
+			case ErrorTexture: {
+				paintError(gc, Color.PINK);
+				break;
+			}
+			case Error: {
+				paintError(gc, Color.BLACK);
+				break;
+			}
+			default: {
+				throw new IllegalStateException("unhandled renderType:" + renderType);
 			}
 		}
 		if (preview) {
@@ -308,12 +317,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintBackgroundError(@NotNull GraphicsContext gc) {
-		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), Color.BLACK, getBackgroundColor());
-	}
-
-	private void paintBadImageError(@NotNull GraphicsContext gc) {
-		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), Color.RED, getBackgroundColor());
+	private void paintError(@NotNull GraphicsContext gc, Color color) {
+		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), color, getBackgroundColor());
 	}
 
 	@NotNull

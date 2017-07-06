@@ -32,8 +32,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 		return null;
 	};
-
-	/** color of drop shadow behind button */
+	
 	private Color colorShadow = Color.BLACK;
 
 	/** bg color when mouse is over control */
@@ -62,7 +61,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				new ValueListener<SerializableValue>() {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-						getBackgroundColorObserver().updateValue((SVColor) newValue);
+						if (newValue instanceof SVColor) {
+							getBackgroundColorObserver().updateValue((SVColor) newValue);
+						}
 					}
 				}
 		);
@@ -83,7 +84,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		if (colorBackground.getValue() instanceof SVColor) {
 			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
 		}
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
 

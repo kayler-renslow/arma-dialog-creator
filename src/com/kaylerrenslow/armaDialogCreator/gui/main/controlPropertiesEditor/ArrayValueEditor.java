@@ -34,7 +34,7 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 	protected final Button btnIncreaseSize = new Button("+");
 	private final double gap = 5;
 	private final double tfPrefWidth = 100d;
-	protected final FlowPane editorsPane = new FlowPane(gap, gap);
+	private final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
 
 	private final ValueObserver<SVArray> valueObserver = new ValueObserver<>(null);

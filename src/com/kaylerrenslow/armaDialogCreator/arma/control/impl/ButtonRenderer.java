@@ -65,7 +65,9 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addListener(new ValueListener<SerializableValue>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				getBackgroundColorObserver().updateValue((SVColor) newValue);
+				if (newValue instanceof SVColor) {
+					getBackgroundColorObserver().updateValue((SVColor) newValue);
+				}
 			}
 		});
 		myControl.findProperty(ControlPropertyLookup.COLOR_SHADOW).getValueObserver().addListener((observer,

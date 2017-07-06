@@ -1,5 +1,7 @@
 **Added:**
-* ability to set focused control in preview window
+* texture parser tests
+* static can have textures if image style is set
+* updated the texture parser to support all textures mentioned in wiki
 
 **Changed:**
 * 
@@ -27,4 +29,7 @@
     * button can use style 48, but the text can only be a texture
 * July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads
     * need tests for changing nested classes from optional to required as well
-    * need texture parser tests
+    * undoing raw value through changelog works, but editor container doesn't update
+     * we should be able to set default values specifically for properties inside nested classes
+        * ShortcutPos.w should not be equal to the normal w
+    * have a TextureOrImage utility class that has a paint method. we can also use it to have consistent error checkerboard colors
