@@ -194,23 +194,21 @@ public abstract class Texture {
 	public static class RenderToTexture extends Texture {
 
 		private final String surfaceName;
-		private final String type;
 		private final double aspectRatio;
 
 		public RenderToTexture(@NotNull String format, int width, int height, int numMips,
-							   @NotNull String surfaceName, @NotNull String type, double aspectRatio
+							   @NotNull String surfaceName, double aspectRatio
 		) {
 			super(format, width, height, numMips);
 			this.surfaceName = surfaceName;
-			this.type = type;
 			this.aspectRatio = aspectRatio;
 		}
 
 		@Override
 		public String toString() {
 			return String.format(
-					"#(%s,%d,%d)rendertotexture(%s,%s,%f)", format, width, height,
-					surfaceName, type, aspectRatio
+					"#(%s,%d,%d)rendertotexture(%s,%f)", format, width, height,
+					surfaceName, aspectRatio
 			);
 		}
 	}

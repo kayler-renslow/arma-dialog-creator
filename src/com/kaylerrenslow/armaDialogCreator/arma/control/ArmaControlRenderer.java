@@ -540,13 +540,18 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.mouseButtonDown = null;
 	}
 
-	public void setFocused(boolean focused) {
-		this.focused = focused;
-	}
-
 	/** @return true if this control would like focus, false if it hasn't requested it */
 	public boolean requestingFocus() {
 		return this.requestFocus;
+	}
+
+	/**
+	 Set if this control has focus
+
+	 @param focused true if should have focus, false otherwise
+	 */
+	public void setFocused(boolean focused) {
+		this.focused = focused;
 	}
 
 	/**
@@ -558,7 +563,43 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		return false;
 	}
 
+	/** @return true if this control has focus, false if it doesn't */
 	public boolean hasFocus() {
 		return focused;
+	}
+
+	/**
+	 Use this when a texture couldn't be determined for background color
+
+	 @param gc context
+	 */
+	protected void paintTextureError(@NotNull GraphicsContext gc) {
+		paintError(gc, Color.DEEPPINK);
+	}
+
+	/**
+	 Use this when an image couldn't be determined for background
+
+	 @param gc context
+	 */
+	protected void paintImageError(@NotNull GraphicsContext gc) {
+		paintError(gc, Color.RED);
+	}
+
+	/**
+	 Use this when a background color array couldn't be determined
+
+	 @param gc context
+	 */
+	protected void paintBackgroundColorError(@NotNull GraphicsContext gc) {
+		paintError(gc, Color.BLACK);
+	}
+
+	/**
+	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
+	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
+	 */
+	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
+		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), color, getBackgroundColor());
 	}
 }

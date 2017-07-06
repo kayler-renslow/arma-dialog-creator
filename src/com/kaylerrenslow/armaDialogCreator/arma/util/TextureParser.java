@@ -70,11 +70,10 @@ public class TextureParser {
 					}
 					return new Texture.FresnelGlass(format, width, height, numMips);
 				}
-				case "rendertotexture": {
+				case "r2t": {
 					String surfaceName = args[0];
-					String type = args[1];
-					double aspectRatio = Double.parseDouble(args[2]);
-					return new Texture.RenderToTexture(format, width, height, numMips, surfaceName, type, aspectRatio);
+					double aspectRatio = Double.parseDouble(args[1]);
+					return new Texture.RenderToTexture(format, width, height, numMips, surfaceName, aspectRatio);
 				}
 				case "treeCrown": {
 					double density = Double.parseDouble(args[0]);

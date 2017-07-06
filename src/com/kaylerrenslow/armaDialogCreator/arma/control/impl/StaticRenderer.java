@@ -5,7 +5,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.Texture;
-import com.kaylerrenslow.armaDialogCreator.arma.util.TextureParser;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
@@ -32,7 +31,7 @@ import java.util.function.Function;
 public class StaticRenderer extends ArmaControlRenderer {
 
 	private enum RenderType {
-		Text, Image, ErrorImage, Texture, ErrorTexture, Line, Frame, Error
+		Text, ImageOrTexture, Line, Frame, Error
 	}
 
 	private BlinkControlHandler blinkControlHandler;
@@ -47,10 +46,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	private volatile RenderType renderType = RenderType.Text;
-	/** The image to paint, or null if not set */
-	private volatile Image imageToPaint = null;
-	private Texture texture;
+	private PictureOrTextureHelper pictureOrTextureHelper = new PictureOrTextureHelper(this);
+	private RenderType renderType = RenderType.Text;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
 	private boolean keepImageAspectRatio = false, tileImage = false;
@@ -137,40 +134,12 @@ public class StaticRenderer extends ArmaControlRenderer {
 	}
 
 	private void checkAndSetRenderType() {
-		SerializableValue textValue = textProperty.getValue();
 		switch (renderTypeForStyle) {
-			case Image: {
-				if (textValue != null && textValue.toString().charAt(0) == '#') {
-					this.texture = null;
-					try {
-						this.texture = new TextureParser(textValue.toString()).parse();
-						renderType = RenderType.Texture;
-						imageToPaint = null;
-					} catch (IllegalArgumentException ignore) {
-						renderType = RenderType.ErrorTexture;
-					}
-
-					requestRender();
-					return;
-				}
-				ImageHelper.getImageAsync(textValue, image -> {
-					synchronized (StaticRenderer.this) {
-						//synchronized so that the renderType and imageToPaint are set at the same time
-
-						renderType = image != null ? RenderType.Image : RenderType.ErrorImage;
-						imageToPaint = image;
-						requestRender();
-					}
-					return null;
-				});
-				//nothing left to do since its async
-				return;
-			}
-			default: {
-				imageToPaint = null;
-				renderType = renderTypeForStyle;
+			case ImageOrTexture: {
+				pictureOrTextureHelper.updateAsync(textProperty.getValue());
 			}
 		}
+		renderType = renderTypeForStyle;
 		requestRender();
 	}
 
@@ -232,78 +201,90 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 				break;
 			}
-			case Image: {
-				if (imageToPaint == null) {
-					throw new IllegalStateException("imageToPaint is null");
-				}
-				int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
-				if (keepImageAspectRatio && !tileImage) {
-					int imgWidth = (int) imageToPaint.getWidth();
-					int imgHeight = (int) imageToPaint.getHeight();
-					double aspectRatio = imgWidth * 1.0 / imgHeight;
+			case ImageOrTexture: {
+				switch (pictureOrTextureHelper.getMode()) {
+					case Image: {
+						Image imageToPaint = pictureOrTextureHelper.getImage();
+						if (imageToPaint == null) {
+							throw new IllegalStateException("imageToPaint is null");
+						}
+						int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
+						if (keepImageAspectRatio && !tileImage) {
+							int imgWidth = (int) imageToPaint.getWidth();
+							int imgHeight = (int) imageToPaint.getHeight();
+							double aspectRatio = imgWidth * 1.0 / imgHeight;
 
-					//We want to make sure that the image doesn't surpass the bounds of the control
-					//while also maintaining the aspect ratio. In arma 3, the height of the image will
-					//never surpass the height of the control. The width is allowed to surpass the bounds though.
+							//We want to make sure that the image doesn't surpass the bounds of the control
+							//while also maintaining the aspect ratio. In arma 3, the height of the image will
+							//never surpass the height of the control. The width is allowed to surpass the bounds though.
 
-					int drawHeight = getHeight();
-					int drawWidth = (int) Math.round(drawHeight * aspectRatio);
+							int drawHeight = getHeight();
+							int drawWidth = (int) Math.round(drawHeight * aspectRatio);
 
-					//after the image as been resized to aspect ratio, center the image
-					int centerX = getX1() + (getWidth() - drawWidth) / 2;
+							//after the image as been resized to aspect ratio, center the image
+							int centerX = getX1() + (getWidth() - drawWidth) / 2;
 
-					gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
-					imageDrawX1 = centerX;
-					imageDrawY1 = y1;
-					imageDrawX2 = centerX + drawWidth;
-					imageDrawY2 = y1 + drawHeight;
-				} else {
-					imageDrawX1 = x1;
-					imageDrawY1 = y1;
-					imageDrawX2 = x2;
-					imageDrawY2 = y2;
+							gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
+							imageDrawX1 = centerX;
+							imageDrawY1 = y1;
+							imageDrawX2 = centerX + drawWidth;
+							imageDrawY2 = y1 + drawHeight;
+						} else {
+							imageDrawX1 = x1;
+							imageDrawY1 = y1;
+							imageDrawX2 = x2;
+							imageDrawY2 = y2;
 
-					if (tileImage) {
-						int tileW = Math.max(1, this.tileW);
-						int tileH = Math.max(1, this.tileH);
-						int controlWidth = getWidth();
-						int controlHeight = getHeight();
-						int tileWidth = controlWidth / tileW;
-						int tileHeight = controlHeight / tileH;
+							if (tileImage) {
+								int tileW = Math.max(1, this.tileW);
+								int tileH = Math.max(1, this.tileH);
+								int controlWidth = getWidth();
+								int controlHeight = getHeight();
+								int tileWidth = controlWidth / tileW;
+								int tileHeight = controlHeight / tileH;
 
-						for (int y = 0; y < tileH; y++) {
-							for (int x = 0; x < tileW; x++) {
-								gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
+								for (int y = 0; y < tileH; y++) {
+									for (int x = 0; x < tileW; x++) {
+										gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
+									}
+								}
+							} else {
+								gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
 							}
 						}
-					} else {
-						gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+
+						//multiply the text color on the image
+						gc.setStroke(getTextColor());
+						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+						Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
+						break;
+					}
+					case Texture: {
+						Texture texture = pictureOrTextureHelper.getTexture();
+						if (texture == null) {
+							throw new IllegalStateException("texture is null");
+						}
+						TexturePainter.paint(gc, texture, x1, y1, x2, y2);
+						break;
+					}
+					case ImageError: {
+						paintImageError(gc);
+						break;
+					}
+					case TextureError: {
+						paintTextureError(gc);
+						break;
+					}
+					case LoadingImage: {
+						super.paint(gc, canvasContext);
+						break;
 					}
 				}
 
-				//multiply the text color on the image
-				gc.setStroke(getTextColor());
-				gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-				Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
-				break;
-			}
-			case Texture: {
-				if (this.texture == null) {
-					throw new IllegalStateException("texture is null");
-				}
-				TexturePainter.paint(gc, texture, x1, y1, x2, y2);
-				break;
-			}
-			case ErrorImage: {
-				paintError(gc, Color.RED);
-				break;
-			}
-			case ErrorTexture: {
-				paintError(gc, Color.PINK);
 				break;
 			}
 			case Error: {
-				paintError(gc, Color.BLACK);
+				paintBackgroundColorError(gc);
 				break;
 			}
 			default: {
@@ -317,9 +298,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintError(@NotNull GraphicsContext gc, Color color) {
-		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), color, getBackgroundColor());
-	}
 
 	@NotNull
 	public Color getTextColor() {
@@ -343,10 +321,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {
 				if (style == ControlStyle.TILE_PICTURE) {
-					return RenderType.Image;
+					return RenderType.ImageOrTexture;
 				}
 				if (style == ControlStyle.PICTURE) {
-					return RenderType.Image;
+					return RenderType.ImageOrTexture;
 				}
 				if (style == ControlStyle.LINE) {
 					return RenderType.Line;

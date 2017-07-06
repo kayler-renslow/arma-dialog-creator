@@ -2,13 +2,11 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.AlternatorHelper;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BasicTextRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
@@ -32,21 +30,24 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 		return null;
 	};
-	
-	private Color colorShadow = Color.BLACK;
 
-	/** bg color when mouse is over control */
-	private Color colorBackgroundActive = Color.BLACK;
-	/** bg color when control is disabled */
-	private Color colorBackgroundDisabled = Color.BLACK;
-	/** color of left border */
-	private Color colorBorder = Color.BLACK;
-	/** text color if control is disabled */
+	private final PictureOrTextureHelper animTextureNormal = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper animTextureDisabled = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper animTextureOver = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper animTexturePressed = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper animTextureFocused = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper animTextureDefault = new PictureOrTextureHelper(this);
+
+	/** secondary text color (text color alternates between "color" and "color2") */
+	private Color color2 = Color.BLACK;
+	private Color colorFocused = Color.BLACK;
 	private Color colorDisabled = Color.BLACK;
-	private Color colorFocused = Color.BLACK, colorFocused2 = Color.BLACK;
+	private Color colorBackgroundFocused = Color.BLACK;
+
+
 	/**
-	 alternating bg color helper. if control has focus (but mouse isn't over control), colorFocused and
-	 colorFocused2 will alternate
+	 Alternating color helper. if control has focus (but mouse isn't over control).
+	 There is only one because both the alternating text color and alternating bg colors are synced
 	 */
 	private final AlternatorHelper<Color> focusedColorAlternator = new AlternatorHelper<>(500);
 
@@ -57,7 +58,12 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.SHADOW
 		);
 
-		myControl.findProperty(ControlPropertyLookup.ANIM_TEXTURE_NORMAL).getValueObserver().addListener(
+		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		if (colorBackground.getValue() instanceof SVColor) {
+			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
+		}
+		colorBackground.getValueObserver().addListener(
 				new ValueListener<SerializableValue>() {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
@@ -68,6 +74,12 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				}
 		);
 
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_NORMAL, animTextureNormal);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_DISABLED, animTextureDisabled);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_OVER, animTextureOver);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_PRESSED, animTexturePressed);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_FOCUSED, animTextureFocused);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_DEFAULT, animTextureDefault);
 
 		myControl.findProperty(ControlPropertyLookup.DEFAULT).getValueObserver().addListener(
 				(observer, oldValue, newValue) -> {
@@ -79,11 +91,6 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
-		if (colorBackground.getValue() instanceof SVColor) {
-			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-		}
 		myControl.findProperty(ControlPropertyLookup.COLOR).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
@@ -97,6 +104,12 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		);
 
 		requestRender();
+	}
+
+	private void attachPicOrTexPropertyListener(ControlPropertyLookupConstant lookup, PictureOrTextureHelper helper) {
+		myControl.findProperty(lookup).getValueObserver().addListener((observer, oldValue, newValue) -> {
+			helper.updateAsync(newValue);
+		});
 	}
 
 	@Override
@@ -114,13 +127,14 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			Color oldTextColor = textRenderer.getTextColor();
 			if (!this.isEnabled()) {
 				//set background color to the disabled color
-
+				//todo
 			} else {
 				if (this.mouseOver) {
-					//if the mouse is over this control, set the background color to backgroundColorActive
-
+					
 				} else if (focused) {
 					double ratio = focusedColorAlternator.updateAndGetRatio();
+
+				} else {
 
 				}
 			}

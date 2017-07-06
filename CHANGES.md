@@ -1,10 +1,8 @@
 **Added:**
-* texture parser tests
-* static can have textures if image style is set
-* updated the texture parser to support all textures mentioned in wiki
+* 
 
 **Changed:**
-* 
+* moved the texture and image painting implementation from static, combined it, and placed it in one class called PictureOrTextureHelper
 
 **Fixed:**
 * 
@@ -32,4 +30,3 @@
     * undoing raw value through changelog works, but editor container doesn't update
      * we should be able to set default values specifically for properties inside nested classes
         * ShortcutPos.w should not be equal to the normal w
-    * have a TextureOrImage utility class that has a paint method. we can also use it to have consistent error checkerboard colors
