@@ -35,6 +35,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 	/** color of drop shadow behind button */
 	private Color colorShadow = Color.BLACK;
+
 	/** bg color when mouse is over control */
 	private Color colorBackgroundActive = Color.BLACK;
 	/** bg color when control is disabled */
@@ -44,7 +45,6 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	/** text color if control is disabled */
 	private Color colorDisabled = Color.BLACK;
 	private Color colorFocused = Color.BLACK, colorFocused2 = Color.BLACK;
-
 	/**
 	 alternating bg color helper. if control has focus (but mouse isn't over control), colorFocused and
 	 colorFocused2 will alternate
@@ -54,7 +54,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	public ShortcutButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT,
-				ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
+				ControlPropertyLookup.COLOR, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE,
 				ControlPropertyLookup.SHADOW
 		);
 
@@ -113,7 +113,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			Color oldTextColor = textRenderer.getTextColor();
 			if (!this.isEnabled()) {
 				//set background color to the disabled color
-				
+
 			} else {
 				if (this.mouseOver) {
 					//if the mouse is over this control, set the background color to backgroundColorActive
@@ -151,6 +151,11 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	@NotNull
 	public Color getTextColor() {
 		return textRenderer.getTextColor();
+	}
+
+	@Override
+	public boolean canHaveFocus() {
+		return true;
 	}
 
 }

@@ -10,6 +10,6 @@ import javafx.event.EventHandler;
 public class ViewPreviewAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		new PreviewPopupWindow().show();
+		PreviewPopupWindow.showWindow();
 	}
 }

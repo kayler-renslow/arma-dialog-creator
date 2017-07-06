@@ -46,6 +46,9 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 		if (mouseOverControl == null) {
 			return;
 		}
+		if (mouseOverControl != mousePressControl && mousePressControl != null) {
+			mousePressControl.getRenderer().setFocused(false);
+		}
 		mousePressControl = mouseOverControl;
 		mouseOverControl.getRenderer().mousePress(mb);
 	}
@@ -53,9 +56,10 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 	@Override
 	protected void mouseReleased(int mousex, int mousey, @NotNull MouseButton mb) {
 		if (mousePressControl == null) {
-			throw new IllegalStateException("mousePressControl shouldn't be null");
+			return;
 		}
 		mousePressControl.getRenderer().mouseRelease();
+		mousePressControl.getRenderer().setFocused(true);
 	}
 
 	@Override

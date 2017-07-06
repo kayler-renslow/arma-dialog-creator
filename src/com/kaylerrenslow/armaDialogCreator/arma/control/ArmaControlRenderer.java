@@ -543,4 +543,22 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	public void setFocused(boolean focused) {
 		this.focused = focused;
 	}
+
+	/** @return true if this control would like focus, false if it hasn't requested it */
+	public boolean requestingFocus() {
+		return this.requestFocus;
+	}
+
+	/**
+	 Get if this control can have focus. Default implementation is false.
+
+	 @return true if this renderer can have focus, false if it can't
+	 */
+	public boolean canHaveFocus() {
+		return false;
+	}
+
+	public boolean hasFocus() {
+		return focused;
+	}
 }

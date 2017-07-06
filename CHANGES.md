@@ -1,12 +1,11 @@
 **Added:**
-* texture parser (untested)
+* ability to set focused control in preview window
 
 **Changed:**
-* tooltips in prop editor container will now have \n inserted automatically
-* removed ColorHelper and now just using Color.interpolate
+* 
 
 **Fixed:**
-* mouseMoved() in UICanvasPreview was wrong.
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

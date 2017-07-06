@@ -282,4 +282,9 @@ public class ButtonRenderer extends ArmaControlRenderer {
 		return textRenderer.getTextColor();
 	}
 
+	@Override
+	public boolean canHaveFocus() {
+		return true;
+	}
+
 }
