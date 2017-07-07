@@ -5,8 +5,8 @@
 * 
 
 **Fixed:**
-* array value editor was always creating a value, even if nothing was entered
-* a lot of issues with array value editor
+* shortcut button wasn't properly multiplying textures with colors
+* over and focus colors for shortcut button weren't correct for periodOver=0 and periodFocus=0
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -30,5 +30,5 @@
 * July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads
     * need tests for changing nested classes from optional to required as well
     * undoing raw value through changelog works, but editor container doesn't update
-     * we should be able to set default values specifically for properties inside nested classes
+    * we should be able to set default values specifically for properties inside nested classes
         * ShortcutPos.w should not be equal to the normal w

@@ -324,7 +324,7 @@ public class HeaderToProject {
 				continue;
 			}
 
-			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType(), project);
+			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType());
 			if (v != null) {
 				property.setValue(v);
 			} else {
@@ -380,7 +380,7 @@ public class HeaderToProject {
 				Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
 				macroName = m == null ? null : m.getKey();
 
-				value = createValueFromAssignment(assignment, lookup.getPropertyType(), project);
+				value = createValueFromAssignment(assignment, lookup.getPropertyType());
 				if (value != null) {
 					usedLookup = lookup;
 					break;
@@ -409,8 +409,16 @@ public class HeaderToProject {
 		return ccc.getControlClass();
 	}
 
-	@Nullable
-	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType, @NotNull Project project) {
+	/**
+	 Attempts to create a {@link SerializableValue} from the given {@link HeaderAssignment}. The value will be
+	 created with {@link PropertyType} <code>initialPropertyType</code>.
+
+	 @param assignment assignment to use
+	 @param initialPropertyType type to use
+	 @return the created value with type ({@link SerializableValue#getPropertyType()}) equal to
+	 <code>initialPropertyType</code>, or null if value couldn't be created
+	 */
+	private SerializableValue createValueFromAssignment(@NotNull HeaderAssignment assignment, @NotNull PropertyType initialPropertyType) {
 		int vCount = initialPropertyType.getPropertyValuesSize();
 		if (assignment.getValue() instanceof HeaderArray) {
 			HeaderArray headerArray = (HeaderArray) assignment.getValue();

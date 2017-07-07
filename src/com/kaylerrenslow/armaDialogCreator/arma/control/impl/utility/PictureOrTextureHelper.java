@@ -83,7 +83,8 @@ public class PictureOrTextureHelper {
 	}
 
 	/**
-	 Get the mode
+	 Get the mode. This method is synchronized to ensure that the mode is set at the same time as {@link #getImage()}
+	 or {@link #getTexture()} is set.
 
 	 @return the current mode
 	 @see #updateAsync(SerializableValue)
@@ -93,13 +94,23 @@ public class PictureOrTextureHelper {
 		return mode;
 	}
 
-	/** @return the texture, or null if {@link #getMode()} is not {@link Mode#Texture} */
+	/**
+	 Get the texture. This method is synchronized to ensure that the mode is set at the same time as
+	 {@link #getImage()} or {@link #getMode()} is set.
+
+	 @return the texture, or null if {@link #getMode()} is not {@link Mode#Texture}
+	 */
 	@Nullable
 	public synchronized Texture getTexture() {
 		return texture;
 	}
 
-	/** @return the image, or null if {@link #getMode()} is not {@link Mode#Image} */
+	/**
+	 Get the texture. This method is synchronized to ensure that the mode is set at the same time as
+	 {@link #getTexture()} ()} or {@link #getMode()} is set.
+
+	 @return the image, or null if {@link #getMode()} is not {@link Mode#Image}
+	 */
 	@Nullable
 	public synchronized Image getImage() {
 		return image;

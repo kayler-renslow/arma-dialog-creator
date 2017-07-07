@@ -264,7 +264,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 						if (texture == null) {
 							throw new IllegalStateException("texture is null");
 						}
-						TexturePainter.paint(gc, texture, x1, y1, x2, y2);
+						TexturePainter.paint(gc, texture, getTextColor(), x1, y1, x2, y2);
 						break;
 					}
 					case ImageError: {

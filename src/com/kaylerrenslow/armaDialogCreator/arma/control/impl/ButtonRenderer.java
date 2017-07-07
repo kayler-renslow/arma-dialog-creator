@@ -230,19 +230,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				//set background color to the disabled color
 				setBackgroundColor(colorBackgroundDisabled);
 				textRenderer.setTextColor(colorDisabled);
-			} else {
-				if (this.mouseOver) {
-					//if the mouse is over this control, set the background color to backgroundColorActive
-					setBackgroundColor(colorBackgroundActive);
-				} else if (focused) {
-					double ratio = focusedColorAlternator.updateAndGetRatio();
-					setBackgroundColor(
-							colorFocused.interpolate(colorFocused2 == null ? backgroundColor : colorFocused2, ratio)
-					);
-				}
-			}
-
-			if (mouseButtonDown == MouseButton.PRIMARY) {
+			} else if (mouseButtonDown == MouseButton.PRIMARY) {
 				int oldX1 = this.x1;
 				int oldX2 = this.x2;
 				int oldY1 = this.y1;
@@ -259,6 +247,14 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				this.x2 = oldX2;
 				this.y1 = oldY1;
 				this.y2 = oldY2;
+			} else if (this.mouseOver) {
+				//if the mouse is over this control, set the background color to backgroundColorActive
+				setBackgroundColor(colorBackgroundActive);
+			} else if (focused) {
+				double ratio = focusedColorAlternator.updateAndGetRatio();
+				setBackgroundColor(
+						colorFocused.interpolate(colorFocused2 == null ? backgroundColor : colorFocused2, ratio)
+				);
 			} else {
 				super.paint(gc, canvasContext);
 			}

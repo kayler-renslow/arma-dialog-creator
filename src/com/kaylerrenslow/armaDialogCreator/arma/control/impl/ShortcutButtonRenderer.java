@@ -194,14 +194,18 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				//mouse is over the button
 				bgTexture = animTextureOver;
 				//interpolate "color" with "colorFocused"
-				textRenderer.setTextColor(colorFocused.interpolate(color2, ratio));
+				if (periodOverMillis > 0) {
+					textRenderer.setTextColor(colorFocused.interpolate(color2, ratio));
+					setBackgroundColor(colorBackgroundFocused.interpolate(colorBackground2, ratio));
+				}
 				//interpolate "colorBackgroundFocused" with "colorBackground2"
-				setBackgroundColor(colorBackgroundFocused.interpolate(colorBackground2, ratio));
 				focusedColorAlternator.setAlternateMillis(periodOverMillis);
 			} else if (focused) {
 				bgTexture = animTextureFocused;
-				textRenderer.setTextColor(color2.interpolate(colorFocused, ratio));
-				setBackgroundColor(colorBackground2.interpolate(colorBackgroundFocused, ratio));
+				if (periodFocusMillis > 0) {
+					textRenderer.setTextColor(color2.interpolate(colorFocused, ratio));
+					setBackgroundColor(colorBackground2.interpolate(colorBackgroundFocused, ratio));
+				}
 				focusedColorAlternator.setAlternateMillis(periodFocusMillis);
 			}
 
@@ -216,6 +220,10 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 						throw new IllegalStateException();
 					}
 					gc.drawImage(image, x1, y1, controlWidth, controlHeight);
+
+					gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+					super.paint(gc, canvasContext);
+					gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 					break;
 				}
 				case ImageError: {
@@ -223,11 +231,11 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case LoadingImage: {
-					//do nothing
+					super.paint(gc, canvasContext);
 					break;
 				}
 				case Texture: {
-					TexturePainter.paint(gc, bgTexture.getTexture(), x1, y1, x2, y2);
+					TexturePainter.paint(gc, bgTexture.getTexture(), backgroundColor, x1, y1, x2, y2);
 					break;
 				}
 				case TextureError: {
@@ -236,9 +244,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				}
 			}
 
-			gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-			super.paint(gc, canvasContext);
-			gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+
 			textRenderer.paint(gc);
 
 			//reset the colors again

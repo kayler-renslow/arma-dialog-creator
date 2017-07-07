@@ -16,10 +16,10 @@ public class TextureParserTest {
 		assertEquals(8, parse.getWidth());
 		assertEquals(8, parse.getHeight());
 		assertEquals(3, parse.getNumberOfMipMaps());
-		assertEquals(1, parse.getR(), 0);
-		assertEquals(0, parse.getG(), 0);
-		assertEquals(0, parse.getB(), 0);
-		assertEquals(1, parse.getA(), 0);
+		assertEquals(1, parse.getRed(), 0);
+		assertEquals(0, parse.getGreen(), 0);
+		assertEquals(0, parse.getBlue(), 0);
+		assertEquals(1, parse.getAlpha(), 0);
 	}
 
 	@Test
@@ -30,10 +30,10 @@ public class TextureParserTest {
 		assertEquals(8, parse.getWidth());
 		assertEquals(8, parse.getHeight());
 		assertEquals(3, parse.getNumberOfMipMaps());
-		assertEquals(1, parse.getR(), 0);
-		assertEquals(0, parse.getG(), 0);
-		assertEquals(0.5, parse.getB(), 0);
-		assertEquals(1, parse.getA(), 0);
+		assertEquals(1, parse.getRed(), 0);
+		assertEquals(0, parse.getGreen(), 0);
+		assertEquals(0.5, parse.getBlue(), 0);
+		assertEquals(1, parse.getAlpha(), 0);
 	}
 
 	@Test
@@ -44,10 +44,10 @@ public class TextureParserTest {
 		assertEquals(8, parse.getWidth());
 		assertEquals(8, parse.getHeight());
 		assertEquals(3, parse.getNumberOfMipMaps());
-		assertEquals(1, parse.getR(), 0);
-		assertEquals(0, parse.getG(), 0);
-		assertEquals(0.5, parse.getB(), 0);
-		assertEquals(0.2, parse.getA(), 0);
+		assertEquals(1, parse.getRed(), 0);
+		assertEquals(0, parse.getGreen(), 0);
+		assertEquals(0.5, parse.getBlue(), 0);
+		assertEquals(0.2, parse.getAlpha(), 0);
 	}
 
 	@Test
@@ -58,9 +58,9 @@ public class TextureParserTest {
 		assertEquals(8, parse.getWidth());
 		assertEquals(8, parse.getHeight());
 		assertEquals(4, parse.getNumberOfMipMaps());
-		assertEquals(1, parse.getR(), 0);
-		assertEquals(0, parse.getG(), 0);
-		assertEquals(0.5, parse.getB(), 0);
-		assertEquals(0.2, parse.getA(), 0);
+		assertEquals(1, parse.getRed(), 0);
+		assertEquals(0, parse.getGreen(), 0);
+		assertEquals(0.5, parse.getBlue(), 0);
+		assertEquals(0.2, parse.getAlpha(), 0);
 	}
 }

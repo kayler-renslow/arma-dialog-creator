@@ -78,19 +78,19 @@ public abstract class Texture {
 		}
 
 
-		public double getR() {
+		public double getRed() {
 			return r;
 		}
 
-		public double getG() {
+		public double getGreen() {
 			return g;
 		}
 
-		public double getB() {
+		public double getBlue() {
 			return b;
 		}
 
-		public double getA() {
+		public double getAlpha() {
 			return a;
 		}
 
@@ -115,10 +115,10 @@ public abstract class Texture {
 		}
 
 		public String toString() {
-			int r = (int) Math.round(this.getR() * 255);
-			int g = (int) Math.round(this.getG() * 255);
-			int b = (int) Math.round(this.getB() * 255);
-			int a = (int) Math.round(this.getA() * 255);
+			int r = (int) Math.round(this.getRed() * 255);
+			int g = (int) Math.round(this.getGreen() * 255);
+			int b = (int) Math.round(this.getBlue() * 255);
+			int a = (int) Math.round(this.getAlpha() * 255);
 			return String.format(
 					"#(rgba,%d,%d)colori(%d,%d,%d,%d%s)", width, height, r, g, b, a,
 					getTextureType() == null ? "" : "," + getTextureType()

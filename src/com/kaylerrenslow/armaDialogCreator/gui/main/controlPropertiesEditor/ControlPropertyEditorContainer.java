@@ -58,7 +58,7 @@ class ControlPropertyEditorContainer extends HBox {
 		this.controlClass = controlClass;
 		this.controlProperty = property;
 
-		updatePropertyValueEditor();
+		resetPropertyValueEditor();
 
 		setAlignment(Pos.TOP_LEFT);
 		setMaxWidth(Double.MAX_VALUE);
@@ -83,13 +83,13 @@ class ControlPropertyEditorContainer extends HBox {
 		menuButtonOptions.getItems().setAll(
 				miDisplayType,
 				miDefaultEditor,
-				miConvert,
-				miRaw,
 				new SeparatorMenuItem(),
 				miResetToInitial,
 				miMacro,
+				miConvert,
 				inheritanceMenuItem,
 				new SeparatorMenuItem(),
+				miRaw,
 				miClearValue
 		);
 
@@ -199,7 +199,7 @@ class ControlPropertyEditorContainer extends HBox {
 						controlProperty.setValue(newValue);
 					}
 				}
-				updatePropertyValueEditor();
+				resetPropertyValueEditor();
 			}
 		});
 		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
@@ -221,7 +221,11 @@ class ControlPropertyEditorContainer extends HBox {
 			public void handle(ActionEvent event) {
 				if (getControlProperty().getValue() == null) {
 					propertyValueEditor.clearListeners();
-					updatePropertyValueEditor();
+					resetPropertyValueEditor();
+					// This is necessary because a value editor may have a null value and the value editor could be
+					// the wrong one due to an import error.
+					//
+					// So, if the value is null, this will reset the editor
 					return;
 				}
 				if (getControlProperty().getMacro() != null) {
@@ -277,7 +281,7 @@ class ControlPropertyEditorContainer extends HBox {
 					throw new IllegalStateException("control property should have raw value");
 				}
 			}
-			updatePropertyValueEditor();
+			resetPropertyValueEditor();
 		});
 		if (controlProperty.getPropertyLookup().getOptions() != null) {
 			menuButtonOptions.getItems().remove(miRaw);
@@ -333,11 +337,16 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 			});
 		} else {
-			if (currentValueEditor().getControlProperty().getMacro() != null) {
+			if (controlProperty.getValue() == null && controlProperty.getMacro() == null) {
+				currentValueEditor().clearListeners();
+				resetPropertyValueEditor();
+				return;
+			}
+			if (controlProperty.getMacro() != null) {
 				if (!askClearMacro()) {
 					return;
 				}
-				currentValueEditor().getControlProperty().setValueToMacro(null);
+				controlProperty.setValueToMacro(null);
 			}
 			stackPanePropertyInput.getChildren().set(0, currentValueEditor().getRootNode());
 			currentValueEditor().setToMode(mode);
@@ -376,7 +385,14 @@ class ControlPropertyEditorContainer extends HBox {
 		return propertyValueEditor;
 	}
 
-	protected void updatePropertyValueEditor() {
+	/**
+	 Resets the the current value editor. The new value editor will be what {@link #constructNewPropertyValueEditor()}
+	 returns.
+	 <p>
+	 Before invoking this method, be sure to clear the listeners of {@link #currentValueEditor()} with
+	 {@link ControlPropertyValueEditor#clearListeners()}.
+	 */
+	private void resetPropertyValueEditor() {
 		propertyValueEditor = constructNewPropertyValueEditor();
 		HBox.setHgrow(stackPanePropertyInput, propertyValueEditor.displayFullWidth() ?
 				Priority.ALWAYS : Priority.NEVER
@@ -404,7 +420,12 @@ class ControlPropertyEditorContainer extends HBox {
 		updateContainerInheritanceTint();
 	}
 
-	/** Get node that holds the controls to input data. */
+	/**
+	 Constructs a new {@link ControlPropertyValueEditor}. If the {@link #controlProperty}'s value is null,
+	 the editor that will be returned is one relevant for {@link ControlProperty#getInitialPropertyType()}
+
+	 @return node that holds the controls to input data.
+	 */
 	@NotNull
 	private ControlPropertyValueEditor constructNewPropertyValueEditor() {
 		ControlPropertyLookupConstant lookup = controlProperty.getPropertyLookup();
