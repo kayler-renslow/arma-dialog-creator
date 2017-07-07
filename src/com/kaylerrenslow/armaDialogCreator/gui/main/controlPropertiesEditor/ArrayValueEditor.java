@@ -15,6 +15,7 @@ import javafx.scene.layout.HBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.Toolkit;
 import java.util.ArrayList;
 
 /**
@@ -39,49 +40,56 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	private final ValueObserver<SVArray> valueObserver = new ValueObserver<>(null);
 
-	public ArrayValueEditor(int numInitialFields) {
+	public ArrayValueEditor() {
 		masterPane = new HBox(5, editorsPane);
-		editorsPane.minWidth(0d);
-		editorsPane.prefWidth(0d);
-		editorsPane.setPrefWrapLength(tfPrefWidth * 3 + gap * numInitialFields); //have room for 3 text fields
-		masterPane.minWidth(0d);
+		editorsPane.setPrefWrapLength(tfPrefWidth * 3); //have room for 3 text fields
+		editorsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
 		masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
 		btnDecreaseSize.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				if (editors.size() > 1) {
-					InputField removed = editors.remove(editors.size() - 1);
-					editorsPane.getChildren().remove(removed);
+				if (editors.size() > 0) {
+					removeLastEditor();
+					valueObserver.updateValue(createValue());
 				}
 			}
 		});
 		btnIncreaseSize.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				InputField<ArmaStringChecker, String> in = getTextField();
-				editors.add(in);
-				editorsPane.getChildren().add(in);
-				editorsPane.autosize();
-
-				addEditorValueUpdateListener();
+				if (editors.size() > 0) {
+					for (InputField inf : editors) {
+						if (inf.getValue() == null) {
+							inf.requestFocus();
+							beep();
+							return;
+						}
+					}
+				}
+				addNewEditor();
 			}
 		});
-		InputField<ArmaStringChecker, String> in;
-		for (int i = 0; i < numInitialFields; i++) {
-			in = getTextField();
-			editors.add(in);
-			editorsPane.getChildren().add(in);
-		}
-		editorsPane.autosize();
-
-		addEditorValueUpdateListener();
 	}
 
-	private void addEditorValueUpdateListener() {
-		for (InputField<ArmaStringChecker, String> inf : editors) {
-			inf.getValueObserver().addListener(editorValueUpdateListener);
-		}
+	private void removeLastEditor() {
+		InputField removed = editors.remove(editors.size() - 1);
+		editorsPane.getChildren().remove(removed);
+	}
+
+	private void addNewEditor() {
+		InputField<ArmaStringChecker, String> in = new InputField<>(new ArmaStringChecker());
+		in.setPrefWidth(tfPrefWidth);
+		in.setValue("");
+		editors.add(in);
+		editorsPane.getChildren().add(in);
+		editorsPane.autosize();
+
+		in.getValueObserver().addListener(editorValueUpdateListener);
+	}
+
+	private void beep() {
+		Toolkit.getDefaultToolkit().beep();
 	}
 
 	@Override
@@ -104,12 +112,6 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 		return valueObserver.getReadOnlyValueObserver();
 	}
 
-	private InputField<ArmaStringChecker, String> getTextField() {
-		InputField<ArmaStringChecker, String> tf = new InputField<>(new ArmaStringChecker());
-		tf.setPrefWidth(tfPrefWidth);
-		return tf;
-	}
-
 	@Override
 	public void submitCurrentData() {
 		for (InputField tf : editors) {
@@ -124,6 +126,9 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	@Nullable
 	private SVArray createValue() {
+		if (editors.size() == 0) {
+			return null;
+		}
 		String[] values = new String[editors.size()];
 		int i = 0;
 		for (InputField tf : editors) {
@@ -138,12 +143,21 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 	@Override
 	public void setValue(SVArray val) {
 		if (val == null) {
-			for (InputField<ArmaStringChecker, String> editor : editors) {
-				editor.setValue(null);
+			while (!editors.isEmpty()) {
+				removeLastEditor();
 			}
 		} else {
 			int i = 0;
-			for (String s : val.getAsStringArray()) {
+			String[] vals = val.getAsStringArray();
+			while (editors.size() > vals.length) {
+				removeLastEditor();
+			}
+			while (editors.size() < vals.length) {
+				addNewEditor();
+				i++;
+			}
+			i = 0;
+			for (String s : vals) {
 				editors.get(i++).setValue(s);
 			}
 		}
@@ -156,6 +170,6 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	@Override
 	public boolean displayFullWidth() {
-		return false;
+		return true;
 	}
 }

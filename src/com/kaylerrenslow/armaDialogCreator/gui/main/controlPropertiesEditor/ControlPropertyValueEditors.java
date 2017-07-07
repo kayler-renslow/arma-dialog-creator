@@ -610,9 +610,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty, int defaultNumFields) {
-			super(defaultNumFields);
-
+		ArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVArray) controlProperty.getValue());

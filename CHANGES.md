@@ -1,11 +1,12 @@
 **Added:**
-* Shortcut button now has a lot of property support
+* 
 
 **Changed:**
-* removed SVNumber and SVIntegerUnmodifiable
+* 
 
 **Fixed:**
-* issue with TextureParser: color format doesn't change order of arguments
+* array value editor was always creating a value, even if nothing was entered
+* a lot of issues with array value editor
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

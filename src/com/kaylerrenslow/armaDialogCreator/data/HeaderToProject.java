@@ -428,12 +428,6 @@ public class HeaderToProject {
 			} catch (SerializableValueConstructionException ignore) {
 
 			}
-			try {
-				return SerializableValue.constructNew(dataContext, PropertyType.Array, items);
-			} catch (SerializableValueConstructionException ignore) {
-
-			}
-
 		} else {
 			if (vCount > 1) {
 				return null;

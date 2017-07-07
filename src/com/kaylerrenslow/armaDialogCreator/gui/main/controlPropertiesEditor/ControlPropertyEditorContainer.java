@@ -89,6 +89,7 @@ class ControlPropertyEditorContainer extends HBox {
 				miResetToInitial,
 				miMacro,
 				inheritanceMenuItem,
+				new SeparatorMenuItem(),
 				miClearValue
 		);
 
@@ -219,6 +220,8 @@ class ControlPropertyEditorContainer extends HBox {
 			@Override
 			public void handle(ActionEvent event) {
 				if (getControlProperty().getValue() == null) {
+					propertyValueEditor.clearListeners();
+					updatePropertyValueEditor();
 					return;
 				}
 				if (getControlProperty().getMacro() != null) {
@@ -421,7 +424,7 @@ class ControlPropertyEditorContainer extends HBox {
 			case String:
 				return new StringEditor(controlClass, controlProperty);
 			case Array:
-				return new ArrayEditor(controlClass, controlProperty, 2);
+				return new ArrayEditor(controlClass, controlProperty);
 			case Color:
 				return new ColorArrayEditor(controlClass, controlProperty);
 			case Sound:

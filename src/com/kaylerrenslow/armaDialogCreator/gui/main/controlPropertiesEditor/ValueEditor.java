@@ -62,7 +62,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case String:
 				return new InputFieldValueEditor.ArmaStringEditor();
 			case Array:
-				return new ArrayValueEditor(2);
+				return new ArrayValueEditor();
 			case Color:
 				return new ColorArrayValueEditor();
 			case Sound:
