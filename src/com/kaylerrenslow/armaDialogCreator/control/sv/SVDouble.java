@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 
 /** A generic wrapper implementation for a double. */
-public class SVDouble extends SVNumber {
+public class SVDouble extends SerializableValue implements SVNumericValue {
 	public static final ValueConverter<SVDouble> CONVERTER = new ValueConverter<SVDouble>() {
 		@Override
 		public SVDouble convert(DataContext context, @NotNull String... values) throws Exception {
@@ -25,15 +25,10 @@ public class SVDouble extends SVNumber {
 	public static String format(double d) {
 		return DECIMAL_FORMAT.format(d);
 	}
-	
-	private double d;
+
+	private final double d;
 	
 	public SVDouble(double d) {
-		super(d);
-		this.d = d;
-	}
-	
-	public void setDouble(double d) {
 		this.d = d;
 	}
 	
@@ -63,17 +58,7 @@ public class SVDouble extends SVNumber {
 	public String toString() {
 		return format(d);
 	}
-	
-	@Override
-	protected void setValue(String value) {
-		setDouble(Double.parseDouble(value));
-	}
-	
-	@Override
-	public double getNumber() {
-		return d;
-	}
-	
+
 	/** use the equals method in {@link SerializableValue}*/
 	@Override
 	public boolean equals(Object o){

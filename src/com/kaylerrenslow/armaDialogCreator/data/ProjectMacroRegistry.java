@@ -2,7 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.control.Macro;
 import com.kaylerrenslow.armaDialogCreator.control.MacroRegistry;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumber;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumericValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Value;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
@@ -50,17 +50,17 @@ public class ProjectMacroRegistry implements MacroRegistry {
 
 	/**
 	 Get an {@link Value} instance by finding the {@link Macro} instance where it's {@link Macro#getKey()}.equals(identifier).
-	 Only Macro's where their value extends {@link SVNumber} are allowed.
+	 Only Macro's where their value extends {@link SVNumericValue} are allowed.
 
 	 @return {@link Value.NumVal} instance,
-	 or null if no identifier matches a macro where it's value extends {@link SVNumber}
+	 or null if no identifier matches a macro where it's value extends {@link SVNumericValue}
 	 */
 	@Nullable
 	public Value.NumVal getMacroValue(String identifier) {
 		for (Macro m : macros) {
 			if (m.getKey().equals(identifier)) {
-				if (m.getValue() instanceof SVNumber) {
-					return new Value.NumVal(((SVNumber) m.getValue()).getNumber());
+				if (m.getValue() instanceof SVNumericValue) {
+					return new Value.NumVal(((SVNumericValue) m.getValue()).toDouble());
 				}
 			}
 		}

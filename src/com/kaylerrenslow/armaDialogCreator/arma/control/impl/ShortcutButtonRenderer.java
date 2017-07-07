@@ -13,6 +13,8 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -43,6 +45,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	private Color colorFocused = Color.BLACK;
 	private Color colorDisabled = Color.BLACK;
 	private Color colorBackgroundFocused = Color.BLACK;
+	private Color colorBackground2 = Color.BLACK;
+	private long periodFocusMillis = 500;
+	private long periodOverMillis = 500;
 
 
 	/**
@@ -88,6 +93,55 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				}
 		);
 
+		myControl.findProperty(ControlPropertyLookup.COLOR2).getValueObserver().addListener((observer, oldValue,
+																							 newValue) -> {
+			if (newValue instanceof SVColor) {
+				color2 = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED).getValueObserver().addListener((observer,
+																									oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				colorFocused = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.COLOR_DISABLED).getValueObserver().addListener((observer,
+																									 oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				colorDisabled = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED).getValueObserver().addListener((observer,
+																											   oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				colorBackgroundFocused = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND2).getValueObserver().addListener((observer,
+																										oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				colorBackground2 = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.PERIOD_FOCUS).getValueObserver().addListener((observer,
+																								   oldValue, newValue) -> {
+			if (newValue instanceof SVNumericValue) {
+				periodFocusMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.PERIOD_OVER).getValueObserver().addListener((observer,
+																								  oldValue, newValue) -> {
+			if (newValue instanceof SVNumericValue) {
+				periodOverMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
+				requestRender();
+			}
+		});
 
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
@@ -121,37 +175,75 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
+		PictureOrTextureHelper bgTexture = animTextureNormal;
 
 		if (preview) {
-			Color oldBgColor = this.backgroundColor;
-			Color oldTextColor = textRenderer.getTextColor();
-			if (!this.isEnabled()) {
-				//set background color to the disabled color
+			double ratio = focusedColorAlternator.updateAndGetRatio();
+			Color colorBackground = this.backgroundColor;
+			Color color = textRenderer.getTextColor();
+
+			if (!isEnabled()) {
+				//button is disabled
 				//todo
-			} else {
-				if (this.mouseOver) {
-					
-				} else if (focused) {
-					double ratio = focusedColorAlternator.updateAndGetRatio();
+			} else if (mouseButtonDown == MouseButton.PRIMARY) {
+				//button is being clicked
+				bgTexture = animTexturePressed;
+				//background color remains as "colorBackground" property value
+				//text color remains as "color" property value
+			} else if (mouseOver) {
+				//mouse is over the button
+				bgTexture = animTextureOver;
+				//interpolate "color" with "colorFocused"
+				textRenderer.setTextColor(colorFocused.interpolate(color2, ratio));
+				//interpolate "colorBackgroundFocused" with "colorBackground2"
+				setBackgroundColor(colorBackgroundFocused.interpolate(colorBackground2, ratio));
+				focusedColorAlternator.setAlternateMillis(periodOverMillis);
+			} else if (focused) {
+				bgTexture = animTextureFocused;
+				textRenderer.setTextColor(color2.interpolate(colorFocused, ratio));
+				setBackgroundColor(colorBackground2.interpolate(colorBackgroundFocused, ratio));
+				focusedColorAlternator.setAlternateMillis(periodFocusMillis);
+			}
 
-				} else {
-
+			//paint the background texture/image
+			switch (bgTexture.getMode()) {
+				case Image: {
+					// In arma 3, they do some weird as shit for manipulating the background texture.
+					// Currently (July 2017), I don't know how they are doing it. So, I'll just stretch the image to
+					// width of the control.
+					Image image = bgTexture.getImage();
+					if (image == null) {
+						throw new IllegalStateException();
+					}
+					gc.drawImage(image, x1, y1, controlWidth, controlHeight);
+					break;
+				}
+				case ImageError: {
+					paintImageError(gc);
+					break;
+				}
+				case LoadingImage: {
+					//do nothing
+					break;
+				}
+				case Texture: {
+					TexturePainter.paint(gc, bgTexture.getTexture(), x1, y1, x2, y2);
+					break;
+				}
+				case TextureError: {
+					paintTextureError(gc);
+					break;
 				}
 			}
 
-			if (mouseButtonDown == MouseButton.PRIMARY) {
-
-				super.paint(gc, canvasContext);
-
-			} else {
-				super.paint(gc, canvasContext);
-			}
-
+			gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+			super.paint(gc, canvasContext);
+			gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 			textRenderer.paint(gc);
 
 			//reset the colors again
-			setBackgroundColor(oldBgColor);
-			textRenderer.setTextColor(oldTextColor);
+			setBackgroundColor(colorBackground);
+			textRenderer.setTextColor(color);
 
 			if (this.mouseOver) {
 				canvasContext.paintLast(tooltipRenderFunc);

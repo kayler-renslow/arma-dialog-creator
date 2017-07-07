@@ -89,17 +89,12 @@ public class TextureParser {
 					if (args.length > 4) {
 						textureType = args[5];
 					}
-					if (format.equals("rgb")) {
+
+					if (format.equals("rgb") || format.equals("argb")) {
 						double r = Double.parseDouble(args[0]);
 						double g = Double.parseDouble(args[1]);
 						double b = Double.parseDouble(args[2]);
 						double a = Double.parseDouble(args[3]);
-						return new Texture.Color(format, width, height, numMips, r, g, b, a, textureType);
-					} else if (format.equals("argb")) {
-						double a = Double.parseDouble(args[0]);
-						double r = Double.parseDouble(args[1]);
-						double g = Double.parseDouble(args[2]);
-						double b = Double.parseDouble(args[3]);
 						return new Texture.Color(format, width, height, numMips, r, g, b, a, textureType);
 					} else {
 						error(null);

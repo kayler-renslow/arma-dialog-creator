@@ -1,11 +1,11 @@
 **Added:**
-* 
+* Shortcut button now has a lot of property support
 
 **Changed:**
-* moved the texture and image painting implementation from static, combined it, and placed it in one class called PictureOrTextureHelper
+* removed SVNumber and SVIntegerUnmodifiable
 
 **Fixed:**
-* 
+* issue with TextureParser: color format doesn't change order of arguments
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -13,6 +13,7 @@
 * June 11: exporter doesn't write any of the custom control classes
     * should we have an additional export place for that? Like export all of them to a different file.
       We'll need to consider macro merges if we separate into many files since custom class can have macros.
+    * what if we made all custom control classes be shared across the workspace?
 * June 23:
     - Header: we need tests for +=
 * BUG: select many things in tree view and drag into folder

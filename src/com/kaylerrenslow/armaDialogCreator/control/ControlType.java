@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVIntegerUnmodifiable;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
@@ -70,7 +69,6 @@ public enum ControlType {
 
 	private final boolean deprecated;
 	private final ControlTypeGroup group;
-	private SVIntegerUnmodifiable sv;
 
 	ControlType(int typeId, String displayName, ControlTypeGroup group) {
 		this(typeId, displayName, group, ControlIcons.placeholder, false);
@@ -92,16 +90,6 @@ public enum ControlType {
 	@Override
 	public String toString() {
 		return fullDisplayText();
-	}
-
-
-	/** Returns the {@link #typeId} inside a {@link SVIntegerUnmodifiable} instance. Only one instance is returned */
-	@NotNull
-	public SVIntegerUnmodifiable toSerializableValue() {
-		if (sv == null) {
-			sv = new SVIntegerUnmodifiable(getTypeId());
-		}
-		return sv;
 	}
 
 

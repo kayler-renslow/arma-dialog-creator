@@ -6,7 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /** A generic wrapper implementation for an int. */
-public class SVInteger extends SVNumber {
+public class SVInteger extends SerializableValue implements SVNumericValue {
 
 	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
 		@Override
@@ -15,14 +15,9 @@ public class SVInteger extends SVNumber {
 		}
 	};
 
-	private int i;
+	private final int i;
 
 	public SVInteger(int i) {
-		super(i);
-		this.i = i;
-	}
-
-	public void setInt(int i) {
 		this.i = i;
 	}
 
@@ -31,7 +26,6 @@ public class SVInteger extends SVNumber {
 	}
 
 	@NotNull
-	@Override
 	public String[] getAsStringArray() {
 		return new String[]{i + ""};
 	}
@@ -52,17 +46,6 @@ public class SVInteger extends SVNumber {
 	public String toString() {
 		return i + "";
 	}
-
-	@Override
-	protected void setValue(String value) {
-		setInt(Integer.parseInt(value));
-	}
-
-	@Override
-	public double getNumber() {
-		return i;
-	}
-
 
 	@Override
 	public boolean equals(Object o) {

@@ -24,6 +24,10 @@ public class AlternatorHelper<T> {
 		long timePast = now - lastUpdate;
 		lastUpdate = now;
 
+		if (alternateMillis <= 0) {
+			return 0;
+		}
+
 		if (in) {
 			durationPast += timePast;
 			if (durationPast >= alternateMillis) {

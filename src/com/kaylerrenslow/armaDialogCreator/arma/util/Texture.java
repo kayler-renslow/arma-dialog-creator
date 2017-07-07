@@ -101,7 +101,7 @@ public abstract class Texture {
 
 		public String toString() {
 			return String.format(
-					"#(rgba,%d,%d)color(%f,%f,%f,%f%s)", width, height, r, g, b, a,
+					"#(argb,%d,%d)color(%f,%f,%f,%f%s)", width, height, r, g, b, a,
 					textureType == null ? "" : "," + textureType
 			);
 		}

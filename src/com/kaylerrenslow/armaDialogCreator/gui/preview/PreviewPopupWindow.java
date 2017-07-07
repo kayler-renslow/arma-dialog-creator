@@ -9,10 +9,10 @@ import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
 
@@ -22,10 +22,23 @@ import java.util.ResourceBundle;
 public class PreviewPopupWindow extends StagePopup<VBox> {
 
 	private static PreviewPopupWindow showingInstance = null;
-	private final UICanvasPreview previewCanvas;
-	private ToggleGroup toggleGroupFocusedControl;
+
 	private ArmaControl focusedControl = null;
+	private final UICanvasPreview previewCanvas;
+	private final ArmaDisplay armaDisplay;
+	private final ToggleGroup toggleGroupFocusedControl = new ToggleGroup();
 	private final ResourceBundle bundle = Lang.getBundle("PreviewWindowBundle");
+	private final ChangeListener<? extends Toggle> toggleGroupListener = (observable, oldValue, newValue) -> {
+		if (newValue == null) {
+			updateFocusedControl();
+			return;
+		}
+		if (focusedControl != null) {
+			setControlFocused(focusedControl, false);
+		}
+		focusedControl = (ArmaControl) newValue.getUserData();
+		setControlFocused(focusedControl, true);
+	};
 
 	public PreviewPopupWindow() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(0), null);
@@ -33,7 +46,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 
 		ApplicationData data = ApplicationData.getManagerInstance();
 		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(data);
-		ArmaDisplay armaDisplay = data.getCurrentProject().getEditingDisplay();
+		armaDisplay = data.getCurrentProject().getEditingDisplay();
 
 		MenuBar menuBar = new MenuBar();
 		{
@@ -50,32 +63,22 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 			Menu menuBgControls = new Menu(bundle.getString("MenuBar.setFocusedControl.bg_controls"));
 
 			miSetFocusedControl.setOnShowing(event -> {
-				//reinitialize the toggle group because just clearing it would reset
+				//remove toggle group listener because just clearing it would reset
 				//the focused control in the same way that pushing reset button would
 				//since the clear method will set the selected toggle to null
-				toggleGroupFocusedControl = new ToggleGroup();
+				toggleGroupFocusedControl.selectedToggleProperty().removeListener((ChangeListener) toggleGroupListener);
 
 				buildMenu(armaDisplay.getControls().deepIterator(), menuControls);
 				buildMenu(armaDisplay.getBackgroundControls().deepIterator(), menuBgControls);
 
-				toggleGroupFocusedControl.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-					if (newValue == null) {
-						updateFocusedControl(armaDisplay);
-						return;
-					}
-					if (focusedControl != null) {
-						focusedControl.getRenderer().setFocused(false);
-					}
-					focusedControl = (ArmaControl) newValue.getUserData();
-					focusedControl.getRenderer().setFocused(true);
-				});
+				toggleGroupFocusedControl.selectedToggleProperty().addListener((ChangeListener) toggleGroupListener);
 
 			});
 			miSetFocusedControl.getItems().add(menuControls);
 			miSetFocusedControl.getItems().add(menuBgControls);
 		}
 
-		updateFocusedControl(armaDisplay);
+		updateFocusedControl();
 		myRootElement.getChildren().add(menuBar);
 
 		previewCanvas = new UICanvasPreview(resolution, armaDisplay);
@@ -85,15 +88,12 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		previewCanvas.updateResolution(resolution);
 	}
 
-	private void updateFocusedControl(@NotNull ArmaDisplay armaDisplay) {
-		if (focusedControl != null) {
-			focusedControl.getRenderer().setFocused(false);
-		}
-		//find the last non bg control that wants focus
+	private void updateFocusedControl() {//find the last non bg control that wants focus
 		//if no control wants focus, set focus to the last control that can have focus
 		Reference<ArmaControl> focusToMe = new Reference<>();
 		Reference<ArmaControl> lastControl = new Reference<>();
 		armaDisplay.getControls().deepIterator().forEach(armaControl -> {
+			setControlFocused(armaControl, false);
 			if (armaControl.getRenderer().requestingFocus()) {
 				focusToMe.setValue(armaControl);
 			}
@@ -107,8 +107,12 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 			focusedControl = focusToMe.getValue();
 		}
 		if (focusedControl != null) {
-			focusedControl.getRenderer().setFocused(true);
+			setControlFocused(focusedControl, true);
 		}
+	}
+
+	private void setControlFocused(ArmaControl armaControl, boolean focused) {
+		armaControl.getRenderer().setFocused(false);
 	}
 
 	private void buildMenu(Iterable<ArmaControl> controls, Menu menuControls) {

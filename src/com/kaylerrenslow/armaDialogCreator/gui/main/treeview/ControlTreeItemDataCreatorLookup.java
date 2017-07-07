@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.dataCreator.ButtonDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.dataCreator.ControlGroupDataCreator;
+import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.dataCreator.ShortcutButtonDataCreator;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.dataCreator.StaticDataCreator;
 
 /**
@@ -18,7 +19,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	ACTIVETEXT(ControlType.ActiveText, StaticDataCreator.INSTANCE),
 
 	BUTTON(ControlType.Button, ButtonDataCreator.INSTANCE),
-	SHORTCUTBUTTON(ControlType.ShortcutButton, StaticDataCreator.INSTANCE),
+	SHORTCUTBUTTON(ControlType.ShortcutButton, ShortcutButtonDataCreator.INSTANCE),
 	XBUTTON(ControlType.XButton, StaticDataCreator.INSTANCE),
 
 	PROGRESS(ControlType.Progress, StaticDataCreator.INSTANCE),
