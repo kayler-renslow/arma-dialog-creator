@@ -250,7 +250,11 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		this.y2 = getBottomY() + dyb;
 	}
 
-	/** Return true if the point is inside the region, false otherwise */
+	/**
+	 Use this method to check if a given point is inside the component's bounds.
+
+	 @return true if the point is inside the region, false otherwise
+	 */
 	@Override
 	public boolean containsPoint(int x, int y) {
 		if (getLeftX() <= x && getTopY() <= y) {

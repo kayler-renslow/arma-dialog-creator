@@ -532,6 +532,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		gc.restore();
 	}
 
+	/**
+	 The mouse was pressed on the given position with the give mouse button. This method assumes that the mouse
+	 position was already in bounds of this control.
+
+	 @param mb mouse button used
+	 */
 	public void mousePress(@NotNull MouseButton mb) {
 		this.mouseButtonDown = mb;
 	}

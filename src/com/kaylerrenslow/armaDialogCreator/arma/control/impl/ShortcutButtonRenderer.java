@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
@@ -39,6 +40,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	private final PictureOrTextureHelper animTexturePressed = new PictureOrTextureHelper(this);
 	private final PictureOrTextureHelper animTextureFocused = new PictureOrTextureHelper(this);
 	private final PictureOrTextureHelper animTextureDefault = new PictureOrTextureHelper(this);
+	private final PictureOrTextureHelper textureNoShortcut = new PictureOrTextureHelper(this);
 
 	/** secondary text color (text color alternates between "color" and "color2") */
 	private Color color2 = Color.BLACK;
@@ -49,6 +51,20 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	private long periodFocusMillis = 500;
 	private long periodOverMillis = 500;
 
+	private double hitZone_top = 0;
+	private double hitZone_right = 0;
+	private double hitZone_bottom = 0;
+	private double hitZone_left = 0;
+
+	private double shortcutPos_top = 0;
+	private double shortcutPos_left = 0;
+	private double shortcutPos_w = 0;
+	private double shortcutPos_h = 0;
+
+	private double textPos_top = 0;
+	private double textPos_right = 0;
+	private double textPos_bottom = 0;
+	private double textPos_left = 0;
 
 	/**
 	 Alternating color helper. if control has focus (but mouse isn't over control).
@@ -68,7 +84,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		if (colorBackground.getValue() instanceof SVColor) {
 			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
 		}
-		colorBackground.getValueObserver().addListener(
+		colorBackground.addValueListener(
 				new ValueListener<SerializableValue>() {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
@@ -85,58 +101,54 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_PRESSED, animTexturePressed);
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_FOCUSED, animTextureFocused);
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_DEFAULT, animTextureDefault);
+		attachPicOrTexPropertyListener(ControlPropertyLookup.TEXTURE_NO_SHORTCUT, textureNoShortcut);
 
-		myControl.findProperty(ControlPropertyLookup.DEFAULT).getValueObserver().addListener(
-				(observer, oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.DEFAULT).addValueListener((observer, oldValue, newValue) -> {
 					requestFocus = newValue instanceof SVBoolean && ((SVBoolean) newValue).isTrue();
 					requestRender();
 				}
 		);
 
-		myControl.findProperty(ControlPropertyLookup.COLOR2).getValueObserver().addListener((observer, oldValue,
-																							 newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.COLOR2).addValueListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				color2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED).getValueObserver().addListener((observer,
-																									oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED).addValueListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_DISABLED).getValueObserver().addListener((observer,
-																									 oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.COLOR_DISABLED).addValueListener((observer,
+																					   oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorDisabled = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED).getValueObserver().addListener((observer,
-																											   oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED).addValueListener((observer,
+																								 oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBackgroundFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND2).getValueObserver().addListener((observer,
-																										oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND2).addValueListener((observer,
+																						  oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBackground2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.PERIOD_FOCUS).getValueObserver().addListener((observer,
-																								   oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.PERIOD_FOCUS).addValueListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				periodFocusMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.PERIOD_OVER).getValueObserver().addListener((observer,
-																								  oldValue, newValue) -> {
+		myControl.findProperty(ControlPropertyLookup.PERIOD_OVER).addValueListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				periodOverMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
 				requestRender();
@@ -148,7 +160,6 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.COLOR).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
-
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl,
 				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
@@ -157,11 +168,96 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.TOOLTIP
 		);
 
+		//nested classes
+		ControlClass hitZone = myControl.findNestedClass("HitZone");
+		{
+			hitZone.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					hitZone_top = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			hitZone.findProperty(ControlPropertyLookup.RIGHT).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					hitZone_right = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			hitZone.findProperty(ControlPropertyLookup.BOTTOM).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					hitZone_bottom = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			hitZone.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					hitZone_left = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+		}
+
+		ControlClass textPos = myControl.findNestedClass("TextPos");
+		{
+			textPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					textPos_top = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			textPos.findProperty(ControlPropertyLookup.RIGHT).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					textPos_right = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			textPos.findProperty(ControlPropertyLookup.BOTTOM).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					textPos_bottom = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			textPos.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					textPos_left = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+		}
+
+		ControlClass shortcutPos = myControl.findNestedClass("ShortcutPos");
+		{
+			shortcutPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					shortcutPos_top = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			shortcutPos.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					shortcutPos_left = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			shortcutPos.findProperty(ControlPropertyLookup.W).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					shortcutPos_w = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+			shortcutPos.findProperty(ControlPropertyLookup.H).addValueListener((observer, oldValue, newValue) -> {
+				if (newValue instanceof SVNumericValue) {
+					shortcutPos_h = ((SVNumericValue) newValue).toDouble();
+					requestRender();
+				}
+			});
+		}
+
 		requestRender();
 	}
 
 	private void attachPicOrTexPropertyListener(ControlPropertyLookupConstant lookup, PictureOrTextureHelper helper) {
-		myControl.findProperty(lookup).getValueObserver().addListener((observer, oldValue, newValue) -> {
+		myControl.findProperty(lookup).addValueListener((observer, oldValue, newValue) -> {
 			helper.updateAsync(newValue);
 		});
 	}
@@ -177,6 +273,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		final int controlHeight = getHeight();
 		PictureOrTextureHelper bgTexture = animTextureNormal;
 
+		int textPosX = x1 + (int) (Math.round(controlWidth * Math.max(textPos_left, .005)));
+		int textPosY = y1 + (int) (Math.round(controlHeight * Math.max(textPos_top, .02))) + textRenderer.getTextHeight();
+
 		if (preview) {
 			double ratio = focusedColorAlternator.updateAndGetRatio();
 			Color colorBackground = this.backgroundColor;
@@ -184,7 +283,8 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 			if (!isEnabled()) {
 				//button is disabled
-				//todo
+				bgTexture = animTextureDisabled;
+				textRenderer.setTextColor(colorDisabled);
 			} else if (mouseButtonDown == MouseButton.PRIMARY) {
 				//button is being clicked
 				bgTexture = animTexturePressed;
@@ -244,8 +344,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				}
 			}
 
+			paintShortcutThing(gc);
 
-			textRenderer.paint(gc);
+			textRenderer.paint(gc, textPosX, textPosY);
 
 			//reset the colors again
 			setBackgroundColor(colorBackground);
@@ -256,9 +357,49 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			}
 		} else {
 			super.paint(gc, canvasContext);
-			textRenderer.paint(gc);
+			paintShortcutThing(gc);
+			textRenderer.paint(gc, textPosX, textPosY);
 		}
 
+	}
+
+	private void paintShortcutThing(GraphicsContext gc) {
+		final int controlWidth = getWidth();
+		final int controlHeight = getHeight();
+
+		int x1 = (int) (this.x1 + Math.round(controlWidth * shortcutPos_left));
+		int y1 = (int) (this.y1 + Math.round(controlHeight * shortcutPos_top));
+		int x2 = (int) (this.x1 + Math.round(controlWidth * shortcutPos_w));
+		int y2 = (int) (this.y1 + Math.round(controlHeight * shortcutPos_h));
+		switch (textureNoShortcut.getMode()) {
+			case Image: {
+				gc.drawImage(textureNoShortcut.getImage(), x1, y1, x2 - x1, y2 - y1);
+				break;
+			}
+			case ImageError: {
+				gc.save();
+				gc.rect(x1, y1, x2 - x1, y2 - y1);
+				gc.clip();
+				paintImageError(gc);
+				gc.restore();
+				break;
+			}
+			case LoadingImage: {
+				break;
+			}
+			case Texture: {
+				TexturePainter.paint(gc, textureNoShortcut.getTexture(), x1, y1, x2, y2);
+				break;
+			}
+			case TextureError: {
+				gc.save();
+				gc.rect(x1, y1, x2 - x1, y2 - y1);
+				gc.clip();
+				paintTextureError(gc);
+				gc.restore();
+				break;
+			}
+		}
 	}
 
 	@NotNull
@@ -271,4 +412,23 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		return true;
 	}
 
+	@Override
+	public boolean containsPoint(int x, int y) {
+		int controlWidth = getWidth();
+		int controlHeight = getHeight();
+
+		//how many pixels from left side that the mouse can't click on
+		int leftCut = (int) (Math.round(controlWidth * this.hitZone_left));
+		//how many pixels from right side that the mouse can't click on
+		int rightCut = (int) (Math.round(controlWidth * this.hitZone_right));
+		int topCut = (int) (Math.round(controlHeight * this.hitZone_top));
+		int bottomCut = (int) (Math.round(controlHeight * this.hitZone_bottom));
+
+		if (x1 + leftCut <= x && x2 - rightCut >= x) {
+			if (y1 + topCut <= y && y2 - bottomCut >= y) {
+				return true;
+			}
+		}
+		return false;
+	}
 }

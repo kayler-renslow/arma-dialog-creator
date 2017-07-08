@@ -1,12 +1,14 @@
 **Added:**
-* 
+* disabling shortcut button now properly sets colors
+* HitZone nested class support to shortcut button
+* ShortcutPos nested class support to shortcut button
+* TextPos nested class support for shortcut button
 
 **Changed:**
 * 
 
 **Fixed:**
-* shortcut button wasn't properly multiplying textures with colors
-* over and focus colors for shortcut button weren't correct for periodOver=0 and periodFocus=0
+* preview window wasn't setting focus control (was always setting focus to false)
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

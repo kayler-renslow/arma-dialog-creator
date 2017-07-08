@@ -547,6 +547,11 @@ public class ControlProperty {
 		return this.getName().equals(other.getName());
 	}
 
+	/** Shortcut for doing {@link ValueObserver#addListener(ValueListener)} on this {@link #getValueObserver()} */
+	public void addValueListener(@NotNull ValueListener<SerializableValue> listener) {
+		valueObserver.addListener(listener);
+	}
+
 	/**
 	 A custom {@link ValueObserver} instance for handling {@link ControlProperty#setValue(SerializableValue)} and
 	 {@link ControlProperty#setValue(SerializableValue, ControlPropertyValueUpdate.ValueOrigin)}.

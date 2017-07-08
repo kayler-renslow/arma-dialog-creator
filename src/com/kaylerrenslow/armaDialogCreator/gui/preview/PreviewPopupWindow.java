@@ -60,7 +60,6 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 			});
 
 			Menu menuControls = new Menu(bundle.getString("MenuBar.setFocusedControl.controls"));
-			Menu menuBgControls = new Menu(bundle.getString("MenuBar.setFocusedControl.bg_controls"));
 
 			miSetFocusedControl.setOnShowing(event -> {
 				//remove toggle group listener because just clearing it would reset
@@ -68,14 +67,29 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 				//since the clear method will set the selected toggle to null
 				toggleGroupFocusedControl.selectedToggleProperty().removeListener((ChangeListener) toggleGroupListener);
 
-				buildMenu(armaDisplay.getControls().deepIterator(), menuControls);
-				buildMenu(armaDisplay.getBackgroundControls().deepIterator(), menuBgControls);
+				menuControls.getItems().clear();
+				for (ArmaControl armaControl : armaDisplay.getControls().deepIterator()) {
+					RadioMenuItem mi = new RadioMenuItem(
+							armaControl.getClassName(),
+							new ImageView(armaControl.getControlType().getIcon())
+					);
+					mi.setUserData(armaControl);
+					mi.setToggleGroup(toggleGroupFocusedControl);
+					menuControls.getItems().add(mi);
+					if (armaControl.getRenderer().hasFocus()) {
+						toggleGroupFocusedControl.selectToggle(mi);
+					}
+				}
+				if (menuControls.getItems().size() == 0) {
+					MenuItem miNoControls = new MenuItem(bundle.getString("MenuBar.setFocusedControl.noControls"));
+					miNoControls.setDisable(true);
+					menuControls.getItems().add(miNoControls);
+				}
 
 				toggleGroupFocusedControl.selectedToggleProperty().addListener((ChangeListener) toggleGroupListener);
 
 			});
 			miSetFocusedControl.getItems().add(menuControls);
-			miSetFocusedControl.getItems().add(menuBgControls);
 		}
 
 		updateFocusedControl();
@@ -112,28 +126,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 	}
 
 	private void setControlFocused(ArmaControl armaControl, boolean focused) {
-		armaControl.getRenderer().setFocused(false);
-	}
-
-	private void buildMenu(Iterable<ArmaControl> controls, Menu menuControls) {
-		menuControls.getItems().clear();
-		for (ArmaControl armaControl : controls) {
-			RadioMenuItem mi = new RadioMenuItem(
-					armaControl.getClassName(),
-					new ImageView(armaControl.getControlType().getIcon())
-			);
-			mi.setUserData(armaControl);
-			mi.setToggleGroup(toggleGroupFocusedControl);
-			menuControls.getItems().add(mi);
-			if (armaControl.getRenderer().hasFocus()) {
-				toggleGroupFocusedControl.selectToggle(mi);
-			}
-		}
-		if (menuControls.getItems().size() == 0) {
-			MenuItem miNoControls = new MenuItem(bundle.getString("MenuBar.setFocusedControl.noControls"));
-			miNoControls.setDisable(true);
-			menuControls.getItems().add(miNoControls);
-		}
+		armaControl.getRenderer().setFocused(focused);
 	}
 
 	@Override

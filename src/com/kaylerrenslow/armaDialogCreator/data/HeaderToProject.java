@@ -315,28 +315,10 @@ public class HeaderToProject {
 		//create the control
 		ArmaControl armaControl = ArmaControl.createControl(controlClassName, ArmaControlLookup.findByControlType(controlType), resolution, env, project);
 
+
+		//load all properties and nested classes
 		List<ControlPropertyLookupConstant> inheritProperties = new LinkedList<>();
-
-		for (ControlProperty property : armaControl.getAllChildProperties()) {
-			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
-			if (assignment == null) {
-				inheritProperties.add(property.getPropertyLookup());
-				continue;
-			}
-
-			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType());
-			if (v != null) {
-				property.setValue(v);
-			} else {
-				property.setValue(new SVRaw(assignment.getAsString(), property.getInitialPropertyType()));
-			}
-
-			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
-			if (m != null) {
-				property.setValueToMacro(m);
-			}
-		}
-
+		loadAllProperties(project, headerClass, armaControl, inheritProperties);
 
 		//get the extend class
 		ControlClass extendClass = null;
@@ -361,6 +343,53 @@ public class HeaderToProject {
 		}
 
 		return armaControl;
+	}
+
+	/**
+	 Creates values from the given {@link HeaderClass} by looking through all of its {@link HeaderAssignment}
+	 instances. For each of those {@link HeaderAssignment}, a {@link ControlProperty} will try to be set to the
+	 matching {@link HeaderAssignment} by comparing {@link HeaderAssignment#getVariableName()} and
+	 {@link ControlProperty#getName()} (comparison is not case sensitive). The {@link ControlProperty} instances will
+	 come from {@link ControlClass#getAllChildProperties()}.
+	 <p>
+	 This method will also load any nested {@link ControlClass} inside <code>controlClass</code> by recursively
+	 calling this method.
+
+	 @param project project to use
+	 @param headerClass the {@link HeaderClass} to fetch {@link HeaderAssignment} from
+	 @param controlClass the {@link ControlClass} to pair {@link HeaderAssignment}s with {@link ControlProperty}.
+	 @param inheritProperties a list to insert {@link ControlProperty} instances that couldn't be paired with a
+	 {@link HeaderAssignment}
+	 */
+	private void loadAllProperties(@NotNull Project project, @NotNull HeaderClass headerClass,
+								   @NotNull ControlClass controlClass, @Nullable List<ControlPropertyLookupConstant>
+										   inheritProperties) {
+		for (ControlProperty property : controlClass.getAllChildProperties()) {
+			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
+			if (assignment == null && inheritProperties != null) {
+				inheritProperties.add(property.getPropertyLookup());
+				continue;
+			}
+
+			SerializableValue v = createValueFromAssignment(assignment, property.getInitialPropertyType());
+			if (v != null) {
+				property.setValue(v);
+			} else {
+				property.setValue(new SVRaw(assignment.getAsString(), property.getInitialPropertyType()));
+			}
+
+			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
+			if (m != null) {
+				property.setValueToMacro(m);
+			}
+		}
+
+		for (ControlClass nestedClass : controlClass.getAllNestedClasses()) {
+			HeaderClass match = headerClass.getNestedClasses().getByName(nestedClass.getClassName(), false);
+			if (match != null) {
+				loadAllProperties(project, match, nestedClass, null);
+			}
+		}
 	}
 
 	@NotNull

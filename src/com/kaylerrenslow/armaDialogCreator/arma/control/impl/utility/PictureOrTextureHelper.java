@@ -107,7 +107,7 @@ public class PictureOrTextureHelper {
 
 	/**
 	 Get the texture. This method is synchronized to ensure that the mode is set at the same time as
-	 {@link #getTexture()} ()} or {@link #getMode()} is set.
+	 {@link #getTexture()} or {@link #getMode()} is set.
 
 	 @return the image, or null if {@link #getMode()} is not {@link Mode#Image}
 	 */
