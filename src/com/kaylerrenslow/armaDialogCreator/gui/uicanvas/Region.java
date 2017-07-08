@@ -118,9 +118,30 @@ public interface Region {
 
 	void scale(int dxl, int dxr, int dyt, int dyb);
 
-	/** Return true if the point is inside the region, false otherwise */
-	boolean containsPoint(int x, int y);
 
+	/**
+	 Use this method to check if a given point is inside the component's bounds.
+
+	 @return true if the point is inside the region, false otherwise
+	 */
+	default boolean containsPoint(int x, int y) {
+		if (getLeftX() <= x && getTopY() <= y) {
+			if (getRightX() >= x && getBottomY() >= y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Check to see if this region is strictly bigger than the given region and if the given region is inside this one */
+	default boolean contains(@NotNull Region r) {
+		if (getLeftX() < r.getLeftX() && getTopY() < r.getTopY()) {
+			if (getRightX() > r.getRightX() && getBottomY() > r.getBottomY()) {
+				return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 Gets the edge(s) that the given point is closest to.
 
@@ -180,6 +201,4 @@ public interface Region {
 		return Edge.NONE;
 	}
 
-	/** Check to see if this region is strictly bigger than the given region and if the given region is inside this one */
-	boolean contains(Region r);
 }

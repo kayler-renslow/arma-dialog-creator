@@ -161,7 +161,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
 		tooltipRenderer = new TooltipRenderer(
-				this.myControl,
+				this.myControl, this,
 				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
 				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
 				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
@@ -273,8 +273,8 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		final int controlHeight = getHeight();
 		PictureOrTextureHelper bgTexture = animTextureNormal;
 
-		int textPosX = x1 + (int) (Math.round(controlWidth * Math.max(textPos_left, .005)));
-		int textPosY = y1 + (int) (Math.round(controlHeight * Math.max(textPos_top, .02))) + textRenderer.getTextHeight();
+		int textPosX = x1 + (int) (Math.round(controlWidth * textPos_left));
+		int textPosY = y1 + (int) (Math.round(controlHeight * textPos_top));
 
 		if (preview) {
 			double ratio = focusedColorAlternator.updateAndGetRatio();

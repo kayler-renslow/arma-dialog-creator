@@ -162,7 +162,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	 </ol>
 	 */
 	protected void paint() {
-		gc.setTextBaseline(VPos.BASELINE); //we actually need to run this with each call for some reason
+		gc.setTextBaseline(VPos.TOP); //we actually need to run this with each call for some reason
 		gc.save();
 		paintBackground();
 		paintControls();

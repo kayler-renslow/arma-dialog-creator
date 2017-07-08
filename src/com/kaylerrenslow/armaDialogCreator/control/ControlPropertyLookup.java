@@ -33,9 +33,9 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	COLOR_BACKGROUND(12, "colorBackground", PropertyType.Color),
 	TEXT(13, 6, "text", PropertyType.String),
 	SHADOW(14, "shadow", PropertyType.Int,  //does absolutely nothing inside the Attributes class for structured text
-			new ControlPropertyOption("None", "0", "No shadow."),
-			new ControlPropertyOption("Drop Shadow", "1", "Drop shadow with soft edges."),
-			new ControlPropertyOption("Stroke", "2", "Stroke")
+			new ControlPropertyOption("None (0)", "0", "No shadow."),
+			new ControlPropertyOption("Drop Shadow (1)", "1", "Drop shadow with soft edges."),
+			new ControlPropertyOption("Stroke (2)", "2", "Stroke")
 	),
 	TOOLTIP(15, "tooltip", PropertyType.String),
 	TOOLTIP_COLOR_SHADE(16, "tooltipColorShade", PropertyType.Color),

@@ -182,7 +182,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 
 
 		tooltipRenderer = new TooltipRenderer(
-				this.myControl,
+				this.myControl, this,
 				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
 				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
 				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
@@ -230,6 +230,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				//set background color to the disabled color
 				setBackgroundColor(colorBackgroundDisabled);
 				textRenderer.setTextColor(colorDisabled);
+				super.paint(gc, canvasContext);
 			} else if (mouseButtonDown == MouseButton.PRIMARY) {
 				int oldX1 = this.x1;
 				int oldX2 = this.x2;
@@ -241,6 +242,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				this.x2 = x1 + controlWidth;
 				this.y2 = y1 + controlHeight;
 
+				setBackgroundColor(colorBackgroundActive);
 				super.paint(gc, canvasContext);
 
 				this.x1 = oldX1;
@@ -250,15 +252,16 @@ public class ButtonRenderer extends ArmaControlRenderer {
 			} else if (this.mouseOver) {
 				//if the mouse is over this control, set the background color to backgroundColorActive
 				setBackgroundColor(colorBackgroundActive);
+				super.paint(gc, canvasContext);
 			} else if (focused) {
 				double ratio = focusedColorAlternator.updateAndGetRatio();
 				setBackgroundColor(
 						colorFocused.interpolate(colorFocused2 == null ? backgroundColor : colorFocused2, ratio)
 				);
+				super.paint(gc, canvasContext);
 			} else {
 				super.paint(gc, canvasContext);
 			}
-
 			textRenderer.paint(gc);
 
 			//reset the colors again

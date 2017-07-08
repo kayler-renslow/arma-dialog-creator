@@ -20,11 +20,14 @@ import java.util.Iterator;
 public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	private final CanvasView canvasView = ArmaDialogCreator.getCanvasView();
+	private final ControlFocusHandler focusHandler;
 	private ArmaControl mouseOverControl;
 	private ArmaControl mousePressControl;
 
-	public UICanvasPreview(@NotNull Resolution resolution, @NotNull ArmaDisplay display) {
+	public UICanvasPreview(@NotNull Resolution resolution, @NotNull ArmaDisplay display,
+						   @NotNull ControlFocusHandler focusHandler) {
 		super(resolution, display);
+		this.focusHandler = focusHandler;
 		this.canvasContext = new CanvasContext() {
 			@Override
 			public boolean paintPartial() {
@@ -46,9 +49,6 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 		if (mouseOverControl == null) {
 			return;
 		}
-		if (mouseOverControl != mousePressControl && mousePressControl != null) {
-			mousePressControl.getRenderer().setFocused(false);
-		}
 		mousePressControl = mouseOverControl;
 		mouseOverControl.getRenderer().mousePress(mb);
 	}
@@ -59,7 +59,9 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 			return;
 		}
 		mousePressControl.getRenderer().mouseRelease();
-		mousePressControl.getRenderer().setFocused(true);
+		if (mousePressControl.getRenderer().canHaveFocus()) {
+			focusHandler.setFocusedControl(mousePressControl);
+		}
 	}
 
 	@Override
@@ -76,7 +78,7 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 		mouseOverControl = null;
 		while (controlIter.hasNext()) {
 			ArmaControl control = controlIter.next();
-			if (control.getRenderer().containsPoint(mousex, mousey)) {
+			if (control.getRenderer().containsPoint(mousex, mousey) && control.getRenderer().isEnabled()) {
 				mouseOverControl = control;
 				setMouseOver(mouseOverControl, mousex, mousey, true);
 				break;

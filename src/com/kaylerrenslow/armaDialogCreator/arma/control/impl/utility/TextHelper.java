@@ -3,12 +3,9 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextBoundsType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,24 +13,6 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 07/03/2017 */
 public class TextHelper {
-	private static Text textObj = new Text();
-
-	static {
-		textObj.setTextOrigin(VPos.TOP);
-		textObj.setBoundsType(TextBoundsType.VISUAL);
-	}
-
-	public static int getWidth(@NotNull String text, @NotNull Font font) {
-		textObj.setText(text);
-		textObj.setFont(font);
-		return (int) textObj.getLayoutBounds().getWidth();
-	}
-
-	public static int getHeight(@NotNull String text, @NotNull Font font) {
-		textObj.setText(text);
-		textObj.setFont(font);
-		return (int) textObj.getLayoutBounds().getHeight();
-	}
 
 	/**
 	 Get the text that can be displayed by a {@link ArmaControlRenderer}
@@ -106,7 +85,6 @@ public class TextHelper {
 
 		gc.setFont(font);
 		gc.setFill(textColor);
-
 		switch (textShadow) {
 			case None: {
 				gc.fillText(text, textX, textY);

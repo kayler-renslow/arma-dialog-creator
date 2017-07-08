@@ -8,10 +8,15 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,8 +38,9 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	protected final Button btnDecreaseSize = new Button("-");
 	protected final Button btnIncreaseSize = new Button("+");
-	private final double gap = 5;
-	private final double tfPrefWidth = 100d;
+	private static final double gap = 5;
+	private static final int numEditorsPerRow = 3;
+	private static final double tfPrefWidth = 100d;
 	private final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
 
@@ -42,7 +48,7 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	public ArrayValueEditor() {
 		masterPane = new HBox(5, editorsPane);
-		editorsPane.setPrefWrapLength(tfPrefWidth * 3); //have room for 3 text fields
+		editorsPane.setPrefWrapLength(tfPrefWidth * numEditorsPerRow + gap * numEditorsPerRow); //have room for 3 text fields
 		editorsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
 		masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
@@ -75,9 +81,22 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 	private void removeLastEditor() {
 		InputField removed = editors.remove(editors.size() - 1);
 		editorsPane.getChildren().remove(removed);
+		if (editors.size() == 0) {
+			Label lbl = new Label("{}");
+			lbl.setFont(Font.font(15));
+			editorsPane.getChildren().add(lbl);
+			Separator sep = new Separator(Orientation.HORIZONTAL);
+			sep.setOpaqueInsets(new Insets(lbl.getHeight() / 2));
+			sep.setPrefWidth(numEditorsPerRow * tfPrefWidth - lbl.getWidth() - 10);
+			editorsPane.getChildren().add(sep);
+		}
 	}
 
 	private void addNewEditor() {
+		if (editors.size() == 0) {
+			//remove the {} label
+			editorsPane.getChildren().clear();
+		}
 		InputField<ArmaStringChecker, String> in = new InputField<>(new ArmaStringChecker());
 		in.setPrefWidth(tfPrefWidth);
 		in.setValue("");

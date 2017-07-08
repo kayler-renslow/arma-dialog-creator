@@ -10,16 +10,14 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
-import javafx.geometry.VPos;
+import com.sun.javafx.tk.FontMetrics;
+import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
-import javafx.scene.text.TextBoundsType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  A utility class for rendering text with a {@link ArmaControlRenderer} which can have the following property updates:
@@ -35,92 +33,92 @@ import org.jetbrains.annotations.NotNull;
 public class BasicTextRenderer {
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
-	private final Text textObj = new Text();
 
 	private Color textColor = Color.BLACK;
 	private ControlProperty sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;
 
-	public BasicTextRenderer(ArmaControl control, ArmaControlRenderer renderer, ControlPropertyLookupConstant text,
-							 ControlPropertyLookupConstant colorText, ControlPropertyLookupConstant style,
-							 ControlPropertyLookupConstant sizeEx, ControlPropertyLookup shadow) {
+	private int textWidth, textHeight;
+	private TextAlignment textAlignment = TextAlignment.CENTER;
+	private String text = "";
+	private Font font = Font.getDefault();
+
+	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
+							 @NotNull ControlPropertyLookupConstant text,
+							 @NotNull ControlPropertyLookupConstant colorText, @Nullable ControlPropertyLookupConstant style,
+							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow) {
 		this.control = control;
-		this.renderer = renderer;
+		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
 		init(text, colorText, style, sizeEx, shadow);
 
 	}
 
-	private void init(ControlPropertyLookupConstant text, ControlPropertyLookupConstant colorText,
-					  ControlPropertyLookupConstant style, ControlPropertyLookupConstant sizeEx,
-					  ControlPropertyLookup shadow) {
-		textObj.setTextOrigin(VPos.TOP);
-		textObj.setBoundsType(TextBoundsType.VISUAL);
+	private void init(@NotNull ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
+					  @Nullable ControlPropertyLookupConstant style, @Nullable ControlPropertyLookupConstant sizeEx,
+					  @Nullable ControlPropertyLookup shadow) {
 
-		control.findProperty(text).getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				setText(TextHelper.getText(newValue));
-				renderer.requestRender();
-			}
-		});
-		ControlProperty textColorProp = control.findProperty(colorText);
-		if (textColorProp.getValue() != null && textColorProp.getValue() instanceof SVColor) {
-			textColor = ((SVColor) textColorProp.getValue()).toJavaFXColor();
-		}
-		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
-		textColorProp.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof SVColor) {
-					setTextColor(((SVColor) newValue).toJavaFXColor());
-				}
-				renderer.requestRender();
-			}
-		});
-		control.findProperty(shadow).getValueObserver().addListener((observer, oldValue, newValue) -> {
-			textShadow = TextHelper.getTextShadow(newValue);
-			renderer.requestRender();
-		});
-		control.findProperty(style).getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof SVControlStyleGroup) {
-					SVControlStyleGroup group = (SVControlStyleGroup) newValue;
-
-					textObj.setTextAlignment(TextAlignment.LEFT);
-
-					for (ControlStyle style : group.getStyleArray()) {
-						if (style == ControlStyle.LEFT) {
-							textObj.setTextAlignment(TextAlignment.LEFT);
-							continue;
-						}
-						if (style == ControlStyle.CENTER) {
-							textObj.setTextAlignment(TextAlignment.CENTER);
-							continue;
-						}
-						if (style == ControlStyle.RIGHT) {
-							textObj.setTextAlignment(TextAlignment.RIGHT);
-							continue;
-						}
-					}
+		control.findProperty(text).addValueListener((observer, oldValue, newValue) -> {
+					setText(TextHelper.getText(newValue));
 					renderer.requestRender();
 				}
-			}
-		});
-		sizeExProperty = control.findProperty(sizeEx);
-		sizeExProperty.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-				if (newValue instanceof SVExpression) {
-					SVExpression ex = (SVExpression) newValue;
-					updateFont(ex);
+		);
+		ControlProperty textColorProp = control.findProperty(colorText);
+		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
+		textColorProp.addValueListener((observer, oldValue, newValue) -> {
+					if (newValue instanceof SVColor) {
+						setTextColor(((SVColor) newValue).toJavaFXColor());
+						renderer.requestRender();
+					}
 				}
-			}
-		});
+		);
+		if (textColorProp.getValue() instanceof SVColor) {
+			textColor = ((SVColor) textColorProp.getValue()).toJavaFXColor();
+		}
+		if (shadow != null) {
+			control.findProperty(shadow).addValueListener((observer, oldValue, newValue) -> {
+				textShadow = TextHelper.getTextShadow(newValue);
+				renderer.requestRender();
+			});
+		}
+		if (style != null) {
+			control.findProperty(style).addValueListener((observer, oldValue, newValue) -> {
+						if (newValue instanceof SVControlStyleGroup) {
+							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
-		if (sizeExProperty.getValue() instanceof SVExpression) {
-			updateFont((SVExpression) sizeExProperty.getValue());
+							textAlignment = TextAlignment.LEFT;
+
+							for (ControlStyle controlStyle : group.getStyleArray()) {
+								if (controlStyle == ControlStyle.LEFT) {
+									textAlignment = TextAlignment.LEFT;
+									continue;
+								}
+								if (controlStyle == ControlStyle.CENTER) {
+									textAlignment = TextAlignment.CENTER;
+									continue;
+								}
+								if (controlStyle == ControlStyle.RIGHT) {
+									textAlignment = TextAlignment.RIGHT;
+									continue;
+								}
+							}
+							renderer.requestRender();
+						}
+					}
+			);
+		}
+		if (sizeEx != null) {
+			sizeExProperty = control.findProperty(sizeEx);
+			sizeExProperty.addValueListener((observer, oldValue, newValue) -> {
+						if (newValue instanceof SVExpression) {
+							SVExpression ex = (SVExpression) newValue;
+							updateFontSize(ex);
+						}
+					}
+			);
+			if (sizeExProperty.getValue() instanceof SVExpression) {
+				updateFontSize((SVExpression) sizeExProperty.getValue());
+			}
 		}
 
 		renderer.getResolutionUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
@@ -132,16 +130,16 @@ public class BasicTextRenderer {
 	}
 
 	public int getTextWidth() {
-		return (int) textObj.getLayoutBounds().getWidth();
+		return textWidth;
 	}
 
 	public int getTextHeight() {
-		return (int) (textObj.getLayoutBounds().getHeight());
+		return textHeight;
 	}
 
 	private int getTextX() {
 		int textWidth = getTextWidth();
-		switch (textObj.getTextAlignment()) {
+		switch (textAlignment) {
 			case LEFT: {
 				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.02);
 			}
@@ -157,7 +155,7 @@ public class BasicTextRenderer {
 
 	private int getTextY() {
 		int textHeight = getTextHeight();
-		return renderer.getTopY() + (renderer.getHeight() + textHeight) / 2;
+		return renderer.getTopY() + (renderer.getHeight() - textHeight) / 2;
 	}
 
 	/**
@@ -193,12 +191,15 @@ public class BasicTextRenderer {
 	}
 
 	public void setText(@NotNull String text) {
-		this.textObj.setText(text);
+		this.text = text;
+		FontMetrics fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
+		textWidth = Math.round(fontMetrics.computeStringWidth(text));
+		textHeight = Math.round(fontMetrics.getLineHeight());
 	}
 
 	@NotNull
 	public String getText() {
-		return this.textObj.getText();
+		return text;
 	}
 
 	public void setTextColor(@NotNull Color color) {
@@ -211,18 +212,29 @@ public class BasicTextRenderer {
 	}
 
 	public void resolutionUpdate() {
-		if (sizeExProperty.getValue() instanceof SVExpression) {
-			updateFont((SVExpression) sizeExProperty.getValue());
+		if (sizeExProperty != null) {
+			if (sizeExProperty.getValue() instanceof SVNumericValue) {
+				updateFontSize((SVNumericValue) sizeExProperty.getValue());
+			}
 		}
 	}
 
 	@NotNull
 	private Font getFont() {
-		return textObj.getFont();
+		return font;
 	}
 
-	private void updateFont(@NotNull SVExpression sizeEx) {
-		textObj.setFont(TextHelper.getFont(renderer.getResolution(), sizeEx.getNumVal()));
+	public void setFont(@NotNull Font font) {
+		this.font = font;
+		updateFontMetrics();
+	}
+
+	private void updateFontMetrics() {
+		setText(this.text); //update text width and height
 		renderer.requestRender();
+	}
+
+	private void updateFontSize(@NotNull SVNumericValue sizeEx) {
+		setFont(TextHelper.getFont(renderer.getResolution(), sizeEx.toDouble()));
 	}
 }
