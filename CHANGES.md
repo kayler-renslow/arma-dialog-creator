@@ -1,13 +1,11 @@
 **Added:**
-* FocusHandler class
+* 
 
 **Changed:**
-* how text width and height is calculated in BasicTextRenderer
-* when array value editor is empty, a {} label and separator line will be inside the pane to lead the user's eyes to the +- buttons
+* the array value editor now properly displays a clear value vs an empty array
 
 **Fixed:**
-* preview window wasn't setting focus control (was always setting focus to false)
-* text y position for shortcut button was off 
+*  
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -35,3 +33,4 @@
         * ShortcutPos.w should not be equal to the normal w
 * July 7: we should support inheriting nested classes.
     * be sure to update HeaderToProject
+    * HeaderToProject is creating 2 of RscText for VehicleShopMenu

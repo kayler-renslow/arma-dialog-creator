@@ -23,13 +23,14 @@ public final class SVArray extends SerializableValue {
 	public SVArray(@NotNull String... strings) {
 		this.strings = strings;
 	}
-	
+
 	@Override
 	public String toString() {
 		StringBuilder ret = new StringBuilder("{");
 		for (int i = 0; i < strings.length; i++) {
-			ret.append(strings[i]).append(i != strings.length - 1 ? ", " : "}");
+			ret.append(strings[i]).append(i != strings.length - 1 ? ", " : "");
 		}
+		ret.append('}');
 		return ret.toString();
 	}
 
@@ -51,8 +52,8 @@ public final class SVArray extends SerializableValue {
 	}
 
 	@Override
-	public boolean equals(Object o){
-		if(o == this){
+	public boolean equals(Object o) {
+		if (o == this) {
 			return true;
 		}
 		if (o instanceof SVArray) {
@@ -61,6 +62,4 @@ public final class SVArray extends SerializableValue {
 		}
 		return false;
 	}
-	
-	
 }

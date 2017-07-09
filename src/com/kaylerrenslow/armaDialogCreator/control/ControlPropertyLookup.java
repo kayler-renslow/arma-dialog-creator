@@ -10,8 +10,8 @@ import java.util.List;
 /**
  A place to find ALL known control properties for all controls.
  This is where the name of the property, property type, description, and options (if allowed) are listed.
-
- *****DO NOT MODIFY THE ID'S.*****
+ <p>
+ *DO NOT MODIFY THE ID'S.*****
 
  @author Kayler
  @since 05/22/2016. */
@@ -23,7 +23,12 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	H(4, 4, "h", PropertyType.Float),
 	TYPE(5, -1, "type", PropertyType.Int),
 	STYLE(6, 5, "style", PropertyType.ControlStyle),
-	ACCESS(7, "access", PropertyType.Int, new ControlPropertyOption("Read and Write", "0", "Default case where properties can still be added or overridden."), new ControlPropertyOption("Read and Create", "1", "Only allows creating new properties."), new ControlPropertyOption("Read Only", "2", "Does not allow to do anything in deriving classes."), new ControlPropertyOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")),
+	ACCESS(7, "access", PropertyType.Int,
+			new ControlPropertyOption("Read and Write", "0", "Default case where properties can still be added or overridden."),
+			new ControlPropertyOption("Read and Create", "1", "Only allows creating new properties."),
+			new ControlPropertyOption("Read Only", "2", "Does not allow to do anything in deriving classes."),
+			new ControlPropertyOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")
+	),
 
 	/*Common*/
 	MOVING(8, "moving", PropertyType.Boolean),
@@ -41,8 +46,16 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	TOOLTIP_COLOR_SHADE(16, "tooltipColorShade", PropertyType.Color),
 	TOOLTIP_COLOR_TEXT(17, "tooltipColorText", PropertyType.Color),
 	TOOLTIP_COLOR_BOX(18, "tooltipColorBox", PropertyType.Color),
-	ALIGN(19, "align", PropertyType.String, new ControlPropertyOption("Left", "left", "Left align."), new ControlPropertyOption("Center", "center", "Center align."), new ControlPropertyOption("Right", "right", "Right align.")),
-	VALIGN(20, "valign", PropertyType.String, new ControlPropertyOption("Top", "top", "Top align."), new ControlPropertyOption("Middle", "middle", "Middle align."), new ControlPropertyOption("Bottom", "bottom", "Bottom align.")),
+	ALIGN(19, "align", PropertyType.String,
+			new ControlPropertyOption("Left", "left", "Left align."),
+			new ControlPropertyOption("Center", "center", "Center align."),
+			new ControlPropertyOption("Right", "right", "Right align.")
+	),
+	VALIGN(20, "valign", PropertyType.String,
+			new ControlPropertyOption("Top", "top", "Top align."),
+			new ControlPropertyOption("Middle", "middle", "Middle align."),
+			new ControlPropertyOption("Bottom", "bottom", "Bottom align.")
+	),
 	COLOR__HEX(21, "color", PropertyType.HexColorString),
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString), //default shadow color
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.Float),
@@ -102,6 +115,13 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	PERIOD_FOCUS(76, "periodFocus", PropertyType.Float),
 	PERIOD_OVER(77, "periodOver", PropertyType.Float),
 	SHORTCUTS(78, "shortcuts", PropertyType.Array),
+	COLOR_SELECTION(79, "colorSelection", PropertyType.Color),
+	AUTO_COMPLETE(80, "autocomplete", PropertyType.String,
+			new ControlPropertyOption("None", "\"\"", "No autocomplete."),
+			new ControlPropertyOption("Scripting", "\"scripting\"", "SQF scripting autocomplete."),
+			new ControlPropertyOption("General", "\"general\"", "Word auto complete.")
+	),
+	HTML_CONTROL(81, "htmlControl", PropertyType.Boolean),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),
@@ -228,8 +248,8 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	/**
 	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyType()}
 	 is equal to find
-	 @param find type to find
 
+	 @param find type to find
 	 @return list of matched
 	 */
 	@NotNull

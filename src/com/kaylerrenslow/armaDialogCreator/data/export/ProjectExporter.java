@@ -72,7 +72,7 @@ public class ProjectExporter {
 			}
 			ret.append(v).append(i != arr.length - 1 ? "," : "");
 		}
-		return arr.length > 1 ? "{" + ret + "}" : ret.toString();
+		return (type.getPropertyValuesSize() > 1) ? "{" + ret + "}" : ret.toString();
 	}
 
 	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull OutputStream stream) throws IOException {

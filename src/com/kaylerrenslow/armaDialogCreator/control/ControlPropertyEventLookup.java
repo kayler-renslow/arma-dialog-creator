@@ -90,22 +90,14 @@ public enum ControlPropertyEventLookup {
 		return null;
 	}
 
-	private static ControlPropertyLookup[] allWithControlScope, allWithButtonScope;
-
 	@NotNull
 	public static ControlPropertyLookup[] allWithControlScope() {
-		if (allWithControlScope == null) {
-			allWithControlScope = allWith("control");
-		}
-		return allWithControlScope;
+		return allWith("control");
 	}
 
 	@NotNull
 	public static ControlPropertyLookup[] allWithButtonScope() {
-		if (allWithButtonScope == null) {
-			allWithButtonScope = allWith("button");
-		}
-		return allWithButtonScope;
+		return allWith("button");
 	}
 
 	@NotNull

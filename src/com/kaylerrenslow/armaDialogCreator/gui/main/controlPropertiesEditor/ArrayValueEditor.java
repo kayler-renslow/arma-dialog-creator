@@ -1,8 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVArray;
-import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.ArmaStringChecker;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.RawChecker;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -28,30 +29,30 @@ import java.util.ArrayList;
  */
 public class ArrayValueEditor implements ValueEditor<SVArray> {
 
-	private final ValueListener<String> editorValueUpdateListener = new ValueListener<String>() {
+	private final ValueListener<SVRaw> editorValueUpdateListener = new ValueListener<SVRaw>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+		public void valueUpdated(@NotNull ValueObserver<SVRaw> observer, SVRaw oldValue, SVRaw newValue) {
 			valueObserver.updateValue(createValue());
 		}
 	};
-	protected ArrayList<InputField<ArmaStringChecker, String>> editors = new ArrayList<>();
+	private ArrayList<InputField> editors = new ArrayList<>();
 
-	protected final Button btnDecreaseSize = new Button("-");
-	protected final Button btnIncreaseSize = new Button("+");
 	private static final double gap = 5;
 	private static final int numEditorsPerRow = 3;
 	private static final double tfPrefWidth = 100d;
 	private final FlowPane editorsPane = new FlowPane(gap, gap);
 	private final HBox masterPane;
+	private final Button btnDecreaseSize, btnIncreaseSize;
 
 	private final ValueObserver<SVArray> valueObserver = new ValueObserver<>(null);
 
 	public ArrayValueEditor() {
-		masterPane = new HBox(5, editorsPane);
+		masterPane = new HBox(5);
 		editorsPane.setPrefWrapLength(tfPrefWidth * numEditorsPerRow + gap * numEditorsPerRow); //have room for 3 text fields
 		editorsPane.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 
-		masterPane.getChildren().addAll(btnDecreaseSize, btnIncreaseSize);
+		btnDecreaseSize = new Button("-");
+		btnIncreaseSize = new Button("+");
 		btnDecreaseSize.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -66,7 +67,7 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 			public void handle(ActionEvent event) {
 				if (editors.size() > 0) {
 					for (InputField inf : editors) {
-						if (inf.getValue() == null) {
+						if (inf.getValue() == null || inf.getText().length() == 0) {
 							inf.requestFocus();
 							beep();
 							return;
@@ -76,20 +77,43 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 				addNewEditor();
 			}
 		});
+
+		addNullValueFiller(true);
+
+		addSpaceFiller();
+	}
+
+	private void addNullValueFiller(boolean add) {
+		masterPane.getChildren().clear();
+		if (add) {
+			Button btnInsert = new Button("{}");
+			btnInsert.setFont(Font.font("monospace", 14));
+			btnInsert.setOnAction(event -> {
+				addNullValueFiller(false);
+				valueObserver.updateValue(new SVArray());
+			});
+			masterPane.getChildren().add(btnInsert);
+		} else {
+			masterPane.getChildren().addAll(editorsPane, btnDecreaseSize, btnIncreaseSize);
+		}
 	}
 
 	private void removeLastEditor() {
 		InputField removed = editors.remove(editors.size() - 1);
 		editorsPane.getChildren().remove(removed);
 		if (editors.size() == 0) {
-			Label lbl = new Label("{}");
-			lbl.setFont(Font.font(15));
-			editorsPane.getChildren().add(lbl);
-			Separator sep = new Separator(Orientation.HORIZONTAL);
-			sep.setOpaqueInsets(new Insets(lbl.getHeight() / 2));
-			sep.setPrefWidth(numEditorsPerRow * tfPrefWidth - lbl.getWidth() - 10);
-			editorsPane.getChildren().add(sep);
+			addSpaceFiller();
 		}
+	}
+
+	private void addSpaceFiller() {
+		Label lbl = new Label("{}");
+		lbl.setFont(Font.font(15));
+		editorsPane.getChildren().add(lbl);
+		Separator sep = new Separator(Orientation.HORIZONTAL);
+		sep.setOpaqueInsets(new Insets(lbl.getHeight() / 2));
+		sep.setPrefWidth(numEditorsPerRow * tfPrefWidth - lbl.getWidth() - 10);
+		editorsPane.getChildren().add(sep);
 	}
 
 	private void addNewEditor() {
@@ -97,9 +121,9 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 			//remove the {} label
 			editorsPane.getChildren().clear();
 		}
-		InputField<ArmaStringChecker, String> in = new InputField<>(new ArmaStringChecker());
+		InputField<RawChecker, SVRaw> in = new InputField<>(new RawChecker(null));
 		in.setPrefWidth(tfPrefWidth);
-		in.setValue("");
+		in.setValue(new SVRaw("", null));
 		editors.add(in);
 		editorsPane.getChildren().add(in);
 		editorsPane.autosize();
@@ -145,9 +169,6 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 
 	@Nullable
 	private SVArray createValue() {
-		if (editors.size() == 0) {
-			return null;
-		}
 		String[] values = new String[editors.size()];
 		int i = 0;
 		for (InputField tf : editors) {
@@ -165,7 +186,10 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 			while (!editors.isEmpty()) {
 				removeLastEditor();
 			}
+			addNullValueFiller(true);
+			valueObserver.updateValue(null);
 		} else {
+			addNullValueFiller(false);
 			int i = 0;
 			String[] vals = val.getAsStringArray();
 			while (editors.size() > vals.length) {
@@ -177,7 +201,7 @@ public class ArrayValueEditor implements ValueEditor<SVArray> {
 			}
 			i = 0;
 			for (String s : vals) {
-				editors.get(i++).setValue(s);
+				editors.get(i++).setText(s);
 			}
 		}
 	}

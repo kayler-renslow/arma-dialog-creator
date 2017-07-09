@@ -97,7 +97,6 @@ public class HeaderToProject {
 		callback.message(bundle.getString("Status.parsing"));
 		try {
 			headerFile = HeaderParser.parse(descExt, workspace.getFileInAdcDirectory("temp"));
-			callback.finishedParse();
 		} catch (HeaderParseException e) {
 			throw new HeaderConversionException(e.getMessage(), e);
 		} catch (IOException e2) {
@@ -114,6 +113,8 @@ public class HeaderToProject {
 				discoveredDialogClassNames.add(hc.getClassName());
 			}
 		}
+
+		callback.finishedParse();
 
 		callback.message(bundle.getString("Status.requesting_dialogs_to_save"));
 
