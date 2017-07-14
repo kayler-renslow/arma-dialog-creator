@@ -2,10 +2,17 @@
 * 
 
 **Changed:**
-* the array value editor now properly displays a clear value vs an empty array
+* canvas editor now has a different, more subtle way of showing what controls are selected
 
 **Fixed:**
-*  
+* when duplicating a bg control, the control was placed in controls rather than bg controls
+* application would freeze when creating new project
+* internal error report when the file path for an image can't be relativized towards the project export directory
+    * this can happen when using different drive letters.
+    * for now, if this error occurs, we just ignore it and write the path stored in the SerializableValue
+* re-double clicking a contorl in editor wouldn't show the popup editor
+* double click could be trigged even when first click wasn't targeting a control and the second click was
+* some render issues with blending an image that has transparency over one that doesnt (was making the non transparent one disappear)
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

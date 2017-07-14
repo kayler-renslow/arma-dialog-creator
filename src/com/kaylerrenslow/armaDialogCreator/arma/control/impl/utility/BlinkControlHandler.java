@@ -23,6 +23,10 @@ public class BlinkControlHandler {
 				blinkDurationSet = false;
 			} else {
 				blinkDuration = blinkProperty.getFloatValue() * 1000; //*1000 because its in millis
+				if (blinkDuration <= 0) {
+					blinkDurationSet = false;
+					return;
+				}
 				blinkDurationSet = true;
 			}
 		});

@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
+import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.Node;
@@ -111,6 +112,12 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 			i++;
 		}
 		ArmaControl dup = myArmaControl.duplicate(newName, p);
+		if (myArmaControl.getHolder() == myArmaControl.getDisplay()) {
+			if (treeView == ArmaDialogCreator.getCanvasView().getBackgroundControlTreeView()) {
+				myArmaControl.getDisplay().getBackgroundControls().add(dup);
+				return;
+			}
+		}
 		myArmaControl.getHolder().getControls().add(dup);
 	}
 }

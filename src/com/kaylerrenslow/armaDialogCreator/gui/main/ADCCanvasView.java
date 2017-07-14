@@ -16,8 +16,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.notification.Notifications;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasComponent;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -96,12 +94,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
-		uiCanvasEditor.getDoubleClickObserver().addListener(new ValueListener<CanvasControl>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<CanvasControl> observer, CanvasControl oldValue, CanvasControl newValue) {
-				if (newValue != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
-					DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) newValue);
-				}
+		uiCanvasEditor.getDoubleClickUpdateGroup().addListener((group, data) -> {
+			if (data != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
+				DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) data);
 			}
 		});
 		uiCanvasEditor.setCanvasContextMenu(new CanvasContextMenu());

@@ -224,16 +224,20 @@ public class StaticRenderer extends ArmaControlRenderer {
 							//after the image as been resized to aspect ratio, center the image
 							int centerX = getX1() + (getWidth() - drawWidth) / 2;
 
-							gc.drawImage(imageToPaint, centerX, getY1(), drawWidth, drawHeight);
 							imageDrawX1 = centerX;
 							imageDrawY1 = y1;
 							imageDrawX2 = centerX + drawWidth;
 							imageDrawY2 = y1 + drawHeight;
+							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
+
+							gc.drawImage(imageToPaint, imageDrawX1, imageDrawY1, drawWidth, drawHeight);
 						} else {
 							imageDrawX1 = x1;
 							imageDrawY1 = y1;
 							imageDrawX2 = x2;
 							imageDrawY2 = y2;
+
+							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
 
 							if (tileImage) {
 								int tileW = Math.max(1, this.tileW);
@@ -249,14 +253,10 @@ public class StaticRenderer extends ArmaControlRenderer {
 									}
 								}
 							} else {
-								gc.drawImage(imageToPaint, getX1(), getY1(), getWidth(), getHeight());
+								gc.drawImage(imageToPaint, imageDrawX1, imageDrawY1, getWidth(), getHeight());
 							}
 						}
 
-						//multiply the text color on the image
-						gc.setStroke(getTextColor());
-						gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-						Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
 						break;
 					}
 					case Texture: {
@@ -296,6 +296,13 @@ public class StaticRenderer extends ArmaControlRenderer {
 				canvasContext.paintLast(tooltipRenderFunc);
 			}
 		}
+	}
+
+	private void paintMultiplyColor(@NotNull GraphicsContext gc, int imageDrawX1, int imageDrawY1, int imageDrawX2, int imageDrawY2) {
+		//multiply the text color on the image
+		gc.setStroke(getTextColor());
+		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+		Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
 	}
 
 

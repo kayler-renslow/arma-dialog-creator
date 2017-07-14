@@ -62,7 +62,11 @@ public class ProjectExporter {
 					if (convertToFilePath != null) {
 						for (int c : convertToFilePath) {
 							if (c == i) {
-								v = Paths.get(exportDir).relativize(Paths.get(v)).toString();
+								try {
+									v = Paths.get(exportDir).relativize(Paths.get(v)).toString();
+								} catch (IllegalArgumentException ignore) {
+									//if we get an exception, we'll just write the file path given
+								}
 							}
 						}
 					}

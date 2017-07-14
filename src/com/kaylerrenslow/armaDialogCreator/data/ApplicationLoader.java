@@ -33,7 +33,7 @@ public class ApplicationLoader {
 		ADCProjectInitWindow projectInitWindow = new ADCProjectInitWindow();
 		projectInitWindow.showAndWait();
 
-		applicationDataManager.loadWorkspace(projectInitWindow.getWorkspaceDirectory());
+		Workspace workspace = applicationDataManager.loadWorkspace(projectInitWindow.getWorkspaceDirectory());
 
 		ProjectInit init = projectInitWindow.getProjectInit();
 		ProjectInfo project;
@@ -57,7 +57,7 @@ public class ApplicationLoader {
 
 			projectName = (projectName != null && projectName.length() > 0) ? projectName : getTemplateProjectName();
 			projectName = projectName.trim();
-			project = new ProjectInfo(projectName, Workspace.getWorkspace().getFileForName(projectName + "/"));
+			project = new ProjectInfo(projectName, workspace.getFileForName(projectName + "/"));
 		}
 
 		return new ApplicationLoadConfig(project, loadType);

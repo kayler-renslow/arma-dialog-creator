@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.util.MathUtil;
 import com.kaylerrenslow.armaDialogCreator.util.Point;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -13,6 +13,8 @@ import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.effect.Effect;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -43,7 +45,7 @@ public class UICanvasEditor extends UICanvas {
 	/** Mouse button that is currently down */
 	private MouseButton mouseButtonDown = MouseButton.NONE;
 	private long lastMousePressTime;
-	private boolean hasDoubleClicked;
+	private boolean hasDoubleClickedCtrl;
 
 	/** amount of change that has happened since last snap */
 	private int dxAmount, dyAmount = 0;
@@ -74,7 +76,8 @@ public class UICanvasEditor extends UICanvas {
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
 
-	private ValueObserver<CanvasControl> doubleClickObserver = new ValueObserver<>(null);
+	private UpdateListenerGroup<CanvasControl> doubleClickUpdateGroup = new UpdateListenerGroup<>();
+	private Effect selectionEffect;
 
 	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull CanvasDisplay<? extends CanvasControl> display) {
 		super(resolution, display);
@@ -106,11 +109,21 @@ public class UICanvasEditor extends UICanvas {
 				prepaint();
 			}
 		});
+
+		initializeSelectionEffect();
 	}
 
-	/** Get the observer that watches what controls get doubled clicked on. If the passed value is null, nothing was double clicked */
-	public ValueObserver<CanvasControl> getDoubleClickObserver() {
-		return doubleClickObserver;
+	private void initializeSelectionEffect() {
+		selectionEffect = new DropShadow(10, backgroundColor.invert());
+	}
+
+	/**
+	 @return an update group that watches what controls get doubled clicked on.
+	 If the passed value is null, nothing was double clicked
+	 */
+	@NotNull
+	public UpdateListenerGroup<CanvasControl> getDoubleClickUpdateGroup() {
+		return doubleClickUpdateGroup;
 	}
 
 	public void setConfig(@NotNull UICanvasConfiguration snapConfig) {
@@ -150,6 +163,8 @@ public class UICanvasEditor extends UICanvas {
 		this.selectionColor = CanvasViewColors.SELECTION;
 		this.absRegionComponent.setBackgroundColor(CanvasViewColors.ABS_REGION);
 		this.setCanvasBackgroundColor(CanvasViewColors.EDITOR_BG);
+
+		initializeSelectionEffect();
 	}
 
 	/**
@@ -242,10 +257,16 @@ public class UICanvasEditor extends UICanvas {
 				gc.strokeLine(0, centery, getCanvasWidth(), centery);
 			}
 			//draw selection 'shadow'
-			gc.setGlobalAlpha(0.4d);
-			gc.setStroke(selectedBorderColor);
+			gc.setLineDashes(1, 1);
+			gc.setLineDashOffset(5);
 			int offset = 4 + (control.getRenderer().getBorder() != null ? control.getRenderer().getBorder().getThickness() : 0);
-			Region.fillRectangle(gc, control.getRenderer().getLeftX() - offset, control.getRenderer().getTopY() - offset, control.getRenderer().getRightX() + offset, control.getRenderer().getBottomY() + offset);
+			int leftX = control.getRenderer().getLeftX();
+			int width = control.getRenderer().getWidth();
+			int topY = control.getRenderer().getTopY();
+			int height = control.getRenderer().getHeight();
+			gc.setEffect(selectionEffect);
+			gc.setFill(selectionColor);
+			gc.fillRect(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
 			gc.restore();
 		}
 		super.paintControl(control);
@@ -329,7 +350,9 @@ public class UICanvasEditor extends UICanvas {
 		if (getContextMenu() != null) {
 			getContextMenu().hide();
 		}
-		hasDoubleClicked = System.currentTimeMillis() - lastMousePressTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS;
+		hasDoubleClickedCtrl = System.currentTimeMillis() - lastMousePressTime <= DOUBLE_CLICK_WAIT_TIME_MILLIS
+				&& selection.numSelected() > 0
+		;
 		lastMousePressTime = System.currentTimeMillis();
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
@@ -376,9 +399,9 @@ public class UICanvasEditor extends UICanvas {
 			} else {
 				if (selection.numSelected() > 0) {
 					if (selection.isSelected(mouseOverControl)) {
-						if (hasDoubleClicked && selection.numSelected() > 1) {
+						if (hasDoubleClickedCtrl && selection.numSelected() > 1) {
 							selection.removeAllAndAdd(mouseOverControl);
-							hasDoubleClicked = false;//don't open configure control properties
+							hasDoubleClickedCtrl = false;//don't open configure control properties
 						}
 						return;
 					}
@@ -422,8 +445,8 @@ public class UICanvasEditor extends UICanvas {
 				setContextMenu(canvasContextMenu, mousex, mousey);
 			}
 		} else {
-			if (hasDoubleClicked) {
-				doubleClickObserver.updateValue(selection.getFirst());
+			if (hasDoubleClickedCtrl) {
+				doubleClickUpdateGroup.update(selection.getFirst());
 			}
 		}
 	}
@@ -438,7 +461,7 @@ public class UICanvasEditor extends UICanvas {
 		if (!basicMouseMovement(mousex, mousey)) {
 			return;//not dragging mouse
 		}
-		hasDoubleClicked = false; //force no double click so that when dragging after a double click, nothing happens
+		hasDoubleClickedCtrl = false; //force no double click so that when dragging after a double click, nothing happens
 		int dx = mousex - lastMousePosition.getX(); //change in x
 		int dy = mousey - lastMousePosition.getY(); //change in y
 		if (keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT)) {

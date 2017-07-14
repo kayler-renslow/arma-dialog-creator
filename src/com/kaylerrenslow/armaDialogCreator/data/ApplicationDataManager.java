@@ -30,13 +30,16 @@ public class ApplicationDataManager {
 	private volatile ApplicationData applicationData;
 	private volatile CountDownLatch waitForInitialize;
 
-	public void loadWorkspace(@NotNull File workspaceDir) {
+	@NotNull
+	public Workspace loadWorkspace(@NotNull File workspaceDir) {
 		if (!workspaceDir.exists()) {
 			workspaceDir.mkdirs();
 		}
 		workspace = new Workspace(workspaceDir);
 		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceDir);
 		saveApplicationProperties();
+
+		return workspace;
 	}
 
 	public void beginInitializing() {
@@ -86,11 +89,19 @@ public class ApplicationDataManager {
 	 instance is set.
 
 	 @return the current {@link Workspace} instance.
+	 @throws IllegalStateException when trying to access this instance on the JavaFX thread while also trying to
+	 initialize this value
 	 */
 	@NotNull
 	public Workspace getWorkspace() {
 		//do not make this method synchronized
 		try {
+			if (Thread.currentThread() == ArmaDialogCreator.getJavaFXThread()) {
+				if (waitForInitialize.getCount() > 0) {
+					throw new IllegalStateException("Trying to access the workspace on the JavaFX thread while " +
+							"waiting to initialize");
+				}
+			}
 			waitForInitialize.await();
 		} catch (InterruptedException ignore) {
 		}
@@ -103,11 +114,19 @@ public class ApplicationDataManager {
 	 instance is set.
 
 	 @return the current {@link ApplicationData} instance.
+	 @throws IllegalStateException when trying to access this instance on the JavaFX thread while also trying to
+	 initialize this value
 	 */
 	@NotNull
 	public ApplicationData getApplicationData() {
 		//do not make this method synchronized
 		try {
+			if (Thread.currentThread() == ArmaDialogCreator.getJavaFXThread()) {
+				if (waitForInitialize.getCount() > 0) {
+					throw new IllegalStateException("Trying to access the workspace on the JavaFX thread while " +
+							"waiting to initialize");
+				}
+			}
 			waitForInitialize.await();
 		} catch (InterruptedException ignore) {
 		}
