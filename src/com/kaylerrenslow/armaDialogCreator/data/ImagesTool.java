@@ -33,7 +33,7 @@ public class ImagesTool {
 	 <p>
 	 The provided image file path can be an absolute path (e.g. starts with drive letter) or a relative path.
 	 If the path is relative, the image file will be retrieved relative to the current
-	 {@link Project#getProjectSaveDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
+	 {@link Workspace#getWorkspaceDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
 	 <p>
 	 This method will also automatically insert any converted paa images into
 	 {@link Workspace#getGlobalResourceRegistry()} with a {@link PaaImageExternalResource} instance.
@@ -50,7 +50,7 @@ public class ImagesTool {
 	 */
 	@NotNull
 	public static File getImageFile(@NotNull String imageFilePath, @NotNull ImageConversionCallback callback) {
-		Project project = Project.getCurrentProject();
+		Workspace workspace = Workspace.getWorkspace();
 
 		imageFilePath = imageFilePath.trim(); //need to trim or Paths.get() will throw exception
 
@@ -66,11 +66,10 @@ public class ImagesTool {
 		if (imagePath.isAbsolute()) {
 			imageFile = imagePath.toFile();
 		} else {
-			imageFile = project.getFileForName(imageFilePath);
+			imageFile = workspace.getFileForName(imageFilePath);
 		}
 
 		if (imageFilePath.endsWith(".paa")) {
-			Workspace workspace = Workspace.getWorkspace();
 			WorkspaceResourceRegistry globalResourceRegistry = workspace.getGlobalResourceRegistry();
 
 			ExternalResource resource = globalResourceRegistry.getResourceByFile(imageFile);

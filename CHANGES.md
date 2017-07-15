@@ -2,17 +2,10 @@
 * 
 
 **Changed:**
-* canvas editor now has a different, more subtle way of showing what controls are selected
+* image file paths are now relative to the workspace directory, not the project directory
 
 **Fixed:**
-* when duplicating a bg control, the control was placed in controls rather than bg controls
-* application would freeze when creating new project
-* internal error report when the file path for an image can't be relativized towards the project export directory
-    * this can happen when using different drive letters.
-    * for now, if this error occurs, we just ignore it and write the path stored in the SerializableValue
-* re-double clicking a contorl in editor wouldn't show the popup editor
-* double click could be trigged even when first click wasn't targeting a control and the second click was
-* some render issues with blending an image that has transparency over one that doesnt (was making the non transparent one disappear)
+* textureNoShortcut in shortcut button wasn't rendering correctly when nothing was entered
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
@@ -28,9 +21,6 @@
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
 * July 3: inherited values aren't always setting the editor's value correctly. Sometimes, the value is present but the editor isn't displaying that value
 * July 4:
-    * file paths should be relative to the workspace, not the project!
-        * ../img/pice.jpg should be img/pice.jpg
-        * we need to do it this way because in mission files, the directory of the description.ext is the starting directory
     * header to project change the file paths to absolute ones for things like images to work
     * button can use style 48, but the text can only be a texture
 * July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads

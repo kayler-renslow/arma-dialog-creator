@@ -31,6 +31,7 @@ public class PictureOrTextureHelper {
 	private volatile Texture texture;
 	private volatile Image image;
 	private volatile Mode mode = Mode.LoadingImage;
+	private SerializableValue value;
 
 	/**
 	 @param renderer the renderer that will be notified of when to render again
@@ -47,6 +48,7 @@ public class PictureOrTextureHelper {
 	 @param value the value to update the helper with
 	 */
 	public void updateAsync(@Nullable SerializableValue value) {
+		this.value = value;
 		if (value != null) {
 			String textValue = value.toString();
 			if (textValue.length() > 0 && textValue.charAt(0) == '#') {
@@ -114,5 +116,11 @@ public class PictureOrTextureHelper {
 	@Nullable
 	public synchronized Image getImage() {
 		return image;
+	}
+
+	/** @return the last value passed through {@link #updateAsync(SerializableValue)} */
+	@Nullable
+	public SerializableValue getValue() {
+		return value;
 	}
 }

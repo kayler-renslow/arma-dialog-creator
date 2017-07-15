@@ -371,6 +371,10 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		int y1 = (int) (this.y1 + Math.round(controlHeight * shortcutPos_top));
 		int x2 = (int) (this.x1 + Math.round(controlWidth * shortcutPos_w));
 		int y2 = (int) (this.y1 + Math.round(controlHeight * shortcutPos_h));
+		if (textureNoShortcut.getValue() != null && textureNoShortcut.getValue().toString().length() == 0) {
+			//ignore the texture if defined but no text is entered
+			return;
+		}
 		switch (textureNoShortcut.getMode()) {
 			case Image: {
 				gc.drawImage(textureNoShortcut.getImage(), x1, y1, x2 - x1, y2 - y1);
@@ -378,7 +382,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			}
 			case ImageError: {
 				gc.save();
-				gc.rect(x1, y1, x2 - x1, y2 - y1);
+				gc.beginPath();
+				gc.rect(x1, y1, 30, 30);
+				gc.closePath();
 				gc.clip();
 				paintImageError(gc);
 				gc.restore();
