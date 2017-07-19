@@ -19,6 +19,8 @@ import javafx.scene.text.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+
 /**
  A utility class for rendering text with a {@link ArmaControlRenderer} which can have the following property updates:
  <ul>
@@ -31,6 +33,7 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 11/21/2016 */
 public class BasicTextRenderer {
+
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 
@@ -39,10 +42,14 @@ public class BasicTextRenderer {
 
 	private TextShadow textShadow = TextShadow.None;
 
-	private int textWidth, textHeight;
+	private int textWidth, textLineHeight;
 	private TextAlignment textAlignment = TextAlignment.CENTER;
 	private String text = "";
 	private Font font = Font.getDefault();
+	private boolean multiline = false;
+	private FontMetrics fontMetrics;
+	private String[] lines = null;
+	private int lastControlX = -1, lastControlY = -1, lastControlArea = -1;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
 							 @NotNull ControlPropertyLookupConstant text,
@@ -52,6 +59,7 @@ public class BasicTextRenderer {
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
 		init(text, colorText, style, sizeEx, shadow);
 
+		setFont(this.font); //set fontMetrics
 	}
 
 	private void init(@NotNull ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
@@ -133,8 +141,8 @@ public class BasicTextRenderer {
 		return textWidth;
 	}
 
-	public int getTextHeight() {
-		return textHeight;
+	public int getTextLineHeight() {
+		return textLineHeight;
 	}
 
 	private int getTextX() {
@@ -154,7 +162,7 @@ public class BasicTextRenderer {
 	}
 
 	private int getTextY() {
-		int textHeight = getTextHeight();
+		int textHeight = getTextLineHeight();
 		return renderer.getTopY() + (renderer.getHeight() - textHeight) / 2;
 	}
 
@@ -185,16 +193,67 @@ public class BasicTextRenderer {
 	 @param textY y position of text
 	 */
 	public void paint(GraphicsContext gc, int textX, int textY) {
-		TextHelper.paintText(
-				gc, textX, textY, getFont(), getText(), textColor, textShadow, Color.BLACK
-		);
+		if (multiline) {
+			int controlWidth = renderer.getWidth();
+
+			//check if lines need to be updated
+			if (this.lines == null
+					|| this.lastControlX != renderer.getX1()
+					|| this.lastControlY != renderer.getY1()
+					|| this.lastControlArea != renderer.getArea()) {
+
+				this.lastControlX = renderer.getX1();
+				this.lastControlY = renderer.getY1();
+				this.lastControlArea = renderer.getArea();
+
+				//update lines
+				String[] words = text.split("\\s"); //split by space
+				StringBuilder lineBuilder = new StringBuilder();
+
+				ArrayList<String> linesList = new ArrayList<>(words.length);
+				final int spaceWidth = (int) fontMetrics.computeStringWidth(" ");
+				if (words.length > 1) {
+					int curWidth = 0;
+					for (String word : words) {
+						curWidth += (int) fontMetrics.computeStringWidth(word) + spaceWidth;
+						lineBuilder.append(word);
+						lineBuilder.append(' ');
+						if (curWidth >= controlWidth) {
+							linesList.add(lineBuilder.toString());
+							curWidth = 0;
+							lineBuilder = new StringBuilder();
+						}
+					}
+					linesList.add(lineBuilder.toString()); //append any remaining text
+					this.lines = linesList.toArray(new String[linesList.size()]);
+				} else {
+					this.lines = words;
+				}
+			}
+
+			//paint the text as multiple lines
+			int lineNum = 0;
+
+			for (String line : lines) {
+				TextHelper.paintText(
+						gc, textX, textY + lineNum * textLineHeight, font, line, textColor, textShadow, Color.BLACK
+				);
+				lineNum++;
+			}
+		} else {
+			//paint all of the text as a single line
+
+			TextHelper.paintText(
+					gc, textX, textY, font, getText(), textColor, textShadow, Color.BLACK
+			);
+		}
 	}
 
 	public void setText(@NotNull String text) {
 		this.text = text;
-		FontMetrics fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
 		textWidth = Math.round(fontMetrics.computeStringWidth(text));
-		textHeight = Math.round(fontMetrics.getLineHeight());
+		textLineHeight = Math.round(fontMetrics.getLineHeight());
+		this.lines = null; //force update lines in paint method
 	}
 
 	@NotNull
@@ -226,15 +285,14 @@ public class BasicTextRenderer {
 
 	public void setFont(@NotNull Font font) {
 		this.font = font;
-		updateFontMetrics();
-	}
-
-	private void updateFontMetrics() {
-		setText(this.text); //update text width and height
-		renderer.requestRender();
+		this.fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
 	}
 
 	private void updateFontSize(@NotNull SVNumericValue sizeEx) {
 		setFont(TextHelper.getFont(renderer.getResolution(), sizeEx.toDouble()));
+	}
+
+	public void setMultiline(boolean multiline) {
+		this.multiline = multiline;
 	}
 }

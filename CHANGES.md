@@ -1,11 +1,11 @@
 **Added:**
-* 
+* BasicTextRenderer can now do multiple lines
 
 **Changed:**
-* image file paths are now relative to the workspace directory, not the project directory
+* 
 
 **Fixed:**
-* textureNoShortcut in shortcut button wasn't rendering correctly when nothing was entered
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.

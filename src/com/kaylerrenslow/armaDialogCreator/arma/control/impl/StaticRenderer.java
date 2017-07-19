@@ -175,7 +175,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 					textWidth = textRenderer.getTextWidth();
 					if (textWidth < controlWidth - (2 * padding)) {
 						//text will paint within the bounds of the frame
-						textRenderer.paint(gc, xLeftOfText, y1 - textRenderer.getTextHeight() / 2);
+						textRenderer.paint(gc, xLeftOfText, y1 - textRenderer.getTextLineHeight() / 2);
 					} else {
 						//don't paint any text if the text is longer than the frame's width
 						textWidth = 0;

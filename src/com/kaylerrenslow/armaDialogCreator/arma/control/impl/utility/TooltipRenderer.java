@@ -58,7 +58,7 @@ public class TooltipRenderer {
 		gc.save();
 
 		int textWidth = textRenderer.getTextWidth();
-		int textHeight = textRenderer.getTextHeight();
+		int textHeight = textRenderer.getTextLineHeight();
 		tooltipY = tooltipY - textHeight * 2;
 		int padding = 5;
 		int tooltipX2 = tooltipX + textWidth + padding + padding;
