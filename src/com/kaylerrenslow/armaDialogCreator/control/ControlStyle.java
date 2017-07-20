@@ -12,7 +12,7 @@ import java.util.MissingResourceException;
  @since 05/22/2016
  */
 public enum ControlStyle {
-	NA(0, 0, getString("ControlStyle.na"), getString("ControlStyle.Doc.na")),
+	NONE(0, 0, getString("ControlStyle.none"), getString("ControlStyle.Doc.none")),
 	//POS(1, 0x0F, getString("ControlStyle.pos"), getString("ControlStyle.Doc.pos")),
 	//HPOS(2, 0x03, getString("ControlStyle.hpos"), getString("ControlStyle.Doc.hpos")),
 	//POS(3, 0x0C, getString("ControlStyle.vpos"), getString("ControlStyle.Doc.vpos")),

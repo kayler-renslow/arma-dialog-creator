@@ -61,6 +61,7 @@ class ControlPropertyValueEditors {
 			super(10, 5);
 			setAlignment(Pos.CENTER_LEFT);
 			setPadding(new Insets(2));
+			setPrefWrapLength(0); //wrap whenever
 
 			this.controlProperty = controlProperty;
 			ControlPropertyLookup lookup = (ControlPropertyLookup) controlProperty.getPropertyLookup();
@@ -149,6 +150,11 @@ class ControlPropertyValueEditors {
 		@Override
 		public void refresh() {
 			setEditorValue(controlProperty.getValue());
+		}
+
+		@Override
+		public boolean displayFullWidth() {
+			return true;
 		}
 	}
 

@@ -19,7 +19,7 @@ public class ShortcutButtonControl extends ArmaControl {
 
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.ShortcutButton, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.NA.getStyleGroup());
+		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.NONE.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
@@ -117,7 +117,7 @@ public class ShortcutButtonControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return new ControlStyle[]{
-					ControlStyle.NA
+					ControlStyle.NONE
 			};
 		}
 	}

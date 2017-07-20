@@ -21,8 +21,8 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.LinkedList;
 
 /**
  @author Kayler
@@ -218,7 +218,13 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintControls();
 		gc.save();
-		for (CanvasControl control : selection.getSelected()) {
+		Iterator<CanvasControl> iter = selection.getSelected().iterator();
+		while (iter.hasNext()) {
+			CanvasControl control = iter.next();
+			if (control.getRenderer().isGhost()) {
+				iter.remove();
+				continue;
+			}
 			gc.setStroke(control.getRenderer().getBackgroundColor());
 			control.getRenderer().strokeRectangle(gc);
 		}
@@ -935,7 +941,7 @@ public class UICanvasEditor extends UICanvas {
 	 Created on 05/13/2016.
 	 */
 	private static class CanvasSelection extends SimpleCanvasComponent implements Selection {
-		private ObservableList<CanvasControl> selected = FXCollections.observableArrayList(new ArrayList<>());
+		private final ObservableList<CanvasControl> selected = FXCollections.observableList(new LinkedList<>());
 		private boolean isSelecting;
 
 		@Override

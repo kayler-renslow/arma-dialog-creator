@@ -28,6 +28,7 @@ import java.util.ArrayList;
  <li>Text horizontal alignment (left, center, right)</li>
  <li>Font size</li>
  <li>Text shadow</li>
+ <li>Multiple cachedBrokenLines</li>
  </ul>
 
  @author Kayler
@@ -46,10 +47,18 @@ public class BasicTextRenderer {
 	private TextAlignment textAlignment = TextAlignment.CENTER;
 	private String text = "";
 	private Font font = Font.getDefault();
+
+	/** True if the text renderer is painting multiple lines, false otherwise */
 	private boolean multiline = false;
 	private FontMetrics fontMetrics;
-	private String[] lines = null;
+	/**
+	 An array of Strings where each string in the array is a single line. You can think of this as a String broken
+	 up by newline characters.
+	 */
+	private String[] cachedBrokenLines = null;
 	private int lastControlX = -1, lastControlY = -1, lastControlArea = -1;
+	/** True if {@link #multiline} is allowed, false if {@link #multiline} should be ignored */
+	private boolean allowMultiLine = false;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
 							 @NotNull ControlPropertyLookupConstant text,
@@ -95,7 +104,7 @@ public class BasicTextRenderer {
 							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
 							textAlignment = TextAlignment.LEFT;
-
+							setMultiline(false);
 							for (ControlStyle controlStyle : group.getStyleArray()) {
 								if (controlStyle == ControlStyle.LEFT) {
 									textAlignment = TextAlignment.LEFT;
@@ -108,6 +117,9 @@ public class BasicTextRenderer {
 								if (controlStyle == ControlStyle.RIGHT) {
 									textAlignment = TextAlignment.RIGHT;
 									continue;
+								}
+								if (controlStyle == ControlStyle.MULTI) {
+									setMultiline(true);
 								}
 							}
 							renderer.requestRender();
@@ -147,6 +159,10 @@ public class BasicTextRenderer {
 
 	private int getTextX() {
 		int textWidth = getTextWidth();
+		TextAlignment textAlignment = this.textAlignment;
+		if (this.multiline) {
+			textAlignment = TextAlignment.LEFT;
+		}
 		switch (textAlignment) {
 			case LEFT: {
 				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.02);
@@ -162,8 +178,7 @@ public class BasicTextRenderer {
 	}
 
 	private int getTextY() {
-		int textHeight = getTextLineHeight();
-		return renderer.getTopY() + (renderer.getHeight() - textHeight) / 2;
+		return renderer.getTopY() + (renderer.getHeight() - textLineHeight) / 2;
 	}
 
 	/**
@@ -193,11 +208,11 @@ public class BasicTextRenderer {
 	 @param textY y position of text
 	 */
 	public void paint(GraphicsContext gc, int textX, int textY) {
-		if (multiline) {
+		if (multiline && allowMultiLine) {
 			int controlWidth = renderer.getWidth();
 
-			//check if lines need to be updated
-			if (this.lines == null
+			//check if cachedBrokenLines need to be updated
+			if (this.cachedBrokenLines == null
 					|| this.lastControlX != renderer.getX1()
 					|| this.lastControlY != renderer.getY1()
 					|| this.lastControlArea != renderer.getArea()) {
@@ -206,7 +221,7 @@ public class BasicTextRenderer {
 				this.lastControlY = renderer.getY1();
 				this.lastControlArea = renderer.getArea();
 
-				//update lines
+				//update cachedBrokenLines
 				String[] words = text.split("\\s"); //split by space
 				StringBuilder lineBuilder = new StringBuilder();
 
@@ -225,16 +240,17 @@ public class BasicTextRenderer {
 						}
 					}
 					linesList.add(lineBuilder.toString()); //append any remaining text
-					this.lines = linesList.toArray(new String[linesList.size()]);
+					this.cachedBrokenLines = linesList.toArray(new String[linesList.size()]);
 				} else {
-					this.lines = words;
+					this.cachedBrokenLines = words;
 				}
 			}
 
-			//paint the text as multiple lines
+			//paint the text as multiple cachedBrokenLines
 			int lineNum = 0;
-
-			for (String line : lines) {
+			textX = renderer.getLeftX();
+			textY = renderer.getTopY();
+			for (String line : cachedBrokenLines) {
 				TextHelper.paintText(
 						gc, textX, textY + lineNum * textLineHeight, font, line, textColor, textShadow, Color.BLACK
 				);
@@ -253,7 +269,7 @@ public class BasicTextRenderer {
 		this.text = text;
 		textWidth = Math.round(fontMetrics.computeStringWidth(text));
 		textLineHeight = Math.round(fontMetrics.getLineHeight());
-		this.lines = null; //force update lines in paint method
+		clearCachedBrokenLines();
 	}
 
 	@NotNull
@@ -286,13 +302,33 @@ public class BasicTextRenderer {
 	public void setFont(@NotNull Font font) {
 		this.font = font;
 		this.fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
+		this.setText(this.text); //update text width and line height
+		clearCachedBrokenLines();
 	}
 
 	private void updateFontSize(@NotNull SVNumericValue sizeEx) {
 		setFont(TextHelper.getFont(renderer.getResolution(), sizeEx.toDouble()));
 	}
 
+	/**
+	 Set if the text renderer will render the text in multiple lines.
+	 <p>
+	 If set to true, this will also force the text to be initially placed at the top left corner of the control and
+	 then have line breaks automatically inserted (this will not affect {@link #getText()}).
+
+	 @param multiline true if to use multiple lines, false otherwise
+	 */
 	public void setMultiline(boolean multiline) {
 		this.multiline = multiline;
+		clearCachedBrokenLines();
+	}
+
+	private void clearCachedBrokenLines() {
+		this.cachedBrokenLines = null;
+	}
+
+	public void setAllowMultiLine(boolean allowMultiline) {
+		this.allowMultiLine = allowMultiline;
+		clearCachedBrokenLines();
 	}
 }

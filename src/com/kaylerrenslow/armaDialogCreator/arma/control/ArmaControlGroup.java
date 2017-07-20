@@ -68,7 +68,7 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 		@NotNull
 		@Override
 		public ControlStyle[] getAllowedStyles() {
-			return ControlStyle.NA.getStyleGroup().getStyleArray();
+			return ControlStyle.NONE.getStyleGroup().getStyleArray();
 		}
 	}
 }

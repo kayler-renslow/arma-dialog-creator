@@ -28,6 +28,7 @@ public class EditControl extends ArmaControl {
 					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
 							ArmaControlSpecRequirement.mergeArrays(
 									new ControlPropertyLookup[]{
+											ControlPropertyLookup.COLOR_BACKGROUND,
 											ControlPropertyLookup.TEXT,
 											ControlPropertyLookup.COLOR_TEXT,
 											ControlPropertyLookup.COLOR_DISABLED,
@@ -49,6 +50,7 @@ public class EditControl extends ArmaControl {
 					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
 									new ControlPropertyLookup[]{
+											ControlPropertyLookup.SHADOW,
 											ControlPropertyLookup.LINE_SPACING,
 											ControlPropertyLookup.TOOLTIP,
 											ControlPropertyLookup.HTML_CONTROL,
@@ -68,6 +70,7 @@ public class EditControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return new ControlStyle[]{
+					ControlStyle.NONE,
 					ControlStyle.MULTI
 			};
 		}

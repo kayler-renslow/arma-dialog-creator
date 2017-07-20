@@ -92,6 +92,9 @@ class ControlPropertyEditorContainer extends HBox {
 				miRaw,
 				miClearValue
 		);
+		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
+
+		getChildren().addAll(menuButtonOptions, new Label("="), stackPanePropertyInput);
 
 		if (SerializableValue.getTypesCanConvertTo(controlProperty.getInitialPropertyType()).size() == 1) {
 			menuButtonOptions.getItems().remove(miConvert);
@@ -140,8 +143,6 @@ class ControlPropertyEditorContainer extends HBox {
 			}
 		};
 		controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyUpdateListener);
-
-		getChildren().addAll(menuButtonOptions, new Label("="), stackPanePropertyInput);
 
 		miDisplayType.setOnAction(event -> {
 			SerializableValue sv = controlProperty.getValue();

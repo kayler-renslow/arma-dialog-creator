@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.DoubleChecke
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.GenericResponseFooter;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyValueObserver;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
@@ -111,10 +112,10 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 	}
 
 	private class ArrayEditorPopup extends Popup {
-		private final InputField<DoubleChecker, Double> r = new InputField<>(new DoubleChecker(), 0d, true);
-		private final InputField<DoubleChecker, Double> g = new InputField<>(new DoubleChecker(), 0d, true);
-		private final InputField<DoubleChecker, Double> b = new InputField<>(new DoubleChecker(), 0d, true);
-		private final InputField<DoubleChecker, Double> a = new InputField<>(new DoubleChecker(), 0d, true);
+		private final InputField<DoubleChecker, Double> r = new InputField<>(new DoubleChecker(), 0d);
+		private final InputField<DoubleChecker, Double> g = new InputField<>(new DoubleChecker(), 0d);
+		private final InputField<DoubleChecker, Double> b = new InputField<>(new DoubleChecker(), 0d);
+		private final InputField<DoubleChecker, Double> a = new InputField<>(new DoubleChecker(), 0d);
 		private final TextField tfAsArray = new TextField();
 		private boolean cancelled = true;
 
@@ -149,9 +150,16 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 			ValueListener<Double> valListener = (observer, oldValue, newValue) -> {
 				Color c = getCurrentColor();
 				if (c != null) {
-					gc.setGlobalAlpha(1);
-					gc.setFill(Color.WHITE);
-					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+
+					if (c.getOpacity() < 1) {
+						//draw a grid to show theres transparency
+						gc.setGlobalAlpha(1);
+						gc.setFill(Color.WHITE);
+						Region.paintCheckerboard(
+								gc, 0, 0, (int) canvas.getWidth(), (int) canvas.getHeight(), Color.GRAY, Color.WHITE,
+								5);
+					}
+
 					gc.setGlobalAlpha(c.getOpacity());
 					gc.setFill(c);
 					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
@@ -204,6 +212,8 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 			setAutoHide(true);
 
 			setHideOnEscape(true); //when push esc key, hide it
+
+			valListener.valueUpdated(r.getValueObserver(), null, null);
 		}
 
 		private boolean hasInvalid() {

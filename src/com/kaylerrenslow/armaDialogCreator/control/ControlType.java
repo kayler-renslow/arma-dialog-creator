@@ -60,7 +60,7 @@ public enum ControlType {
 	//@formatter:on
 
 	/** all control types that are supported for the application */
-	public static final ControlType[] AVAILABLE_TYPES = {Static, ControlsGroup, Button, ShortcutButton};
+	public static final ControlType[] AVAILABLE_TYPES = {Static, ControlsGroup, Button, ShortcutButton, Edit};
 
 	private final int typeId;
 	private final String displayName;

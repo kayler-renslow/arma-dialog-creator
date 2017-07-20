@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
 public enum ArmaControlLookup {
 	Static(ControlType.Static, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 	HTML(ControlType.HTML, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
-	Edit(ControlType.Edit, EditControl.SPEC_PROVIDER, StaticRenderer.class),
+	Edit(ControlType.Edit, EditControl.SPEC_PROVIDER, EditRenderer.class),
 	StructuredText(ControlType.StructuredText, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 	ActiveText(ControlType.ActiveText, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 

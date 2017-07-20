@@ -94,9 +94,9 @@ class ADCCanvasView extends HBox implements CanvasView {
 				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
 			}
 		});
-		uiCanvasEditor.getDoubleClickUpdateGroup().addListener((group, data) -> {
-			if (data != null && uiCanvasEditor.getMouseOverControl() == uiCanvasEditor.getSelection().getFirst()) {
-				DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) data);
+		uiCanvasEditor.getDoubleClickUpdateGroup().addListener((group, clickedControl) -> {
+			if (clickedControl != null && clickedControl == uiCanvasEditor.getSelection().getFirst()) {
+				DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) clickedControl);
 			}
 		});
 		uiCanvasEditor.setCanvasContextMenu(new CanvasContextMenu());

@@ -61,6 +61,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.SHADOW
 		);
 
+		textRenderer.setAllowMultiLine(true);
+
 		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 
 		colorBackground.getValueObserver().addListener(new ValueListener<SerializableValue>() {
