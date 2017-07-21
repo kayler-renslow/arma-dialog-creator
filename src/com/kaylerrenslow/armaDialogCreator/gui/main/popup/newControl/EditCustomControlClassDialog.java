@@ -45,6 +45,13 @@ public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 			toEdit.getControlClass().update(update, false);
 		}
 		toEdit.setComment(getTaComment().getText());
+		CustomControlClass duplicatedCustomControlClass = getCustomControlClass();
+		if (toEdit.getScope() != duplicatedCustomControlClass.getScope()) {
+			Project project = Project.getCurrentProject();
+			project.removeCustomControlClass(toEdit);
+			toEdit.setScope(duplicatedCustomControlClass.getScope());
+			project.addCustomControlClass(toEdit);
+		}
 		close();
 	}
 

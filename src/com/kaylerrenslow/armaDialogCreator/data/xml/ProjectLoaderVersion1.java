@@ -442,12 +442,11 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			CustomControlClass customControlClass = new CustomControlClass(spec, project);
-			if (loadInProjectRegistry) {
-				project.getProjectCustomControlClassRegistry().addControlClass(customControlClass);
-			} else {
-				project.getWorkspaceCustomControlClassRegistry().addControlClass(customControlClass);
-			}
+			CustomControlClass customControlClass = new CustomControlClass(
+					spec, project,
+					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
+			);
+			project.addCustomControlClass(customControlClass);
 		}
 
 		@Override

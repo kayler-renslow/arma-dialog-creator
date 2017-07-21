@@ -11,7 +11,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
@@ -128,7 +127,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 
 	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
 		Project project = Project.getCurrentProject();
-		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
+		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
 		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));

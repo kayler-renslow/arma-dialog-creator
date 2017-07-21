@@ -2,7 +2,7 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.edit;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
-import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseCustomControlDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.ChooseCustomControlClassDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.newControl.EditCustomControlClassDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -13,7 +13,7 @@ import javafx.event.EventHandler;
 public class EditCustomControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ChooseCustomControlDialog dialog = new ChooseCustomControlDialog();
+		ChooseCustomControlClassDialog dialog = new ChooseCustomControlClassDialog();
 		dialog.show();
 		CustomControlClass controlClass = dialog.getChosenItem();
 		if (dialog.wasCancelled() || controlClass == null) {

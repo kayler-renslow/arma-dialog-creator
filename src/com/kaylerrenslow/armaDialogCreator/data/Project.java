@@ -6,12 +6,14 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
+import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -60,8 +62,8 @@ public class Project implements SpecificationRegistry {
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
 		resourceRegistry = new ResourceRegistry(this);
-		projectCustomControlClassRegistry = new CustomControlClassRegistry(this);
-		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(this);
+		projectCustomControlClassRegistry = new CustomControlClassRegistry(this, CustomControlClass.Scope.Project);
+		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(this, CustomControlClass.Scope.Workspace);
 
 		projectSaveFile = info.getProjectXmlFile();
 	}
@@ -173,6 +175,57 @@ public class Project implements SpecificationRegistry {
 		return workspaceCustomControlClassRegistry;
 	}
 
+	/**
+	 @return all {@link CustomControlClass} instances across {@link #getProjectCustomControlClassRegistry()} and
+	 {@link #getWorkspaceCustomControlClassRegistry()} in a new list
+	 */
+	@NotNull
+	public List<CustomControlClass> getAllCustomControlClasses() {
+		ReadOnlyList<CustomControlClass> pList = getProjectCustomControlClassRegistry().getControlClassList();
+		ReadOnlyList<CustomControlClass> wList = getWorkspaceCustomControlClassRegistry().getControlClassList();
+		List<CustomControlClass> list = new ArrayList<>(pList.size() + wList.size());
+		list.addAll(pList);
+		list.addAll(wList);
+
+		return list;
+	}
+
+	/**
+	 Adds a {@link CustomControlClass} to its appropriate {@link ControlClassRegistry} dependent upon
+	 {@link CustomControlClass#getScope()}
+
+	 @param customControlClass to add
+	 */
+	public void addCustomControlClass(@NotNull CustomControlClass customControlClass) {
+		switch (customControlClass.getScope()) {
+			case Project: {
+				projectCustomControlClassRegistry.addControlClass(customControlClass);
+				return;
+			}
+			case Workspace: {
+				workspaceCustomControlClassRegistry.addControlClass(customControlClass);
+				return;
+			}
+			default:
+				throw new IllegalStateException("unhandled scope:" + customControlClass.getScope());
+		}
+	}
+
+	public void removeCustomControlClass(@NotNull CustomControlClass customControlClass) {
+		switch (customControlClass.getScope()) {
+			case Project: {
+				projectCustomControlClassRegistry.removeControlClass(customControlClass);
+				return;
+			}
+			case Workspace: {
+				workspaceCustomControlClassRegistry.removeControlClass(customControlClass);
+				return;
+			}
+			default:
+				throw new IllegalStateException("unhandled scope:" + customControlClass.getScope());
+		}
+	}
+
 	@Override
 	@NotNull
 	public String toString() {
@@ -234,6 +287,7 @@ public class Project implements SpecificationRegistry {
 		defaultValueProvider.prefetchValues(tofetch);
 	}
 
+
 	/**
 	 Set the default language for {@link #getStringTable()}. If {@link #getStringTable()} is null, the value will be cached and when {@link #setStringTable(StringTable)} is invoked,
 	 {@link StringTable#setDefaultLanguage(Language)} will automatically be invoked.
@@ -246,7 +300,6 @@ public class Project implements SpecificationRegistry {
 			stringTable.setDefaultLanguage(defaultLanguage);
 		}
 	}
-
 
 	/** @return the file that stores {@link Project#getWorkspaceCustomControlClassRegistry()} */
 	@NotNull

@@ -34,27 +34,34 @@ public class ChooseItemDialog<V> extends StageDialog<VBox> {
 	private final TabPane tabPane = new TabPane();
 	private V selectedItem;
 	private String searchText;
+	private final Label lblHeaderTitle;
 
-	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @NotNull String dialogTitle, @NotNull String headerTitle) {
+	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @Nullable String dialogTitle,
+							@Nullable String headerTitle) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
 		myRootElement.setMinWidth(720d);
 		myStage.setResizable(false);
 
+		lblHeaderTitle = new Label(headerTitle);
 		itemCategoryTabs = new ArrayList<>(categories.length);
 		for (ItemCategory<V> category : categories) {
 			itemCategoryTabs.add(new ItemCategoryTab<>(category, allItems));
 		}
 
-		initRootElement(headerTitle);
+		initRootElement();
 	}
 
-	private void initRootElement(@NotNull String headerTitle) {
+	protected void setHeaderTitle(@NotNull String headerTitle) {
+		lblHeaderTitle.setText(headerTitle);
+	}
+
+	private void initRootElement() {
 		myRootElement.setPadding(new Insets(10));
-		final Label lblChooseMacro = new Label(headerTitle);
-		lblChooseMacro.setFont(Font.font(15d));
+
+		lblHeaderTitle.setFont(Font.font(15d));
 
 		SearchTextField searchField = initializeSearchBox();
-		myRootElement.getChildren().add(new BorderPane(null, null, searchField, null, lblChooseMacro));
+		myRootElement.getChildren().add(new BorderPane(null, null, searchField, null, lblHeaderTitle));
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
 
 		final ChangeListener<? super V> selectedItemListener = new ChangeListener<V>() {

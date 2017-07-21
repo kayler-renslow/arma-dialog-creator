@@ -242,6 +242,9 @@ public class ProjectExporter {
 
 		exportCustomControlClasses(stringBuilder, conf.getProject().getWorkspaceCustomControlClassRegistry());
 
+		//write remainder of text
+		stream.write(stringBuilder.toString().getBytes());
+
 		stream.flush();
 		//don't close stream
 	}
@@ -297,14 +300,12 @@ public class ProjectExporter {
 			writeln(stringBuilder, "#include \"" + getMacrosFileName(conf) + "\"");
 			writeln(stringBuilder, "");
 		}
-		writeln(stringBuilder, "#include \"" + customClassesExportFile + "\"");
+		writeln(stringBuilder, "#include \"" + conf.getCustomClassesExportFileName() + "\"");
 		if (project.getProjectDescription() != null && project.getProjectDescription().length() > 0) {
 			writelnComment(stringBuilder, project.getProjectDescription());
 		}
 
-		writeln(stringBuilder, "");
 		exportCustomControlClasses(stringBuilder, conf.getProject().getProjectCustomControlClassRegistry());
-		writeln(stringBuilder, "");
 
 		ArmaDisplay display = project.getEditingDisplay();
 

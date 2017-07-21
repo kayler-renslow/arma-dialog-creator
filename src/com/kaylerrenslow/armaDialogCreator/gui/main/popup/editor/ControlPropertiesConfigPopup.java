@@ -5,7 +5,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
-import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.IdentifierChecker;
@@ -78,12 +77,12 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			if (newValue == null) {
 				menuButtonExtendControls.chooseItem((ControlClass) null);
 			} else {
-				CustomControlClassRegistry registry = Project.getCurrentProject().getProjectCustomControlClassRegistry();
-				CustomControlClass customControlClass = registry.findCustomControlClassByName(newValue.getClassName());
-				if (customControlClass == null) {
+				Project project = Project.getCurrentProject();
+				ControlClass controlClass = project.findControlClassByName(newValue.getClassName());
+				if (controlClass == null) {
 					return;
 				}
-				menuButtonExtendControls.chooseItem(customControlClass.getControlClass());
+				menuButtonExtendControls.chooseItem(controlClass);
 			}
 		}
 	};
@@ -228,7 +227,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		menuButtonExtendControls = new ComboBoxMenuButton<>(
 				true, bundle.getString("ControlPropertiesConfig.no_extend_class"), null
 		);
-		ReadOnlyList<CustomControlClass> customControls = Project.getCurrentProject().getProjectCustomControlClassRegistry().getControlClassList();
+		List<CustomControlClass> customControls = Project.getCurrentProject().getAllCustomControlClasses();
 		for (CustomControlClass customControlClass : customControls) {
 			ImageContainer imageContainer = null;
 			try {

@@ -1,17 +1,17 @@
 **Added:**
-* ability to export custom control classes in export dialog
-    * preview tab is available for the custom control classes export
-* workspace and project level custom control classes
-* workspace level custom control classes now get saved in workspace/.adc folder
+* ability to edit Custom Control Class's save scope (project or workspace)
+* a scope category for choosing Custom Control Class in chooser popup
 
 **Changed:**
-* made application load the project on a different thread
-* made ArmaDialogCreator.getMainWindow() return a different type
+* 
 
 **Fixed:**
 * 
 
 **Notes:**
+
+WE NEED TO FINISH WORKSPACE CUSTOM CONTROL CLASSES
+
 * May 31: we should have default value providers in one xml file for every control.
     * this will make xml files shorter (load faster for default value provider), and modularize things a lil
 * June 11: exporter doesn't write any of the custom control classes

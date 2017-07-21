@@ -56,7 +56,7 @@ public class ProjectExportConfiguration {
 		this.fileType = fileType;
 		setExportConfigName(exportConfigName);
 
-		this.customControlClassesExportFileName = "Custom_controls" + fileType.getExtension();
+		this.customControlClassesExportFileName = "CustomControlClasses" + fileType.getExtension();
 	}
 
 	@NotNull

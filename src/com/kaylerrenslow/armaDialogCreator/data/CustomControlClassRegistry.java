@@ -18,9 +18,11 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
 	private final SpecificationRegistry specReg;
+	private final CustomControlClass.Scope scope;
 
-	public CustomControlClassRegistry(@NotNull SpecificationRegistry specReg) {
+	public CustomControlClassRegistry(@NotNull SpecificationRegistry specReg, @NotNull CustomControlClass.Scope scope) {
 		this.specReg = specReg;
+		this.scope = scope;
 	}
 
 	/**
@@ -40,27 +42,39 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 		return controlClassList.iterator();
 	}
 
+	/** @return the scope of this registries {@link CustomControlClass} instances. */
+	@NotNull
+	public CustomControlClass.Scope getScope() {
+		return scope;
+	}
+
 	/**
 	 Add a new {@link CustomControlClass} instance by creating it from the given {@link ControlClassSpecification}.
+	 <p>
+	 {@link CustomControlClass#getScope()} will automatically be set to {@link #getScope()} on insertion.
 
 	 @return the {@link CustomControlClass} that was created and added to {@link #getControlClassList()}
 	 */
-	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClassSpecification controlClass) {
-		CustomControlClass ccc = new CustomControlClass(controlClass, specReg);
+		CustomControlClass ccc = new CustomControlClass(controlClass, specReg, scope);
 		controlClassList.add(ccc);
 		return ccc;
 	}
 
 	/**
-	 Add the given {@link CustomControlClass} instance to {@link #getControlClassList()}
+	 Add the given {@link CustomControlClass} instance to {@link #getControlClassList()}.
+	 <p>
+	 {@link CustomControlClass#getScope()} will automatically be set to {@link #getScope()} on insertion.
 	 */
 	public void addControlClass(@NotNull CustomControlClass controlClass) {
 		controlClassList.add(controlClass);
+		controlClass.setScope(this.scope);
 	}
 
 	/**
 	 Add a new {@link CustomControlClass} instance by creating it from the given {@link ControlClass}.
+	 <p>
+	 {@link CustomControlClass#getScope()} will automatically be set to {@link #getScope()} on insertion.
 
 	 @return the {@link CustomControlClass} that was created and added to {@link #getControlClassList()}
 	 @see #addControlClass(ControlClassSpecification)
@@ -68,7 +82,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	 */
 	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClass controlClass) {
-		CustomControlClass ccc = new CustomControlClass(controlClass);
+		CustomControlClass ccc = new CustomControlClass(controlClass, scope);
 		addControlClass(ccc);
 		return ccc;
 	}

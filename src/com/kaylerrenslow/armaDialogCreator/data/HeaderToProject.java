@@ -324,7 +324,7 @@ public class HeaderToProject {
 		//get the extend class
 		ControlClass extendClass = null;
 		if (headerClass.getExtendClassName() != null) {
-			extendClass = project.getProjectCustomControlClassRegistry().findControlClassByName(headerClass.getExtendClassName());
+			extendClass = project.findControlClassByName(headerClass.getExtendClassName());
 			if (extendClass == null) {
 				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
 				if (extendHeaderClass == null) {
@@ -428,7 +428,7 @@ public class HeaderToProject {
 				optional
 		);
 
-		CustomControlClass ccc = project.getProjectCustomControlClassRegistry().addControlClass(ccs);
+		CustomControlClass ccc = project.getWorkspaceCustomControlClassRegistry().addControlClass(ccs);
 
 
 		if (headerClass.getExtendClassName() != null) {

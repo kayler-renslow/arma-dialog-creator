@@ -147,17 +147,17 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		/*set custom classes export file name*/
 		{
 			Label lbl = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.custom_classes_export_file_name"));
-			FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-					bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
-			Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
-			chooserPane.setChosenFile(configuration.getExportDirectory());
-			chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
-					configuration.setExportDirectory(newValue);
-				}
-			});
-			tabRoot.getChildren().add(new VBox(5, lbl, chooserPane));
+			//			FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
+			//					bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
+			//			Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
+			//			chooserPane.setChosenFile(configuration.getExportDirectory());
+			//			chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
+			//				@Override
+			//				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
+			//					configuration.setExportDirectory(newValue);
+			//				}
+			//			});
+			tabRoot.getChildren().add(new VBox(5, lbl, new Label("TODO TODO TODO TODO TODO")));
 		}
 
 		/*export macros to own file*/
@@ -297,6 +297,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 
 		TextArea textArea = new TextArea();
 		textArea.setEditable(false);
+		VBox.setVgrow(textArea, Priority.ALWAYS);
 
 		tab.selectedProperty().addListener((observable, oldValue, selected) -> {
 			if (!selected) {

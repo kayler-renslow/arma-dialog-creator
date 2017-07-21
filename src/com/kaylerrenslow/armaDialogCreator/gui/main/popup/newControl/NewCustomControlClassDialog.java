@@ -26,6 +26,7 @@ import com.kaylerrenslow.armaDialogCreator.util.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -56,6 +57,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	private final Label lblBaseControl;
 	private final TextArea taComment = new TextArea();
 	private final ControlClassMenuButton extendClassMenuButton;
+	private final ComboBox<CustomControlClass.Scope> comboBoxScope = new ComboBox<>();
 
 	private ControlPropertiesEditorPane editorPane;
 
@@ -76,15 +78,22 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 		/*HEADER*/
 		{
-			final HBox hboxHeader = new HBox(10);
-			hboxHeader.setFillHeight(true);
+			VBox vboxHeader = new VBox(10);
+			myRootElement.getChildren().add(vboxHeader);
+			HBox hboxTopHeader = new HBox(10);
+			HBox hboxBottomHeader = new HBox(10);
+
+			vboxHeader.getChildren().add(hboxTopHeader);
+			vboxHeader.getChildren().add(hboxBottomHeader);
+
+			hboxTopHeader.setFillHeight(true);
 
 			//control class name
 			{
 				final Label lblControlClassName = new Label(bundle.getString("Popups.NewCustomControl.control_class_name"));
 				lblControlClassName.setFont(Font.font(18d));
-				hboxHeader.getChildren().add(lblControlClassName);
-				hboxHeader.getChildren().add(inClassName);
+				hboxTopHeader.getChildren().add(lblControlClassName);
+				hboxTopHeader.getChildren().add(inClassName);
 
 				inClassName.getValueObserver().addListener(new ValueListener<String>() {
 					@Override
@@ -98,14 +107,14 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 			//extend/parent class
 			{
-				hboxHeader.getChildren().add(new Label(":"));
+				hboxTopHeader.getChildren().add(new Label(":"));
 				extendClassMenuButton = new ControlClassMenuButton(
 						true,
 						bundle.getString("Popups.NewCustomControl.no_parent_class"),
 						null
 				);
 
-				hboxHeader.getChildren().add(extendClassMenuButton);
+				hboxTopHeader.getChildren().add(extendClassMenuButton);
 
 				extendClassMenuButton.addItems(getCustomControlClassesItems());
 				extendClassMenuButton.getSelectedValueObserver().addListener((observer, oldValue, newValue) -> {
@@ -133,6 +142,21 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					editClass.extendControlClass(newValue);
 					updatePreview();
 				});
+
+			}
+
+			//scope
+			{
+				comboBoxScope.getItems().addAll(CustomControlClass.Scope.values());
+				comboBoxScope.getSelectionModel().select(CustomControlClass.Scope.Workspace);
+				HBox hbox = new HBox(5,
+						new Label(bundle.getString("Popups.NewCustomControl.scope")),
+						comboBoxScope
+				);
+				hbox.setAlignment(Pos.CENTER_LEFT);
+				hboxBottomHeader.getChildren().add(hbox);
+
+				comboBoxScope.setTooltip(new Tooltip(bundle.getString("Popups.NewCustomControl.scope_tooltip")));
 
 			}
 
@@ -194,10 +218,8 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 				lblBaseControl = new Label(bundle.getString("Popups.NewCustomControl.template"), templateControlMenuButton);
 				lblBaseControl.setContentDisplay(ContentDisplay.RIGHT);
-				hboxHeader.getChildren().add(lblBaseControl);
+				hboxBottomHeader.getChildren().add(lblBaseControl);
 			}
-
-			myRootElement.getChildren().add(hboxHeader);
 		}
 
 
@@ -251,7 +273,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private List<CBMBMenuItem<String>> getCustomControlClassesNamesItems() {
-		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
+		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
 		List<CBMBMenuItem<String>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			CBMBMenuItem<String> menuItem = new CBMBMenuItem<>(ccc.getControlClass().getClassName());
@@ -262,7 +284,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
-		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
+		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
 		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));
@@ -326,11 +348,16 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 			inClassName.requestFocus();
 			return;
 		}
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
-		customControlClass.setComment(taComment.getText());
-		project.getProjectCustomControlClassRegistry().addControlClass(customControlClass);
-
+		CustomControlClass customControlClass = getCustomControlClass();
+		project.addCustomControlClass(customControlClass);
 		super.ok();
+	}
+
+	@NotNull
+	protected CustomControlClass getCustomControlClass() {
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), comboBoxScope.getValue());
+		customControlClass.setComment(taComment.getText());
+		return customControlClass;
 	}
 
 	@Override
