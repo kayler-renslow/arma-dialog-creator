@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.data.xml;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
@@ -14,6 +15,7 @@ import org.w3c.dom.Node;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 
 /**
  Common XML writing/loading handling for save files.
@@ -128,6 +130,64 @@ public class ProjectXmlUtil {
 			list.add(newSpec);
 		}
 
+	}
+
+	public static void writeCustomControls(@NotNull XmlWriterOutputStream stm,
+										   @NotNull CustomControlClassRegistry registry) throws IOException {
+		String customControlClasses = "custom-controls";
+		stm.writeBeginTag(customControlClasses);
+		final String customControl = "custom-control";
+		final String comment = "comment";
+		for (CustomControlClass customClass : registry.getControlClassList()) {
+			stm.writeBeginTag(customControl);
+			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.newSpecification());
+			if (customClass.getComment() != null) {
+				stm.writeBeginTag(comment);
+				stm.write(customClass.getComment());
+				stm.writeCloseTag(comment);
+			}
+			stm.writeCloseTag(customControl);
+		}
+		stm.writeCloseTag(customControlClasses);
+	}
+
+	/**
+	 Used for loading {@link CustomControlClass} instances.
+
+	 @param controlsElement root element that contains all written custom control classes
+	 @param context used for {@link #loadControlClassSpecification(Element, DataContext, XmlErrorRecorder)}
+	 @param recorder used for {@link #loadControlClassSpecification(Element, DataContext, XmlErrorRecorder)}
+	 @param customClassParsed this function is invoked when a {@link ControlClassSpecification} is loaded that will
+	 be used to construct a {@link CustomControlClass}
+	 */
+	public static void loadCustomControlClasses(@NotNull Element controlsElement,
+												@Nullable DataContext context,
+												@NotNull XmlErrorRecorder recorder,
+												@NotNull Function<ControlClassSpecification, ?> customClassParsed
+	) throws IOException {
+		final String customControls = "custom-controls";
+		final String customControl = "custom-control";
+		final String comment = "comment";
+		final String classSpec = "class-spec";
+		List<Element> customControlsElementGroups = XmlUtil.getChildElementsWithTagName(controlsElement, customControls);
+		for (Element customControlClassesGroup : customControlsElementGroups) {
+			List<Element> customControlElements = XmlUtil.getChildElementsWithTagName(customControlClassesGroup, customControl);
+			for (Element customControlElement : customControlElements) {
+				List<Element> controlClassSpecs = XmlUtil.getChildElementsWithTagName(customControlElement, classSpec);
+				if (controlClassSpecs.size() <= 0) {
+					continue;
+				}
+				ControlClassSpecification spec = loadControlClassSpecification(controlClassSpecs.get(0), context, recorder);
+				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
+				String commentContent = null;
+				if (commentElements.size() > 0) {
+					commentContent = XmlUtil.getImmediateTextContent(commentElements.get(0));
+				}
+				spec.setComment(commentContent);
+
+				customClassParsed.apply(spec);
+			}
+		}
 	}
 
 	/**

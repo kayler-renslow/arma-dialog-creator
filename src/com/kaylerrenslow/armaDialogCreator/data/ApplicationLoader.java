@@ -57,10 +57,10 @@ public class ApplicationLoader {
 
 			projectName = (projectName != null && projectName.length() > 0) ? projectName : getTemplateProjectName();
 			projectName = projectName.trim();
-			project = new ProjectInfo(projectName, workspace.getFileForName(projectName + "/"));
+			project = new ProjectInfo(projectName, workspace);
 		}
 
-		return new ApplicationLoadConfig(project, loadType);
+		return new ApplicationLoadConfig(project, loadType, workspace);
 	}
 
 	private String getTemplateProjectName() {
@@ -78,10 +78,13 @@ public class ApplicationLoader {
 	public static class ApplicationLoadConfig {
 		private final ProjectInfo newProject;
 		private final LoadType loadType;
+		private final Workspace workspace;
 
-		private ApplicationLoadConfig(@NotNull ProjectInfo newProject, @NotNull LoadType loadType) {
+		private ApplicationLoadConfig(@NotNull ProjectInfo newProject, @NotNull LoadType loadType,
+									  @NotNull Workspace workspace) {
 			this.newProject = newProject;
 			this.loadType = loadType;
+			this.workspace = workspace;
 		}
 
 		@NotNull
@@ -92,6 +95,11 @@ public class ApplicationLoader {
 		@NotNull
 		public ProjectInfo getProjectInfo() {
 			return newProject;
+		}
+
+		@NotNull
+		public Workspace getWorkspace() {
+			return workspace;
 		}
 	}
 

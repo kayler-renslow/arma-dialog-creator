@@ -12,15 +12,18 @@ public class ProjectInfo {
 	private final String projectName;
 	private final File projectXmlFile;
 	private final File projectDirectory;
+	private final Workspace workspace;
 
-	public ProjectInfo(@NotNull String projectName, @NotNull File projectDirectory) {
-		this(projectName, new File(projectDirectory.getPath() + "/" + Project.PROJECT_SAVE_FILE_NAME), projectDirectory);
+	public ProjectInfo(@NotNull String projectName, @NotNull Workspace workspace) {
+		this.projectName = projectName;
+		this.projectDirectory = workspace.getFileForName(projectName + "/");
+		this.projectXmlFile = new File(projectDirectory.getPath() + "/" + Project.PROJECT_SAVE_FILE_NAME);
+		this.workspace = workspace;
 	}
 
-	public ProjectInfo(@NotNull String projectName, @NotNull File projectXmlFile, @NotNull File projectDirectory) {
-		this.projectName = projectName;
-		this.projectXmlFile = projectXmlFile;
-		this.projectDirectory = projectDirectory;
+	@NotNull
+	public Workspace getWorkspace() {
+		return workspace;
 	}
 
 	@NotNull

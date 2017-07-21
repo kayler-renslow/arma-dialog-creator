@@ -128,7 +128,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 
 	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
 		Project project = Project.getCurrentProject();
-		ReadOnlyList<CustomControlClass> cccList = project.getCustomControlClassRegistry().getControlClassList();
+		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
 		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));

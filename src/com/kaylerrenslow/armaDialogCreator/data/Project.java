@@ -3,10 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.data;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -37,12 +34,14 @@ public class Project implements SpecificationRegistry {
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
 	private final ProjectMacroRegistry macroRegistry;
 	private final ResourceRegistry resourceRegistry;
-	private final ProjectControlClassRegistry controlRegistry;
+	private final CustomControlClassRegistry projectCustomControlClassRegistry;
 	private ProjectExportConfiguration exportConfiguration;
 
 	private ProjectDefaultValueProvider defaultValueProvider;
 	private StringTable stringTable;
 	private Language defaultLanguage;
+	private CustomControlClassRegistry workspaceCustomControlClassRegistry;
+	private Workspace workspace;
 
 	/**
 	 Create a new instance.
@@ -53,6 +52,7 @@ public class Project implements SpecificationRegistry {
 	public Project(@NotNull ApplicationData applicationData, @NotNull ProjectInfo info) {
 		this.applicationData = applicationData;
 		this.projectName = info.getProjectName();
+		this.workspace = info.getWorkspace();
 		this.projectSaveDirectory = info.getProjectDirectry();
 
 		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);
@@ -60,7 +60,8 @@ public class Project implements SpecificationRegistry {
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
 		resourceRegistry = new ResourceRegistry(this);
-		controlRegistry = new ProjectControlClassRegistry(this);
+		projectCustomControlClassRegistry = new CustomControlClassRegistry(this);
+		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(this);
 
 		projectSaveFile = info.getProjectXmlFile();
 	}
@@ -148,9 +149,28 @@ public class Project implements SpecificationRegistry {
 		return resourceRegistry;
 	}
 
+	/**
+	 This returns a {@link CustomControlClassRegistry} where each {@link CustomControlClass} that is only for this
+	 project. The {@link CustomControlClass} instances <b>are</b> saved within the project's save file.
+
+	 @return the registry
+	 @see #getWorkspaceCustomControlClassRegistry()
+	 */
 	@NotNull
-	public ProjectControlClassRegistry getCustomControlClassRegistry() {
-		return controlRegistry;
+	public CustomControlClassRegistry getProjectCustomControlClassRegistry() {
+		return projectCustomControlClassRegistry;
+	}
+
+	/**
+	 This returns a {@link CustomControlClassRegistry} where each {@link CustomControlClass} that is shared across a
+	 {@link Workspace}. The {@link CustomControlClass} instances are not saved within the project's save file.
+
+	 @return the registry
+	 @see #getProjectCustomControlClassRegistry()
+	 */
+	@NotNull
+	public CustomControlClassRegistry getWorkspaceCustomControlClassRegistry() {
+		return workspaceCustomControlClassRegistry;
 	}
 
 	@Override
@@ -169,7 +189,7 @@ public class Project implements SpecificationRegistry {
 	}
 
 	/**
-	 Will get the {@link ControlClass} instance by name. First will search {@link #getCustomControlClassRegistry()}.
+	 Will get the {@link ControlClass} instance by name. First will search {@link #getProjectCustomControlClassRegistry()}.
 	 If that returns null, will search {@link #getEditingDisplay()} via {@link ArmaDisplay#findControlByClassName(String)}*
 
 	 @return the matched class, or null if couldn't be located
@@ -177,7 +197,11 @@ public class Project implements SpecificationRegistry {
 	@Override
 	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
-		ControlClass controlClass = controlRegistry.findControlClassByName(className);
+		ControlClass controlClass = projectCustomControlClassRegistry.findControlClassByName(className);
+		if (controlClass != null) {
+			return controlClass;
+		}
+		controlClass = workspaceCustomControlClassRegistry.findControlClassByName(className);
 		if (controlClass != null) {
 			return controlClass;
 		}
@@ -221,5 +245,21 @@ public class Project implements SpecificationRegistry {
 		if (stringTable != null) {
 			stringTable.setDefaultLanguage(defaultLanguage);
 		}
+	}
+
+
+	/** @return the file that stores {@link Project#getWorkspaceCustomControlClassRegistry()} */
+	@NotNull
+	public File getCustomControlClassesFile() {
+		return workspace.getFileInAdcDirectory("custom_controls.xml");
+	}
+
+	/**
+	 @return the {@link Workspace} that owns this {@link Project}
+	 (may be different from {@link Workspace#getWorkspace()})
+	 */
+	@NotNull
+	public Workspace getWorkspace() {
+		return workspace;
 	}
 }

@@ -1,8 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup;
 
 import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
+import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemDialog;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Pos;
@@ -16,7 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link ProjectControlClassRegistry}.
+ This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link CustomControlClassRegistry}.
 
  @author Kayler
  @since 11/13/2016 */
@@ -24,7 +24,7 @@ public class ChooseCustomControlDialog extends ChooseItemDialog<CustomControlCla
 	private static final ItemCategory<CustomControlClass>[] categories = new ControlClassCategory[]{new ControlClassCategory()};
 
 	public ChooseCustomControlDialog() {
-		super(categories, Project.getCurrentProject().getCustomControlClassRegistry().getControlClassList(),
+		super(categories, Project.getCurrentProject().getProjectCustomControlClassRegistry().getControlClassList(),
 				Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.dialog_title"),
 				Lang.ApplicationBundle().getString("Popups.ChooseCustomControl.header_title")
 		);

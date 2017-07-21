@@ -29,6 +29,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -37,8 +38,6 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 10/02/2016 */
 public class EditExportConfigurationDialog extends StageDialog<VBox> {
-
-	private boolean cancel = false;
 
 	private final Insets padding10t = new Insets(10, 0, 10, 0);
 	private final ProjectExportConfiguration configuration;
@@ -64,18 +63,23 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		setStageSize(720, 480);
 		myRootElement.setPadding(new Insets(10d));
 
-		final Label lblTitle = new Label(bundle.getString("Popups.EditProjectExportConfig.title_label"));
+		Label lblTitle = new Label(bundle.getString("Popups.EditProjectExportConfig.title_label"));
 		lblTitle.setFont(Font.font(17));
 		myRootElement.getChildren().add(lblTitle);
 		myRootElement.getChildren().add(new Separator(Orientation.HORIZONTAL));
-		final Tab tabDisplayProperties = new Tab(bundle.getString("Popups.EditProjectExportConfig.display_properties"));
+		Tab tabDisplayProperties = new Tab(bundle.getString("Popups.EditProjectExportConfig.display_properties"));
 		tabDisplayProperties.setClosable(false);
-		final Tab tabExportParameters = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_parameters"));
+		Tab tabExportParameters = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_parameters"));
 		tabExportParameters.setClosable(false);
-		final Tab tabExportPreview = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_preview"));
+		Tab tabExportPreview = new Tab(bundle.getString("Popups.EditProjectExportConfig.export_preview"));
 		tabExportPreview.setClosable(false);
 
-		final TabPane tabPane = new TabPane(tabDisplayProperties, tabExportParameters, tabExportPreview);
+		Tab tabCustomControlsExportPreview = new Tab(
+				bundle.getString("Popups.EditProjectExportConfig.custom_classes_export_preview")
+		);
+		tabCustomControlsExportPreview.setClosable(false);
+
+		TabPane tabPane = new TabPane(tabDisplayProperties, tabExportParameters, tabExportPreview, tabCustomControlsExportPreview);
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
 		myRootElement.getChildren().add(tabPane);
@@ -83,6 +87,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		initTabDisplayProperties(tabDisplayProperties);
 		initTabExportParameters(tabExportParameters);
 		initTabExportPreview(tabExportPreview);
+		initTabCustomClassesExportPreview(tabCustomControlsExportPreview);
 	}
 
 	/*
@@ -90,14 +95,14 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	* TAB INIT: Display Properties
 	*
 	*/
-	private void initTabDisplayProperties(Tab tabDisplayProperties) {
-		final VBox tabRoot = new VBox(10);
+	private void initTabDisplayProperties(Tab tab) {
+		VBox tabRoot = new VBox(10);
 		tabRoot.setPadding(padding10t);
-		tabDisplayProperties.setContent(tabRoot);
+		tab.setContent(tabRoot);
 
 		/*class name*/
-		final InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker(), configuration.getExportClassName());
-		final ValueObserver<String> classNameObserver = inputFieldClassName.getValueObserver();
+		InputField<IdentifierChecker, String> inputFieldClassName = new InputField<>(new IdentifierChecker(), configuration.getExportClassName());
+		ValueObserver<String> classNameObserver = inputFieldClassName.getValueObserver();
 		classNameObserver.addListener(new ValueListener<String>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
@@ -105,7 +110,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 			}
 		});
 		HBox.setHgrow(inputFieldClassName, Priority.ALWAYS);
-		final HBox hboxClassName = new HBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.DisplayProperties.class_name")), inputFieldClassName);
+		HBox hboxClassName = new HBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.DisplayProperties.class_name")), inputFieldClassName);
 		tabRoot.getChildren().add(hboxClassName);
 
 		/*display properties*/
@@ -118,71 +123,94 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	* TAB INIT: Export Parameters
 	*
 	*/
-	private void initTabExportParameters(Tab tabExportParameters) {
-		final VBox tabRoot = new VBox(20);
+	private void initTabExportParameters(Tab tab) {
+		VBox tabRoot = new VBox(20);
 		tabRoot.setPadding(padding10t);
-		tabExportParameters.setContent(tabRoot);
+		tab.setContent(tabRoot);
 
 		/*set export directory*/
-		final Label lblExportDirectory = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory"));
-		final FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-				bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
-		Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
-		chooserPane.setChosenFile(configuration.getExportDirectory());
-		chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
-				configuration.setExportDirectory(newValue);
-			}
-		});
-		tabRoot.getChildren().add(new VBox(5, lblExportDirectory, chooserPane));
+		{
+			Label lblExportDirectory = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory"));
+			FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
+					bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
+			Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
+			chooserPane.setChosenFile(configuration.getExportDirectory());
+			chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
+					configuration.setExportDirectory(newValue);
+				}
+			});
+			tabRoot.getChildren().add(new VBox(5, lblExportDirectory, chooserPane));
+		}
 
+		/*set custom classes export file name*/
+		{
+			Label lbl = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.custom_classes_export_file_name"));
+			FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
+					bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
+			Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
+			chooserPane.setChosenFile(configuration.getExportDirectory());
+			chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
+				@Override
+				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
+					configuration.setExportDirectory(newValue);
+				}
+			});
+			tabRoot.getChildren().add(new VBox(5, lbl, chooserPane));
+		}
 
 		/*export macros to own file*/
-		final CheckBox checkBoxExportMacrosToFile = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file"));
-		checkBoxExportMacrosToFile.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file_tooltip")));
-		checkBoxExportMacrosToFile.setSelected(configuration.shouldExportMacrosToFile());
-		checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				configuration.setExportMacrosToFile(selected);
-				exportMacrosToFileObserver.updateValue(selected);
-			}
-		});
-		tabRoot.getChildren().add(checkBoxExportMacrosToFile);
+		{
+			CheckBox checkBoxExportMacrosToFile = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file"));
+			checkBoxExportMacrosToFile.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_macros_to_file_tooltip")));
+			checkBoxExportMacrosToFile.setSelected(configuration.shouldExportMacrosToFile());
+			checkBoxExportMacrosToFile.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					configuration.setExportMacrosToFile(selected);
+					exportMacrosToFileObserver.updateValue(selected);
+				}
+			});
+			tabRoot.getChildren().add(checkBoxExportMacrosToFile);
+		}
 
 		/*export file extension*/
-		final ToggleGroup toggleGroupFileExt = new ToggleGroup();
-		final FlowPane flowPaneFileExt = new FlowPane(Orientation.HORIZONTAL, 5, 10);
-		for (HeaderFileType headerFileType : HeaderFileType.values()) {
-			final RadioButton radioButtonFileExt = new RadioButton(headerFileType.getExtension());
-			radioButtonFileExt.setToggleGroup(toggleGroupFileExt);
-			if (headerFileType == configuration.getHeaderFileType()) {
-				toggleGroupFileExt.selectToggle(radioButtonFileExt);
+		{
+			ToggleGroup toggleGroupFileExt = new ToggleGroup();
+			FlowPane flowPaneFileExt = new FlowPane(Orientation.HORIZONTAL, 5, 10);
+			for (HeaderFileType headerFileType : HeaderFileType.values()) {
+				RadioButton radioButtonFileExt = new RadioButton(headerFileType.getExtension());
+				radioButtonFileExt.setToggleGroup(toggleGroupFileExt);
+				if (headerFileType == configuration.getHeaderFileType()) {
+					toggleGroupFileExt.selectToggle(radioButtonFileExt);
+				}
+				radioButtonFileExt.setUserData(headerFileType);
+				flowPaneFileExt.getChildren().add(radioButtonFileExt);
 			}
-			radioButtonFileExt.setUserData(headerFileType);
-			flowPaneFileExt.getChildren().add(radioButtonFileExt);
+			toggleGroupFileExt.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+				@Override
+				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+					configuration.setFileType((HeaderFileType) newValue.getUserData());
+				}
+			});
+			tabRoot.getChildren().add(new VBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_file_extension")), flowPaneFileExt));
 		}
-		toggleGroupFileExt.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-			@Override
-			public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-				configuration.setFileType((HeaderFileType) newValue.getUserData());
-			}
-		});
-		tabRoot.getChildren().add(new VBox(5, new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_file_extension")), flowPaneFileExt));
 
 
 		/*place adc notice*/
-		final CheckBox checkBoxPlaceAdcNotice = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice"));
-		checkBoxPlaceAdcNotice.setSelected(configuration.shouldPlaceAdcNotice());
-		checkBoxPlaceAdcNotice.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice_tooltip")));
-		checkBoxPlaceAdcNotice.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				configuration.setPlaceAdcNotice(newValue);
-			}
-		});
-		tabRoot.getChildren().add(new HBox(2, checkBoxPlaceAdcNotice, new ImageView(ADCImagePaths.ICON_HEART)));
+		{
+			CheckBox checkBoxPlaceAdcNotice = new CheckBox(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice"));
+			checkBoxPlaceAdcNotice.setSelected(configuration.shouldPlaceAdcNotice());
+			checkBoxPlaceAdcNotice.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.place_adc_notice_tooltip")));
+			checkBoxPlaceAdcNotice.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+					configuration.setPlaceAdcNotice(newValue);
+				}
+			});
+			tabRoot.getChildren().add(new HBox(2, checkBoxPlaceAdcNotice, new ImageView(ADCImagePaths.ICON_HEART)));
+		}
 	}
 
 	/*
@@ -191,25 +219,25 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	*
 	*/
 	@SuppressWarnings("unchecked")
-	private void initTabExportPreview(Tab tabExportPreview) {
-		final StackPane tabRoot = new StackPane();
-		tabExportPreview.setContent(tabRoot);
+	private void initTabExportPreview(Tab tab) {
+		StackPane tabRoot = new StackPane();
+		tab.setContent(tabRoot);
 
-		final SplitPane splitPane = new SplitPane();
+		SplitPane splitPane = new SplitPane();
 		splitPane.setOrientation(Orientation.HORIZONTAL);
 		tabRoot.getChildren().add(splitPane);
 
-		final VBox vboxDisplayPreview = new VBox(5);
-		final Label lblDisplayFileExportPreview = new Label("");
-		final TextArea textAreaDisplay = new TextArea();
+		VBox vboxDisplayPreview = new VBox(5);
+		Label lblDisplayFileExportPreview = new Label("");
+		TextArea textAreaDisplay = new TextArea();
 		textAreaDisplay.setEditable(false);
 		vboxDisplayPreview.getChildren().add(lblDisplayFileExportPreview);
 		vboxDisplayPreview.getChildren().add(textAreaDisplay);
 		VBox.setVgrow(textAreaDisplay, Priority.ALWAYS);
 
-		final VBox vboxMacrosPreview = new VBox(5);
-		final Label lblMacrosFileExportPreview = new Label("");
-		final TextArea textAreaMacros = new TextArea();
+		VBox vboxMacrosPreview = new VBox(5);
+		Label lblMacrosFileExportPreview = new Label("");
+		TextArea textAreaMacros = new TextArea();
 		textAreaMacros.setEditable(false);
 
 		vboxMacrosPreview.getChildren().add(lblMacrosFileExportPreview);
@@ -227,7 +255,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				}
 			}
 		});
-		tabExportPreview.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		tab.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
 				if (!selected) {
@@ -236,22 +264,16 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				lblDisplayFileExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
 				lblMacrosFileExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
 
-				final ByteArrayOutputStream outDisplay = new ByteArrayOutputStream();
-				final ByteArrayOutputStream outMacros = new ByteArrayOutputStream();
+				ByteArrayOutputStream outDisplay = new ByteArrayOutputStream();
+				ByteArrayOutputStream outMacros = new ByteArrayOutputStream();
 				try {
-					ProjectExporter.export(configuration, outDisplay, outMacros);
+					ProjectExporter.exportDisplayAndMacros(configuration, outDisplay, outMacros);
 				} catch (Exception e) {
 					textAreaDisplay.setText("Could not export: " + e.getMessage());
 					ExceptionHandler.error(e);
 				}
 				textAreaDisplay.setText(new String(outDisplay.toByteArray()));
 				textAreaMacros.setText(new String(outMacros.toByteArray()));
-				try {
-					outDisplay.close();
-					outMacros.close();
-				} catch (Exception e) {
-					ExceptionHandler.error(e);
-				}
 			}
 		});
 
@@ -261,10 +283,38 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		}
 	}
 
-	@Override
-	protected void cancel() {
-		this.cancel = true;
-		super.cancel();
+	/*
+	*
+	* TAB INIT: Custom Classes Export Preview
+	*
+	*/
+	private void initTabCustomClassesExportPreview(Tab tab) {
+		VBox tabRoot = new VBox(10);
+		tabRoot.setPadding(padding10t);
+		tab.setContent(tabRoot);
+
+		Label lblFileName = new Label("");
+
+		TextArea textArea = new TextArea();
+		textArea.setEditable(false);
+
+		tab.selectedProperty().addListener((observable, oldValue, selected) -> {
+			if (!selected) {
+				return;
+			}
+			lblFileName.setText(configuration.getCustomClassesExportFileName());
+			try {
+				ByteArrayOutputStream stm = new ByteArrayOutputStream();
+				ProjectExporter.exportWorkspaceCustomControls(configuration, stm);
+
+				textArea.setText(new String(stm.toByteArray()));
+			} catch (IOException e) {
+				textArea.setText("Couldn't export custom controls.");
+				ExceptionHandler.error(e);
+			}
+		});
+
+		tabRoot.getChildren().addAll(lblFileName, textArea);
 	}
 
 	@Override
@@ -275,6 +325,6 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	/** @return the new configuration, or null if was cancelled */
 	@Nullable
 	public ProjectExportConfiguration getConfiguration() {
-		return cancel ? null : configuration;
+		return wasCancelled() ? null : configuration;
 	}
 }

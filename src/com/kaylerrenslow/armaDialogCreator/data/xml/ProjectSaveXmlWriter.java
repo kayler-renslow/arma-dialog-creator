@@ -6,7 +6,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.data.ProjectControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
@@ -84,7 +83,7 @@ public class ProjectSaveXmlWriter {
 		writeMacros(stm);
 		writeDisplay(stm, project.getEditingDisplay());
 
-		writeCustomControls(stm, project.getCustomControlClassRegistry());
+		ProjectXmlUtil.writeCustomControls(stm, project.getProjectCustomControlClassRegistry());
 
 		writeProjectExportConfiguration(stm, project.getExportConfiguration());
 
@@ -92,24 +91,18 @@ public class ProjectSaveXmlWriter {
 
 		stm.flush();
 		stm.close();
+
+		writeWorkspaceCustomControlClassRegistry();
 	}
 
-	private void writeCustomControls(@NotNull XmlWriterOutputStream stm, @NotNull ProjectControlClassRegistry registry) throws IOException {
-		String customControlClasses = "custom-controls";
-		stm.writeBeginTag(customControlClasses);
-		final String customControl = "custom-control";
-		final String comment = "comment";
-		for (CustomControlClass customClass : registry.getControlClassList()) {
-			stm.writeBeginTag(customControl);
-			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.newSpecification());
-			if (customClass.getComment() != null) {
-				stm.writeBeginTag(comment);
-				stm.write(customClass.getComment());
-				stm.writeCloseTag(comment);
-			}
-			stm.writeCloseTag(customControl);
-		}
-		stm.writeCloseTag(customControlClasses);
+	private void writeWorkspaceCustomControlClassRegistry() throws IOException {
+		XmlWriterOutputStream stm = new XmlWriterOutputStream(project.getCustomControlClassesFile());
+		stm.writeDefaultProlog();
+		stm.writeBeginTag("custom-classes");
+		ProjectXmlUtil.writeCustomControls(stm, project.getWorkspaceCustomControlClassRegistry());
+		stm.writeCloseTag("custom-classes");
+		stm.flush();
+		stm.close();
 	}
 
 	private void writeProjectExportConfiguration(XmlWriterOutputStream stm, @NotNull ProjectExportConfiguration configuration) throws IOException {

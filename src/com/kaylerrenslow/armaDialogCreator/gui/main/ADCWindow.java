@@ -12,8 +12,11 @@ import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
@@ -21,42 +24,62 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  The main window of Arma Dialog Creator
+
  @author Kayler
- @since 05/11/2016
- */
-public class ADCWindow {
-	private final Stage primaryStage;
+ @since 05/11/2016 */
+public class ADCWindow implements ADCMainWindow {
+	private final Stage stage;
 	private VBox rootElement = new VBox();
 	private ADCCanvasView canvasView;
 	private ADCMenuBar mainMenuBar;
 	private boolean fullscreen = false;
+	private boolean preInit = false;
 
-	public ADCWindow(Stage primaryStage) {
-		this.primaryStage = primaryStage;
-		primaryStage.fullScreenProperty().addListener(new ChangeListener<Boolean>() {
+	public ADCWindow(Stage stage) {
+		this.stage = stage;
+		stage.fullScreenProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				setToFullScreen(newValue);
 			}
 		});
-		primaryStage.widthProperty().addListener(new ChangeListener<Number>() {
+		stage.widthProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				if (preInit) {
+					return;
+				}
 				autoResizeCanvasView();
 			}
 		});
 		Scene scene = new Scene(rootElement);
 		scene.getStylesheets().add("/com/kaylerrenslow/armaDialogCreator/gui/misc.css");
-		this.primaryStage.setScene(scene);
+		this.stage.setScene(scene);
 
 		ImagesTool.subscribeToConversion(new ConvertingImageSubscriberDialog());
 		ImagesTool.subscribeToConversion(new ConvertingImageSubscriberNotificationCreator());
 	}
 
-	public void initialize(@Nullable TreeStructure<ArmaControl> backgroundTreeStructure, @Nullable TreeStructure<ArmaControl> mainTreeStructure) {
+	public void preInit() {
+		preInit = true;
 		rootElement = new VBox();
-		primaryStage.getScene().setRoot(rootElement);
-		Scene scene = primaryStage.getScene();
+		rootElement.setPadding(new Insets(10));
+		stage.getScene().setRoot(rootElement);
+		StackPane stackPane = new StackPane();
+		rootElement.getChildren().add(stackPane);
+
+		ProgressBar bar = new ProgressBar(-1);
+		stackPane.getChildren().add(bar);
+
+		stage.setWidth(ScreenDimension.D1024.width + CanvasControls.PREFERRED_WIDTH);
+		stage.setHeight(ScreenDimension.D1024.height + 100);
+	}
+
+	public void initialize(@Nullable TreeStructure<ArmaControl> backgroundTreeStructure, @Nullable TreeStructure<ArmaControl> mainTreeStructure) {
+		preInit = false;
+		rootElement = new VBox();
+		Scene scene = stage.getScene();
+		scene.setRoot(rootElement);
 
 		FXUtil.runWhenVisible(rootElement, new Runnable() {
 			@Override
@@ -88,10 +111,21 @@ public class ADCWindow {
 	}
 
 	public void show() {
-		this.primaryStage.show();
+		this.stage.show();
 		autoResizeCanvasView();
 	}
 
+	private void autoResizeCanvasView() {
+		ScreenDimension closest = ScreenDimension.SMALLEST;
+		for (ScreenDimension dimension : ScreenDimension.values()) {
+			if (stage.getWidth() - (fullscreen ? 0 : CanvasControls.PREFERRED_WIDTH) >= dimension.width) {
+				closest = dimension;
+			}
+		}
+		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setScreenDimension(closest);
+	}
+
+	@Override
 	@NotNull
 	public CanvasView getCanvasView() {
 		if (!isShowing()) {
@@ -100,18 +134,9 @@ public class ADCWindow {
 		return canvasView;
 	}
 
-	private void autoResizeCanvasView() {
-		ScreenDimension closest = ScreenDimension.SMALLEST;
-		for (ScreenDimension dimension : ScreenDimension.values()) {
-			if (primaryStage.getWidth() - (fullscreen ? 0 : CanvasControls.PREFERRED_WIDTH) >= dimension.width) {
-				closest = dimension;
-			}
-		}
-		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setScreenDimension(closest);
-	}
-
+	@Override
 	public void setToFullScreen(boolean fullScreen) {
-		primaryStage.setFullScreen(fullScreen);
+		stage.setFullScreen(fullScreen);
 		this.fullscreen = fullScreen;
 		if (fullScreen) {
 			rootElement.getChildren().remove(mainMenuBar);
@@ -122,7 +147,13 @@ public class ADCWindow {
 		autoResizeCanvasView();
 	}
 
+	@Override
 	public boolean isShowing() {
-		return primaryStage.isShowing();
+		return stage.isShowing();
+	}
+
+	@NotNull
+	public Stage getStage() {
+		return stage;
 	}
 }

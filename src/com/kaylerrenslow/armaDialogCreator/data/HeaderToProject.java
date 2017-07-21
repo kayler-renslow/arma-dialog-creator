@@ -196,7 +196,7 @@ public class HeaderToProject {
 				dialogDir.mkdir();
 			}
 
-			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir));
+			project = new Project(dataContext, new ProjectInfo(dialogClassName, workspace));
 		}
 
 		dataContext.setCurrentProject(project);
@@ -324,7 +324,7 @@ public class HeaderToProject {
 		//get the extend class
 		ControlClass extendClass = null;
 		if (headerClass.getExtendClassName() != null) {
-			extendClass = project.getCustomControlClassRegistry().findControlClassByName(headerClass.getExtendClassName());
+			extendClass = project.getProjectCustomControlClassRegistry().findControlClassByName(headerClass.getExtendClassName());
 			if (extendClass == null) {
 				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
 				if (extendHeaderClass == null) {
@@ -428,7 +428,7 @@ public class HeaderToProject {
 				optional
 		);
 
-		CustomControlClass ccc = project.getCustomControlClassRegistry().addControlClass(ccs);
+		CustomControlClass ccc = project.getProjectCustomControlClassRegistry().addControlClass(ccs);
 
 
 		if (headerClass.getExtendClassName() != null) {

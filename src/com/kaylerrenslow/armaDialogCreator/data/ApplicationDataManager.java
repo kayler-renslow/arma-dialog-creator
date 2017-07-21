@@ -96,9 +96,9 @@ public class ApplicationDataManager {
 	public Workspace getWorkspace() {
 		//do not make this method synchronized
 		try {
-			if (Thread.currentThread() == ArmaDialogCreator.getJavaFXThread()) {
-				if (waitForInitialize.getCount() > 0) {
-					throw new IllegalStateException("Trying to access the workspace on the JavaFX thread while " +
+			if (Thread.currentThread() == ArmaDialogCreator.getInitializingThread()) {
+				if (isInitializing()) {
+					throw new IllegalStateException("Trying to access the workspace on the initializing thread while " +
 							"waiting to initialize");
 				}
 			}
@@ -121,9 +121,9 @@ public class ApplicationDataManager {
 	public ApplicationData getApplicationData() {
 		//do not make this method synchronized
 		try {
-			if (Thread.currentThread() == ArmaDialogCreator.getJavaFXThread()) {
-				if (waitForInitialize.getCount() > 0) {
-					throw new IllegalStateException("Trying to access the workspace on the JavaFX thread while " +
+			if (Thread.currentThread() == ArmaDialogCreator.getInitializingThread()) {
+				if (isInitializing()) {
+					throw new IllegalStateException("Trying to access the workspace on the initializing thread while " +
 							"waiting to initialize");
 				}
 			}
@@ -234,6 +234,10 @@ public class ApplicationDataManager {
 			return false;
 		}
 		return true;
+	}
+
+	public boolean isInitializing() {
+		return waitForInitialize.getCount() > 0;
 	}
 
 	private static class SaveProjectDialog extends StageDialog<VBox> {

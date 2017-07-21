@@ -25,7 +25,7 @@ public class ShortcutButtonDataCreator implements TreeItemDataCreator<ArmaContro
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
 		NewControlDialog dialog = new NewControlDialog(
 				ControlType.ShortcutButton,
-				ArmaDialogCreator.getMainWindow().getCanvasView().isBackgroundTreeView(treeView)
+				ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView)
 		);
 		dialog.show();
 		if (dialog.wasCancelled()) {

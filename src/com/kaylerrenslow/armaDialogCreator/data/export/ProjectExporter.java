@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
@@ -22,21 +23,52 @@ import java.util.ResourceBundle;
 import java.util.function.Function;
 
 /**
- Created by Kayler on 09/13/2016.
- */
+ A {@link Project} exporter for converting. Converts the {@link Project} into header file code (.h, .hh, etc)
+
+ @author Kayler
+ @since 09/13/2016 */
 public class ProjectExporter {
 	private static final String CONTROLS_BACKGROUND = "ControlsBackground";
 	private static final String OBJECTS = "Objects";
 	private static final String CONTROLS = "Controls";
 
-	public static void export(@NotNull ProjectExportConfiguration configuration) throws IOException {
-		new ProjectExporter(configuration).export();
+	/**
+	 Exports the whole {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
+
+	 @param configuration config to use
+	 @see #exportDisplayAndMacros(OutputStream, OutputStream)
+	 */
+	public static void exportProject(@NotNull ProjectExportConfiguration configuration) throws IOException {
+		new ProjectExporter(configuration).exportProject();
 	}
 
-	public static void export(@NotNull ProjectExportConfiguration configuration, @NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
-		new ProjectExporter(configuration).export(displayOutputStream, macrosOutputStream);
+	/**
+	 Exports the {@link ProjectExportConfiguration#getProject()} to the given output streams. This method will only
+	 export the {@link Project#getEditingDisplay()}, {@link Project#getMacroRegistry()}, and
+	 {@link Project#getProjectCustomControlClassRegistry()}.
+	 The streams will not be closed once this method finishes!
+
+	 @param configuration config to use
+	 @param displayOutputStream stream to use for writing the {@link Project#getEditingDisplay()}
+	 @param macrosOutputStream stream to use for writing {@link Project#getMacroRegistry()}, or null to write to same
+	 file as <code>displayOutputStream</code>
+	 */
+	public static void exportDisplayAndMacros(@NotNull ProjectExportConfiguration configuration,
+											  @NotNull OutputStream displayOutputStream,
+											  @Nullable OutputStream macrosOutputStream) throws IOException {
+		new ProjectExporter(configuration).exportDisplayAndMacros(displayOutputStream, macrosOutputStream);
 	}
 
+	/**
+	 Exports {@link Project#getWorkspaceCustomControlClassRegistry()} to the given output stream.
+
+	 @param configuration config to use
+	 @param stream stream to use
+	 */
+	public static void exportWorkspaceCustomControls(@NotNull ProjectExportConfiguration configuration,
+													 @NotNull OutputStream stream) throws IOException {
+		new ProjectExporter(configuration).exportWorkspaceCustomControls(stream);
+	}
 
 	@NotNull
 	public static String getMacrosFileName(@NotNull ProjectExportConfiguration configuration) {
@@ -113,38 +145,57 @@ public class ProjectExporter {
 
 	}
 
-	public void export() throws IOException {
+	/**
+	 Exports the {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
+	 <p>
+	 This invokes {@link #exportDisplayAndMacros(OutputStream, OutputStream)} and {@link #exportWorkspaceCustomControls()}
+	 */
+	public void exportProject() throws IOException {
+		initConfExportDirectory();
+		File exportDirectory = conf.getExportDirectory();
+
+		exportDirectory.mkdir();
+
+		File exportDisplayFile = conf.getFileForExportDirectory(getDisplayFileName(conf));
+		exportDisplayFile.createNewFile();
+		FileOutputStream fosDisplay = new FileOutputStream(exportDisplayFile);
+
+		FileOutputStream fosMacros = null;
+		if (conf.shouldExportMacrosToFile()) {
+			final File macrosExportFile = conf.getFileForExportDirectory(getMacrosFileName(conf));
+			macrosExportFile.createNewFile();
+			fosMacros = new FileOutputStream(macrosExportFile);
+		}
+
+		exportDisplayAndMacros(fosDisplay, fosMacros);
+
+		fosDisplay.close();
+		if (fosMacros != null) {
+			fosMacros.close();
+		}
+
+		this.exportWorkspaceCustomControls();
+	}
+
+	private void initConfExportDirectory() {
 		if (!conf.getExportDirectory().exists()) {
 			conf.getExportDirectory().mkdirs();
 		}
 		if (!conf.getExportDirectory().isDirectory()) {
 			throw new IllegalArgumentException("exportLocation ('" + conf.getExportDirectory().getPath() + "') is not a directory");
 		}
-		final String exportDirectoryPath = conf.getExportDirectory().getPath() + "/";
-		final File exportDirectory = conf.getExportDirectory();
-
-		exportDirectory.mkdir();
-
-		final File exportDisplayFile = new File(exportDirectoryPath + getDisplayFileName(conf));
-		exportDisplayFile.createNewFile();
-		final FileOutputStream fosDisplay = new FileOutputStream(exportDisplayFile);
-
-		FileOutputStream fosMacros = null;
-		if (conf.shouldExportMacrosToFile()) {
-			final File macrosExportFile = new File(exportDirectoryPath + getMacrosFileName(conf));
-			macrosExportFile.createNewFile();
-			fosMacros = new FileOutputStream(macrosExportFile);
-		}
-
-		export(fosDisplay, fosMacros);
-
-		fosDisplay.close();
-		if (fosMacros != null) {
-			fosMacros.close();
-		}
 	}
 
-	public void export(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream) throws IOException {
+	/**
+	 Exports the {@link ProjectExportConfiguration#getProject()} to the given output streams.
+	 The streams will not be closed once this method finishes!
+
+	 @param displayOutputStream stream to use for writing the {@link Project#getEditingDisplay()}
+	 @param macrosOutputStream stream to use for writing {@link Project#getMacroRegistry()}, or null to write to same
+	 file as <code>displayOutputStream</code>
+	 */
+	public void exportDisplayAndMacros(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream)
+			throws IOException {
 		if (macrosOutputStream == null || !conf.shouldExportMacrosToFile()) {
 			macrosOutputStream = displayOutputStream; //save the macros inside the display header file
 		}
@@ -164,6 +215,45 @@ public class ProjectExporter {
 		//one last flush
 		displayOutputStream.flush();
 		macrosOutputStream.flush();
+
+		//don't close streams
+
+	}
+
+	public void exportWorkspaceCustomControls() throws IOException {
+		initConfExportDirectory();
+
+		File exportFile = conf.getFileForExportDirectory(conf.getCustomClassesExportFileName());
+		exportFile.createNewFile();
+		FileOutputStream fos = new FileOutputStream(exportFile);
+
+		exportWorkspaceCustomControls(fos);
+
+		fos.flush();
+		fos.close();
+	}
+
+	public void exportWorkspaceCustomControls(@NotNull OutputStream stream) throws IOException {
+		IndentedStringBuilder stringBuilder = getBuilder(stream);
+
+		if (conf.shouldPlaceAdcNotice()) {
+			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
+		}
+
+		exportCustomControlClasses(stringBuilder, conf.getProject().getWorkspaceCustomControlClassRegistry());
+
+		stream.flush();
+		//don't close stream
+	}
+
+	private void exportCustomControlClasses(@NotNull IndentedStringBuilder stringBuilder,
+											@NotNull CustomControlClassRegistry registry) throws IOException {
+		for (CustomControlClass cc : registry) {
+			if (cc.getComment() != null) {
+				writelnComment(stringBuilder, cc.getComment());
+			}
+			writeControlClass(stringBuilder, cc.getControlClass(), null);
+		}
 	}
 
 	private void writeln(@NotNull IndentedStringBuilder stringBuilder, @NotNull String s) {
@@ -192,6 +282,12 @@ public class ProjectExporter {
 	}
 
 	private void exportDisplay(@NotNull IndentedStringBuilder stringBuilder) throws IOException {
+		File customClassesExportFile = conf.getFileForExportDirectory(conf.getCustomClassesExportFileName());
+		if (!customClassesExportFile.exists() &&
+				!conf.getProject().getWorkspaceCustomControlClassRegistry().getControlClassList().isEmpty()) {
+			customClassesExportFile.createNewFile();
+		}
+
 		if (conf.shouldPlaceAdcNotice()) {
 			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
 			writeln(stringBuilder, "");
@@ -201,9 +297,15 @@ public class ProjectExporter {
 			writeln(stringBuilder, "#include \"" + getMacrosFileName(conf) + "\"");
 			writeln(stringBuilder, "");
 		}
+		writeln(stringBuilder, "#include \"" + customClassesExportFile + "\"");
 		if (project.getProjectDescription() != null && project.getProjectDescription().length() > 0) {
 			writelnComment(stringBuilder, project.getProjectDescription());
 		}
+
+		writeln(stringBuilder, "");
+		exportCustomControlClasses(stringBuilder, conf.getProject().getProjectCustomControlClassRegistry());
+		writeln(stringBuilder, "");
+
 		ArmaDisplay display = project.getEditingDisplay();
 
 		writeClass(stringBuilder, conf.getExportClassName(), null, stringBuilderCopy -> {
@@ -333,13 +435,20 @@ public class ProjectExporter {
 		}
 	}
 
-	private void writelnComment(@NotNull IndentedStringBuilder stringBuilder, String s) throws IOException {
-		if (s.contains("\n")) {
+	/**
+	 Writes a comment and then appends a new line character. If the comment has a newline character inside it, the
+	 comment will be a block comment, otherwise the comment will be a single line comment (//etc).
+
+	 @param stringBuilder builder to use
+	 @param comment the comment
+	 */
+	private void writelnComment(@NotNull IndentedStringBuilder stringBuilder, String comment) throws IOException {
+		if (comment.contains("\n")) {
 			writeln(stringBuilder, "/*");
-			writeln(stringBuilder, s);
+			writeln(stringBuilder, comment);
 			writeln(stringBuilder, "*/");
 		} else {
-			writeln(stringBuilder, "//" + s);
+			writeln(stringBuilder, "//" + comment);
 		}
 	}
 

@@ -37,7 +37,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			return;
 		}
 		try {
-			ProjectExporter.export(dialog.getConfiguration());
+			ProjectExporter.exportProject(dialog.getConfiguration());
 			File exportDir = dialog.getConfiguration().getExportDirectory();
 
 			Notifications.showNotification(

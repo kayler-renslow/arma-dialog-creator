@@ -1,9 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassRegistry;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
-import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,27 +10,34 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- A {@link ControlClassRegistry} implementation for {@link Project#getCustomControlClassRegistry()}
+ A {@link ControlClassRegistry} implementation for storing {@link CustomControlClass} instances
 
  @author Kayler
  @since 10/23/2016. */
-public class ProjectControlClassRegistry implements ControlClassRegistry {
+public class CustomControlClassRegistry implements ControlClassRegistry, Iterable<CustomControlClass> {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
-	private Project project;
+	private final SpecificationRegistry specReg;
 
-	ProjectControlClassRegistry(@NotNull Project project) {
-		this.project = project;
+	public CustomControlClassRegistry(@NotNull SpecificationRegistry specReg) {
+		this.specReg = specReg;
 	}
 
+	/**
+	 Returns a read-only list of all {@link CustomControlClass} instances in this registry.
+	 The reason this is a list is so order-of-insertion is maintained.
+
+	 @return list
+	 */
 	@NotNull
 	public ReadOnlyList<CustomControlClass> getControlClassList() {
 		return controlClassReadOnlyList;
 	}
 
 	@NotNull
-	public Iterator<ControlClass> customControlsIterator() {
-		return new CustomControlClassIterator(this);
+	@Override
+	public Iterator<CustomControlClass> iterator() {
+		return controlClassList.iterator();
 	}
 
 	/**
@@ -43,7 +47,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	 */
 	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClassSpecification controlClass) {
-		CustomControlClass ccc = new CustomControlClass(controlClass, project);
+		CustomControlClass ccc = new CustomControlClass(controlClass, specReg);
 		controlClassList.add(ccc);
 		return ccc;
 	}
@@ -111,7 +115,7 @@ public class ProjectControlClassRegistry implements ControlClassRegistry {
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {
 		private final Iterator<CustomControlClass> iterator;
 
-		public CustomControlClassIterator(ProjectControlClassRegistry registry) {
+		public CustomControlClassIterator(CustomControlClassRegistry registry) {
 			iterator = registry.getControlClassList().iterator();
 		}
 

@@ -251,7 +251,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private List<CBMBMenuItem<String>> getCustomControlClassesNamesItems() {
-		ReadOnlyList<CustomControlClass> cccList = project.getCustomControlClassRegistry().getControlClassList();
+		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
 		List<CBMBMenuItem<String>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			CBMBMenuItem<String> menuItem = new CBMBMenuItem<>(ccc.getControlClass().getClassName());
@@ -262,7 +262,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
-		ReadOnlyList<CustomControlClass> cccList = project.getCustomControlClassRegistry().getControlClassList();
+		ReadOnlyList<CustomControlClass> cccList = project.getProjectCustomControlClassRegistry().getControlClassList();
 		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));
@@ -328,7 +328,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		}
 		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass());
 		customControlClass.setComment(taComment.getText());
-		project.getCustomControlClassRegistry().addControlClass(customControlClass);
+		project.getProjectCustomControlClassRegistry().addControlClass(customControlClass);
 
 		super.ok();
 	}

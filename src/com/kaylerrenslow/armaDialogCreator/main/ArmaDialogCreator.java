@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.main;
 import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
+import com.kaylerrenslow.armaDialogCreator.gui.main.ADCMainWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
@@ -11,10 +12,12 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.ProjectImp
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +39,7 @@ public final class ArmaDialogCreator extends Application {
 	private static Locale locale = ApplicationProperty.LOCALE.getDefaultValue();
 	private static Manifest adcManifest;
 	private static Thread JavaFXThread;
+	private static Thread initializingThread;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -188,48 +192,76 @@ public final class ArmaDialogCreator extends Application {
 			}
 		}
 
-		ApplicationDataManager.getInstance().beginInitializing();
+		ADCWindow adcWindow = getADCWindow();
+		adcWindow.getStage().close();
 
-		getPrimaryStage().close();
+
+		ApplicationDataManager.getInstance().beginInitializing();
 		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
 
-		ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
+		adcWindow.preInit();
+		adcWindow.getStage().show();
 
-		ProjectXmlLoader.ProjectParseResult result = null;
-		if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
-			try {
-				result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
+		Task<Boolean> task = new Task<Boolean>() {
+			@Override
+			protected Boolean call() throws Exception {
+				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
 
-				applicationData.setCurrentProject(result.getProject());
+				ProjectXmlLoader.ProjectParseResult result = null;
+				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
+					try {
+						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
 
-			} catch (Exception e) {
-				applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
-				INSTANCE.showLater.add(new Runnable() {
+						applicationData.setCurrentProject(result.getProject());
+
+					} catch (Exception e) {
+						applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
+						INSTANCE.showLater.add(new Runnable() {
+							@Override
+							public void run() {
+								new CouldNotLoadProjectDialog(e).show();
+							}
+						});
+					}
+				} else {
+					applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
+				}
+
+				ApplicationDataManager.getInstance().initializeDone();
+
+				final ProjectXmlLoader.ProjectParseResult finalResult = result;
+				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						new CouldNotLoadProjectDialog(e).show();
+						adcWindow.initialize(finalResult != null ? finalResult.getTreeStructureBg() : null,
+								finalResult != null ? finalResult.getTreeStructureMain() : null
+						);
+						adcWindow.show();
+
+						if (finalResult != null) {
+							if (finalResult.getErrors().size() > 0) {
+								new ProjectImproperResultDialog(finalResult).showAndWait();
+							}
+						}
+
+						for (Runnable run : INSTANCE.showLater) {
+							run.run();
+						}
+						INSTANCE.showLater.clear();
 					}
 				});
+
+				return true;
 			}
-		} else {
-			applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
-		}
+		};
+		task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+			ExceptionHandler.fatal(newValue);
+		});
 
-		ApplicationDataManager.getInstance().initializeDone();
-
-		getMainWindow().initialize(result != null ? result.getTreeStructureBg() : null, result != null ? result.getTreeStructureMain() : null);
-		getMainWindow().show();
-
-		if (result != null) {
-			if (result.getErrors().size() > 0) {
-				new ProjectImproperResultDialog(result).showAndWait();
-			}
-		}
-
-		for (Runnable run : INSTANCE.showLater) {
-			run.run();
-		}
-		INSTANCE.showLater.clear();
+		initializingThread = new Thread(task);
+		initializingThread.setName("ADC - Project Initializing Thread");
+		initializingThread.setDaemon(false);
+		initializingThread.start();
 	}
 
 	/**
@@ -246,7 +278,11 @@ public final class ArmaDialogCreator extends Application {
 		return INSTANCE.primaryStage;
 	}
 
-	public static ADCWindow getMainWindow() {
+	private static ADCWindow getADCWindow() {
+		return INSTANCE.mainWindow;
+	}
+
+	public static ADCMainWindow getMainWindow() {
 		return INSTANCE.mainWindow;
 	}
 
@@ -261,7 +297,7 @@ public final class ArmaDialogCreator extends Application {
 			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
 			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
 		}
-		if (getMainWindow().isShowing()) {
+		if (getADCWindow().isShowing()) {
 			getCanvasView().updateCanvas();
 		}
 		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
@@ -305,6 +341,14 @@ public final class ArmaDialogCreator extends Application {
 	@NotNull
 	public static Thread getJavaFXThread() {
 		return JavaFXThread;
+	}
+
+	@Nullable
+	public static Thread getInitializingThread() {
+		if (getApplicationDataManager().isInitializing()) {
+			return initializingThread;
+		}
+		return null;
 	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {

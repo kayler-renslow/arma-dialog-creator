@@ -17,5 +17,4 @@ public interface ControlClassRegistry {
 	 */
 	@Nullable
 	ControlClass findControlClassByName(@NotNull String className);
-
 }

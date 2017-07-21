@@ -23,7 +23,7 @@ public class EditDataCreator implements TreeItemDataCreator<ArmaControl, TreeIte
 
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(ControlType.Edit, ArmaDialogCreator.getMainWindow().getCanvasView().isBackgroundTreeView(treeView));
+		NewControlDialog dialog = new NewControlDialog(ControlType.Edit, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;

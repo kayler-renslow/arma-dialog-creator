@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.gui.uicanvas;
 
-import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,7 +12,6 @@ import java.util.function.Function;
  @since 07/04/2017 */
 public class CanvasContext {
 	private final List<Function<GraphicsContext, Void>> paintLast = new ArrayList<>();
-	private final DataContext dataContext = new DataContext();
 
 	/**
 	 Use this function to paint something after the initial {@link UICanvas#paint()} is invoked.
@@ -35,10 +33,5 @@ public class CanvasContext {
 	 */
 	public boolean paintPartial() {
 		return true;
-	}
-
-	@NotNull
-	public DataContext getData() {
-		return dataContext;
 	}
 }

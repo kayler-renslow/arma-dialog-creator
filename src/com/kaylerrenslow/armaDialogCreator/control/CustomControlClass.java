@@ -36,6 +36,7 @@ public class CustomControlClass {
 	 */
 	public CustomControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
 		controlClass = specification.constructNewControlClass(registry);
+		setComment(specification.getComment());
 	}
 
 	/** Get the {@link ControlClass} instance. This instance will remain constant. */

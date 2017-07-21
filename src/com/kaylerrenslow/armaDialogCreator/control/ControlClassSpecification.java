@@ -23,6 +23,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private final ReadOnlyList<ControlPropertyLookupConstant> requiredPropertiesLookup, optionalPropertiesLookup;
 	private final List<ControlPropertySpecification> inheritedProperties = new LinkedList<>();
 	private @Nullable String extendClass;
+	private String comment;
 
 	/**
 	 Construct a specification with the given lists. Note: the lists will not be deep copied.
@@ -280,5 +281,14 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 			}
 		}
 		throw new IllegalArgumentException("couldn't find property " + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]");
+	}
+
+	@Nullable
+	public String getComment() {
+		return comment;
+	}
+
+	public void setComment(@Nullable String comment) {
+		this.comment = comment;
 	}
 }

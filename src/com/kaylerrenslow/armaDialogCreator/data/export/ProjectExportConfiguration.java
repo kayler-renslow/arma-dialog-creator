@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data.export;
 
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ public class ProjectExportConfiguration {
 	private boolean exportMacrosToFile;
 	private HeaderFileType fileType;
 	private String exportConfigName;
+	private String customControlClassesExportFileName;
 
 	public ProjectExportConfiguration(
 			@NotNull String exportClassName,
@@ -53,6 +55,8 @@ public class ProjectExportConfiguration {
 		this.exportMacrosToFile = exportMacrosToFile;
 		this.fileType = fileType;
 		setExportConfigName(exportConfigName);
+
+		this.customControlClassesExportFileName = "Custom_controls" + fileType.getExtension();
 	}
 
 	@NotNull
@@ -76,6 +80,21 @@ public class ProjectExportConfiguration {
 	@NotNull
 	public File getExportDirectory() {
 		return exportDirectory;
+	}
+
+	@NotNull
+	public File getFileForExportDirectory(@NotNull String fileName) {
+		return new File(exportDirectory.getAbsolutePath() + "/" + fileName);
+	}
+
+	/** @return the file name that a {@link Project}'s {@link CustomControlClass} instances will be written to. */
+	@NotNull
+	public String getCustomClassesExportFileName() {
+		return customControlClassesExportFileName;
+	}
+
+	public void setCustomControlClassesExportFile(@NotNull String customControlClassesExportFileName) {
+		this.customControlClassesExportFileName = customControlClassesExportFileName;
 	}
 
 	/** @return the dialog's export class name */

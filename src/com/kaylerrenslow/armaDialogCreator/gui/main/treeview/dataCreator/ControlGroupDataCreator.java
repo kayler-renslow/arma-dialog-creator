@@ -29,7 +29,7 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<ArmaControl,
 	@NotNull
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(ControlType.ControlsGroup, ArmaDialogCreator.getMainWindow().getCanvasView().isBackgroundTreeView(treeView));
+		NewControlDialog dialog = new NewControlDialog(ControlType.ControlsGroup, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;

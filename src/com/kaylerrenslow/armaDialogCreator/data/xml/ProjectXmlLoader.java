@@ -1,12 +1,10 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
-import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
-import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
+import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.Key;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +12,8 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- Loads a project from a .xml save file. When the xml is loaded, a {@link ProjectVersionLoader} is designated to do the rest of the xml loading.
+ Loads a project from a .xml save file.
+ When the xml is loaded, a {@link ProjectVersionLoader} is designated to do the rest of the xml loading.
 
  @author Kayler
  @since 07/28/2016. */
@@ -22,11 +21,13 @@ public class ProjectXmlLoader extends XmlLoader {
 
 	private final String saveVersion;
 	protected final ApplicationData applicationData;
-
+	/** Saved from constructor. This is used for {@link super#XmlLoader(File, DataContext, Key[])} */
+	protected final Key<?>[] keys;
 
 	protected ProjectXmlLoader(@NotNull File xmlFile, @NotNull ApplicationData data, Key<?>... keys) throws XmlParseException {
 		super(xmlFile, data, keys);
 		this.applicationData = data;
+		this.keys = keys;
 		saveVersion = document.getDocumentElement().getAttribute("save-version").trim();
 	}
 
@@ -57,7 +58,12 @@ public class ProjectXmlLoader extends XmlLoader {
 	public static ProjectPreviewParseResult previewParseProjectXmlFile(@NotNull File projectSaveXml) throws XmlParseException {
 		ProjectPreviewLoaderVersion1 versionLoader = new ProjectPreviewLoaderVersion1(projectSaveXml);
 		versionLoader.parseDocument();
-		return new ProjectPreviewParseResult(new ProjectInfo(versionLoader.getProjectName(), projectSaveXml, projectSaveXml.getParentFile()), versionLoader.getErrors());
+		return new ProjectPreviewParseResult(
+				new ProjectInfo(versionLoader.getProjectName(),
+						new Workspace(projectSaveXml.getParentFile().getParentFile())
+				),
+				versionLoader.getErrors()
+		);
 	}
 
 
@@ -76,7 +82,8 @@ public class ProjectXmlLoader extends XmlLoader {
 		private final TreeStructure<ArmaControl> treeStructureMain;
 		private final TreeStructure<ArmaControl> treeStructureBg;
 
-		private ProjectParseResult(Project project, TreeStructure<ArmaControl> treeStructureMain, TreeStructure<ArmaControl> treeStructureBg, ArrayList<ParseError> errors) {
+		private ProjectParseResult(Project project, TreeStructure<ArmaControl> treeStructureMain,
+								   TreeStructure<ArmaControl> treeStructureBg, ArrayList<ParseError> errors) {
 			super(errors);
 			this.project = project;
 			this.treeStructureMain = treeStructureMain;

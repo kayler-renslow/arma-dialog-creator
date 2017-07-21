@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +65,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			project.setProjectName(projectName);
 			loadStringtableXml();
 			loadMacroRegistry();
-			loadCustomControlClassRegistry();
+			loadCustomControlClassRegistries();
 
 			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros());
 			if (editingDisplay != null) {
@@ -158,28 +157,23 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 	}
 
-	private void loadCustomControlClassRegistry() throws IOException {
-		final String customControls = "custom-controls";
-		final String customControl = "custom-control";
-		final String comment = "comment";
-		final String classSpec = "class-spec";
-		List<Element> customControlsElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), customControls);
-		for (Element customControlClassesGroup : customControlsElementGroups) {
-			List<Element> customControlElements = XmlUtil.getChildElementsWithTagName(customControlClassesGroup, customControl);
-			for (Element customControlElement : customControlElements) {
-				List<Element> controlClassSpecs = XmlUtil.getChildElementsWithTagName(customControlElement, classSpec);
-				if (controlClassSpecs.size() <= 0) {
-					continue;
-				}
-				ControlClassSpecification spec = ProjectXmlUtil.loadControlClassSpecification(controlClassSpecs.get(0), dataContext, this.loader);
-				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
-				String commentContent = null;
-				if (commentElements.size() > 0) {
-					commentContent = XmlUtil.getImmediateTextContent(commentElements.get(0));
-				}
-				jobs.add(new CreateCustomControlClassJob(spec, commentContent));
-			}
+	private void loadCustomControlClassRegistries() throws Exception {
+		//load workspace custom control classes
+		if (project.getCustomControlClassesFile().exists()) {
+			XmlLoader xmlLoader = new XmlLoader(project.getCustomControlClassesFile(), dataContext, this.loader.keys);
+			ProjectXmlUtil.loadCustomControlClasses(xmlLoader.document.getDocumentElement(), dataContext, this.loader,
+					controlClassSpecification -> {
+						jobs.add(new CreateCustomControlClassJob(controlClassSpecification, false));
+						return null;
+					}
+			);
 		}
+		ProjectXmlUtil.loadCustomControlClasses(document.getDocumentElement(), dataContext, this.loader,
+				controlClassSpecification -> {
+					jobs.add(new CreateCustomControlClassJob(controlClassSpecification, true));
+					return null;
+				}
+		);
 	}
 
 	private void loadMacroRegistry() {
@@ -439,18 +433,21 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private class CreateCustomControlClassJob implements AfterLoadJob {
 
 		private ControlClassSpecification spec;
-		private String comment;
+		private final boolean loadInProjectRegistry;
 
-		public CreateCustomControlClassJob(@NotNull ControlClassSpecification spec, @Nullable String comment) {
+		public CreateCustomControlClassJob(@NotNull ControlClassSpecification spec, boolean loadInProjectRegistry) {
 			this.spec = spec;
-			this.comment = comment;
+			this.loadInProjectRegistry = loadInProjectRegistry;
 		}
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
 			CustomControlClass customControlClass = new CustomControlClass(spec, project);
-			customControlClass.setComment(comment);
-			project.getCustomControlClassRegistry().addControlClass(customControlClass);
+			if (loadInProjectRegistry) {
+				project.getProjectCustomControlClassRegistry().addControlClass(customControlClass);
+			} else {
+				project.getWorkspaceCustomControlClassRegistry().addControlClass(customControlClass);
+			}
 		}
 
 		@Override

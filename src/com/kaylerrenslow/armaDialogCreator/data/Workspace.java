@@ -24,7 +24,7 @@ public class Workspace {
 
 	 @param workspaceDirectory the directory for the workspace. The directory must exist, or an exception will be thrown
 	 */
-	protected Workspace(@NotNull File workspaceDirectory) {
+	public Workspace(@NotNull File workspaceDirectory) {
 		if (!workspaceDirectory.isDirectory()) {
 			throw new IllegalArgumentException("workspaceDirectory isn't a directory");
 		}
