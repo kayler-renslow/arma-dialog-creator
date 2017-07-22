@@ -1,5 +1,5 @@
 **Added:**
-* XSlider control, renderer, and data creator
+* 
 
 
 **Changed:**

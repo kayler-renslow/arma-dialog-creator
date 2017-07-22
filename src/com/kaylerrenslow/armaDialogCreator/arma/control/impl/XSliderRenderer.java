@@ -134,17 +134,17 @@ public class XSliderRenderer extends ArmaControlRenderer {
 	}
 
 	private void paintThumb(@NotNull GraphicsContext gc, int thumbX, int thumbWidth, PictureOrTextureHelper helper) {
-		Color backgroundColor = (focused && isEnabled()) ? colorActive : this.backgroundColor;
+		Color color = (focused && isEnabled()) ? colorActive : this.backgroundColor;
 		switch (helper.getMode()) {
 			case Texture: {
 				TexturePainter.paint(gc, helper.getTexture(),
-						backgroundColor, thumbX, y1, thumbX + thumbWidth, y1
+						color, thumbX, y1, thumbX + thumbWidth, y2
 				);
 				break;
 			}
 			case Image: {
+				paintMultiplyColor(gc, thumbX, y1, thumbX + thumbWidth, y2, color);
 				gc.drawImage(helper.getImage(), thumbX, y1, thumbWidth, getHeight());
-				paintMultiplyColor(gc, thumbX, y1, thumbX + thumbWidth, y2, backgroundColor);
 				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 				break;
 			}
@@ -167,7 +167,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case LoadingImage: {
-				gc.setStroke(backgroundColor);
+				gc.setStroke(color);
 				Region.fillRectangle(gc, thumbX, y1, thumbX + thumbWidth, y2);
 				break;
 			}
@@ -182,13 +182,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		switch (helper.getMode()) {
 			case Texture: {
 				TexturePainter.paint(gc, helper.getTexture(),
-						arrowColor, arrowX, y1, arrowWidth, y1
+						arrowColor, arrowX, y1, arrowX + arrowWidth, y2
 				);
 				break;
 			}
 			case Image: {
-				gc.drawImage(helper.getImage(), arrowX, y1, arrowWidth, getHeight());
 				paintMultiplyColor(gc, arrowX, y1, arrowX + arrowWidth, y2, arrowColor);
+				gc.drawImage(helper.getImage(), arrowX, y1, arrowWidth, getHeight());
 				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 				break;
 			}
@@ -244,7 +244,6 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= thumbX && mouseOverX <= thumbX + thumbWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					thumbPress = true;
-					progressUpdateFromMouse(mouseOverX);
 					return;
 				}
 			}
@@ -253,7 +252,6 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= arrowLeftX && mouseOverX <= arrowLeftX + arrowWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					leftArrowPress = true;
-					this.progress = Math.max(0, this.progress - 0.1);
 					return;
 				}
 			}
@@ -261,7 +259,6 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= arrowRightX && mouseOverX <= arrowRightX + arrowWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					rightArrowPress = true;
-					this.progress = Math.min(1, this.progress + 0.1);
 					return;
 				}
 			}
@@ -270,8 +267,22 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 	@Override
 	public void mouseRelease() {
+		if (leftArrowPress) {
+			this.progress = Math.max(0, this.progress - 0.1);
+			if (this.progress < 0.01) {
+				this.progress = 0;
+			}
+		} else if (rightArrowPress) {
+			this.progress = Math.min(1, this.progress + 0.1);
+			if (this.progress > 0.99) {
+				this.progress = 1;
+			}
+		}
 		leftArrowPress = false;
 		rightArrowPress = false;
+		if (thumbPress) {
+			progressUpdateFromMouse(mouseOverX);
+		}
 		thumbPress = false;
 	}
 

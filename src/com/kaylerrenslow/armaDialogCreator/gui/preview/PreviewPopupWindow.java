@@ -105,10 +105,12 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 	@Override
 	protected void closing() {
 		previewCanvas.clearListeners();
+		previewCanvas.getTimer().stop();
+		showingInstance = null;
 	}
 
 	public static void showWindow() {
-		if (showingInstance == null || !showingInstance.isShowing()) {
+		if (showingInstance == null) {
 			showingInstance = new PreviewPopupWindow();
 			showingInstance.show();
 		} else {
