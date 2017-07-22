@@ -1,8 +1,7 @@
-package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
+package com.kaylerrenslow.armaDialogCreator.data;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVImage;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
-import com.kaylerrenslow.armaDialogCreator.data.ImagesTool;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +40,14 @@ public class ImageHelper {
 					f = null;
 				} else {
 					f = new File(pathValue.toString());
+				}
+
+				if (f != null) {
+					Image internalImage = Arma3ExternalImagePathConverter.getInstance().getImage(f.getPath());
+					if (internalImage != null) {
+						imageGetFunc.apply(internalImage);
+						return;
+					}
 				}
 
 				if (f != null && f.getName().endsWith(".ogv")) {

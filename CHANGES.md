@@ -1,13 +1,11 @@
 **Added:**
-* 
-
+* a way of converting Arma 3's default icons stored in pbo's into ADC's internal cached versions of them
 
 **Changed:**
-* 
+* moved ImageHelper.java into the data package because it felt more appropriate
 
 **Fixed:**
-* control style group editor wasn't saving and restoring the correct serializable values
-    * made the editor find an equal valued match
+* 
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
