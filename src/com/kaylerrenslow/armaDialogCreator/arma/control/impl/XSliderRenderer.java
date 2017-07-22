@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -66,6 +67,30 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
+		myControl.findProperty(ControlPropertyLookup.COLOR_ACTIVE).addValueListener((observer, oldValue, newValue) ->
+		{
+			if (newValue instanceof SVColor) {
+				colorActive = ((SVColor) newValue).toJavaFXColor();
+				requestRender();
+			}
+		});
+
+		myControl.findProperty(ControlPropertyLookup.ARROW_EMPTY).addValueListener((observer, oldValue, newValue) -> {
+			arrowEmpty.updateAsync(newValue);
+		});
+
+		myControl.findProperty(ControlPropertyLookup.ARROW_FULL).addValueListener((observer, oldValue, newValue) -> {
+			arrowFull.updateAsync(newValue);
+		});
+
+		myControl.findProperty(ControlPropertyLookup.BORDER).addValueListener((observer, oldValue, newValue) -> {
+			border.updateAsync(newValue);
+		});
+
+		myControl.findProperty(ControlPropertyLookup.THUMB).addValueListener((observer, oldValue, newValue) -> {
+			thumb.updateAsync(newValue);
+		});
+
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
 				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
@@ -91,28 +116,27 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		final int arrowWidth = getHeight();
 		final int arrowRightX = x2 - arrowWidth;
 
-		final int gap = x2 - arrowRightX; //how many pixels the left and right arrows are from the thumb
+		final int gap = 4; //how many pixels the left and right arrows are from the thumb
 
-		final int thumbX = arrowLeftX + gap;
-		final int thumbWidth = x2 - gap - arrowWidth;
+		final int thumbWidth = getWidth() - gap * 2 - arrowWidth * 2;
+		final int thumbX = arrowLeftX + arrowWidth + gap;
 
 		//paints the left arrow
-		paintArrow(gc, canvasContext, arrowLeftX, mouseButtonDown == null ? arrowEmpty : arrowFull);
+		paintArrow(gc, arrowLeftX, mouseButtonDown == null ? arrowEmpty : arrowFull);
 
 		//paints the background behind the thumb
-		paintThumb(gc, canvasContext, thumbX, thumbWidth, border);
+		paintThumb(gc, thumbX, thumbWidth, border);
 
 		//paints the thumb
-		paintThumb(gc, canvasContext, thumbX, (int) (thumbWidth * progress), border);
+		paintThumb(gc, thumbX, (int) (thumbWidth * progress), border);
 
 		//paints the right arrow
-		paintArrow(gc, canvasContext, arrowRightX, mouseButtonDown == null ? arrowEmpty : arrowFull);
+		paintArrow(gc, arrowRightX, mouseButtonDown == null ? arrowEmpty : arrowFull);
 
 	}
 
-	private void paintThumb(@NotNull GraphicsContext gc, CanvasContext canvasContext,
-							int thumbX, int thumbWidth, PictureOrTextureHelper helper) {
-		Color backgroundColor = focused ? colorActive : this.backgroundColor;
+	private void paintThumb(@NotNull GraphicsContext gc, int thumbX, int thumbWidth, PictureOrTextureHelper helper) {
+		Color backgroundColor = (focused && isEnabled()) ? colorActive : this.backgroundColor;
 		switch (helper.getMode()) {
 			case Texture: {
 				TexturePainter.paint(gc, helper.getTexture(),
@@ -145,7 +169,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case LoadingImage: {
-				super.paint(gc, canvasContext);
+				gc.setStroke(backgroundColor);
+				Region.fillRectangle(gc, thumbX, y1, thumbX + thumbWidth, y2);
 				break;
 			}
 			default:
@@ -153,9 +178,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintArrow(@NotNull GraphicsContext gc, CanvasContext canvasContext,
-							int arrowX, PictureOrTextureHelper helper) {
-		Color arrowColor = focused ? colorActive : backgroundColor;
+	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, PictureOrTextureHelper helper) {
+		Color arrowColor = (focused && isEnabled()) ? colorActive : backgroundColor;
 		final int arrowWidth = getHeight();
 		switch (helper.getMode()) {
 			case Texture: {
@@ -189,7 +213,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case LoadingImage: {
-				super.paint(gc, canvasContext);
+				gc.setStroke(backgroundColor);
+				Region.fillRectangle(gc, arrowX, y1, arrowX + arrowWidth, y2);
 				break;
 			}
 			default:

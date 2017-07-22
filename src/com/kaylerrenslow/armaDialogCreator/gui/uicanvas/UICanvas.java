@@ -63,11 +63,8 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	/** Set to true if {@link #requestPaint()} is not necessary and will always paint when {@link #timer} wants to */
 	protected boolean alwaysPaint = false;
 
-	private final UpdateGroupListener renderUpdateGroupListener = new UpdateGroupListener() {
-		@Override
-		public void update(@NotNull UpdateListenerGroup group, @Nullable Object data) {
-			requestPaint();
-		}
+	private final UpdateGroupListener renderUpdateGroupListener = (group, data) -> {
+		requestPaint();
 	};
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<C> display) {
@@ -132,8 +129,10 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	@SuppressWarnings("unchecked")
 	private void setDisplayListeners(boolean add) {
 		if (add) {
+			this.display.getControls().getUpdateGroup().addListener(renderUpdateGroupListener);
 			this.display.getReRenderUpdateGroup().addListener(renderUpdateGroupListener);
 		} else {
+			this.display.getControls().getUpdateGroup().removeListener(renderUpdateGroupListener);
 			this.display.getReRenderUpdateGroup().removeListener(renderUpdateGroupListener);
 		}
 	}
