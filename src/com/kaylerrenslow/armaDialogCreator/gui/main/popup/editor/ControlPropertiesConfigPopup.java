@@ -285,15 +285,17 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 		final HBox hboxRight = new HBox(10, btnAutoSize, tfSearch, btnClose);
 		hboxRight.setAlignment(Pos.CENTER_RIGHT);
-		myRootElement.getChildren().add(
-				new BorderPane(
-						null, //center
-						null, //top
-						hboxRight, //right
-						null, //bottom
-						hboxLeft //left
-				)
+
+		BorderPane borderPane = new BorderPane(
+				null, //center
+				null, //top
+				hboxRight, //right
+				null, //bottom
+				hboxLeft //left
 		);
+		//help distance the left side from right
+		BorderPane.setMargin(hboxLeft, new Insets(0, 40, 0, 0));
+		myRootElement.getChildren().add(borderPane);
 	}
 
 	@Override

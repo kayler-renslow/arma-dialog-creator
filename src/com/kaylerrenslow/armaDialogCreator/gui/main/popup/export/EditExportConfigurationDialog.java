@@ -124,9 +124,12 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 	*
 	*/
 	private void initTabExportParameters(Tab tab) {
-		VBox tabRoot = new VBox(20);
+		VBox tabRoot = new VBox(30);
 		tabRoot.setPadding(padding10t);
-		tab.setContent(tabRoot);
+		ScrollPane scrollPane = new ScrollPane(tabRoot);
+		scrollPane.setFitToWidth(true);
+		scrollPane.setFitToHeight(true);
+		tab.setContent(scrollPane);
 
 		/*set export directory*/
 		{
@@ -147,17 +150,13 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		/*set custom classes export file name*/
 		{
 			Label lbl = new Label(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.custom_classes_export_file_name"));
-			//			FileChooserPane chooserPane = new FileChooserPane(ArmaDialogCreator.getPrimaryStage(), FileChooserPane.ChooserType.DIRECTORY,
-			//					bundle.getString("Popups.EditProjectExportConfig.ExportParameters.locate_export_directory"), configuration.getExportDirectory());
-			//			Tooltip.install(chooserPane, new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.export_directory_tooltip")));
-			//			chooserPane.setChosenFile(configuration.getExportDirectory());
-			//			chooserPane.getChosenFileObserver().addListener(new ValueListener<File>() {
-			//				@Override
-			//				public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
-			//					configuration.setExportDirectory(newValue);
-			//				}
-			//			});
-			tabRoot.getChildren().add(new VBox(5, lbl, new Label("TODO TODO TODO TODO TODO")));
+			TextField tf = new TextField(configuration.getCustomClassesExportFileName());
+			tf.setTooltip(new Tooltip(bundle.getString("Popups.EditProjectExportConfig.ExportParameters.custom_classes_tooltip")));
+			tf.textProperty().addListener((observable, oldValue, newValue) -> {
+				newValue = newValue == null ? "" : newValue;
+				configuration.setCustomControlClassesExportFile(newValue);
+			});
+			tabRoot.getChildren().add(new VBox(5, lbl, tf));
 		}
 
 		/*export macros to own file*/

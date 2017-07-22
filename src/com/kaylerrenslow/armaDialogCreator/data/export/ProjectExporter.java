@@ -21,6 +21,8 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  A {@link Project} exporter for converting. Converts the {@link Project} into header file code (.h, .hh, etc)
@@ -240,7 +242,33 @@ public class ProjectExporter {
 			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
 		}
 
+		//create a header guard
+		String headerGuard = "HG_" + conf.getCustomClassesExportFileName();
+		Pattern p = Pattern.compile("(\\s+)|([^a-zA-Z_]+)");
+		Matcher matcher = p.matcher(headerGuard);
+		StringBuffer sb = new StringBuffer();
+		while (matcher.find()) {
+			String g = matcher.group(1);
+			if (g != null) {
+				matcher.appendReplacement(sb, "_");
+				continue;
+			}
+			g = matcher.group(2);
+			if (g == null) {
+				throw new IllegalStateException("nothing was matched");
+			}
+			matcher.appendReplacement(sb, "");
+		}
+		matcher.appendTail(sb);
+		headerGuard = sb.toString();
+		writeln(stringBuilder, "#ifndef " + headerGuard);
+		writeln(stringBuilder, "#define " + headerGuard + " 1");
+		writelnComment(stringBuilder, "Create a header guard to prevent duplicate include.");
+		writeln(stringBuilder, "");
+
 		exportCustomControlClasses(stringBuilder, conf.getProject().getWorkspaceCustomControlClassRegistry());
+
+		writeln(stringBuilder, "#endif");
 
 		//write remainder of text
 		stream.write(stringBuilder.toString().getBytes());

@@ -363,6 +363,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	 */
 	private static class CanvasMouseEvent implements EventHandler<MouseEvent> {
 		private final UICanvas canvas;
+		private boolean mouseDown = false;
 
 		CanvasMouseEvent(UICanvas canvas) {
 			this.canvas = canvas;
@@ -383,14 +384,20 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 			if (event.getEventType() == MouseEvent.MOUSE_MOVED || event.getEventType() == MouseEvent.MOUSE_DRAGGED) {
 				canvas.mouseMoved(mousex, mousey);
 				canvas.setLastMousePosition(mousex, mousey);
+				if (mouseDown) {
+					this.canvas.requestPaint();
+				}
 			} else {
 				if (event.getEventType() == MouseEvent.MOUSE_PRESSED) {
+					mouseDown = true;
 					canvas.mousePressed(mousex, mousey, btn);
 				} else if (event.getEventType() == MouseEvent.MOUSE_RELEASED) {
 					canvas.mouseReleased(mousex, mousey, btn);
+					mouseDown = false;
+					canvas.requestPaint();
 				}
 			}
-			this.canvas.requestPaint();
+
 		}
 
 	}

@@ -1,23 +1,16 @@
 **Added:**
-* ability to edit Custom Control Class's save scope (project or workspace)
-* a scope category for choosing Custom Control Class in chooser popup
+* header guard to workspace custom control clases file
 
 **Changed:**
-* 
+* finished implementation for editing custom class export file name
+* made UICanvas not repaint upon every mouse movement (now requires mouse to be pressed)
 
 **Fixed:**
 * 
 
 **Notes:**
-
-WE NEED TO FINISH WORKSPACE CUSTOM CONTROL CLASSES
-
 * May 31: we should have default value providers in one xml file for every control.
     * this will make xml files shorter (load faster for default value provider), and modularize things a lil
-* June 11: exporter doesn't write any of the custom control classes
-    * should we have an additional export place for that? Like export all of them to a different file.
-      We'll need to consider macro merges if we separate into many files since custom class can have macros.
-    * what if we made all custom control classes be shared across the workspace?
 * June 23:
     - Header: we need tests for +=
 * BUG: select many things in tree view and drag into folder
