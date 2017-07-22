@@ -17,8 +17,6 @@ import java.util.Arrays;
 public class SVControlStyleGroup extends SerializableValue {
 	private final ControlStyle[] styles;
 
-	public static final String DEFAULT_DELIMITER = "+";
-
 	public static final ValueConverter<SVControlStyleGroup> CONVERTER = new ValueConverter<SVControlStyleGroup>() {
 		@Override
 		public SVControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
@@ -35,10 +33,10 @@ public class SVControlStyleGroup extends SerializableValue {
 					continue;
 				}
 				try {
-					styles.add(ControlStyle.findById(num));
+					styles.add(ControlStyle.findByValue(num));
 				} catch (IllegalArgumentException e) { //will catch number format exception
 					try {
-						styles.add(ControlStyle.findByValue(num));
+						styles.add(ControlStyle.findById(num));
 					} catch (IllegalArgumentException ignore) {
 
 					}
@@ -80,10 +78,11 @@ public class SVControlStyleGroup extends SerializableValue {
 	public static String toString(@NotNull ControlStyle[] values) {
 		StringBuilder s = new StringBuilder();
 		for (int i = 0; i < values.length; i++) {
-			s.append(values[i].styleValue).append(i != values.length - 1 ? DEFAULT_DELIMITER : "");
+			s.append(values[i].styleValue).append(i != values.length - 1 ? "+" : "");
 		}
 		return s.toString();
 	}
+
 
 	@Override
 	public String toString() {

@@ -16,6 +16,7 @@ import javafx.scene.layout.Priority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,22 +38,18 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 		for (ControlStyle style : menuButton.getItems()) {
 			menuButton.bindTooltip(style, style.documentation);
 		}
-		menuButton.getSelectedItems().addListener(new ListChangeListener<ControlStyle>() {
+		menuButton.getSelectedItemsReadOnly().addListener(new ListChangeListener<ControlStyle>() {
 			@Override
 			public void onChanged(Change<? extends ControlStyle> c) {
-				StringBuilder s = new StringBuilder();
-				List<ControlStyle> selected = menuButton.getSelectedItems();
+				List<ControlStyle> selected = menuButton.getSelectedItemsReadOnly();
 				if (selected.size() == 0) {
 					valueObserver.updateValue(null);
 					textField.setText("");
 					return;
 				}
-				for (int i = 0; i < selected.size(); i++) {
-					s.append(selected.get(i).styleValue).append(i != selected.size() - 1 ? SVControlStyleGroup.DEFAULT_DELIMITER : "");
-				}
-				textField.setText(s.toString());
-				SVControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? null :
-						new SVControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
+				SVControlStyleGroup group = menuButton.getSelectedItemsReadOnly().size() == 0 ? null :
+						new SVControlStyleGroup(menuButton.getSelectedItemsReadOnly().toArray(new ControlStyle[menuButton.getSelectedItemsReadOnly().size()]));
+				textField.setText(group == null ? "" : group.toString());
 				valueObserver.updateValue(group);
 			}
 		});
@@ -78,7 +75,28 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 			menuButton.clearSelection();
 			textField.setText("");
 		} else {
-			menuButton.setSelected(val.getStyleArray());
+			ControlStyle[] styles = val.getStyleArray();
+
+			ArrayList<ControlStyle> selectMe = new ArrayList<>();
+
+			for (ControlStyle style : styles) {
+				if (menuButton.getItems().contains(style)) {
+					selectMe.add(style);
+				} else {
+					//The menuButton may have some styles removed because the user may not actually need all the styles.
+
+					//Since the style isn't in the button, we will attempt to find one that is in the button and has an
+					//equal value.
+
+					for (ControlStyle buttonStyle : menuButton.getItems()) {
+						if (buttonStyle.styleValue == style.styleValue) {
+							selectMe.add(buttonStyle);
+							break;
+						}
+					}
+				}
+			}
+			menuButton.setSelected(selectMe);
 		}
 	}
 

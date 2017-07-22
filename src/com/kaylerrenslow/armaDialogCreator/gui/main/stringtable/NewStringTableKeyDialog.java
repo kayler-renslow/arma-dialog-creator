@@ -38,7 +38,7 @@ class NewStringTableKeyDialog extends NameTextFieldDialog {
 
 		CheckMenuButton<Language> menuButtonLangs = new CheckMenuButton<>(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_popup_lang_button_text"), null, KnownLanguage.values());
 		menuButtonLangs.setAlignment(Pos.CENTER_LEFT);
-		menuButtonLangs.getSelectedItems().addListener(new ListChangeListener<Language>() {
+		menuButtonLangs.getSelectedItemsReadOnly().addListener(new ListChangeListener<Language>() {
 			@Override
 			public void onChanged(Change<? extends Language> c) {
 				while (c.next()) {

@@ -134,6 +134,26 @@ public class CheckMenuButton<E> extends StackPane {
 		}
 	}
 
+	/** Clears the selection and sets what items are selected. */
+	public void setSelected(List<E> items) {
+		for (MenuItem menuItem : menuButton.getItems()) {
+			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
+			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
+			boolean found = false;
+			for (E item : items) {
+				if (customMenuItem.getUserData() == item) {
+					checkBox.setSelected(true);
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				checkBox.setSelected(false);
+			}
+
+		}
+	}
+
 	/** Clears the selection */
 	public void clearSelection() {
 		for (MenuItem menuItem : menuButton.getItems()) {
@@ -144,7 +164,7 @@ public class CheckMenuButton<E> extends StackPane {
 	}
 
 	/** Get all selected items (read-only list) */
-	public ObservableList<E> getSelectedItems() {
+	public ObservableList<E> getSelectedItemsReadOnly() {
 		return selectedReadOnly;
 	}
 }

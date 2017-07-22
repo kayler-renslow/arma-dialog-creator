@@ -6,7 +6,8 @@
 * 
 
 **Fixed:**
-* 
+* control style group editor wasn't saving and restoring the correct serializable values
+    * made the editor find an equal valued match
 
 **Notes:**
 * May 31: we should have default value providers in one xml file for every control.
