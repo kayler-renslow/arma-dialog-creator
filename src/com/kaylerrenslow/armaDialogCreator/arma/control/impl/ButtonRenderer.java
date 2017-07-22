@@ -195,14 +195,14 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	@Override
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
 		boolean preview = paintPreview(canvasContext);
-		if (preview) {
-			blinkControlHandler.paint(gc);
-		}
 
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
 
 		if (isEnabled()) {
+			if (preview) {
+				blinkControlHandler.paint(gc);
+			}
 			//won't draw shadow if not enabled
 			Paint old = gc.getStroke();
 			gc.setStroke(colorShadow);

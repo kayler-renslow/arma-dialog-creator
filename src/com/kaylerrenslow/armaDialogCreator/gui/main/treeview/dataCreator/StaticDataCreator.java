@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntr
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 06/19/2016.
@@ -21,6 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class StaticDataCreator implements TreeItemDataCreator<ArmaControl, TreeItemEntry> {
 	public static final StaticDataCreator INSTANCE = new StaticDataCreator();
 
+	@Nullable
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
 		NewControlDialog dialog = new NewControlDialog(ControlType.Static, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));

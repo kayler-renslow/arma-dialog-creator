@@ -57,7 +57,7 @@ public enum ControlPropertyEventLookup {
 	EventOnCheckedChanged(ControlPropertyLookup.EVENT_ON_CHECKED_CHANGED, -1, "Checkbox"),
 	EventOnCheckBoxesSelChanged(ControlPropertyLookup.EVENT_ON_CHECK_BOXES_SEL_CHANGED, 2, "Checkbox"),
 	EventOnHtmlLink(ControlPropertyLookup.EVENT_ON_HTML_LINK, 2, "Checkbox"),
-	EventOnSliderPosChanged(ControlPropertyLookup.EVENT_ON_SLIDER_POS_CHANGED, 2, "HTML"),
+	EventOnSliderPosChanged(ControlPropertyLookup.EVENT_ON_SLIDER_POS_CHANGED, 2, "HTML, Slider"),
 	EventOnObjectMoved(ControlPropertyLookup.EVENT_ON_OBJECT_MOVED, 2, "Slider"),
 	EventOnMenuSelected(ControlPropertyLookup.EVENT_ON_MENU_SELECTED, 2, "Object"),
 	EventOnDraw(ControlPropertyLookup.EVENT_ON_DRAW, -1, "Context menu"),
@@ -109,5 +109,10 @@ public enum ControlPropertyEventLookup {
 			}
 		}
 		return lookups.toArray(new ControlPropertyLookup[lookups.size()]);
+	}
+
+	@NotNull
+	public static ControlPropertyLookup[] allWithSliderScope() {
+		return allWith("slider");
 	}
 }

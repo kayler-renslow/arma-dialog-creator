@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlTreeItemEntr
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 11/21/2016.
@@ -21,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 public class ButtonDataCreator implements TreeItemDataCreator<ArmaControl, TreeItemEntry> {
 	public static final ButtonDataCreator INSTANCE = new ButtonDataCreator();
 
-	@NotNull
+	@Nullable
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
 		NewControlDialog dialog = new NewControlDialog(ControlType.Button, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));

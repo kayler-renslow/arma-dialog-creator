@@ -1,9 +1,9 @@
 **Added:**
-* header guard to workspace custom control clases file
+* XSlider control, renderer, and data creator
+
 
 **Changed:**
-* finished implementation for editing custom class export file name
-* made UICanvas not repaint upon every mouse movement (now requires mouse to be pressed)
+* 
 
 **Fixed:**
 * 

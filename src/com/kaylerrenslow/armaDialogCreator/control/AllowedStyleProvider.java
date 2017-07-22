@@ -8,6 +8,6 @@ import org.jetbrains.annotations.NotNull;
 public interface AllowedStyleProvider {
 	@NotNull
 	default ControlStyle[] getAllowedStyles() {
-		return ControlStyle.EMPTY;
+		return new ControlStyle[0];
 	}
 }

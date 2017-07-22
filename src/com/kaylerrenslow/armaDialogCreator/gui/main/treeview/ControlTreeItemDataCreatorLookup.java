@@ -30,7 +30,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	ITEMSLOT(ControlType.ItemSlot, StaticDataCreator.INSTANCE),
 
 	SLIDER(ControlType.Slider, StaticDataCreator.INSTANCE),
-	XSLIDER(ControlType.XSlider, StaticDataCreator.INSTANCE),
+	XSLIDER(ControlType.XSlider, XSliderDataCreator.INSTANCE),
 
 	COMBO(ControlType.Combo, StaticDataCreator.INSTANCE),
 	XCOMBO(ControlType.XCombo, StaticDataCreator.INSTANCE),

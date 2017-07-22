@@ -51,7 +51,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 					s.append(selected.get(i).styleValue).append(i != selected.size() - 1 ? SVControlStyleGroup.DEFAULT_DELIMITER : "");
 				}
 				textField.setText(s.toString());
-				SVControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? new SVControlStyleGroup(ControlStyle.EMPTY) :
+				SVControlStyleGroup group = menuButton.getSelectedItems().size() == 0 ? null :
 						new SVControlStyleGroup(menuButton.getSelectedItems().toArray(new ControlStyle[menuButton.getSelectedItems().size()]));
 				valueObserver.updateValue(group);
 			}

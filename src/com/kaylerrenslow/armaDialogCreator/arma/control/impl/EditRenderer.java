@@ -91,9 +91,6 @@ public class EditRenderer extends ArmaControlRenderer {
 
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
 		boolean preview = paintPreview(canvasContext);
-		if (preview) {
-			blinkControlHandler.paint(gc);
-		}
 
 		if (!isEnabled()) {
 			Color oldTextColor = textRenderer.getTextColor();
@@ -102,6 +99,9 @@ public class EditRenderer extends ArmaControlRenderer {
 			textRenderer.paint(gc);
 			textRenderer.setTextColor(oldTextColor);
 		} else {
+			if (preview) {
+				blinkControlHandler.paint(gc);
+			}
 			super.paint(gc, canvasContext);
 			textRenderer.paint(gc);
 		}
@@ -120,6 +120,6 @@ public class EditRenderer extends ArmaControlRenderer {
 
 	@Override
 	public boolean canHaveFocus() {
-		return false;
+		return true;
 	}
 }

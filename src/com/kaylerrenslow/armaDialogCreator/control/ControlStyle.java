@@ -44,13 +44,13 @@ public enum ControlStyle {
 
 	// Slider styles
 	//SL_DIR(27, 0x400, getString("ControlStyle.sl_dir"), getString("ControlStyle.Doc.sl_dir")),
-	SL_VERT(28, 0, getString("ControlStyle.sl_vert"), getString("ControlStyle.Doc.sl_vert")),
+	//SL_VERT(28, 0, getString("ControlStyle.sl_vert"), getString("ControlStyle.Doc.sl_vert")),
 	SL_HORZ(29, 1024, getString("ControlStyle.sl_horz"), getString("ControlStyle.Doc.sl_horz")),
-	SL_TEXTURES(30, 0x10, getString("ControlStyle.sl_textures"), getString("ControlStyle.Doc.sl_textures")),
+	//SL_TEXTURES(30, 0x10, getString("ControlStyle.sl_textures"), getString("ControlStyle.Doc.sl_textures")),
 
 	// progress bar
-	VERTICAL(31, 0x01, getString("ControlStyle.vertical"), getString("ControlStyle.Doc.vertical")),
-	HORIZONTAL(32, 0, getString("ControlStyle.horizontal"), getString("ControlStyle.Doc.horizontal")),
+	VERTICAL(31, 0, getString("ControlStyle.vertical"), getString("ControlStyle.Doc.vertical")),
+	HORIZONTAL(32, 1024, getString("ControlStyle.horizontal"), getString("ControlStyle.Doc.horizontal")),
 
 	// Listbox styles
 	LB_TEXTURES(33, 0x10, getString("ControlStyle.lb_textures"), getString("ControlStyle.Doc.lb_textures")),
@@ -66,13 +66,10 @@ public enum ControlStyle {
 	//MB_BUTTON_USER(39, 4, getString("ControlStyle.mb_button_user"), getString("ControlStyle.Doc.mb_button_user"))
 	;
 
-	public static final ControlStyle[] EMPTY = new ControlStyle[0];
 	public final int styleValue;
 	public final int styleId;
 	public final String displayName;
 	public final String documentation;
-
-	private SVControlStyleGroup styleGroup;
 
 	ControlStyle(int styleId, int styleValue, String displayName, String documentation) {
 		if (StyleIdVerifier.usedIds.contains(styleId)) {
@@ -88,10 +85,7 @@ public enum ControlStyle {
 
 	/** A SVControlStyleGroup instance with only this instance's ControlStyle inside */
 	public SVControlStyleGroup getStyleGroup() {
-		if (styleGroup == null) {
-			styleGroup = new SVControlStyleGroup(new ControlStyle[]{this});
-		}
-		return styleGroup;
+		return new SVControlStyleGroup(new ControlStyle[]{this});
 	}
 
 	/**
@@ -101,6 +95,7 @@ public enum ControlStyle {
 	 @throws IllegalArgumentException when id couldn't be matched
 	 @see #findByValue(int)
 	 */
+	@NotNull
 	public static ControlStyle findById(int id) {
 		for (ControlStyle style : values()) {
 			if (style.styleId == id) {

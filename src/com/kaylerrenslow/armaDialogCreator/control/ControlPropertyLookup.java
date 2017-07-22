@@ -122,6 +122,11 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 			new ControlPropertyOption("General", "\"general\"", "Word auto complete.")
 	),
 	HTML_CONTROL(81, "htmlControl", PropertyType.Boolean),
+	COLOR_ACTIVE(82, "colorActive", PropertyType.Color),
+	ARROW_EMPTY(83, "arrowEmpty", PropertyType.Texture),
+	ARROW_FULL(84, "arrowFull", PropertyType.Texture),
+	BORDER(85, "border", PropertyType.Texture),
+	THUMB(86, "thumb", PropertyType.Texture),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

@@ -28,7 +28,7 @@ import java.util.ArrayList;
  <li>Text horizontal alignment (left, center, right)</li>
  <li>Font size</li>
  <li>Text shadow</li>
- <li>Multiple cachedBrokenLines</li>
+ <li>Multiple lines</li>
  </ul>
 
  @author Kayler

@@ -14,6 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlGroupTreeIte
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 07/04/2016.
@@ -26,7 +27,7 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<ArmaControl,
 		return ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment();
 	}
 
-	@NotNull
+	@Nullable
 	@Override
 	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
 		NewControlDialog dialog = new NewControlDialog(ControlType.ControlsGroup, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));

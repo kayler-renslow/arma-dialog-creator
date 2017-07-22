@@ -17,6 +17,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -575,5 +576,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 */
 	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
 		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), color, getBackgroundColor());
+	}
+
+	/**
+	 Paints a filled rectangle at the given positions where the blend mode is {@link BlendMode#MULTIPLY}
+	 */
+	protected void paintMultiplyColor(@NotNull GraphicsContext gc,
+									  int x1, int y1, int x2, int y2,
+									  @NotNull Color color) {
+		//multiply the color on the image
+		gc.setStroke(color);
+		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+		Region.fillRectangle(gc, x1, y1, x2, y2);
 	}
 }

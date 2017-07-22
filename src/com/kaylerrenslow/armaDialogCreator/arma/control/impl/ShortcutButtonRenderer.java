@@ -265,9 +265,6 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	@Override
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
 		boolean preview = paintPreview(canvasContext);
-		if (preview) {
-			blinkControlHandler.paint(gc);
-		}
 
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
@@ -277,6 +274,10 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		int textPosY = y1 + (int) (Math.round(controlHeight * textPos_top));
 
 		if (preview) {
+			if (isEnabled()) {
+				blinkControlHandler.paint(gc);
+			}
+
 			double ratio = focusedColorAlternator.updateAndGetRatio();
 			Color colorBackground = this.backgroundColor;
 			Color color = textRenderer.getTextColor();

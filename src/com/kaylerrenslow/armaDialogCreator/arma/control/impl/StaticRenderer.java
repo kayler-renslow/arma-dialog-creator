@@ -15,7 +15,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -230,7 +229,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 							imageDrawY1 = y1;
 							imageDrawX2 = centerX + drawWidth;
 							imageDrawY2 = y1 + drawHeight;
-							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
+							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2, getTextColor());
 
 							gc.drawImage(imageToPaint, imageDrawX1, imageDrawY1, drawWidth, drawHeight);
 						} else {
@@ -239,7 +238,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 							imageDrawX2 = x2;
 							imageDrawY2 = y2;
 
-							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
+							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2, getTextColor());
 
 							if (tileImage) {
 								int tileW = Math.max(1, this.tileW);
@@ -298,13 +297,6 @@ public class StaticRenderer extends ArmaControlRenderer {
 				canvasContext.paintLast(tooltipRenderFunc);
 			}
 		}
-	}
-
-	private void paintMultiplyColor(@NotNull GraphicsContext gc, int imageDrawX1, int imageDrawY1, int imageDrawX2, int imageDrawY2) {
-		//multiply the text color on the image
-		gc.setStroke(getTextColor());
-		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-		Region.fillRectangle(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2);
 	}
 
 

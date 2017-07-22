@@ -30,7 +30,7 @@ public enum ControlType {
 	ItemSlot(103, getString("ControlType.itemslot"), ControlTypeGroup.MISC),
 	
 	Slider(3, getString("ControlType.slider"), ControlTypeGroup.SLIDER, "control_slider.png", true),
-	XSlider(43, getString("ControlType.xslider"), ControlTypeGroup.SLIDER),
+	XSlider(43, getString("ControlType.xslider"), ControlTypeGroup.SLIDER, "control_slider.png"),
 	
 	Combo(4, getString("ControlType.combo"), ControlTypeGroup.COMBO, "control_combobox.png"),
 	XCombo(44, getString("ControlType.xcombo"), ControlTypeGroup.COMBO),
@@ -60,7 +60,10 @@ public enum ControlType {
 	//@formatter:on
 
 	/** all control types that are supported for the application */
-	public static final ControlType[] AVAILABLE_TYPES = {Static, ControlsGroup, Button, ShortcutButton, Edit};
+	public static final ControlType[] AVAILABLE_TYPES = {
+			Static, ControlsGroup, Button, ShortcutButton, Edit,
+			XSlider
+	};
 
 	private final int typeId;
 	private final String displayName;

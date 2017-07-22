@@ -31,7 +31,7 @@ public enum ArmaControlLookup {
 	ItemSlot(ControlType.ItemSlot, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 
 	Slider(ControlType.Slider, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
-	XSlider(ControlType.XSlider, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
+	XSlider(ControlType.XSlider, XSliderControl.SPEC_PROVIDER, XSliderRenderer.class),
 
 	Combo(ControlType.Combo, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 	XCombo(ControlType.XCombo, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
