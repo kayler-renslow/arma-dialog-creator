@@ -167,6 +167,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	}
 
+	protected void positionUpdate() {
+
+	}
+
 	/**
 	 Since the control's update group will update before the renderer's control property value listeners get notified,
 	 the re-render must occur AFTER the renderer's internal values change. Invoke
@@ -222,6 +226,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		int dx = newX1 - oldX1;
 		setX1Silent(newX1);
 		setX2Silent(x2 + dx);//keep old width
+		positionUpdate();
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
@@ -234,6 +239,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		int dy = newY1 - oldY1;
 		setY1Silent(newY1);
 		setY2Silent(y2 + dy); //keep old height
+		positionUpdate();
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
@@ -243,6 +249,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		}
 		int w = calcScreenWidth(width.getNumVal());
 		setX2Silent(getX1() + w);
+		positionUpdate();
 	}
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
@@ -252,6 +259,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		}
 		int h = calcScreenHeight(height.getNumVal());
 		setY2Silent(getY1() + h);
+		positionUpdate();
 	}
 
 	@Override

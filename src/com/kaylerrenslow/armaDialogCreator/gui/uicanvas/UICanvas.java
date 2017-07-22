@@ -240,11 +240,13 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	/** Sets canvas background image and automatically repaints */
 	public void setCanvasBackgroundImage(@Nullable ImagePattern background) {
 		this.backgroundImage = background;
+		requestPaint();
 	}
 
 	/** Sets canvas background color and repaints the canvas */
 	public void setCanvasBackgroundColor(@NotNull Color color) {
 		this.backgroundColor = color;
+		requestPaint();
 	}
 
 	/** @return the background image, or null if not set */
