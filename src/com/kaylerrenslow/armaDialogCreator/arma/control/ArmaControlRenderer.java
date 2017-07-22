@@ -329,6 +329,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	/** Set the x and y values (and width and height) based upon the renderer's position */
 	protected final void recalcPosition() {
+		positionUpdate();
 		if (disableRecalc) {
 			return;
 		}
@@ -371,63 +372,54 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	public void translate(int dx, int dy) {
 		super.translate(dx, dy);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void scale(int dxl, int dxr, int dyt, int dyb) {
 		super.scale(dxl, dxr, dyt, dyb);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setPosition(@NotNull Region r) {
 		super.setPosition(r);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setPosition(int x1, int y1, int x2, int y2) {
 		super.setPosition(x1, y1, x2, y2);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setPositionWH(int x1, int y1, int width, int height) {
 		super.setPositionWH(x1, y1, width, height);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setX1(int x1) {
 		super.setX1(x1);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setY1(int y1) {
 		super.setY1(y1);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setX2(int x2) {
 		super.setX2(x2);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	@Override
 	public void setY2(int y2) {
 		super.setY2(y2);
 		recalcPosition();
-		positionUpdate();
 	}
 
 	/** Set x1 without recalculating position */

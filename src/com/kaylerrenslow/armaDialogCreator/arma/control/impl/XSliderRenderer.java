@@ -126,7 +126,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		paintThumb(gc, thumbX, thumbWidth, border);
 
 		//paints the thumb
-		paintThumb(gc, thumbX, (int) (thumbWidth * progress), border);
+		paintThumb(gc, thumbX, (int) (thumbWidth * progress), thumb);
 
 		//paints the right arrow
 		paintArrow(gc, arrowRightX, rightArrowPress ? arrowFull : arrowEmpty);
@@ -244,6 +244,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= thumbX && mouseOverX <= thumbX + thumbWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					thumbPress = true;
+					progressUpdateFromMouse(mouseOverX);
 					return;
 				}
 			}
@@ -252,6 +253,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= arrowLeftX && mouseOverX <= arrowLeftX + arrowWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					leftArrowPress = true;
+					this.progress = Math.max(0, this.progress - 0.1);
 					return;
 				}
 			}
@@ -259,6 +261,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			if (mouseOverX >= arrowRightX && mouseOverX <= arrowRightX + arrowWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					rightArrowPress = true;
+					this.progress = Math.min(1, this.progress + 0.1);
 					return;
 				}
 			}
@@ -277,17 +280,21 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		super.setMouseOver(mousex, mousey, mouseOver);
 
 		if (thumbPress) {
-			//if the thumb is pressed, manipulate the progress
-			int thumbX2 = (thumbX + thumbWidth);
-			if (mousex <= thumbX) {
-				this.progress = 0;
-			} else if (mousex >= thumbX2) {
-				this.progress = 1;
-			} else {
-				this.progress = 1 - Math.abs((thumbX2 - mousex)) * 1.0 / thumbWidth;
-			}
+			progressUpdateFromMouse(mousex);
 		}
 
+	}
+
+	private void progressUpdateFromMouse(int mousex) {
+		//if the thumb is pressed, manipulate the progress
+		int thumbX2 = (thumbX + thumbWidth);
+		if (mousex <= thumbX) {
+			this.progress = 0;
+		} else if (mousex >= thumbX2) {
+			this.progress = 1;
+		} else {
+			this.progress = 1 - Math.abs((thumbX2 - mousex)) * 1.0 / thumbWidth;
+		}
 	}
 
 	@Override
