@@ -1,8 +1,8 @@
 **Added:**
-* a way of converting Arma 3's default icons stored in pbo's into ADC's internal cached versions of them
+* more arma 3 gui icons
 
 **Changed:**
-* moved ImageHelper.java into the data package because it felt more appropriate
+* 
 
 **Fixed:**
 * 
