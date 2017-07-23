@@ -17,6 +17,10 @@ import java.util.Arrays;
 public class ShortcutButtonControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
+	public static final String NestedClassName_HitZone = "HitZone";
+	public static final String NestedClassName_ShortcutPos = "ShortcutPos";
+	public static final String NestedClassName_TextPos = "TextPos";
+
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.ShortcutButton, resolution, env, registry);
 		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.NONE.getStyleGroup());
@@ -30,21 +34,21 @@ public class ShortcutButtonControl extends ArmaControl {
 			return new ReadOnlyList<>(
 					Arrays.asList(
 							new ControlClassSpecification(
-									"HitZone", Arrays.asList(
+									NestedClassName_HitZone, Arrays.asList(
 									new ControlPropertySpecification(ControlPropertyLookup.TOP),
 									new ControlPropertySpecification(ControlPropertyLookup.RIGHT),
 									new ControlPropertySpecification(ControlPropertyLookup.BOTTOM),
 									new ControlPropertySpecification(ControlPropertyLookup.LEFT)
 							), ControlPropertySpecification.EMPTY),
 							new ControlClassSpecification(
-									"ShortcutPos", Arrays.asList(
+									NestedClassName_ShortcutPos, Arrays.asList(
 									new ControlPropertySpecification(ControlPropertyLookup.TOP),
 									new ControlPropertySpecification(ControlPropertyLookup.LEFT),
 									new ControlPropertySpecification(ControlPropertyLookup.W),
 									new ControlPropertySpecification(ControlPropertyLookup.H)
 							), ControlPropertySpecification.EMPTY),
 							new ControlClassSpecification(
-									"TextPos", Arrays.asList(
+									NestedClassName_TextPos, Arrays.asList(
 									new ControlPropertySpecification(ControlPropertyLookup.TOP),
 									new ControlPropertySpecification(ControlPropertyLookup.RIGHT),
 									new ControlPropertySpecification(ControlPropertyLookup.BOTTOM),

@@ -19,7 +19,7 @@ public class Arma3ExternalImagePathConverter {
 		return instance;
 	}
 
-	private final HashMap<PBOPath, String> extToInternalMap = new HashMap<>();
+	private final HashMap<String, String> extToInternalMap = new HashMap<>();
 	private final HashMap<String, Image> cache = new HashMap<>();
 
 	private Arma3ExternalImagePathConverter() {
@@ -52,7 +52,7 @@ public class Arma3ExternalImagePathConverter {
 			stream.close();
 		} catch (IOException ignore) {
 		}
-		String put = extToInternalMap.put(new PBOPath(externalPath), internalPath);
+		String put = extToInternalMap.put(extPathCaseConvert(externalPath), internalPath);
 		if (put != null) {
 			throw new IllegalArgumentException("externalPath '" + externalPath + "' is already used");
 		}
@@ -71,7 +71,7 @@ public class Arma3ExternalImagePathConverter {
 	 */
 	@Nullable
 	public Image getImage(@NotNull String path) {
-		String internalPath = extToInternalMap.get(new PBOPath(path));
+		String internalPath = extToInternalMap.get(extPathCaseConvert(path));
 		if (internalPath == null) {
 			return null;
 		}
@@ -80,35 +80,18 @@ public class Arma3ExternalImagePathConverter {
 		});
 	}
 
-	private static class PBOPath {
-		private final String p;
-
-		public PBOPath(@NotNull String p) {
-			int lastBackslashInd = p.lastIndexOf('\\');
-			if (lastBackslashInd < 0) {
-				this.p = "";
-				return;
-			}
-			if (lastBackslashInd == 0) {
-				this.p = p;
-				return;
-			}
-
-			//allow the text left of the last \ to be non case-sensitive, however, any text afterwards is case sensitive for .equals()
-			String left = p.substring(0, lastBackslashInd);
-			this.p = left.toLowerCase() + p.substring(lastBackslashInd);
+	private String extPathCaseConvert(String p) {
+		int lastBackslashInd = p.lastIndexOf('\\');
+		if (lastBackslashInd < 0) {
+			return "";
+		}
+		if (lastBackslashInd == 0) {
+			return p;
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (o == this) {
-				return true;
-			}
-			if (o instanceof PBOPath) {
-				PBOPath other = (PBOPath) o;
-				return this.p.equals(other.p);
-			}
-			return false;
-		}
+		//allow the text left of the last \ to be non case-sensitive, however, any text afterwards is case sensitive for .equals()
+		String left = p.substring(0, lastBackslashInd);
+		return left.toLowerCase() + p.substring(lastBackslashInd);
 	}
+
 }

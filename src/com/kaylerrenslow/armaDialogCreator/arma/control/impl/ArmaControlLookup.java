@@ -33,7 +33,7 @@ public enum ArmaControlLookup {
 	Slider(ControlType.Slider, ArmaControlSpecRequirement.TRIVIAL, StaticRenderer.class),
 	XSlider(ControlType.XSlider, XSliderControl.SPEC_PROVIDER, XSliderRenderer.class),
 
-	Combo(ControlType.Combo, ComboControl.SPEC_PROVIDER, StaticRenderer.class),
+	Combo(ControlType.Combo, ComboControl.SPEC_PROVIDER, ComboRenderer.class),
 	XCombo(ControlType.XCombo, ArmaControlSpecRequirement.TRIVIAL, StaticRenderer.class),
 
 	ListBox(ControlType.ListBox, ArmaControlSpecRequirement.TRIVIAL, StaticRenderer.class),

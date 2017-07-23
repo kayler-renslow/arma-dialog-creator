@@ -34,13 +34,13 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	private final PictureOrTextureHelper animTextureNormal = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper animTextureDisabled = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper animTextureOver = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper animTexturePressed = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper animTextureFocused = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper animTextureDefault = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper textureNoShortcut = new PictureOrTextureHelper(this);
+	private final ImageOrTextureHelper animTextureNormal = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper animTextureDisabled = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper animTextureOver = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper animTexturePressed = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper animTextureFocused = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper animTextureDefault = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper textureNoShortcut = new ImageOrTextureHelper(this);
 
 	/** secondary text color (text color alternates between "color" and "color2") */
 	private Color color2 = Color.BLACK;
@@ -169,7 +169,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		);
 
 		//nested classes
-		ControlClass hitZone = myControl.findNestedClass("HitZone");
+		ControlClass hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
 		{
 			hitZone.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -197,7 +197,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			});
 		}
 
-		ControlClass textPos = myControl.findNestedClass("TextPos");
+		ControlClass textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
 		{
 			textPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -225,7 +225,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 			});
 		}
 
-		ControlClass shortcutPos = myControl.findNestedClass("ShortcutPos");
+		ControlClass shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
 		{
 			shortcutPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -256,7 +256,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		requestRender();
 	}
 
-	private void attachPicOrTexPropertyListener(ControlPropertyLookupConstant lookup, PictureOrTextureHelper helper) {
+	private void attachPicOrTexPropertyListener(ControlPropertyLookupConstant lookup, ImageOrTextureHelper helper) {
 		myControl.findProperty(lookup).addValueListener((observer, oldValue, newValue) -> {
 			helper.updateAsync(newValue);
 		});
@@ -268,7 +268,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
-		PictureOrTextureHelper bgTexture = animTextureNormal;
+		ImageOrTextureHelper bgTexture = animTextureNormal;
 
 		int textPosX = x1 + (int) (Math.round(controlWidth * textPos_left));
 		int textPosY = y1 + (int) (Math.round(controlHeight * textPos_top));
@@ -328,7 +328,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case ImageError: {
-					paintImageError(gc);
+					paintImageError(gc, x1, y1, controlWidth, controlHeight);
 					break;
 				}
 				case LoadingImage: {
@@ -340,7 +340,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 					break;
 				}
 				case TextureError: {
-					paintTextureError(gc);
+					paintTextureError(gc, x1, y1, controlWidth, controlHeight);
 					break;
 				}
 			}
@@ -382,13 +382,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case ImageError: {
-				gc.save();
-				gc.beginPath();
-				gc.rect(x1, y1, 30, 30);
-				gc.closePath();
-				gc.clip();
-				paintImageError(gc);
-				gc.restore();
+				paintImageError(gc, x1, y1, 30, 30);
 				break;
 			}
 			case LoadingImage: {
@@ -399,11 +393,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case TextureError: {
-				gc.save();
-				gc.rect(x1, y1, x2 - x1, y2 - y1);
-				gc.clip();
-				paintTextureError(gc);
-				gc.restore();
+				paintTextureError(gc, x1, y1, x2 - x1, y2 - y1);
 				break;
 			}
 		}

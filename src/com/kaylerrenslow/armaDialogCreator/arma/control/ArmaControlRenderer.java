@@ -553,8 +553,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintTextureError(@NotNull GraphicsContext gc) {
-		paintError(gc, Color.DEEPPINK);
+	protected void paintTextureError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+		paintError(gc, Color.DEEPPINK, x, y, w, h);
 	}
 
 	/**
@@ -562,8 +562,8 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintImageError(@NotNull GraphicsContext gc) {
-		paintError(gc, Color.RED);
+	protected void paintImageError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+		paintError(gc, Color.RED, x, y, w, h);
 	}
 
 	/**
@@ -571,8 +571,16 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintBackgroundColorError(@NotNull GraphicsContext gc) {
-		paintError(gc, Color.BLACK);
+	protected void paintBackgroundColorError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+		paintError(gc, Color.BLACK, x, y, w, h);
+	}
+
+	/**
+	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
+	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
+	 */
+	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color, int x, int y, int w, int h) {
+		paintCheckerboard(gc, x, y, w, h, color, getBackgroundColor());
 	}
 
 	/**
@@ -580,7 +588,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
 	 */
 	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
-		paintCheckerboard(gc, getX1(), getY1(), getWidth(), getHeight(), color, getBackgroundColor());
+		paintError(gc, color, getX1(), getY1(), getWidth(), getHeight());
 	}
 
 	/**

@@ -1,5 +1,6 @@
 **Added:**
-* start of Combo control
+* start of Combo control renderer
+    * also data creator
 
 **Changed:**
 * 

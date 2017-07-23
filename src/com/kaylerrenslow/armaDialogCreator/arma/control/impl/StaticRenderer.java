@@ -45,7 +45,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	private PictureOrTextureHelper pictureOrTextureHelper = new PictureOrTextureHelper(this);
+	private ImageOrTextureHelper pictureOrTextureHelper = new ImageOrTextureHelper(this);
 	private RenderType renderType = RenderType.Text;
 	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
@@ -269,11 +269,11 @@ public class StaticRenderer extends ArmaControlRenderer {
 						break;
 					}
 					case ImageError: {
-						paintImageError(gc);
+						paintImageError(gc, x1, y1, getWidth(), getHeight());
 						break;
 					}
 					case TextureError: {
-						paintTextureError(gc);
+						paintTextureError(gc, x1, y1, getWidth(), getHeight());
 						break;
 					}
 					case LoadingImage: {
@@ -285,7 +285,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case Error: {
-				paintBackgroundColorError(gc);
+				paintBackgroundColorError(gc, x1, y1, getWidth(), getHeight());
 				break;
 			}
 			default: {

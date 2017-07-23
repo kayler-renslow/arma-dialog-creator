@@ -61,7 +61,7 @@ public class BasicTextRenderer {
 	private boolean allowMultiLine = false;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
-							 @NotNull ControlPropertyLookupConstant text,
+							 @Nullable ControlPropertyLookupConstant text,
 							 @NotNull ControlPropertyLookupConstant colorText, @Nullable ControlPropertyLookupConstant style,
 							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow) {
 		this.control = control;
@@ -71,15 +71,17 @@ public class BasicTextRenderer {
 		setFont(this.font); //set fontMetrics
 	}
 
-	private void init(@NotNull ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
+	private void init(@Nullable ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
 					  @Nullable ControlPropertyLookupConstant style, @Nullable ControlPropertyLookupConstant sizeEx,
 					  @Nullable ControlPropertyLookup shadow) {
 
-		control.findProperty(text).addValueListener((observer, oldValue, newValue) -> {
-					setText(TextHelper.getText(newValue));
-					renderer.requestRender();
-				}
-		);
+		if (text != null) {
+			control.findProperty(text).addValueListener((observer, oldValue, newValue) -> {
+						setText(TextHelper.getText(newValue));
+						renderer.requestRender();
+					}
+			);
+		}
 		ControlProperty textColorProp = control.findProperty(colorText);
 		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
 		textColorProp.addValueListener((observer, oldValue, newValue) -> {

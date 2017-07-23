@@ -4,6 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -18,9 +19,14 @@ public class ComboControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
+	public static final String NestedClassName_ComboScrollBar = "ComboScrollBar";
+
 	public ComboControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.Combo, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
+
+		//force these value so that if the default value provider doesn't provide a value, there's still one present
+		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());
+		findProperty(ControlPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVInteger(0));
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
@@ -42,7 +48,8 @@ public class ComboControl extends ArmaControl {
 									ControlPropertyLookup.WHOLE_HEIGHT,
 									ControlPropertyLookup.COLOR_DISABLED,
 									ControlPropertyLookup.FONT,
-									ControlPropertyLookup.SIZE_EX
+									ControlPropertyLookup.SIZE_EX,
+									ControlPropertyLookup.MAX_HISTORY_DELAY
 							},
 							ControlPropertyLookupConstant.PRIORITY_SORT
 					)
@@ -78,7 +85,7 @@ public class ComboControl extends ArmaControl {
 			return new ReadOnlyList<>(
 					Arrays.asList(
 							new ControlClassSpecification(
-									"ComboScrollBar", Arrays.asList(
+									NestedClassName_ComboScrollBar, Arrays.asList(
 									new ControlPropertySpecification(ControlPropertyLookup.COLOR),
 									new ControlPropertySpecification(ControlPropertyLookup.THUMB),
 									new ControlPropertySpecification(ControlPropertyLookup.ARROW_FULL),

@@ -43,7 +43,7 @@ public class ConvertingImageSubscriberNotificationCreator implements ImagesTool.
 								bundle.getString("Notifications.ConvertingImage.failed_f"),
 								image.getName()
 						),
-						false
+						true
 				)
 		);
 	}

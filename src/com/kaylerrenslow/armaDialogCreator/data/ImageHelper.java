@@ -42,7 +42,7 @@ public class ImageHelper {
 					f = new File(pathValue.toString());
 				}
 
-				if (f != null) {
+				if (f != null && f.getPath().startsWith("\\")) {
 					Image internalImage = Arma3ExternalImagePathConverter.getInstance().getImage(f.getPath());
 					if (internalImage != null) {
 						imageGetFunc.apply(internalImage);

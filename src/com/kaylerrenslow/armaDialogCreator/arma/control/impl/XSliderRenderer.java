@@ -3,7 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.PictureOrTextureHelper;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageOrTextureHelper;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TexturePainter;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
@@ -35,10 +35,10 @@ public class XSliderRenderer extends ArmaControlRenderer {
 	private BlinkControlHandler blinkControlHandler;
 	private TooltipRenderer tooltipRenderer;
 	private Color colorActive = Color.WHITE;
-	private final PictureOrTextureHelper arrowEmpty = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper arrowFull = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper border = new PictureOrTextureHelper(this);
-	private final PictureOrTextureHelper thumb = new PictureOrTextureHelper(this);
+	private final ImageOrTextureHelper arrowEmpty = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper arrowFull = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper border = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper thumb = new ImageOrTextureHelper(this);
 	private double progress = 0.7;
 
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
@@ -133,7 +133,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 	}
 
-	private void paintThumb(@NotNull GraphicsContext gc, int thumbX, int thumbWidth, PictureOrTextureHelper helper) {
+	private void paintThumb(@NotNull GraphicsContext gc, int thumbX, int thumbWidth, ImageOrTextureHelper helper) {
 		Color color = (focused && isEnabled()) ? colorActive : this.backgroundColor;
 		switch (helper.getMode()) {
 			case Texture: {
@@ -149,21 +149,11 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case ImageError: {
-				gc.save();
-				gc.rect(thumbX, y1, thumbWidth, getHeight());
-				gc.closePath();
-				gc.clip();
-				paintImageError(gc);
-				gc.restore();
+				paintImageError(gc, thumbX, y1, thumbWidth, getHeight());
 				break;
 			}
 			case TextureError: {
-				gc.save();
-				gc.rect(thumbX, y1, thumbWidth, getHeight());
-				gc.closePath();
-				gc.clip();
-				paintTextureError(gc);
-				gc.restore();
+				paintTextureError(gc, thumbX, y1, thumbWidth, getHeight());
 				break;
 			}
 			case LoadingImage: {
@@ -176,7 +166,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, PictureOrTextureHelper helper) {
+	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, ImageOrTextureHelper helper) {
 		Color arrowColor = (focused && isEnabled()) ? colorActive : backgroundColor;
 		final int arrowWidth = getHeight();
 		switch (helper.getMode()) {
@@ -193,21 +183,11 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case ImageError: {
-				gc.save();
-				gc.rect(arrowX, y1, arrowWidth, getHeight());
-				gc.closePath();
-				gc.clip();
-				paintImageError(gc);
-				gc.restore();
+				paintImageError(gc, arrowX, y1, arrowWidth, getHeight());
 				break;
 			}
 			case TextureError: {
-				gc.save();
-				gc.rect(arrowX, y1, arrowWidth, getHeight());
-				gc.closePath();
-				gc.clip();
-				paintTextureError(gc);
-				gc.restore();
+				paintTextureError(gc, arrowX, y1, arrowWidth, getHeight());
 				break;
 			}
 			case LoadingImage: {

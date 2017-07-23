@@ -133,6 +133,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	SOUND_COLLAPSE(90, "soundCollapse", PropertyType.Sound),
 	COLOR_SELECT_BACKGROUND(91, "colorSelectBackground", PropertyType.Color),
 	WHOLE_HEIGHT(92, "wholeHeight", PropertyType.Float),
+	MAX_HISTORY_DELAY(93, "maxHistoryDelay", PropertyType.Float),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

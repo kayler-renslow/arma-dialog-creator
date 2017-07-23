@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/06/2017 */
-public class PictureOrTextureHelper {
+public class ImageOrTextureHelper {
 	public enum Mode {
 		/** The property has an image */
 		Image,
@@ -31,13 +31,13 @@ public class PictureOrTextureHelper {
 	private final ArmaControlRenderer renderer;
 	private volatile Texture texture;
 	private volatile Image image;
-	private volatile Mode mode = Mode.LoadingImage;
+	private volatile Mode mode = Mode.ImageError;
 	private SerializableValue value;
 
 	/**
 	 @param renderer the renderer that will be notified of when to render again
 	 */
-	public PictureOrTextureHelper(@NotNull ArmaControlRenderer renderer) {
+	public ImageOrTextureHelper(@NotNull ArmaControlRenderer renderer) {
 		this.renderer = renderer;
 	}
 
@@ -70,7 +70,7 @@ public class PictureOrTextureHelper {
 		mode = Mode.LoadingImage;
 
 		ImageHelper.getImageAsync(value, image -> {
-			synchronized (PictureOrTextureHelper.this) {
+			synchronized (ImageOrTextureHelper.this) {
 				//synchronized so that the mode and image to paint are set at the same time
 				if (image == null) {
 					this.image = null;
