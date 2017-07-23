@@ -115,4 +115,9 @@ public enum ControlPropertyEventLookup {
 	public static ControlPropertyLookup[] allWithSliderScope() {
 		return allWith("slider");
 	}
+
+	@NotNull
+	public static ControlPropertyLookup[] allWithComboScope() {
+		return allWith("combo");
+	}
 }

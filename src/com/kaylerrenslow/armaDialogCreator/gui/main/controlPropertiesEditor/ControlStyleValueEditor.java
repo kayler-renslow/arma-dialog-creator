@@ -16,7 +16,6 @@ import javafx.scene.layout.Priority;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,28 +74,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 			menuButton.clearSelection();
 			textField.setText("");
 		} else {
-			ControlStyle[] styles = val.getStyleArray();
-
-			ArrayList<ControlStyle> selectMe = new ArrayList<>();
-
-			for (ControlStyle style : styles) {
-				if (menuButton.getItems().contains(style)) {
-					selectMe.add(style);
-				} else {
-					//The menuButton may have some styles removed because the user may not actually need all the styles.
-
-					//Since the style isn't in the button, we will attempt to find one that is in the button and has an
-					//equal value.
-
-					for (ControlStyle buttonStyle : menuButton.getItems()) {
-						if (buttonStyle.styleValue == style.styleValue) {
-							selectMe.add(buttonStyle);
-							break;
-						}
-					}
-				}
-			}
-			menuButton.setSelected(selectMe);
+			menuButton.setSelected(val.getStyleArray());
 		}
 	}
 

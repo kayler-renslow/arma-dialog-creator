@@ -127,6 +127,12 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	ARROW_FULL(84, "arrowFull", PropertyType.Texture),
 	BORDER(85, "border", PropertyType.Texture),
 	THUMB(86, "thumb", PropertyType.Texture),
+	COLOR_SELECT(87, "colorSelect", PropertyType.Color),
+	SOUND_SELECT(88, "soundSelect", PropertyType.Sound),
+	SOUND_EXPAND(89, "soundExpand", PropertyType.Sound),
+	SOUND_COLLAPSE(90, "soundCollapse", PropertyType.Sound),
+	COLOR_SELECT_BACKGROUND(91, "colorSelectBackground", PropertyType.Color),
+	WHOLE_HEIGHT(92, "wholeHeight", PropertyType.Float),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

@@ -2,12 +2,12 @@ package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
-import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
@@ -23,10 +23,7 @@ import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  A project loader for save-version='1'
@@ -362,9 +359,6 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 		ArmaControlLookup armaControlLookup = ArmaControlLookup.findByControlType(controlType);
 
-		//renderer
-		Class<? extends ArmaControlRenderer> rendererLookup = armaControlLookup.renderer;
-
 		//control properties
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "property");
 		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
@@ -387,8 +381,50 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				continue;
 			}
 			p.setTo(specification, project);
-		}
 
+			if (!(p.getValue() instanceof SVControlStyleGroup)) {
+				continue;
+			}
+			if (!(armaControlLookup.specProvider instanceof AllowedStyleProvider)) {
+				continue;
+			}
+			// Since some styles can have an equal value, we will cross reference the allowed styles with the present styles.
+			// If a style is present that isn't allowed, it will be replaced with an allowed style with an equal value.
+			// This isn't 100% foolproof since multiple allowed styles can have equal values as well.
+			// However, there shouldn't ever be a case where multiple allowed styles should have equal values
+			// because it doesn't make intuitive sense.
+			AllowedStyleProvider allowedStyleProvider = (AllowedStyleProvider) armaControlLookup.specProvider;
+			ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
+			List<ControlStyle> fixedStyles = new ArrayList<>(allowedStyles.length);
+			boolean replace = false;
+			if (p.getValue() instanceof SVControlStyleGroup) {
+				SVControlStyleGroup g = (SVControlStyleGroup) p.getValue();
+				ControlStyle[] controlStyles = g.getStyleArray();
+				for (ControlStyle controlStyle : controlStyles) {
+					boolean match = false;
+					for (ControlStyle allowedStyle : allowedStyles) {
+						if (controlStyle == allowedStyle) {
+							match = true;
+							break;
+						}
+					}
+					if (!match) {
+						replace = true;
+						for (ControlStyle allowedStyle : allowedStyles) {
+							if (controlStyle.styleValue == allowedStyle.styleValue) {
+								fixedStyles.add(allowedStyle);
+								break;
+							}
+						}
+					} else {
+						fixedStyles.add(controlStyle);
+					}
+				}
+			}
+			if (replace) {
+				p.setValue(new SVControlStyleGroup(fixedStyles.toArray(new ControlStyle[fixedStyles.size()])));
+			}
+		}
 
 		//load nested classes
 		List<Element> reqNestedClassesElementGroups = XmlUtil.getChildElementsWithTagName(controlElement, "nested-required");

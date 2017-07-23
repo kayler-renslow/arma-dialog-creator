@@ -1,5 +1,5 @@
 **Added:**
-* more arma 3 gui icons
+* start of Combo control
 
 **Changed:**
 * 

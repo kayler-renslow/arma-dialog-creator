@@ -59,7 +59,7 @@ public class Arma3ExternalImagePathConverter {
 	}
 
 	/**
-	 Convert an Arma 3 pbo path (something like \A3\ui_f\etc) into a JavaFX image stored inside the application.
+	 Convert an Arma 3 pbo path (something like &#92;A3&#92;ui_f&#92;etc) into a JavaFX image stored inside the application.
 	 <p>
 	 The path may be valid, but this method can still return null for a valid path if there is no image for the valid
 	 path in the application.
