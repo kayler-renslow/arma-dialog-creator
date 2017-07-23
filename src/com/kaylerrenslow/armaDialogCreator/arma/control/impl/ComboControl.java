@@ -4,7 +4,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlSpecRequirement;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVDouble;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.util.ArrayUtil;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
@@ -26,7 +26,7 @@ public class ComboControl extends ArmaControl {
 
 		//force these value so that if the default value provider doesn't provide a value, there's still one present
 		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());
-		findProperty(ControlPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVInteger(0));
+		findProperty(ControlPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVDouble(0));
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

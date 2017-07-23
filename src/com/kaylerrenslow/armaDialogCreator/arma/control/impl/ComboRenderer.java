@@ -13,6 +13,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
@@ -121,19 +122,18 @@ public class ComboRenderer extends ArmaControlRenderer {
 		} else {
 			if (preview) {
 				blinkControlHandler.paint(gc);
+				if (this.mouseOver) {
+					canvasContext.paintLast(tooltipRenderFunc);
+				}
 			}
 			super.paint(gc, canvasContext);
+			textRenderer.paint(gc);
 			if (preview && menuDown) {
 				paintArrow(gc, arrowFull_combo);
-			} else {
-				paintArrow(gc, arrowFull_combo);
-			}
-			textRenderer.paint(gc);
-		}
 
-		if (preview) {
-			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				//todo draw drop down menu
+			} else {
+				paintArrow(gc, arrowEmpty_combo);
 			}
 		}
 	}
@@ -177,5 +177,13 @@ public class ComboRenderer extends ArmaControlRenderer {
 	@Override
 	public boolean canHaveFocus() {
 		return true;
+	}
+
+	@Override
+	public void mousePress(@NotNull MouseButton mb) {
+		super.mousePress(mb);
+		if (mouseButtonDown == MouseButton.PRIMARY) {
+			//todo
+		}
 	}
 }
