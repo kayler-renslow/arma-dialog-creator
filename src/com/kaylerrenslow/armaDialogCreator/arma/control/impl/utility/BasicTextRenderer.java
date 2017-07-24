@@ -35,6 +35,7 @@ import java.util.ArrayList;
  @since 11/21/2016 */
 public class BasicTextRenderer {
 
+	public static final double TEXT_PADDING = 0.025;
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 
@@ -167,10 +168,10 @@ public class BasicTextRenderer {
 		}
 		switch (textAlignment) {
 			case LEFT: {
-				return renderer.getLeftX() + (int) (renderer.getWidth() * 0.02);
+				return renderer.getLeftX() + (int) (renderer.getWidth() * TEXT_PADDING);
 			}
 			case RIGHT: {
-				return renderer.getRightX() - textWidth - (int) (renderer.getWidth() * 0.02);
+				return renderer.getRightX() - textWidth - (int) (renderer.getWidth() * TEXT_PADDING);
 			}
 			default:
 			case CENTER: {

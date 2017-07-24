@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* 
+* updates to combo renderer
 
 **Fixed:**
 * 

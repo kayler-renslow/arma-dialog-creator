@@ -23,6 +23,9 @@ public class ControlFocusHandler {
 	}
 
 	public void setFocusedControl(@Nullable ArmaControl control) {
+		if (focusedControl == control) {
+			return;
+		}
 		if (focusedControl != null) {
 			setControlFocused(focusedControl, false);
 		}

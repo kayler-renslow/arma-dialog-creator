@@ -10,6 +10,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
+import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
@@ -27,16 +28,18 @@ import java.util.function.Function;
 public class ComboRenderer extends ArmaControlRenderer {
 
 	private BlinkControlHandler blinkControlHandler;
-
 	private BasicTextRenderer textRenderer;
-	private TooltipRenderer tooltipRenderer;
 
+	private TooltipRenderer tooltipRenderer;
 	private final ImageOrTextureHelper arrowEmpty_combo = new ImageOrTextureHelper(this);
+
 	private final ImageOrTextureHelper arrowFull_combo = new ImageOrTextureHelper(this);
 	private Color colorSelect = Color.RED;
 	private Color colorDisabled = Color.BLACK;
-	private double wholeHeight = 0.45;
+	private Color colorSelectBackground = Color.BLACK;
+	private double wholeHeight;
 
+	private int menuHeightInPixels = 0;
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 		return null;
@@ -52,6 +55,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
 				ControlPropertyLookup.SHADOW
 		);
+		textRenderer.setText("Placeholder");
 
 		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 		{
@@ -100,6 +104,13 @@ public class ComboRenderer extends ArmaControlRenderer {
 		myControl.findProperty(ControlPropertyLookup.WHOLE_HEIGHT).addValueListener((observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				wholeHeight = ((SVNumericValue) newValue).toDouble();
+				updateMenuPixelHeight();
+				requestRender();
+			}
+		});
+		myControl.findProperty(ControlPropertyLookup.COLOR_SELECT_BACKGROUND).addValueListener((observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
@@ -119,6 +130,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 			textRenderer.setTextColor(colorDisabled);
 			textRenderer.paint(gc);
 			textRenderer.setTextColor(oldTextColor);
+			//in Arma 3, when combo is disabled, the arrow isn't visible
 		} else {
 			if (preview) {
 				blinkControlHandler.paint(gc);
@@ -127,11 +139,51 @@ public class ComboRenderer extends ArmaControlRenderer {
 				}
 			}
 			super.paint(gc, canvasContext);
+			Color backgroundColor = getBackgroundColor();
 			textRenderer.paint(gc);
 			if (preview && menuDown) {
 				paintArrow(gc, arrowFull_combo);
+				{ //draw drop down menu
+					final int textPadding = (int) Math.round(getWidth() * BasicTextRenderer.TEXT_PADDING);
+					int menuX1 = x1;
+					int menuY1 = y2;
+					int menuX2 = Math.max(x2, x1 + textRenderer.getTextWidth() + textPadding);
+					int menuY2 = y2 + menuHeightInPixels;
+					gc.setStroke(backgroundColor);
+					Region.fillRectangle(gc, menuX1, menuY1, menuX2, menuY2);
 
-				//todo draw drop down menu
+					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
+					gc.rect(menuX1, menuY1, menuX2 - menuX1, menuY2 - menuY1);
+					gc.closePath();
+					gc.clip();
+					//draw text for drop down menu
+
+					int allTextHeight = 0;
+					int leftTextX = x1 + textPadding;
+					int textHeight = textRenderer.getTextLineHeight();
+					while (allTextHeight <= menuHeightInPixels && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
+						int rowY1 = menuY1 + allTextHeight;
+						int rowY2 = rowY1 + textHeight;
+						if (mouseOverY >= rowY1 && mouseOverY < rowY2) {
+							//mouse is over this row
+							gc.setStroke(colorSelectBackground);
+							Region.fillRectangle(gc, x1, rowY1, menuX2, rowY2);
+							gc.setStroke(backgroundColor);
+							Color textColor = textRenderer.getTextColor();
+							textRenderer.setTextColor(colorSelect);
+							textRenderer.paint(gc, leftTextX, menuY1 + allTextHeight);
+							textRenderer.setTextColor(textColor);
+						} else {
+							textRenderer.paint(gc, leftTextX, menuY1 + allTextHeight);
+						}
+						allTextHeight += textHeight;
+					}
+
+					//todo draw scrollbar
+					//todo get scrollbar width and add it to the Region.fillRectangle above
+
+				}
+
 			} else {
 				paintArrow(gc, arrowEmpty_combo);
 			}
@@ -182,8 +234,40 @@ public class ComboRenderer extends ArmaControlRenderer {
 	@Override
 	public void mousePress(@NotNull MouseButton mb) {
 		super.mousePress(mb);
-		if (mouseButtonDown == MouseButton.PRIMARY) {
-			//todo
+
+	}
+
+	@Override
+	public void mouseRelease() {
+		super.mouseRelease();
+		menuDown = !menuDown;
+	}
+
+	@Override
+	public boolean containsPoint(int x, int y) {
+		int menuHeight = menuDown ? menuHeightInPixels : 0;
+		if (x1 <= x && y1 <= y) {
+			if (x2 >= x && (y2 + menuHeight) >= y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	protected void positionUpdate() {
+		updateMenuPixelHeight();
+	}
+
+	private void updateMenuPixelHeight() {
+		menuHeightInPixels = (int) Math.round(wholeHeight * resolution.getViewportHeight());
+	}
+
+	@Override
+	public void setFocused(boolean focused) {
+		super.setFocused(focused);
+		if (!focused) {
+			menuDown = false;
 		}
 	}
 }

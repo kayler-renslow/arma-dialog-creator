@@ -167,6 +167,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	}
 
+	/** Invoked when the x, y, width, or height of the control is updated. Default implementation does nothing. */
 	protected void positionUpdate() {
 
 	}
