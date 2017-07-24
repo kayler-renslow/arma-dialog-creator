@@ -162,14 +162,15 @@ public class ComboRenderer extends ArmaControlRenderer {
 				paintArrow(gc, arrowFull_combo);
 				{ //draw drop down menu
 					final int textPadding = (int) Math.round(getWidth() * BasicTextRenderer.TEXT_PADDING);
+					int textAndScrollbarWidth = textRenderer.getTextWidth() + textPadding + ScrollbarRenderer.SCROLLBAR_WIDTH;
 					int menuX1 = x1;
 					int menuY1 = y2;
-					int menuX2 = Math.max(x2, x1 + textRenderer.getTextWidth() + textPadding);
+					int menuX2 = textAndScrollbarWidth > getWidth() ? x1 + textAndScrollbarWidth : x2;
 					int menuY2 = y2 + menuHeightInPixels;
 					gc.setStroke(backgroundColor);
-					Region.fillRectangle(gc, menuX1, menuY1, menuX2 + ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2);
+					Region.fillRectangle(gc, menuX1, menuY1, menuX2, menuY2);
 
-					scrollbarRenderer.paint(gc, menuX2, menuY1, menuHeightInPixels);
+					scrollbarRenderer.paint(gc, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
 
 					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
 					gc.rect(menuX1, menuY1, menuX2 - menuX1, menuY2 - menuY1);
