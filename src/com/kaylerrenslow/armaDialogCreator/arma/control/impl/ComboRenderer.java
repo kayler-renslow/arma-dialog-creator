@@ -145,7 +145,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 				}
 			}
 			Color textColor = textRenderer.getTextColor();
-			if (preview && focused) {
+			if (preview && focused && !menuDown) {
 				Color backgroundColor = getBackgroundColor();
 				textRenderer.setTextColor(colorSelect);
 				setBackgroundColor(colorSelectBackground);
@@ -166,7 +166,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 					int menuY1 = y2;
 					int menuX2 = Math.max(x2, x1 + textRenderer.getTextWidth() + textPadding);
 					int menuY2 = y2 + menuHeightInPixels;
-					gc.setStroke(colorSelectBackground);
+					gc.setStroke(backgroundColor);
 					Region.fillRectangle(gc, menuX1, menuY1, menuX2 + ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2);
 
 					scrollbarRenderer.paint(gc, menuX2, menuY1, menuHeightInPixels);
