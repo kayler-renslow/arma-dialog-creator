@@ -17,11 +17,17 @@ public class ControlFocusHandler {
 		this.armaDisplay = display;
 	}
 
+	/** @return the control that has focus, or null if no control has focus */
 	@Nullable
 	public ArmaControl getFocusedControl() {
 		return focusedControl;
 	}
 
+	/**
+	 Set the focused control. If the current focused control is reference equal to the provided control, this method will do nothing.
+
+	 @param control the control to set as focused
+	 */
 	public void setFocusedControl(@Nullable ArmaControl control) {
 		if (focusedControl == control) {
 			return;
@@ -35,6 +41,11 @@ public class ControlFocusHandler {
 		}
 	}
 
+	/**
+	 Set the focus to last control requesting focus.
+	 If no control is requesting focus, the last control that can have focus will get the focus.
+	 If no control can have focus, no control will get focus.
+	 */
 	public void autoFocusToControl() {
 		Reference<ArmaControl> focusToMe = new Reference<>();
 		Reference<ArmaControl> lastControl = new Reference<>();

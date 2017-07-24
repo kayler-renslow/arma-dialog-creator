@@ -554,7 +554,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintTextureError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+	public void paintTextureError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
 		paintError(gc, Color.DEEPPINK, x, y, w, h);
 	}
 
@@ -563,7 +563,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintImageError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+	public void paintImageError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
 		paintError(gc, Color.RED, x, y, w, h);
 	}
 
@@ -572,7 +572,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param gc context
 	 */
-	protected void paintBackgroundColorError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
+	public void paintBackgroundColorError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
 		paintError(gc, Color.BLACK, x, y, w, h);
 	}
 
@@ -580,7 +580,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
 	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
 	 */
-	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color, int x, int y, int w, int h) {
+	public void paintError(@NotNull GraphicsContext gc, @NotNull Color color, int x, int y, int w, int h) {
 		paintCheckerboard(gc, x, y, w, h, color, getBackgroundColor());
 	}
 
@@ -588,16 +588,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
 	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
 	 */
-	protected void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
+	public void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
 		paintError(gc, color, getX1(), getY1(), getWidth(), getHeight());
 	}
 
 	/**
-	 Paints a filled rectangle at the given positions where the blend mode is {@link BlendMode#MULTIPLY}
+	 Paints a filled rectangle at the given positions where the blend mode is {@link BlendMode#MULTIPLY}.
+	 Be sure to set the BlendMode back after using this method!
 	 */
-	protected void paintMultiplyColor(@NotNull GraphicsContext gc,
-									  int x1, int y1, int x2, int y2,
-									  @NotNull Color color) {
+	public void paintMultiplyColor(@NotNull GraphicsContext gc,
+								   int x1, int y1, int x2, int y2,
+								   @NotNull Color color) {
 		//multiply the color on the image
 		gc.setStroke(color);
 		gc.setGlobalBlendMode(BlendMode.MULTIPLY);

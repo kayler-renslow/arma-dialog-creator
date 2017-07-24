@@ -110,7 +110,11 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 	}
 
 	public static void showWindow() {
-		if (showingInstance == null) {
+		if (showingInstance == null || !showingInstance.isShowing()) {
+			//note: the instance may be hidden without the closing() method being invoked which sets showingInstance to null
+			if (showingInstance != null) {
+				showingInstance.closing();
+			}
 			showingInstance = new PreviewPopupWindow();
 			showingInstance.show();
 		} else {

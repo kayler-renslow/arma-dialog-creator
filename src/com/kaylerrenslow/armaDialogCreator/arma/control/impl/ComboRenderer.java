@@ -38,6 +38,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 	private Color colorDisabled = Color.BLACK;
 	private Color colorSelectBackground = Color.BLACK;
 	private double wholeHeight;
+	private final ScrollbarRenderer scrollbarRenderer;
 
 	private int menuHeightInPixels = 0;
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
@@ -117,7 +118,12 @@ public class ComboRenderer extends ArmaControlRenderer {
 
 		{
 			ControlClass comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
-			//todo
+
+			scrollbarRenderer = new ScrollbarRenderer(comboScrollBar, this,
+					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,
+					ControlPropertyLookup.ARROW_EMPTY, ControlPropertyLookup.BORDER,
+					ControlPropertyLookup.COLOR
+			);
 		}
 	}
 
@@ -138,9 +144,20 @@ public class ComboRenderer extends ArmaControlRenderer {
 					canvasContext.paintLast(tooltipRenderFunc);
 				}
 			}
-			super.paint(gc, canvasContext);
-			Color backgroundColor = getBackgroundColor();
-			textRenderer.paint(gc);
+			Color textColor = textRenderer.getTextColor();
+			if (preview && focused) {
+				Color backgroundColor = getBackgroundColor();
+				textRenderer.setTextColor(colorSelect);
+				setBackgroundColor(colorSelectBackground);
+				super.paint(gc, canvasContext);
+				textRenderer.paint(gc);
+				textRenderer.setTextColor(textColor);
+				setBackgroundColor(backgroundColor);
+			} else {
+				super.paint(gc, canvasContext);
+				textRenderer.paint(gc);
+			}
+
 			if (preview && menuDown) {
 				paintArrow(gc, arrowFull_combo);
 				{ //draw drop down menu
@@ -149,8 +166,10 @@ public class ComboRenderer extends ArmaControlRenderer {
 					int menuY1 = y2;
 					int menuX2 = Math.max(x2, x1 + textRenderer.getTextWidth() + textPadding);
 					int menuY2 = y2 + menuHeightInPixels;
-					gc.setStroke(backgroundColor);
-					Region.fillRectangle(gc, menuX1, menuY1, menuX2, menuY2);
+					gc.setStroke(colorSelectBackground);
+					Region.fillRectangle(gc, menuX1, menuY1, menuX2 + ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2);
+
+					scrollbarRenderer.paint(gc, menuX2, menuY1, menuHeightInPixels);
 
 					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
 					gc.rect(menuX1, menuY1, menuX2 - menuX1, menuY2 - menuY1);
@@ -169,7 +188,6 @@ public class ComboRenderer extends ArmaControlRenderer {
 							gc.setStroke(colorSelectBackground);
 							Region.fillRectangle(gc, x1, rowY1, menuX2, rowY2);
 							gc.setStroke(backgroundColor);
-							Color textColor = textRenderer.getTextColor();
 							textRenderer.setTextColor(colorSelect);
 							textRenderer.paint(gc, leftTextX, menuY1 + allTextHeight);
 							textRenderer.setTextColor(textColor);
@@ -178,10 +196,6 @@ public class ComboRenderer extends ArmaControlRenderer {
 						}
 						allTextHeight += textHeight;
 					}
-
-					//todo draw scrollbar
-					//todo get scrollbar width and add it to the Region.fillRectangle above
-
 				}
 
 			} else {

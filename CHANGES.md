@@ -1,5 +1,5 @@
 **Added:**
-* 
+* scrollbar renderer
 
 **Changed:**
 * updates to combo renderer
