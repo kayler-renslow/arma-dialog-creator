@@ -28,15 +28,15 @@ import java.util.function.Function;
  @since 05/15/2016. */
 class CanvasControls extends VBox implements UICanvasConfiguration {
 
+	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final ADCCanvasView canvasView;
 	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain;
 	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg;
 	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
-	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final CheckBox checkBoxViewportSnapping = new CheckBox(bundle.getString("CanvasControls.viewport_snapping"));
 
-	public static final double PREFERRED_WIDTH = 250d;
+	public static final double PREFERRED_WIDTH = 320d;
 	private boolean showGrid = true;
 
 	CanvasControls(ADCCanvasView canvasView) {

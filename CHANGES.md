@@ -1,8 +1,9 @@
 **Added:**
-* Edit default values
+* 
 
 **Changed:**
-* made readonly text fields and text areas have a more subtle look to show they can't be edited
+* made the ability to rename control in config popup less ambiguous
+* made project load error reporting more descriptive 
 
 **Fixed:**
 * 

@@ -182,7 +182,30 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		// checkBoxHideInherited.setSelected(KEY_HIDE_INHERITED.get(control.getUserData()));
 
-		final HBox hboxLeft = new HBox(15, checkBoxIsBackgroundControl, checkBoxHideInherited);
+		HBox hboxLeft;
+		{
+			MenuButton menu = new MenuButton(bundle.getString("down_arrow_menu_label"));
+			{
+				MenuItem miRename = new MenuItem(bundle.getString("rename_control"));
+				menu.getItems().add(miRename);
+				miRename.setOnAction(event -> {
+					NameInputFieldDialog<IdentifierChecker, String> dialog = new NameInputFieldDialog<>(
+							miRename.getText(), bundle.getString("new_control_name"),
+							new IdentifierChecker()
+					);
+					dialog.getInputField().getValueObserver().updateValue(control.getClassName());
+					dialog.getInputField().selectAll();
+					dialog.show();
+					String value = dialog.getInputField().getValue();
+					if (dialog.wasCancelled() || value == null) {
+						return;
+					}
+					control.setClassName(value);
+				});
+			}
+			hboxLeft = new HBox(15, checkBoxIsBackgroundControl, checkBoxHideInherited, menu);
+			hboxLeft.setAlignment(Pos.CENTER_LEFT);
+		}
 
 		myRootElement.getChildren().add(
 				new BorderPane(
@@ -253,26 +276,13 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		{
 			lblClassName = new Label(control.getClassName());
 			lblClassName.setFont(Font.font(16));
-			MenuItem miRename = new MenuItem(bundle.getString("rename_control"));
-			miRename.setOnAction(event -> {
-				NameInputFieldDialog<IdentifierChecker, String> dialog = new NameInputFieldDialog<>(
-						miRename.getText(), bundle.getString("new_control_name"),
-						new IdentifierChecker()
-				);
-				dialog.getInputField().getValueObserver().updateValue(control.getClassName());
-				dialog.getInputField().selectAll();
-				dialog.show();
-				String value = dialog.getInputField().getValue();
-				if (dialog.wasCancelled() || value == null) {
-					return;
-				}
-				control.setClassName(value);
-			});
-			lblClassName.setContextMenu(new ContextMenu(miRename));
 		}
 		Label lblColon = new Label(":");
 		lblColon.setFont(lblClassName.getFont());
-		final HBox hboxLeft = new HBox(5, lblClassName, lblColon, menuButtonExtendControls);
+		final HBox hboxLeft;
+		{
+			hboxLeft = new HBox(5, lblClassName, lblColon, menuButtonExtendControls);
+		}
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 
 		final SearchTextField tfSearch = new SearchTextField();

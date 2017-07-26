@@ -30,7 +30,7 @@ public class ProjectXmlUtil {
 	 Loads a {@link ControlClassSpecification} from xml.
 
 	 @param containerElement element that contains the xml tags written by {@link #writeControlClassSpecification(XmlWriterOutputStream, ControlClassSpecification)}
-	 @param context used for loading {@link ControlPropertySpecification} via {@link #loadControlProperty(Element, DataContext, XmlErrorRecorder)}
+	 @param context used for loading {@link ControlPropertySpecification} via {@link #loadControlProperty(String, Element, DataContext, XmlErrorRecorder)}
 	 */
 	public static List<ControlClassSpecification> loadControlClassSpecifications(@NotNull Element containerElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		List<Element> classSpecElements = XmlUtil.getChildElementsWithTagName(containerElement, "class-spec");
@@ -62,13 +62,13 @@ public class ProjectXmlUtil {
 		//required control properties
 		List<Element> requiredPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "required-properties");
 		if (requiredPropertyElementGroups.size() > 0) {
-			loadPropertyList(requiredProperties, context, recorder, controlPropertyTagName, requiredPropertyElementGroups.get(0));
+			loadPropertyList(className, requiredProperties, context, recorder, controlPropertyTagName, requiredPropertyElementGroups.get(0));
 		}
 
 		//optional control properties
 		List<Element> optionalPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "optional-properties");
 		if (optionalPropertyElementGroups.size() > 0) {
-			loadPropertyList(optionalProperties, context, recorder, controlPropertyTagName, optionalPropertyElementGroups.get(0));
+			loadPropertyList(className, optionalProperties, context, recorder, controlPropertyTagName, optionalPropertyElementGroups.get(0));
 		}
 
 		//overridden control properties
@@ -102,13 +102,14 @@ public class ProjectXmlUtil {
 		return specification;
 	}
 
-	private static void loadPropertyList(@NotNull List<ControlPropertySpecification> list, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder,
+	private static void loadPropertyList(@NotNull String requester, @NotNull List<ControlPropertySpecification> list,
+										 @Nullable DataContext context, @NotNull XmlErrorRecorder recorder,
 										 @NotNull String controlPropertyTagName, @NotNull Element propertyElementGroup) {
 		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, controlPropertyTagName);
 		List<Element> missingPropertyElements = XmlUtil.getChildElementsWithTagName(propertyElementGroup, "undefined");
 
 		for (Element propertyElement : propertyElements) {
-			ControlPropertySpecification p = loadControlProperty(propertyElement, context, recorder);
+			ControlPropertySpecification p = loadControlProperty(requester, propertyElement, context, recorder);
 			if (p != null) {
 				list.add(p);
 			}
@@ -339,6 +340,7 @@ public class ProjectXmlUtil {
 	/**
 	 Loads a {@link ControlPropertySpecification} from the given xml element.
 
+	 @param requester a name to use for error reporting that explains what/why is invoking this method
 	 @param controlPropertyElement xml element (should be a &lt;property&gt; tag)
 	 @param context used for fetching {@link SerializableValue} instances inside the {@link ControlProperty} xml text. See
 	 {@link #loadValue(String, Element, PropertyType, DataContext, XmlErrorRecorder)}
@@ -346,7 +348,9 @@ public class ProjectXmlUtil {
 	 @return the instance, or null if couldn't be loaded
 	 */
 	@Nullable
-	public static ControlPropertySpecification loadControlProperty(@NotNull Element controlPropertyElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
+	public static ControlPropertySpecification loadControlProperty(@NotNull String requester, @NotNull Element controlPropertyElement,
+																   @Nullable DataContext context,
+																   @NotNull XmlErrorRecorder recorder) {
 		String lookupIdAttr = controlPropertyElement.getAttribute("id");
 		String macroKeyAttr = controlPropertyElement.getAttribute("macro-key");
 		String propertyTypeAttr = controlPropertyElement.getAttribute("ptype");
@@ -362,12 +366,13 @@ public class ProjectXmlUtil {
 		if (lookup == null) {
 			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 		}
+		requester = requester + ";" + lookup.getPropertyName();
 		SerializableValue value;
 		if (convertToPropertyType != null) {
 			if (convertToPropertyType == PropertyType.Raw) {
-				value = loadRawValue(lookup.getPropertyType(), controlPropertyElement, recorder);
+				value = loadRawValue(requester, lookup.getPropertyType(), controlPropertyElement, recorder);
 			} else {
-				value = loadValue(lookup.getPropertyName(), controlPropertyElement, convertToPropertyType, context, recorder);
+				value = loadValue(requester, controlPropertyElement, convertToPropertyType, context, recorder);
 				if (value == null) {
 					recorder.addError(
 							new ParseError(
@@ -380,11 +385,11 @@ public class ProjectXmlUtil {
 				}
 			}
 		} else {
-			value = loadValue(lookup.getPropertyName(), controlPropertyElement, lookup.getPropertyType(), context, recorder);
+			value = loadValue(requester, controlPropertyElement, lookup.getPropertyType(), context, recorder);
 		}
-		if (value == null) {
-			return null;
-		}
+		//Don't worry about value being null.
+		//If a value failed to be created, and thus a null value was returned, the user will be notified of such error
+
 		return new ControlPropertySpecification(lookup, value, macroKeyAttr);
 	}
 
@@ -440,7 +445,6 @@ public class ProjectXmlUtil {
 		try {
 			value = SerializableValue.constructNew(dataContext, propertyType, values);
 		} catch (Exception e) {
-			e.printStackTrace(System.out);
 			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.could_not_create_value_f"), requester, Arrays.toString(values))));
 			return null;
 		}
@@ -449,7 +453,7 @@ public class ProjectXmlUtil {
 
 
 	@Nullable
-	public static SVRaw loadRawValue(@Nullable PropertyType substituteType, @NotNull Element parentElement,
+	public static SVRaw loadRawValue(@NotNull String requester, @Nullable PropertyType substituteType, @NotNull Element parentElement,
 									 @NotNull XmlErrorRecorder recorder) {
 		List<Element> valueElements = XmlUtil.getChildElementsWithTagName(parentElement, "v");
 		if (valueElements.size() < 1) {
@@ -457,7 +461,7 @@ public class ProjectXmlUtil {
 					new ParseError(
 							String.format(
 									bundle.getString("ProjectLoad.bad_value_creation_count_f"),
-									parentElement.getTagName(),
+									requester,
 									valueElements.size())
 					)
 			);

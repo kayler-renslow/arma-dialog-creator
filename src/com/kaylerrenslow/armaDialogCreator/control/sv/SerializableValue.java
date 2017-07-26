@@ -149,16 +149,15 @@ public abstract class SerializableValue {
 	 */
 	@NotNull
 	public static SerializableValue constructNew(@Nullable DataContext dataContext, @NotNull PropertyType type, @NotNull String... values) {
-		Exception e = null;
 		try {
 			SerializableValue value = doConstructNew(dataContext, type, values);
 			if (value != null) {
 				return value;
 			}
-		} catch (Exception e1) {
-			e = e1;
+			throw new NullPointerException();
+		} catch (Exception e) {
+			throw new SerializableValueConstructionException(e.getMessage() != null ? e.getMessage() : "", e);
 		}
-		throw new SerializableValueConstructionException(e != null ? e.getMessage() : "", e);
 	}
 
 	private static SerializableValue doConstructNew(@Nullable DataContext dataContext, @NotNull PropertyType type, @NotNull String[] values) throws Exception {

@@ -231,7 +231,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			try {
 				int id = Integer.parseInt(lookupId);
 				DisplayPropertyLookup lookup = DisplayPropertyLookup.findById(id);
-				SerializableValue value = getValue(lookup.getPropertyName(), lookup.getPropertyType(), displayPropertyElement);
+				SerializableValue value = getValue("Display." + lookup.getPropertyName(), lookup.getPropertyType(), displayPropertyElement);
 				switch (lookup) {
 					case IDD: {
 						display.getIddProperty().setValue(value);
@@ -363,7 +363,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		List<Element> controlPropertyElements = XmlUtil.getChildElementsWithTagName(controlElement, "property");
 		LinkedList<ControlPropertySpecification> properties = new LinkedList<>();
 		for (Element controlPropertyElement : controlPropertyElements) {
-			ControlPropertySpecification property = ProjectXmlUtil.loadControlProperty(controlPropertyElement, dataContext, this.loader);
+			ControlPropertySpecification property = ProjectXmlUtil.loadControlProperty(controlClassName, controlPropertyElement, dataContext, this.loader);
 			if (property != null) {
 				properties.add(property);
 			}
@@ -421,7 +421,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					}
 				}
 			}
-			if (replace) {
+			if (replace && fixedStyles.size() > 0) {
 				p.setValue(new SVControlStyleGroup(fixedStyles));
 			}
 		}

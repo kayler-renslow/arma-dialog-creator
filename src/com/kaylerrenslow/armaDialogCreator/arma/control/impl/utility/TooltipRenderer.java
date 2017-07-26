@@ -52,7 +52,7 @@ public class TooltipRenderer {
 	}
 
 	public void paint(GraphicsContext gc, int tooltipX, int tooltipY) {
-		if (backgroundColor == null || borderColor == null) {
+		if (backgroundColor == null || borderColor == null || textRenderer.getText().length() == 0) {
 			return;
 		}
 		gc.save();
