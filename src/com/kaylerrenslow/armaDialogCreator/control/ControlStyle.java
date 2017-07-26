@@ -8,10 +8,14 @@ import java.util.LinkedList;
 import java.util.MissingResourceException;
 
 /**
+ <b>Do not change the ID's.</b>
+
  @author Kayler
- @since 05/22/2016
- */
+ @since 05/22/2016 */
 public enum ControlStyle {
+	//DO NOT CHANGE THE ID'S. NOT EVEN FOR THE COMMENTED OUT STYLES.
+	//Also, don't remove the commented out styles.
+
 	NONE(0, 0, getString("ControlStyle.none"), getString("ControlStyle.Doc.none")),
 	//POS(1, 0x0F, getString("ControlStyle.pos"), getString("ControlStyle.Doc.pos")),
 	//HPOS(2, 0x03, getString("ControlStyle.hpos"), getString("ControlStyle.Doc.hpos")),

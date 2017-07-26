@@ -24,7 +24,7 @@
 	<property name='text'>
 		<v></v>
 	</property>
-	<property name='style'>
+	<property name='style'> <!-- text align left-->
 		<v>ID:4</v>
-	</property> <!-- text align left-->
+	</property>
 </value-provider-sheet>

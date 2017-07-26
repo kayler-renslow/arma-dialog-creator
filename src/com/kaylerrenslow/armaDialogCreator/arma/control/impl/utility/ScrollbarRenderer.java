@@ -37,21 +37,21 @@ public class ScrollbarRenderer {
 		this.arrowFull = new ImageOrTextureHelper(renderer);
 		this.border = new ImageOrTextureHelper(renderer);
 
-		controlClass.findProperty(thumb).addValueListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, thumb, (observer, oldValue, newValue) -> {
 			this.thumb.updateAsync(newValue);
 		});
-		controlClass.findProperty(arrowFull).addValueListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, arrowFull, (observer, oldValue, newValue) -> {
 			this.arrowFull.updateAsync(newValue);
 		});
-		controlClass.findProperty(arrowEmpty).addValueListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, arrowEmpty, (observer, oldValue, newValue) -> {
 			this.arrowEmpty.updateAsync(newValue);
 		});
-		controlClass.findProperty(border).addValueListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, border, (observer, oldValue, newValue) -> {
 			this.border.updateAsync(newValue);
 		});
 
 		if (scrollbarColor != null) {
-			controlClass.findProperty(scrollbarColor).addValueListener((observer, oldValue, newValue) -> {
+			renderer.addValueListener(controlClass, scrollbarColor, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					this.scrollbarColor = ((SVColor) newValue).toJavaFXColor();
 					renderer.requestRender();

@@ -69,10 +69,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 			do {
 				reverse.addFirst(cur);
 				cur = cur.getParentContext();
-				if (cur == null) {
-					break;
-				}
-			} while (cur.getParentContext() != null);
+			} while (cur != null);
 		}
 		for (Context cur : reverse) {
 			if (cur instanceof DefaultValueProvider.ControlTypeContext) {

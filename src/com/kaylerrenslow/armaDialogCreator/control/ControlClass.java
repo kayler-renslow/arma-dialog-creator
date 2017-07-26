@@ -155,6 +155,7 @@ public class ControlClass {
 		prefetch.addAll(specProvider.getRequiredProperties());
 		prefetch.addAll(specProvider.getOptionalProperties());
 		registry.prefetchValues(prefetch, context);
+
 		addProperties(requiredProperties, specProvider.getRequiredProperties(), registry);
 		addProperties(optionalProperties, specProvider.getOptionalProperties(), registry);
 
@@ -202,15 +203,17 @@ public class ControlClass {
 		addProperties(specification.getRequiredControlProperties(), requiredProperties, registry, prefetch);
 		addProperties(specification.getOptionalControlProperties(), optionalProperties, registry, prefetch);
 
-		registry.prefetchValues(prefetch, context);
-		for (ControlPropertyLookupConstant lookup : prefetch) {
-			SerializableValue def = registry.getDefaultValue(lookup);
-			if (def == null) {
-				continue;
+		if (context != null) {
+			registry.prefetchValues(prefetch, context);
+			for (ControlPropertyLookupConstant lookup : prefetch) {
+				SerializableValue def = registry.getDefaultValue(lookup);
+				if (def == null) {
+					continue;
+				}
+				findProperty(lookup).setValue(def);
 			}
-			findProperty(lookup).setValue(def);
+			registry.cleanup();
 		}
-		registry.cleanup();
 
 		for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
 			requiredNestedClasses.add(s.constructNewControlClass(registry, new DefaultValueProvider.ControlClassNameContext(context, s.getClassName())));

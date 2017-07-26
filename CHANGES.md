@@ -1,14 +1,8 @@
 **Added:**
-* a more detailed default value provider
-    * nested classes for control can now have default values
-     * instead of a single .xml sheet for all types, every control gets its own xml sheet
-* default values for static and button
+* default values for Combo
 
 **Changed:**
-* default value provider has an xml file for every control type and a control type's nested class.
-* added ability to convert a control style from as string with control style ID's rather than values
-* cleaned up some renderer code
-    * at the same time, we also made it so the value listeners added via a method are automatically invoked with the current value
+* 
 
 **Fixed:**
 * 

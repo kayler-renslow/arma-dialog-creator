@@ -68,41 +68,40 @@ public class BasicTextRenderer {
 		this.control = control;
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
 		init(text, colorText, style, sizeEx, shadow);
-
-		setFont(this.font); //set fontMetrics
 	}
 
 	private void init(@Nullable ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
 					  @Nullable ControlPropertyLookupConstant style, @Nullable ControlPropertyLookupConstant sizeEx,
 					  @Nullable ControlPropertyLookup shadow) {
 
+		setFont(this.font); //pre-set font so that we can initialize text right away. Also, set font metrics
+
 		if (text != null) {
-			control.findProperty(text).addValueListener((observer, oldValue, newValue) -> {
-						setText(TextHelper.getText(newValue));
+			renderer.addValueListener(text, (observer, oldValue, newValue) -> {
+
+				setText(TextHelper.getText(newValue));
 						renderer.requestRender();
 					}
 			);
 		}
 		ControlProperty textColorProp = control.findProperty(colorText);
 		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
-		textColorProp.addValueListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(colorText, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						setTextColor(((SVColor) newValue).toJavaFXColor());
 						renderer.requestRender();
 					}
 				}
 		);
-		if (textColorProp.getValue() instanceof SVColor) {
-			textColor = ((SVColor) textColorProp.getValue()).toJavaFXColor();
-		}
+
 		if (shadow != null) {
-			control.findProperty(shadow).addValueListener((observer, oldValue, newValue) -> {
+			renderer.addValueListener(shadow, (observer, oldValue, newValue) -> {
 				textShadow = TextHelper.getTextShadow(newValue);
 				renderer.requestRender();
 			});
 		}
 		if (style != null) {
-			control.findProperty(style).addValueListener((observer, oldValue, newValue) -> {
+			renderer.addValueListener(style, (observer, oldValue, newValue) -> {
 						if (newValue instanceof SVControlStyleGroup) {
 							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
@@ -132,16 +131,13 @@ public class BasicTextRenderer {
 		}
 		if (sizeEx != null) {
 			sizeExProperty = control.findProperty(sizeEx);
-			sizeExProperty.addValueListener((observer, oldValue, newValue) -> {
+			renderer.addValueListener(sizeEx, (observer, oldValue, newValue) -> {
 						if (newValue instanceof SVExpression) {
 							SVExpression ex = (SVExpression) newValue;
 							updateFontSize(ex);
 						}
 					}
 			);
-			if (sizeExProperty.getValue() instanceof SVExpression) {
-				updateFontSize((SVExpression) sizeExProperty.getValue());
-			}
 		}
 
 		renderer.getResolutionUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {

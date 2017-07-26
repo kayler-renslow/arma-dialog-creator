@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>0.1</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='style'> <!-- listbox textures-->
+		<v>ID:33</v>
+	</property>
+	<property name='arrowEmpty'>
+		<v>\A3\ui_f\data\GUI\RscCommon\RscCombo\arrow_combo_ca.paa</v>
+	</property>
+	<property name='arrowFull'>
+		<v>\A3\ui_f\data\GUI\RscCommon\RscCombo\arrow_combo_active_ca.paa</v>
+	</property>
+	<property name='soundSelect'>
+		<v>\A3\ui_f\data\sound\RscCombo\soundSelect</v>
+		<v>0.1</v>
+		<v>1</v>
+	</property>
+	<property name='soundExpand'>
+		<v>\A3\ui_f\data\sound\RscCombo\soundExpand</v>
+		<v>0.1</v>
+		<v>1</v>
+	</property>
+	<property name='soundCollapse'>
+		<v>\A3\ui_f\data\sound\RscCombo\soundCollapse</v>
+		<v>0.1</v>
+		<v>1</v>
+	</property>
+	<property name='colorSelect'>
+		<v>1</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorSelectBackground'>
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='wholeHeight'>
+		<v>0.3</v>
+	</property>
+	<property name='maxHistoryDelay'>
+		<v>0</v>
+	</property>
+</value-provider-sheet>
