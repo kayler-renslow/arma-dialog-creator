@@ -130,6 +130,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		scrollPane.setFitToWidth(true);
 		scrollPane.setFitToHeight(true);
 		tab.setContent(scrollPane);
+		tabRoot.setPadding(new Insets(10, 10, 0, 0));
 
 		/*set export directory*/
 		{

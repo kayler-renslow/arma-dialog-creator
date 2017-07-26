@@ -1,8 +1,8 @@
 **Added:**
-* default values for Combo
+* Edit default values
 
 **Changed:**
-* 
+* made readonly text fields and text areas have a more subtle look to show they can't be edited
 
 **Fixed:**
 * 

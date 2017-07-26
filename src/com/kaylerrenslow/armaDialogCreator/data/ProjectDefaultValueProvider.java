@@ -18,7 +18,7 @@ import java.util.Map;
  @author Kayler
  @since 11/22/2016 */
 public class ProjectDefaultValueProvider implements DefaultValueProvider {
-	private static final String PREFIX = "/com/kaylerrenslow/armaDialogCreator/data/";
+	private static final String PREFIX = "/com/kaylerrenslow/armaDialogCreator/defaultValues/";
 	private static final String DEFAULT = PREFIX + "_FallbackDefaultPropertyValues.xml";
 
 	private ApplicationData data;
@@ -39,11 +39,13 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 		try {
 			String path;
 			if (context != null) {
-				path = buildPath(context);
+				path = PREFIX + buildPath(context);
 			} else {
 				path = DEFAULT;
 			}
+
 			InputStream is = getClass().getResourceAsStream(path);
+
 			if (is == null) {
 				return;
 			}

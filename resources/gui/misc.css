@@ -52,3 +52,7 @@
 .less-visible-tree-cell{
     -fx-opacity:0.7;
 }
+
+.text-field:readonly, .text-area:readonly {
+    -fx-font-style:italic;
+}

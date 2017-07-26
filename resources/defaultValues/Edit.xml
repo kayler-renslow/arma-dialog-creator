@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>1</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='style'> <!-- no style -->
+		<v>ID:0</v>
+	</property>
+	<property name='colorDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorSelection'>
+		<v>1</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='autocomplete'> <!-- No autocomplete-->
+		<v></v>
+	</property>
+</value-provider-sheet>

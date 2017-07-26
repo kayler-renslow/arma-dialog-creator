@@ -19,13 +19,12 @@ import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.LinkedList;
-import java.util.Locale;
+import java.util.*;
 import java.util.jar.Manifest;
 
 /**
@@ -49,6 +48,17 @@ public final class ArmaDialogCreator extends Application {
 			getPrimaryStage().requestFocus();
 			return;
 		}
+		try {
+			Class c = Class.forName("javafx.application.Application");
+		} catch (ClassNotFoundException e) {
+			SwingUtilities.invokeLater(() -> {
+				ResourceBundle b = Lang.ApplicationBundle();
+				JOptionPane.showMessageDialog(null, b.getString("no_javafx"), b.getString("no_javafx_short"), JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
+			});
+			return;
+		}
+
 		ExceptionHandler.init();
 		launch(args);
 	}
@@ -75,10 +85,13 @@ public final class ArmaDialogCreator extends Application {
 
 		//todo have actual progress be displayed (sum of file sizes and when file is loaded, subtract file size)
 
-		for (; progress < 100; progress++) {
-			Thread.sleep(40);
-			notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
+		if (!containsUnamedLaunchParameter(ProgramArgument.NoSplash)) {
+			for (; progress < 100; progress++) {
+				Thread.sleep(40);
+				notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
+			}
 		}
+
 
 	}
 
