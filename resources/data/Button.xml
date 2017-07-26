@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>1</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='style'> <!-- text align center-->
+		<v>ID:0</v>
+	</property>
+	<property name='colorDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorBackgroundDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorBackgroundActive'>
+		<v>1</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorFocused'> <!-- The drop shadow of the entire button-->
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorShadow'> <!-- The drop shadow of the entire button-->
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='borderSize'>
+		<v>0</v>
+	</property>
+	<property name='colorBorder'> <!-- That "tab" thing sticking out of the button-->
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+	</property>
+	<property name='offsetX'>
+		<v>0.01</v>
+	</property>
+	<property name='offsetY'>
+		<v>0.01</v>
+	</property>
+	<property name='offsetPressedX'>
+		<v>0.01</v>
+	</property>
+	<property name='offsetPressedY'>
+		<v>0.01</v>
+	</property>
+	<property name='soundClick'>
+		<v>\A3\ui_f\data\sound\RscButton\soundClick</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundEnter'>
+		<v>\A3\ui_f\data\sound\RscButton\soundEnter</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundEscape'>
+		<v>\A3\ui_f\data\sound\RscButton\soundEscape</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundPush'>
+		<v>\A3\ui_f\data\sound\RscButton\soundPush</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+</value-provider-sheet>

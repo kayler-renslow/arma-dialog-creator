@@ -47,7 +47,7 @@ public class ControlStyleValueEditor extends HBox implements ValueEditor<SVContr
 					return;
 				}
 				SVControlStyleGroup group = menuButton.getSelectedItemsReadOnly().size() == 0 ? null :
-						new SVControlStyleGroup(menuButton.getSelectedItemsReadOnly().toArray(new ControlStyle[menuButton.getSelectedItemsReadOnly().size()]));
+						new SVControlStyleGroup(menuButton.getSelectedItemsReadOnly());
 				textField.setText(group == null ? "" : group.toString());
 				valueObserver.updateValue(group);
 			}

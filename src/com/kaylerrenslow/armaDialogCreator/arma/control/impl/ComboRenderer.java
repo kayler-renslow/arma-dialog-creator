@@ -7,12 +7,13 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVFont;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumericValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -60,25 +61,19 @@ public class ComboRenderer extends ArmaControlRenderer {
 
 		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 		{
-			colorBackground.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-					if (newValue instanceof SVColor) {
-						getBackgroundColorObserver().updateValue((SVColor) newValue);
-					}
+			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+				if (newValue instanceof SVColor) {
+					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
 			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
 
-			if (colorBackground.getValue() instanceof SVColor) {
-				setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-			}
 		}
 
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
 
-		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
+		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
@@ -88,28 +83,28 @@ public class ComboRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.TOOLTIP
 		);
 
-		myControl.findProperty(ControlPropertyLookup.ARROW_EMPTY).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
 			arrowEmpty_combo.updateAsync(newValue);
 		});
-		myControl.findProperty(ControlPropertyLookup.ARROW_FULL).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
 			arrowFull_combo.updateAsync(newValue);
 		});
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_SELECT).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelect = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.WHOLE_HEIGHT).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.WHOLE_HEIGHT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				wholeHeight = ((SVNumericValue) newValue).toDouble();
 				updateMenuPixelHeight();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_SELECT_BACKGROUND).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 				requestRender();

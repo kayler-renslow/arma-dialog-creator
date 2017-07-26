@@ -11,12 +11,9 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
@@ -53,25 +50,19 @@ public class XSliderRenderer extends ArmaControlRenderer {
 	public XSliderRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR);
 		{
-			colorBackground.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-				@Override
-				public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-					if (newValue instanceof SVColor) {
-						getBackgroundColorObserver().updateValue((SVColor) newValue);
-					}
+			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR);
+			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+				if (newValue instanceof SVColor) {
+					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
 			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
-
-			if (colorBackground.getValue() instanceof SVColor) {
-				setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-			}
 		}
-		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_ACTIVE).addValueListener((observer, oldValue, newValue) ->
+		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+
+		addValueListener(ControlPropertyLookup.COLOR_ACTIVE, (observer, oldValue, newValue) ->
 		{
 			if (newValue instanceof SVColor) {
 				colorActive = ((SVColor) newValue).toJavaFXColor();
@@ -79,19 +70,19 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.ARROW_EMPTY).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
 			arrowEmpty.updateAsync(newValue);
 		});
 
-		myControl.findProperty(ControlPropertyLookup.ARROW_FULL).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
 			arrowFull.updateAsync(newValue);
 		});
 
-		myControl.findProperty(ControlPropertyLookup.BORDER).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.BORDER, (observer, oldValue, newValue) -> {
 			border.updateAsync(newValue);
 		});
 
-		myControl.findProperty(ControlPropertyLookup.THUMB).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.THUMB, (observer, oldValue, newValue) -> {
 			thumb.updateAsync(newValue);
 		});
 

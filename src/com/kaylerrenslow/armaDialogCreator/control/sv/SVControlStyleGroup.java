@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  A {@link SVControlStyleGroup} has a 1 length {@link #getAsStringArray()}.
@@ -20,7 +21,16 @@ public class SVControlStyleGroup extends SerializableValue {
 	public static final ValueConverter<SVControlStyleGroup> CONVERTER = new ValueConverter<SVControlStyleGroup>() {
 		@Override
 		public SVControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
-			String[] split = values[0].split("\\+");
+			String val = values[0];
+			boolean asId = false;
+			if (val.startsWith("ID:")) {
+				// This is most useful with default value providers since they have no idea what the styles are being loaded for.
+				// By loading by style id, the matched styles will match perfectly. If not by id, the first style value will be matched,
+				// which there can be many styles with the same style value.
+				val = val.substring("ID:".length());
+				asId = true;
+			}
+			String[] split = val.split("\\+");
 			for (int i = 0; i < split.length; i++) {
 				split[i] = split[i].trim();
 			}
@@ -33,21 +43,49 @@ public class SVControlStyleGroup extends SerializableValue {
 					continue;
 				}
 				try {
-					styles.add(ControlStyle.findByValue(num));
-				} catch (IllegalArgumentException e) { //will catch number format exception
-					try {
+					if (asId) {
 						styles.add(ControlStyle.findById(num));
-					} catch (IllegalArgumentException ignore) {
-
+					} else {
+						styles.add(ControlStyle.findByValue(num));
 					}
+				} catch (IllegalArgumentException ignore) { //will catch number format exception
+					ignore.printStackTrace(System.out);
 				}
 			}
-			return new SVControlStyleGroup(styles.toArray(new ControlStyle[styles.size()]));
+			if (styles.isEmpty()) {
+				return null;
+			}
+			return new SVControlStyleGroup(styles);
 		}
 	};
 
+	/**
+	 Create a new style group.
+
+	 @param styles all styles
+	 @throws IllegalArgumentException if styles.length is 0
+	 */
 	public SVControlStyleGroup(@NotNull ControlStyle[] styles) {
+		if (styles.length == 0) {
+			throw new IllegalArgumentException("styles.length is 0");
+		}
 		this.styles = styles;
+	}
+
+	/**
+	 Create a new style group.
+
+	 @param styles all styles
+	 @throws IllegalArgumentException if styles.size() is 0
+	 */
+	public SVControlStyleGroup(@NotNull List<ControlStyle> styles) {
+		if (styles.size() == 0) {
+			throw new IllegalArgumentException("styles.size() is 0");
+		}
+		this.styles = new ControlStyle[styles.size()];
+		for (int i = 0; i < styles.size(); i++) {
+			this.styles[i] = styles.get(i);
+		}
 	}
 
 	@NotNull

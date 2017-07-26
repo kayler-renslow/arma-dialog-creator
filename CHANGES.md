@@ -1,15 +1,19 @@
 **Added:**
-* 
+* a more detailed default value provider
+    * nested classes for control can now have default values
+     * instead of a single .xml sheet for all types, every control gets its own xml sheet
+* default values for static and button
 
 **Changed:**
-* 
+* default value provider has an xml file for every control type and a control type's nested class.
+* added ability to convert a control style from as string with control style ID's rather than values
+* cleaned up some renderer code
+    * at the same time, we also made it so the value listeners added via a method are automatically invoked with the current value
 
 **Fixed:**
 * 
 
 **Notes:**
-* May 31: we should have default value providers in one xml file for every control.
-    * this will make xml files shorter (load faster for default value provider), and modularize things a lil
 * June 23:
     - Header: we need tests for +=
 * BUG: select many things in tree view and drag into folder

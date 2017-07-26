@@ -1,6 +1,5 @@
 package com.kaylerrenslow.armaDialogCreator.data.xml;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
@@ -24,20 +23,11 @@ public class DefaultValueXmlLoader extends XmlLoader {
 	public SerializableValue fetchValue(@NotNull ControlPropertyLookupConstant constantToFetch) {
 		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(getDocumentElement(), "property");
 		for (Element propertyElement : propertyElements) {
-			String lookupIdAttr = propertyElement.getAttribute("lookup-id");
-			if (lookupIdAttr.equals(constantToFetch.getPropertyId() + "")) {
-				ControlPropertyLookup lookup = ProjectXmlUtil.getLookup(lookupIdAttr, getDocumentElement(), this);
-				if (lookup == null) {
-					return null;
-				}
-				return ProjectXmlUtil.loadValue(constantToFetch.getPropertyName(), propertyElement, lookup.getPropertyType(), dataContext, this);
+			String popertyNameAttr = propertyElement.getAttribute("name");
+			if (popertyNameAttr.equals(constantToFetch.getPropertyName())) {
+				return ProjectXmlUtil.loadValue(constantToFetch.getPropertyName(), propertyElement, constantToFetch.getPropertyType(), dataContext, this);
 			}
 		}
 		return null;
-	}
-
-	public static SerializableValue fetchValue(@NotNull InputStream is, @NotNull DataContext context, @NotNull ControlPropertyLookupConstant constantToFetch) throws XmlParseException {
-		DefaultValueXmlLoader loader = new DefaultValueXmlLoader(is, context);
-		return loader.fetchValue(constantToFetch);
 	}
 }

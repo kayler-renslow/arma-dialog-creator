@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumericValue;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,12 +19,12 @@ public class BlinkControlHandler {
 	private boolean blinkIn = false;
 	private long blinkDurationPast = 0;
 
-	public BlinkControlHandler(@NotNull ControlProperty blinkProperty) {
-		blinkProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {
-			if (newValue == null) {
+	public BlinkControlHandler(@NotNull ArmaControlRenderer renderer, @NotNull ControlPropertyLookupConstant constant) {
+		renderer.addValueListener(constant, (observer, oldValue, newValue) -> {
+			if (newValue == null || !(newValue instanceof SVNumericValue)) {
 				blinkDurationSet = false;
 			} else {
-				blinkDuration = blinkProperty.getFloatValue() * 1000; //*1000 because its in millis
+				blinkDuration = ((SVNumericValue) newValue).toDouble() * 1000; //*1000 because its in millis
 				if (blinkDuration <= 0) {
 					blinkDurationSet = false;
 					return;

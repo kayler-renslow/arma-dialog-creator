@@ -16,10 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.ArmaControlLookup;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaUIScale;
-import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.Macro;
-import com.kaylerrenslow.armaDialogCreator.control.SpecificationRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.expression.SimpleEnv;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.treeView.CellType;
@@ -68,7 +65,12 @@ public class EditorComponentTreeViewTest extends Application {
 		}
 
 		@Override
-		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
+		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
+
+		}
+
+		@Override
+		public void cleanup() {
 
 		}
 	}

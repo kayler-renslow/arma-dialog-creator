@@ -280,13 +280,17 @@ public class Project implements SpecificationRegistry {
 	}
 
 	@Override
-	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
+	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable Context context) {
 		if (defaultValueProvider == null) {
 			defaultValueProvider = new ProjectDefaultValueProvider(applicationData);
 		}
-		defaultValueProvider.prefetchValues(tofetch);
+		defaultValueProvider.prefetchValues(tofetch, context);
 	}
 
+	@Override
+	public void cleanup() {
+		defaultValueProvider.cleanup();
+	}
 
 	/**
 	 Set the default language for {@link #getStringTable()}. If {@link #getStringTable()} is null, the value will be cached and when {@link #setStringTable(StringTable)} is invoked,

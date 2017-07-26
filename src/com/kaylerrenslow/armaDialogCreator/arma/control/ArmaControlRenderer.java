@@ -3,8 +3,10 @@ package com.kaylerrenslow.armaDialogCreator.arma.control;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaPrecision;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.PositionCalculator;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
@@ -484,6 +486,23 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		return resolutionUpdateGroup;
 	}
 
+	/**
+	 Adds a value listener to {@link #myControl} with the provided lookup.
+	 Afterwards, it invokes the listener with the current value.
+	 */
+	public void addValueListener(@NotNull ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> listener) {
+		addValueListener(myControl, lookup, listener);
+	}
+
+	/**
+	 Adds a value listener to the given {@link ControlClass} with the provided lookup.
+	 Afterwards, it invokes the listener with the current value.
+	 */
+	public void addValueListener(@NotNull ControlClass owner, ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> l) {
+		ControlProperty property = owner.findProperty(lookup);
+		property.addValueListener(l);
+		l.valueUpdated(property.getValueObserver(), property.getValue(), property.getValue());
+	}
 
 	/**
 	 Used by Arma Preview to let this renderer know that the user's mouse is over the control in the preview.

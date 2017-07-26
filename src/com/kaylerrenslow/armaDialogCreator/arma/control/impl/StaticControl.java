@@ -37,7 +37,8 @@ public class StaticControl extends ArmaControl {
 									ControlPropertyLookup.FONT,
 									ControlPropertyLookup.SIZE_EX
 							},
-							ControlPropertyLookupConstant.PRIORITY_SORT)
+							ControlPropertyLookupConstant.PRIORITY_SORT
+					)
 			);
 		}
 

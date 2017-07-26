@@ -422,7 +422,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 			}
 			if (replace) {
-				p.setValue(new SVControlStyleGroup(fixedStyles.toArray(new ControlStyle[fixedStyles.size()])));
+				p.setValue(new SVControlStyleGroup(fixedStyles));
 			}
 		}
 

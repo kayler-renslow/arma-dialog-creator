@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>1</v>
+	</property>
+	<property name='size'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='animTextureNormal'>
+		<v>#(argb,8,8,3)color(1,1,1,1)</v>
+	</property>
+	<property name='animTextureDisabled'>
+		<v>#(argb,8,8,3)color(0.2,0.2,0.2,1)</v>
+	</property>
+	<property name='animTextureOver'>
+		<v>#(argb,8,8,3)color(1,1,1,1)</v>
+	</property>
+	<property name='animTexturePressed'>
+		<v>#(argb,8,8,3)color(1,1,1,1)</v>
+	</property>
+	<property name='animTextureFocused'>
+		<v>#(argb,8,8,3)color(1,1,1,1)</v>
+	</property>
+	<property name='animTextureDefault'>
+		<v>#(argb,8,8,3)color(1,1,1,1)</v>
+	</property>
+	<property name='color'>
+		<v>1</v>
+		<v>0.7131</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='color2'>
+		<v>1</v>
+		<v>1</v>
+		<v>1</v>
+		<v>1</v>
+	</property>
+	<property name='colorBackground'>
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorBackground2'>
+		<v>0.102</v>
+		<v>0.102</v>
+		<v>0.102</v>
+		<v>1</v>
+	</property>
+	<property name='colorBackgroundFocused'>
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='colorFocused'> <!-- The drop shadow of the entire button-->
+		<v>1</v>
+		<v>0.7131</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorShadow'> <!-- The drop shadow of the entire button-->
+		<v>0</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='textureNoShortcut'> <!-- The drop shadow of the entire button-->
+		<v></v>
+	</property>
+	<property name='style'> <!-- no style-->
+		<v>ID:0</v>
+	</property>
+	<property name='soundClick'>
+		<v>\A3\ui_f\data\sound\RscButtonMenu\soundClick</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundEnter'>
+		<v>\A3\ui_f\data\sound\RscButtonMenu\soundEnter</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundEscape'>
+		<v>\A3\ui_f\data\sound\RscButtonMenu\soundEscape</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='soundPush'>
+		<v>\A3\ui_f\data\sound\RscButtonMenu\soundPush</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+</value-provider-sheet>

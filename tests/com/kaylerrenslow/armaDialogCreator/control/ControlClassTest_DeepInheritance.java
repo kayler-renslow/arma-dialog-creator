@@ -209,9 +209,15 @@ public class ControlClassTest_DeepInheritance {
 		}
 
 		@Override
-		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch) {
+		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
 
 		}
+
+		@Override
+		public void cleanup() {
+
+		}
+
 	}
 
 }

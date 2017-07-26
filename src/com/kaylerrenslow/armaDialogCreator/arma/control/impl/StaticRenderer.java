@@ -62,20 +62,14 @@ public class StaticRenderer extends ArmaControlRenderer {
 
 		textRenderer.setAllowMultiLine(true);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-
-		colorBackground.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+		{
+			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
-			}
-		});
-		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
-
-		if (colorBackground.getValue() instanceof SVColor) {
-			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
+			});
+			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
 		}
 
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
@@ -120,7 +114,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		});
 
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
-		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
+		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,

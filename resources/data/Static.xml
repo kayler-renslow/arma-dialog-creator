@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>1</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='style'>
+		<v>ID:4</v>
+	</property> <!-- text align left-->
+</value-provider-sheet>

@@ -11,8 +11,6 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
@@ -79,21 +77,15 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.SHADOW
 		);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
-		if (colorBackground.getValue() instanceof SVColor) {
-			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-		}
-		colorBackground.addValueListener(
-				new ValueListener<SerializableValue>() {
-					@Override
-					public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-						if (newValue instanceof SVColor) {
-							getBackgroundColorObserver().updateValue((SVColor) newValue);
-						}
-					}
+		{
+			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+				if (newValue instanceof SVColor) {
+					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
-		);
+			});
+			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		}
 
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_NORMAL, animTextureNormal);
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_DISABLED, animTextureDisabled);
@@ -103,59 +95,59 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_DEFAULT, animTextureDefault);
 		attachPicOrTexPropertyListener(ControlPropertyLookup.TEXTURE_NO_SHORTCUT, textureNoShortcut);
 
-		myControl.findProperty(ControlPropertyLookup.DEFAULT).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.DEFAULT, (observer, oldValue, newValue) -> {
 					requestFocus = newValue instanceof SVBoolean && ((SVBoolean) newValue).isTrue();
 					requestRender();
 				}
 		);
 
-		myControl.findProperty(ControlPropertyLookup.COLOR2).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR2, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				color2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_FOCUSED, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_DISABLED).addValueListener((observer,
-																					   oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_DISABLED, (observer,
+																oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorDisabled = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED).addValueListener((observer,
-																								 oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED, (observer,
+																		  oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBackgroundFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND2).addValueListener((observer,
-																						  oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND2, (observer,
+																   oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBackground2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.PERIOD_FOCUS).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.PERIOD_FOCUS, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				periodFocusMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.PERIOD_OVER).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(ControlPropertyLookup.PERIOD_OVER, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				periodOverMillis = Math.round(((SVNumericValue) newValue).toDouble() * 1000);
 				requestRender();
 			}
 		});
 
-		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
+		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
 		myControl.findProperty(ControlPropertyLookup.COLOR).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
@@ -171,25 +163,25 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		//nested classes
 		ControlClass hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
 		{
-			hitZone.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(hitZone, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					hitZone_top = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			hitZone.findProperty(ControlPropertyLookup.RIGHT).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(hitZone, ControlPropertyLookup.RIGHT, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					hitZone_right = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			hitZone.findProperty(ControlPropertyLookup.BOTTOM).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(hitZone, ControlPropertyLookup.BOTTOM, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					hitZone_bottom = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			hitZone.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(hitZone, ControlPropertyLookup.LEFT, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					hitZone_left = ((SVNumericValue) newValue).toDouble();
 					requestRender();
@@ -199,25 +191,25 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 		ControlClass textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
 		{
-			textPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(textPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					textPos_top = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			textPos.findProperty(ControlPropertyLookup.RIGHT).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(textPos, ControlPropertyLookup.RIGHT, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					textPos_right = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			textPos.findProperty(ControlPropertyLookup.BOTTOM).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(textPos, ControlPropertyLookup.BOTTOM, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					textPos_bottom = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			textPos.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(textPos, ControlPropertyLookup.LEFT, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					textPos_left = ((SVNumericValue) newValue).toDouble();
 					requestRender();
@@ -227,25 +219,25 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 
 		ControlClass shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
 		{
-			shortcutPos.findProperty(ControlPropertyLookup.TOP).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(shortcutPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					shortcutPos_top = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			shortcutPos.findProperty(ControlPropertyLookup.LEFT).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(shortcutPos, ControlPropertyLookup.LEFT, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					shortcutPos_left = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			shortcutPos.findProperty(ControlPropertyLookup.W).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(shortcutPos, ControlPropertyLookup.W, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					shortcutPos_w = ((SVNumericValue) newValue).toDouble();
 					requestRender();
 				}
 			});
-			shortcutPos.findProperty(ControlPropertyLookup.H).addValueListener((observer, oldValue, newValue) -> {
+			addValueListener(shortcutPos, ControlPropertyLookup.H, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					shortcutPos_h = ((SVNumericValue) newValue).toDouble();
 					requestRender();
@@ -257,7 +249,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	}
 
 	private void attachPicOrTexPropertyListener(ControlPropertyLookupConstant lookup, ImageOrTextureHelper helper) {
-		myControl.findProperty(lookup).addValueListener((observer, oldValue, newValue) -> {
+		addValueListener(lookup, (observer, oldValue, newValue) -> {
 			helper.updateAsync(newValue);
 		});
 	}

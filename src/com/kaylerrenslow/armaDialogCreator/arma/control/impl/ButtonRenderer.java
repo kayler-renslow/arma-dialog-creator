@@ -13,8 +13,6 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -62,30 +60,32 @@ public class ButtonRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.SHADOW
 		);
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND).getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+		{
+			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
-			}
-		});
-		myControl.findProperty(ControlPropertyLookup.COLOR_SHADOW).getValueObserver().addListener((observer,
-																								   oldValue, newValue) -> {
+			});
+			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+		}
+
+		addValueListener(ControlPropertyLookup.COLOR_SHADOW, (observer,
+															  oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorShadow = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.OFFSET_X).getValueObserver().addListener((observer, oldValue,
-																							   newValue) -> {
+		addValueListener(ControlPropertyLookup.OFFSET_X, (observer, oldValue,
+														  newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				offsetX = ((SVNumericValue) newValue).toDouble();
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.OFFSET_Y).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.OFFSET_Y,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetY = ((SVNumericValue) newValue).toDouble();
@@ -93,7 +93,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.OFFSET_PRESSED_X).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.OFFSET_PRESSED_X,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetPressedX = ((SVNumericValue) newValue).toDouble();
@@ -101,7 +101,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.OFFSET_PRESSED_Y).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.OFFSET_PRESSED_Y,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetPressedY = ((SVNumericValue) newValue).toDouble();
@@ -109,7 +109,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_ACTIVE).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND_ACTIVE,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBackgroundActive = ((SVColor) newValue).toJavaFXColor();
@@ -117,7 +117,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND_DISABLED).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND_DISABLED,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBackgroundDisabled = ((SVColor) newValue).toJavaFXColor();
@@ -125,7 +125,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.COLOR_FOCUSED,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorFocused = ((SVColor) newValue).toJavaFXColor();
@@ -133,7 +133,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.COLOR_FOCUSED2).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.COLOR_FOCUSED2,
 				(observer, oldValue, newValue) -> {
 					if (newValue == null) {
 						colorFocused2 = null;
@@ -146,13 +146,13 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.DEFAULT).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.DEFAULT,
 				(observer, oldValue, newValue) -> {
 					requestFocus = newValue instanceof SVBoolean && ((SVBoolean) newValue).isTrue();
 					requestRender();
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.BORDER_SIZE).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.BORDER_SIZE,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						borderSize = ((SVNumericValue) newValue).toDouble();
@@ -162,7 +162,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					requestRender();
 				}
 		);
-		myControl.findProperty(ControlPropertyLookup.COLOR_BORDER).getValueObserver().addListener(
+		addValueListener(ControlPropertyLookup.COLOR_BORDER,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBorder = ((SVColor) newValue).toJavaFXColor();
@@ -170,13 +170,9 @@ public class ButtonRenderer extends ArmaControlRenderer {
 					}
 				}
 		);
-		blinkControlHandler = new BlinkControlHandler(myControl.findProperty(ControlPropertyLookup.BLINKING_PERIOD));
+		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-		colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
-		if (colorBackground.getValue() instanceof SVColor) {
-			setBackgroundColor(((SVColor) colorBackground.getValue()).toJavaFXColor());
-		}
+
 		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
 		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 

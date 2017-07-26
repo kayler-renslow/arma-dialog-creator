@@ -262,6 +262,15 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	/**
+	 Just invokes {@link ControlClass#ControlClass(ControlClassSpecification, SpecificationRegistry, DefaultValueProvider.Context)}
+	 with this instance provided
+	 */
+	@NotNull
+	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry, @Nullable DefaultValueProvider.Context context) {
+		return new ControlClass(this, registry, context);
+	}
+
+	/**
 	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and {@link #getOptionalControlProperties()}
 
 	 @param lookup the lookup to fetch instance for

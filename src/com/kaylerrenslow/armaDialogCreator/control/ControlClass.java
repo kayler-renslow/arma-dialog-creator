@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -123,6 +124,9 @@ public class ControlClass {
 	 This constructor will create new {@link ControlProperty} instances for
 	 {@link #getOptionalProperties()} and {@link #getRequiredProperties()} via {@link ControlPropertyLookupConstant#newEmptyProperty(DefaultValueProvider)}
 	 (using parameter <code>registry</code>).
+	 <p>
+	 This constructor will invoke {@link #ControlClass(String, ControlClassRequirementSpecification, SpecificationRegistry, DefaultValueProvider.Context)},
+	 with a {@link DefaultValueProvider.ControlClassNameContext} passed as the context parameter.
 
 	 @param name the class name
 	 @param specification specification to use
@@ -130,37 +134,89 @@ public class ControlClass {
 	 @see ControlProperty
 	 */
 	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification, @NotNull SpecificationRegistry registry) {
+		this(name, specification, registry, new DefaultValueProvider.ControlClassNameContext(name));
+	}
+
+
+	/**
+	 This is equivalent to {@link #ControlClass(String, ControlClassRequirementSpecification, SpecificationRegistry)},
+	 but this constructor allows for a predefined {@link DefaultValueProvider.Context}.
+	 <p>
+	 All nested classes for this {@link ControlClass} will then get a new {@link DefaultValueProvider.ControlClassNameContext}
+	 with the provided {@link DefaultValueProvider.Context} as a parent context
+	 (e.g. {@link DefaultValueProvider.Context#getParentContext()} )
+	 */
+	public ControlClass(@NotNull String name, @NotNull ControlClassRequirementSpecification specification,
+						@NotNull SpecificationRegistry registry, @Nullable DefaultValueProvider.Context context) {
 		classNameObserver.updateValue(name);
 		this.specProvider = specification;
 
 		List<ControlPropertyLookupConstant> prefetch = new LinkedList<>();
 		prefetch.addAll(specProvider.getRequiredProperties());
 		prefetch.addAll(specProvider.getOptionalProperties());
-		registry.prefetchValues(prefetch);
+		registry.prefetchValues(prefetch, context);
+		addProperties(requiredProperties, specProvider.getRequiredProperties(), registry);
+		addProperties(optionalProperties, specProvider.getOptionalProperties(), registry);
 
-		addProperties(requiredProperties, specProvider.getRequiredProperties(), registry, true);
-		addProperties(optionalProperties, specProvider.getOptionalProperties(), registry, false);
-		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses());
-		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses());
+		registry.cleanup();
+
+		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses(), context);
+		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses(), context);
 
 		afterConstructor();
 	}
 
-	/** Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry} */
+	/**
+	 Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry}.
+	 This constructor will not use the {@link DefaultValueProvider} since the {@link ControlClassSpecification} should specify
+	 the values for each of its {@link ControlPropertySpecification}
+	 */
 	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry) {
+		this(specification, registry, null);
+	}
+
+	/**
+	 Construct a {@link ControlClass} with the given specification and {@link SpecificationRegistry}.
+	 This constructor will use the {@link DefaultValueProvider} if the provided {@link DefaultValueProvider.Context} is not
+	 null.
+	 <p>
+	 For each {@link ControlPropertySpecification} in {@link ControlClassSpecification},
+	 if a {@link DefaultValueProvider#getDefaultValue(ControlPropertyLookupConstant)} call returns a null value for the property spec,
+	 the {@link SerializableValue} inside the {@link ControlPropertySpecification#getValue()} will be used.
+	 <p>
+	 All nested classes for the {@link ControlClassSpecification} will then get a new {@link DefaultValueProvider.ControlClassNameContext}
+	 with the provided {@link DefaultValueProvider.Context} as a parent context
+	 (e.g. {@link DefaultValueProvider.Context#getParentContext()} )
+
+	 @param specification spec to use
+	 @param registry registry to use
+	 @param context context to use for getting default values, or null to just use the values inside the {@link ControlClassSpecification}
+	 */
+	public ControlClass(@NotNull ControlClassSpecification specification, @NotNull SpecificationRegistry registry,
+						@Nullable DefaultValueProvider.Context context) {
 		setClassName(specification.getClassName());
 		this.specProvider = specification;
-		for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
-			requiredProperties.add(property.constructNewControlProperty(registry));
+
+		LinkedList<ControlPropertyLookupConstant> prefetch = new LinkedList<>();
+
+		addProperties(specification.getRequiredControlProperties(), requiredProperties, registry, prefetch);
+		addProperties(specification.getOptionalControlProperties(), optionalProperties, registry, prefetch);
+
+		registry.prefetchValues(prefetch, context);
+		for (ControlPropertyLookupConstant lookup : prefetch) {
+			SerializableValue def = registry.getDefaultValue(lookup);
+			if (def == null) {
+				continue;
+			}
+			findProperty(lookup).setValue(def);
 		}
-		for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
-			optionalProperties.add(property.constructNewControlProperty(registry));
-		}
+		registry.cleanup();
+
 		for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
-			requiredNestedClasses.add(s.constructNewControlClass(registry));
+			requiredNestedClasses.add(s.constructNewControlClass(registry, new DefaultValueProvider.ControlClassNameContext(context, s.getClassName())));
 		}
 		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
-			optionalNestedClasses.add(s.constructNewControlClass(registry));
+			optionalNestedClasses.add(s.constructNewControlClass(registry, new DefaultValueProvider.ControlClassNameContext(context, s.getClassName())));
 		}
 		if (specification.getExtendClassName() != null) {
 			ControlClass extendMe = registry.findControlClassByName(specification.getExtendClassName());
@@ -173,7 +229,6 @@ public class ControlClass {
 	}
 
 	private void afterConstructor() {
-
 		for (ControlProperty controlProperty : requiredProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
@@ -191,19 +246,28 @@ public class ControlClass {
 		});
 	}
 
-	private void addProperties(@NotNull List<ControlProperty> propertiesList, @NotNull List<ControlPropertyLookupConstant> props, @NotNull SpecificationRegistry registry, boolean required) {
-		for (ControlPropertyLookupConstant lookup : props) {
-			if (required) {
-				propertiesList.add(lookup.newEmptyProperty(registry));
-			} else {
-				propertiesList.add(lookup.newEmptyProperty(null));
-			}
+	private void addProperties(@NotNull Iterable<ControlPropertySpecification> props, @NotNull List<ControlProperty> addTo,
+							   @NotNull SpecificationRegistry registry, @NotNull LinkedList<ControlPropertyLookupConstant> prefetch) {
+		for (ControlPropertySpecification property : props) {
+			ControlProperty p = property.constructNewControlProperty(registry);
+			addTo.add(p);
+			prefetch.add(p.getPropertyLookup());
 		}
 	}
 
-	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull SpecificationRegistry registry, @NotNull List<ControlClassSpecification> nestedClassesSpecs) {
+	private void addProperties(@NotNull List<ControlProperty> propertiesList,
+							   @NotNull List<ControlPropertyLookupConstant> props,
+							   @NotNull SpecificationRegistry registry) {
+		for (ControlPropertyLookupConstant lookup : props) {
+			propertiesList.add(lookup.newEmptyProperty(registry));
+		}
+	}
+
+	private void addNestedClasses(@NotNull List<ControlClass> nestedClasses, @NotNull SpecificationRegistry registry,
+								  @NotNull List<ControlClassSpecification> nestedClassesSpecs,
+								  @Nullable DefaultValueProvider.Context context) {
 		for (ControlClassSpecification nestedClass : nestedClassesSpecs) {
-			nestedClasses.add(new ControlClass(nestedClass, registry));
+			nestedClasses.add(new ControlClass(nestedClass, registry, new DefaultValueProvider.ControlClassNameContext(context, nestedClass.getClassName())));
 		}
 	}
 

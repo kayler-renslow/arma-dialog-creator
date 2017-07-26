@@ -44,7 +44,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	 */
 	protected ArmaControl(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 						  @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, lookup.specProvider, registry);
+		super(name, lookup.specProvider, registry, new DefaultValueProvider.ControlTypeContext(lookup.controlType));
 		this.armaControlLookup = lookup;
 		construct(lookup, resolution, env);
 	}
@@ -67,7 +67,7 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
 						  @NotNull ArmaResolution resolution, @NotNull Env env,
 						  @NotNull SpecificationRegistry registry) {
-		super(specification, registry);
+		super(specification, registry, new DefaultValueProvider.ControlTypeContext(lookup.controlType));
 		this.armaControlLookup = lookup;
 		construct(lookup, resolution, env);
 	}
