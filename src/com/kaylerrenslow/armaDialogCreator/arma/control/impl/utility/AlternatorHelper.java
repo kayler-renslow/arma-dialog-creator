@@ -5,7 +5,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
  @author Kayler
  @since 11/22/2016 */
-public class AlternatorHelper<T> {
+public class AlternatorHelper {
 	private long alternateMillis;
 	private long lastUpdate;
 	private boolean in = false;

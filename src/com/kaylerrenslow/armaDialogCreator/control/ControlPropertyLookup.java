@@ -57,7 +57,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 			new ControlPropertyOption("Bottom", "bottom", "Bottom align.")
 	),
 	COLOR__HEX(21, "color", PropertyType.HexColorString),
-	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString), //default shadow color
+	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString),
 	BLINKING_PERIOD(23, "blinkingPeriod", PropertyType.Float),
 
 	AUTO_PLAY(24, "autoPlay", PropertyType.Boolean),
@@ -136,6 +136,10 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	CAN_MODIFY(94, "canModify", PropertyType.Boolean),
 	MAX_CHARS(95, "maxChars", PropertyType.Int),
 	FORCE_DRAW_CARET(96, "forceDrawCaret", PropertyType.Boolean),
+	COLOR_SELECT_BACKGROUND2(97, "colorSelectBackground2", PropertyType.Color),
+	COLOR_SELECT2(98, "colorSelect2", PropertyType.Color),
+	ROW_HEIGHT(99, "rowHeight", PropertyType.Float),
+	PERIOD(100, "period", PropertyType.Float),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

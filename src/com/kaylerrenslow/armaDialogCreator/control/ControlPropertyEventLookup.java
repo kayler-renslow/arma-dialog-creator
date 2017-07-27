@@ -120,4 +120,9 @@ public enum ControlPropertyEventLookup {
 	public static ControlPropertyLookup[] allWithComboScope() {
 		return allWith("combo");
 	}
+
+	@NotNull
+	public static ControlPropertyLookup[] allWithListboxScope() {
+		return allWith("listbox");
+	}
 }

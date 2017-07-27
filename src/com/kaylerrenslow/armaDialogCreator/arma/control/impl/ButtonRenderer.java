@@ -51,7 +51,7 @@ public class ButtonRenderer extends ArmaControlRenderer {
 	 alternating bg color helper. if control has focus (but mouse isn't over control), colorFocused and
 	 colorFocused2 will alternate
 	 */
-	private final AlternatorHelper<Color> focusedColorAlternator = new AlternatorHelper<>(500);
+	private final AlternatorHelper focusedColorAlternator = new AlternatorHelper(500);
 
 	public ButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);

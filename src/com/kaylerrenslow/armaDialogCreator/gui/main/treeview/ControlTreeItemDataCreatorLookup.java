@@ -35,7 +35,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	COMBO(ControlType.Combo, ComboDataCreator.INSTANCE),
 	XCOMBO(ControlType.XCombo, StaticDataCreator.INSTANCE),
 
-	LISTBOX(ControlType.ListBox, StaticDataCreator.INSTANCE),
+	LISTBOX(ControlType.ListBox, ListboxDataCreator.INSTANCE),
 	XLISTBOX(ControlType.XListBox, StaticDataCreator.INSTANCE),
 	LISTNBOX(ControlType.ListNBox, StaticDataCreator.INSTANCE),
 

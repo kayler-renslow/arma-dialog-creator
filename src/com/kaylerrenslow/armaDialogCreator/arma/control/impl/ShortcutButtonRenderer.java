@@ -68,7 +68,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 	 Alternating color helper. if control has focus (but mouse isn't over control).
 	 There is only one because both the alternating text color and alternating bg colors are synced
 	 */
-	private final AlternatorHelper<Color> focusedColorAlternator = new AlternatorHelper<>(500);
+	private final AlternatorHelper focusedColorAlternator = new AlternatorHelper(500);
 
 	public ShortcutButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);

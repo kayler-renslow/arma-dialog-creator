@@ -36,7 +36,7 @@ public enum ArmaControlLookup {
 	Combo(ControlType.Combo, ComboControl.SPEC_PROVIDER, ComboRenderer.class),
 	XCombo(ControlType.XCombo, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 
-	ListBox(ControlType.ListBox, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
+	ListBox(ControlType.ListBox, ListboxControl.SPEC_PROVIDER, ListboxRenderer.class),
 	XListBox(ControlType.XListBox, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 	ListNBox(ControlType.ListNBox, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 

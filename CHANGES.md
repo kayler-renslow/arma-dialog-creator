@@ -1,5 +1,5 @@
 **Added:**
-* default values for XSlider
+* start of lsitbox and listbox renderer
 
 **Changed:**
 *  
