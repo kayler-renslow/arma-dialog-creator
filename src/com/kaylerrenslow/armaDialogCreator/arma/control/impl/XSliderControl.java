@@ -67,7 +67,7 @@ public class XSliderControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return new ControlStyle[]{
-					ControlStyle.HORIZONTAL
+					ControlStyle.SL_HORZ
 			};
 		}
 	}

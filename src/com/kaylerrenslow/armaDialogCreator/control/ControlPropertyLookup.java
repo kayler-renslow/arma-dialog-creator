@@ -118,8 +118,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	COLOR_SELECTION(79, "colorSelection", PropertyType.Color),
 	AUTO_COMPLETE(80, "autocomplete", PropertyType.String,
 			new ControlPropertyOption("None", "\"\"", "No autocomplete."),
-			new ControlPropertyOption("Scripting", "\"scripting\"", "SQF scripting autocomplete."),
-			new ControlPropertyOption("General", "\"general\"", "Word auto complete.")
+			new ControlPropertyOption("Scripting", "\"scripting\"", "SQF autocomplete.")
 	),
 	HTML_CONTROL(81, "htmlControl", PropertyType.Boolean),
 	COLOR_ACTIVE(82, "colorActive", PropertyType.Color),
@@ -134,6 +133,9 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
 	COLOR_SELECT_BACKGROUND(91, "colorSelectBackground", PropertyType.Color),
 	WHOLE_HEIGHT(92, "wholeHeight", PropertyType.Float),
 	MAX_HISTORY_DELAY(93, "maxHistoryDelay", PropertyType.Float),
+	CAN_MODIFY(94, "canModify", PropertyType.Boolean),
+	MAX_CHARS(95, "maxChars", PropertyType.Int),
+	FORCE_DRAW_CARET(96, "forceDrawCaret", PropertyType.Boolean),
 
 	/*event handlers*/
 	EVENT_ON_LOAD(1000, "onLoad", PropertyType.SQF),

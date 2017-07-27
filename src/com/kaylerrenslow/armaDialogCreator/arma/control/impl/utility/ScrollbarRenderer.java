@@ -81,11 +81,7 @@ public class ScrollbarRenderer {
 					renderer.paintMultiplyColor(gc, x, y, x + w, y + h, scrollbarColor);
 				}
 				if (rotate) {
-					gc.save();
-					gc.translate(x + w / 2, y + h / 2); //move to center of image
-					gc.rotate(180);
-					gc.drawImage(helper.getImage(), -w / 2, -h / 2, w, h);
-					gc.restore();
+					MiscHelpers.paintRotatedImage(gc, helper.getImage(), x, y, w, h, 180);
 				} else {
 					gc.drawImage(helper.getImage(), x, y, w, h);
 				}

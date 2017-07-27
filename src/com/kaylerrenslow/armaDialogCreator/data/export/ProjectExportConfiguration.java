@@ -46,10 +46,7 @@ public class ProjectExportConfiguration {
 			@Nullable String exportConfigName
 	) {
 		this.exportClassName = exportClassName;
-		if (!exportDirectory.exists()) {
-			exportDirectory.mkdirs();
-		}
-		setExportDirectory(exportDirectory);
+		this.exportDirectory = exportDirectory;
 		this.project = project;
 		this.placeAdcNotice = placeAdcNotice;
 		this.exportMacrosToFile = exportMacrosToFile;
@@ -146,7 +143,7 @@ public class ProjectExportConfiguration {
 	}
 
 	@NotNull
-	public static ProjectExportConfiguration getDefaultConfiguration(@NotNull Project project) {
+	public static ProjectExportConfiguration newDefaultConfiguration(@NotNull Project project) {
 		return new ProjectExportConfiguration(
 				DEFAULT_CLASS_NAME,
 				project.getProjectSaveDirectory(),

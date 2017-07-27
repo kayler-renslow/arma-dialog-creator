@@ -1,9 +1,8 @@
 **Added:**
-* 
+* default values for XSlider
 
 **Changed:**
-* made the ability to rename control in config popup less ambiguous
-* made project load error reporting more descriptive 
+*  
 
 **Fixed:**
 * 

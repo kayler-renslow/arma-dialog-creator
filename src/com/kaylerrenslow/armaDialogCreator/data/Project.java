@@ -55,9 +55,9 @@ public class Project implements SpecificationRegistry {
 		this.applicationData = applicationData;
 		this.projectName = info.getProjectName();
 		this.workspace = info.getWorkspace();
-		this.projectSaveDirectory = info.getProjectDirectry();
+		this.projectSaveDirectory = info.getProjectDirectory();
 
-		exportConfiguration = ProjectExportConfiguration.getDefaultConfiguration(this);
+		exportConfiguration = ProjectExportConfiguration.newDefaultConfiguration(this);
 
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();

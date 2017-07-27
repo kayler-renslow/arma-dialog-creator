@@ -54,6 +54,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 		}
 
 		myRootElement.addRow(0, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.class_name")), inClassName);
+		inClassName.setValue("Control" + inClassName.hashCode());
 		myRootElement.addRow(1, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.control_type")), menuButtonControlType);
 		myRootElement.addRow(2, new Label(Lang.ApplicationBundle().getString("Popups.NewControl.background_control")), checkBoxBackgroundControl);
 

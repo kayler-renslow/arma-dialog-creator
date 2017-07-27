@@ -51,6 +51,9 @@ public class EditControl extends ArmaControl {
 							ArmaControlSpecRequirement.mergeArrays(
 									new ControlPropertyLookup[]{
 											ControlPropertyLookup.SHADOW,
+											ControlPropertyLookup.CAN_MODIFY,
+											ControlPropertyLookup.MAX_CHARS,
+											ControlPropertyLookup.FORCE_DRAW_CARET,
 											ControlPropertyLookup.LINE_SPACING,
 											ControlPropertyLookup.TOOLTIP,
 											ControlPropertyLookup.HTML_CONTROL,

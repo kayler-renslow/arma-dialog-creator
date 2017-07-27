@@ -226,7 +226,6 @@ public final class ArmaDialogCreator extends Application {
 						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
 
 						applicationData.setCurrentProject(result.getProject());
-
 					} catch (Exception e) {
 						applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
 						INSTANCE.showLater.add(new Runnable() {

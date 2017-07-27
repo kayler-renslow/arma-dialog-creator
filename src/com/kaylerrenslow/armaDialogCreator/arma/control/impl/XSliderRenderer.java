@@ -2,10 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageOrTextureHelper;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TexturePainter;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
@@ -111,7 +108,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 
 		//paints the left arrow
-		paintArrow(gc, arrowLeftX, leftArrowPress ? arrowFull : arrowEmpty);
+		paintArrow(gc, arrowLeftX, leftArrowPress ? arrowFull : arrowEmpty, false);
 
 		//paints the background behind the thumb
 		paintThumb(gc, thumbX, thumbWidth, border);
@@ -120,7 +117,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		paintThumb(gc, thumbX, (int) (thumbWidth * progress), thumb);
 
 		//paints the right arrow
-		paintArrow(gc, arrowRightX, rightArrowPress ? arrowFull : arrowEmpty);
+		paintArrow(gc, arrowRightX, rightArrowPress ? arrowFull : arrowEmpty, true);
 
 	}
 
@@ -157,7 +154,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, ImageOrTextureHelper helper) {
+	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, ImageOrTextureHelper helper, boolean rotate) {
 		Color arrowColor = (focused && isEnabled()) ? colorActive : backgroundColor;
 		final int arrowWidth = getHeight();
 		switch (helper.getMode()) {
@@ -169,7 +166,11 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			}
 			case Image: {
 				paintMultiplyColor(gc, arrowX, y1, arrowX + arrowWidth, y2, arrowColor);
-				gc.drawImage(helper.getImage(), arrowX, y1, arrowWidth, getHeight());
+				if (rotate) {
+					MiscHelpers.paintFlippedImage(gc, helper.getImage(), arrowX, y1, arrowWidth, arrowWidth);
+				} else {
+					gc.drawImage(helper.getImage(), arrowX, y1, arrowWidth, getHeight());
+				}
 				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 				break;
 			}

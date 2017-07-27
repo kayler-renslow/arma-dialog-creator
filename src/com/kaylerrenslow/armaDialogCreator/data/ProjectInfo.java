@@ -37,7 +37,7 @@ public class ProjectInfo {
 	}
 
 	@NotNull
-	public File getProjectDirectry() {
+	public File getProjectDirectory() {
 		return projectDirectory;
 	}
 

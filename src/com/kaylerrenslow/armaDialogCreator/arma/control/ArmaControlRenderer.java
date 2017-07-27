@@ -620,7 +620,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 								   @NotNull Color color) {
 		//multiply the color on the image
 		gc.setStroke(color);
-		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
 		Region.fillRectangle(gc, x1, y1, x2, y2);
+		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
 	}
 }

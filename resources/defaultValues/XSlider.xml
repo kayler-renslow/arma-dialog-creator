@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>0.1</v>
+	</property>
+
+	<property name='style'> <!-- horiz-->
+		<v>ID:29</v>
+	</property>
+	<property name='arrowEmpty'>
+		<v>\A3\ui_f\data\GUI\Cfg\Slider\arrowEmpty_ca.paa</v>
+	</property>
+	<property name='arrowFull'>
+		<v>\A3\ui_f\data\GUI\Cfg\Slider\arrowFull_ca.paa</v>
+	</property>
+	<property name='border'>
+		<v>\A3\ui_f\data\GUI\Cfg\Slider\border_ca.paa</v>
+	</property>
+	<property name='thumb'>
+		<v>\A3\ui_f\data\GUI\Cfg\Slider\thumb_ca.paa</v>
+	</property>
+
+	<property name='colorActive'>
+		<v>1</v>
+		<v>1</v>
+		<v>1</v>
+		<v>1</v>
+	</property>
+
+</value-provider-sheet>
