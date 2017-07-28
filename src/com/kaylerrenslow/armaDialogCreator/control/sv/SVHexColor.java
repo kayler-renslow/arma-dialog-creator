@@ -32,7 +32,7 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	public SVHexColor(@NotNull String hex) {
 		this.hex = hex;
 		double[] colorArray = new double[4];
-		getColorArray(colorArray, Integer.decode(hex));
+		getColorArray(colorArray, hex);
 		setColor(colorArray);
 	}
 
@@ -64,10 +64,27 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	/**
 	 Gets color array. Ignores alpha
 
-	 @param arr stores values in given array (array must be length 3) (r,g,b)
+	 @param arr stores values in given array (array must be length 3) (r,g,b).
+	 This array is modified directly and is returned. Each value at each index will be randed 0-1
+	 @param color color as a hex string
+	 @return the array
+	 @throws IllegalArgumentException when the color couldn't be converted to an int
+	 */
+	public static double[] getColorArray(double[] arr, @NotNull String color) {
+		return getColorArray(arr, Integer.decode(color));
+	}
+
+	/**
+	 Gets color array. Ignores alpha
+
+	 @param arr stores values in given array (array must be length 3) (r,g,b).
+	 This array is modified directly and is returned. Each value at each index will be randed 0-1
+	 @param color the color as an integer
+	 @return the array
+	 @throws IllegalArgumentException when the array length < 3
 	 */
 	public static double[] getColorArray(double[] arr, int color) {
-		if (arr.length != 4) {
+		if (arr.length < 3) {
 			throw new IllegalArgumentException("arr.length != 4");
 		}
 		int r = (color) & 0xFF;

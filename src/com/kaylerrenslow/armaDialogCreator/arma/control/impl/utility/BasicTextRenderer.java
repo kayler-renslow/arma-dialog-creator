@@ -99,7 +99,7 @@ public class BasicTextRenderer {
 
 		if (shadow != null) {
 			renderer.addValueListener(shadow, (observer, oldValue, newValue) -> {
-				textShadow = TextHelper.getTextShadow(newValue);
+				textShadow = TextShadow.getTextShadow(newValue);
 				renderer.requestRender();
 			});
 		}

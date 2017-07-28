@@ -45,25 +45,6 @@ public class TextHelper {
 	}
 
 	/**
-	 @return the {@link TextShadow} for the given value. If the given value is null, will return
-	 {@link TextShadow#None}
-	 */
-	@NotNull
-	public static TextShadow getTextShadow(@Nullable SerializableValue newValue) {
-		if (newValue != null) {
-			String v = newValue.toString();
-			if (v.contains("0")) {
-				return TextShadow.None;
-			} else if (v.contains("1")) {
-				return TextShadow.DropShadow;
-			} else if (v.contains("2")) {
-				return TextShadow.Stroke;
-			}
-		}
-		return TextShadow.None;
-	}
-
-	/**
 	 Paint the text where designated. The text will not be clipped anywhere.
 	 <p>
 	 This method will invoke {@link GraphicsContext#save()} and {@link GraphicsContext#restore()}
