@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<value-provider-sheet version="1">
+	<property name='idc'>
+		<v>-1</v>
+	</property>
+	<property name='x'>
+		<v>0</v>
+	</property>
+	<property name='y'>
+		<v>0</v>
+	</property>
+	<property name='w'>
+		<v>1</v>
+	</property>
+	<property name='h'>
+		<v>0.1</v>
+	</property>
+	<property name='sizeEx'>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+	</property>
+	<property name='font'>
+		<v>PuristaMedium</v>
+	</property>
+	<property name='text'>
+		<v></v>
+	</property>
+	<property name='style'> <!-- listbox textures-->
+		<v>ID:33</v>
+	</property>
+	<property name='soundSelect'>
+		<v>\A3\ui_f\data\sound\RscListbox\soundSelect</v>
+		<v>0.09</v>
+		<v>1</v>
+	</property>
+	<property name='colorSelect'>
+		<v>1</v>
+		<v>0</v>
+		<v>0</v>
+		<v>1</v>
+	</property>
+	<property name='colorDisabled'>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>0.2</v>
+		<v>1</v>
+	</property>
+	<property name='rowHeight'>
+		<v>0</v>
+	</property>
+	<property name='maxHistoryDelay'>
+		<v>0</v>
+	</property>
+</value-provider-sheet>
