@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.popup;
 
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
@@ -14,7 +15,9 @@ public class SimpleResponseDialog extends StageDialog<StackPane> {
 
 	public SimpleResponseDialog(Stage primaryStage, String title, String body, boolean canCancel, boolean canOk, boolean hasHelp) {
 		super(primaryStage, new StackPane(), title, canCancel, canOk, hasHelp);
-		final Label lblBody = new Label(body);
+		myRootElement.setAlignment(Pos.TOP_LEFT);
+		Label lblBody = new Label(body);
+		lblBody.maxWidthProperty().bind(myRootElement.widthProperty());
 		lblBody.setWrapText(true);
 		myRootElement.getChildren().add(lblBody);
 

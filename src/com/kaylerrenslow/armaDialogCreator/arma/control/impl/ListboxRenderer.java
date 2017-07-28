@@ -41,6 +41,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 	private Color colorSelectBackground2 = null;
 	private final ScrollbarRenderer scrollbarRenderer;
 	private final AlternatorHelper periodAlternator = new AlternatorHelper(0);
+	private int selectedRow = 0;
 
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
@@ -155,33 +156,36 @@ public class ListboxRenderer extends ArmaControlRenderer {
 				}
 			}
 			super.paint(gc, canvasContext);
+			int controlHeight = getHeight();
 			int allTextHeight = 0;
-			final int textGap = (int) Math.max(0, rowHeight * resolution.getViewportHeight());
 			final int textPadding = (int) (getWidth() * 0.025);
 			int leftTextX = x1 + textPadding;
 			int textHeight = textRenderer.getTextLineHeight();
 			double ratio = periodAlternator.updateAndGetRatio();
-			final int rowHeight = textHeight + textGap;
+			final int rowHeight = getRowPixelHeight();
 
-			scrollbarRenderer.paint(gc, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, getHeight());
+			scrollbarRenderer.paint(gc, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
 
+			gc.beginPath();
 			gc.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());
 			gc.closePath();
 			gc.clip();
-			while (allTextHeight <= getHeight() && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
+			int row = 0;
+			int selectedRow = preview ? this.selectedRow : 0;
+			while (allTextHeight <= controlHeight && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
 				int textY2 = y1 + allTextHeight;
-				if (allTextHeight == 0) {
+				if (row == selectedRow) {
 					if (colorSelectBackground != null) {
 						Color bgColor = colorSelectBackground;
-						if (colorSelectBackground2 != null && focused) {
+						if (focused && colorSelectBackground2 != null) {
 							bgColor = colorSelectBackground.interpolate(colorSelectBackground2, ratio);
 						}
 						gc.setStroke(bgColor);
-						Region.fillRectangle(gc, x1, y1, x2, textY2 + rowHeight);
+						Region.fillRectangle(gc, x1, y1 + allTextHeight, x2, textY2 + rowHeight);
 					}
 					Color tColor = colorSelect;
-					if (colorSelect2 != null && focused) {
-						tColor = colorSelect.interpolate(colorSelect2, ratio);
+					if (focused && colorSelect2 != null) {
+						tColor = colorSelect2.interpolate(colorSelect, ratio);
 					}
 					Color oldTextColor = textRenderer.getTextColor();
 					textRenderer.setTextColor(tColor);
@@ -192,6 +196,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 					textRenderer.paint(gc, leftTextX, textY2);
 				}
 				allTextHeight += rowHeight;
+				row++;
 			}
 		}
 	}
@@ -209,11 +214,13 @@ public class ListboxRenderer extends ArmaControlRenderer {
 	@Override
 	public void mousePress(@NotNull MouseButton mb) {
 		super.mousePress(mb);
-
+		if (mouseButtonDown != MouseButton.PRIMARY) {
+			return;
+		}
+		this.selectedRow = Math.abs(this.mouseOverY - this.y1) / getRowPixelHeight();
 	}
 
-	@Override
-	public void mouseRelease() {
-		super.mouseRelease();
+	private int getRowPixelHeight() {
+		return textRenderer.getTextLineHeight() + (int) Math.max(0, this.rowHeight * resolution.getViewportHeight());
 	}
 }

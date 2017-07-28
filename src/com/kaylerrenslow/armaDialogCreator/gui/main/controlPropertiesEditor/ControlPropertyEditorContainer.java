@@ -240,6 +240,7 @@ class ControlPropertyEditorContainer extends HBox {
 						bundle.getString("ClearValuePopup.popup_title"),
 						bundle.getString("ClearValuePopup.body"), true, true, false
 				);
+				dialog.setResizable(false);
 				ResourceBundle appBundle = Lang.ApplicationBundle();
 				dialog.getFooter().getBtnCancel().setText(appBundle.getString("Confirmation.no"));
 				dialog.getFooter().getBtnOk().setText(appBundle.getString("Confirmation.yes"));
