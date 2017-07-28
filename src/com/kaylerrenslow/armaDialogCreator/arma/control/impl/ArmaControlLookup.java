@@ -13,7 +13,7 @@ public enum ArmaControlLookup {
 	Static(ControlType.Static, StaticControl.SPEC_PROVIDER, StaticRenderer.class),
 	HTML(ControlType.HTML, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 	Edit(ControlType.Edit, EditControl.SPEC_PROVIDER, EditRenderer.class),
-	StructuredText(ControlType.StructuredText, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
+	StructuredText(ControlType.StructuredText, StructuredTextControl.SPEC_PROVIDER, StructuredTextRenderer.class),
 	ActiveText(ControlType.ActiveText, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 
 	Button(ControlType.Button, ButtonControl.SPEC_PROVIDER, ButtonRenderer.class),

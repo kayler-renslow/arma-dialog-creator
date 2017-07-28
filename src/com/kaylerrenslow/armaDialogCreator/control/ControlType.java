@@ -59,7 +59,7 @@ public enum ControlType {
 	_Test(Integer.MIN_VALUE, "ADC TEST", ControlTypeGroup.TEXT);
 	//@formatter:on
 
-	/** all control types that are supported for the application */
+	/** All control types that are supported for the application */
 	public static final ControlType[] AVAILABLE_TYPES = {
 			Static, ControlsGroup, Button, ShortcutButton, Edit,
 			XSlider, Combo, ListBox, Progress

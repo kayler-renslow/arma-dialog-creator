@@ -1,6 +1,5 @@
 **Added:**
-* progress control and renderer
-* progress default values
+* 
 
 **Changed:**
 *  
