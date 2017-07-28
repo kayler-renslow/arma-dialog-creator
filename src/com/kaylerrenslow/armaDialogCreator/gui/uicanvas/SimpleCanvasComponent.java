@@ -25,7 +25,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	protected int x1, y1, x2, y2;
 	protected Color backgroundColor = randomColor(this);
 
-	private Border border;
+	protected Border border;
 	private boolean isEnabled = true;
 	private boolean isVisible = true;
 
@@ -66,7 +66,15 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		setEnabled(!ghost);
 	}
 
+	/** Invokes {@link #paintBorder(GraphicsContext)} and then paints the square with {@link #backgroundColor} and */
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
+		paintBorder(gc);
+		gc.setStroke(backgroundColor);
+		fillRectangle(gc);
+	}
+
+	/** Will paint the {@link #border} if it isn't null. If the border is null, nothing will happen. */
+	protected void paintBorder(@NotNull GraphicsContext gc) {
 		if (border != null) {
 			gc.save();
 			gc.setStroke(border.getColor());
@@ -74,9 +82,6 @@ public class SimpleCanvasComponent implements CanvasComponent {
 			strokeRectangle(gc);
 			gc.restore();
 		}
-		gc.setFill(backgroundColor);
-		gc.setStroke(backgroundColor);
-		fillRectangle(gc);
 	}
 
 	public void setBackgroundColor(@NotNull Color paint) {

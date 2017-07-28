@@ -20,7 +20,7 @@ public enum ArmaControlLookup {
 	ShortcutButton(ControlType.ShortcutButton, ShortcutButtonControl.SPEC_PROVIDER, ShortcutButtonRenderer.class),
 	XButton(ControlType.XButton, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 
-	Progress(ControlType.Progress, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
+	Progress(ControlType.Progress, ProgressControl.SPEC_PROVIDER, ProgressRenderer.class),
 	StaticSkew(ControlType.StaticSkew, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 	LineBreak(ControlType.Linebreak, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),
 	Tree(ControlType.Tree, ArmaControlSpecRequirement.TRIVIAL, ArmaControlRenderer.class),

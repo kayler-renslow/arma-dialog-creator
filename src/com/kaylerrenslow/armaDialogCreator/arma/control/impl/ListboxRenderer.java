@@ -54,7 +54,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 		textRenderer = new BasicTextRenderer(control, this,
 				null, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW
+				ControlPropertyLookup.SHADOW, true
 		);
 		textRenderer.setText("Placeholder");
 

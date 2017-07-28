@@ -29,7 +29,8 @@ public class TooltipRenderer {
 	) {
 		this.control = control;
 		textRenderer = new BasicTextRenderer(
-				control, renderer, tooltipText, tooltipTextColor, null, null, null
+				control, renderer, tooltipText, tooltipTextColor, null, null, null,
+				false
 		);
 		textRenderer.setFont(TOOLTIP_FONT);
 		control.findProperty(tooltipBackgroundColor).getValueObserver().addListener((observer, oldValue, newValue) ->

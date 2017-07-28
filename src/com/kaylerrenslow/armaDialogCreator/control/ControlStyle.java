@@ -53,8 +53,8 @@ public enum ControlStyle {
 	//SL_TEXTURES(30, 0x10, getString("ControlStyle.sl_textures"), getString("ControlStyle.Doc.sl_textures")),
 
 	// progress bar
-	VERTICAL(31, 0, getString("ControlStyle.vertical"), getString("ControlStyle.Doc.vertical")),
-	HORIZONTAL(32, 1024, getString("ControlStyle.horizontal"), getString("ControlStyle.Doc.horizontal")),
+	VERTICAL(31, 1, getString("ControlStyle.vertical"), getString("ControlStyle.Doc.vertical")),
+	HORIZONTAL(32, 0, getString("ControlStyle.horizontal"), getString("ControlStyle.Doc.horizontal")),
 
 	// Listbox styles
 	LB_TEXTURES(33, 0x10, getString("ControlStyle.lb_textures"), getString("ControlStyle.Doc.lb_textures")),

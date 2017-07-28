@@ -19,7 +19,7 @@ public enum ControlTreeItemDataCreatorLookup {
 	SHORTCUTBUTTON(ControlType.ShortcutButton, ShortcutButtonDataCreator.INSTANCE),
 	XBUTTON(ControlType.XButton, StaticDataCreator.INSTANCE),
 
-	PROGRESS(ControlType.Progress, StaticDataCreator.INSTANCE),
+	PROGRESS(ControlType.Progress, ProgressDataCreator.INSTANCE),
 	STATIC_SKEW(ControlType.StaticSkew, StaticDataCreator.INSTANCE),
 	LINEBREAK(ControlType.Linebreak, StaticDataCreator.INSTANCE),
 	TREE(ControlType.Tree, StaticDataCreator.INSTANCE),

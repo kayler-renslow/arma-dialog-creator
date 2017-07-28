@@ -44,7 +44,7 @@ public class EditRenderer extends ArmaControlRenderer {
 		textRenderer = new BasicTextRenderer(control, this,
 				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW
+				ControlPropertyLookup.SHADOW, true
 		);
 		textRenderer.setAllowMultiLine(true);
 

@@ -11,14 +11,13 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  @author Kayler
- @since 07/08/2017 */
-public class XSliderControl extends ArmaControl {
+ @since 07/27/2017 */
+public class ProgressControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-	public XSliderControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
-						  @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.XSlider, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.SL_HORZ.getStyleGroup());
+	public ProgressControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
+						   @NotNull SpecificationRegistry registry) {
+		super(name, ArmaControlLookup.Progress, resolution, env, registry);
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
@@ -29,12 +28,9 @@ public class XSliderControl extends ArmaControl {
 					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
 							ArmaControlSpecRequirement.mergeArrays(
 									new ControlPropertyLookup[]{
-											ControlPropertyLookup.COLOR,
-											ControlPropertyLookup.COLOR_ACTIVE,
-											ControlPropertyLookup.ARROW_EMPTY,
-											ControlPropertyLookup.ARROW_FULL,
-											ControlPropertyLookup.BORDER,
-											ControlPropertyLookup.THUMB,
+											ControlPropertyLookup.COLOR_BAR,
+											ControlPropertyLookup.COLOR_FRAME,
+											ControlPropertyLookup.TEXTURE
 									}
 							),
 							ControlPropertyLookupConstant.PRIORITY_SORT
@@ -67,7 +63,8 @@ public class XSliderControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return new ControlStyle[]{
-					ControlStyle.SL_HORZ
+					ControlStyle.HORIZONTAL,
+					ControlStyle.VERTICAL
 			};
 		}
 	}

@@ -48,13 +48,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		super(control, resolution, env);
 
 		{
-			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR);
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			ControlProperty bgColor = myControl.findProperty(ControlPropertyLookup.COLOR);
+			addValueListener(bgColor.getPropertyLookup(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			bgColor.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
 		}
 
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);

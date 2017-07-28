@@ -1,5 +1,6 @@
 **Added:**
-* listbox default values
+* progress control and renderer
+* progress default values
 
 **Changed:**
 *  
@@ -19,8 +20,8 @@
 * July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads
     * need tests for changing nested classes from optional to required as well
     * undoing raw value through changelog works, but editor container doesn't update
-    * we should be able to set default values specifically for properties inside nested classes
-        * ShortcutPos.w should not be equal to the normal w
 * July 7: we should support inheriting nested classes.
     * be sure to update HeaderToProject
     * HeaderToProject is creating 2 of RscText for VehicleShopMenu
+    
+* July 27: export order of classes matters - be sure to check that it properly handles export order

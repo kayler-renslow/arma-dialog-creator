@@ -74,7 +74,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT,
 				ControlPropertyLookup.COLOR, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE,
-				ControlPropertyLookup.SHADOW
+				ControlPropertyLookup.SHADOW, true
 		);
 
 		{

@@ -64,15 +64,16 @@ public class BasicTextRenderer {
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
 							 @Nullable ControlPropertyLookupConstant text,
 							 @NotNull ControlPropertyLookupConstant colorText, @Nullable ControlPropertyLookupConstant style,
-							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow) {
+							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow,
+							 boolean autoInitializeTextColor) {
 		this.control = control;
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
-		init(text, colorText, style, sizeEx, shadow);
+		init(text, colorText, style, sizeEx, shadow, autoInitializeTextColor);
 	}
 
 	private void init(@Nullable ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
 					  @Nullable ControlPropertyLookupConstant style, @Nullable ControlPropertyLookupConstant sizeEx,
-					  @Nullable ControlPropertyLookup shadow) {
+					  @Nullable ControlPropertyLookup shadow, boolean autoInitializeTextColor) {
 
 		setFont(this.font); //pre-set font so that we can initialize text right away. Also, set font metrics
 
@@ -85,7 +86,9 @@ public class BasicTextRenderer {
 			);
 		}
 		ControlProperty textColorProp = control.findProperty(colorText);
-		textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
+		if (autoInitializeTextColor) {
+			textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
+		}
 		renderer.addValueListener(colorText, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						setTextColor(((SVColor) newValue).toJavaFXColor());
