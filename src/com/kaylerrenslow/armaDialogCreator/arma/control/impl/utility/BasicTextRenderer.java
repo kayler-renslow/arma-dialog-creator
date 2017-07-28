@@ -135,6 +135,7 @@ public class BasicTextRenderer {
 						if (newValue instanceof SVExpression) {
 							SVExpression ex = (SVExpression) newValue;
 							updateFontSize(ex);
+							renderer.requestRender();
 						}
 					}
 			);

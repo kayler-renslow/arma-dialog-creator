@@ -162,6 +162,12 @@ public class ListboxRenderer extends ArmaControlRenderer {
 			int textHeight = textRenderer.getTextLineHeight();
 			double ratio = periodAlternator.updateAndGetRatio();
 			final int rowHeight = textHeight + textGap;
+
+			scrollbarRenderer.paint(gc, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, getHeight());
+
+			gc.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());
+			gc.closePath();
+			gc.clip();
 			while (allTextHeight <= getHeight() && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
 				int textY2 = y1 + allTextHeight;
 				if (allTextHeight == 0) {
@@ -171,7 +177,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 							bgColor = colorSelectBackground.interpolate(colorSelectBackground2, ratio);
 						}
 						gc.setStroke(bgColor);
-						Region.fillRectangle(gc, x1, y1, x2, textY2);
+						Region.fillRectangle(gc, x1, y1, x2, textY2 + rowHeight);
 					}
 					Color tColor = colorSelect;
 					if (colorSelect2 != null && focused) {
