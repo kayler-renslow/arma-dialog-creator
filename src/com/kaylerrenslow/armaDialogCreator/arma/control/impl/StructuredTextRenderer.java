@@ -7,8 +7,6 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TextHelper;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TextShadow;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
-import com.kaylerrenslow.armaDialogCreator.arma.util.StructuredTextParseException;
-import com.kaylerrenslow.armaDialogCreator.arma.util.StructuredTextParser;
 import com.kaylerrenslow.armaDialogCreator.arma.util.TextSection;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
@@ -17,6 +15,8 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.data.ImageHelper;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
+import com.sun.javafx.tk.FontMetrics;
+import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -25,7 +25,6 @@ import javafx.scene.text.TextAlignment;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -41,11 +40,12 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 	private BlinkControlHandler blinkControlHandler;
 	private TooltipRenderer tooltipRenderer;
 
-	private @Nullable Color attributesColor = null;
-	private @NotNull TextAlignment attributesAlign = TextAlignment.LEFT;
-	private @Nullable Color attributesShadowColor = null;
 	private double size = 0;
 	private @Nullable Double attributesSize = null;
+
+	private final SectionData defaultSectionData = new SectionData();
+
+	private String text = null;
 
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
@@ -70,6 +70,9 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		}
 
 		addValueListener(ControlPropertyLookup.TEXT, (observer, oldValue, newValue) -> {
+			this.text = TextHelper.getText(newValue);
+			/*
+			todo when the renderer is fully implemented, uncomment this
 			StructuredTextParser p = new StructuredTextParser(TextHelper.getText(newValue));
 			try {
 				List<TextSection> sections = p.parse();
@@ -81,6 +84,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			} catch (StructuredTextParseException e) {
 				sections = Collections.emptyList();
 			}
+			*/
 			requestRender();
 		});
 
@@ -105,24 +109,24 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		{
 			ControlClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
 			addValueListener(attributes, ControlPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
+				Color c = null;
 				if (newValue instanceof SVColor) {
-					attributesColor = ((SVColor) newValue).toJavaFXColor();
-				} else if (newValue == null) {
-					attributesColor = null;
+					c = ((SVColor) newValue).toJavaFXColor();
 				}
+				defaultSectionData.textColor = c;
 				requestRender();
 			});
 			addValueListener(attributes, ControlPropertyLookup.ALIGN, (observer, oldValue, newValue) -> {
 				String alignment = newValue == null ? "" : newValue.toString();
-				attributesAlign = getAlignment(alignment);
+				defaultSectionData.alignment = getAlignment(alignment);
 				requestRender();
 			});
 			addValueListener(attributes, ControlPropertyLookup.SHADOW_COLOR, (observer, oldValue, newValue) -> {
+				Color c = null;
 				if (newValue instanceof SVColor) {
-					attributesShadowColor = ((SVColor) newValue).toJavaFXColor();
-				} else if (newValue == null) {
-					attributesShadowColor = null;
+					c = ((SVColor) newValue).toJavaFXColor();
 				}
+				defaultSectionData.shadowColor = c;
 				requestRender();
 			});
 			addValueListener(attributes, ControlPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
@@ -136,12 +140,15 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			});
 
 		}
+
+		updateSectionsFont();
 	}
 
 	private void updateSectionsFont() {
 		for (GraphicTextSection section : sections) {
 			section.updateFont(this.size, attributesSize, resolution);
 		}
+		defaultSectionData.updateFont(this.size, attributesSize, resolution);
 	}
 
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
@@ -158,7 +165,44 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		gc.rect(x1, y1, getWidth(), getHeight());
 		gc.closePath();
 		gc.clip(); //prevent text going out of bounds
+		gc.setFill(defaultSectionData.textColor == null ? Color.RED : defaultSectionData.textColor);
+		gc.setFont(defaultSectionData.font);
+		gc.fillText(this.text, x1 + (int) (getWidth() * .025), y1 + (int) (getHeight() * .025));
+	}
 
+	/** Note (July 29, 2017) this is the implementation for painting structured text. Notice it isn't done yet */
+	@Deprecated
+	private void paintStructuredText(@NotNull GraphicsContext gc) {
+		final int controlWidth = getWidth();
+		gc.beginPath();
+		gc.rect(x1, y1, controlWidth, getHeight());
+		gc.closePath();
+		gc.clip(); //prevent text going out of bounds
+
+
+		int rowWidth = 0;
+		int rowY = y1;
+
+		for (GraphicTextSection section : sections) {
+			gc.setFont(section.font);
+			if (section.textColor == null) {
+				gc.setFill(defaultSectionData.textColor);
+			} else {
+				gc.setFill(section.textColor);
+			}
+
+			boolean outOfBounds = section.textWidth + rowWidth > controlWidth;
+			if (outOfBounds) {
+				FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(section.font);
+				StringBuilder sb = new StringBuilder(section.text);
+				//break the text into multiple lines
+				while (section.textWidth + rowWidth > controlWidth) {
+
+				}
+			} else {
+
+			}
+		}
 	}
 
 	private static TextAlignment getAlignment(String alignment) {
@@ -178,22 +222,12 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private static class GraphicTextSection {
-		private static final double[] buffer = {0, 0, 0, 0};
-		private final TextSection.TagName tagName;
-		private Font font;
-		private Color textColor;
-		private TextAlignment alignment = TextAlignment.LEFT;
-		private boolean underline;
-		private volatile Image image;
-		private Color shadowColor;
-		private TextShadow shadow;
-		private String text;
-		private Double textSizePercent;
+	private static class GraphicTextSection extends SectionData {
+		public final TextSection.TagName tagName;
 
 		public GraphicTextSection(@NotNull TextSection section) {
-			this.text = section.getText();
 			this.tagName = section.getTagName();
+			this.text = section.getText();
 			switch (section.getTagName()) {
 				case A: {
 					break;
@@ -214,6 +248,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 						String hexColor = section.getAttributes().get("color");
 						if (hexColor != null) {
 							try {
+								double[] buffer = {0, 0, 0, 0};
 								SVHexColor.getColorArray(buffer, hexColor);
 								textColor = Color.color(buffer[0], buffer[1], buffer[2]);
 							} catch (IllegalArgumentException ignore) {
@@ -237,6 +272,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 						String shadowHex = section.getAttributes().get("shadowColor");
 						if (shadowHex != null) {
 							try {
+								double[] buffer = {0, 0, 0, 0};
 								SVHexColor.getColorArray(buffer, shadowHex);
 								shadowColor = Color.color(buffer[0], buffer[1], buffer[2]);
 							} catch (IllegalArgumentException ignore) {
@@ -271,6 +307,21 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			}
 		}
 
+	}
+
+	private static class SectionData {
+		public @NotNull Font font = Font.font(15);
+		public Color textColor;
+		public TextAlignment alignment;
+		public boolean underline;
+		public volatile Image image;
+		public Color shadowColor;
+		public TextShadow shadow;
+		public String text;
+		public Double textSizePercent;
+		public int textWidth;
+		public int textHeight;
+
 		public void updateFont(double size, Double attributesSize, ArmaResolution resolution) {
 			if (textSizePercent == null) {
 				if (attributesSize == null) {
@@ -281,6 +332,11 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			} else {
 				font = TextHelper.getFont(resolution, textSizePercent);
 			}
+
+			FontMetrics fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
+			this.textWidth = (int) fontMetrics.computeStringWidth(text);
+			this.textHeight = (int) fontMetrics.getLineHeight();
 		}
 	}
+
 }

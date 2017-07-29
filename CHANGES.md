@@ -1,8 +1,8 @@
 **Added:**
-* 
+* structured text default values
 
 **Changed:**
-*  
+* updates to structured text renderer
 
 **Fixed:**
 * 
