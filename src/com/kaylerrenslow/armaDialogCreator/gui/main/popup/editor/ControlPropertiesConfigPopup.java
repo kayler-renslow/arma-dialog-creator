@@ -175,12 +175,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean hideInherited) {
 				editorPane.hideInheritedProperties(hideInherited);
-				// KEY_HIDE_INHERITED.put(control.getUserData(), hideInherited);
-				// sizeToScene();
+				KEY_HIDE_INHERITED.put(control.getUserData(), hideInherited);
 			}
 		});
 
-		// checkBoxHideInherited.setSelected(KEY_HIDE_INHERITED.get(control.getUserData()));
+		checkBoxHideInherited.setSelected(KEY_HIDE_INHERITED.get(control.getUserData()));
 
 		HBox hboxLeft;
 		{

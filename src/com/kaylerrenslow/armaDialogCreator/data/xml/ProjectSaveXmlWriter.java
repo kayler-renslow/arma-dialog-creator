@@ -96,7 +96,7 @@ public class ProjectSaveXmlWriter {
 	}
 
 	private void writeWorkspaceCustomControlClassRegistry() throws IOException {
-		XmlWriterOutputStream stm = new XmlWriterOutputStream(project.getCustomControlClassesFile());
+		XmlWriterOutputStream stm = new XmlWriterOutputStream(project.getWorkspaceCustomControlClassesFile());
 		stm.writeDefaultProlog();
 		stm.writeBeginTag("custom-classes");
 		ProjectXmlUtil.writeCustomControls(stm, project.getWorkspaceCustomControlClassRegistry());

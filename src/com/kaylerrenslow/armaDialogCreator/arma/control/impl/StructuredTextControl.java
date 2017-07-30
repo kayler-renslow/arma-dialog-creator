@@ -71,12 +71,13 @@ public class StructuredTextControl extends ArmaControl {
 							new ControlClassSpecification(
 									NestedClassName_Attributes, ControlPropertySpecification.EMPTY,
 									Arrays.asList(
-									new ControlPropertySpecification(ControlPropertyLookup.FONT),
-									new ControlPropertySpecification(ControlPropertyLookup.COLOR__HEX),
-									new ControlPropertySpecification(ControlPropertyLookup.ALIGN),
-									new ControlPropertySpecification(ControlPropertyLookup.SHADOW_COLOR),
-									new ControlPropertySpecification(ControlPropertyLookup.SIZE)
-									))
+											new ControlPropertySpecification(ControlPropertyLookup.FONT),
+											new ControlPropertySpecification(ControlPropertyLookup.COLOR__HEX),
+											new ControlPropertySpecification(ControlPropertyLookup.ALIGN),
+											new ControlPropertySpecification(ControlPropertyLookup.SHADOW_COLOR),
+											new ControlPropertySpecification(ControlPropertyLookup.SIZE)
+									)
+							)
 					)
 			);
 		}

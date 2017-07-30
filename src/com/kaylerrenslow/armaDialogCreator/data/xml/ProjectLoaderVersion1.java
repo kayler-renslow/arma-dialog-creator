@@ -156,8 +156,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 	private void loadCustomControlClassRegistries() throws Exception {
 		//load workspace custom control classes
-		if (project.getCustomControlClassesFile().exists()) {
-			XmlLoader xmlLoader = new XmlLoader(project.getCustomControlClassesFile(), dataContext, this.loader.keys);
+		if (project.getWorkspaceCustomControlClassesFile().exists()) {
+			XmlLoader xmlLoader = new XmlLoader(project.getWorkspaceCustomControlClassesFile(), dataContext, this.loader.keys);
 			ProjectXmlUtil.loadCustomControlClasses(xmlLoader.document.getDocumentElement(), dataContext, this.loader,
 					controlClassSpecification -> {
 						jobs.add(new CreateCustomControlClassJob(controlClassSpecification, false));

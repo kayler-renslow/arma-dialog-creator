@@ -307,7 +307,7 @@ public class Project implements SpecificationRegistry {
 
 	/** @return the file that stores {@link Project#getWorkspaceCustomControlClassRegistry()} */
 	@NotNull
-	public File getCustomControlClassesFile() {
+	public File getWorkspaceCustomControlClassesFile() {
 		return workspace.getFileInAdcDirectory("custom_controls.xml");
 	}
 

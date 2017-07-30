@@ -168,7 +168,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 					scrollbarRenderer.paint(gc, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
 
 					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
-					gc.rect(menuX1, menuY1, menuX2 - menuX1, menuY2 - menuY1);
+					gc.rect(menuX1, menuY1, menuX2 - menuX1 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2 - menuY1);
 					gc.closePath();
 					gc.clip();
 					//draw text for drop down menu

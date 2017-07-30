@@ -1,9 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.DownArrowMenu;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.editor.UICanvasConfiguration;
+import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.EditorComponentTreeView;
+import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.FolderTreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.gui.main.treeview.TreeItemEntry;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.beans.value.ChangeListener;
@@ -129,8 +132,92 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
+		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveDownIntoHandler = treeView -> {
+			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+			if (item == null) {
+				//the button should be disabled when there is nothing selected
+				throw new IllegalStateException("item shouldn't be null");
+			}
+			TreeItem nextSibling = item.nextSibling();
+			if (nextSibling == null) {
+				return null;
+			}
+			if (!(nextSibling.getValue() instanceof ControlGroupTreeItemEntry) && !(nextSibling.getValue() instanceof FolderTreeItemEntry)) {
+				return null;
+			}
+			treeView.moveTreeItem(item, nextSibling, 0);
+
+			//the selection index needs to be updated
+			treeView.getSelectionModel().clearSelection();
+			treeView.getSelectionModel().select(item);
+			return null;
+		};
+
+		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveUpIntoHandler = treeView -> {
+			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+			if (item == null) {
+				//the button should be disabled when there is nothing selected
+				throw new IllegalStateException("item shouldn't be null");
+			}
+			TreeItem prevSibling = item.previousSibling();
+			if (prevSibling == null) {
+				return null;
+			}
+			if (!(prevSibling.getValue() instanceof ControlGroupTreeItemEntry) && !(prevSibling.getValue() instanceof FolderTreeItemEntry)) {
+				return null;
+			}
+			treeView.moveTreeItem(item, prevSibling, prevSibling.getChildren().size());
+
+			//the selection index needs to be updated
+			treeView.getSelectionModel().clearSelection();
+			treeView.getSelectionModel().select(item);
+			return null;
+		};
+
+		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveDownOutHandler = treeView -> {
+			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+			if (item == null) {
+				//the button should be disabled when there is nothing selected
+				throw new IllegalStateException("item shouldn't be null");
+			}
+			if (item.getParent() == treeView.getRoot()) {
+				return null;
+			}
+			TreeItem newParent = item.getParent().getParent();
+			if (newParent == treeView.getRoot() || newParent.getValue() instanceof ControlGroupTreeItemEntry || newParent.getValue() instanceof FolderTreeItemEntry) {
+				treeView.moveTreeItem(item, newParent, newParent.getChildren().size());
+
+				//the selection index needs to be updated
+				treeView.getSelectionModel().clearSelection();
+				treeView.getSelectionModel().select(item);
+			}
+
+			return null;
+		};
+
+		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveUpOutHandler = treeView -> {
+			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+			if (item == null) {
+				//the button should be disabled when there is nothing selected
+				throw new IllegalStateException("item shouldn't be null");
+			}
+			if (item.getParent() == treeView.getRoot()) {
+				return null;
+			}
+			TreeItem newParent = item.getParent().getParent();
+			if (newParent == treeView.getRoot() || newParent.getValue() instanceof ControlGroupTreeItemEntry || newParent.getValue() instanceof FolderTreeItemEntry) {
+				treeView.moveTreeItem(item, newParent, 0);
+
+				//the selection index needs to be updated
+				treeView.getSelectionModel().clearSelection();
+				treeView.getSelectionModel().select(item);
+			}
+
+			return null;
+		};
+
 		//buttons for moving bg controls up/down hierarchy
-		Button btnBgControlMoveUp, btnBgControlMoveDown;
+		Button btnBgControlMoveUp, btnBgControlMoveDown, btnBgControlMoveUpInto, btnBgControlMoveDownInto, btnBgControlMoveUpOut, btnBgControlMoveDownOut;
 		{
 			btnBgControlMoveUp = new Button("", new ImageView(ADCImages.ICON_UP_ARROW));
 			btnBgControlMoveUp.setOnAction(event -> {
@@ -146,26 +233,67 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnBgControlMoveDown.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
+
+			btnBgControlMoveUpInto = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_INTO));
+			btnBgControlMoveUpInto.setOnAction(event -> {
+				funcMoveUpIntoHandler.apply(treeViewBg);
+			});
+			btnBgControlMoveUpInto.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
+
+			btnBgControlMoveDownInto = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_INTO));
+			btnBgControlMoveDownInto.setOnAction(event -> {
+				funcMoveDownIntoHandler.apply(treeViewBg);
+			});
+			btnBgControlMoveDownInto.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
+
+
+			btnBgControlMoveUpOut = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_OUT));
+			btnBgControlMoveUpOut.setOnAction(event -> {
+				funcMoveUpOutHandler.apply(treeViewBg);
+			});
+			btnBgControlMoveUpOut.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
+
+			btnBgControlMoveDownOut = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_OUT));
+			btnBgControlMoveDownOut.setOnAction(event -> {
+				funcMoveDownOutHandler.apply(treeViewBg);
+			});
+			btnBgControlMoveDownOut.setDisable(treeViewBg.getSelectionModel().isEmpty());
+			btnBgControlMoveDownOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_out")));
+
 			treeViewBg.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				boolean disable = newValue == null;
 				btnBgControlMoveDown.setDisable(disable);
 				btnBgControlMoveUp.setDisable(disable);
+				btnBgControlMoveDownInto.setDisable(disable);
+				btnBgControlMoveUpInto.setDisable(disable);
+				btnBgControlMoveDownOut.setDisable(disable);
+				btnBgControlMoveUpOut.setDisable(disable);
 			});
 		}
 
-		HBox bgControlsHbox = new HBox(10,
+		FlowPane bgControlsPane = new FlowPane(10, 10,
 				new Label(bundle.getString("CanvasControls.background_controls")),
 				new Separator(Orientation.VERTICAL),
 				cbShowBackgroundControls,
 				btnBgControlMoveUp,
-				btnBgControlMoveDown
+				btnBgControlMoveDown,
+				new DownArrowMenu(
+						new CustomMenuItem(btnBgControlMoveUpInto, false),
+						new CustomMenuItem(btnBgControlMoveUpOut, false),
+						new SeparatorMenuItem(),
+						new CustomMenuItem(btnBgControlMoveDownInto, false),
+						new CustomMenuItem(btnBgControlMoveDownOut, false)
+				)
 		);
-		bgControlsHbox.setAlignment(Pos.CENTER_LEFT);
-		VBox vbBgControls = new VBox(vertSpacing, bgControlsHbox, treeViewBg);
-		bgControlsHbox.setPadding(new Insets(vertSpacing, vertSpacing, 0, vertSpacing));
+		bgControlsPane.setAlignment(Pos.CENTER_LEFT);
+		VBox vbBgControls = new VBox(vertSpacing, bgControlsPane, treeViewBg);
+		bgControlsPane.setPadding(new Insets(vertSpacing, vertSpacing, 0, vertSpacing));
 
 		//buttons for moving controls up/down hierarchy
-		Button btnControlMoveUp, btnControlMoveDown;
+		Button btnControlMoveUp, btnControlMoveDown, btnControlMoveUpInto, btnControlMoveDownInto, btnControlMoveUpOut, btnControlMoveDownOut;
 		{
 			btnControlMoveUp = new Button("", new ImageView(ADCImages.ICON_UP_ARROW));
 			btnControlMoveUp.setOnAction(event -> {
@@ -181,24 +309,65 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnControlMoveDown.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
+
+			btnControlMoveUpInto = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_INTO));
+			btnControlMoveUpInto.setOnAction(event -> {
+				funcMoveUpIntoHandler.apply(treeViewMain);
+			});
+			btnControlMoveUpInto.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
+
+			btnControlMoveDownInto = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_INTO));
+			btnControlMoveDownInto.setOnAction(event -> {
+				funcMoveDownIntoHandler.apply(treeViewMain);
+			});
+			btnControlMoveDownInto.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
+
+
+			btnControlMoveUpOut = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_OUT));
+			btnControlMoveUpOut.setOnAction(event -> {
+				funcMoveUpOutHandler.apply(treeViewMain);
+			});
+			btnControlMoveUpOut.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
+
+			btnControlMoveDownOut = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_OUT));
+			btnControlMoveDownOut.setOnAction(event -> {
+				funcMoveDownOutHandler.apply(treeViewMain);
+			});
+			btnControlMoveDownOut.setDisable(treeViewMain.getSelectionModel().isEmpty());
+			btnControlMoveDownOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_out")));
+
 			treeViewMain.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 				boolean disable = newValue == null;
 				btnControlMoveDown.setDisable(disable);
 				btnControlMoveUp.setDisable(disable);
+				btnControlMoveDownInto.setDisable(disable);
+				btnControlMoveUpInto.setDisable(disable);
+				btnControlMoveDownOut.setDisable(disable);
+				btnControlMoveUpOut.setDisable(disable);
 			});
 		}
 
 
-		HBox controlsHbox = new HBox(10,
+		FlowPane controlsPane = new FlowPane(10, 10,
 				new Label(bundle.getString("CanvasControls.controls")),
 				new Separator(Orientation.VERTICAL),
 				cbShowControls,
 				btnControlMoveUp,
-				btnControlMoveDown
+				btnControlMoveDown,
+				new DownArrowMenu(
+						new CustomMenuItem(btnControlMoveUpInto, false),
+						new CustomMenuItem(btnControlMoveUpOut, false),
+						new SeparatorMenuItem(),
+						new CustomMenuItem(btnControlMoveDownInto, false),
+						new CustomMenuItem(btnControlMoveDownOut, false)
+				)
 		);
-		controlsHbox.setAlignment(Pos.CENTER_LEFT);
-		VBox vbControls = new VBox(vertSpacing, controlsHbox, treeViewMain);
-		controlsHbox.setPadding(bgControlsHbox.getPadding());
+		controlsPane.setAlignment(Pos.CENTER_LEFT);
+		VBox vbControls = new VBox(vertSpacing, controlsPane, treeViewMain);
+		controlsPane.setPadding(bgControlsPane.getPadding());
 
 
 		VBox.setVgrow(treeViewBg, Priority.ALWAYS);

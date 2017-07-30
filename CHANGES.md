@@ -1,17 +1,15 @@
 **Added:**
-* structured text default values
+* 
 
 **Changed:**
-* updates to structured text renderer
+* removed the dragging in treeview and now just have buttons that can move into/out of groups/folders
 
 **Fixed:**
-* 
+* combo renderer was drawing the selection box over the scrollbar
 
 **Notes:**
 * June 23:
     - Header: we need tests for +=
-* BUG: select many things in tree view and drag into folder
-    * what if we remove the dragging crap and just have buttons that do the same thing?
 * June 28: we should probably have an option to enable/disable sticky select, otherwise people will think its a bug
 * July 4:
     * header to project change the file paths to absolute ones for things like images to work

@@ -61,7 +61,7 @@ public enum ControlType {
 
 	/** All control types that are supported for the application */
 	public static final ControlType[] AVAILABLE_TYPES = {
-			Static, ControlsGroup, Button, ShortcutButton, Edit,
+			Static, /*ControlsGroup,*/ Button, ShortcutButton, Edit,
 			XSlider, Combo, ListBox, Progress, StructuredText
 	};
 

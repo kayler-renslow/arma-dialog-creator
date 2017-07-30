@@ -23,6 +23,10 @@ public abstract class ADCImagePaths {
 	public static final String ICON_MINUS = pathPrefix + "icons/minus.png";
 	public static final String ICON_DOWN_ARROW = pathPrefix + "icons/down_arrow.png";
 	public static final String ICON_UP_ARROW = pathPrefix + "icons/up_arrow.png";
+	public static final String ICON_DOWN_ARROW_INTO = pathPrefix + "icons/down_arrow_into.png";
+	public static final String ICON_UP_ARROW_INTO = pathPrefix + "icons/up_arrow_into.png";
+	public static final String ICON_DOWN_ARROW_OUT = pathPrefix + "icons/down_arrow_out.png";
+	public static final String ICON_UP_ARROW_OUT = pathPrefix + "icons/up_arrow_out.png";
 	public static final String ICON_AUTO_SIZE = pathPrefix + "icons/autosize.png";
 
 	public static final String ICON_BRACKETS = pathPrefix + "icons/brackets.png";

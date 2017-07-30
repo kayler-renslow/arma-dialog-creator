@@ -367,8 +367,10 @@ public class HeaderToProject {
 										   inheritProperties) {
 		for (ControlProperty property : controlClass.getAllChildProperties()) {
 			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
-			if (assignment == null && inheritProperties != null) {
-				inheritProperties.add(property.getPropertyLookup());
+			if (assignment == null) {
+				if (inheritProperties != null) {
+					inheritProperties.add(property.getPropertyLookup());
+				}
 				continue;
 			}
 

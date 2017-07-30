@@ -122,7 +122,7 @@ public class ProjectExporter {
 	}
 
 	private static CachedIndentedStringBuilder getBuilder(@NotNull OutputStream outputStream) {
-		return new CachedIndentedStringBuilder(4, true, 120, s -> {
+		return new CachedIndentedStringBuilder(4, true, 500, s -> {
 			try {
 				outputStream.write(s.getBytes());
 				outputStream.flush();

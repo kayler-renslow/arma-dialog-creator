@@ -55,7 +55,7 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 		// first method called when the user clicks and drags a tree item
 		TreeCell<Td> myTreeCell = this;
 
-		addDragListeners(treeView, myTreeCell);
+		//		addDragListeners(treeView, myTreeCell);
 	}
 
 	private void addDragListeners(@NotNull EditableTreeView<Tv, Td> treeView, TreeCell<Td> myTreeCell) {
