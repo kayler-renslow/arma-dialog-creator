@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* removed the dragging in treeview and now just have buttons that can move into/out of groups/folders
+* 
 
 **Fixed:**
-* combo renderer was drawing the selection box over the scrollbar
+* HeaderToProject was creating duplicate ControlClasses for when a HeaderClass had an extend class
 
 **Notes:**
 * June 23:
@@ -19,6 +19,5 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes.
     * be sure to update HeaderToProject
-    * HeaderToProject is creating 2 of RscText for VehicleShopMenu
     
 * July 27: export order of classes matters - be sure to check that it properly handles export order

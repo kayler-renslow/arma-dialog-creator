@@ -490,8 +490,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			if (o instanceof CreateCustomControlClassJob) {
 				CreateCustomControlClassJob other = (CreateCustomControlClassJob) o;
 				if (other.spec.getExtendClassName() == null) {
-					//run this first
-					return -1;
+					//let other load first
+					return 1;
 				}
 				if (spec.getExtendClassName() == null) {
 					//run this first

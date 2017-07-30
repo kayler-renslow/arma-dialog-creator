@@ -322,17 +322,7 @@ public class HeaderToProject {
 		loadAllProperties(project, headerClass, armaControl, inheritProperties);
 
 		//get the extend class
-		ControlClass extendClass = null;
-		if (headerClass.getExtendClassName() != null) {
-			extendClass = project.findControlClassByName(headerClass.getExtendClassName());
-			if (extendClass == null) {
-				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
-				if (extendHeaderClass == null) {
-					convertError(ownerDialogName, String.format(bundle.getString("Error.no_class_f"), headerClass.getExtendClassName()));
-				}
-				extendClass = createAndAppendCustomControlClass(project, extendHeaderClass);
-			}
-		}
+		ControlClass extendClass = getExtendControlClass(project, ownerDialogName, headerClass);
 
 
 		// After setting the properties, extend the class. As mentioned in the ControlProperty.inherit() documentation,
@@ -344,6 +334,21 @@ public class HeaderToProject {
 		}
 
 		return armaControl;
+	}
+
+	private ControlClass getExtendControlClass(@NotNull Project project, @NotNull String ownerDialogName, @NotNull HeaderClass headerClass) throws HeaderConversionException {
+		ControlClass extendClass = null;
+		if (headerClass.getExtendClassName() != null) {
+			extendClass = project.findControlClassByName(headerClass.getExtendClassName());
+			if (extendClass == null) {
+				HeaderClass extendHeaderClass = headerFile.getExtendClass(headerClass, false);
+				if (extendHeaderClass == null) {
+					convertError(ownerDialogName, String.format(bundle.getString("Error.no_class_f"), headerClass.getExtendClassName()));
+				}
+				extendClass = createAndAppendCustomControlClass(project, ownerDialogName, extendHeaderClass);
+			}
+		}
+		return extendClass;
 	}
 
 	/**
@@ -396,7 +401,7 @@ public class HeaderToProject {
 	}
 
 	@NotNull
-	private ControlClass createAndAppendCustomControlClass(@NotNull Project project, @NotNull HeaderClass headerClass) {
+	private ControlClass createAndAppendCustomControlClass(@NotNull Project project, @NotNull String dialogClassName, @NotNull HeaderClass headerClass) throws HeaderConversionException {
 		List<ControlPropertySpecification> optional = new ArrayList<>(headerClass.getAssignments().size());
 		for (HeaderAssignment assignment : headerClass.getAssignments()) {
 			//todo handle custom properties because the user may use the dialog class for more than just dialogs!
@@ -434,7 +439,7 @@ public class HeaderToProject {
 
 
 		if (headerClass.getExtendClassName() != null) {
-			ControlClass cc = createAndAppendCustomControlClass(project, headerFile.getExtendClass(headerClass, false));
+			ControlClass cc = getExtendControlClass(project, dialogClassName, headerClass);
 			ccc.getControlClass().extendControlClass(cc);
 		}
 
