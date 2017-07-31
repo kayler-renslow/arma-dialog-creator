@@ -18,8 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -115,14 +114,14 @@ public class ProjectExporter {
 
 	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull OutputStream stream) throws IOException {
 		ProjectExporter exporter = new ProjectExporter(configuration);
-		CachedIndentedStringBuilder builder = getBuilder(stream);
+		BufferedIndentedStringBuilder builder = getBuilder(stream);
 		exporter.writeControlClass(builder, controlClass, null);
 		stream.write(builder.toString().getBytes());
 		stream.flush();
 	}
 
-	private static CachedIndentedStringBuilder getBuilder(@NotNull OutputStream outputStream) {
-		return new CachedIndentedStringBuilder(4, true, 500, s -> {
+	private static BufferedIndentedStringBuilder getBuilder(@NotNull OutputStream outputStream) {
+		return new BufferedIndentedStringBuilder(4, true, 1000, s -> {
 			try {
 				outputStream.write(s.getBytes());
 				outputStream.flush();
@@ -137,9 +136,9 @@ public class ProjectExporter {
 	private final ProjectExportConfiguration conf;
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
-	private CachedIndentedStringBuilder displayStringBuilder;
+	private BufferedIndentedStringBuilder displayStringBuilder;
 
-	private CachedIndentedStringBuilder macrosStringBuilder;
+	private BufferedIndentedStringBuilder macrosStringBuilder;
 
 	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
 		this.conf = configuration;
@@ -279,11 +278,16 @@ public class ProjectExporter {
 
 	private void exportCustomControlClasses(@NotNull IndentedStringBuilder stringBuilder,
 											@NotNull CustomControlClassRegistry registry) throws IOException {
-		for (CustomControlClass cc : registry) {
-			if (cc.getComment() != null) {
-				writelnComment(stringBuilder, cc.getComment());
+		List<ControlClass> sorted = sortControlClasses(registry.controlClassIterator());
+		for (ControlClass cc : sorted) {
+			for (CustomControlClass ccc : registry) {
+				if (cc == ccc.getControlClass()) {
+					if (ccc.getComment() != null) {
+						writelnComment(stringBuilder, ccc.getComment());
+					}
+					writeControlClass(stringBuilder, ccc.getControlClass(), null);
+				}
 			}
-			writeControlClass(stringBuilder, cc.getControlClass(), null);
 		}
 	}
 
@@ -346,7 +350,7 @@ public class ProjectExporter {
 
 			//write background controls
 			writeClass(stringBuilder, CONTROLS_BACKGROUND, null, sb -> {
-				for (ArmaControl control : display.getBackgroundControls()) {
+				for (ArmaControl control : sortControlClasses(display.getBackgroundControls())) {
 					writeControl(stringBuilder, control);
 				}
 				return null;
@@ -354,7 +358,7 @@ public class ProjectExporter {
 
 			//write controls
 			writeClass(stringBuilder, CONTROLS, null, sb -> {
-				for (ArmaControl control : display.getControls()) {
+				for (ArmaControl control : sortControlClasses(display.getControls())) {
 					writeControl(stringBuilder, control);
 				}
 				return null;
@@ -372,7 +376,7 @@ public class ProjectExporter {
 			if (control instanceof ArmaControlGroup) {
 				//write group's "Controls" class
 				writeClass(sb, CONTROLS, null, sb2 -> {
-					for (ArmaControl subControl : ((ArmaControlGroup) control).getControls()) {
+					for (ArmaControl subControl : sortControlClasses(((ArmaControlGroup) control).getControls())) {
 						writeControl(sb2, subControl);
 					}
 					return null;
@@ -387,7 +391,7 @@ public class ProjectExporter {
 								   @Nullable Function<IndentedStringBuilder, Void> insertBodyFunc) {
 		writeClass(stringBuilder, controlClass.getClassName(), controlClass.getExtendClass() == null ? null : controlClass.getExtendClass().getClassName(), sb -> {
 			writeControlProperties(sb, controlClass.getAllChildProperties());
-			for (ControlClass nested : controlClass.getAllNestedClasses()) {
+			for (ControlClass nested : sortControlClasses(controlClass.getAllNestedClasses())) {
 				writeControlClass(stringBuilder, nested, null);
 			}
 			if (insertBodyFunc != null) {
@@ -481,13 +485,64 @@ public class ProjectExporter {
 		}
 	}
 
-	private static class CachedIndentedStringBuilder extends IndentedStringBuilder {
+	/**
+	 Combines all classes into a list and "sorts" them. This isn't a normal sort however.
+	 How it works:
+	 <ol>
+	 <li>The {@link ControlClass} instances that have no extend class
+	 ({@link ControlClass#getExtendClass()} == null) will appear at the start of the list</li>
+	 <li>If a {@link ControlClass} has an extend class, it will be appended after it's extend class has been appended to the list.</li>
+	 <li>If a {@link ControlClass} has an extend class that isn't in this iterable, it will be added to the end of the list</li>
+	 </ol>
+	 */
+	private static <T extends ControlClass> List<T> sortControlClasses(@NotNull Iterable<T> controlClasses) {
+		HashSet<String> visited = new HashSet<>();
+		LinkedList<T> toVisit = new LinkedList<>();
+		for (T cc : controlClasses) {
+			toVisit.add(cc);
+		}
+
+		List<T> sorted = new ArrayList<>(toVisit.size());
+
+		while (!toVisit.isEmpty()) {
+			Iterator<T> iter = toVisit.iterator();
+			boolean didRemove = false;
+			while (iter.hasNext()) {
+				T cc = iter.next();
+				if (cc.getExtendClass() == null) {
+					visited.add(cc.getClassName());
+					sorted.add(cc);
+					iter.remove();
+					didRemove = true;
+					continue;
+				}
+				if (visited.contains(cc.getExtendClass().getClassName())) {
+					visited.add(cc.getClassName());
+					sorted.add(cc);
+					iter.remove();
+					didRemove = true;
+					continue;
+				}
+			}
+			if (!didRemove) {
+				//if nothing was removed last iteration, then there is nothing left to do (this will prevent infinite loop)
+				break;
+			}
+		}
+		if (!toVisit.isEmpty()) {
+			sorted.addAll(toVisit);
+		}
+
+		return sorted;
+	}
+
+	private static class BufferedIndentedStringBuilder extends IndentedStringBuilder {
 
 		private final int cacheSize;
 		private int appendCount;
 		private Function<String, Object> onFull;
 
-		public CachedIndentedStringBuilder(int tabSizeInSpaces, boolean useTabCharacter, int cacheSize, @NotNull Function<String, Object> onFull) {
+		public BufferedIndentedStringBuilder(int tabSizeInSpaces, boolean useTabCharacter, int cacheSize, @NotNull Function<String, Object> onFull) {
 			super(tabSizeInSpaces, useTabCharacter);
 			this.cacheSize = cacheSize;
 			this.onFull = onFull;

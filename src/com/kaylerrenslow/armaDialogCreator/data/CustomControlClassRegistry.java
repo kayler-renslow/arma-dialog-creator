@@ -126,6 +126,16 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 		return null;
 	}
 
+	public Iterable<ControlClass> controlClassIterator() {
+		return new Iterable<ControlClass>() {
+			@NotNull
+			@Override
+			public Iterator<ControlClass> iterator() {
+				return new CustomControlClassIterator(CustomControlClassRegistry.this);
+			}
+		};
+	}
+
 	private static class CustomControlClassIterator implements Iterator<ControlClass> {
 		private final Iterator<CustomControlClass> iterator;
 
