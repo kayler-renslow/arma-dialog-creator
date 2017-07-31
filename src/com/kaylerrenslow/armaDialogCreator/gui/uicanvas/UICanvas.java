@@ -130,9 +130,11 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	private void setDisplayListeners(boolean add) {
 		if (add) {
 			this.display.getControls().getUpdateGroup().addListener(renderUpdateGroupListener);
+			this.display.getBackgroundControls().getUpdateGroup().addListener(renderUpdateGroupListener);
 			this.display.getReRenderUpdateGroup().addListener(renderUpdateGroupListener);
 		} else {
 			this.display.getControls().getUpdateGroup().removeListener(renderUpdateGroupListener);
+			this.display.getBackgroundControls().getUpdateGroup().removeListener(renderUpdateGroupListener);
 			this.display.getReRenderUpdateGroup().removeListener(renderUpdateGroupListener);
 		}
 	}

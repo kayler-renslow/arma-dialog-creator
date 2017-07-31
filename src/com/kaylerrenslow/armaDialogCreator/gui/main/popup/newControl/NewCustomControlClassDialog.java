@@ -76,6 +76,9 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);
 		setTitle(bundle.getString("Popups.NewCustomControl.popup_title"));
 
+		myRootElement.setPrefHeight(560);
+		myRootElement.setPrefWidth(720);
+
 		/*HEADER*/
 		{
 			VBox vboxHeader = new VBox(10);

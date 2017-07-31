@@ -6,8 +6,6 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.LinkedList;
-
 /**
  Used for setting the entries in a TreeView, or representing the entries for use of outside the GUI code.
  This is a slightly complicated way of converting {@link TreeItem} instances into something more generic outside the GUI,
@@ -40,29 +38,32 @@ public class GUITreeStructure<T> implements TreeStructure<T> {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <Td extends TreeItemData, Tv> GUITreeStructure<Tv> getStructure(@NotNull TreeView<Td> treeView, @NotNull TreeDataToValueConverter<Td, Tv> converter) {
-		LinkedList<TreeItem<Td>> q = new LinkedList<>();
-		q.addAll(treeView.getRoot().getChildren());
-		TreeItem<Td> pop = treeView.getRoot();
 
-		TreeNode<Tv> parent = new TreeNode.Simple<>(null, "~ROOT", false);
-		TreeNode<Tv> created = parent;
-		TreeNode<Tv> root = parent;
-		int parentInd = 0;
-		int childCount = parent.getChildren().size();
-		while (q.size() > 0) {
-			if (parentInd >= childCount) {
-				parentInd = 0;
-				childCount = pop.getChildren().size();
-				parent = created;
-			}
-			pop = q.pop();
-			q.addAll(pop.getChildren());
-			created = new TreeNode.Simple<>(converter.convert(pop.getValue()), pop.getValue().toString(), pop.getValue().isFolder());
-			parent.getChildren().add(created);
-			parentInd++;
+		TreeNode.Simple<Tv> rootAsNode = new TreeNode.Simple<>(null, "~ROOT", false);
+		for (TreeItem<Td> child : treeView.getRoot().getChildren()) {
+			buildStructure(converter, child, rootAsNode);
 		}
 
-		return new GUITreeStructure<>(root);
+		return new GUITreeStructure<>(rootAsNode);
+	}
+
+	private static <Td extends TreeItemData, Tv> void buildStructure(
+			@NotNull TreeDataToValueConverter<Td, Tv> converter,
+			@NotNull TreeItem<Td> treeItem,
+			@NotNull TreeNode<Tv> parentAsTreeNode) {
+		TreeNode.Simple<Tv> treeItemAsNode = getNode(converter, treeItem);
+		parentAsTreeNode.getChildren().add(treeItemAsNode);
+
+		for (TreeItem<Td> child : treeItem.getChildren()) {
+			TreeNode.Simple<Tv> childAsNode = getNode(converter, child);
+			treeItemAsNode.getChildren().add(childAsNode);
+			buildStructure(converter, child, childAsNode);
+		}
+	}
+
+	@NotNull
+	private static <Td extends TreeItemData, Tv> TreeNode.Simple<Tv> getNode(@NotNull TreeDataToValueConverter<Td, Tv> converter, TreeItem<Td> child) {
+		return new TreeNode.Simple<>(converter.convert(child.getValue()), child.getValue().toString(), child.getValue().isFolder());
 	}
 
 

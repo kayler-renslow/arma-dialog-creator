@@ -55,6 +55,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 
 	 @return the {@link CustomControlClass} that was created and added to {@link #getControlClassList()}
 	 */
+	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClassSpecification controlClass) {
 		CustomControlClass ccc = new CustomControlClass(controlClass, specReg, scope);
 		controlClassList.add(ccc);
@@ -126,6 +127,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 		return null;
 	}
 
+	@NotNull
 	public Iterable<ControlClass> controlClassIterator() {
 		return new Iterable<ControlClass>() {
 			@NotNull

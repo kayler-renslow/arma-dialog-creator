@@ -1,8 +1,8 @@
 **Added:**
-* 
+* ability to rename control from treeview
 
 **Changed:**
-* made tweaks to project export control class sorting 
+*  
 
 **Fixed:**
 * 

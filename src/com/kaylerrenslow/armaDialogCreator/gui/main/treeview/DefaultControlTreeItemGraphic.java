@@ -82,6 +82,7 @@ public class DefaultControlTreeItemGraphic extends HBox {
 	private void fillBox(Color color) {
 		GraphicsContext gc = box.getGraphicsContext2D();
 		gc.save();
+		gc.clearRect(0, 0, box.getWidth(), box.getHeight());
 		gc.setFill(color);
 		gc.fillRect(0, 0, box.getWidth(), box.getHeight());
 		gc.restore();

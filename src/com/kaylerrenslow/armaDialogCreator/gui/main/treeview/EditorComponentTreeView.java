@@ -186,11 +186,16 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<T>>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<T>> observable, TreeItem<T> oldValue, TreeItem<T> selected) {
-				if (selected != null && selected.getValue() instanceof ControlTreeItemEntry) {
-					treeView.setContextMenu(new ControlEditContextMenu(EditorComponentTreeView.this, (ControlTreeItemEntry) selected.getValue()));
-				} else {
-					treeView.setContextMenu(controlCreationContextMenu);
+				if (selected != null) {
+					if (selected.getValue() instanceof ControlTreeItemEntry) {
+						treeView.setContextMenu(new EditorTreeViewEditContextMenu(EditorComponentTreeView.this, (ControlTreeItemEntry) selected.getValue()));
+						return;
+					} else if (selected.getValue() instanceof FolderTreeItemEntry) {
+						treeView.setContextMenu(new EditorTreeViewEditContextMenu(EditorComponentTreeView.this, (FolderTreeItemEntry) selected.getValue()));
+						return;
+					}
 				}
+				treeView.setContextMenu(controlCreationContextMenu);
 			}
 		});
 	}

@@ -92,6 +92,9 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
 					requestRender();
+				} else {
+					setBackgroundColor(Color.TRANSPARENT);
+					requestRender();
 				}
 			}
 		});

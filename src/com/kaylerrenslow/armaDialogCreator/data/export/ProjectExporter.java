@@ -281,7 +281,7 @@ public class ProjectExporter {
 		for (ControlClass cc : sortControlClasses(registry.controlClassIterator())) {
 			for (CustomControlClass ccc : registry) {
 				if (cc == ccc.getControlClass()) {
-					if (ccc.getComment() != null) {
+					if (ccc.getComment() != null && ccc.getComment().trim().length() > 0) {
 						writelnComment(stringBuilder, ccc.getComment());
 					}
 					writeControlClass(stringBuilder, ccc.getControlClass(), null);
@@ -295,6 +295,10 @@ public class ProjectExporter {
 		stringBuilder.append('\n');
 	}
 
+	private void write(@NotNull IndentedStringBuilder stringBuilder, @NotNull String s) {
+		stringBuilder.append(s);
+		stringBuilder.append('\n');
+	}
 
 	private void exportMacros(@NotNull IndentedStringBuilder stringBuilder) throws IOException {
 		List<Macro> macros = project.getMacroRegistry().getMacros();
@@ -302,9 +306,9 @@ public class ProjectExporter {
 			if (macro.getComment() != null && macro.getComment().length() != 0) {
 				writelnComment(stringBuilder, macro.getComment());
 			}
-			writeln(stringBuilder, "#define ");
-			writeln(stringBuilder, macro.getKey());
-			writeln(stringBuilder, " ");
+			write(stringBuilder, "#define ");
+			write(stringBuilder, macro.getKey());
+			write(stringBuilder, " ");
 			writeln(stringBuilder, getExportValueString(
 					macro.getValue(),
 					macro.getPropertyType(), conf.getExportDirectory().getAbsolutePath())
@@ -319,6 +323,7 @@ public class ProjectExporter {
 		File customClassesExportFile = conf.getFileForExportDirectory(conf.getCustomClassesExportFileName());
 		if (!customClassesExportFile.exists() &&
 				!conf.getProject().getWorkspaceCustomControlClassRegistry().getControlClassList().isEmpty()) {
+			customClassesExportFile.getParentFile().mkdirs();
 			customClassesExportFile.createNewFile();
 		}
 

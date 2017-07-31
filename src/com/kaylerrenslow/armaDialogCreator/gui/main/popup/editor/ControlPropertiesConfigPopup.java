@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVNumericValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.IdentifierChecker;
@@ -254,8 +255,10 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			ImageContainer imageContainer = null;
 			try {
 				ControlProperty type = customControlClass.getControlClass().findProperty(ControlPropertyLookup.TYPE);
-				ControlType controlType = ControlType.findById(type.getIntValue());
-				imageContainer = new BorderedImageView(controlType.getCustomIcon());
+				if (type.getValue() instanceof SVNumericValue) {
+					ControlType controlType = ControlType.findById(type.getIntValue());
+					imageContainer = new BorderedImageView(controlType.getCustomIcon());
+				}
 
 			} catch (IllegalArgumentException ignore) {
 

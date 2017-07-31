@@ -230,16 +230,21 @@ public class BasicTextRenderer {
 
 				ArrayList<String> linesList = new ArrayList<>(words.length);
 				final int spaceWidth = (int) fontMetrics.computeStringWidth(" ");
+				final int textPadding = (int) (renderer.getWidth() * TEXT_PADDING);
 				if (words.length > 1) {
-					int curWidth = 0;
+					int curWidth = textPadding;
 					for (String word : words) {
-						curWidth += (int) fontMetrics.computeStringWidth(word) + spaceWidth;
-						lineBuilder.append(word);
-						lineBuilder.append(' ');
-						if (curWidth >= controlWidth) {
+						int wordWidth = (int) fontMetrics.computeStringWidth(word) + spaceWidth;
+						if (curWidth + wordWidth >= controlWidth) {
 							linesList.add(lineBuilder.toString());
-							curWidth = 0;
 							lineBuilder = new StringBuilder();
+							curWidth = wordWidth;
+							lineBuilder.append(word);
+							lineBuilder.append(' ');
+						} else {
+							curWidth += wordWidth;
+							lineBuilder.append(word);
+							lineBuilder.append(' ');
 						}
 					}
 					linesList.add(lineBuilder.toString()); //append any remaining text

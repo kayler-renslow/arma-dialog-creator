@@ -49,6 +49,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 	private final Label lblNoTypeChosen = new Label(null);
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
+	private Macro initialMacro;
 
 	/**
 	 Creates a Macro editor.
@@ -169,6 +170,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 
 	/** Set the editor to the given macro */
 	protected void setToMacro(@Nullable Macro m) {
+		initialMacro = m;
 		if (m == null) {
 			inMacroKey.clear();
 			cbMacroType.setDisable(false);
@@ -204,8 +206,10 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 			if (sup != null) {
 				return sup;
 			}
-			if (Project.getCurrentProject().findMacroByKey(data) != null) {
-				return bundle.getString("Macros.key_already_exists");
+			if (!initialMacro.getKey().equals(data)) {
+				if (Project.getCurrentProject().findMacroByKey(data) != null) {
+					return bundle.getString("Macros.key_already_exists");
+				}
 			}
 			return null;
 		}
