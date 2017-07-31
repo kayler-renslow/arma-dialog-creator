@@ -297,7 +297,6 @@ public class ProjectExporter {
 
 	private void write(@NotNull IndentedStringBuilder stringBuilder, @NotNull String s) {
 		stringBuilder.append(s);
-		stringBuilder.append('\n');
 	}
 
 	private void exportMacros(@NotNull IndentedStringBuilder stringBuilder) throws IOException {

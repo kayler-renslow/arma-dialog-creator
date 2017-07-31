@@ -1,5 +1,5 @@
 **Added:**
-* ability to rename control from treeview
+* 
 
 **Changed:**
 *  
