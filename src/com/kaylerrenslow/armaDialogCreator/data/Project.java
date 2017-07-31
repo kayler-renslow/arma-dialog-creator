@@ -13,6 +13,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +32,7 @@ public class Project implements SpecificationRegistry {
 	private final ApplicationData applicationData;
 	private String projectName;
 	private String projectDescription;
-	private final File projectSaveDirectory;
+	private File projectSaveDirectory;
 	private File projectSaveFile;
 
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
@@ -106,9 +108,55 @@ public class Project implements SpecificationRegistry {
 		return projectName;
 	}
 
-	public void setProjectName(@NotNull String projectName) throws IOException {
-		this.projectName = projectName;
-		//		Files.move(projectSaveDirectory.toPath(), getProjectFile(projectName, appSaveDirectory).toPath(), StandardCopyOption.ATOMIC_MOVE);
+	/**
+	 Set the project name, which is stored in the project.xml file
+
+	 @param projectName the new project name
+	 */
+	public void setProjectName(@NotNull String projectName) throws IllegalArgumentException {
+		this.projectName = makeProjectNameSafe(projectName);
+	}
+
+	/** @return a name that is safe to use for a directory name */
+	@NotNull
+	public static String makeProjectNameSafe(@NotNull String projectName) {
+		final char[] illegalChars = {'/', '\n', '\r', '\t', '\0', '\f', '`', '?', '*', '\\', '<', '>', '|', '\"', ':'};
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < projectName.length(); i++) {
+			boolean illegal = false;
+			for (char c : illegalChars) {
+				if (projectName.charAt(i) == c) {
+					illegal = true;
+					break;
+				}
+			}
+			if (!illegal) {
+				sb.append(projectName.charAt(i));
+			}
+		}
+		return sb.toString();
+	}
+
+
+	/**
+	 Set the directory where the project is saved.
+	 The project's save path will be relative to {@link Workspace#getWorkspaceDirectory()}
+	 <p>
+	 If the project directory name already exists, a (x) will be appended to the name
+
+	 @param directoryName the new directory name for the project.
+	 @throws IOException when the file system couldn't do the move
+	 */
+	public void setProjectDirectoryName(@NotNull String directoryName) throws IOException {
+		File dest = workspace.getFileForName(directoryName);
+		int c = 1;
+		while (dest.exists()) {
+			dest = workspace.getFileForName(directoryName + " (" + c + ")");
+		}
+		Files.move(projectSaveDirectory.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		this.projectSaveDirectory = dest;
+		this.projectSaveFile = getFileForName(PROJECT_SAVE_FILE_NAME);
 	}
 
 	@Nullable
@@ -125,7 +173,7 @@ public class Project implements SpecificationRegistry {
 		return projectSaveDirectory;
 	}
 
-	/** Get the display that the dialog creator is editing right now. */
+	/** @return the display that the dialog creator is editing right now. */
 	@NotNull
 	public ArmaDisplay getEditingDisplay() {
 		return editingDisplayObserver.getValue();

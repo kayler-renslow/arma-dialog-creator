@@ -14,9 +14,9 @@ public class ProjectInfo {
 	private final File projectDirectory;
 	private final Workspace workspace;
 
-	public ProjectInfo(@NotNull String projectName, @NotNull Workspace workspace) {
+	public ProjectInfo(@NotNull String projectName, @NotNull String projectDirectoryName, @NotNull Workspace workspace) {
 		this.projectName = projectName;
-		this.projectDirectory = workspace.getFileForName(projectName + "/");
+		this.projectDirectory = workspace.getFileForName(Project.makeProjectNameSafe(projectDirectoryName) + "/");
 		this.projectXmlFile = new File(projectDirectory.getPath() + "/" + Project.PROJECT_SAVE_FILE_NAME);
 		this.workspace = workspace;
 	}

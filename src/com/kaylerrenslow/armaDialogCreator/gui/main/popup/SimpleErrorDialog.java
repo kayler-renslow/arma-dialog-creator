@@ -14,7 +14,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ResourceBundle;
@@ -27,7 +26,13 @@ import java.util.ResourceBundle;
 public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 	protected final B myBody;
 
-	public SimpleErrorDialog(@Nullable Stage primaryStage, @Nullable String title, @NotNull Throwable error,
+	/**
+	 @param primaryStage the primary stage
+	 @param title title of dialog
+	 @param error use null if you wish to not show a strack trace to the user
+	 @param body body to use, or null to not have a body
+	 */
+	public SimpleErrorDialog(@Nullable Stage primaryStage, @Nullable String title, @Nullable Throwable error,
 							 @Nullable B body) {
 		super(primaryStage, new VBox(10), title, false, true, false);
 		this.myBody = body;
@@ -50,27 +55,29 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 			body.autosize();
 		}
 
-		Label lblErrMsg = new Label(error.getMessage());
-		lblErrMsg.setWrapText(true);
-		myRootElement.getChildren().add(lblErrMsg);
-		ToggleButton toggleButton = new ToggleButton(showStackTraceLblStr);
-		myRootElement.getChildren().add(toggleButton);
+		if (error != null) {
+			Label lblErrMsg = new Label(error.getMessage());
+			lblErrMsg.setWrapText(true);
+			myRootElement.getChildren().add(lblErrMsg);
+			ToggleButton toggleButton = new ToggleButton(showStackTraceLblStr);
+			myRootElement.getChildren().add(toggleButton);
 
-		toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
-			final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
+			toggleButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
+				final TextArea taErrorMessage = ExceptionHandler.getExceptionTextArea(error);
 
-			@Override
-			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				if (selected) {
-					toggleButton.setText(hideStackTraceLblStr);
-					myRootElement.getChildren().add(taErrorMessage);
-				} else {
-					toggleButton.setText(showStackTraceLblStr);
-					myRootElement.getChildren().remove(taErrorMessage);
+				@Override
+				public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
+					if (selected) {
+						toggleButton.setText(hideStackTraceLblStr);
+						myRootElement.getChildren().add(taErrorMessage);
+					} else {
+						toggleButton.setText(showStackTraceLblStr);
+						myRootElement.getChildren().remove(taErrorMessage);
+					}
+					SimpleErrorDialog.this.sizeToScene();
 				}
-				SimpleErrorDialog.this.sizeToScene();
-			}
-		});
+			});
+		}
 	}
 
 	@Override

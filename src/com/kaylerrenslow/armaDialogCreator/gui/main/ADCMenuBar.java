@@ -62,7 +62,7 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem edit_custom_control = addOnAction(new MenuItem(bundle.getString("edit_custom_control")), new EditCustomControlAction());
 	final MenuItem edit_string_table = addOnAction(new MenuItem(bundle.getString("edit_string_table")), new EditStringTableAction());
 	final MenuItem edit_exportConfig = addOnAction(new MenuItem(bundle.getString("edit_export_config")), new EditExportConfigAction());
-
+	final MenuItem edit_projectSettings = addOnAction(new MenuItem(bundle.getString("edit_project_settings")), new EditProjectSettingsAction());
 
 	/*View*/
 	final MenuItem view_preview = addOnAction(new MenuItem(bundle.getString("view_preview"), null), new ViewPreviewAction());
@@ -170,7 +170,8 @@ class ADCMenuBar extends MenuBar {
 			edit_macros,
 			edit_custom_control,
 			edit_string_table,
-			edit_exportConfig
+			edit_exportConfig,
+			edit_projectSettings
 	);
 	final Menu menuView = new Menu(
 			bundle.getString("view"), null,

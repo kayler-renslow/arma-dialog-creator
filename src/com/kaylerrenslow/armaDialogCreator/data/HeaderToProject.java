@@ -196,7 +196,7 @@ public class HeaderToProject {
 				dialogDir.mkdir();
 			}
 
-			project = new Project(dataContext, new ProjectInfo(dialogClassName, workspace));
+			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogClassName, workspace));
 		}
 
 		dataContext.setCurrentProject(project);

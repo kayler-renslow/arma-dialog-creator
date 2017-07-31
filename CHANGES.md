@@ -1,11 +1,11 @@
 **Added:**
-* 
+* ability to editing project name, description, and project save directory
 
 **Changed:**
 * 
 
 **Fixed:**
-* HeaderToProject was creating duplicate ControlClasses for when a HeaderClass had an extend class
+* 
 
 **Notes:**
 * June 23:

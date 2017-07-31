@@ -60,6 +60,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		versionLoader.parseDocument();
 		return new ProjectPreviewParseResult(
 				new ProjectInfo(versionLoader.getProjectName(),
+						projectSaveXml.getParentFile().getName(),
 						new Workspace(projectSaveXml.getParentFile().getParentFile())
 				),
 				versionLoader.getErrors()

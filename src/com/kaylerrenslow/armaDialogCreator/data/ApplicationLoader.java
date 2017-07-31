@@ -57,7 +57,7 @@ public class ApplicationLoader {
 
 			projectName = (projectName != null && projectName.length() > 0) ? projectName : getTemplateProjectName();
 			projectName = projectName.trim();
-			project = new ProjectInfo(projectName, workspace);
+			project = new ProjectInfo(projectName, projectName, workspace);
 		}
 
 		return new ApplicationLoadConfig(project, loadType, workspace);
