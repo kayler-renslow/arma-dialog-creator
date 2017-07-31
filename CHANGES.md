@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* 
+* made tweaks to project export control class sorting 
 
 **Fixed:**
-* export order of classes matters - now there is a sort for export order of control classes
+* 
 
 **Notes:**
 * June 23:

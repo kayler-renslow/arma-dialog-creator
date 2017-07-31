@@ -278,8 +278,7 @@ public class ProjectExporter {
 
 	private void exportCustomControlClasses(@NotNull IndentedStringBuilder stringBuilder,
 											@NotNull CustomControlClassRegistry registry) throws IOException {
-		List<ControlClass> sorted = sortControlClasses(registry.controlClassIterator());
-		for (ControlClass cc : sorted) {
+		for (ControlClass cc : sortControlClasses(registry.controlClassIterator())) {
 			for (CustomControlClass ccc : registry) {
 				if (cc == ccc.getControlClass()) {
 					if (ccc.getComment() != null) {
@@ -495,8 +494,7 @@ public class ProjectExporter {
 	 <li>If a {@link ControlClass} has an extend class that isn't in this iterable, it will be added to the end of the list</li>
 	 </ol>
 	 */
-	private static <T extends ControlClass> List<T> sortControlClasses(@NotNull Iterable<T> controlClasses) {
-		HashSet<String> visited = new HashSet<>();
+	private static <T extends ControlClass> Iterable<T> sortControlClasses(@NotNull Iterable<T> controlClasses) {
 		LinkedList<T> toVisit = new LinkedList<>();
 		for (T cc : controlClasses) {
 			toVisit.add(cc);
@@ -504,20 +502,23 @@ public class ProjectExporter {
 
 		List<T> sorted = new ArrayList<>(toVisit.size());
 
+		{
+			Iterator<T> iter = toVisit.iterator();
+			while (iter.hasNext()) {
+				T cc = iter.next();
+				if (cc.getExtendClass() == null) {
+					sorted.add(cc);
+					iter.remove();
+				}
+			}
+		}
+
 		while (!toVisit.isEmpty()) {
 			Iterator<T> iter = toVisit.iterator();
 			boolean didRemove = false;
 			while (iter.hasNext()) {
 				T cc = iter.next();
-				if (cc.getExtendClass() == null) {
-					visited.add(cc.getClassName());
-					sorted.add(cc);
-					iter.remove();
-					didRemove = true;
-					continue;
-				}
-				if (visited.contains(cc.getExtendClass().getClassName())) {
-					visited.add(cc.getClassName());
+				if (sorted.contains(cc.getExtendClass())) {
 					sorted.add(cc);
 					iter.remove();
 					didRemove = true;
@@ -525,12 +526,10 @@ public class ProjectExporter {
 				}
 			}
 			if (!didRemove) {
-				//if nothing was removed last iteration, then there is nothing left to do (this will prevent infinite loop)
-				break;
+				T cc = toVisit.removeFirst();
+				sorted.add(cc);
+				continue;
 			}
-		}
-		if (!toVisit.isEmpty()) {
-			sorted.addAll(toVisit);
 		}
 
 		return sorted;
