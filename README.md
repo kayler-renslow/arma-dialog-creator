@@ -12,14 +12,19 @@ Arma Dialog Creator is a tool for creating dialogs for Arma 3 and **is still a w
 * Preview of Controls that have a .paa image file (must have Arma 3 Tools installed).
 * A nice [StringTable](https://community.bistudio.com/wiki/Stringtable.xml) editor
 
+### Trailer
+Here is a trailer for Arma Dialog Creator. It's a really short, but dense, video showing many of the implemented features.
+You can watch the video [here](https://youtu.be/0P7pYvGDFvU).
+
+If you would like a slower paced video, check out the preview video below. The preview video is months older than the trailer, but the core of Arma Dialog Creator is pretty much the same.
+
 ### Preview Video
 Arma Dialog Creator isn't out yet, but there is a video showcasing what has been accomplished (as of November 24 2016). Please note that nothing in the video is final and already things have been improved.
 
 You can watch the video [here](https://www.youtube.com/watch?v=ytqxZvdEDjk).
 
-
 ### License
-Arma games are created by and owned Bohemia Interactive. Arma Dialog Creator was created by Kayler Renslow. Arma Dialog Creator and it's author aren't affiliated with Bohemia Interactive. This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). You don't need to contact me if you want to create derivatives or publish the project elsewhere.
+Arma games are created by and owned Bohemia Interactive. Arma Dialog Creator is developed by Kayler Renslow. Arma Dialog Creator and it's developer aren't affiliated with Bohemia Interactive. This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). You don't need to contact me if you want to create derivatives or publish the project elsewhere (attribution is appreciated :) ).
 
-### More info coming soon...
+### More info coming Actually Soon™...
 
