@@ -26,7 +26,7 @@ import java.util.function.Function;
 
  @author Kayler
  @since 07/23/2017 */
-public class ListboxRenderer extends ArmaControlRenderer {
+public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRenderer.UpdateCallback {
 
 	private BlinkControlHandler blinkControlHandler;
 	private BasicTextRenderer textRenderer;
@@ -54,7 +54,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 		textRenderer = new BasicTextRenderer(control, this,
 				null, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true
+				ControlPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setText("Placeholder");
 
@@ -164,7 +164,7 @@ public class ListboxRenderer extends ArmaControlRenderer {
 			double ratio = periodAlternator.updateAndGetRatio();
 			final int rowHeight = getRowPixelHeight();
 
-			scrollbarRenderer.paint(gc, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
+			scrollbarRenderer.paint(gc, preview, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
 
 			gc.beginPath();
 			gc.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());

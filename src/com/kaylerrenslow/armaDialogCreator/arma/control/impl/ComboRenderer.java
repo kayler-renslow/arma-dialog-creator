@@ -26,7 +26,7 @@ import java.util.function.Function;
 
  @author Kayler
  @since 07/23/2017 */
-public class ComboRenderer extends ArmaControlRenderer {
+public class ComboRenderer extends ArmaControlRenderer implements BasicTextRenderer.UpdateCallback {
 
 	private BlinkControlHandler blinkControlHandler;
 	private BasicTextRenderer textRenderer;
@@ -55,7 +55,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 		textRenderer = new BasicTextRenderer(control, this,
 				null, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true
+				ControlPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setText("Placeholder");
 
@@ -165,7 +165,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 					gc.setStroke(backgroundColor);
 					Region.fillRectangle(gc, menuX1, menuY1, menuX2, menuY2);
 
-					scrollbarRenderer.paint(gc, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
+					scrollbarRenderer.paint(gc, true, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
 
 					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
 					gc.rect(menuX1, menuY1, menuX2 - menuX1 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2 - menuY1);
@@ -265,7 +265,7 @@ public class ComboRenderer extends ArmaControlRenderer {
 	}
 
 	@Override
-	protected void positionUpdate() {
+	protected void positionUpdate(boolean initializingPosition) {
 		updateMenuPixelHeight();
 	}
 

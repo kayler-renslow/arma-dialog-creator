@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.TintedImageHelperRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.arma.util.Texture;
@@ -12,8 +13,6 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -27,15 +26,15 @@ import java.util.function.Function;
 
  @author Kayler
  @since 05/25/2016 */
-public class StaticRenderer extends ArmaControlRenderer {
+public class StaticRenderer extends ArmaControlRenderer implements BasicTextRenderer.UpdateCallback {
 
 	private enum RenderType {
 		Text, ImageOrTexture, Line, Frame, Error
 	}
 
 	private BlinkControlHandler blinkControlHandler;
-	private ControlProperty styleProperty;
-	private ControlProperty textProperty;
+	private SerializableValue stylePropertyValue;
+	private SerializableValue textPropertyValue;
 
 	private BasicTextRenderer textRenderer;
 	private TooltipRenderer tooltipRenderer;
@@ -45,19 +44,22 @@ public class StaticRenderer extends ArmaControlRenderer {
 		return null;
 	};
 
-	private ImageOrTextureHelper pictureOrTextureHelper = new ImageOrTextureHelper(this);
+	private final ImageOrTextureHelper pictureOrTextureHelper;
 	private RenderType renderType = RenderType.Text;
-	private SerializableValue styleValue = null;
 	private RenderType renderTypeForStyle = RenderType.Error;
 	private boolean keepImageAspectRatio = false, tileImage = false;
 	private int tileW = 0, tileH = 0;
 
+	private final TintedImageHelperRenderer tintedImage = new TintedImageHelperRenderer();
+	;
+
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
+		pictureOrTextureHelper = new ImageOrTextureHelper(this);
 		textRenderer = new BasicTextRenderer(control, this,
 				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true
+				ControlPropertyLookup.SHADOW, true, this
 		);
 
 		textRenderer.setAllowMultiLine(true);
@@ -91,27 +93,8 @@ public class StaticRenderer extends ArmaControlRenderer {
 			}
 		});
 
-		styleProperty = myControl.findProperty(ControlPropertyLookup.STYLE);
-		styleProperty.getValueObserver().addListener((observer, oldValue, newValue) -> {
-			if (newValue instanceof SVControlStyleGroup) {
-				SVControlStyleGroup group = (SVControlStyleGroup) newValue;
-				keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
-				tileImage = group.hasStyle(ControlStyle.TILE_PICTURE);
-			}
-			renderTypeForStyle = getRenderTypeFromStyle();
-			styleValue = newValue;
-			checkAndSetRenderType();
-		});
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
 
-		textProperty = myControl.findProperty(ControlPropertyLookup.TEXT);
-
-		textProperty.setValueIfAbsent(true, SVString.newEmptyString());
-		textProperty.getValueObserver().addListener(new ValueListener<SerializableValue>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, @Nullable SerializableValue oldValue, @Nullable SerializableValue newValue) {
-				checkAndSetRenderType();
-			}
-		});
 
 		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
@@ -131,10 +114,14 @@ public class StaticRenderer extends ArmaControlRenderer {
 	private void checkAndSetRenderType() {
 		switch (renderTypeForStyle) {
 			case ImageOrTexture: {
-				pictureOrTextureHelper.updateAsync(textProperty.getValue());
+				pictureOrTextureHelper.updateAsync(textPropertyValue, mode -> {
+					updateTintedImage();
+					return null;
+				});
 			}
 		}
 		renderType = renderTypeForStyle;
+
 		requestRender();
 	}
 
@@ -143,6 +130,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 		if (preview) {
 			blinkControlHandler.paint(gc);
 		}
+
 		switch (renderType) {
 			case Text: {
 				super.paint(gc, canvasContext);
@@ -203,38 +191,11 @@ public class StaticRenderer extends ArmaControlRenderer {
 						if (imageToPaint == null) {
 							throw new IllegalStateException("imageToPaint is null");
 						}
-						int imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2;
 						if (keepImageAspectRatio && !tileImage) {
-							int imgWidth = (int) imageToPaint.getWidth();
-							int imgHeight = (int) imageToPaint.getHeight();
-							double aspectRatio = imgWidth * 1.0 / imgHeight;
-
-							//We want to make sure that the image doesn't surpass the bounds of the control
-							//while also maintaining the aspect ratio. In arma 3, the height of the image will
-							//never surpass the height of the control. The width is allowed to surpass the bounds though.
-
-							int drawHeight = getHeight();
-							int drawWidth = (int) Math.round(drawHeight * aspectRatio);
-
-							//after the image as been resized to aspect ratio, center the image
-							int centerX = getX1() + (getWidth() - drawWidth) / 2;
-
-							imageDrawX1 = centerX;
-							imageDrawY1 = y1;
-							imageDrawX2 = centerX + drawWidth;
-							imageDrawY2 = y1 + drawHeight;
-							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2, getTextColor());
-
-							gc.drawImage(imageToPaint, imageDrawX1, imageDrawY1, drawWidth, drawHeight);
+							tintedImage.paintTintedImage(gc);
 						} else {
-							imageDrawX1 = x1;
-							imageDrawY1 = y1;
-							imageDrawX2 = x2;
-							imageDrawY2 = y2;
-
-							paintMultiplyColor(gc, imageDrawX1, imageDrawY1, imageDrawX2, imageDrawY2, getTextColor());
-
 							if (tileImage) {
+								paintMultiplyColor(gc, x1, y1, x2, y2, getTextColor());
 								int tileW = Math.max(1, this.tileW);
 								int tileH = Math.max(1, this.tileH);
 								int controlWidth = getWidth();
@@ -248,7 +209,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 									}
 								}
 							} else {
-								gc.drawImage(imageToPaint, imageDrawX1, imageDrawY1, getWidth(), getHeight());
+								tintedImage.paintTintedImage(gc);
 							}
 						}
 
@@ -271,7 +232,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 						break;
 					}
 					case LoadingImage: {
-						super.paint(gc, canvasContext);
+						paintImageLoading(gc, backgroundColor, x1, y1, x2, y2);
 						break;
 					}
 				}
@@ -286,6 +247,7 @@ public class StaticRenderer extends ArmaControlRenderer {
 				throw new IllegalStateException("unhandled renderType:" + renderType);
 			}
 		}
+
 		if (preview) {
 			if (this.mouseOver) {
 				canvasContext.paintLast(tooltipRenderFunc);
@@ -293,6 +255,73 @@ public class StaticRenderer extends ArmaControlRenderer {
 		}
 	}
 
+	@Override
+	protected void positionUpdate(boolean initializingPosition) {
+		if (!initializingPosition) {
+			updateTintedImage();
+		}
+	}
+
+	@Override
+	public void textColorUpdate(@Nullable SerializableValue newValue) {
+		updateTintedImage();
+	}
+
+	@Override
+	public void textUpdate(@Nullable SerializableValue newValue) {
+		textPropertyValue = newValue;
+		checkAndSetRenderType();
+	}
+
+	@Override
+	public void styleUpdate(@Nullable SerializableValue newValue) {
+		stylePropertyValue = newValue;
+		if (newValue instanceof SVControlStyleGroup) {
+			SVControlStyleGroup group = (SVControlStyleGroup) newValue;
+			keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
+			tileImage = group.hasStyle(ControlStyle.TILE_PICTURE);
+
+		}
+		renderTypeForStyle = getRenderTypeFromStyle();
+		checkAndSetRenderType();
+	}
+
+	private void updateTintedImage() {
+		if (pictureOrTextureHelper.getImage() == null) {
+			tintedImage.updateImage(null); //help garbage collection
+			return;
+		}
+		Image img = pictureOrTextureHelper.getImage();
+		int x, y, w, h;
+		if (keepImageAspectRatio && !tileImage) {
+			int imgWidth = (int) img.getWidth();
+			int imgHeight = (int) img.getHeight();
+			double aspectRatio = imgWidth * 1.0 / imgHeight;
+
+			//We want to make sure that the image doesn't surpass the bounds of the control
+			//while also maintaining the aspect ratio. In arma 3, the height of the image will
+			//never surpass the height of the control. The width is allowed to surpass the bounds though.
+
+			int drawHeight = getHeight();
+			int drawWidth = (int) Math.round(drawHeight * aspectRatio);
+
+			//after the image as been resized to aspect ratio, center the image
+			x = getX1() + (getWidth() - drawWidth) / 2;
+			;
+
+			y = y1;
+			w = drawWidth;
+			h = drawHeight;
+		} else {
+			x = x1;
+			y = y1;
+			w = getWidth();
+			h = getHeight();
+		}
+		tintedImage.updateEffect(
+				pictureOrTextureHelper.getImage(), getTextColor(), x, y, w, h, true
+		);
+	}
 
 	@NotNull
 	public Color getTextColor() {
@@ -305,12 +334,9 @@ public class StaticRenderer extends ArmaControlRenderer {
 	 */
 	@NotNull
 	private RenderType getRenderTypeFromStyle() {
-		SerializableValue value = styleProperty.getValue();
+		SerializableValue value = stylePropertyValue;
 		if (value == null) {
 			return RenderType.Error;
-		}
-		if (value == styleValue) {
-			return renderTypeForStyle;
 		}
 		if (value instanceof SVControlStyleGroup) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;

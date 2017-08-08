@@ -379,11 +379,15 @@ public class ControlClass {
 			}
 
 			for (ControlClass nested : extendMe.getAllNestedClasses()) {
-				if (findNestedClassNullable(nested.getClassName()) == null) {
+				ControlClass nestedMatch = findNestedClassNullable(nested.getClassName());
+				if (nestedMatch == null) {
 					optionalNestedClasses.add(nested);
+					tempNestedClasses.add(nested);
 					getControlClassUpdateGroup().update(
 							new ControlClassTemporaryNestedClassUpdate(this, nested, true)
 					);
+				} else {
+					//do nothing if the nested class already exists (tested this Aug 5, 2017)
 				}
 			}
 
@@ -407,8 +411,17 @@ public class ControlClass {
 				this.overrideProperty(property.getPropertyLookup());
 			}
 
+			for (ControlClass nested : getAllNestedClasses()) {
+				nested.extendControlClass(null);
+			}
+
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
 			oldExtendClass.mySubClasses.remove(this);
+
+			//tell all sub classes that this class isn't extending anything
+			//todo
+
+			//todo as well: we should have a test case that tests if a property in the middle of a tree is changed and propogates correctly
 		}
 
 		extendClassObserver.updateValue(extendMe);

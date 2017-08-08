@@ -4,12 +4,10 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -72,6 +70,66 @@ public class ControlClassTest_DeepInheritance {
 		assertEquals(style, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
 		assertEquals(colorText_rscText, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
 		assertEquals(colorText_rscText, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+	}
+
+	@Test
+	public void test3() {
+		EmptySpecRegistry registry = new EmptySpecRegistry();
+		RscText rscText = new RscText(registry);
+		Hint hint = new Hint(registry);
+		HintRep hintRep = new HintRep(registry);
+
+		//HintRep's values will all be empty
+
+		SerializableValue style = new SVString("style");
+		SerializableValue colorText_rscText = new SVString("colorText RscText");
+		SerializableValue colorText_hint = new SVString("colorText Hint");
+
+		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+
+		hint.extendControlClass(rscText);
+		hintRep.extendControlClass(hint);
+
+		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
+
+		hint.overrideProperty(ControlPropertyLookup.COLOR_TEXT);
+
+		assertEquals(style, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
+		assertEquals(style, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_rscText, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+	}
+
+	@Test
+	public void test4() {
+		EmptySpecRegistry registry = new EmptySpecRegistry();
+		RscText rscText = new RscText(registry);
+		Hint hint = new Hint(registry);
+		HintRep hintRep = new HintRep(registry);
+
+		//HintRep's values will all be empty
+
+		SerializableValue style = new SVString("style");
+		SerializableValue colorText_rscText = new SVString("colorText RscText");
+		SerializableValue colorText_hint = new SVString("colorText Hint");
+
+		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+
+		hint.extendControlClass(rscText);
+		hintRep.extendControlClass(hint);
+
+		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
+
+		hint.extendControlClass(null);
+
+		assertEquals(null, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
+		assertEquals(null, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_hint, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
 	}
 
 	static final ControlPropertyLookupConstant[] requiredProperties = {
@@ -185,39 +243,6 @@ public class ControlClassTest_DeepInheritance {
 					registry
 			);
 		}
-	}
-
-	private class EmptySpecRegistry implements SpecificationRegistry {
-
-
-		@Override
-		@Nullable
-		public Macro findMacroByKey(@NotNull String macroKey) {
-			return null;
-		}
-
-		@Override
-		@Nullable
-		public ControlClass findControlClassByName(@NotNull String className) {
-			return null;
-		}
-
-		@Override
-		@Nullable
-		public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
-			return null;
-		}
-
-		@Override
-		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
-
-		}
-
-		@Override
-		public void cleanup() {
-
-		}
-
 	}
 
 }

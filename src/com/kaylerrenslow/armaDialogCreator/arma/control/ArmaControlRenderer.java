@@ -7,10 +7,7 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
-import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.*;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
@@ -22,6 +19,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,13 +33,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	/** Resolution of the control. Should not change the reference, but rather change the values inside the resolution. */
 	protected final ArmaResolution resolution;
 	private final ValueObserver<SVColor> globalBackgroundColorObserver;
-	/** A simple value listener that will only invoke {@link #requestRender()} when update is received */
-	protected final ValueListener<SerializableValue> renderValueUpdateListener = new ValueListener<SerializableValue>() {
-		@Override
-		public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
-			requestRender();
-		}
-	};
 
 	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
@@ -80,6 +71,9 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 */
 	protected boolean requestFocus = false;
 
+	/** False when the constructor finishes */
+	private boolean initializing = true;
+
 	public ArmaControlRenderer(@NotNull ArmaControl control, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(0, 0, 0, 0);
 		this.resolution = resolution;
@@ -91,11 +85,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				if (newValue != null) {
 					setBackgroundColor(newValue.toJavaFXColor());
-					requestRender();
 				} else {
 					setBackgroundColor(Color.TRANSPARENT);
-					requestRender();
 				}
+				requestRender();
 			}
 		});
 
@@ -170,10 +163,16 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			setHSilent((SVExpression) hProperty.getValue());
 		}
 
+		initializing = false;
 	}
 
-	/** Invoked when the x, y, width, or height of the control is updated. Default implementation does nothing. */
-	protected void positionUpdate() {
+	/**
+	 Invoked when the x, y, width, or height of the control is updated. Default implementation does nothing.
+
+	 @param initializingPosition true when the renderer's position is being initialized for the first time,
+	 false for every other position update
+	 */
+	protected void positionUpdate(boolean initializingPosition) {
 
 	}
 
@@ -198,36 +197,36 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	 @param cc context from {@link CanvasComponent#paint(GraphicsContext, CanvasContext)}
 	 */
-	protected boolean paintPreview(@NotNull CanvasContext cc) {
+	public boolean paintPreview(@NotNull CanvasContext cc) {
 		return !cc.paintPartial();
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
-	public void defineX(SVExpression x) {
+	public void defineX(SerializableValue x) {
 		xProperty.setValue(x);
 	}
 
 	/** Set y and define the y control property. This will also update the renderer's position. */
-	public void defineY(SVExpression y) {
+	public void defineY(SerializableValue y) {
 		yProperty.setValue(y);
 	}
 
 	/** Set w (width) and define the w control property. This will also update the renderer's position. */
-	public void defineW(SVExpression width) {
+	public void defineW(SerializableValue width) {
 		wProperty.setValue(width);
 	}
 
 	/** Set h (height) and define the h control property. This will also update the renderer's position. */
-	public void defineH(SVExpression height) {
+	public void defineH(SerializableValue height) {
 		hProperty.setValue(height);
 	}
 
 	/** Just set x position without updating the property. This will also update the renderer's position. */
-	protected void setXSilent(SVExpression x) {
+	protected void setXSilent(SVNumericValue x) {
 		if (x == null) {
 			return;
 		}
-		int newX1 = calcScreenX(x.getNumVal());
+		int newX1 = calcScreenX(x.toDouble());
 		int oldX1 = x1;
 		int dx = newX1 - oldX1;
 		setX1Silent(newX1);
@@ -235,11 +234,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Just set the y position without updating the y property. This will also update the renderer's position. */
-	protected void setYSilent(SVExpression y) {
+	protected void setYSilent(SVNumericValue y) {
 		if (y == null) {
 			return;
 		}
-		int newY1 = calcScreenY(y.getNumVal());
+		int newY1 = calcScreenY(y.toDouble());
 		int oldY1 = y1;
 		int dy = newY1 - oldY1;
 		setY1Silent(newY1);
@@ -247,20 +246,20 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/** Set the width without updating it's control property. This will also update the renderer's position. */
-	protected void setWSilent(SVExpression width) {
+	protected void setWSilent(SVNumericValue width) {
 		if (width == null) {
 			return;
 		}
-		int w = calcScreenWidth(width.getNumVal());
+		int w = calcScreenWidth(width.toDouble());
 		setX2Silent(getX1() + w);
 	}
 
 	/** Just set height without setting control property. This will also update the renderer's position. */
-	protected void setHSilent(SVExpression height) {
+	protected void setHSilent(SVNumericValue height) {
 		if (height == null) {
 			return;
 		}
-		int h = calcScreenHeight(height.getNumVal());
+		int h = calcScreenHeight(height.toDouble());
 		setY2Silent(getY1() + h);
 	}
 
@@ -335,7 +334,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	/** Set the x and y values (and width and height) based upon the renderer's position */
 	protected final void recalcPosition() {
-		positionUpdate();
+		positionUpdate(this.initializing);
 		if (disableRecalc) {
 			return;
 		}
@@ -463,17 +462,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		if (xProperty.getValue() instanceof SVExpression) {
-			setXSilent((SVExpression) xProperty.getValue());
+		if (xProperty.getValue() instanceof SVNumericValue) {
+			setXSilent((SVNumericValue) xProperty.getValue());
 		}
-		if (yProperty.getValue() instanceof SVExpression) {
-			setYSilent((SVExpression) yProperty.getValue());
+		if (yProperty.getValue() instanceof SVNumericValue) {
+			setYSilent((SVNumericValue) yProperty.getValue());
 		}
-		if (wProperty.getValue() instanceof SVExpression) {
-			setWSilent((SVExpression) wProperty.getValue());
+		if (wProperty.getValue() instanceof SVNumericValue) {
+			setWSilent((SVNumericValue) wProperty.getValue());
 		}
-		if (hProperty.getValue() instanceof SVExpression) {
-			setHSilent((SVExpression) hProperty.getValue());
+		if (hProperty.getValue() instanceof SVNumericValue) {
+			setHSilent((SVNumericValue) hProperty.getValue());
 		}
 
 		resolutionUpdateGroup.update(newResolution);
@@ -589,6 +588,14 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		paintError(gc, Color.RED, x, y, w, h);
 	}
 
+	public static void paintImageLoading(@NotNull GraphicsContext gc, @NotNull Paint bgColor, int x1, int y1, int x2, int y2) {
+		gc.setStroke(bgColor);
+		Region.fillRectangle(gc, x1, y1, x2, y2);
+		gc.setStroke(Color.MAGENTA);
+		gc.strokeLine(x1, y1, x2, y2);
+		gc.strokeLine(x2, y1, x1, y2);
+	}
+
 	/**
 	 Use this when a background color array couldn't be determined
 
@@ -617,7 +624,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	/**
 	 Paints a filled rectangle at the given positions where the blend mode is {@link BlendMode#MULTIPLY}.
 	 Be sure to set the BlendMode back after using this method!
+
+	 @deprecated Use {@link TintedImageHelperRenderer} instead
 	 */
+	@Deprecated
 	public void paintMultiplyColor(@NotNull GraphicsContext gc,
 								   int x1, int y1, int x2, int y2,
 								   @NotNull Color color) {
@@ -626,4 +636,5 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		Region.fillRectangle(gc, x1, y1, x2, y2);
 		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
 	}
+
 }

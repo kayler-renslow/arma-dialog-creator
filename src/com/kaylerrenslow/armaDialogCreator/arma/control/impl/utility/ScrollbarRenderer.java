@@ -1,11 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.TintedImageHelperRenderer;
 import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
+import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,6 +16,10 @@ import org.jetbrains.annotations.Nullable;
  @since 07/24/2017 */
 public class ScrollbarRenderer {
 	private final ImageOrTextureHelper thumb, arrowFull, arrowEmpty, border;
+	private final TintedImageHelperRenderer tintedThumb = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedArrowTop = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedArrowBottom = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedBorder = new TintedImageHelperRenderer();
 	private final ArmaControlRenderer renderer;
 
 	private Color scrollbarColor = null;
@@ -37,58 +42,90 @@ public class ScrollbarRenderer {
 		this.arrowFull = new ImageOrTextureHelper(renderer);
 		this.border = new ImageOrTextureHelper(renderer);
 
+		tintedArrowBottom.rotate(180);
+
 		renderer.addValueListener(controlClass, thumb, (observer, oldValue, newValue) -> {
-			this.thumb.updateAsync(newValue);
+			this.thumb.updateAsync(newValue, mode -> {
+				if (this.thumb.getImage() != null) {
+					tintedThumb.updateImage(this.thumb.getImage(), true);
+				} else {
+					tintedThumb.updateImage(null); //help garbage collection
+				}
+				return null;
+			});
 		});
 		renderer.addValueListener(controlClass, arrowFull, (observer, oldValue, newValue) -> {
 			this.arrowFull.updateAsync(newValue);
 		});
 		renderer.addValueListener(controlClass, arrowEmpty, (observer, oldValue, newValue) -> {
-			this.arrowEmpty.updateAsync(newValue);
+			this.arrowEmpty.updateAsync(newValue, mode -> {
+				if (this.arrowEmpty.getImage() != null) {
+					Image img = this.arrowEmpty.getImage();
+					tintedArrowTop.updateImage(img, true);
+					tintedArrowBottom.updateImage(img, true);
+				}
+				return null;
+			});
 		});
 		renderer.addValueListener(controlClass, border, (observer, oldValue, newValue) -> {
-			this.border.updateAsync(newValue);
+			this.border.updateAsync(newValue, mode -> {
+				if (this.border.getImage() != null) {
+					tintedBorder.updateImage(this.border.getImage(), true);
+				} else {
+					tintedBorder.updateImage(null); //help garbage collection
+				}
+				return null;
+			});
 		});
 
 		if (scrollbarColor != null) {
 			renderer.addValueListener(controlClass, scrollbarColor, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					this.scrollbarColor = ((SVColor) newValue).toJavaFXColor();
+					tintedThumb.updateTint(this.scrollbarColor, true);
+					tintedBorder.updateTint(this.scrollbarColor, true);
+					tintedArrowTop.updateTint(this.scrollbarColor, true);
+					tintedArrowBottom.updateTint(this.scrollbarColor, true);
 					renderer.requestRender();
 				}
 			});
 		}
+
+
 	}
 
-	public void paint(@NotNull GraphicsContext gc, int x, int y, int h) {
+	public void paint(@NotNull GraphicsContext gc, boolean preview, int x, int y, int h) {
+		setTintedImagesToPreviewMode(preview);
+
 		final int arrowPadding = 4;
 		//top arrow
-		paintHelper(gc, arrowEmpty, x, y, SCROLLBAR_WIDTH, ARROW_HEIGHT, false);
+		paintHelper(gc, arrowEmpty, x, y, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowTop);
 
-		final int borderHeight = h - (ARROW_HEIGHT + arrowPadding) * 2;
+		final int borderHeight = Math.max(1, h - (ARROW_HEIGHT + arrowPadding) * 2);
 		final int borderY = y + ARROW_HEIGHT + arrowPadding;
-		paintHelper(gc, border, x, borderY, SCROLLBAR_WIDTH, borderHeight, false);
-		paintHelper(gc, thumb, x, borderY, SCROLLBAR_WIDTH, borderHeight / 2, false);
+		paintHelper(gc, border, x, borderY, SCROLLBAR_WIDTH, borderHeight, tintedBorder);
+		paintHelper(gc, thumb, x, borderY, SCROLLBAR_WIDTH, borderHeight / 2, tintedThumb);
 
 		//bottom arrow
-		paintHelper(gc, arrowEmpty, x, y + h - ARROW_HEIGHT, SCROLLBAR_WIDTH, ARROW_HEIGHT, true);
+		paintHelper(gc, arrowEmpty, x, y + h - ARROW_HEIGHT, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowBottom);
+
+		setTintedImagesToPreviewMode(false);
 	}
 
-	private void paintHelper(GraphicsContext gc, ImageOrTextureHelper helper, int x, int y, int w, int h, boolean rotate) {
+	private void setTintedImagesToPreviewMode(boolean preview) {
+		tintedArrowTop.setToPreviewMode(preview);
+		tintedArrowBottom.setToPreviewMode(preview);
+	}
+
+	private void paintHelper(GraphicsContext gc, ImageOrTextureHelper helper, int x, int y, int w, int h, TintedImageHelperRenderer tinted) {
 		switch (helper.getMode()) {
 			case Image: {
-				if (scrollbarColor != null) {
-					renderer.paintMultiplyColor(gc, x, y, x + w, y + h, scrollbarColor);
-				}
-				if (rotate) {
-					MiscHelpers.paintRotatedImage(gc, helper.getImage(), x, y, w, h, 180);
-				} else {
-					gc.drawImage(helper.getImage(), x, y, w, h);
-				}
-				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+				tinted.updatePosition(x, y, w, h, true);
+				tinted.paintTintedImage(gc);
 				break;
 			}
 			case LoadingImage: {
+				ArmaControlRenderer.paintImageLoading(gc, tinted.getTint(), x, y, x + w, y + h);
 				break;
 			}
 			case Texture: {
@@ -107,4 +144,5 @@ public class ScrollbarRenderer {
 				throw new IllegalStateException("unknown mode:" + helper.getMode());
 		}
 	}
+
 }

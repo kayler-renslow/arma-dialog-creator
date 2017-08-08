@@ -25,7 +25,7 @@ import java.util.function.Function;
 
  @author Kayler
  @since 07/19/2017 */
-public class EditRenderer extends ArmaControlRenderer {
+public class EditRenderer extends ArmaControlRenderer implements BasicTextRenderer.UpdateCallback {
 
 	private BlinkControlHandler blinkControlHandler;
 
@@ -44,7 +44,7 @@ public class EditRenderer extends ArmaControlRenderer {
 		textRenderer = new BasicTextRenderer(control, this,
 				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
 				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true
+				ControlPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setAllowMultiLine(true);
 

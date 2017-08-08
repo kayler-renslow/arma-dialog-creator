@@ -23,7 +23,7 @@ import java.util.function.Function;
 /**
  @author Kayler
  @since 11/21/2016 */
-public class ShortcutButtonRenderer extends ArmaControlRenderer {
+public class ShortcutButtonRenderer extends ArmaControlRenderer implements BasicTextRenderer.UpdateCallback {
 	private BasicTextRenderer textRenderer;
 	private BlinkControlHandler blinkControlHandler;
 	private TooltipRenderer tooltipRenderer;
@@ -74,7 +74,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT,
 				ControlPropertyLookup.COLOR, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE,
-				ControlPropertyLookup.SHADOW, true
+				ControlPropertyLookup.SHADOW, true, this
 		);
 
 		{

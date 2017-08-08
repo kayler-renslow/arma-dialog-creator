@@ -38,6 +38,7 @@ public class BasicTextRenderer {
 	public static final double TEXT_PADDING = 0.025;
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
+	private final UpdateCallback callback;
 
 	private Color textColor = Color.BLACK;
 	private ControlProperty sizeExProperty;
@@ -65,9 +66,10 @@ public class BasicTextRenderer {
 							 @Nullable ControlPropertyLookupConstant text,
 							 @NotNull ControlPropertyLookupConstant colorText, @Nullable ControlPropertyLookupConstant style,
 							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow,
-							 boolean autoInitializeTextColor) {
+							 boolean autoInitializeTextColor, @NotNull BasicTextRenderer.UpdateCallback callback) {
 		this.control = control;
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
+		this.callback = callback;
 		init(text, colorText, style, sizeEx, shadow, autoInitializeTextColor);
 	}
 
@@ -81,6 +83,7 @@ public class BasicTextRenderer {
 			renderer.addValueListener(text, (observer, oldValue, newValue) -> {
 
 				setText(TextHelper.getText(newValue));
+				callback.textUpdate(newValue);
 						renderer.requestRender();
 					}
 			);
@@ -92,6 +95,7 @@ public class BasicTextRenderer {
 		renderer.addValueListener(colorText, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						setTextColor(((SVColor) newValue).toJavaFXColor());
+						callback.textColorUpdate(newValue);
 						renderer.requestRender();
 					}
 				}
@@ -100,6 +104,7 @@ public class BasicTextRenderer {
 		if (shadow != null) {
 			renderer.addValueListener(shadow, (observer, oldValue, newValue) -> {
 				textShadow = TextShadow.getTextShadow(newValue);
+				callback.textShadowUpdate(newValue);
 				renderer.requestRender();
 			});
 		}
@@ -127,6 +132,7 @@ public class BasicTextRenderer {
 									setMultiline(true);
 								}
 							}
+							callback.styleUpdate(newValue);
 							renderer.requestRender();
 						}
 					}
@@ -140,6 +146,7 @@ public class BasicTextRenderer {
 							updateFontSize(ex);
 							renderer.requestRender();
 						}
+				callback.fontUpdate(newValue);
 					}
 			);
 		}
@@ -338,5 +345,25 @@ public class BasicTextRenderer {
 	public void setAllowMultiLine(boolean allowMultiline) {
 		this.allowMultiLine = allowMultiline;
 		clearCachedBrokenLines();
+	}
+
+	public interface UpdateCallback {
+		default void textUpdate(@Nullable SerializableValue newValue) {
+		}
+
+		default void textColorUpdate(@Nullable SerializableValue newValue) {
+		}
+
+		default void fontUpdate(@Nullable SerializableValue newValue) {
+		}
+
+		default void multilineUpdate(@Nullable SerializableValue newValue) {
+		}
+
+		default void styleUpdate(@Nullable SerializableValue newValue) {
+		}
+
+		default void textShadowUpdate(@Nullable SerializableValue newValue) {
+		}
 	}
 }

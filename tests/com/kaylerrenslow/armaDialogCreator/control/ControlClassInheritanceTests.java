@@ -37,9 +37,6 @@ public class ControlClassInheritanceTests {
 		assertNotEquals(jenny, tcc.findRequiredProperty(constant).getValue());
 	}
 
-	//todo we need tests that test for creating a temporary inherited property from a long change of inheritance (A extends B, B extends C, etc)
-	//and test if the changes are properly handled when B no longer extends C for example
-
 	@Test
 	public void inherit_checkInherited() throws Exception {
 		//inherit property that exists in the class

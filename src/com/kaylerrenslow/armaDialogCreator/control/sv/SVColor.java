@@ -108,15 +108,16 @@ public interface SVColor {
 	 Gets color array (formatted: [r,g,b,a])
 
 	 @param arr stores values in given array (array must be length 4)
+	 @param argb color in ARGB integer form
 	 */
-	static double[] getColorArray(double[] arr, int color) {
+	static double[] getArgbColorArray(double[] arr, int argb) {
 		if (arr.length != 4) {
 			throw new IllegalArgumentException("arr.length != 4");
 		}
-		int r = (color) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = (color >> 16) & 0xFF;
-		int a = (color >> 24) & 0xFF;
+		int a = (argb >> 24) & 0xFF;
+		int b = (argb >> 16) & 0xFF;
+		int g = (argb >> 8) & 0xFF;
+		int r = (argb) & 0xFF;
 		final double f = 255.0;
 		arr[0] = r / f;
 		arr[1] = g / f;
@@ -125,9 +126,9 @@ public interface SVColor {
 		return arr;
 	}
 
-	/** Returns what {@link #getColorArray(double[], int)} would, with new array of length 4 */
-	static double[] getColorArray(int color) {
-		return getColorArray(new double[4], color);
+	/** Returns what {@link #getArgbColorArray(double[], int)} would, with new array of length 4 */
+	static double[] getArgbColorArray(int argb) {
+		return getArgbColorArray(new double[4], argb);
 	}
 
 	static int to32BitInteger(int red, int green, int blue, int alpha) {

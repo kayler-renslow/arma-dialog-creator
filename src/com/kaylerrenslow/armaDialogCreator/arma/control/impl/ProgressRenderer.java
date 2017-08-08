@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.TintedImageHelperRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
@@ -30,6 +31,7 @@ public class ProgressRenderer extends ArmaControlRenderer {
 	private TooltipRenderer tooltipRenderer;
 	private Color colorBar = Color.RED;
 	private final ImageOrTextureHelper textureHelper = new ImageOrTextureHelper(this);
+	private final TintedImageHelperRenderer tintedTexture = new TintedImageHelperRenderer();
 	private final AlternatorHelper progressAlternator = new AlternatorHelper(5 * 1000);
 	private double progress = 0.7;
 	private boolean horizProgress = false;
@@ -58,12 +60,16 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		addValueListener(ControlPropertyLookup.COLOR_BAR, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBar = ((SVColor) newValue).toJavaFXColor();
+				updateTintedTexture();
 				requestRender();
 			}
 		});
 
 		addValueListener(ControlPropertyLookup.TEXTURE, (observer, oldValue, newValue) -> {
-			textureHelper.updateAsync(newValue);
+			textureHelper.updateAsync(newValue, mode -> {
+				updateTintedTexture();
+				return null;
+			});
 		});
 
 		addValueListener(ControlPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
@@ -81,6 +87,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
 				ControlPropertyLookup.TOOLTIP
 		);
+
+		updateTintedTexture();
 	}
 
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
@@ -96,6 +104,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 			this.progress = progressAlternator.updateAndGetRatio();
 		}
 
+		tintedTexture.setToPreviewMode(preview);
+
 		paintBorder(gc);
 
 		//progress filler
@@ -105,8 +115,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 
 		switch (textureHelper.getMode()) {
 			case Image: {
-				paintMultiplyColor(gc, x1, y1, x2, y2, colorBar);
-				gc.drawImage(textureHelper.getImage(), x1, y1, x2 - x1, y2 - y1);
+				tintedTexture.updatePosition(x1, y1, x2 - x1, y2 - y1);
+				tintedTexture.paintTintedImage(gc);
 				break;
 			}
 			case ImageError: {
@@ -114,6 +124,7 @@ public class ProgressRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case LoadingImage: {
+				paintImageLoading(gc, backgroundColor, x1, y1, x2, y2);
 				break;
 			}
 			case Texture: {
@@ -127,6 +138,16 @@ public class ProgressRenderer extends ArmaControlRenderer {
 			default:
 				throw new IllegalStateException("unknown mode : " + textureHelper.getMode());
 		}
+
+		tintedTexture.setToPreviewMode(false);
+	}
+
+	private void updateTintedTexture() {
+		if (textureHelper.getImage() == null) {
+			tintedTexture.updateImage(null); //help garbage collection
+			return;
+		}
+		tintedTexture.updateEffect(textureHelper.getImage(), colorBar, x1, y1, getWidth(), getHeight(), true);
 	}
 
 	@Override

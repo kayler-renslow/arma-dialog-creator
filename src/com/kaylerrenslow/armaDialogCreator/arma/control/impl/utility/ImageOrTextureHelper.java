@@ -5,9 +5,12 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.Texture;
 import com.kaylerrenslow.armaDialogCreator.arma.util.TextureParser;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.ImageHelper;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.function.Function;
 
 /**
  Utility class to combine the use cases of a property that supports textures and images.
@@ -49,6 +52,21 @@ public class ImageOrTextureHelper {
 	 @param value the value to update the helper with
 	 */
 	public void updateAsync(@Nullable SerializableValue value) {
+		updateAsync(value, null);
+	}
+
+	/**
+	 Updates the internal state of this helper. This method isn't async, unless an image is being loaded. When an
+	 image is being loaded, {@link #getMode()} will return {@link Mode#LoadingImage}. This method will also invoke
+	 {@link ArmaControlRenderer#requestRender()}.
+	 <p>
+	 If <code>completionCallback</code> isn't null, it will be invoked before the render request. Also, the function will
+	 be executed on the JavaFX Thread
+
+	 @param value the value to update the helper with
+	 @param completionCallback function to use when this method's internal functionality is complete, or null if don't care
+	 */
+	public void updateAsync(@Nullable SerializableValue value, @Nullable Function<Mode, Void> completionCallback) {
 		this.value = value;
 		if (value != null) {
 			String textValue = value.toString();
@@ -79,11 +97,19 @@ public class ImageOrTextureHelper {
 					this.image = image;
 					mode = Mode.Image;
 				}
-				renderer.requestRender();
+				Platform.runLater(() -> {
+					if (completionCallback != null) {
+						completionCallback.apply(mode);
+					}
+
+					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
+					renderer.requestRender();
+				});
 			}
 			return null;
 		});
 	}
+
 
 	/**
 	 Get the mode. This method is synchronized to ensure that the mode is set at the same time as {@link #getImage()}

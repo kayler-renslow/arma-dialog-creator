@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author Kayler
  @since 07/04/2017 */
-public class TooltipRenderer {
+public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 	private static final Font TOOLTIP_FONT = Font.font(14);
 	private final ArmaControl control;
 	private Color backgroundColor = null;
@@ -30,7 +30,7 @@ public class TooltipRenderer {
 		this.control = control;
 		textRenderer = new BasicTextRenderer(
 				control, renderer, tooltipText, tooltipTextColor, null, null, null,
-				false
+				false, this
 		);
 		textRenderer.setFont(TOOLTIP_FONT);
 		control.findProperty(tooltipBackgroundColor).getValueObserver().addListener((observer, oldValue, newValue) ->

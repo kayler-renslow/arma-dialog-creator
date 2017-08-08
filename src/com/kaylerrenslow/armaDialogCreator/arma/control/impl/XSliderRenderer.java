@@ -2,7 +2,11 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.*;
+import com.kaylerrenslow.armaDialogCreator.arma.control.TintedImageHelperRenderer;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.BlinkControlHandler;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.ImageOrTextureHelper;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TexturePainter;
+import com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility.TooltipRenderer;
 import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
@@ -10,9 +14,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SVColor;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVColorArray;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
-import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -33,19 +35,27 @@ public class XSliderRenderer extends ArmaControlRenderer {
 	private final ImageOrTextureHelper arrowFull = new ImageOrTextureHelper(this);
 	private final ImageOrTextureHelper border = new ImageOrTextureHelper(this);
 	private final ImageOrTextureHelper thumb = new ImageOrTextureHelper(this);
+
+	private final TintedImageHelperRenderer tintedLeftArrow = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedRightArrow = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedBorder = new TintedImageHelperRenderer();
+	private final TintedImageHelperRenderer tintedThumb = new TintedImageHelperRenderer();
+
 	private double progress = 0.7;
 
 	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
 		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
 		return null;
 	};
-	private int arrowLeftX, arrowRightX, arrowWidth, thumbX, thumbWidth;
+	private int arrowLeftX, arrowRightX, arrowWidth, thumbX, borderWidth;
 	private boolean leftArrowPress = false;
 	private boolean rightArrowPress = false;
 	private boolean thumbPress = false;
 
 	public XSliderRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
+
+		tintedRightArrow.flipHorizontally();
 
 		{
 			ControlProperty bgColor = myControl.findProperty(ControlPropertyLookup.COLOR);
@@ -68,7 +78,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		});
 
 		addValueListener(ControlPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
-			arrowEmpty.updateAsync(newValue);
+			arrowEmpty.updateAsync(newValue, mode -> {
+				if (arrowEmpty.getImage() != null) {
+					tintedLeftArrow.updateImage(arrowEmpty.getImage());
+					tintedRightArrow.updateImage(arrowEmpty.getImage());
+				}
+				return null;
+			});
 		});
 
 		addValueListener(ControlPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
@@ -76,11 +92,21 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		});
 
 		addValueListener(ControlPropertyLookup.BORDER, (observer, oldValue, newValue) -> {
-			border.updateAsync(newValue);
+			border.updateAsync(newValue, mode -> {
+				if (border.getImage() != null) {
+					tintedBorder.updateImage(border.getImage());
+				}
+				return null;
+			});
 		});
 
 		addValueListener(ControlPropertyLookup.THUMB, (observer, oldValue, newValue) -> {
-			thumb.updateAsync(newValue);
+			thumb.updateAsync(newValue, mode -> {
+				if (thumb.getImage() != null) {
+					tintedThumb.updateImage(thumb.getImage());
+				}
+				return null;
+			});
 		});
 
 		tooltipRenderer = new TooltipRenderer(
@@ -90,6 +116,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
 				ControlPropertyLookup.TOOLTIP
 		);
+
+		updateTintedImages();
 	}
 
 	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
@@ -106,34 +134,47 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			}
 		}
 
+		setTintHelpersToPreviewMode(preview);
 
 		//paints the left arrow
-		paintArrow(gc, arrowLeftX, leftArrowPress ? arrowFull : arrowEmpty, false);
+		Color colorTint = (preview && focused && isEnabled()) ? colorActive : backgroundColor;
+
+		paintArrow(gc, colorTint, arrowLeftX, (preview && leftArrowPress) ? arrowFull : arrowEmpty, tintedLeftArrow);
 
 		//paints the background behind the thumb
-		paintThumb(gc, thumbX, thumbWidth, border);
+		paintThumbOrBorder(gc, colorTint, thumbX, borderWidth, border, tintedBorder);
 
 		//paints the thumb
-		paintThumb(gc, thumbX, (int) (thumbWidth * progress), thumb);
+		paintThumbOrBorder(gc, colorTint, thumbX, (int) (borderWidth * progress), thumb, tintedThumb);
 
 		//paints the right arrow
-		paintArrow(gc, arrowRightX, rightArrowPress ? arrowFull : arrowEmpty, true);
+		paintArrow(gc, colorTint, arrowRightX, (preview && rightArrowPress) ? arrowFull : arrowEmpty, tintedRightArrow);
+
+
+		setTintHelpersToPreviewMode(false);
 
 	}
 
-	private void paintThumb(@NotNull GraphicsContext gc, int thumbX, int thumbWidth, ImageOrTextureHelper helper) {
-		Color color = (focused && isEnabled()) ? colorActive : this.backgroundColor;
+	private void setTintHelpersToPreviewMode(boolean previewMode) {
+		tintedThumb.setToPreviewMode(previewMode);
+		tintedLeftArrow.setToPreviewMode(previewMode);
+		tintedRightArrow.setToPreviewMode(previewMode);
+		//we don't need to set border's preview mode because using preview is no different than no preview
+	}
+
+	private void paintThumbOrBorder(GraphicsContext gc, Color tint, int thumbX, int thumbWidth, ImageOrTextureHelper helper, TintedImageHelperRenderer tinted) {
 		switch (helper.getMode()) {
 			case Texture: {
+				tinted.updateImage(null); //help garbage collection
 				TexturePainter.paint(gc, helper.getTexture(),
-						color, thumbX, y1, thumbX + thumbWidth, y2
+						tint, thumbX, y1, thumbX + thumbWidth, y2
 				);
 				break;
 			}
 			case Image: {
-				paintMultiplyColor(gc, thumbX, y1, thumbX + thumbWidth, y2, color);
-				gc.drawImage(helper.getImage(), thumbX, y1, thumbWidth, getHeight());
-				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+				tinted.updateTint(tint);
+				tinted.updatePosition(thumbX, y1, thumbWidth, getHeight(), true);
+				tinted.paintTintedImage(gc);
 				break;
 			}
 			case ImageError: {
@@ -145,8 +186,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 				break;
 			}
 			case LoadingImage: {
-				gc.setStroke(color);
-				Region.fillRectangle(gc, thumbX, y1, thumbX + thumbWidth, y2);
+				ArmaControlRenderer.paintImageLoading(gc, tint, thumbX, y1, thumbX + thumbWidth, y2);
 				break;
 			}
 			default:
@@ -154,37 +194,32 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintArrow(@NotNull GraphicsContext gc, int arrowX, ImageOrTextureHelper helper, boolean rotate) {
-		Color arrowColor = (focused && isEnabled()) ? colorActive : backgroundColor;
-		final int arrowWidth = getHeight();
+	private void paintArrow(GraphicsContext gc, Color arrowColor, int arrowX, ImageOrTextureHelper helper, TintedImageHelperRenderer tintedArrow) {
+		final int arrowSize = getArrowSize();
 		switch (helper.getMode()) {
 			case Texture: {
+				tintedArrow.updateImage(null); //help garbage collection
 				TexturePainter.paint(gc, helper.getTexture(),
-						arrowColor, arrowX, y1, arrowX + arrowWidth, y2
+						arrowColor, arrowX, y1, arrowX + arrowSize, y2
 				);
 				break;
 			}
 			case Image: {
-				paintMultiplyColor(gc, arrowX, y1, arrowX + arrowWidth, y2, arrowColor);
-				if (rotate) {
-					MiscHelpers.paintFlippedImage(gc, helper.getImage(), arrowX, y1, arrowWidth, arrowWidth);
-				} else {
-					gc.drawImage(helper.getImage(), arrowX, y1, arrowWidth, getHeight());
-				}
-				gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+				tintedArrow.updateImage(helper.getImage());
+				tintedArrow.updateTint(arrowColor);
+				tintedArrow.paintTintedImage(gc);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, arrowX, y1, arrowWidth, getHeight());
+				paintImageError(gc, arrowX, y1, arrowSize, getHeight());
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, arrowX, y1, arrowWidth, getHeight());
+				paintTextureError(gc, arrowX, y1, arrowSize, getHeight());
 				break;
 			}
 			case LoadingImage: {
-				gc.setStroke(backgroundColor);
-				Region.fillRectangle(gc, arrowX, y1, arrowX + arrowWidth, y2);
+				ArmaControlRenderer.paintImageLoading(gc, backgroundColor, arrowX, y1, arrowX + arrowSize, y2);
 				break;
 			}
 			default:
@@ -193,15 +228,28 @@ public class XSliderRenderer extends ArmaControlRenderer {
 	}
 
 	@Override
-	protected void positionUpdate() {
+	protected void positionUpdate(boolean initializingPosition) {
 		arrowLeftX = x1;
 		arrowWidth = getHeight();
 		arrowRightX = x2 - arrowWidth;
 
 		final int gap = 4; //how many pixels the left and right arrows are from the thumb
 
-		thumbWidth = getWidth() - gap * 2 - arrowWidth * 2;
+		borderWidth = getWidth() - gap * 2 - arrowWidth * 2;
 		thumbX = arrowLeftX + arrowWidth + gap;
+
+		if (!initializingPosition) {
+			updateTintedImages();
+		}
+
+	}
+
+	private void updateTintedImages() {
+		if (arrowEmpty.getImage() != null) {
+			final int arrowSize = getArrowSize();
+			tintedLeftArrow.updatePosition(arrowLeftX, y1, arrowSize, arrowSize, true);
+			tintedRightArrow.updatePosition(arrowRightX, y1, arrowSize, arrowSize, true);
+		}
 	}
 
 	@Override
@@ -213,7 +261,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 		if (mouseButtonDown == MouseButton.PRIMARY) {
 			//check thumb
-			if (mouseOverX >= thumbX && mouseOverX <= thumbX + thumbWidth) {
+			if (mouseOverX >= thumbX && mouseOverX <= thumbX + borderWidth) {
 				if (mouseOverY >= y1 && mouseOverY <= y2) {
 					thumbPress = true;
 					return;
@@ -270,18 +318,22 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 	private void progressUpdateFromMouse(int mousex) {
 		//if the thumb is pressed, manipulate the progress
-		int thumbX2 = (thumbX + thumbWidth);
+		int thumbX2 = (thumbX + borderWidth);
 		if (mousex <= thumbX) {
 			this.progress = 0;
 		} else if (mousex >= thumbX2) {
 			this.progress = 1;
 		} else {
-			this.progress = 1 - Math.abs((thumbX2 - mousex)) * 1.0 / thumbWidth;
+			this.progress = 1 - Math.abs((thumbX2 - mousex)) * 1.0 / borderWidth;
 		}
 	}
 
 	@Override
 	public boolean canHaveFocus() {
 		return true;
+	}
+
+	private int getArrowSize() {
+		return getHeight();
 	}
 }

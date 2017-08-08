@@ -65,7 +65,7 @@ public class ApplicationLoader {
 
 	private String getTemplateProjectName() {
 		int year = Calendar.getInstance().get(Calendar.YEAR);
-		int month = Calendar.getInstance().get(Calendar.MONTH);
+		int month = Calendar.getInstance().get(Calendar.MONTH) + 1; //month starts at 0
 		int day = Calendar.getInstance().get(Calendar.DAY_OF_MONTH);
 		int hour = Calendar.getInstance().get(Calendar.HOUR);
 		int minute = Calendar.getInstance().get(Calendar.MINUTE);
