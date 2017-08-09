@@ -1,8 +1,8 @@
 **Added:**
-* more tests
+* 
 
 **Changed:**
-* made the multiply color work correctly now (doesn't paint where there's transparency)
+* completely removed ArmaControlRenderer.paintMultiplyColor
 
 **Fixed:**
 * 
@@ -18,4 +18,3 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes.
     * be sure to update HeaderToProject
-* Aug 8: complete the multiply color implementations

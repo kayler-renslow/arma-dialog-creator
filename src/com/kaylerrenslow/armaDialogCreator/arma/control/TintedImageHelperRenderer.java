@@ -4,6 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.paint.Paint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,17 +18,14 @@ public class TintedImageHelperRenderer {
 	private boolean previewMode = false;
 	private int x, y, w, h;
 	private final PerspectiveTransform imgTrans1 = new PerspectiveTransform();
-	private final ImageInput imgInput1 = new ImageInput();
 	private final ColorInput colorInput1 = new ColorInput();
 	private final PerspectiveTransform imgTrans2 = new PerspectiveTransform();
-	private final ImageInput imgInput2 = new ImageInput();
 	private final ColorInput colorInput2 = new ColorInput();
 	private boolean flipped = false;
 	private boolean rotated;
 	private double rotateDeg;
 
 	public TintedImageHelperRenderer() {
-		imgTrans1.setInput(imgInput1);
 		this.effect1 = new Blend(
 				BlendMode.MULTIPLY,
 				imgTrans1,
@@ -37,7 +35,6 @@ public class TintedImageHelperRenderer {
 						colorInput1
 				)
 		);
-		imgTrans2.setInput(imgInput2);
 		this.effect2 = new Blend(
 				BlendMode.MULTIPLY,
 				imgTrans2,
@@ -76,6 +73,22 @@ public class TintedImageHelperRenderer {
 	}
 
 	/** This method applies to {@link #setToPreviewMode(boolean)} */
+	public void updateImageAsTiled(@NotNull Image img, int tileW, int tileH) {
+		updateImageAsTiled(img, tileW, tileH, false);
+	}
+
+	public void updateImageAsTiled(@NotNull Image img, int tileW, int tileH, boolean modifyBoth) {
+		ImagePattern pattern = new ImagePattern(img, 0, 0, tileW, tileH, false);
+		ColorInput colorInput = new ColorInput(0, 0, w, h, pattern);
+		if (modifyBoth || previewMode) {
+			imgTrans2.setInput(colorInput);
+		}
+		if (modifyBoth || !previewMode) {
+			imgTrans1.setInput(colorInput);
+		}
+	}
+
+	/** This method applies to {@link #setToPreviewMode(boolean)} */
 	public void updateImage(@Nullable Image img) {
 		updateImage(img, true);
 	}
@@ -88,10 +101,10 @@ public class TintedImageHelperRenderer {
 	/** @param modifyBoth set to true if both preview and non-preview effect should be modified, false otherwise */
 	public void updateImage(@Nullable Image img, boolean modifyBoth) {
 		if (modifyBoth || previewMode) {
-			imgInput2.setSource(img);
+			imgTrans2.setInput(new ImageInput(img));
 		}
 		if (modifyBoth || !previewMode) {
-			imgInput1.setSource(img);
+			imgTrans1.setInput(new ImageInput(img));
 		}
 	}
 

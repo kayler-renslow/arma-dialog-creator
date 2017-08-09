@@ -16,6 +16,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Region;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -81,6 +82,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileH = (int) expr.getNumVal();
+				updateTintedImage();
 				requestRender();
 			}
 		});
@@ -89,6 +91,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileW = (int) expr.getNumVal();
+				updateTintedImage();
 				requestRender();
 			}
 		});
@@ -191,28 +194,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 						if (imageToPaint == null) {
 							throw new IllegalStateException("imageToPaint is null");
 						}
-						if (keepImageAspectRatio && !tileImage) {
-							tintedImage.paintTintedImage(gc);
-						} else {
-							if (tileImage) {
-								paintMultiplyColor(gc, x1, y1, x2, y2, getTextColor());
-								int tileW = Math.max(1, this.tileW);
-								int tileH = Math.max(1, this.tileH);
-								int controlWidth = getWidth();
-								int controlHeight = getHeight();
-								int tileWidth = controlWidth / tileW;
-								int tileHeight = controlHeight / tileH;
-
-								for (int y = 0; y < tileH; y++) {
-									for (int x = 0; x < tileW; x++) {
-										gc.drawImage(imageToPaint, x1 + x * tileWidth, y1 + y * tileHeight, tileWidth, tileHeight);
-									}
-								}
-							} else {
-								tintedImage.paintTintedImage(gc);
-							}
-						}
-
+						tintedImage.paintTintedImage(gc);
 						break;
 					}
 					case Texture: {
@@ -292,6 +274,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			return;
 		}
 		Image img = pictureOrTextureHelper.getImage();
+		Paint fill = getTextColor();
 		int x, y, w, h;
 		if (keepImageAspectRatio && !tileImage) {
 			int imgWidth = (int) img.getWidth();
@@ -307,7 +290,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 
 			//after the image as been resized to aspect ratio, center the image
 			x = getX1() + (getWidth() - drawWidth) / 2;
-			;
+
 
 			y = y1;
 			w = drawWidth;
@@ -321,6 +304,11 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		tintedImage.updateEffect(
 				pictureOrTextureHelper.getImage(), getTextColor(), x, y, w, h, true
 		);
+		if (tileImage) {
+			int tileW = Math.max(1, this.tileW);
+			int tileH = Math.max(1, this.tileH);
+			tintedImage.updateImageAsTiled(pictureOrTextureHelper.getImage(), getWidth() / tileW, getHeight() / tileH, true);
+		}
 	}
 
 	@NotNull

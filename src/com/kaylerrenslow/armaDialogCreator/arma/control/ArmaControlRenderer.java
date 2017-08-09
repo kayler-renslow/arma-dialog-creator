@@ -16,7 +16,6 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import javafx.application.Platform;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -619,22 +618,6 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 */
 	public void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
 		paintError(gc, color, getX1(), getY1(), getWidth(), getHeight());
-	}
-
-	/**
-	 Paints a filled rectangle at the given positions where the blend mode is {@link BlendMode#MULTIPLY}.
-	 Be sure to set the BlendMode back after using this method!
-
-	 @deprecated Use {@link TintedImageHelperRenderer} instead
-	 */
-	@Deprecated
-	public void paintMultiplyColor(@NotNull GraphicsContext gc,
-								   int x1, int y1, int x2, int y2,
-								   @NotNull Color color) {
-		//multiply the color on the image
-		gc.setStroke(color);
-		Region.fillRectangle(gc, x1, y1, x2, y2);
-		gc.setGlobalBlendMode(BlendMode.MULTIPLY);
 	}
 
 }
