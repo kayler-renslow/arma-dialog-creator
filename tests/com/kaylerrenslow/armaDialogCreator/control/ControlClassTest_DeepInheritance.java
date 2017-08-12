@@ -104,27 +104,50 @@ public class ControlClassTest_DeepInheritance {
 
 	@Test
 	public void test4() {
+		//this tests have a chain of inheritance and if the control classes react appropriately if a control class
+		//somewhere in the middle clears its extend control class (says extendControlClass(null))
+
 		EmptySpecRegistry registry = new EmptySpecRegistry();
 		RscText rscText = new RscText(registry);
 		Hint hint = new Hint(registry);
 		HintRep hintRep = new HintRep(registry);
+		HintWithNestedClass hintWithNestedClass = new HintWithNestedClass("HintWithNestedClass", registry);
+		Empty empty = new Empty("Empty", registry);
+		Empty empty2 = new Empty("Empty2", registry);
 
 		//HintRep's values will all be empty
 
 		SerializableValue style = new SVString("style");
 		SerializableValue colorText_rscText = new SVString("colorText RscText");
 		SerializableValue colorText_hint = new SVString("colorText Hint");
+		SerializableValue hintWithNestedClassPropertyValue = new SVString("hintWithNestedClassPropertyValue");
 
 		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
 		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
 		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
+		ControlClass hintWithNestedClass_controlClass = hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName);
+		hintWithNestedClass_controlClass.findProperty(nestedClassNestedRequiredPropertyLookup).setValue(hintWithNestedClassPropertyValue);
+
 		hint.extendControlClass(rscText);
+		hintWithNestedClass.extendControlClass(rscText);
+		empty.extendControlClass(hintWithNestedClass);
+		empty2.extendControlClass(empty);
 		hintRep.extendControlClass(hint);
 
 		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
 
+		assertEquals(true, hintWithNestedClass_controlClass == empty.findNestedClass(hintWithNestedClass_nestedClassName));
+		assertEquals(true, hintWithNestedClass_controlClass == empty2.findNestedClass(hintWithNestedClass_nestedClassName));
+		assertEquals(hintWithNestedClassPropertyValue, empty.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(nestedClassNestedRequiredPropertyLookup).getValue());
+
 		hint.extendControlClass(null);
+		empty.extendControlClass(null);
+
+		assertEquals(null, empty.findNestedClassNullable(hintWithNestedClass_nestedClassName));
+		assertEquals(null, empty2.findNestedClassNullable(hintWithNestedClass_nestedClassName));
+		assertEquals(hintWithNestedClassPropertyValue, hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(nestedClassNestedRequiredPropertyLookup).getValue());
+
 
 		assertEquals(null, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
 		assertEquals(null, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
@@ -139,6 +162,10 @@ public class ControlClassTest_DeepInheritance {
 	static final ControlPropertyLookupConstant[] optionalProperties = {
 			ControlPropertyLookup.COLOR_TEXT
 	};
+
+	static final ControlPropertyLookup nestedClassNestedRequiredPropertyLookup = ControlPropertyLookup.ANIM_TEXTURE_DEFAULT;
+
+	static final String hintWithNestedClass_nestedClassName = "HintWithNestedClass_NestedClass";
 
 	/** This class will have {@link #requiredProperties} and {@link #optionalProperties} */
 	private class RscText extends ControlClass {
@@ -211,6 +238,55 @@ public class ControlClassTest_DeepInheritance {
 		}
 	}
 
+	/**
+	 This class will have no required properties to force temporary property inheritance.
+	 This class will also have {@link #optionalProperties} to check for non temporary property inheritance propagation.
+	 This class will also have a required nested class that has 1 required property itself
+	 */
+	private class HintWithNestedClass extends ControlClass {
+
+		public HintWithNestedClass(@NotNull String className, @NotNull SpecificationRegistry registry) {
+			super(className,
+					new ControlClassRequirementSpecification() {
+						@NotNull
+						@Override
+						public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
+							return new ReadOnlyList<>(Arrays.asList(
+									new ControlClassSpecification(
+											hintWithNestedClass_nestedClassName,
+											Arrays.asList(
+													new ControlPropertySpecification(
+															nestedClassNestedRequiredPropertyLookup
+													)
+											),
+											Collections.emptyList()
+									)
+							));
+						}
+
+						@NotNull
+						@Override
+						public ReadOnlyList<ControlClassSpecification> getOptionalNestedClasses() {
+							return new ReadOnlyList<>(Collections.emptyList());
+						}
+
+						@NotNull
+						@Override
+						public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+							return new ReadOnlyList<>(Collections.emptyList());
+						}
+
+						@NotNull
+						@Override
+						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
+						}
+					},
+					registry
+			);
+		}
+	}
+
 	/** This class will have {@link #requiredProperties} and {@link #optionalProperties} */
 	private class HintRep extends ControlClass {
 		public HintRep(@NotNull SpecificationRegistry registry) {
@@ -239,6 +315,19 @@ public class ControlClassTest_DeepInheritance {
 						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
 							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 						}
+					},
+					registry
+			);
+		}
+	}
+
+	/**
+	 This class will have no properties and no nested classes.
+	 */
+	private class Empty extends ControlClass {
+		public Empty(@NotNull String className, @NotNull SpecificationRegistry registry) {
+			super(className,
+					new ControlClassRequirementSpecification() {
 					},
 					registry
 			);

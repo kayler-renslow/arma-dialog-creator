@@ -1,8 +1,8 @@
 **Added:**
-* 
+* more control class tests
 
 **Changed:**
-* completely removed ArmaControlRenderer.paintMultiplyColor
+* 
 
 **Fixed:**
 * 
@@ -16,5 +16,5 @@
 * July 5: have tests that make sure changing a property from required to optional and vice versa doesn't break project loading and properly loads
     * need tests for changing nested classes from optional to required as well
     * undoing raw value through changelog works, but editor container doesn't update
-* July 7: we should support inheriting nested classes.
+* July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject

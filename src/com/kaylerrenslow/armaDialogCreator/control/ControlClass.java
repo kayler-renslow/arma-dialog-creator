@@ -402,9 +402,47 @@ public class ControlClass {
 
 			//remove all temp nested classes
 			for (ControlClass tempNested : tempNestedClasses) {
+				optionalNestedClasses.remove(tempNested);
 				controlClassUpdateGroup.update(new ControlClassTemporaryNestedClassUpdate(this, tempNested, false));
 			}
 			tempNestedClasses.clear();
+
+
+			//tell all sub classes that this class isn't extending anything
+			for (ControlClass subClass : mySubClasses) {
+				for (ControlProperty inheritedProperty : subClass.getInheritedProperties()) {
+					boolean matched = false;
+					for (ControlProperty myProperty : getAllChildProperties()) {
+						if (inheritedProperty.getInherited() == myProperty) {
+							//If the property exists in this control class, nothing needs to be done.
+							//If the property was inherited by this control class's extend class, it needs to be removed.
+							matched = true;
+							break;
+						}
+					}
+					if (!matched) {
+						subClass.overrideProperty(inheritedProperty.getPropertyLookup());
+					}
+				}
+				for (ControlClass tempNested : subClass.tempNestedClasses) {
+					boolean matched = false;
+					for (ControlClass myNestedClass : getAllNestedClasses()) {
+						if (tempNested == myNestedClass) {
+							//was inherited from this control class
+							matched = true;
+							break;
+						}
+					}
+					if (matched) {
+						continue;
+					}
+					//If reached this point, the temp nested class was the result of this control class's extend class
+					//so it needs to be removed.
+					subClass.tempNestedClasses.remove(tempNested);
+					subClass.optionalNestedClasses.remove(tempNested);
+					subClass.controlClassUpdateGroup.update(new ControlClassTemporaryNestedClassUpdate(subClass, tempNested, false));
+				}
+			}
 
 			//clear all inheritance
 			for (ControlProperty property : this.getAllChildProperties()) {
@@ -418,10 +456,6 @@ public class ControlClass {
 			oldExtendClass.getControlClassUpdateGroup().removeListener(controlClassUpdateExtendListener);
 			oldExtendClass.mySubClasses.remove(this);
 
-			//tell all sub classes that this class isn't extending anything
-			//todo
-
-			//todo as well: we should have a test case that tests if a property in the middle of a tree is changed and propogates correctly
 		}
 
 		extendClassObserver.updateValue(extendMe);
@@ -733,7 +767,7 @@ public class ControlClass {
 		if (c != null) {
 			return c;
 		}
-		noClassMatch(className, " control class " + getClassName());
+		noClassMatch(className, "control class" + getClassName());
 		return null;
 	}
 
