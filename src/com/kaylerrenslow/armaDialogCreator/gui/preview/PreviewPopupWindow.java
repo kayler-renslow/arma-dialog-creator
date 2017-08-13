@@ -7,8 +7,11 @@ import com.kaylerrenslow.armaDialogCreator.data.ApplicationData;
 import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
+import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -97,9 +100,15 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 
 		previewCanvas = new UICanvasPreview(resolution, armaDisplay, focusHandler);
 		myRootElement.getChildren().add(previewCanvas);
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, false, true));
 
 		previewCanvas.setDisplay(armaDisplay);
 		previewCanvas.updateResolution(resolution);
+	}
+
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.ARMA_PREVIEW_WINDOW);
 	}
 
 	@Override

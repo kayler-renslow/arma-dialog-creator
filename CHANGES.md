@@ -1,8 +1,8 @@
 **Added:**
-* 
+* JavaFX check to launcher
 
 **Changed:**
-* 
+* updated help urls and buttons
 
 **Fixed:**
 * 

@@ -90,6 +90,7 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 		initTabCustomClassesExportPreview(tabCustomControlsExportPreview);
 	}
 
+
 	/*
 	*
 	* TAB INIT: Display Properties

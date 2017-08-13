@@ -365,7 +365,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void help() {
-		BrowserUtil.browse(HelpUrls.NEW_CUSTOM_CONTROL_POPUP);
+		BrowserUtil.browse(HelpUrls.CUSTOM_CONTROL_CLASSES);
 	}
 
 	private void updatePreview() {

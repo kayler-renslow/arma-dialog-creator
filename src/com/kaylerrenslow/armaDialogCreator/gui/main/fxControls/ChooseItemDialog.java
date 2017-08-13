@@ -38,7 +38,7 @@ public class ChooseItemDialog<V> extends StageDialog<VBox> {
 
 	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @Nullable String dialogTitle,
 							@Nullable String headerTitle) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, true);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, false);
 		myRootElement.setMinWidth(720d);
 		myStage.setResizable(false);
 

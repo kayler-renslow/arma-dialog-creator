@@ -5,8 +5,10 @@ import com.kaylerrenslow.armaDialogCreator.expression.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SyntaxTextArea;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.main.ProgramArgument;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -82,7 +84,16 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 			Button btnToggleConsole = new Button(bundle.getString("Toolbar.toggle_console"));
 			btnToggleConsole.setOnAction(event -> toggleConsole());
 
-			toolBar = new ToolBar(btnEval, btnTerminate, new Separator(Orientation.VERTICAL), btnToggleConsole);
+			Button btnHelp = new Button(Lang.ApplicationBundle().getString("Popups.btn_help"));
+			btnHelp.setOnAction(event -> help());
+
+			toolBar = new ToolBar(
+					btnEval, btnTerminate,
+					new Separator(Orientation.VERTICAL),
+					btnToggleConsole,
+					new Separator(Orientation.VERTICAL),
+					btnHelp
+			);
 		}
 
 		myRootElement.getChildren().add(toolBar);
@@ -212,6 +223,11 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		Label label = new Label(s);
 		label.setFont(Font.font(14));
 		return label;
+	}
+
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.MINI_SQF_EVALUATOR);
 	}
 
 	private class CodeAreaPane extends SyntaxTextArea {

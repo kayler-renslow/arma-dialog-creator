@@ -43,7 +43,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 	 @param controlClass the {@link ControlClass} to edit/mutate
 	 */
 	public EditNestedControlClassDialog(@NotNull ControlClass controlClass) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, true);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
 		setTitle(bundle.getString("Popups.EditNestedControlClass.popup_title"));
 
 		editorPane = new ControlPropertiesEditorPane(controlClass);

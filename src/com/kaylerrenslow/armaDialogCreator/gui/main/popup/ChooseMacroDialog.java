@@ -11,9 +11,7 @@ import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.gui.main.fxControls.ChooseItemDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.stringtable.StringTableLanguageTokenEditor;
-import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
-import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
@@ -77,12 +75,6 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		);
 		myStage.sizeToScene();
 	}
-
-	@Override
-	protected void help() {
-		BrowserUtil.browse(HelpUrls.MACROS);
-	}
-
 
 	@Override
 	public void show() {

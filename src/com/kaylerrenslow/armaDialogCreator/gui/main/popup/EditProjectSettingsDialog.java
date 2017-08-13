@@ -22,7 +22,7 @@ public class EditProjectSettingsDialog extends StageDialog<VBox> {
 	private final CheckBox checkBoxMoveProjectDir;
 
 	public EditProjectSettingsDialog(@NotNull Project project) {
-		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null, true, true, true);
+		super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), null, true, true, false);
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		setTitle(bundle.getString("Popups.EditProjectSettings.popup_title"));
 

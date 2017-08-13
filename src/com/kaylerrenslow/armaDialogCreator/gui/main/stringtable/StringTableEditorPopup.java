@@ -3,10 +3,13 @@ package com.kaylerrenslow.armaDialogCreator.gui.main.stringtable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.*;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.SearchTextField;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.GenericResponseFooter;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StagePopup;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
+import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValue;
 import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
@@ -169,14 +172,19 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		btnRemove.disabledProperty();
 		myRootElement.getChildren().add(new ToolBar(btnRefresh, btnSave, new Separator(Orientation.VERTICAL), btnInsert, btnRemove));
 		myRootElement.getChildren().add(tabPane);
+
+		GenericResponseFooter responseFooter = getBoundResponseFooter(false, true, true);
+		VBox.setMargin(responseFooter, new Insets(10));
+		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), responseFooter);
 		VBox.setVgrow(tabPane, Priority.ALWAYS);
 
 		setStageSize(720, 480);
 
 	}
 
-	private void setTable(StringTable table) {
-		this.table = table;
+	@Override
+	protected void help() {
+		BrowserUtil.browse(HelpUrls.STRING_TABLE_EDITOR);
 	}
 
 	/** Get the table that is being edited */

@@ -12,6 +12,8 @@ package com.kaylerrenslow.armaDialogCreator.launcher;
 
 import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.File;
 
 /**
@@ -22,6 +24,17 @@ public class ADCLauncher {
 	private static final File ADC_JAR_SAVE_LOCATION = new File("./" + ADC_JAR);
 
 	public static void main(String[] args) throws Exception {
+		try {
+			Class c = Class.forName("javafx.application.Application");
+		} catch (ClassNotFoundException e) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(null, "JavaFX 8 isn't installed on this computer. Please install it to run Arma Dialog Creator.", "JavaFX 8 Missing", JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
+			});
+			return;
+		}
+
+
 		if (ADC_JAR_SAVE_LOCATION.exists()) {
 			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
 		} else {

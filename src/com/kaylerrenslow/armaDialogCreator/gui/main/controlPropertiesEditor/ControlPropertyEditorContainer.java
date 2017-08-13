@@ -529,7 +529,7 @@ class ControlPropertyEditorContainer extends HBox {
 		private final ComboBox<PropertyType> comboBoxType = new ComboBox<>();
 
 		public ChooseNewPropertyTypeDialog(@NotNull ControlProperty property) {
-			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ConvertValueDialog.popup_title"), true, true, true);
+			super(ArmaDialogCreator.getPrimaryStage(), new VBox(10), bundle.getString("ConvertValueDialog.popup_title"), true, true, false);
 
 			Label lbl = new Label(String.format(bundle.getString("ConvertValueDialog.body_f"), property.getName()));
 			lbl.setWrapText(true);
