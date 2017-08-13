@@ -23,7 +23,10 @@ import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
 
 /**
  A project loader for save-version='1'
@@ -388,41 +391,9 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			if (!(armaControlLookup.specProvider instanceof AllowedStyleProvider)) {
 				continue;
 			}
-			// Since some styles can have an equal value, we will cross reference the allowed styles with the present styles.
-			// If a style is present that isn't allowed, it will be replaced with an allowed style with an equal value.
-			// This isn't 100% foolproof since multiple allowed styles can have equal values as well.
-			// However, there shouldn't ever be a case where multiple allowed styles should have equal values
-			// because it doesn't make intuitive sense.
-			AllowedStyleProvider allowedStyleProvider = (AllowedStyleProvider) armaControlLookup.specProvider;
-			ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
-			List<ControlStyle> fixedStyles = new ArrayList<>(allowedStyles.length);
-			boolean replace = false;
+
 			if (p.getValue() instanceof SVControlStyleGroup) {
-				SVControlStyleGroup g = (SVControlStyleGroup) p.getValue();
-				ControlStyle[] controlStyles = g.getStyleArray();
-				for (ControlStyle controlStyle : controlStyles) {
-					boolean match = false;
-					for (ControlStyle allowedStyle : allowedStyles) {
-						if (controlStyle == allowedStyle) {
-							match = true;
-							break;
-						}
-					}
-					if (!match) {
-						replace = true;
-						for (ControlStyle allowedStyle : allowedStyles) {
-							if (controlStyle.styleValue == allowedStyle.styleValue) {
-								fixedStyles.add(allowedStyle);
-								break;
-							}
-						}
-					} else {
-						fixedStyles.add(controlStyle);
-					}
-				}
-			}
-			if (replace && fixedStyles.size() > 0) {
-				p.setValue(new SVControlStyleGroup(fixedStyles));
+				p.setValue(SVControlStyleGroup.fixMisidentified((SVControlStyleGroup) p.getValue(), (AllowedStyleProvider) armaControlLookup.specProvider));
 			}
 		}
 

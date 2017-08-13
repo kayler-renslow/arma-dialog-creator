@@ -121,7 +121,9 @@ public class ShortcutButtonControl extends ArmaControl {
 		@Override
 		public ControlStyle[] getAllowedStyles() {
 			return new ControlStyle[]{
-					ControlStyle.NONE
+					ControlStyle.NONE,
+					ControlStyle.UPPERCASE,
+					ControlStyle.LOWERCASE
 			};
 		}
 	}

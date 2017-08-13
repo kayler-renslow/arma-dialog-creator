@@ -209,11 +209,18 @@ class ControlPropertyEditorContainer extends HBox {
 				if (getControlProperty().isInherited()) {
 					getControlProperty().inherit(null);
 				} else {
+					//if the inherited property type doesn't match the current editor type, there will be an exception
+					propertyValueEditor.clearListeners();
+
 					boolean inherited = controlClass.inheritProperty(getControlProperty().getPropertyLookup());
 					if (!inherited) {
 						MenuButtonPopup popup = new MenuButtonPopup(bundle.getString("nothing_to_inherit"));
 						popup.showPopup();
 					}
+
+					resetPropertyValueEditor();
+					propertyInheritUpdate.apply(null);
+
 				}
 			}
 		});

@@ -1,10 +1,12 @@
 package com.kaylerrenslow.armaDialogCreator.control.sv;
 
+import com.kaylerrenslow.armaDialogCreator.control.AllowedStyleProvider;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.PropertyType;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +19,66 @@ import java.util.List;
  @since 08/05/2016 */
 public class SVControlStyleGroup extends SerializableValue {
 	private final ControlStyle[] styles;
+
+	/**
+	 Converts a String to a {@link SVControlStyleGroup} and then executes {@link #fixMisidentified(SVControlStyleGroup, AllowedStyleProvider)}
+	 if the given {@link AllowedStyleProvider} is not null
+
+	 @return the instance created
+	 @throws Exception when the text couldn't be converted
+	 */
+	@NotNull
+	public static SVControlStyleGroup getGroupFromString(@NotNull String text, @Nullable AllowedStyleProvider styleProvider) throws Exception {
+		SVControlStyleGroup converted = CONVERTER.convert(null, text);
+		if (styleProvider == null) {
+			return converted;
+		}
+		return fixMisidentified(converted, styleProvider);
+	}
+
+	/**
+	 Since some styles can have an equal value, we will cross reference the allowed styles with the present styles.
+	 If a style is present that isn't allowed, it will be replaced with an allowed style with an equal value.
+	 This isn't 100% foolproof since multiple allowed styles can have equal values as well.
+	 However, there shouldn't ever be a case where multiple allowed styles should have equal values
+	 because it doesn't make intuitive sense.
+
+	 @param toFix the group to fix
+	 @param allowedStyleProvider the {@link AllowedStyleProvider} to assist in finding misindentified styles
+	 @return <code>toFix</code> if a fix couldn't happen, or returns the newly created fixed {@link SVControlStyleGroup}
+	 **/
+	@NotNull
+	public static SVControlStyleGroup fixMisidentified(@NotNull SVControlStyleGroup toFix, @NotNull AllowedStyleProvider allowedStyleProvider) {
+		ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
+		List<ControlStyle> fixedStyles = new ArrayList<>(allowedStyles.length);
+		boolean replace = false;
+		ControlStyle[] controlStyles = toFix.getStyleArray();
+		for (ControlStyle controlStyle : controlStyles) {
+			boolean match = false;
+			for (ControlStyle allowedStyle : allowedStyles) {
+				if (controlStyle == allowedStyle) {
+					match = true;
+					break;
+				}
+			}
+			if (!match) {
+				replace = true;
+				for (ControlStyle allowedStyle : allowedStyles) {
+					if (controlStyle.styleValue == allowedStyle.styleValue) {
+						fixedStyles.add(allowedStyle);
+						break;
+					}
+				}
+			} else {
+				fixedStyles.add(controlStyle);
+			}
+		}
+		if (replace && fixedStyles.size() > 0) {
+			return new SVControlStyleGroup(fixedStyles);
+		}
+
+		return toFix;
+	}
 
 	public static final ValueConverter<SVControlStyleGroup> CONVERTER = new ValueConverter<SVControlStyleGroup>() {
 		@Override

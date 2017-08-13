@@ -1,11 +1,12 @@
 **Added:**
-* JavaFX check to launcher
+* support for upper and lower case
 
 **Changed:**
-* updated help urls and buttons
+* Control Styles now include their hex value in the toString()
 
 **Fixed:**
-* 
+* bug where inheriting a value that the current value editor doesn't support created an exception
+    * fixed this by clearing the current value editor's listeners and then reseting the value editor after the inherit
 
 **Notes:**
 * June 23:
@@ -18,4 +19,6 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject
-* We need to be able to REMOVE macros and custom control classes
+
+
+**We need to be able to REMOVE macros and custom control classes**

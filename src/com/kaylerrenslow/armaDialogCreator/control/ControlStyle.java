@@ -67,7 +67,9 @@ public enum ControlStyle {
 	// MessageBox styles
 	//MB_BUTTON_OK(37, 1, getString("ControlStyle.mb_button_ok"), getString("ControlStyle.Doc.mb_button_ok")),
 	//MB_BUTTON_CANCEL(38, 2, getString("ControlStyle.mb_button_cancel"), getString("ControlStyle.Doc.mb_button_cancel")),
-	//MB_BUTTON_USER(39, 4, getString("ControlStyle.mb_button_user"), getString("ControlStyle.Doc.mb_button_user"))
+	//MB_BUTTON_USER(39, 4, getString("ControlStyle.mb_button_user"), getString("ControlStyle.Doc.mb_button_user")),
+	UPPERCASE(40, 0xC0, getString("ControlStyle.uppercase"), getString("ControlStyle.Doc.uppercase")),
+	LOWERCASE(41, 0xD0, getString("ControlStyle.lowercase"), getString("ControlStyle.Doc.lowercase"))
 	;
 
 	public final int styleValue;
@@ -111,7 +113,7 @@ public enum ControlStyle {
 
 	@Override
 	public String toString() {
-		return displayName + " (" + styleValue + ")";
+		return displayName + " (" + styleValue + ", " + "0x" + Integer.toHexString(styleValue).toUpperCase() + ")";
 	}
 
 	private static String getString(String s) {

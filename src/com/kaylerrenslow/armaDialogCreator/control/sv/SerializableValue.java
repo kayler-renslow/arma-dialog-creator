@@ -56,7 +56,7 @@ public abstract class SerializableValue {
 		}
 		switch (fromType) {
 			case Int: {
-				return false;
+				return toType == PropertyType.String;
 			}
 			case Array: {
 				return false;
@@ -68,13 +68,13 @@ public abstract class SerializableValue {
 				return false;
 			}
 			case Float: {
-				return false;
+				return toType == PropertyType.String;
 			}
 			case Sound: {
 				return false;
 			}
 			case ControlStyle: {
-				return false;
+				return toType == PropertyType.String;
 			}
 			case Texture: {
 				return toType == PropertyType.String;
@@ -86,6 +86,9 @@ public abstract class SerializableValue {
 						|| toType == PropertyType.Font
 						|| toType == PropertyType.SQF
 						|| toType == PropertyType.HexColorString
+						|| toType == PropertyType.ControlStyle
+						|| toType == PropertyType.Int
+						|| toType == PropertyType.Float
 						;
 			}
 			case FileName: {

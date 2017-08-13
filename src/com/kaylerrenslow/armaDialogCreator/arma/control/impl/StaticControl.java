@@ -88,7 +88,9 @@ public class StaticControl extends ArmaControl {
 					ControlStyle.LINE,
 					ControlStyle.NO_RECT,
 					ControlStyle.KEEP_ASPECT_RATIO,
-					ControlStyle.TILE_PICTURE
+					ControlStyle.TILE_PICTURE,
+					ControlStyle.UPPERCASE,
+					ControlStyle.LOWERCASE
 			};
 		}
 	}

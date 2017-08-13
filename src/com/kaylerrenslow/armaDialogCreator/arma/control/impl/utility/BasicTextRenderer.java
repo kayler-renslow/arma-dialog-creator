@@ -2,10 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
-import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
-import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
+import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
@@ -36,6 +33,11 @@ import java.util.ArrayList;
 public class BasicTextRenderer {
 
 	public static final double TEXT_PADDING = 0.025;
+
+	private enum Case {
+		Upper, Lower, Default
+	}
+
 	private final ArmaControl control;
 	private final ArmaControlRenderer renderer;
 	private final UpdateCallback callback;
@@ -47,7 +49,7 @@ public class BasicTextRenderer {
 
 	private int textWidth, textLineHeight;
 	private TextAlignment textAlignment = TextAlignment.CENTER;
-	private String text = "";
+	private String textInOriginalCase = "";
 	private Font font = Font.getDefault();
 
 	/** True if the text renderer is painting multiple lines, false otherwise */
@@ -61,6 +63,8 @@ public class BasicTextRenderer {
 	private int lastControlX = -1, lastControlY = -1, lastControlArea = -1;
 	/** True if {@link #multiline} is allowed, false if {@link #multiline} should be ignored */
 	private boolean allowMultiLine = false;
+	private String textInForcedCase = "";
+	private Case textCase = Case.Default;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
 							 @Nullable ControlPropertyLookupConstant text,
@@ -110,11 +114,23 @@ public class BasicTextRenderer {
 		}
 		if (style != null) {
 			renderer.addValueListener(style, (observer, oldValue, newValue) -> {
+				if (!(newValue instanceof SVControlStyleGroup) && newValue != null) {
+					//attempt to create one
+					try {
+						newValue = SVControlStyleGroup.getGroupFromString(
+								newValue.toString(),
+								control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
+						);
+					} catch (Exception ignore) {
+
+					}
+				}
 						if (newValue instanceof SVControlStyleGroup) {
 							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
 							textAlignment = TextAlignment.LEFT;
 							setMultiline(false);
+							textCase = Case.Default;
 							for (ControlStyle controlStyle : group.getStyleArray()) {
 								if (controlStyle == ControlStyle.LEFT) {
 									textAlignment = TextAlignment.LEFT;
@@ -130,11 +146,21 @@ public class BasicTextRenderer {
 								}
 								if (controlStyle == ControlStyle.MULTI) {
 									setMultiline(true);
+									continue;
+								}
+								if (controlStyle == ControlStyle.UPPERCASE) {
+									textCase = Case.Upper;
+									continue;
+								}
+								if (controlStyle == ControlStyle.LOWERCASE) {
+									textCase = Case.Lower;
+									continue;
 								}
 							}
-							callback.styleUpdate(newValue);
-							renderer.requestRender();
+							setText(this.textInOriginalCase); //update the text case
 						}
+				callback.styleUpdate(newValue);
+				renderer.requestRender();
 					}
 			);
 		}
@@ -232,7 +258,7 @@ public class BasicTextRenderer {
 				this.lastControlArea = renderer.getArea();
 
 				//update cachedBrokenLines
-				String[] words = text.split("\\s"); //split by space
+				String[] words = textInForcedCase.split("\\s"); //split by space
 				StringBuilder lineBuilder = new StringBuilder();
 
 				ArrayList<String> linesList = new ArrayList<>(words.length);
@@ -281,15 +307,34 @@ public class BasicTextRenderer {
 	}
 
 	public void setText(@NotNull String text) {
-		this.text = text;
-		textWidth = Math.round(fontMetrics.computeStringWidth(text));
+		this.textInOriginalCase = text;
+		switch (textCase) {
+			case Lower: {
+				this.textInForcedCase = text.toLowerCase();
+				break;
+			}
+			case Upper: {
+				this.textInForcedCase = text.toUpperCase();
+				break;
+			}
+			case Default: {
+				this.textInForcedCase = text;
+				break;
+			}
+		}
+		textWidth = Math.round(fontMetrics.computeStringWidth(this.textInForcedCase));
 		textLineHeight = Math.round(fontMetrics.getLineHeight());
 		clearCachedBrokenLines();
 	}
 
 	@NotNull
 	public String getText() {
-		return text;
+		return textInForcedCase;
+	}
+
+	@NotNull
+	public String getTextInOriginalCase() {
+		return this.textInOriginalCase;
 	}
 
 	public void setTextColor(@NotNull Color color) {
@@ -317,7 +362,7 @@ public class BasicTextRenderer {
 	public void setFont(@NotNull Font font) {
 		this.font = font;
 		this.fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
-		this.setText(this.text); //update text width and line height
+		this.setText(this.textInOriginalCase); //update text width and line height
 		clearCachedBrokenLines();
 	}
 
