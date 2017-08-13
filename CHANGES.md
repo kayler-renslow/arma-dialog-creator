@@ -1,5 +1,5 @@
 **Added:**
-* more control class tests
+* 
 
 **Changed:**
 * 
@@ -18,3 +18,4 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject
+* We need to be able to REMOVE macros and custom control classes

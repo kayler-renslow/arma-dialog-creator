@@ -187,7 +187,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				String propertyTypeAttr = macroElement.getAttribute(propertyTypeId);
 				String commentAttr = macroElement.getAttribute(comment);
 				if (keyAttr.length() == 0 || propertyTypeAttr.length() == 0) {
-					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_key_or_type_f"), keyAttr, propertyTypeAttr)));
+					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_key_or_type_f"), keyAttr, propertyTypeAttr), bundle.getString("ProjectLoad.macro_cleared")));
 					continue;
 				}
 				PropertyType propertyType;
@@ -572,7 +572,10 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			ControlClass cc = project.findControlClassByName(extendThisControlClassName);
 
 			if (cc == null) {
-				loader.addError(new ParseError(String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName())));
+				loader.addError(new ParseError(
+						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
+						bundle.getString("ProjectLoad.no_extend_class_recover")
+				));
 				return;
 			}
 

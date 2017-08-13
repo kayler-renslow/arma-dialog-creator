@@ -180,6 +180,7 @@ public class UICanvasEditor extends UICanvas {
 		if (showing != -1) {
 			absRegionComponent.setGhost(!(showing == 1));
 		}
+		requestPaint();
 	}
 
 	private void prepaint() {
