@@ -102,7 +102,8 @@ class StringTableKeyEditorPane extends StackPane {
 				if (dialog.wasCancelled()) {
 					return;
 				}
-				key.getPath().setPackageName(dialog.getInputText());
+				String packageName = dialog.getInputText() == null ? null : (dialog.getInputText().length() == 0 ? null : dialog.getInputText());
+				key.getPath().setPackageName(packageName);
 			}
 		});
 		MenuItem miEditContainer = new MenuItem(bundle.getString("StringTableEditorPopup.Tab.Edit.edit_container"));
