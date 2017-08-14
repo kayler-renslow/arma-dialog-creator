@@ -118,16 +118,21 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 		return renderUpdateGroup;
 	}
 
-	/** Search all controls inside the display (including controls inside {@link ArmaControlGroup} instances) */
+	/**
+	 Search all controls inside the display (including controls inside {@link ArmaControlGroup} instances).
+	 This search is non case sensitive.
+
+	 @return what was matched, or null if nothing was matched
+	 */
 	@Nullable
 	public ArmaControl findControlByClassName(@NotNull String className) {
 		for (ArmaControl control : getBackgroundControls().deepIterator()) {
-			if (className.equals(control.getClassName())) {
+			if (className.equalsIgnoreCase(control.getClassName())) {
 				return control;
 			}
 		}
 		for (ArmaControl control : getControls().deepIterator()) {
-			if (className.equals(control.getClassName())) {
+			if (className.equalsIgnoreCase(control.getClassName())) {
 				return control;
 			}
 		}

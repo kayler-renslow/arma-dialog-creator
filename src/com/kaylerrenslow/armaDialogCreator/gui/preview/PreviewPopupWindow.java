@@ -11,7 +11,6 @@ import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
 import javafx.beans.value.ChangeListener;
-import javafx.geometry.Orientation;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
@@ -55,44 +54,55 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		{
 			Menu miSetFocusedControl = new Menu(bundle.getString("MenuBar.setFocusedControl"));
 			menuBar.getMenus().add(miSetFocusedControl);
+			{
+				MenuItem miReset = new MenuItem(bundle.getString("MenuBar.setFocusedControl.reset"));
+				miSetFocusedControl.getItems().add(miReset);
+				miReset.setOnAction(event -> {
+					toggleGroupFocusedControl.selectToggle(null);
+				});
 
-			MenuItem miReset = new MenuItem(bundle.getString("MenuBar.setFocusedControl.reset"));
-			miSetFocusedControl.getItems().add(miReset);
-			miReset.setOnAction(event -> {
-				toggleGroupFocusedControl.selectToggle(null);
-			});
+				Menu menuControls = new Menu(bundle.getString("MenuBar.setFocusedControl.controls"));
 
-			Menu menuControls = new Menu(bundle.getString("MenuBar.setFocusedControl.controls"));
+				miSetFocusedControl.setOnShowing(event -> {
+					//remove toggle group listener because just clearing it would reset
+					//the focused control in the same way that pushing reset button would
+					//since the clear method will set the selected toggle to null
+					toggleGroupFocusedControl.selectedToggleProperty().removeListener((ChangeListener) toggleGroupListener);
 
-			miSetFocusedControl.setOnShowing(event -> {
-				//remove toggle group listener because just clearing it would reset
-				//the focused control in the same way that pushing reset button would
-				//since the clear method will set the selected toggle to null
-				toggleGroupFocusedControl.selectedToggleProperty().removeListener((ChangeListener) toggleGroupListener);
-
-				menuControls.getItems().clear();
-				for (ArmaControl armaControl : armaDisplay.getControls().deepIterator()) {
-					RadioMenuItem mi = new RadioMenuItem(
-							armaControl.getClassName(),
-							new ImageView(armaControl.getControlType().getIcon())
-					);
-					mi.setUserData(armaControl);
-					mi.setToggleGroup(toggleGroupFocusedControl);
-					menuControls.getItems().add(mi);
-					if (armaControl.getRenderer().hasFocus()) {
-						toggleGroupFocusedControl.selectToggle(mi);
+					menuControls.getItems().clear();
+					for (ArmaControl armaControl : armaDisplay.getControls().deepIterator()) {
+						RadioMenuItem mi = new RadioMenuItem(
+								armaControl.getClassName(),
+								new ImageView(armaControl.getControlType().getIcon())
+						);
+						mi.setUserData(armaControl);
+						mi.setToggleGroup(toggleGroupFocusedControl);
+						menuControls.getItems().add(mi);
+						if (armaControl.getRenderer().hasFocus()) {
+							toggleGroupFocusedControl.selectToggle(mi);
+						}
 					}
-				}
-				if (menuControls.getItems().size() == 0) {
-					MenuItem miNoControls = new MenuItem(bundle.getString("MenuBar.setFocusedControl.noControls"));
-					miNoControls.setDisable(true);
-					menuControls.getItems().add(miNoControls);
-				}
+					if (menuControls.getItems().size() == 0) {
+						MenuItem miNoControls = new MenuItem(bundle.getString("MenuBar.setFocusedControl.noControls"));
+						miNoControls.setDisable(true);
+						menuControls.getItems().add(miNoControls);
+					}
 
-				toggleGroupFocusedControl.selectedToggleProperty().addListener((ChangeListener) toggleGroupListener);
+					toggleGroupFocusedControl.selectedToggleProperty().addListener((ChangeListener) toggleGroupListener);
 
-			});
-			miSetFocusedControl.getItems().add(menuControls);
+				});
+				miSetFocusedControl.getItems().add(menuControls);
+			}
+
+			Menu menuHelp = new Menu(bundle.getString("MenuBar.help"));
+			menuBar.getMenus().add(menuHelp);
+			{
+				MenuItem menuItemWiki = new MenuItem(bundle.getString("MenuBar.wiki"));
+				menuItemWiki.setOnAction(event -> {
+					help();
+				});
+				menuHelp.getItems().add(menuItemWiki);
+			}
 		}
 
 		focusHandler.autoFocusToControl();
@@ -100,7 +110,6 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 
 		previewCanvas = new UICanvasPreview(resolution, armaDisplay, focusHandler);
 		myRootElement.getChildren().add(previewCanvas);
-		myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, false, true));
 
 		previewCanvas.setDisplay(armaDisplay);
 		previewCanvas.updateResolution(resolution);

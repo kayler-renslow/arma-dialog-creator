@@ -121,7 +121,7 @@ public class ProjectExporter {
 	}
 
 	private static BufferedIndentedStringBuilder getBuilder(@NotNull OutputStream outputStream) {
-		return new BufferedIndentedStringBuilder(4, true, 1000, s -> {
+		return new BufferedIndentedStringBuilder(4, true, 20000/*20 kb*/, s -> {
 			try {
 				outputStream.write(s.getBytes());
 				outputStream.flush();

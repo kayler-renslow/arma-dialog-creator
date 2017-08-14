@@ -97,7 +97,8 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	}
 
 	/**
-	 Will get the {@link CustomControlClass#getControlClass()} by the given name, or null if nothing could be matched
+	 Will get the {@link CustomControlClass#getControlClass()} by the given name, or null if nothing could be matched.
+	 This search is non case sensitive.
 
 	 @return the matched {@link ControlClass}, or null if couldn't be found
 	 */
@@ -105,7 +106,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	@Nullable
 	public ControlClass findControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
-			if (controlClass.getControlClass().getClassName().equals(className)) {
+			if (controlClass.getControlClass().getClassName().equalsIgnoreCase(className)) {
 				return controlClass.getControlClass();
 			}
 		}
@@ -113,14 +114,15 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	}
 
 	/**
-	 Will get the {@link CustomControlClass} by the given name, or null if nothing could be matched
+	 Will get the {@link CustomControlClass} by the given name, or null if nothing could be matched.
+	 This search is non case sensitive.
 
 	 @return matched class, null if couldn't be matched
 	 */
 	@Nullable
 	public CustomControlClass findCustomControlClassByName(@NotNull String className) {
 		for (CustomControlClass controlClass : controlClassList) {
-			if (controlClass.getControlClass().getClassName().equals(className)) {
+			if (controlClass.getControlClass().getClassName().equalsIgnoreCase(className)) {
 				return controlClass;
 			}
 		}

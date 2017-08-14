@@ -336,6 +336,7 @@ public class HeaderToProject {
 		return armaControl;
 	}
 
+	@Nullable
 	private ControlClass getExtendControlClass(@NotNull Project project, @NotNull String ownerDialogName, @NotNull HeaderClass headerClass) throws HeaderConversionException {
 		ControlClass extendClass = null;
 		if (headerClass.getExtendClassName() != null) {
