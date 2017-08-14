@@ -1,5 +1,5 @@
 **Added:**
-* 
+* ability to remove custom control classes
 
 **Changed:**
 * made Control Style control property value editor present all ControlStyles, but now the ones that aren't relevant are placed in a menu

@@ -164,7 +164,7 @@ public class ControlClass {
 		addNestedClasses(requiredNestedClasses, registry, specProvider.getRequiredNestedClasses(), context);
 		addNestedClasses(optionalNestedClasses, registry, specProvider.getOptionalNestedClasses(), context);
 
-		afterConstructor();
+		afterPropertyAndNestedClassConstruction();
 	}
 
 	/**
@@ -221,6 +221,10 @@ public class ControlClass {
 		for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
 			optionalNestedClasses.add(s.constructNewControlClass(registry, new DefaultValueProvider.ControlClassNameContext(context, s.getClassName())));
 		}
+
+		//needs to come before extendControlClass, otherwise we will be attaching listeners to temporary inherited properties
+		afterPropertyAndNestedClassConstruction();
+
 		if (specification.getExtendClassName() != null) {
 			ControlClass extendMe = registry.findControlClassByName(specification.getExtendClassName());
 			if (extendMe == null) {
@@ -228,15 +232,19 @@ public class ControlClass {
 			}
 			extendControlClass(extendMe);
 		}
-		afterConstructor();
 	}
 
-	private void afterConstructor() {
+	private void afterPropertyAndNestedClassConstruction() {
 		for (ControlProperty controlProperty : requiredProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
 		}
 		for (ControlProperty controlProperty : optionalProperties) {
 			controlProperty.getControlPropertyUpdateGroup().addListener(controlPropertyListener);
+		}
+		for (ControlClass nestedClass : getAllNestedClasses()) {
+			nestedClass.controlClassUpdateGroup.addListener((group, data) -> {
+				controlClassUpdateGroup.update(new ControlClassNestedClassUpdate(this, nestedClass, data));
+			});
 		}
 		classNameObserver.addListener(new ValueListener<String>() {
 			@Override
@@ -1205,6 +1213,14 @@ public class ControlClass {
 		return userData;
 	}
 
+	/** Will set all {@link ControlClass} instances that have this as their {@link #getExtendClass()} and set it to null */
+	public void clearSubClasses() {
+		List<ControlClass> unextend = new ArrayList<>(mySubClasses.size());
+		unextend.addAll(mySubClasses);
+		for (ControlClass cc : unextend) {
+			cc.extendControlClass(null); //todo this doesn't work
+		}
+	}
 
 	/**
 	 Updates this {@link ControlClass} to the given update
@@ -1236,6 +1252,20 @@ public class ControlClass {
 			//This does not need to have anything handled since it happens inside overrideProperty() or inheritProperty()
 			//which will create their respective updates.
 			return;
+		} else if (data instanceof ControlClassNestedClassUpdate) {
+			ControlClassNestedClassUpdate update = (ControlClassNestedClassUpdate) data;
+			ControlClass nestedClassToUpdate;
+			ControlClass myNestedClass;
+			ControlClass parentClass = this;
+			do {
+				nestedClassToUpdate = ((ControlClassNestedClassUpdate) update.getNestedClassUpdate()).getNested();
+				myNestedClass = parentClass.findNestedClassNullable(nestedClassToUpdate.getClassName());
+				if (myNestedClass == null) {
+					return;
+				}
+				parentClass = nestedClassToUpdate;
+			} while (update.getNestedClassUpdate() instanceof ControlClassNestedClassUpdate);
+			myNestedClass.update(data, deepCopy);
 		} else {
 			throw new IllegalStateException("unknown handled update:" + data.getClass().getName());
 		}

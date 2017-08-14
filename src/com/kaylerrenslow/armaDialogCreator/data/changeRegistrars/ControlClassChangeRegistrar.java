@@ -318,6 +318,8 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 				//
 				//
 				//
+			} else if (classUpdate instanceof ControlClassTemporaryPropertyUpdate || classUpdate instanceof ControlClassTemporaryNestedClassUpdate) {
+				throw new Exception(); //nothing needs to be done
 			} else {
 				System.err.println("WARNING: ControlClassChangeRegistrar.ControlClassChangeRegistrar():" +
 						"unknown control class update:" + classUpdate);

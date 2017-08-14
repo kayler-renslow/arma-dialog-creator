@@ -17,10 +17,8 @@ public class SimpleResponseDialog extends StageDialog<StackPane> {
 		super(primaryStage, new StackPane(), title, canCancel, canOk, hasHelp);
 		myRootElement.setAlignment(Pos.TOP_LEFT);
 		Label lblBody = new Label(body);
-		lblBody.maxWidthProperty().bind(myRootElement.widthProperty());
 		lblBody.setWrapText(true);
 		myRootElement.getChildren().add(lblBody);
-
 	}
 
 	@NotNull
