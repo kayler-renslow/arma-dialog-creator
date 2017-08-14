@@ -1,5 +1,5 @@
 **Added:**
-* JavaFX 9 check to installer
+* 
 
 **Changed:**
 * working on release automation
