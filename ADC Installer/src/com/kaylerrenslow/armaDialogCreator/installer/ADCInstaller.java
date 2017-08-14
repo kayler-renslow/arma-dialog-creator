@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import java.io.File;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -16,6 +18,16 @@ public class ADCInstaller extends Application {
 	static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.installer.InstallBundle");
 
 	public static void main(String[] args) {
+		try {
+			Class c = Class.forName("javafx.application.Application");
+		} catch (ClassNotFoundException e) {
+			SwingUtilities.invokeLater(() -> {
+				JOptionPane.showMessageDialog(null, "JavaFX 8 isn't installed on this computer. Please install it to run Arma Dialog Creator.", "JavaFX 8 Missing", JOptionPane.ERROR_MESSAGE);
+				System.exit(0);
+			});
+			return;
+		}
+
 		launch(args);
 	}
 
@@ -33,7 +45,7 @@ public class ADCInstaller extends Application {
 			pw.runInstall(f);
 		} else {
 			InstallerConfigWindow window = new InstallerConfigWindow(primaryStage, f);
-			primaryStage.show();
+			window.show();
 		}
 	}
 

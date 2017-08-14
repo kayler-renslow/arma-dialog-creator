@@ -31,6 +31,7 @@ import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
  @since 4/17/17 */
 class InstallerConfigWindow {
 
+	private final Stage stage;
 	private File installDir = new File("");
 	private BooleanProperty closeInstallerBtnDisable;
 	private final BooleanProperty installFailedProperty = new SimpleBooleanProperty(false);
@@ -38,6 +39,7 @@ class InstallerConfigWindow {
 	private final TextArea taDetails = new TextArea("");
 
 	public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
+		this.stage = stage;
 		stage.setTitle(bundle.getString("InstallerWindow.window_title"));
 		stage.getIcons().addAll(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
 
@@ -48,6 +50,10 @@ class InstallerConfigWindow {
 		stage.setResizable(false);
 
 		initPane(stage);
+	}
+
+	public void show() {
+		stage.show();
 	}
 
 	private void initPane(Stage stage) {

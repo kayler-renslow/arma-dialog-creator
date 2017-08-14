@@ -15,15 +15,35 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 
 /**
- This class is used for preparing a build for Arma Dialog Creator and building "Arma Dialog Creator.exe". In order to build the .exe, <a href='http://launch4j.sourceforge.net/'>Launch4J</a> will be
- needed.
+ This class is used for preparing a build for Arma Dialog Creator and building "Arma Dialog Creator.exe".
+ In order to build the .exe, <a href='http://launch4j.sourceforge.net/'>Launch4J</a> will be needed.
+
  @author Kayler
- @since 10/10/2016.
- */
+ @since 10/10/2016. */
 public class ADCReleaseAutomation {
 	private final String workingDirectoryPath = new File("").getAbsolutePath();
+	private final String launch4jPath = "D:\\DATA\\Launch4j";
+
+	/*Steps to building the Arma Dialog Creator.exe and installer:
+
+	1. Run ADCReleaseAutomation.main() with no program arguments
+	    * This step will create adc.jar's manifest, launch4j configs for exe's, and remove old exe's previously created
+	2. Build adc.jar
+	3. Build adc_launcher.jar
+	4. Build adc_updater.jar
+	5. Run ADCReleaseAutomation.main() with "-buildADCExe" as the program arguments
+	    * This step will create "Arma Dialog Creator.exe"
+	6. Run ADCReleaseAutomation.main() with "-packInstaller" as the program arguments
+	    * This step will copy adc.jar, adc_updater.jar, etc, to the installer's build location
+	7. Build adc_installer.jar
+	    * This step will take previously copied adc.jar and other files and build adc_installer.jar
+	8. Run ADCReleaseAutomation.main() with "-buildInstallerExe" as the program arguments
+	    * This step will create "Arma Dialog Creator Installer.exe"
+	*/
 
 	public static void main(String[] args) {
 		try {
@@ -34,14 +54,35 @@ public class ADCReleaseAutomation {
 	}
 
 	private void run(String[] args) throws Exception {
-		if (args.length > 0 && args[0].equals("-buildExe")) {
+		if (args.length > 0 && args[0].equals("-packInstaller")) {
+			packInstaller();
+		} else if (args.length > 0 && args[0].equals("-buildADCExe")) {
 			createExe();
+		} else if (args.length > 0 && args[0].equals("-buildInstallerExe")) {
+			createInstallerExe(); //create installer last
 		} else {
 			createManifest();
-			createLaunch4jConfig();
-			removeOldExe();
+			createLaunch4jConfig("release_automation/configuration_template.xml", "release_automation/configuration.xml");
+			createLaunch4jConfig("release_automation/installer_configuration_template.xml", "release_automation/installer_configuration.xml");
+			removeOldExeFiles();
 		}
 
+	}
+
+	private void packInstaller() {
+		File[] filesToPack = {
+				new File("out/artifacts/adc_jar/adc.jar"),
+				new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe"),
+				new File("out/artifacts/adc_updater_jar/adc_updater.jar")
+		};
+		for (File f : filesToPack) {
+			try {
+				Path dest = new File("out/production/ADC Installer/install/" + f.getName()).toPath();
+				Files.copy(f.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	/** Ask Launch4j to build the .exe for us */
@@ -52,7 +93,23 @@ public class ADCReleaseAutomation {
 			Process p = Runtime.getRuntime().exec(
 					String.format("java -jar launch4j.jar \"%s\\release_automation\\configuration.xml\"", workingDirectoryPath),
 					null,
-					new File("D:\\DATA\\Launch4j")
+					new File(launch4jPath)
+			);
+			p.waitFor();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/** Ask Launch4j to build the .exe for us */
+	private void createInstallerExe() {
+		ProcessBuilder pb = new ProcessBuilder();
+		try {
+			pb.inheritIO();
+			Process p = Runtime.getRuntime().exec(
+					String.format("java -jar launch4j.jar \"%s\\release_automation\\installer_configuration.xml\"", workingDirectoryPath),
+					null,
+					new File(launch4jPath)
 			);
 			p.waitFor();
 		} catch (Exception e) {
@@ -65,20 +122,24 @@ public class ADCReleaseAutomation {
 		exportNew(new File("release_automation/MANIFEST_template.mf"), new File("src/META-INF/MANIFEST.MF"));
 	}
 
-	private void removeOldExe() {
-		File oldExe = new File("out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe");
-		if (oldExe.exists()) {
-			try {
-				Files.delete(oldExe.toPath());
-			} catch (IOException e) {
-				e.printStackTrace();
+	private void removeOldExeFiles() {
+		for (File f : new File[]{
+				new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe"),
+				new File("out/artifacts/adc_installer_jar/Arma Dialog Creator Installer.exe")
+		}) {
+			if (f.exists()) {
+				try {
+					Files.delete(f.toPath());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	/** create the config file that will be used to make "Arma Dialog Creator.exe" via Launch4j */
-	private void createLaunch4jConfig() throws IOException {
-		exportNew(new File("release_automation/configuration_template.xml"), new File("release_automation/configuration.xml"));
+	private void createLaunch4jConfig(String templateFilePath, String destTemplateFilePath) throws IOException {
+		exportNew(new File(templateFilePath), new File(destTemplateFilePath));
 	}
 
 	private void exportNew(File template, File out) {
@@ -96,15 +157,19 @@ public class ADCReleaseAutomation {
 					if (in == '$') {
 						startVariable = false;
 					} else {
-						variable.append((char)in);
+						variable.append((char) in);
 						continue;
 					}
 
 					String varName = variable.toString();
 
 					switch (varName) {
-						case "PROJECT_OUT_PATH": {
-							fos.write((workingDirectoryPath + "\\out\\artifacts\\Arma_Dialog_Creator").getBytes());
+						case "ADC_LAUNCHER_PROJECT_OUT_PATH": {
+							fos.write((workingDirectoryPath + "\\out\\artifacts\\adc_launcher_jar").getBytes());
+							break;
+						}
+						case "ADC_INSTALLER_PROJECT_OUT_PATH": {
+							fos.write((workingDirectoryPath + "\\out\\artifacts\\adc_installer_jar").getBytes());
 							break;
 						}
 						case "VERSION": {
@@ -121,7 +186,7 @@ public class ADCReleaseAutomation {
 							break;
 						}
 						default: {
-							throw new IllegalStateException("unknown variable:" + varName);
+							System.err.println("WARNING: unknown variable:" + varName);
 						}
 					}
 				} else {

@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact name="adc_launcher_exe">
-    <output-path>$PROJECT_DIR$/out/artifacts/adc_launcher_exe</output-path>
-    <root id="root">
-      <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe" />
-    </root>
-  </artifact>
-</component>

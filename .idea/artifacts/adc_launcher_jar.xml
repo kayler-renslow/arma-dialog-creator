@@ -1,11 +1,11 @@
 <component name="ArtifactManager">
-  <artifact type="jar" name="adc_updater">
-    <output-path>$PROJECT_DIR$/out/artifacts/adc_updater</output-path>
-    <root id="archive" name="adc_updater.jar">
+  <artifact type="jar" name="adc_launcher.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/adc_launcher_jar</output-path>
+    <root id="archive" name="adc_launcher.jar">
+      <element id="module-output" name="ADC Launcher" />
       <element id="module-output" name="ADC Updater" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-simple-1.1.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/hamcrest-core-1.1.jar" path-in-jar="/" />
-      <element id="module-output" name="ADC Standalone Progress Window" />
     </root>
   </artifact>
 </component>

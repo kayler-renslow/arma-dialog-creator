@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="adc_installer.jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/adc_installer_jar</output-path>
+    <root id="archive" name="adc_installer.jar">
+      <element id="module-output" name="ADC Installer" />
+      <element id="library" level="project" name="annotations-java8" />
+      <element id="artifact" artifact-name="adc.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/Arma Dialog Creator.exe" />
+      <element id="artifact" artifact-name="adc_updater.jar" />
+    </root>
+  </artifact>
+</component>

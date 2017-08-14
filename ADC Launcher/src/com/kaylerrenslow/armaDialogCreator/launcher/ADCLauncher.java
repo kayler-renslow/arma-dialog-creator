@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.updater.ADCUpdater;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import java.io.File;
+import java.io.IOException;
 
 /**
  Created by Kayler on 10/23/2016.
@@ -34,11 +35,15 @@ public class ADCLauncher {
 			return;
 		}
 
-
 		if (ADC_JAR_SAVE_LOCATION.exists()) {
-			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
+			launchAdc();
 		} else {
 			ADCUpdater.main(args);
+			launchAdc();
 		}
+	}
+
+	private static void launchAdc() throws IOException {
+		Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
 	}
 }

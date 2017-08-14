@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Arma Dialog Creator Unversioned Release" type="JarApplication" factoryName="JAR Application">
     <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-    <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/Arma_Dialog_Creator/adc.jar" />
+    <option name="JAR_PATH" value="$PROJECT_DIR$/out/artifacts/adc_jar/adc.jar" />
+    <option name="PROGRAM_PARAMETERS" value="-packInstaller" />
     <option name="WORKING_DIRECTORY" value="." />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
     <option name="ALTERNATIVE_JRE_PATH" value="1.8" />
@@ -10,15 +11,20 @@
     <method>
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation unversioned" run_configuration_type="Application" />
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="Arma Dialog Creator" />
+        <artifact name="adc.jar" />
       </option>
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="adc_launcher" />
+        <artifact name="adc_launcher.jar" />
+      </option>
+      <option name="BuildArtifacts" enabled="true">
+        <artifact name="adc_updater.jar" />
       </option>
       <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation - Build Exe" run_configuration_type="Application" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation - Pack Installer" run_configuration_type="Application" />
       <option name="BuildArtifacts" enabled="true">
-        <artifact name="adc_updater" />
+        <artifact name="adc_installer.jar" />
       </option>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation - Build Installer Exe" run_configuration_type="Application" />
     </method>
   </configuration>
 </component>

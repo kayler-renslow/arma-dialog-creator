@@ -1,8 +1,8 @@
 **Added:**
-* ability to remove custom control classes
+* JavaFX 9 check to installer
 
 **Changed:**
-* made Control Style control property value editor present all ControlStyles, but now the ones that aren't relevant are placed in a menu
+* working on release automation
 
 **Fixed:**
 * 
@@ -18,6 +18,3 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject
-
-
-**We need to be able to REMOVE macros and custom control classes**

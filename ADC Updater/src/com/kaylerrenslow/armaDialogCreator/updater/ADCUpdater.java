@@ -25,7 +25,6 @@ import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -75,42 +74,35 @@ public class ADCUpdater extends Application {
 	}
 
 	private void runVersionTask() {
-		loadTask(new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION, ADC_DOWNLOAD_JAR_SAVE_LOCATION, JSON_RELEASE_INFO), "", new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				launchADC();
-			}
-		});
-	}
-
-	private void launchADC() {
-		boolean error = false;
-		if (!ADC_JAR_SAVE_LOCATION.exists()) {
-			window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
-			error = true;
-		}
-		try {
-			Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			window.getLblError().setText("ERROR: " + e.getMessage());
-			error = true;
-		}
-		final boolean finalError = error;
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (finalError) {
-					try {
-						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+		loadTask(
+				new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION,
+						ADC_DOWNLOAD_JAR_SAVE_LOCATION,
+						JSON_RELEASE_INFO
+				), "", new EventHandler<WorkerStateEvent>() {
+					@Override
+					public void handle(WorkerStateEvent event) {
+						boolean error = false;
+						if (!ADC_JAR_SAVE_LOCATION.exists()) {
+							window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
+							error = true;
+						}
+						final boolean finalError = error;
+						new Thread(new Runnable() {
+							@Override
+							public void run() {
+								if (finalError) {
+									try {
+										Thread.sleep(3000);
+									} catch (InterruptedException e) {
+										e.printStackTrace();
+									}
+								}
+								Platform.exit();
+							}
+						}).start();
 					}
 				}
-				Platform.exit();
-			}
-		}).start();
-
+		);
 	}
 
 	private void loadTask(Task<?> task, String initStatusText, EventHandler<WorkerStateEvent> succeedEvent) {
