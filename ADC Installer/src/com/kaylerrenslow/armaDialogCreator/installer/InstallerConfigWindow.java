@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.installer;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -78,6 +79,15 @@ class InstallerConfigWindow {
 			imageViewAdc.setFitHeight(64);
 			imageViewAdc.setFitWidth(64);
 			hboxHeaderIconAndTitle.getChildren().add(imageViewAdc);
+			{ //icon animation
+				AnimationTimer timer = new AnimationTimer() {
+					@Override
+					public void handle(long now) {
+						imageViewAdc.rotateProperty().set(imageViewAdc.rotateProperty().doubleValue() + .5);
+					}
+				};
+				timer.start();
+			}
 
 			//title and sub title stuff
 			{
@@ -126,6 +136,7 @@ class InstallerConfigWindow {
 					return;
 				}
 				tfDir.setText(chosen.getAbsolutePath());
+				installDir = chosen;
 			});
 
 			vboxAfterHeader.getChildren().add(new Label(bundle.getString("InstallerWindow.change_dir_if_needed")));
@@ -196,7 +207,9 @@ class InstallerConfigWindow {
 		installTask.setOnCancelled((e) -> {
 			installFail();
 		});
-		installTask.setOnSucceeded(installTask.getOnCancelled());
+		installTask.setOnSucceeded(event -> {
+			installSucceed();
+		});
 		installTask.setOnFailed((e) -> {
 			installFail();
 		});
@@ -218,6 +231,10 @@ class InstallerConfigWindow {
 	private void installFail() {
 		enableCloseInstallButton();
 		installFailedProperty.setValue(true);
+	}
+
+	private void installSucceed() {
+		enableCloseInstallButton();
 	}
 
 	private void enableCloseInstallButton() {

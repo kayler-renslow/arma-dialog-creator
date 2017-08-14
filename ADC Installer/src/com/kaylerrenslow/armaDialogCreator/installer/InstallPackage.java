@@ -54,9 +54,15 @@ public abstract class InstallPackage {
 			FileOutputStream fos = new FileOutputStream(extractToFile);
 
 			int i = 0;
+			int bufSize = 0;
 			while ((i = stream.read()) >= 0) {
 				fos.write(i);
+				bufSize++;
+				if (bufSize > 1000) {
+					fos.flush();
+				}
 			}
+			fos.flush();
 
 			stream.close();
 			fos.close();

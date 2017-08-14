@@ -87,12 +87,11 @@ public class ADCInstallerTask extends Task<File> {
 				continue;
 			}
 
-			String e = String.format(
-					bundle.getString("Installer.verify_fail_f"),
-					String.format(bundle.getString("Installer.file_didnt_extract_f"), f)
-			);
 			message(
-					e
+					String.format(
+							bundle.getString("Installer.verify_fail_f"),
+							String.format(bundle.getString("Installer.file_didnt_extract_f"), f)
+					)
 			);
 
 			try {
@@ -100,6 +99,7 @@ public class ADCInstallerTask extends Task<File> {
 			} catch (Exception ex) {
 				String e1 = String.format(bundle.getString("Installer.backup_restore_failed_f"), ex.getMessage());
 				message(e1);
+				throw ex;
 			}
 
 			return null;

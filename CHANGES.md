@@ -1,11 +1,11 @@
 **Added:**
-* 
+* made installer ADC icon rotate :)
 
 **Changed:**
 * working on release automation
 
 **Fixed:**
-* 
+* installer not extracting anything in correct spot
 
 **Notes:**
 * June 23:
