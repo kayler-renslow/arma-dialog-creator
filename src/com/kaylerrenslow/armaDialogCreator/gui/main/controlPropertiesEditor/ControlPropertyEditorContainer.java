@@ -206,22 +206,20 @@ class ControlPropertyEditorContainer extends HBox {
 		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
+				//if the inherited property type doesn't match the current editor type, there will be an exception
+				propertyValueEditor.clearListeners();
+
 				if (getControlProperty().isInherited()) {
 					getControlProperty().inherit(null);
 				} else {
-					//if the inherited property type doesn't match the current editor type, there will be an exception
-					propertyValueEditor.clearListeners();
-
 					boolean inherited = controlClass.inheritProperty(getControlProperty().getPropertyLookup());
 					if (!inherited) {
 						MenuButtonPopup popup = new MenuButtonPopup(bundle.getString("nothing_to_inherit"));
 						popup.showPopup();
 					}
-
-					resetPropertyValueEditor();
-					propertyInheritUpdate.apply(null);
-
 				}
+				resetPropertyValueEditor();
+				propertyInheritUpdate.apply(null);
 			}
 		});
 		miClearValue.setOnAction(new EventHandler<ActionEvent>() {
@@ -314,6 +312,10 @@ class ControlPropertyEditorContainer extends HBox {
 				stackPaneTint = new StackPane();
 				stackPaneTint.setStyle("-fx-background-color:rgba(0, 132, 180, 0.23)");
 				stackPanePropertyInput.getChildren().add(stackPaneTint);
+			} else {
+				if (!stackPanePropertyInput.getChildren().contains(stackPaneTint)) {
+					stackPanePropertyInput.getChildren().add(stackPaneTint);
+				}
 			}
 		} else {
 			stackPanePropertyInput.getChildren().removeIf(node -> node == stackPaneTint);

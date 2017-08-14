@@ -233,8 +233,24 @@ class ControlPropertyValueEditors {
 		public ControlStyleEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
 			if (control.getSpecProvider() instanceof AllowedStyleProvider) {
 				AllowedStyleProvider specProvider = (AllowedStyleProvider) control.getSpecProvider();
+				ArrayList<ControlStyle> moveAfterSeparator = new ArrayList<>();
 				menuButton.getItems().clear();
-				menuButton.getItems().addAll(specProvider.getAllowedStyles());
+				ControlStyle[] allowedStyles = specProvider.getAllowedStyles();
+				for (ControlStyle style : ControlStyle.values()) {
+					boolean match = false;
+					for (ControlStyle allowed : allowedStyles) {
+						if (style == allowed) {
+							menuButton.getItems().add(allowed);
+							match = true;
+							continue;
+						}
+					}
+					if (!match) {
+						moveAfterSeparator.add(style);
+					}
+				}
+				menuButton.addMenu(Lang.ApplicationBundle().getString("ControlPropertyValueEditors.unused_styles"), moveAfterSeparator);
+
 				for (com.kaylerrenslow.armaDialogCreator.control.ControlStyle style : menuButton.getItems()) {
 					menuButton.bindTooltip(style, style.documentation);
 				}

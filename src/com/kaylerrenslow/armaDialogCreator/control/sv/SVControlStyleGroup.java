@@ -100,7 +100,7 @@ public class SVControlStyleGroup extends SerializableValue {
 			for (String s : split) {
 				int num;
 				try {
-					num = Integer.parseInt(s);
+					num = Integer.decode(s);
 				} catch (IllegalArgumentException ignore) { //will catch number format exception
 					continue;
 				}

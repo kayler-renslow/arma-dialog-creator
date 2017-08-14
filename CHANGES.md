@@ -1,12 +1,11 @@
 **Added:**
-* support for upper and lower case
+* 
 
 **Changed:**
-* Control Styles now include their hex value in the toString()
+* made Control Style control property value editor present all ControlStyles, but now the ones that aren't relevant are placed in a menu
 
 **Fixed:**
-* bug where inheriting a value that the current value editor doesn't support created an exception
-    * fixed this by clearing the current value editor's listeners and then reseting the value editor after the inherit
+* 
 
 **Notes:**
 * June 23:

@@ -258,7 +258,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	@Override
 	public void styleUpdate(@Nullable SerializableValue newValue) {
 		stylePropertyValue = newValue;
-		if (newValue instanceof SVControlStyleGroup) {
+		newValue = MiscHelpers.getGroup(newValue, myControl);
+		if (newValue != null) {
 			SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 			keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
 			tileImage = group.hasStyle(ControlStyle.TILE_PICTURE);
@@ -326,7 +327,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		if (value == null) {
 			return RenderType.Error;
 		}
-		if (value instanceof SVControlStyleGroup) {
+		value = MiscHelpers.getGroup(value, this.myControl);
+		if (value != null) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {
 				if (style == ControlStyle.TILE_PICTURE) {

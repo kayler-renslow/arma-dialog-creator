@@ -2,7 +2,10 @@ package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlRenderer;
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlProperty;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
+import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
+import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
@@ -113,19 +116,10 @@ public class BasicTextRenderer {
 			});
 		}
 		if (style != null) {
-			renderer.addValueListener(style, (observer, oldValue, newValue) -> {
-				if (!(newValue instanceof SVControlStyleGroup) && newValue != null) {
-					//attempt to create one
-					try {
-						newValue = SVControlStyleGroup.getGroupFromString(
-								newValue.toString(),
-								control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
-						);
-					} catch (Exception ignore) {
-
-					}
-				}
-						if (newValue instanceof SVControlStyleGroup) {
+			renderer.addValueListener(style,
+					(observer, oldValue, newValue) -> {
+						newValue = MiscHelpers.getGroup(newValue, control);
+						if (newValue != null) {
 							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 
 							textAlignment = TextAlignment.LEFT;
@@ -159,8 +153,8 @@ public class BasicTextRenderer {
 							}
 							setText(this.textInOriginalCase); //update the text case
 						}
-				callback.styleUpdate(newValue);
-				renderer.requestRender();
+						callback.styleUpdate(newValue);
+						renderer.requestRender();
 					}
 			);
 		}

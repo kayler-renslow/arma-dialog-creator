@@ -73,7 +73,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		});
 
 		addValueListener(ControlPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
-			if (newValue instanceof SVControlStyleGroup) {
+			newValue = MiscHelpers.getGroup(newValue, control);
+			if (newValue != null) {
 				SVControlStyleGroup g = (SVControlStyleGroup) newValue;
 				horizProgress = g.hasStyle(ControlStyle.HORIZONTAL);
 				requestRender();

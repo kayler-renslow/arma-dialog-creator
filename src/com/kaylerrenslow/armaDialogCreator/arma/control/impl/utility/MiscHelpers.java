@@ -1,8 +1,15 @@
 package com.kaylerrenslow.armaDialogCreator.arma.control.impl.utility;
 
+import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControl;
+import com.kaylerrenslow.armaDialogCreator.control.AllowedStyleProvider;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVControlStyleGroup;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVString;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
@@ -21,5 +28,32 @@ public class MiscHelpers {
 		gc.rotate(rotateDeg);
 		gc.drawImage(img, -w / 2, -h / 2, w, h);
 		gc.restore();
+	}
+
+	/**
+	 This method will check in various ways if the given {@link SerializableValue} can be converted into a {@link SVControlStyleGroup}
+
+	 @return a {@link SVControlStyleGroup} for the given {@link SerializableValue}, or null if can't be created
+	 */
+	@Nullable
+	public static SVControlStyleGroup getGroup(@Nullable SerializableValue value, @NotNull ArmaControl control) {
+		if (value instanceof SVControlStyleGroup) {
+			return (SVControlStyleGroup) value;
+		}
+		if (value instanceof SVExpression) {
+			value = new SVString(((SVExpression) value).getExpression()); //use the expression text instead of the returned number
+		}
+		if (value != null) {
+			//attempt to create one
+			try {
+				return SVControlStyleGroup.getGroupFromString(
+						value.toString(),
+						control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
+				);
+			} catch (Exception ignore) {
+
+			}
+		}
+		return null;
 	}
 }

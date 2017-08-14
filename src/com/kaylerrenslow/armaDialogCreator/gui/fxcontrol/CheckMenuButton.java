@@ -45,23 +45,7 @@ public class CheckMenuButton<E> extends StackPane {
 				while (c.next()) {
 					if (c.wasAdded()) {
 						for (E item : c.getAddedSubList()) {
-							final CheckBox checkBox = new CheckBox(item.toString());
-							final CustomMenuItem menuItem = new CustomMenuItem(checkBox, false);
-							menuItem.setUserData(item);
-							checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
-								@Override
-								public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
-									if (checked) {
-										if (!selected.contains(item)) {
-											selected.add(item);
-										}
-										checkBox.setStyle(CHECK_BOX_BOLD_TEXT);
-									} else {
-										selected.remove(item);
-										checkBox.setStyle(null);
-									}
-								}
-							});
+							CustomMenuItem menuItem = createCheckBoxMenuItem(item);
 							menuButton.getItems().add(menuItem);
 						}
 					}
@@ -86,10 +70,38 @@ public class CheckMenuButton<E> extends StackPane {
 		Collections.addAll(this.items, initialItems);
 	}
 
+	@NotNull
+	private CustomMenuItem createCheckBoxMenuItem(E item) {
+		CheckBox checkBox = new CheckBox(item.toString());
+		CustomMenuItem menuItem = new CustomMenuItem(checkBox, false);
+		menuItem.setUserData(item);
+		checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
+				if (checked) {
+					if (!selected.contains(item)) {
+						selected.add(item);
+					}
+					checkBox.setStyle(CHECK_BOX_BOLD_TEXT);
+				} else {
+					selected.remove(item);
+					checkBox.setStyle(null);
+				}
+			}
+		});
+		return menuItem;
+	}
+
 	/** Bind a tooltip to one of the items, If the tooltip is null, will remove the tooltip. */
 	public void bindTooltip(@NotNull E itemToBindTo, @Nullable String tooltip) {
 		for (MenuItem menuItem : menuButton.getItems()) {
+			if (!(menuItem instanceof CustomMenuItem)) {
+				continue;
+			}
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
+			if (!(customMenuItem.getContent() instanceof CheckBox)) {
+				continue;
+			}
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
 			if (customMenuItem.getUserData() == itemToBindTo) {
 				if (tooltip == null) {
@@ -109,55 +121,83 @@ public class CheckMenuButton<E> extends StackPane {
 		menuButton.setTooltip(tooltip);
 	}
 
-	/** Get all items added */
+	/** @return all items added */
+	@NotNull
 	public ObservableList<E> getItems() {
 		return items;
 	}
 
-	/** Clears the selection and sets what items are selected. */
-	public void setSelected(E[] items) {
-		for (MenuItem menuItem : menuButton.getItems()) {
-			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
-			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
-			boolean found = false;
-			for (E item : items) {
-				if (customMenuItem.getUserData() == item) {
-					checkBox.setSelected(true);
-					found = true;
-					break;
-				}
-			}
-			if (!found) {
-				checkBox.setSelected(false);
-			}
+	/** Adds a {@link SeparatorMenuItem} */
+	public void addSeparator() {
+		menuButton.getItems().add(new SeparatorMenuItem());
+	}
 
+	public void addMenu(@NotNull String menuName, @NotNull List<E> items) {
+		Menu m = new Menu(menuName);
+		menuButton.getItems().add(m);
+		for (E e : items) {
+			m.getItems().add(createCheckBoxMenuItem(e));
 		}
 	}
 
 	/** Clears the selection and sets what items are selected. */
+	public void setSelected(E[] items) {
+		setSelected(null, items, menuButton.getItems());
+	}
+
+	/** Clears the selection and sets what items are selected. */
 	public void setSelected(List<E> items) {
-		for (MenuItem menuItem : menuButton.getItems()) {
+		setSelected(items, null, menuButton.getItems());
+	}
+
+	private void setSelected(@Nullable List<E> itemsInList, @Nullable E[] itemsInArray, List<MenuItem> menuItems) {
+		for (MenuItem menuItem : menuItems) {
+			if (menuItem instanceof Menu) {
+				setSelected(itemsInList, itemsInArray, ((Menu) menuItem).getItems());
+			}
+			if (!(menuItem instanceof CustomMenuItem)) {
+				continue;
+			}
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
+			if (!(customMenuItem.getContent() instanceof CheckBox)) {
+				continue;
+			}
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
 			boolean found = false;
-			for (E item : items) {
-				if (customMenuItem.getUserData() == item) {
-					checkBox.setSelected(true);
-					found = true;
-					break;
+			if (itemsInList != null) {
+				for (E item : itemsInList) {
+					if (customMenuItem.getUserData() == item) {
+						checkBox.setSelected(true);
+						found = true;
+						break;
+					}
+				}
+			}
+			if (!found && itemsInArray != null) {
+				for (E item : itemsInArray) {
+					if (customMenuItem.getUserData() == item) {
+						checkBox.setSelected(true);
+						found = true;
+						break;
+					}
 				}
 			}
 			if (!found) {
 				checkBox.setSelected(false);
 			}
-
 		}
 	}
 
 	/** Clears the selection */
 	public void clearSelection() {
 		for (MenuItem menuItem : menuButton.getItems()) {
+			if (!(menuItem instanceof CustomMenuItem)) {
+				continue;
+			}
 			CustomMenuItem customMenuItem = (CustomMenuItem) menuItem;
+			if (!(customMenuItem.getContent() instanceof CheckBox)) {
+				continue;
+			}
 			CheckBox checkBox = (CheckBox) customMenuItem.getContent();
 			checkBox.setSelected(false);
 		}
