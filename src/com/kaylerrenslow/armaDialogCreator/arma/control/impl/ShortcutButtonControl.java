@@ -87,7 +87,8 @@ public class ShortcutButtonControl extends ArmaControl {
 									ControlPropertyLookup.SIZE,
 									ControlPropertyLookup.SIZE_EX
 							},
-							ControlPropertyLookupConstant.PRIORITY_SORT)
+							ControlPropertyLookupConstant.PRIORITY_SORT
+					)
 			);
 		}
 
@@ -113,7 +114,8 @@ public class ShortcutButtonControl extends ArmaControl {
 									ControlPropertyEventLookup.allWithControlScope(),
 									ControlPropertyEventLookup.allWithButtonScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT)
+							ControlPropertyLookupConstant.PRIORITY_SORT
+					)
 			);
 		}
 

@@ -1,5 +1,5 @@
 **Added:**
-* missing control property documentation for some controls
+* more control property documentation for controls
 
 **Changed:**
 * 
