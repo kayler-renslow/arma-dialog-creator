@@ -1207,7 +1207,7 @@ public class ControlClass {
 		return getClassName();
 	}
 
-	/** Get a {@link DataContext} instance that stores random things. */
+	/** @return a {@link DataContext} instance that stores random things. */
 	@NotNull
 	public DataContext getUserData() {
 		return userData;

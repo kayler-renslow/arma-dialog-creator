@@ -6,6 +6,7 @@ import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import static com.kaylerrenslow.armaDialogCreator.main.Lang.Application.APPLICATION_NAME;
@@ -35,9 +36,10 @@ public interface Lang {
 
 	 @param bundleName name of bundle (be sure to include package information if needed)
 	 @return the bundle
+	 @see ResourceBundle#getBundle(String, Locale)
 	 */
 	@NotNull
-	static ResourceBundle getBundle(@NotNull String bundleName) {
+	static ResourceBundle getBundle(@NotNull String bundleName) throws MissingResourceException {
 		return ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator." + bundleName, ArmaDialogCreator.getCurrentLocale());
 	}
 

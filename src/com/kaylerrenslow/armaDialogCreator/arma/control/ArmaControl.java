@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.util.ArmaResolution;
 import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVExpression;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SVInteger;
+import com.kaylerrenslow.armaDialogCreator.data.DataKeys;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasControl;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasDisplay;
@@ -49,6 +50,14 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		construct(lookup, resolution, env);
 	}
 
+	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
+						  @NotNull ArmaResolution resolution, @NotNull Env env,
+						  @NotNull SpecificationRegistry registry) {
+		super(specification, registry, new DefaultValueProvider.ControlTypeContext(lookup.controlType));
+		this.armaControlLookup = lookup;
+		construct(lookup, resolution, env);
+	}
+
 	private void construct(@NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		defineType(lookup.controlType);
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
@@ -61,15 +70,17 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		idcProperty = findRequiredProperty(ControlPropertyLookup.IDC);
 		idcProperty.setValueIfAbsent(true, new SVInteger(-1));
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
-		//do not define properties x,y,w,h,idc,type,style here so that they are marked as missed when checking what requirements have been filled
-	}
 
-	protected ArmaControl(@NotNull ControlClassSpecification specification, @NotNull ArmaControlLookup lookup,
-						  @NotNull ArmaResolution resolution, @NotNull Env env,
-						  @NotNull SpecificationRegistry registry) {
-		super(specification, registry, new DefaultValueProvider.ControlTypeContext(lookup.controlType));
-		this.armaControlLookup = lookup;
-		construct(lookup, resolution, env);
+		//This used for ControlProperty documentation so that each property can have its own documentation for each ControlType
+		//and each nested ControlClass
+		for (ControlProperty property : getAllChildProperties()) {
+			DataKeys.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name());
+		}
+		for (ControlClass nested : getAllNestedClasses()) {
+			for (ControlProperty property : nested.getAllChildProperties()) {
+				DataKeys.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name() + "/" + nested.getClassName());
+			}
+		}
 	}
 
 	private void defineType(@NotNull ControlType type) {
@@ -77,32 +88,10 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		this.controlType = type;
 	}
 
-
-	/** Set x and define the x control property. This will also update the renderer's position. */
-	public void defineX(SVExpression x) {
-		renderer.defineX(x);
-	}
-
-	/** Set y and define the y control property. This will also update the renderer's position. */
-	public void defineY(SVExpression y) {
-		renderer.defineY(y);
-	}
-
-	/** Set w (width) and define the w control property. This will also update the renderer's position. */
-	public void defineW(SVExpression width) {
-		renderer.defineW(width);
-	}
-
-	/** Set h (height) and define the h control property. This will also update the renderer's position. */
-	public void defineH(SVExpression height) {
-		renderer.defineH(height);
-	}
-
 	@Override
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		renderer.resolutionUpdate(newResolution);
 	}
-
 
 	@NotNull
 	@Override
@@ -114,12 +103,6 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 	@Override
 	public ValueObserver<ControlHolder<ArmaControl>> getHolderObserver() {
 		return holderObserver;
-	}
-
-
-	@NotNull
-	public ControlProperty getIdcProperty() {
-		return idcProperty;
 	}
 
 	/** Set and define the access property */

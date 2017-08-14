@@ -1,10 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
-import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
-import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
+import com.kaylerrenslow.armaDialogCreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +41,7 @@ public class ControlProperty {
 			ControlProperty.this.update(data, false);
 		}
 	};
+	private final DataContext userData = new DataContext();
 
 
 	/**
@@ -550,6 +548,11 @@ public class ControlProperty {
 	/** Shortcut for doing {@link ValueObserver#addListener(ValueListener)} on this {@link #getValueObserver()} */
 	public void addValueListener(@NotNull ValueListener<SerializableValue> listener) {
 		valueObserver.addListener(listener);
+	}
+
+	@NotNull
+	public DataContext getUserData() {
+		return userData;
 	}
 
 	/**

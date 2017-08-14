@@ -66,7 +66,7 @@ class ControlPropertyEditorContainer extends HBox {
 	}
 
 	private void init() {
-		placeTooltip(controlClass, menuButtonOptions, currentValueEditor().getControlProperty().getPropertyLookup());
+		placeTooltip(menuButtonOptions);
 
 		final MenuItem miDisplayType = new MenuItem(bundle.getString("display_type"));
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
@@ -491,19 +491,8 @@ class ControlPropertyEditorContainer extends HBox {
 		setManaged(visible);
 	}
 
-	static Tooltip getTooltip(@NotNull ControlClass controlClass, @NotNull ControlPropertyLookupConstant lookup) {
-		ControlType type = null;
-		{
-			ControlProperty prop = controlClass.findPropertyByNameNullable("type");
-			if (prop != null && prop.getInitialPropertyType() == PropertyType.Int) {
-				try {
-					type = ControlType.findById(prop.getIntValue());
-				} catch (IllegalArgumentException | NullPointerException ignore) {
-
-				}
-			}
-		}
-		String tooltip = lookupDocProvider.getDocumentation(lookup, type);
+	private Tooltip getTooltip() {
+		String tooltip = lookupDocProvider.getDocumentation(this.controlProperty);
 		StringBuilder sb = new StringBuilder(tooltip.length());
 		int len = 0;
 		for (int i = 0; i < tooltip.length(); i++) {
@@ -523,13 +512,10 @@ class ControlPropertyEditorContainer extends HBox {
 	/**
 	 Places tooltip on n
 
-	 @param controlClass used for getting a {@link ControlType}, which assists in getting documentation
 	 @param n Node to place tooltip on
-	 @param lookup constant to create tooltip of
 	 */
-	static void placeTooltip(@NotNull ControlClass controlClass, @NotNull Node n, @NotNull ControlPropertyLookupConstant lookup) {
-		Tooltip tip = getTooltip(controlClass, lookup);
-		Tooltip.install(n, tip);
+	private void placeTooltip(@NotNull Node n) {
+		Tooltip.install(n, getTooltip());
 	}
 
 

@@ -10,7 +10,8 @@ import com.kaylerrenslow.armaDialogCreator.util.Key;
 public final class DataKeys {
 	public static final Key<Env> ENV = new Key<>("expression.env", null);
 	public static final Key<ArmaResolution> ARMA_RESOLUTION = new Key<>("resolution.armaResolution", null);
-	
+	public static final Key<String> CONTROL_PROPERTY_DOCUMENTATION_PATH = new Key<String>("controlClassDocumentationPath");
+
 	private DataKeys(){}
 		
 }
