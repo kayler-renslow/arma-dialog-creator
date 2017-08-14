@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--@formatter:off -->
 <value-provider-sheet version="1">
 	<property name='top'>
-		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) - (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)) /
-			2
-		</v>
+		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) - (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)) / 2</v>
 	</property>
 	<property name='right'>
 		<v>0.005</v>
