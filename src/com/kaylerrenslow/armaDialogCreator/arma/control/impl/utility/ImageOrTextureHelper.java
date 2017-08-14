@@ -79,7 +79,14 @@ public class ImageOrTextureHelper {
 				} catch (IllegalArgumentException ignore) {
 					mode = Mode.TextureError;
 				}
-				renderer.requestRender();
+				Platform.runLater(() -> {
+					if (completionCallback != null) {
+						completionCallback.apply(mode);
+					}
+
+					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
+					renderer.requestRender();
+				});
 				return;
 			}
 		}

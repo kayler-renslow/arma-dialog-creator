@@ -79,10 +79,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 		addValueListener(ControlPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
 			arrowEmpty.updateAsync(newValue, mode -> {
-				if (arrowEmpty.getImage() != null) {
-					tintedLeftArrow.updateImage(arrowEmpty.getImage());
-					tintedRightArrow.updateImage(arrowEmpty.getImage());
-				}
+				tintedLeftArrow.updateImage(arrowEmpty.getImage());
+				tintedRightArrow.updateImage(arrowEmpty.getImage());
 				return null;
 			});
 		});
@@ -93,18 +91,14 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 		addValueListener(ControlPropertyLookup.BORDER, (observer, oldValue, newValue) -> {
 			border.updateAsync(newValue, mode -> {
-				if (border.getImage() != null) {
-					tintedBorder.updateImage(border.getImage());
-				}
+				tintedBorder.updateImage(border.getImage());
 				return null;
 			});
 		});
 
 		addValueListener(ControlPropertyLookup.THUMB, (observer, oldValue, newValue) -> {
 			thumb.updateAsync(newValue, mode -> {
-				if (thumb.getImage() != null) {
-					tintedThumb.updateImage(thumb.getImage());
-				}
+				tintedThumb.updateImage(thumb.getImage());
 				return null;
 			});
 		});
@@ -159,13 +153,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		tintedThumb.setToPreviewMode(previewMode);
 		tintedLeftArrow.setToPreviewMode(previewMode);
 		tintedRightArrow.setToPreviewMode(previewMode);
+		tintedBorder.setToPreviewMode(previewMode);
 		//we don't need to set border's preview mode because using preview is no different than no preview
 	}
 
 	private void paintThumbOrBorder(GraphicsContext gc, Color tint, int thumbX, int thumbWidth, ImageOrTextureHelper helper, TintedImageHelperRenderer tinted) {
 		switch (helper.getMode()) {
 			case Texture: {
-				tinted.updateImage(null); //help garbage collection
 				TexturePainter.paint(gc, helper.getTexture(),
 						tint, thumbX, y1, thumbX + thumbWidth, y2
 				);

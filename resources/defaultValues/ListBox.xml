@@ -13,7 +13,7 @@
 		<v>1</v>
 	</property>
 	<property name='h'>
-		<v>0.1</v>
+		<v>0.5</v>
 	</property>
 	<property name='sizeEx'>
 		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>

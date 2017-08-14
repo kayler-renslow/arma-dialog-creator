@@ -1,11 +1,11 @@
 **Added:**
-* made installer ADC icon rotate :)
+* missing control property documentation for some controls
 
 **Changed:**
-* working on release automation
+* 
 
 **Fixed:**
-* installer not extracting anything in correct spot
+* 
 
 **Notes:**
 * June 23:
@@ -18,3 +18,6 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject
+
+
+**XSlider's border isn't correct at launch for "Lots of Controls project" (it's black instead of the texture color)**
