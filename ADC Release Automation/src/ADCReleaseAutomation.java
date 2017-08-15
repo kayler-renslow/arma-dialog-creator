@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  This class is used for preparing a build for Arma Dialog Creator and building "Arma Dialog Creator.exe".
@@ -75,13 +74,17 @@ public class ADCReleaseAutomation {
 	}
 
 	private void packInstaller() {
-		ArrayList<File> filesToPack = new ArrayList<>(
-				Arrays.asList(
-						new File("out/artifacts/adc_jar/adc.jar"),
-						new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe")
-						/*,new File("out/artifacts/adc_updater_jar/adc_updater.jar")*/
-				)
-		);
+		String[] paths = {
+				"out/artifacts/adc_jar/adc.jar",
+				"out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe",
+				"out/artifacts/adc_updater_jar/adc_updater.jar"
+		};
+		ArrayList<File> filesToPack = new ArrayList<>();
+
+		for (String path : paths) {
+			filesToPack.add(new File(workingDirectoryPath + "/" + path));
+		}
+
 		ZipFile zip;
 		try {
 			File zipFile = new File(workingDirectoryPath + "/out/artifacts/adc_installer_jar/adc_installation.zip");
@@ -101,8 +104,8 @@ public class ADCReleaseAutomation {
 		for (File f : filesToPack) {
 			try {
 				File dest = new File("/out/production/ADC Installer/install/" + f.getName());
-				System.out.println("Copying " + f.getAbsoluteFile().toPath() + " to '" + dest.toPath() + "'");
-				Files.copy(f.getAbsoluteFile().toPath(), dest.getAbsoluteFile().toPath(), StandardCopyOption.REPLACE_EXISTING);
+				System.out.println("Copying " + f.toPath() + " to '" + dest.toPath() + "'");
+				Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
