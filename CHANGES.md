@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* 
+* display property editing issue
 
 **Notes:**
 * June 23:

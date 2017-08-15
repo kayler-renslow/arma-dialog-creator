@@ -147,7 +147,8 @@ public class DisplayPropertiesEditorPane extends StackPane {
 		@SuppressWarnings("unchecked")
 		public DisplayPropertyEditorPane(@NotNull DisplayProperty property, @NotNull DisplayPropertiesEditorPane editorPane) {
 			this.displayProperty = property;
-			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
+
+			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyLookup().getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 			editor.setValue(property.getValue());
 			editor.getReadOnlyObserver().addListener(new ReadOnlyValueListener() {
 				@Override
