@@ -9,13 +9,15 @@
  */
 
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 /**
@@ -75,11 +77,27 @@ public class ADCReleaseAutomation {
 				new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe"),
 				/*new File("out/artifacts/adc_updater_jar/adc_updater.jar")*/
 		};
+		ZipFile zip;
+		try {
+			File zipFile = new File(workingDirectoryPath + "/out/artifacts/adc_installer_jar/adc_installation.zip");
+			if (zipFile.exists()) {
+				zipFile.delete();
+			}
+			zip = new ZipFile(zipFile.toPath().toString());
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
+		ZipParameters parameters = new ZipParameters();
+		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+
 		for (File f : filesToPack) {
 			try {
-				Path dest = new File("out/production/ADC Installer/install/" + f.getName()).toPath();
-				Files.copy(f.toPath(), dest, StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e) {
+				File dest = new File("out/production/ADC Installer/install/" + f.getName());
+				Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				zip.addFile(f.getAbsoluteFile(), parameters);
+			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
 		}
