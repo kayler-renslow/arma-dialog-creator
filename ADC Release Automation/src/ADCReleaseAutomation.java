@@ -102,8 +102,8 @@ public class ADCReleaseAutomation {
 		}
 
 		for (File f : filesToPack) {
+			File dest = new File(workingDirectoryPath + "/out/production/ADC Installer/install/" + f.getName());
 			try {
-				File dest = new File("/out/production/ADC Installer/install/" + f.getName());
 				System.out.println("Copying " + f.toPath() + " to '" + dest.toPath() + "'");
 				Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (Exception e) {
