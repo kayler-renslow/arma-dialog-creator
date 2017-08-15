@@ -19,6 +19,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  This class is used for preparing a build for Arma Dialog Creator and building "Arma Dialog Creator.exe".
@@ -34,6 +36,7 @@ public class ADCReleaseAutomation {
 
 	1. Run ADCReleaseAutomation.main() with no program arguments
 	    * This step will create adc.jar's manifest, launch4j configs for exe's, and remove old exe's previously created
+	    * You will need BUILD_NUMBER defined in environment variables
 	2. Build adc.jar
 	3. Build adc_launcher.jar
 	4. Build adc_updater.jar
@@ -72,11 +75,13 @@ public class ADCReleaseAutomation {
 	}
 
 	private void packInstaller() {
-		File[] filesToPack = {
-				new File("out/artifacts/adc_jar/adc.jar"),
-				new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe"),
-				/*new File("out/artifacts/adc_updater_jar/adc_updater.jar")*/
-		};
+		ArrayList<File> filesToPack = new ArrayList<>(
+				Arrays.asList(
+						new File("out/artifacts/adc_jar/adc.jar"),
+						new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe")
+						/*,new File("out/artifacts/adc_updater_jar/adc_updater.jar")*/
+				)
+		);
 		ZipFile zip;
 		try {
 			File zipFile = new File(workingDirectoryPath + "/out/artifacts/adc_installer_jar/adc_installation.zip");
@@ -84,19 +89,19 @@ public class ADCReleaseAutomation {
 				zipFile.delete();
 			}
 			zip = new ZipFile(zipFile.toPath().toString());
+
+			ZipParameters parameters = new ZipParameters();
+			parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+			zip.createZipFile(filesToPack, parameters);
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-
-		ZipParameters parameters = new ZipParameters();
-		parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-		parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
 
 		for (File f : filesToPack) {
 			try {
 				File dest = new File("out/production/ADC Installer/install/" + f.getName());
 				Files.copy(f.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				zip.addFile(f.getAbsoluteFile(), parameters);
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
