@@ -30,7 +30,6 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	 @throws IllegalArgumentException for when the hex color is formatted wrong
 	 */
 	public SVHexColor(@NotNull String hex) {
-		this.hex = hex;
 		double[] colorArray = new double[4];
 		getColorArray(colorArray, hex);
 		setColor(colorArray);
@@ -190,7 +189,11 @@ public class SVHexColor extends SerializableValue implements SVColor {
 		int g = (int) (getGreen() * f);
 		int b = (int) (getBlue() * f);
 		int argb = (r << 16) | (g << 8) | b;
-		hex = "#" + Integer.toHexString(argb);
+		String h = Integer.toHexString(argb);
+		if (h.length() < 6) {
+			h = "000000".substring(0, 6 - h.length()) + h;
+		}
+		hex = "#" + h;
 	}
 
 	@Override

@@ -127,7 +127,7 @@ public class ControlClassTest_DeepInheritance {
 		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
 		ControlClass hintWithNestedClass_controlClass = hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName);
-		hintWithNestedClass_controlClass.findProperty(nestedClassNestedRequiredPropertyLookup).setValue(hintWithNestedClassPropertyValue);
+		hintWithNestedClass_controlClass.findProperty(hintWithNestedClass_propertyLookup).setValue(hintWithNestedClassPropertyValue);
 
 		hint.extendControlClass(rscText);
 		hintWithNestedClass.extendControlClass(rscText);
@@ -139,14 +139,14 @@ public class ControlClassTest_DeepInheritance {
 
 		assertEquals(true, hintWithNestedClass_controlClass == empty.findNestedClass(hintWithNestedClass_nestedClassName));
 		assertEquals(true, hintWithNestedClass_controlClass == empty2.findNestedClass(hintWithNestedClass_nestedClassName));
-		assertEquals(hintWithNestedClassPropertyValue, empty.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(nestedClassNestedRequiredPropertyLookup).getValue());
+		assertEquals(hintWithNestedClassPropertyValue, empty.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
 
 		hint.extendControlClass(null);
 		empty.extendControlClass(null);
 
 		assertEquals(null, empty.findNestedClassNullable(hintWithNestedClass_nestedClassName));
 		assertEquals(null, empty2.findNestedClassNullable(hintWithNestedClass_nestedClassName));
-		assertEquals(hintWithNestedClassPropertyValue, hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(nestedClassNestedRequiredPropertyLookup).getValue());
+		assertEquals(hintWithNestedClassPropertyValue, hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
 
 
 		assertEquals(null, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
@@ -154,6 +154,33 @@ public class ControlClassTest_DeepInheritance {
 		assertEquals(colorText_hint, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
 		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
 	}
+
+
+	//	@Test
+	//	public void forceInheritNestedClasses() {
+	//		//this tests for forcibly inheriting nested classes
+	//
+	//		EmptySpecRegistry registry = new EmptySpecRegistry();
+	//		HintWithNestedClass hintWithNestedClass = new HintWithNestedClass("HintWithNestedClass", registry);
+	//		HintWithNestedClass hintWithNestedClass2 = new HintWithNestedClass("HintWithNestedClass2", registry);
+	//		Empty empty = new Empty("Empty", registry);
+	//		Empty empty2 = new Empty("Empty2", registry);
+	//
+	//		SerializableValue nestedClassValue1 = new SVString("nestedClassValue1");
+	//		SerializableValue nestedClassValue2 = new SVString("nestedClassValue2");
+	//		hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).setValue(nestedClassValue1);
+	//		hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).setValue(nestedClassValue2);
+	//
+	//		hintWithNestedClass2.extendControlClass(hintWithNestedClass);
+	//		empty.extendControlClass(hintWithNestedClass2);
+	//		empty2.extendControlClass(empty);
+	//
+	//		hintWithNestedClass2.inheritNestedClass(hintWithNestedClass_nestedClassName);
+	//
+	//		assertEquals(nestedClassValue1, hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
+	//		assertEquals(nestedClassValue1, empty.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
+	//		assertEquals(nestedClassValue1, empty2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
+	//	}
 
 	static final ControlPropertyLookupConstant[] requiredProperties = {
 			ControlPropertyLookup.STYLE
@@ -163,7 +190,7 @@ public class ControlClassTest_DeepInheritance {
 			ControlPropertyLookup.COLOR_TEXT
 	};
 
-	static final ControlPropertyLookup nestedClassNestedRequiredPropertyLookup = ControlPropertyLookup.ANIM_TEXTURE_DEFAULT;
+	static final ControlPropertyLookup hintWithNestedClass_propertyLookup = ControlPropertyLookup.ANIM_TEXTURE_DEFAULT;
 
 	static final String hintWithNestedClass_nestedClassName = "HintWithNestedClass_NestedClass";
 
@@ -256,7 +283,7 @@ public class ControlClassTest_DeepInheritance {
 											hintWithNestedClass_nestedClassName,
 											Arrays.asList(
 													new ControlPropertySpecification(
-															nestedClassNestedRequiredPropertyLookup
+															hintWithNestedClass_propertyLookup
 													)
 											),
 											Collections.emptyList()

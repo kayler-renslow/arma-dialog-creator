@@ -77,7 +77,54 @@ public class ReadOnlyList<E> implements List<E> {
 	@NotNull
 	@Override
 	public ListIterator<E> listIterator(int index) {
-		return dataList.listIterator(index);
+		return new ListIterator<E>() {
+			ListIterator<E> iter = dataList.listIterator(index);
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public E next() {
+				return iter.next();
+			}
+
+			@Override
+			public boolean hasPrevious() {
+				return iter.hasPrevious();
+			}
+
+			@Override
+			public E previous() {
+				return iter.previous();
+			}
+
+			@Override
+			public int nextIndex() {
+				return iter.nextIndex();
+			}
+
+			@Override
+			public int previousIndex() {
+				return iter.previousIndex();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void set(E e) {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public void add(E e) {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@NotNull
@@ -88,7 +135,24 @@ public class ReadOnlyList<E> implements List<E> {
 
 	@NotNull
 	public Iterator<E> iterator() {
-		return dataList.iterator();
+		return new Iterator<E>() {
+			Iterator<E> iter = dataList.iterator();
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public E next() {
+				return iter.next();
+			}
+
+			@Override
+			public void remove() {
+				throw new UnsupportedOperationException();
+			}
+		};
 	}
 
 	@NotNull

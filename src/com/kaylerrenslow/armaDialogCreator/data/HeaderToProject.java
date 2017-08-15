@@ -321,6 +321,8 @@ public class HeaderToProject {
 		List<ControlPropertyLookupConstant> inheritProperties = new LinkedList<>();
 		loadAllProperties(project, headerClass, armaControl, inheritProperties);
 
+		loadAllNestedClasses(project, headerClass, armaControl);
+
 		//get the extend class
 		ControlClass extendClass = getExtendControlClass(project, ownerDialogName, headerClass);
 
@@ -352,6 +354,19 @@ public class HeaderToProject {
 		return extendClass;
 	}
 
+	private void loadAllNestedClasses(@NotNull Project project, @NotNull HeaderClass headerClass,
+									  @NotNull ControlClass controlClass) {
+		for (ControlClass cc : controlClass.getAllNestedClasses()) {
+			HeaderClass match = headerClass.getOwnerFile().getNestedClassName(headerClass, cc.getClassName(), false);
+			if (match == null) {
+				continue;
+			}
+
+			loadAllProperties(project, match, cc, null);
+			loadAllNestedClasses(project, match, cc);
+		}
+	}
+
 	/**
 	 Creates values from the given {@link HeaderClass} by looking through all of its {@link HeaderAssignment}
 	 instances. For each of those {@link HeaderAssignment}, a {@link ControlProperty} will try to be set to the
@@ -369,8 +384,7 @@ public class HeaderToProject {
 	 {@link HeaderAssignment}
 	 */
 	private void loadAllProperties(@NotNull Project project, @NotNull HeaderClass headerClass,
-								   @NotNull ControlClass controlClass, @Nullable List<ControlPropertyLookupConstant>
-										   inheritProperties) {
+								   @NotNull ControlClass controlClass, @Nullable List<ControlPropertyLookupConstant> inheritProperties) {
 		for (ControlProperty property : controlClass.getAllChildProperties()) {
 			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
 			if (assignment == null) {
@@ -390,13 +404,6 @@ public class HeaderToProject {
 			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
 			if (m != null) {
 				property.setValueToMacro(m);
-			}
-		}
-
-		for (ControlClass nestedClass : controlClass.getAllNestedClasses()) {
-			HeaderClass match = headerClass.getNestedClasses().getByName(nestedClass.getClassName(), false);
-			if (match != null) {
-				loadAllProperties(project, match, nestedClass, null);
 			}
 		}
 	}

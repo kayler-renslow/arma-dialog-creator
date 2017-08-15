@@ -42,8 +42,10 @@ public class ControlClass {
 
 	private final List<ControlClass> requiredNestedClasses = new LinkedList<>();
 	private final List<ControlClass> optionalNestedClasses = new LinkedList<>();
+	private final List<ControlClass> inheritedNestedClasses = new LinkedList<>();
 	private final ReadOnlyList<ControlClass> requiredNestedClassesReadOnly = new ReadOnlyList<>(requiredNestedClasses);
 	private final ReadOnlyList<ControlClass> optionalNestedClassesReadOnly = new ReadOnlyList<>(optionalNestedClasses);
+	private final ReadOnlyList<ControlClass> inheritedNestedClassesReadOnly = new ReadOnlyList<>(inheritedNestedClasses);
 	private final List<ControlClass> tempNestedClasses = new LinkedList<>();
 	private final ReadOnlyList<ControlClass> tempNestedClassesReadOnly = new ReadOnlyList<>(tempNestedClasses);
 
@@ -117,7 +119,7 @@ public class ControlClass {
 			controlClassUpdateGroup.update(new ControlClassPropertyUpdate(ControlClass.this, data));
 		}
 	};
-
+	private final IdentityHashMap<String, UpdateGroupListener<ControlClassUpdate>> inheritNestedClassListenerMap = new IdentityHashMap<>();
 
 	/**
 	 Construct a new instance with the given class name, specification, and registry.
@@ -450,6 +452,7 @@ public class ControlClass {
 					subClass.optionalNestedClasses.remove(tempNested);
 					subClass.controlClassUpdateGroup.update(new ControlClassTemporaryNestedClassUpdate(subClass, tempNested, false));
 				}
+
 			}
 
 			//clear all inheritance
@@ -473,6 +476,92 @@ public class ControlClass {
 
 		updatingExtendClass = false;
 
+	}
+
+	@Deprecated
+	public final boolean inheritNestedClass(@NotNull String nestedClassName) {
+		//todo finish this method
+		if (getExtendClass() == null) {
+			return false;
+		}
+
+		ControlClass parentNestedClass = getExtendClass().findNestedClassNullable(nestedClassName);
+		if (parentNestedClass == null) {
+			return false;
+		}
+
+		ControlClass mine = null;
+		for (ControlClass inherited : getAllNestedClasses()) {
+			if (inherited.getClassName().equals(nestedClassName)) {
+				mine = inherited;
+				break;
+			}
+		}
+
+		if (mine != null && inheritedNestedClasses.contains(mine)) {
+			//already inherited
+			return true;
+		}
+
+		if (mine == null) {
+			//should have already been inherited with extendControlClass()
+			noClassMatch(nestedClassName, "nested classes");
+		}
+
+		//todo copy properties and nested classes from parentNestedClass
+
+		final ControlClass finalMine = mine;
+		UpdateGroupListener<ControlClassUpdate> inheritNestedClassListener = (group, data) -> {
+			finalMine.update(data, true);
+		};
+
+		inheritNestedClassListenerMap.put(nestedClassName, inheritNestedClassListener);
+		parentNestedClass.controlClassUpdateGroup.addListener(inheritNestedClassListener);
+		//todo: for the class update, make sure there is an undo/redo action for it
+
+		inheritedNestedClasses.add(mine);
+		controlClassUpdateGroup.update(new ControlClassInheritNestedClassUpdate(this, mine, true));
+
+		return true;
+	}
+
+	@Deprecated
+	public final void overrideNestedClass(@NotNull String nestedClassName) {
+		//todo finish this method
+		if (getExtendClass() == null) {
+			return;
+		}
+
+		ControlClass mine = null;
+		for (ControlClass inherited : inheritedNestedClasses) {
+			if (inherited.getClassName().equals(nestedClassName)) {
+				mine = inherited;
+				break;
+			}
+		}
+		if (mine == null) {
+			noClassMatch(nestedClassName, "inherited nested classes");
+			return;
+		}
+
+		ControlClass parentNestedClass = getExtendClass().findNestedClassNullable(nestedClassName);
+		if (parentNestedClass == null) {
+			return;
+		}
+
+		if (tempNestedClasses.contains(mine)) {
+			// no overriding inherited temp nested classes
+			return;
+		} else {
+			UpdateGroupListener<ControlClassUpdate> listener = inheritNestedClassListenerMap.get(nestedClassName);
+			if (listener == null) {
+				throw new IllegalStateException("listener was null");
+			}
+			parentNestedClass.controlClassUpdateGroup.removeListener(listener);
+		}
+
+		inheritedNestedClasses.remove(mine);
+		controlClassUpdateGroup.update(new ControlClassInheritNestedClassUpdate(this, mine, false));
 	}
 
 	/**
@@ -509,7 +598,6 @@ public class ControlClass {
 		return optionalNestedClassesReadOnly;
 	}
 
-
 	/**
 	 Return a concatenation of {@link #getRequiredNestedClasses()} and
 	 {@link #getOptionalNestedClasses()} in an iterator
@@ -517,9 +605,14 @@ public class ControlClass {
 	@NotNull
 	public final Iterable<ControlClass> getAllNestedClasses() {
 		ArrayList<List<ControlClass>> merge = new ArrayList<>(2);
-		merge.add(requiredNestedClasses);
-		merge.add(optionalNestedClasses);
+		merge.add(requiredNestedClassesReadOnly);
+		merge.add(optionalNestedClassesReadOnly);
 		return new ListMergeIterator<>(false, merge);
+	}
+
+	@NotNull
+	public final Iterable<ControlClass> getAllInheritedNestedClasses() {
+		return inheritedNestedClassesReadOnly;
 	}
 
 	/**
@@ -1266,6 +1359,13 @@ public class ControlClass {
 				parentClass = nestedClassToUpdate;
 			} while (update.getNestedClassUpdate() instanceof ControlClassNestedClassUpdate);
 			myNestedClass.update(data, deepCopy);
+		} else if (data instanceof ControlClassInheritNestedClassUpdate) {
+			ControlClassInheritNestedClassUpdate update = (ControlClassInheritNestedClassUpdate) data;
+			if (update.isInherited()) {
+				inheritNestedClass(update.getNested().getClassName());
+			} else {
+				overrideNestedClass(update.getNested().getClassName());
+			}
 		} else {
 			throw new IllegalStateException("unknown handled update:" + data.getClass().getName());
 		}

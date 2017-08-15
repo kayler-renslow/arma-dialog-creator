@@ -9,21 +9,21 @@ import org.jetbrains.annotations.NotNull;
  @since 11/16/2016 */
 public class ControlClassInheritPropertyUpdate implements ControlClassUpdate {
 	private final ControlClass controlClass;
-	private final ControlProperty overidden;
+	private final ControlProperty property;
 	private final boolean inherited;
 	private final boolean updatingExtendClass;
 
 	/**
 	 @param controlClass {@link ControlClass} that was updated
-	 @param overridden the {@link ControlProperty} that was overridden
+	 @param property the {@link ControlProperty} that was inherited/overridden
 	 @param inherited true if it was inherited, false if was overridden
 	 @param updatingExtendClass true if the inherit update was caused by
 	 {@link ControlClass#extendControlClass(ControlClass)}, false otherwise
 	 */
-	public ControlClassInheritPropertyUpdate(@NotNull ControlClass controlClass, @NotNull ControlProperty overridden,
+	public ControlClassInheritPropertyUpdate(@NotNull ControlClass controlClass, @NotNull ControlProperty property,
 											 boolean inherited, boolean updatingExtendClass) {
 		this.controlClass = controlClass;
-		this.overidden = overridden;
+		this.property = property;
 		this.inherited = inherited;
 		this.updatingExtendClass = updatingExtendClass;
 	}
@@ -31,7 +31,7 @@ public class ControlClassInheritPropertyUpdate implements ControlClassUpdate {
 	/** @return the {@link ControlProperty} affected with this update */
 	@NotNull
 	public ControlProperty getControlProperty() {
-		return overidden;
+		return property;
 	}
 
 	/**

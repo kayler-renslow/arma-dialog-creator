@@ -118,6 +118,38 @@ public class HeaderFile {
 	}
 
 	/**
+	 Get a nested class for a {@link HeaderClass}. This method will also check inherited nested classes.
+	 <b>NOTE:</b> this method will only work if the {@link HeaderClass} is a member of this file.
+
+	 @param start the {@link HeaderClass} to get an assignment for
+	 @param className the class name ({@link HeaderClass#getClassName()})
+	 @param caseSensitive true if the class names and assignment names should be matched with case sensitivity
+	 @return the {@link HeaderClass} that was matched, or null if none was matched
+	 @throws HeaderClassNotFoundException when the extend class of <code>start</code> doesn't exist
+	 */
+	@Nullable
+	public HeaderClass getNestedClassName(@NotNull HeaderClass start, @NotNull String className, boolean caseSensitive) {
+		if (start.getOwnerFile() != this) {
+			throw new IllegalArgumentException("start is not a member of this file");
+		}
+		HeaderClass cursor = start;
+		while (true) {
+			HeaderClass hc = cursor.getNestedClasses().getByName(className, caseSensitive);
+			if (hc != null) {
+				return hc;
+			}
+
+			HeaderClass extendClass = getInherited(cursor, caseSensitive);
+
+			if (extendClass == null) {
+				return null;
+			}
+
+			cursor = extendClass;
+		}
+	}
+
+	/**
 	 Get the extend class for the given {@link HeaderClass} instance
 
 	 @param headerClass the class to get extend class for

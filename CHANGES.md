@@ -5,9 +5,7 @@
 * 
 
 **Fixed:**
-* HeaderToProject wasn't taking into consideration that all custom control classes created would have the same case (Listbox vs ListBox)
-    * Made project.findControlClass() non case sensitive
-* some default values had newline characters in them, creating errors for exported dialogs
+* hex color wasn't exporting correctly
 
 **Notes:**
 * June 23:
