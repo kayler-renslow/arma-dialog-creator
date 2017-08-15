@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* hex color wasn't exporting correctly
+* 
 
 **Notes:**
 * June 23:

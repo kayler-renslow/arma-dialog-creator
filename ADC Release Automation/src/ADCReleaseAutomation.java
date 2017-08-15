@@ -73,7 +73,7 @@ public class ADCReleaseAutomation {
 		File[] filesToPack = {
 				new File("out/artifacts/adc_jar/adc.jar"),
 				new File("out/artifacts/adc_launcher_jar/Arma Dialog Creator.exe"),
-				new File("out/artifacts/adc_updater_jar/adc_updater.jar")
+				/*new File("out/artifacts/adc_updater_jar/adc_updater.jar")*/
 		};
 		for (File f : filesToPack) {
 			try {

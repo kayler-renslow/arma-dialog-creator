@@ -40,7 +40,8 @@ public class ADCUpdater extends Application {
 
 	/** Launches the updater as a new Application (DO NOT USE when an application is already running. Just create a new instance!) */
 	public static void main(String[] args) {
-		launch(args);
+		System.err.println("change this so it supports the installer instead");
+		//launch(args);
 	}
 
 	private ADCUpdaterWindow window;
