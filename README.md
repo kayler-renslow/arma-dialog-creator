@@ -26,5 +26,3 @@ You can watch the video [here](https://www.youtube.com/watch?v=ytqxZvdEDjk).
 ### License
 Arma games are created by and owned Bohemia Interactive. Arma Dialog Creator is developed by Kayler Renslow. Arma Dialog Creator and it's developer aren't affiliated with Bohemia Interactive. This project is licensed under the [MIT License](https://en.wikipedia.org/wiki/MIT_License). You don't need to contact me if you want to create derivatives or publish the project elsewhere (attribution is appreciated :) ).
 
-### More info coming Actually Soon™...
-
