@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* display property editing issue
+* null pointer exception when creating macros
 
 **Notes:**
 * June 23:

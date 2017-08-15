@@ -206,7 +206,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 			if (sup != null) {
 				return sup;
 			}
-			if (!initialMacro.getKey().equals(data)) {
+			if (initialMacro != null && !initialMacro.getKey().equals(data)) {
 				if (Project.getCurrentProject().findMacroByKey(data) != null) {
 					return bundle.getString("Macros.key_already_exists");
 				}
