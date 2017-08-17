@@ -1,10 +1,7 @@
 
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
-import com.kaylerrenslow.armaDialogCreator.data.ApplicationProperty;
-import com.kaylerrenslow.armaDialogCreator.data.Project;
-import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
-import com.kaylerrenslow.armaDialogCreator.data.Workspace;
+import com.kaylerrenslow.armaDialogCreator.data.*;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectInit;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
@@ -166,14 +163,14 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<LocaleDescriptor>() {
 				@Override
 				public void changed(ObservableValue<? extends LocaleDescriptor> observable, LocaleDescriptor oldValue, LocaleDescriptor newValue) {
+					if (newValue == null) {
+						return;
+					}
+					ApplicationProperty.LOCALE.put(ApplicationDataManager.getApplicationProperties(), newValue.getLocale());
+					ApplicationDataManager.getInstance().saveApplicationProperties();
 					boolean restart = ADCMustRestartDialog.getResponse();
 					if (restart) {
-						ArmaDialogCreator.setLocale(newValue.getLocale());
 						ArmaDialogCreator.restartApplication(false);
-					} else {
-						comboBoxLanguage.getSelectionModel().selectedItemProperty().removeListener(this);
-						comboBoxLanguage.getSelectionModel().select(oldValue);
-						comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(this);
 					}
 				}
 			});

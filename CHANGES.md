@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* null pointer exception when creating macros
+* Notifications was throwing exception because the default notification pane wasn't set
 
 **Notes:**
 * June 23:

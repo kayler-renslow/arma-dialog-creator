@@ -81,9 +81,7 @@ public final class ArmaDialogCreator extends Application {
 		int progress = 0;
 
 		applicationDataManager = new ApplicationDataManager();
-		initializeCurrentLocale();
-
-		//todo have actual progress be displayed (sum of file sizes and when file is loaded, subtract file size)
+		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getApplicationProperties());
 
 		if (!containsUnamedLaunchParameter(ProgramArgument.NoSplash)) {
 			for (; progress < 100; progress++) {
@@ -336,17 +334,6 @@ public final class ArmaDialogCreator extends Application {
 
 	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
 		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
-	}
-
-	private static void initializeCurrentLocale() {
-		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getApplicationProperties());
-	}
-
-	/** Set the Locale of Arma Dialog Creator to a new locale. This will require a restart to fully take into affect. */
-	public static void setLocale(@NotNull Locale locale) {
-		ArmaDialogCreator.locale = locale;
-		ApplicationProperty.LOCALE.put(ApplicationDataManager.getApplicationProperties(), locale);
-		ApplicationDataManager.getInstance().saveApplicationProperties();
 	}
 
 	/** Gets the JavaFX thread */

@@ -3,6 +3,7 @@ package com.kaylerrenslow.armaDialogCreator.gui.notification;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import javafx.application.Platform;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -18,6 +19,9 @@ public class Notifications {
 	private static final Notifications INSTANCE = new Notifications();
 	private static final int MAX_HISTORY_NOTIFICATIONS = 15;
 
+	//this list doesn't need to be synchronized since we are synchronizing on INSTANCE
+	private static final List<Notification> showWhenInitialized = new LinkedList<>();
+
 	/**
 	 Shows the specified {@link Notification}
 
@@ -25,26 +29,33 @@ public class Notifications {
 	 @param pane pane to place the notification on
 	 */
 	public static void showNotification(@NotNull Notification notification, @NotNull NotificationPane pane) {
-		INSTANCE.doShowNotification(notification, pane);
+		synchronized (INSTANCE) {
+			INSTANCE.doShowNotification(notification, pane);
+		}
 	}
 
 	/**
-	 Shows the specified {@link Notification} on {@link #getNotificationPane()}
+	 Shows the specified {@link Notification} on {@link #getNotificationPane()}. If the pane is undefined at the time of this call,
+	 the notification will be placed on a queue and made visible when it is defined with {@link #setDefaultNotificationPane(NotificationPane)}.
 
 	 @param notification notification to show
-	 @throws IllegalStateException when {@link #setDefaultNotificationPane(NotificationPane)} is not invoked prior to this call
 	 */
 	public static void showNotification(@NotNull Notification notification) {
-		if (INSTANCE.notificationPane == null) {
-			throw new IllegalStateException("notificationPane is not set from setDefaultNotificationPane()");
+		synchronized (INSTANCE) {
+			if (INSTANCE.notificationPane == null) {
+				showWhenInitialized.add(notification);
+				return;
+			}
+			INSTANCE.doShowNotification(notification, INSTANCE.notificationPane);
 		}
-		INSTANCE.doShowNotification(notification, INSTANCE.notificationPane);
 	}
 
 	/** Return a list of past notifications that were displayed. */
 	@NotNull
 	public static ReadOnlyList<NotificationDescriptor> getPastNotifications() {
-		return INSTANCE.pastNotificationsReadOnly;
+		synchronized (INSTANCE) {
+			return INSTANCE.pastNotificationsReadOnly;
+		}
 	}
 
 	/**
@@ -53,12 +64,21 @@ public class Notifications {
 	 @param notificationPane the pane
 	 */
 	public static void setDefaultNotificationPane(@NotNull NotificationPane notificationPane) {
-		INSTANCE.notificationPane = notificationPane;
+		synchronized (INSTANCE) {
+			INSTANCE.notificationPane = notificationPane;
+			for (Notification notification : showWhenInitialized) {
+				INSTANCE.doShowNotification(notification, INSTANCE.notificationPane);
+			}
+			showWhenInitialized.clear();
+		}
 	}
 
 	/** {@link #setDefaultNotificationPane(NotificationPane)} */
+	@Nullable
 	public static NotificationPane getNotificationPane() {
-		return INSTANCE.notificationPane;
+		synchronized (INSTANCE) {
+			return INSTANCE.notificationPane;
+		}
 	}
 
 	private Notifications() {
