@@ -59,6 +59,10 @@ public final class ArmaDialogCreator extends Application {
 			return;
 		}
 
+		//This is to ensure that numbers use periods instead of commas for decimals and use commas for thousands place.
+		//Do not move out of main method to ensure that all static objects that may use the Locale will initialize with this Locale
+		Locale.setDefault(Locale.Category.FORMAT, Locale.US);
+
 		ExceptionHandler.init();
 		launch(args);
 	}

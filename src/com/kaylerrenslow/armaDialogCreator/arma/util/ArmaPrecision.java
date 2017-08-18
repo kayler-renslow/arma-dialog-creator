@@ -4,6 +4,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  @author Kayler
@@ -19,6 +21,10 @@ public class ArmaPrecision {
 
 	static {
 		DECIMAL_FORMAT.setRoundingMode(RoundingMode.CEILING);
+
+		//This is to ensure that numbers use periods instead of commas for decimals and use commas for thousands place.
+		//Also, this is being initialized here because DECIMAL_FORMAT is static and may initialize before some testing methods
+		DECIMAL_FORMAT.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
 	}
 
 	/** Get a String representation of the given double that is truncated and not rounded */

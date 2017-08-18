@@ -8,6 +8,8 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  Defines a color as an array.
@@ -29,6 +31,12 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	}
 
 	public static final DecimalFormat format = new DecimalFormat("#.####");
+
+	static {
+		//This is to ensure that numbers use periods instead of commas for decimals and use commas for thousands place.
+		//Also, this is being initialized here because DECIMAL_FORMAT is static and may initialize before some testing methods
+		format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
+	}
 
 	public static final ValueConverter<SVColorArray> CONVERTER = new ValueConverter<SVColorArray>() {
 		@Override
@@ -193,13 +201,13 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	/**
 	 @return the given colors into a String.
-	 Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}"
+	 Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0, 0.1, 0.2, 0.3}"
 	 */
 	@NotNull
 	public static String toString(double red, double green, double blue, double alpha) {
-		return "{" + format.format(red) + ","
-				+ format.format(green) + ","
-				+ format.format(blue) + ","
+		return "{" + format.format(red) + ", "
+				+ format.format(green) + ", "
+				+ format.format(blue) + ", "
 				+ format.format(alpha) + "}";
 	}
 

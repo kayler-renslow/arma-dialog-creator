@@ -29,7 +29,6 @@ import java.util.ArrayList;
  @since 10/10/2016. */
 public class ADCReleaseAutomation {
 	private final String workingDirectoryPath = new File("").getAbsolutePath();
-	private final String launch4jPath = "D:\\DATA\\Launch4j";
 
 	/*Steps to building the Arma Dialog Creator.exe and installer:
 
@@ -61,7 +60,7 @@ public class ADCReleaseAutomation {
 		if (args.length > 0 && args[0].equals("-packInstaller")) {
 			packInstaller();
 		} else if (args.length > 0 && args[0].equals("-buildADCExe")) {
-			createExe();
+			createADCExe();
 		} else if (args.length > 0 && args[0].equals("-buildInstallerExe")) {
 			createInstallerExe(); //create installer last
 		} else {
@@ -113,30 +112,23 @@ public class ADCReleaseAutomation {
 	}
 
 	/** Ask Launch4j to build the .exe for us */
-	private void createExe() {
-		ProcessBuilder pb = new ProcessBuilder();
-		try {
-			pb.inheritIO();
-			Process p = Runtime.getRuntime().exec(
-					String.format("java -jar launch4j.jar \"%s\\release_automation\\configuration.xml\"", workingDirectoryPath),
-					null,
-					new File(launch4jPath)
-			);
-			p.waitFor();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	private void createADCExe() {
+		createExe(String.format("\"%s\\release_automation\\configuration.xml\"", workingDirectoryPath));
 	}
 
 	/** Ask Launch4j to build the .exe for us */
 	private void createInstallerExe() {
+		createExe(String.format("\"%s\\release_automation\\installer_configuration.xml\"", workingDirectoryPath));
+	}
+
+	private void createExe(String path) {
 		ProcessBuilder pb = new ProcessBuilder();
 		try {
 			pb.inheritIO();
 			Process p = Runtime.getRuntime().exec(
-					String.format("java -jar launch4j.jar \"%s\\release_automation\\installer_configuration.xml\"", workingDirectoryPath),
+					String.format("java -jar %s %s", "launch4j.jar", path),
 					null,
-					new File(launch4jPath)
+					new File("D:\\DATA\\Launch4j")
 			);
 			p.waitFor();
 		} catch (Exception e) {
