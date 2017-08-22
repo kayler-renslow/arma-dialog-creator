@@ -26,7 +26,7 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 	public void handle(ActionEvent event) {
 		CheckForUpdateDialog d = new CheckForUpdateDialog();
 		d.show();
-		if (d.wasCancelled() || d.getReleaseInfo() == null) {
+		if (d.wasCancelled() || d.getReleaseInfo() == null || !d.isUpdateAvailable()) {
 			return;
 		}
 
@@ -48,6 +48,7 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 		private ReleaseInfo releaseInfo;
 		private final Label lblStatus = new Label();
 		private final ResourceBundle bundle = Lang.ApplicationBundle();
+		private boolean updateAvailable = false;
 
 		public CheckForUpdateDialog() {
 			super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, false);
@@ -83,6 +84,7 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 							lblStatus.setText(bundle.getString("Popups.CheckForUpdate.no-update"));
 						}
 					} else {
+						updateAvailable = true;
 						lblStatus.setText(
 								String.format(
 										bundle.getString("Popups.CheckForUpdate.update-available-f"),
@@ -106,6 +108,10 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 		@Nullable
 		public ReleaseInfo getReleaseInfo() {
 			return releaseInfo;
+		}
+
+		public boolean isUpdateAvailable() {
+			return updateAvailable;
 		}
 	}
 }
