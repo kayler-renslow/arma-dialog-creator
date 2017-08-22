@@ -10,3 +10,4 @@ Specification-Title: Arma Dialog Creator
 Specification-Version: $VERSION$
 Specification-Vendor: https://github.com/kayler-renslow/arma-dialog-creator
 Build-Number: $BUILD_NUMBER$
+Class-Path: adc_updater.jar

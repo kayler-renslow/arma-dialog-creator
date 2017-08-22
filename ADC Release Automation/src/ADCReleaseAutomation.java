@@ -118,7 +118,7 @@ public class ADCReleaseAutomation {
 	}
 
 	private void createUpdateStuff() throws IOException {
-		String version = Lang.Application.VERSION + "+" + getBuildNumber();
+		String version = Lang.Application.VERSION + "-build" + getBuildNumber(); //DO NOT INCLUDE + because GitHub will remove it from file names!
 		String updateJarName = "adcupdate-" + version + ".jar";
 
 		//create update config

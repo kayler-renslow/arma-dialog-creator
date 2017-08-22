@@ -10,3 +10,4 @@ Specification-Title: Arma Dialog Creator
 Specification-Version: 1.0.2
 Specification-Vendor: https://github.com/kayler-renslow/arma-dialog-creator
 Build-Number: unversioned
+Class-Path: adc_updater.jar
