@@ -33,13 +33,11 @@ import java.util.jar.Manifest;
  */
 public class AdcVersionCheckTask extends Task<Boolean> {
 	private final File adcJarSave;
-	private File downloadDirectory;
-	private final String versionCheckUrl;
+	private final File downloadDirectory;
 
-	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull File downloadDirectory, @NotNull String versionCheckUrl) {
+	public AdcVersionCheckTask(@NotNull File adcJarSave, @NotNull File downloadDirectory) {
 		this.adcJarSave = adcJarSave;
 		this.downloadDirectory = downloadDirectory;
-		this.versionCheckUrl = versionCheckUrl;
 	}
 
 	@Override
@@ -48,10 +46,11 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 
 		String currentJarVersion = getCurrentJarVersion();
 
-		ReleaseInfo latestRelease = getLatestRelease();
+		setStatusText("Updater.checking_for_updates");
+		ReleaseInfo releaseInfo = getLatestRelease();
 
-		if (!latestRelease.getTagName().equals(currentJarVersion)) {
-			downloadLatestRelease(latestRelease);
+		if (!releaseInfo.getTagName().equals(currentJarVersion)) {
+			downloadLatestRelease(releaseInfo);
 		}
 
 		return true;
@@ -139,11 +138,9 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 	}
 
 	@NotNull
-	private ReleaseInfo getLatestRelease() throws Exception {
-		setStatusText("Updater.checking_for_updates");
-
+	public static ReleaseInfo getLatestRelease() throws Exception {
 		JSONParser parser = new JSONParser();
-		URLConnection connection = new URL(versionCheckUrl).openConnection();
+		URLConnection connection = new URL(ADCUpdater.JSON_RELEASE_INFO_URL).openConnection();
 		InputStreamReader reader = new InputStreamReader(connection.getInputStream());
 
 		JSONObject object = (JSONObject) parser.parse(reader);

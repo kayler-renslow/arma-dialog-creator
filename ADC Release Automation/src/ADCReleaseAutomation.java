@@ -27,6 +27,8 @@ import java.util.ArrayList;
 public class ADCReleaseAutomation {
 	private final String workingDirectoryPath = new File("").getAbsolutePath();
 
+	private final String INSTALL_JAR_DIR = "/out/artifacts/adc_installer_jar/";
+
 	/*Steps to building the Arma Dialog Creator.exe and installer:
 
 	1. Run ADCReleaseAutomation.main() with no program arguments
@@ -90,7 +92,7 @@ public class ADCReleaseAutomation {
 
 		ZipFile zip;
 		try {
-			File zipFile = new File(workingDirectoryPath + "/out/artifacts/adc_installer_jar/adc_installation.zip");
+			File zipFile = new File(workingDirectoryPath + INSTALL_JAR_DIR + "adc_installation.zip");
 			if (zipFile.exists()) {
 				zipFile.delete();
 			}
@@ -121,7 +123,7 @@ public class ADCReleaseAutomation {
 
 		//create update config
 		{
-			File updateConfig = new File(workingDirectoryPath + "/update.properties");
+			File updateConfig = new File(workingDirectoryPath + INSTALL_JAR_DIR + "update.properties");
 			updateConfig.createNewFile();
 			FileOutputStream fos = new FileOutputStream(updateConfig);
 			fos.write(String.format("updateJar=%s\n", updateJarName).getBytes());
@@ -132,7 +134,7 @@ public class ADCReleaseAutomation {
 
 		//rename the current installer jar to the update jar name
 		{
-			String installJarPath = workingDirectoryPath + "/out/artifacts/adc_installer_jar/";
+			String installJarPath = workingDirectoryPath + INSTALL_JAR_DIR;
 			File installerJar = new File(installJarPath + "adc_installer.jar");
 			Files.copy(installerJar.toPath(), new File(installJarPath + updateJarName).toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}

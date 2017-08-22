@@ -1,11 +1,11 @@
 **Added:**
-* support for update checking and installing
+* ability to check for updates through adc
 
 **Changed:**
 * 
 
 **Fixed:**
-* 
+* output directory of release automation's update.properties file 
 
 **Notes:**
 * June 23:

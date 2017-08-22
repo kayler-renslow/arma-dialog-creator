@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Function;
 import java.util.jar.Manifest;
 
 /**
@@ -160,13 +161,26 @@ public final class ArmaDialogCreator extends Application {
 		return locale;
 	}
 
-	/** Closes the application after asking if user wants to save. */
-	public static void closeApplication() {
+	/**
+	 Closes the application after asking if user wants to save.
+
+	 @param reply function to use (null if not to use) when the user has made their response.
+	 The parameter is whether or not the application is closing. Return type of cuntion is ignored.
+	 */
+	public static void closeApplication(@Nullable Function<Boolean, Void> reply) {
 		if (!ApplicationDataManager.getInstance().askSaveAll()) {
+			if (reply != null) {
+				reply.apply(false);
+			}
 			return;
 		}
 		//do not execute window closing event
+		if (reply != null) {
+			reply.apply(true);
+		}
 		Platform.exit();
+
+		return;
 	}
 
 	public static void restartApplication(boolean askToSave) {
@@ -361,7 +375,7 @@ public final class ArmaDialogCreator extends Application {
 			/*we want to keep the Arma Dialog Creator window still open when asking to save progress before exiting.
 			Consuming the event will keep window open and then we call closeApplication to execute the closing procedure and in turn, close the window*/
 			event.consume();
-			closeApplication();
+			closeApplication(null);
 		}
 	}
 }

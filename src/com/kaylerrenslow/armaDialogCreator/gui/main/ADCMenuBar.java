@@ -15,6 +15,7 @@ import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.Crea
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.edit.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.file.*;
+import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.help.CheckForUpdateAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.help.WikiUrlAction;
 import com.kaylerrenslow.armaDialogCreator.gui.main.actions.mainMenu.view.*;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.AboutDialog;
@@ -150,6 +151,7 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
 	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("help_about")), event -> new AboutDialog().show());
 	final MenuItem help_evaluator = addOnAction(new MenuItem(bundle.getString("help_evaluator")), event -> new ExpressionEvaluatorPopup().show());
+	final MenuItem help_checkForUpdate = addOnAction(new MenuItem(bundle.getString("help_check_for_update")), new CheckForUpdateAction());
 
 	final Menu menuFile = new Menu(
 			bundle.getString("file"), null,
@@ -199,7 +201,8 @@ class ADCMenuBar extends MenuBar {
 			bundle.getString("help"), null,
 			help_evaluator,
 			help_wiki,
-			help_about
+			help_about,
+			help_checkForUpdate
 	);
 
 	ADCMenuBar() {

@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
  @since April 10, 2017
  */
 public class ADCStandaloneProgressWindow {
-	private final Stage primaryStage;
+	private final Stage stage;
 
 	private final ProgressBar progressBar = new ProgressBar(-1);
 	private final Label lblStatus = new Label();
@@ -31,7 +31,7 @@ public class ADCStandaloneProgressWindow {
 	private boolean exitButtonAdded = false;
 
 	public ADCStandaloneProgressWindow(@NotNull Stage stage) {
-		this.primaryStage = stage;
+		this.stage = stage;
 
 		stage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
 
@@ -53,8 +53,8 @@ public class ADCStandaloneProgressWindow {
 	}
 
 	@NotNull
-	public Stage getPrimaryStage() {
-		return primaryStage;
+	public Stage getStage() {
+		return stage;
 	}
 
 	@NotNull

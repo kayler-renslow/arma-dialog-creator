@@ -10,6 +10,6 @@ import javafx.event.EventHandler;
 public class FileExitAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ArmaDialogCreator.closeApplication();
+		ArmaDialogCreator.closeApplication(null);
 	}
 }
