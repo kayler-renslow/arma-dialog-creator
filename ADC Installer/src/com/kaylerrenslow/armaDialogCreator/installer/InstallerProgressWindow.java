@@ -1,10 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.installer;
 
 import com.kaylerrenslow.armaDialogCreator.pwindow.ADCStandaloneProgressWindow;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -28,11 +27,8 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 		task.messageProperty().addListener((observable, oldValue, newValue) -> {
 			this.getLblStatus().setText(newValue);
 		});
-		task.setOnCancelled(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				InstallerProgressWindow.this.addExitButton(ADCInstaller.bundle.getString("InstallerWindow.close_installer"));
-			}
+		task.setOnCancelled(event -> {
+			InstallerProgressWindow.this.addExitButton(ADCInstaller.bundle.getString("InstallerWindow.close_installer"));
 		});
 		task.exceptionProperty().addListener(new ChangeListener<Throwable>() {
 			@Override
@@ -41,7 +37,16 @@ class InstallerProgressWindow extends ADCStandaloneProgressWindow {
 			}
 		});
 		task.setOnFailed(task.getOnCancelled());
-		task.setOnSucceeded(task.getOnCancelled());
+		task.setOnSucceeded(event -> {
+			new Thread(() -> {
+				try {
+					Thread.sleep(1000); //give some time before closing installer to show install completed
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				Platform.exit();
+			}).start();
+		});
 
 		try {
 			new Thread(task).start();

@@ -1,17 +1,5 @@
-/*
- * Copyright (c) 2016 Kayler Renslow
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * The software is provided "as is", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. in no event shall the authors or copyright holders be liable for any claim, damages or other liability, whether in an action of contract, tort or otherwise, arising from, out of or in connection with the software or the use or other dealings in the software.
- */
-
-
 package com.kaylerrenslow.armaDialogCreator.updater;
 
-import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.updater.gui.ADCUpdaterWindow;
 import com.kaylerrenslow.armaDialogCreator.updater.tasks.AdcVersionCheckTask;
 import javafx.application.Application;
@@ -22,9 +10,9 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -36,12 +24,11 @@ public class ADCUpdater extends Application {
 	private static final File ADC_DOWNLOAD_JAR_SAVE_LOCATION = new File(".");
 	private static final String JSON_RELEASE_INFO = "https://api.github.com/repos/kayler-renslow/arma-dialog-creator/releases/latest";
 
-	public static final ResourceBundle bundle = Lang.getBundle("UpdaterBundle");
+	public static final ResourceBundle bundle = ResourceBundle.getBundle("com.kaylerrenslow.armaDialogCreator.updater.UpdaterBundle");
 
 	/** Launches the updater as a new Application (DO NOT USE when an application is already running. Just create a new instance!) */
 	public static void main(String[] args) {
-		System.err.println("change this so it supports the installer instead");
-		//launch(args);
+		launch(args);
 	}
 
 	private ADCUpdaterWindow window;
@@ -60,11 +47,6 @@ public class ADCUpdater extends Application {
 		}
 	};
 
-	@NotNull
-	public ADCUpdaterWindow getWindow() {
-		return window;
-	}
-
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.window = new ADCUpdaterWindow(primaryStage);
@@ -79,29 +61,33 @@ public class ADCUpdater extends Application {
 				new AdcVersionCheckTask(ADC_JAR_SAVE_LOCATION,
 						ADC_DOWNLOAD_JAR_SAVE_LOCATION,
 						JSON_RELEASE_INFO
-				), "", new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						boolean error = false;
-						if (!ADC_JAR_SAVE_LOCATION.exists()) {
-							window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
+				), "", event -> {
+					boolean error = false;
+					if (!ADC_JAR_SAVE_LOCATION.exists()) {
+						window.getLblError().setText(bundle.getString("Updater.Fail.adc_didnt_save"));
+						error = true;
+					} else {
+						try {
+							Runtime.getRuntime().exec("java -jar " + ADC_JAR, null, ADC_JAR_SAVE_LOCATION.getParentFile());
+						} catch (IOException e) {
+							window.getLblError().setText(bundle.getString("Updater.Fail.couldnt_start"));
 							error = true;
 						}
-						final boolean finalError = error;
-						new Thread(new Runnable() {
-							@Override
-							public void run() {
-								if (finalError) {
-									try {
-										Thread.sleep(3000);
-									} catch (InterruptedException e) {
-										e.printStackTrace();
-									}
-								}
-								Platform.exit();
-							}
-						}).start();
 					}
+					final boolean finalError = error;
+					new Thread(new Runnable() {
+						@Override
+						public void run() {
+							if (finalError) {
+								try {
+									Thread.sleep(3000);
+								} catch (InterruptedException e) {
+									e.printStackTrace();
+								}
+							}
+							Platform.exit();
+						}
+					}).start();
 				}
 		);
 	}

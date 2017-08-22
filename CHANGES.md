@@ -1,13 +1,11 @@
 **Added:**
-* tests that check for localization problems
-* run configuration for pretending to run the application in a different default locale (French) 
+* support for update checking and installing
 
 **Changed:**
 * 
 
 **Fixed:**
-* wrapper .exe java version issue (https://github.com/kayler-renslow/arma-dialog-creator/issues/9)
-* comma vs period in different countries (https://github.com/kayler-renslow/arma-dialog-creator/issues/8)
+* 
 
 **Notes:**
 * June 23:

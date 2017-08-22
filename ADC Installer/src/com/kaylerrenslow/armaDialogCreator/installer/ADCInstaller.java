@@ -42,7 +42,11 @@ public class ADCInstaller extends Application {
 		if (this.getParameters().getUnnamed().contains("-nocfg")) { //install where installer is and dont use config window
 			InstallerProgressWindow pw = new InstallerProgressWindow(primaryStage);
 			primaryStage.show();
-			pw.runInstall(f);
+			File dest = new File(".").getAbsoluteFile();
+			if (!dest.exists() || !dest.isDirectory()) {
+				throw new IllegalStateException("destination install folder couldn't be determined (exists=" + dest.exists() + ")");
+			}
+			pw.runInstall(dest);
 		} else {
 			InstallerConfigWindow window = new InstallerConfigWindow(primaryStage, f);
 			window.show();

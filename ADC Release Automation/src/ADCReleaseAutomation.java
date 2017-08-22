@@ -13,10 +13,7 @@ import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -62,7 +59,8 @@ public class ADCReleaseAutomation {
 		} else if (args.length > 0 && args[0].equals("-buildADCExe")) {
 			createADCExe();
 		} else if (args.length > 0 && args[0].equals("-buildInstallerExe")) {
-			createInstallerExe(); //create installer last
+			createInstallerExe();
+			createUpdateStuff();
 		} else {
 			createManifest();
 			createLaunch4jConfig("release_automation/configuration_template.xml", "release_automation/configuration.xml");
@@ -82,6 +80,12 @@ public class ADCReleaseAutomation {
 
 		for (String path : paths) {
 			filesToPack.add(new File(workingDirectoryPath + "/" + path));
+		}
+
+		for (File f : filesToPack) {
+			if (!f.exists()) {
+				throw new RuntimeException(new FileNotFoundException(f.toString()));
+			}
 		}
 
 		ZipFile zip;
@@ -108,6 +112,29 @@ public class ADCReleaseAutomation {
 			} catch (Exception e) {
 				throw new RuntimeException(e);
 			}
+		}
+	}
+
+	private void createUpdateStuff() throws IOException {
+		String version = Lang.Application.VERSION + "+" + getBuildNumber();
+		String updateJarName = "adcupdate-" + version + ".jar";
+
+		//create update config
+		{
+			File updateConfig = new File(workingDirectoryPath + "/update.properties");
+			updateConfig.createNewFile();
+			FileOutputStream fos = new FileOutputStream(updateConfig);
+			fos.write(String.format("updateJar=%s\n", updateJarName).getBytes());
+			fos.write(String.format("version=%s\n", version).getBytes());
+			fos.flush();
+			fos.close();
+		}
+
+		//rename the current installer jar to the update jar name
+		{
+			String installJarPath = workingDirectoryPath + "/out/artifacts/adc_installer_jar/";
+			File installerJar = new File(installJarPath + "adc_installer.jar");
+			Files.copy(installerJar.toPath(), new File(installJarPath + updateJarName).toPath(), StandardCopyOption.REPLACE_EXISTING);
 		}
 	}
 
@@ -196,12 +223,7 @@ public class ADCReleaseAutomation {
 							break;
 						}
 						case "BUILD_NUMBER": {
-							String buildNumber = System.getenv("BUILD_NUMBER");
-							if (buildNumber == null) {
-								fos.write("unversioned".getBytes());
-							} else {
-								fos.write(buildNumber.getBytes());
-							}
+							fos.write(getBuildNumber().getBytes());
 							break;
 						}
 						default: {
@@ -224,5 +246,13 @@ public class ADCReleaseAutomation {
 			e.printStackTrace();
 		}
 
+	}
+
+	private String getBuildNumber() {
+		String buildNumber = System.getenv("BUILD_NUMBER");
+		if (buildNumber == null) {
+			return "unversioned";
+		}
+		return buildNumber;
 	}
 }

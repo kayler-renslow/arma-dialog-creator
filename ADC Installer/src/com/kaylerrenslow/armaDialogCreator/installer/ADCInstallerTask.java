@@ -23,7 +23,7 @@ public class ADCInstallerTask extends Task<File> {
 	};
 
 	private final File extractDirectory;
-	private InstallPackage installPackage;
+	private final InstallPackage installPackage;
 
 	/**
 	 Create an installer task that will extract an InstallPackage
@@ -62,7 +62,7 @@ public class ADCInstallerTask extends Task<File> {
 
 		message(bundle.getString("Installer.backing_up"));
 		File backupFile = new File(extractDirectory.getAbsolutePath() + ".backup");
-		Files.copy(extractDirectory.toPath(), backupFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+		//todo make backup
 		updateProgress(++progress, MAX_PROGRESS);
 
 		message(bundle.getString("Installer.backup_finished"));
@@ -71,7 +71,7 @@ public class ADCInstallerTask extends Task<File> {
 		message(bundle.getString("Installer.extracting"));
 
 		for (String f : toExtract) {
-			message("extract:" + f);
+			message(bundle.getString("Installer.extract") + f);
 			boolean s = installPackage.extract(f, getDestPath(f));
 			if (!s) {
 				break;
@@ -143,4 +143,5 @@ public class ADCInstallerTask extends Task<File> {
 
 		}
 	}
+
 }

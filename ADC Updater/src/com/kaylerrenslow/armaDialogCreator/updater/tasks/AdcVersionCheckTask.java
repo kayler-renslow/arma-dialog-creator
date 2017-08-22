@@ -19,12 +19,11 @@ import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Properties;
+import java.util.function.Function;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
@@ -50,65 +49,93 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 		String currentJarVersion = getCurrentJarVersion();
 
 		ReleaseInfo latestRelease = getLatestRelease();
-		ReleaseAsset adcJarAsset = latestRelease.getAssestByName(adcJarSave.getName());
-		if (adcJarAsset == null) {
-			throw new Exception(ADCUpdater.bundle.getString("Updater.Fail.asset_name_not_matched"));
-		}
 
 		if (!latestRelease.getTagName().equals(currentJarVersion)) {
-			downloadLatestRelease(adcJarAsset.getDownloadUrl());
+			downloadLatestRelease(latestRelease);
 		}
 
 		return true;
 	}
 
-	private void downloadLatestRelease(String downloadUrl) throws Exception {
+	private void downloadLatestRelease(@NotNull ReleaseInfo releaseInfo) throws Exception {
 		setIndeterminateProgress();
-		setStatusText("Updater.downloading_newest_version");
 
-		URL url = new URL(downloadUrl);
+		String updateJarName = null;
 
-		BufferedInputStream in = null;
-		FileOutputStream fout = null;
-		URLConnection urlConnection = null;
-		long workDone = 0;
+		File downloadedUpdateJarFile = null;
 
-		downloadDirectory.mkdirs();
-		try {
-			urlConnection = url.openConnection();
-			in = new BufferedInputStream(urlConnection.getInputStream());
-			fout = new FileOutputStream(downloadDirectory.getAbsolutePath() + "/" + adcJarSave.getName());
+		//get the update.properties file
+		{
+			setStatusText("Updater.retrieving_details");
 
-			long downloadSize = urlConnection.getContentLengthLong();
-			if (downloadDirectory.getFreeSpace() < downloadSize) {
-				in.close();
-				fout.close();
-				urlConnection.getInputStream().close();
-				throw new NotEnoughFreeSpaceException(ADCUpdater.bundle.getString("Updater.not_enough_free_space"));
+			ReleaseAsset updatePropertiesAsset = releaseInfo.getAssetByName("update.properties");
+			if (updatePropertiesAsset == null) {
+				throw new Exception(ADCUpdater.bundle.getString("Updater.Fail.asset_name_not_matched"));
 			}
 
-			final byte data[] = new byte[1024];
-			int count;
-			while ((count = in.read(data, 0, 1024)) != -1) {
-				fout.write(data, 0, count);
-				workDone += count;
-				updateProgress(workDone, downloadSize);
-			}
-		} finally {
-			if (in != null) {
-				in.close();
-			}
-			if (urlConnection != null) {
-				urlConnection.getInputStream().close();
-			}
-			if (fout != null) {
-				fout.close();
-			}
+			URL url = new URL(updatePropertiesAsset.getDownloadUrl());
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			downloadFromServer(url, 5000/*5KB*/, os, prog -> {
+				updateProgress(prog, 1);
+				return null;
+			});
+
+			setStatusText("Updater.parsing_update_details");
+			Properties p = new Properties();
+			p.load(new StringReader(os.toString()));
+			updateJarName = p.getProperty("updateJar");
 		}
+
+		ReleaseAsset updateJarAsset = releaseInfo.getAssetByName("update.properties");
+		if (updateJarAsset == null) {
+			throw new Exception(ADCUpdater.bundle.getString("Updater.Fail.asset_name_not_matched"));
+		}
+
+		if (updateJarName != null) {
+			updateJarAsset = releaseInfo.getAssetByName(updateJarName);
+		}
+
+		if (updateJarAsset == null) {
+			throw new Exception(ADCUpdater.bundle.getString("Updater.Fail.asset_name_not_matched"));
+		}
+
+		//download the latest release update jar
+		{
+			setIndeterminateProgress();
+			updateMessage(String.format(
+					ADCUpdater.bundle.getString("Updater.downloading_newest_version_f"),
+					releaseInfo.getTagName()
+			));
+
+			URL url = new URL(updateJarAsset.getDownloadUrl());
+			downloadDirectory.mkdirs();
+			downloadedUpdateJarFile = new File(downloadDirectory.getAbsolutePath() + "/" + updateJarAsset.getName());
+			FileOutputStream fos = new FileOutputStream(downloadedUpdateJarFile);
+			downloadFromServer(url, downloadDirectory.getFreeSpace(), fos, prog -> {
+				updateProgress(prog, 1);
+				return null;
+			});
+		}
+
 		setStatusText("Updater.download_complete");
 		Thread.sleep(1000);
+
+		setStatusText("Updater.launching_update_installer");
+		setIndeterminateProgress();
+		{ //launch installer
+			try {
+				Process p = Runtime.getRuntime().exec("java -jar " + downloadedUpdateJarFile.getName() + " -nocfg", null, downloadDirectory);
+				setStatusText("Updater.waiting_for_install");
+				p.waitFor();
+			} catch (IOException e) {
+				return;
+			}
+		}
+
+		downloadedUpdateJarFile.deleteOnExit();
+
 		setStatusText("Updater.launching");
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 	}
 
 	@NotNull
@@ -143,5 +170,42 @@ public class AdcVersionCheckTask extends Task<Boolean> {
 
 	private void setIndeterminateProgress() {
 		updateProgress(-1, 0);
+	}
+
+	private static void downloadFromServer(@NotNull URL url, long maxFileSize, @NotNull OutputStream outputStream,
+										   @NotNull Function<Double, Double> progressUpdate) throws IOException, NotEnoughFreeSpaceException {
+
+		BufferedInputStream in = null;
+		URLConnection urlConnection = null;
+		double workDone = 0;
+
+		try {
+			urlConnection = url.openConnection();
+			in = new BufferedInputStream(urlConnection.getInputStream());
+
+			long downloadSize = urlConnection.getContentLengthLong();
+			if (maxFileSize < downloadSize) {
+				in.close();
+				outputStream.close();
+				urlConnection.getInputStream().close();
+				throw new NotEnoughFreeSpaceException(ADCUpdater.bundle.getString("Updater.not_enough_free_space"));
+			}
+
+			final byte data[] = new byte[1024];
+			int count;
+			while ((count = in.read(data, 0, 1024)) != -1) {
+				outputStream.write(data, 0, count);
+				workDone += count;
+				progressUpdate.apply(workDone / downloadSize);
+			}
+		} finally {
+			if (in != null) {
+				in.close();
+			}
+			if (urlConnection != null) {
+				urlConnection.getInputStream().close();
+			}
+			outputStream.close();
+		}
 	}
 }

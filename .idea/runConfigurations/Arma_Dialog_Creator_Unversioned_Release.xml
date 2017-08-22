@@ -15,7 +15,7 @@
       <option name="BuildArtifacts" enabled="true">
         <artifact name="adc_launcher.jar" />
       </option>
-      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation - Build Exe" run_configuration_type="Application" />
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="ADC Release Automation - Build ADC Exe" run_configuration_type="Application" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="adc_updater.jar" />
       </option>

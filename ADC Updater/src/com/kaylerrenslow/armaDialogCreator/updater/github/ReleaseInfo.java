@@ -38,7 +38,7 @@ public class ReleaseInfo {
 	}
 
 	@Nullable
-	public ReleaseAsset getAssestByName(@NotNull String name) {
+	public ReleaseAsset getAssetByName(@NotNull String name) {
 		for (ReleaseAsset asset : assets) {
 			if (asset.getName().equals(name)) {
 				return asset;
