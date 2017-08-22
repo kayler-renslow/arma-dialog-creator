@@ -1,11 +1,11 @@
 **Added:**
-* ability to check for updates through adc
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* output directory of release automation's update.properties file 
+* https://github.com/kayler-renslow/arma-dialog-creator/issues/5
 
 **Notes:**
 * June 23:

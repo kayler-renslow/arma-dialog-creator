@@ -1327,7 +1327,12 @@ public class ControlClass {
 			setClassName(update.getNewName());
 			return;
 		} else if (data instanceof ControlClassPropertyUpdate) {
-			update(((ControlClassPropertyUpdate) data).getPropertyUpdate(), deepCopy);
+			ControlPropertyUpdate propertyUpdate = ((ControlClassPropertyUpdate) data).getPropertyUpdate();
+			try {
+				findProperty(propertyUpdate.getControlProperty().getPropertyLookup()).update(propertyUpdate, deepCopy);
+			} catch (IllegalArgumentException ignore) {
+
+			}
 			return;
 		} else if (data instanceof ControlClassInheritPropertyUpdate) {
 			ControlClassInheritPropertyUpdate update = (ControlClassInheritPropertyUpdate) data;
@@ -1351,13 +1356,18 @@ public class ControlClass {
 			ControlClass myNestedClass;
 			ControlClass parentClass = this;
 			do {
-				nestedClassToUpdate = ((ControlClassNestedClassUpdate) update.getNestedClassUpdate()).getNested();
+				nestedClassToUpdate = update.getNested();
 				myNestedClass = parentClass.findNestedClassNullable(nestedClassToUpdate.getClassName());
 				if (myNestedClass == null) {
 					return;
 				}
 				parentClass = nestedClassToUpdate;
-			} while (update.getNestedClassUpdate() instanceof ControlClassNestedClassUpdate);
+				if (update.getNestedClassUpdate() instanceof ControlClassNestedClassUpdate) {
+					update = (ControlClassNestedClassUpdate) update.getNestedClassUpdate();
+				} else {
+					break;
+				}
+			} while (true);
 			myNestedClass.update(data, deepCopy);
 		} else if (data instanceof ControlClassInheritNestedClassUpdate) {
 			ControlClassInheritNestedClassUpdate update = (ControlClassInheritNestedClassUpdate) data;
@@ -1368,14 +1378,6 @@ public class ControlClass {
 			}
 		} else {
 			throw new IllegalStateException("unknown handled update:" + data.getClass().getName());
-		}
-	}
-
-	private void update(@NotNull ControlPropertyUpdate propertyUpdate, boolean deepCopy) {
-		try {
-			findProperty(propertyUpdate.getControlProperty().getPropertyLookup()).update(propertyUpdate, deepCopy);
-		} catch (IllegalArgumentException ignore) {
-
 		}
 	}
 
