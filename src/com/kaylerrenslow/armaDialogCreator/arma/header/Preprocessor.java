@@ -312,30 +312,26 @@ class Preprocessor {
 						return;
 					}
 					char left = macroContent.charAt(0);
-					char right = macroContent.charAt(macroContent.length() - 1);
-					boolean badFormat;
+					int rightMatchIndex = -1;
 					switch (left) {
 						case '"': {
-							badFormat = left != right;
+							rightMatchIndex = macroContent.indexOf('"', 1);
 							break;
 						}
 						case '<': {
-							badFormat = right != '>';
+							rightMatchIndex = macroContent.indexOf('>', 1);
 							break;
 						}
 						case '\'': {
-							badFormat = left != right;
+							rightMatchIndex = macroContent.indexOf('\'', 1);
 							break;
 						}
-						default: {
-							badFormat = true;
-						}
 					}
-					if (badFormat) {
+					if (rightMatchIndex < 0) {
 						error(bundle.getString("Error.Preprocessor.Parse.bad_include_format"));
 					}
 
-					String filePath = macroContent.substring(1, macroContent.length() - 1);
+					String filePath = macroContent.substring(1, rightMatchIndex);
 
 					File f = processFile.getParentFile().toPath().resolve(filePath).toFile();
 					if (f == null) {

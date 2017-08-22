@@ -112,4 +112,19 @@ public class HeaderParserLargeTest {
 		testEquivalence(headerFile, expected);
 	}
 
+	@Test
+	public void parseHeaderTest4() throws Exception {
+		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test4Files/largeTest4.h"), HeaderTestUtil.getTemporaryResultsFile());
+
+		HeaderClass expected = hClass("-root class", null,
+				hClass(
+						"EmptyClass",
+						null
+				)
+		);
+
+		testEquivalence(headerFile, expected);
+	}
+
+
 }
