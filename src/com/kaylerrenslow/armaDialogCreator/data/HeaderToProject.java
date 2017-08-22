@@ -271,14 +271,14 @@ public class HeaderToProject {
 		if (arrayOfControlsAssignment instanceof HeaderArrayAssignment) {
 			arrayOfControls = ((HeaderArrayAssignment) arrayOfControlsAssignment).getArray();
 		} else {
-			convertError(ownerDialogName, bundle.getString("Convert.FailReason.bg_controls_assignment_not_array"));
+			convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
 		}
 
 		List<HeaderArrayItem> items = arrayOfControls.getItems();
 		for (HeaderArrayItem arrayItem : items) {
 			HeaderValue v = arrayItem.getValue();
 			if (v instanceof HeaderArray) {
-				convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.bg_controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
+				convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
 				break;
 			}
 			Reference<HeaderClass> matchedClassRef = new Reference<>();

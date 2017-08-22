@@ -1,11 +1,11 @@
 **Added:**
-* test for https://github.com/kayler-renslow/arma-dialog-creator/issues/6
+* 
 
 **Changed:**
 * 
 
 **Fixed:**
-* https://github.com/kayler-renslow/arma-dialog-creator/issues/6
+* https://github.com/kayler-renslow/arma-dialog-creator/issues/7
 
 **Notes:**
 * June 23:
