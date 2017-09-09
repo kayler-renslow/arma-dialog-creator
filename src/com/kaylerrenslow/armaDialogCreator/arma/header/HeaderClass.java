@@ -50,6 +50,41 @@ public interface HeaderClass extends HeaderItem {
 		return addTo;
 	}
 
+	/**
+	 Gets a list of all nested {@link HeaderClass} as well as inherited {@link HeaderClass} instances from all parent classes recursively and returns it.
+	 This method utilizes {@link HeaderFile#getExtendClass(HeaderClass, boolean)}, which is what <code>caseSensitive</code> is for
+
+	 @param caseSensitive true if extend class case sensitivity matters, false if it doesn't
+	 @return the list of nested classes
+	 @see #getNestedClassesIncludingInherited(boolean, List)
+	 */
+	@NotNull
+	default List<HeaderClass> getNestedClassesIncludingInherited(boolean caseSensitive) {
+		return getNestedClassesIncludingInherited(caseSensitive, new ArrayList<>());
+	}
+
+	/**
+	 This method does exactly what {@link #getNestedClassesIncludingInherited(boolean)} does,
+	 with the additional functionality of passing in the list you want to add to.
+
+	 @param addTo list to add to
+	 @param caseSensitive true if extend class case sensitivity matters, false if it doesn't
+	 @return addTo
+	 */
+	@NotNull
+	default List<HeaderClass> getNestedClassesIncludingInherited(boolean caseSensitive, @NotNull List<HeaderClass> addTo) {
+		for (HeaderClass headerClass : getNestedClasses()) {
+			addTo.add(headerClass);
+		}
+		HeaderClass extendClass = getOwnerFile().getExtendClass(this, caseSensitive);
+		if (extendClass != null) {
+			extendClass.getNestedClassesIncludingInherited(caseSensitive, addTo);
+		}
+		return addTo;
+	}
+
+
+
 	/** @return {@link HeaderClass} instances that are inside this {@link HeaderClass} */
 	@NotNull HeaderClassList getNestedClasses();
 
