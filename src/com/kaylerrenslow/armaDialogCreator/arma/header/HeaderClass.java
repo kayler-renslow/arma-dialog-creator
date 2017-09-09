@@ -3,17 +3,52 @@ package com.kaylerrenslow.armaDialogCreator.arma.header;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.function.Function;
 
 /**
+ @author Kayler
  @see HeaderParser
  @see HeaderFile
- @author Kayler
  @since 03/19/2017 */
 public interface HeaderClass extends HeaderItem {
 	/** @return {@link HeaderAssignment} instances that are inside this {@link HeaderClass}. */
 	@NotNull HeaderAssignmentList getAssignments();
+
+	/**
+	 Gets a list of all assignments as well as inherited assignments from all parent classes recursively and returns it.
+	 This method utilizes {@link HeaderFile#getExtendClass(HeaderClass, boolean)}, which is what <code>caseSensitive</code> is for
+
+	 @param caseSensitive true if extend class case sensitivity matters, false if it doesn't
+	 @return the list of assignments
+	 @see #getAssignmentsIncludingInherited(boolean, List)
+	 */
+	@NotNull
+	default List<HeaderAssignment> getAssignmentsIncludingInherited(boolean caseSensitive) {
+		return getAssignmentsIncludingInherited(caseSensitive, new ArrayList<>());
+	}
+
+	/**
+	 This method does exactly what {@link #getAssignmentsIncludingInherited(boolean)} does,
+	 with the additional functionality of passing in the list you want to add to.
+
+	 @param addTo list to add to
+	 @param caseSensitive true if extend class case sensitivity matters, false if it doesn't
+	 @return addTo
+	 */
+	@NotNull
+	default List<HeaderAssignment> getAssignmentsIncludingInherited(boolean caseSensitive, @NotNull List<HeaderAssignment> addTo) {
+		for (HeaderAssignment assignment : getAssignments()) {
+			addTo.add(assignment);
+		}
+		HeaderClass extendClass = getOwnerFile().getExtendClass(this, caseSensitive);
+		if (extendClass != null) {
+			extendClass.getAssignmentsIncludingInherited(caseSensitive, addTo);
+		}
+		return addTo;
+	}
 
 	/** @return {@link HeaderClass} instances that are inside this {@link HeaderClass} */
 	@NotNull HeaderClassList getNestedClasses();
@@ -73,7 +108,7 @@ public interface HeaderClass extends HeaderItem {
 	@Nullable HeaderClass getParentClass();
 
 	/**
-	 Get the {@link HeaderFile} that owns this {@link HeaderClass}
+	 Get the {@link HeaderFile} where the parse began and subsequently created this {@link HeaderClass}
 
 	 @return owner
 	 */
