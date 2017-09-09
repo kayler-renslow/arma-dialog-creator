@@ -134,13 +134,13 @@ public interface HeaderClass extends HeaderItem {
 	}
 
 	/**
-	 Every class has a parent class, except the root class. The root class is used for populating {@link HeaderFile#getClasses()}
+	 Every class has a containing class, except the root class. The root class is used for populating {@link HeaderFile#getClasses()}
 	 and {@link HeaderFile#getAssignments()}. The root class basically copies the references to the {@link HeaderFile}, however,
 	 the root class still exists in the {@link HeaderClass} hierarchy and is reachable via this method.
 
-	 @return the parent {@link HeaderClass}, or null if has no parent class and is the root class.
+	 @return the containing {@link HeaderClass}, or null if has no containing class and is the root class.
 	 */
-	@Nullable HeaderClass getParentClass();
+	@Nullable HeaderClass getContainingClass();
 
 	/**
 	 Get the {@link HeaderFile} where the parse began and subsequently created this {@link HeaderClass}
@@ -162,7 +162,7 @@ public interface HeaderClass extends HeaderItem {
 		boolean contTraversal = true;
 		while (cursor != null && contTraversal) {
 			discovered = cursor;
-			cursor = cursor.getParentClass();
+			cursor = cursor.getContainingClass();
 			contTraversal = classTraverseCallback.apply(discovered);
 		}
 		return discovered;

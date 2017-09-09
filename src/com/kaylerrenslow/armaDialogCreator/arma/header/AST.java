@@ -191,7 +191,7 @@ interface AST {
 
 		@Override
 		@Nullable
-		public HeaderClass getParentClass() {
+		public HeaderClass getContainingClass() {
 			return parentClass;
 		}
 
