@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 public class ArmaTools {
 
 	private static final String IMAGE_TO_PAA_EXE = "\\ImageToPAA\\ImageToPAA.exe";
+	private static final String BANK_REV = "\\BankRev\\BankRev.exe";
 
 	/** Test if the given File is a valid path to Arma 3 Tools. In order to be valid, the path must be something like 'STEAM_INSTALLATION_ROOT\steamapps\common\Arma 3 Tools\' */
 	public static boolean isValidA3ToolsDirectory(@NotNull File file) {
@@ -79,6 +80,42 @@ public class ArmaTools {
 		}
 
 		String commandLine = String.format("\"%s\\\\%s\" \"%s\" \"%s\"", arma3ToolsDirectory.getPath(), IMAGE_TO_PAA_EXE, toConvert.getPath(), saveTo.getPath());
+		return execCommandLineOperation(commandLine, timeout);
+	}
+
+	/**
+	 Utilizes "BankRev.exe", which extracts PBO's. It should be noted that this will extract the entire PBO, which could
+	 take a lot of disk memory and time.<br>
+	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a {@link Task} if using with JavaFX.
+
+	 @param arma3ToolsDirectory the directory of Arma 3 Tools installation (should be something like "Program Files x32\Steam\steamapps\common\Arma 3 Tools\")
+	 @param pboToExtract the .pbo file to extract
+	 @param saveToDirectory the directory to save the extracted contents to
+	 @param timeout how many milliseconds the operation is allowed to take before it is suspended.
+	 @return true if the operation succeeded. Returns false if the operation failed and for an unknown reason (something bad happened with the conversion).
+	 @throws IOException when any of the given file parameters are invalid
+	 */
+	public static boolean extractPBO(@NotNull File arma3ToolsDirectory, @NotNull File pboToExtract, @NotNull File saveToDirectory, long timeout) throws IOException {
+		if (!arma3ToolsDirectory.exists()) {
+			throw new FileNotFoundException("Arma Tools: Arma 3 Tools Directory doesn't exist. Dir=" +
+					arma3ToolsDirectory.getPath());
+		}
+		if (!isValidA3ToolsDirectory(arma3ToolsDirectory)) {
+			throw new FileNotFoundException("Arma Tools: Path to Arma 3 Tools directory is incorrect. Dir=" +
+					arma3ToolsDirectory.getPath());
+		}
+		if (!pboToExtract.exists()) {
+			throw new FileNotFoundException("Arma Tools: The pbo file doesn't exist. File=" +
+					pboToExtract.getPath());
+		}
+
+		String commandLine = String.format(
+				"\"%s\\\\%s\" -f \"%s\" \"%s\"",
+				arma3ToolsDirectory.getPath(),
+				BANK_REV,
+				saveToDirectory.getPath(),
+				pboToExtract.getPath()
+		);
 		return execCommandLineOperation(commandLine, timeout);
 	}
 
