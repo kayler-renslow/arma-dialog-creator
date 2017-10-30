@@ -19,7 +19,8 @@ You can watch the video [here](https://youtu.be/0P7pYvGDFvU).
 If you would like a slower paced video, check out the preview video below. The preview video is months older than the trailer, but the core of Arma Dialog Creator is pretty much the same.
 
 ### Preview Video
-Arma Dialog Creator isn't out yet, but there is a video showcasing what has been accomplished (as of November 24 2016). Please note that nothing in the video is final and already things have been improved.
+Here is a long, slow video showcasing what has been accomplished (as of November 24 2016).
+Please note that the video was made in 2016, so a lot has changed and been improved.
 
 You can watch the video [here](https://www.youtube.com/watch?v=ytqxZvdEDjk).
 
