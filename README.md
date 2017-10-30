@@ -1,7 +1,7 @@
 # ![logo](http://i.imgur.com/qDMUPCz.png) Arma Dialog Creator 
 
 ### About
-Arma Dialog Creator is a tool for creating dialogs for Arma 3 and **is still a work in progress with no fixed release date :(**. The tool was designed from the beginning to be completely independent from header files (*.h, *.hpp, *.hh), which is how Arma's engine interprets how to create the dialogs. All editing is done with specialized editors such as a color picker and Font chooser.
+Arma Dialog Creator is a tool for creating dialogs for Arma 3. The tool was designed from the beginning to be completely independent from header files (*.h, *.hpp, *.hh), which is how Arma's engine interprets how to create the dialogs. All editing is done with specialized editors such as a color picker and Font chooser.
 
 ### Key Features
 * Required, optional, and [event handler properties](https://community.bistudio.com/wiki/User_Interface_Event_Handlers) listed for all Arma 3 controls.
