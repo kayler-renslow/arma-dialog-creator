@@ -39,4 +39,5 @@ class CfgDebriefing
 		picture = "";
 		pictureColor[] = {0,0.3,0.6,1};
 	};*/
+	novalue=;//purposely doesn't have a value here
 };

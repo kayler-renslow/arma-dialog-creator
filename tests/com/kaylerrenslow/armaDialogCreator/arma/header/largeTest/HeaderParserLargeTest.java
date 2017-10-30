@@ -51,7 +51,8 @@ public class HeaderParserLargeTest {
 				hClass("CfgSounds", null,
 						arr_assign("sounds", array(), false)
 				),
-				hClass("CfgDebriefing", null)
+				hClass("CfgDebriefing", null,
+						assign("novalue", ""))
 
 		);
 

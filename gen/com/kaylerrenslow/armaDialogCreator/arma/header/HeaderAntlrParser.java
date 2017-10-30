@@ -110,14 +110,6 @@ public class HeaderAntlrParser extends Parser {
 			this.file = file;
 		}
 		@Override public int getRuleIndex() { return RULE_root_class; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterRoot_class(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitRoot_class(this);
-		}
 	}
 
 	public final Root_classContext root_class(HeaderFile file) throws RecognitionException {
@@ -188,14 +180,6 @@ public class HeaderAntlrParser extends Parser {
 			this.parentClass = parentClass;
 		}
 		@Override public int getRuleIndex() { return RULE_header_class; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterHeader_class(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitHeader_class(this);
-		}
 	}
 
 	public final Header_classContext header_class(HeaderClass parentClass) throws RecognitionException {
@@ -297,14 +281,6 @@ public class HeaderAntlrParser extends Parser {
 			this.assigns = assigns;
 		}
 		@Override public int getRuleIndex() { return RULE_header_class_helper; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterHeader_class_helper(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitHeader_class_helper(this);
-		}
 	}
 
 	public final Header_class_helperContext header_class_helper(HeaderClass parentClass,ArrayList<HeaderClass> nested,ArrayList<HeaderAssignment> assigns) throws RecognitionException {
@@ -365,31 +341,41 @@ public class HeaderAntlrParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_assignment; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterAssignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitAssignment(this);
-		}
 	}
 
 	public final AssignmentContext assignment() throws RecognitionException {
 		AssignmentContext _localctx = new AssignmentContext(_ctx, getState());
 		enterRule(_localctx, 6, RULE_assignment);
 		try {
-			enterOuterAlt(_localctx, 1);
-			{
-			setState(55);
-			((AssignmentContext)_localctx).varName = match(Identifier);
-			setState(56);
-			match(Equal);
-			setState(57);
-			((AssignmentContext)_localctx).val = value();
-			setState(58);
-			match(Semicolon);
-			 ((AssignmentContext)_localctx).ast =  new AST.HeaderAssignmentNode((((AssignmentContext)_localctx).varName!=null?((AssignmentContext)_localctx).varName.getText():null), ((AssignmentContext)_localctx).val.ast); 
+			setState(65);
+			_errHandler.sync(this);
+			switch ( getInterpreter().adaptivePredict(_input,5,_ctx) ) {
+			case 1:
+				enterOuterAlt(_localctx, 1);
+				{
+				setState(55);
+				((AssignmentContext)_localctx).varName = match(Identifier);
+				setState(56);
+				match(Equal);
+				setState(57);
+				match(Semicolon);
+				 ((AssignmentContext)_localctx).ast =  new AST.HeaderAssignmentNode((((AssignmentContext)_localctx).varName!=null?((AssignmentContext)_localctx).varName.getText():null), null); 
+				}
+				break;
+			case 2:
+				enterOuterAlt(_localctx, 2);
+				{
+				setState(59);
+				((AssignmentContext)_localctx).varName = match(Identifier);
+				setState(60);
+				match(Equal);
+				setState(61);
+				((AssignmentContext)_localctx).val = value();
+				setState(62);
+				match(Semicolon);
+				 ((AssignmentContext)_localctx).ast =  new AST.HeaderAssignmentNode((((AssignmentContext)_localctx).varName!=null?((AssignmentContext)_localctx).varName.getText():null), ((AssignmentContext)_localctx).val.ast); 
+				}
+				break;
 			}
 		}
 		catch (RecognitionException re) {
@@ -420,14 +406,6 @@ public class HeaderAntlrParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_arr_assignment; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterArr_assignment(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArr_assignment(this);
-		}
 	}
 
 	public final Arr_assignmentContext arr_assignment() throws RecognitionException {
@@ -437,11 +415,11 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(61);
+			setState(67);
 			((Arr_assignmentContext)_localctx).varName = match(Identifier);
-			setState(62);
+			setState(68);
 			match(BacketPair);
-			setState(63);
+			setState(69);
 			((Arr_assignmentContext)_localctx).eq = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==PlusEqual || _la==Equal) ) {
@@ -452,9 +430,9 @@ public class HeaderAntlrParser extends Parser {
 				_errHandler.reportMatch(this);
 				consume();
 			}
-			setState(64);
+			setState(70);
 			((Arr_assignmentContext)_localctx).val = array();
-			setState(65);
+			setState(71);
 			match(Semicolon);
 			 ((Arr_assignmentContext)_localctx).ast =  new AST.HeaderArrayAssignmentNode((((Arr_assignmentContext)_localctx).varName!=null?((Arr_assignmentContext)_localctx).varName.getText():null), ((Arr_assignmentContext)_localctx).val.ast, (((Arr_assignmentContext)_localctx).eq!=null?((Arr_assignmentContext)_localctx).eq.getText():null).equals("+=")); 
 			}
@@ -489,14 +467,6 @@ public class HeaderAntlrParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_array; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterArray(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArray(this);
-		}
 	}
 
 	public final ArrayContext array() throws RecognitionException {
@@ -507,35 +477,35 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(68);
+			setState(74);
 			match(LBrace);
-			setState(77);
+			setState(83);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			if ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << LBrace) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0)) {
 				{
-				setState(69);
+				setState(75);
 				array_helper(_localctx.items);
-				setState(74);
+				setState(80);
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 				while (_la==Comma) {
 					{
 					{
-					setState(70);
+					setState(76);
 					match(Comma);
-					setState(71);
+					setState(77);
 					array_helper(_localctx.items);
 					}
 					}
-					setState(76);
+					setState(82);
 					_errHandler.sync(this);
 					_la = _input.LA(1);
 				}
 				}
 			}
 
-			setState(79);
+			setState(85);
 			match(RBrace);
 			 ((ArrayContext)_localctx).ast =  new AST.HeaderArrayNode(_localctx.items); 
 			}
@@ -567,21 +537,13 @@ public class HeaderAntlrParser extends Parser {
 			this.items = items;
 		}
 		@Override public int getRuleIndex() { return RULE_array_helper; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterArray_helper(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitArray_helper(this);
-		}
 	}
 
 	public final Array_helperContext array_helper(ArrayList<HeaderArrayItem> items) throws RecognitionException {
 		Array_helperContext _localctx = new Array_helperContext(_ctx, getState(), items);
 		enterRule(_localctx, 12, RULE_array_helper);
 		try {
-			setState(88);
+			setState(94);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case String:
@@ -596,7 +558,7 @@ public class HeaderAntlrParser extends Parser {
 			case Number:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(82);
+				setState(88);
 				((Array_helperContext)_localctx).v = value();
 				 _localctx.items.add(new AST.HeaderArrayItemNode(((Array_helperContext)_localctx).v.ast)); 
 				}
@@ -604,7 +566,7 @@ public class HeaderAntlrParser extends Parser {
 			case LBrace:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(85);
+				setState(91);
 				((Array_helperContext)_localctx).a = array();
 				 _localctx.items.add(((Array_helperContext)_localctx).a.ast); 
 				}
@@ -636,27 +598,19 @@ public class HeaderAntlrParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_value; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterValue(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitValue(this);
-		}
 	}
 
 	public final ValueContext value() throws RecognitionException {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
 		enterRule(_localctx, 14, RULE_value);
 		try {
-			setState(95);
+			setState(101);
 			_errHandler.sync(this);
-			switch ( getInterpreter().adaptivePredict(_input,8,_ctx) ) {
+			switch ( getInterpreter().adaptivePredict(_input,9,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(90);
+				setState(96);
 				((ValueContext)_localctx).s = match(String);
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).s!=null?((ValueContext)_localctx).s.getText():null)); 
 				}
@@ -664,7 +618,7 @@ public class HeaderAntlrParser extends Parser {
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(92);
+				setState(98);
 				((ValueContext)_localctx).eq = equation();
 				 ((ValueContext)_localctx).ast =  new AST.HeaderValueNode((((ValueContext)_localctx).eq!=null?_input.getText(((ValueContext)_localctx).eq.start,((ValueContext)_localctx).eq.stop):null)); 
 				}
@@ -727,14 +681,6 @@ public class HeaderAntlrParser extends Parser {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_equation; }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).enterEquation(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof HeaderAntlrListener ) ((HeaderAntlrListener)listener).exitEquation(this);
-		}
 	}
 
 	public final EquationContext equation() throws RecognitionException {
@@ -744,13 +690,13 @@ public class HeaderAntlrParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(98); 
+			setState(104); 
 			_errHandler.sync(this);
 			_la = _input.LA(1);
 			do {
 				{
 				{
-				setState(97);
+				setState(103);
 				_la = _input.LA(1);
 				if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0)) ) {
 				_errHandler.recoverInline(this);
@@ -762,7 +708,7 @@ public class HeaderAntlrParser extends Parser {
 				}
 				}
 				}
-				setState(100); 
+				setState(106); 
 				_errHandler.sync(this);
 				_la = _input.LA(1);
 			} while ( (((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << String) | (1L << Plus) | (1L << Minus) | (1L << Star) | (1L << FSlash) | (1L << LParen) | (1L << RParen) | (1L << BSlash) | (1L << Identifier) | (1L << Number))) != 0) );
@@ -780,32 +726,33 @@ public class HeaderAntlrParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36i\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\36o\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\3\2\7\2\26"+
 		"\n\2\f\2\16\2\31\13\2\3\3\3\3\3\3\3\3\3\3\5\3 \n\3\3\3\3\3\7\3$\n\3\f"+
 		"\3\16\3\'\13\3\3\3\5\3*\n\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
-		"\4\3\4\5\48\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\6\3\6\3\6\3\6\3\6\3\6\3\6\3"+
-		"\7\3\7\3\7\3\7\7\7K\n\7\f\7\16\7N\13\7\5\7P\n\7\3\7\3\7\3\7\3\b\3\b\3"+
-		"\b\3\b\3\b\3\b\5\b[\n\b\3\t\3\t\3\t\3\t\3\t\5\tb\n\t\3\n\6\ne\n\n\r\n"+
-		"\16\nf\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2\b\t\4\2\3\3\17\27\2j\2"+
-		"\27\3\2\2\2\4\32\3\2\2\2\6\67\3\2\2\2\b9\3\2\2\2\n?\3\2\2\2\fF\3\2\2\2"+
-		"\16Z\3\2\2\2\20a\3\2\2\2\22d\3\2\2\2\24\26\5\6\4\2\25\24\3\2\2\2\26\31"+
-		"\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2\2\2\31\27\3\2\2\2\32\33"+
-		"\7\4\2\2\33\37\7\26\2\2\34\35\7\6\2\2\35\36\7\26\2\2\36 \b\3\1\2\37\34"+
-		"\3\2\2\2\37 \3\2\2\2 )\3\2\2\2!%\7\n\2\2\"$\5\6\4\2#\"\3\2\2\2$\'\3\2"+
-		"\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2(*\7\13\2\2)!\3\2\2\2)*\3"+
-		"\2\2\2*+\3\2\2\2+,\7\7\2\2,-\b\3\1\2-\5\3\2\2\2./\5\4\3\2/\60\b\4\1\2"+
-		"\608\3\2\2\2\61\62\5\b\5\2\62\63\b\4\1\2\638\3\2\2\2\64\65\5\n\6\2\65"+
-		"\66\b\4\1\2\668\3\2\2\2\67.\3\2\2\2\67\61\3\2\2\2\67\64\3\2\2\28\7\3\2"+
-		"\2\29:\7\26\2\2:;\7\t\2\2;<\5\20\t\2<=\7\7\2\2=>\b\5\1\2>\t\3\2\2\2?@"+
-		"\7\26\2\2@A\7\f\2\2AB\t\2\2\2BC\5\f\7\2CD\7\7\2\2DE\b\6\1\2E\13\3\2\2"+
-		"\2FO\7\n\2\2GL\5\16\b\2HI\7\5\2\2IK\5\16\b\2JH\3\2\2\2KN\3\2\2\2LJ\3\2"+
-		"\2\2LM\3\2\2\2MP\3\2\2\2NL\3\2\2\2OG\3\2\2\2OP\3\2\2\2PQ\3\2\2\2QR\7\13"+
-		"\2\2RS\b\7\1\2S\r\3\2\2\2TU\5\20\t\2UV\b\b\1\2V[\3\2\2\2WX\5\f\7\2XY\b"+
-		"\b\1\2Y[\3\2\2\2ZT\3\2\2\2ZW\3\2\2\2[\17\3\2\2\2\\]\7\3\2\2]b\b\t\1\2"+
-		"^_\5\22\n\2_`\b\t\1\2`b\3\2\2\2a\\\3\2\2\2a^\3\2\2\2b\21\3\2\2\2ce\t\3"+
-		"\2\2dc\3\2\2\2ef\3\2\2\2fd\3\2\2\2fg\3\2\2\2g\23\3\2\2\2\f\27\37%)\67"+
-		"LOZaf";
+		"\4\3\4\5\48\n\4\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\3\5\5\5D\n\5\3\6\3"+
+		"\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\7\3\7\7\7Q\n\7\f\7\16\7T\13\7\5\7V\n"+
+		"\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3\b\5\ba\n\b\3\t\3\t\3\t\3\t\3\t\5"+
+		"\th\n\t\3\n\6\nk\n\n\r\n\16\nl\3\n\2\2\13\2\4\6\b\n\f\16\20\22\2\4\3\2"+
+		"\b\t\4\2\3\3\17\27\2q\2\27\3\2\2\2\4\32\3\2\2\2\6\67\3\2\2\2\bC\3\2\2"+
+		"\2\nE\3\2\2\2\fL\3\2\2\2\16`\3\2\2\2\20g\3\2\2\2\22j\3\2\2\2\24\26\5\6"+
+		"\4\2\25\24\3\2\2\2\26\31\3\2\2\2\27\25\3\2\2\2\27\30\3\2\2\2\30\3\3\2"+
+		"\2\2\31\27\3\2\2\2\32\33\7\4\2\2\33\37\7\26\2\2\34\35\7\6\2\2\35\36\7"+
+		"\26\2\2\36 \b\3\1\2\37\34\3\2\2\2\37 \3\2\2\2 )\3\2\2\2!%\7\n\2\2\"$\5"+
+		"\6\4\2#\"\3\2\2\2$\'\3\2\2\2%#\3\2\2\2%&\3\2\2\2&(\3\2\2\2\'%\3\2\2\2"+
+		"(*\7\13\2\2)!\3\2\2\2)*\3\2\2\2*+\3\2\2\2+,\7\7\2\2,-\b\3\1\2-\5\3\2\2"+
+		"\2./\5\4\3\2/\60\b\4\1\2\608\3\2\2\2\61\62\5\b\5\2\62\63\b\4\1\2\638\3"+
+		"\2\2\2\64\65\5\n\6\2\65\66\b\4\1\2\668\3\2\2\2\67.\3\2\2\2\67\61\3\2\2"+
+		"\2\67\64\3\2\2\28\7\3\2\2\29:\7\26\2\2:;\7\t\2\2;<\7\7\2\2<D\b\5\1\2="+
+		">\7\26\2\2>?\7\t\2\2?@\5\20\t\2@A\7\7\2\2AB\b\5\1\2BD\3\2\2\2C9\3\2\2"+
+		"\2C=\3\2\2\2D\t\3\2\2\2EF\7\26\2\2FG\7\f\2\2GH\t\2\2\2HI\5\f\7\2IJ\7\7"+
+		"\2\2JK\b\6\1\2K\13\3\2\2\2LU\7\n\2\2MR\5\16\b\2NO\7\5\2\2OQ\5\16\b\2P"+
+		"N\3\2\2\2QT\3\2\2\2RP\3\2\2\2RS\3\2\2\2SV\3\2\2\2TR\3\2\2\2UM\3\2\2\2"+
+		"UV\3\2\2\2VW\3\2\2\2WX\7\13\2\2XY\b\7\1\2Y\r\3\2\2\2Z[\5\20\t\2[\\\b\b"+
+		"\1\2\\a\3\2\2\2]^\5\f\7\2^_\b\b\1\2_a\3\2\2\2`Z\3\2\2\2`]\3\2\2\2a\17"+
+		"\3\2\2\2bc\7\3\2\2ch\b\t\1\2de\5\22\n\2ef\b\t\1\2fh\3\2\2\2gb\3\2\2\2"+
+		"gd\3\2\2\2h\21\3\2\2\2ik\t\3\2\2ji\3\2\2\2kl\3\2\2\2lj\3\2\2\2lm\3\2\2"+
+		"\2m\23\3\2\2\2\r\27\37%)\67CRU`gl";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

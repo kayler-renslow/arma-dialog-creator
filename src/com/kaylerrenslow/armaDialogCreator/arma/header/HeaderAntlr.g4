@@ -45,7 +45,8 @@ header_class_helper[HeaderClass parentClass, ArrayList<HeaderClass> nested, Arra
 
 
 assignment returns [AST.HeaderAssignmentNode ast]:
-    varName=Identifier Equal val=value Semicolon { $ast = new AST.HeaderAssignmentNode($varName.text, $val.ast); }
+    varName=Identifier Equal Semicolon { $ast = new AST.HeaderAssignmentNode($varName.text, null); }
+    | varName=Identifier Equal val=value Semicolon { $ast = new AST.HeaderAssignmentNode($varName.text, $val.ast); }
     ;
 
 arr_assignment returns [AST.HeaderArrayAssignmentNode ast]:

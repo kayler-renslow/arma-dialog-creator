@@ -36,9 +36,13 @@ interface AST {
 		private final String varName;
 		private final HeaderValue value;
 
-		public HeaderAssignmentNode(@NotNull String varName, @NotNull HeaderValue value) {
+		public HeaderAssignmentNode(@NotNull String varName, @Nullable HeaderValue value) {
 			this.varName = varName;
-			this.value = value;
+			if (value == null) {
+				this.value = new BasicHeaderValue("");
+			} else {
+				this.value = value;
+			}
 		}
 
 		@Override
