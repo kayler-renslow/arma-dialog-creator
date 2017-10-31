@@ -398,7 +398,7 @@ public class HeaderToProject {
 			if (v != null) {
 				property.setValue(v);
 			} else {
-				property.setValue(new SVRaw(assignment.getAsString(), property.getInitialPropertyType()));
+				property.setValue(new SVRaw(assignment.getValue().getContent(), property.getInitialPropertyType()));
 			}
 
 			Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
@@ -473,7 +473,7 @@ public class HeaderToProject {
 			String[] items = new String[headerArray.getItems().size()];
 			int i = 0;
 			for (HeaderArrayItem arrayItem : headerArray.getItems()) {
-				items[i] = removeQuotes(arrayItem.getAsString());
+				items[i] = removeQuotes(arrayItem.getAsString(null));
 				i++;
 			}
 			try {

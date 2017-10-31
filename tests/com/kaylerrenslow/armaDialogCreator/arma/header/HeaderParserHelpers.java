@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,7 +36,12 @@ public class HeaderParserHelpers {
 		Iterator<HeaderAssignment> iterAssigns = headerFile.getAssignments().iterator();
 		for (HeaderAssignment expectedAssign : expected.getAssignments()) {
 			if (!iterAssigns.hasNext()) {
-				assertEquals("No more items in actual when there should be. Missing assignment: " + expectedAssign.getAsString(), expected.getAssignments().size(), headerFile.getAssignments().size());
+				assertEquals(
+						"No more items in actual when there should be. Missing assignment: "
+								+ expectedAssign.getAsString(new IndentedStringBuilder(4)),
+						expected.getAssignments().size(),
+						headerFile.getAssignments().size()
+				);
 			}
 			HeaderAssignment actualAssign = iterAssigns.next();
 			if (!expectedAssign.equalsAssignment(actualAssign)) {
@@ -46,7 +52,12 @@ public class HeaderParserHelpers {
 		Iterator<HeaderClass> iterClass = headerFile.getClasses().iterator();
 		for (HeaderClass expectedClass : expected.getNestedClasses()) {
 			if (!iterClass.hasNext()) {
-				assertEquals("No more items in actual when there should be.  Missing class: " + expectedClass.getAsString(), expected.getNestedClasses().size(), headerFile.getClasses().size());
+				assertEquals(
+						"No more items in actual when there should be.  Missing class: "
+								+ expectedClass.getAsString(new IndentedStringBuilder(4)),
+						expected.getNestedClasses().size(),
+						headerFile.getClasses().size()
+				);
 			}
 			HeaderClass actualClass = iterClass.next();
 			if (!expectedClass.equalsClass(actualClass)) {
@@ -115,7 +126,7 @@ public class HeaderParserHelpers {
 		return new AST.HeaderValueNode(s);
 	}
 
-	public static String w(String s) {
+	public static String wrap(String s) {
 		return "\"" + s + "\"";
 	}
 }

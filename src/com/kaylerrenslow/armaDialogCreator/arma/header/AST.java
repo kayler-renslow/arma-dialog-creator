@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,7 +12,6 @@ import java.util.List;
 interface AST {
 
 	abstract class ASTNode implements AST {
-		private String s;
 
 		public ASTNode() {
 
@@ -19,16 +19,16 @@ interface AST {
 
 		@Override
 		public String toString() {
-			if (s == null) {
-				if (this instanceof HeaderItem) {
-					HeaderItem me = (HeaderItem) this;
-					s = me.getAsString();
-				} else {
-					s = super.toString();
-				}
+			String s = "";
+			if (this instanceof HeaderItem) {
+				HeaderItem me = (HeaderItem) this;
+				s = me.getAsString(new IndentedStringBuilder(4));
+			} else {
+				s = super.toString();
 			}
 			return s;
 		}
+
 	}
 
 	class HeaderAssignmentNode extends ASTNode implements HeaderAssignment {
@@ -39,7 +39,7 @@ interface AST {
 		public HeaderAssignmentNode(@NotNull String varName, @Nullable HeaderValue value) {
 			this.varName = varName;
 			if (value == null) {
-				this.value = new BasicHeaderValue("");
+				this.value = new BasicHeaderValue("\"\"");
 			} else {
 				this.value = value;
 			}

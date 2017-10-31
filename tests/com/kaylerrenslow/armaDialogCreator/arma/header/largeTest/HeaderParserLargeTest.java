@@ -18,7 +18,7 @@ public class HeaderParserLargeTest {
 		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test1Files/largeTestRoot.h"), HeaderTestUtil.getTemporaryResultsFile());
 
 		HeaderClass expected = hClass("-root class", null,
-				assign("author", w("K-Town")),
+				assign("author", wrap("K-Town")),
 				assign("respawn", "BASE"),
 				hClass("Header", null,
 						assign("gameType", "RPG")
@@ -26,7 +26,7 @@ public class HeaderParserLargeTest {
 				assign("wreckLimit", "5"),
 				//#include "largeTestRoot_configs.h"
 				//#include "dir/dirF.h"
-				arr_assign("words", array(value(w("bird")), value(w("buh buh bird"))), false),
+				arr_assign("words", array(value(wrap("bird")), value(wrap("buh buh bird"))), false),
 				hClass("Configuration", null,
 						hClass("Reputation", null,
 								assign("max", "500"),
@@ -41,9 +41,9 @@ public class HeaderParserLargeTest {
 				//#include "largeTestRoot_functions.h"
 				hClass("CfgFunctions", null,
 						hClass("Client_Functions", null,
-								assign("tag", w("capwar")),
+								assign("tag", wrap("capwar")),
 								hClass("Util", null,
-										assign("file", w("core\\util")),
+										assign("file", wrap("core\\util")),
 										hClass("fetchVehInfo", null)
 								)
 						)
@@ -52,7 +52,7 @@ public class HeaderParserLargeTest {
 						arr_assign("sounds", array(), false)
 				),
 				hClass("CfgDebriefing", null,
-						assign("novalue", ""))
+						assign("novalue", wrap("")))
 
 		);
 
@@ -74,9 +74,9 @@ public class HeaderParserLargeTest {
 		HeaderClass expected = hClass("-root class", null,
 				hClass("DevStuff", null,
 						hClass("Errors", null,
-								hClass("InvalidArgument", null, assign("msg", w("Invalid Argument"))),
-								hClass("IllegalState", null, assign("msg", w("Illegal State"))),
-								hClass("ClassNotFound", null, assign("msg", w("Class Not Found")))
+								hClass("InvalidArgument", null, assign("msg", wrap("Invalid Argument"))),
+								hClass("IllegalState", null, assign("msg", wrap("Illegal State"))),
+								hClass("ClassNotFound", null, assign("msg", wrap("Class Not Found")))
 						)
 				)
 		);
@@ -91,16 +91,16 @@ public class HeaderParserLargeTest {
 		HeaderClass hClassOne = hClass(
 				"Sound_Man_one",
 				null,
-				assign("name", w("")),
-				arr_assign("sound", array(value(w("\\sounds\\Man\\one.ogg")), value("5"), value("1")), false),
-				arr_assign("titles", array(value("0"), value(w("Man says 'one'"))), false)
+				assign("name", wrap("")),
+				arr_assign("sound", array(value(wrap("\\sounds\\Man\\one.ogg")), value("5"), value("1")), false),
+				arr_assign("titles", array(value("0"), value(wrap("Man says 'one'"))), false)
 		);
 		HeaderClass hClassTwo = hClass(
 				"Sound_Man_two",
 				null,
-				assign("name", w("")),
-				arr_assign("sound", array(value(w("\\sounds\\Man\\two.ogg")), value("5"), value("1")), false),
-				arr_assign("titles", array(value("0"), value(w("Man says 'two'"))), false)
+				assign("name", wrap("")),
+				arr_assign("sound", array(value(wrap("\\sounds\\Man\\two.ogg")), value("5"), value("1")), false),
+				arr_assign("titles", array(value("0"), value(wrap("Man says 'two'"))), false)
 		);
 
 		HeaderClass expected = hClass("-root class", null,

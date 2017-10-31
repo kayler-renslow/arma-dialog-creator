@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -191,28 +192,52 @@ public interface HeaderClass extends HeaderItem {
 
 	@Override
 	@NotNull
-	default String getAsString() {
-		StringBuilder body = new StringBuilder();
+	default String getAsString(@Nullable IndentedStringBuilder indentedBuilder) {
+		if (indentedBuilder == null) {
+			StringBuilder body = new StringBuilder();
 
-		boolean nl = false;
+			boolean nl = false;
 
-		for (HeaderAssignment a : getAssignments()) {
-			if (!nl) {
-				body.append('\n');
-				nl = true;
+			for (HeaderAssignment a : getAssignments()) {
+				if (!nl) {
+					body.append('\n');
+					nl = true;
+				}
+				body.append(a.getAsString(null));
 			}
-			body.append(a.getAsString());
+
+			for (HeaderClass hc : getNestedClasses()) {
+				if (!nl) {
+					body.append('\n');
+					nl = true;
+				}
+				body.append(hc.getAsString(null));
+			}
+
+			return String.format("class %s%s{%s}\n", getClassName(), getExtendClassName() == null ? "" : " : " + getExtendClassName(), body);
 		}
 
-		for (HeaderClass hc : getNestedClasses()) {
-			if (!nl) {
-				body.append('\n');
-				nl = true;
-			}
-			body.append(hc.getAsString());
+		indentedBuilder.append("class ");
+		indentedBuilder.append(getClassName());
+		if (getExtendClassName() != null) {
+			indentedBuilder.append(" : ");
+			indentedBuilder.append(getExtendClassName());
 		}
+		indentedBuilder.append("\n{");
+		indentedBuilder.incrementTabCount();
+		indentedBuilder.append('\n');
+		{
+			for (HeaderAssignment a : getAssignments()) {
+				a.getAsString(indentedBuilder);
+			}
 
-		return String.format("class %s%s{%s}\n", getClassName(), getExtendClassName() == null ? "" : " : " + getExtendClassName(), body);
+			for (HeaderClass hc : getNestedClasses()) {
+				hc.getAsString(indentedBuilder);
+			}
+		}
+		indentedBuilder.decrementTabCount();
+		indentedBuilder.append("\n};");
+		return indentedBuilder.toString();
 	}
 
 	default boolean equalsClass(@NotNull HeaderClass o) {

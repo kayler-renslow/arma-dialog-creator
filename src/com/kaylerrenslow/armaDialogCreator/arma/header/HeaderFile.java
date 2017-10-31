@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -198,14 +199,23 @@ public class HeaderFile {
 	}
 
 	@NotNull
-	public String getAsString() {
-		StringBuilder b = new StringBuilder();
+	public String getAsString(@Nullable IndentedStringBuilder indentedBuilder) {
+		if (indentedBuilder == null) {
+			StringBuilder b = new StringBuilder();
+			for (HeaderAssignment a : getAssignments()) {
+				b.append(a.getAsString(null));
+			}
+			for (HeaderClass hc : getClasses()) {
+				b.append(hc.getAsString(null));
+			}
+			return b.toString();
+		}
 		for (HeaderAssignment a : getAssignments()) {
-			b.append(a.getAsString());
+			a.getAsString(indentedBuilder);
 		}
 		for (HeaderClass hc : getClasses()) {
-			b.append(hc.getAsString());
+			hc.getAsString(indentedBuilder);
 		}
-		return b.toString();
+		return indentedBuilder.toString();
 	}
 }

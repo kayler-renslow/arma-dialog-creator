@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -16,10 +18,10 @@ public interface HeaderArray extends HeaderValue, HeaderArrayItem, HeaderItem {
 		return this;
 	}
 
-	@NotNull
 	@Override
+	@NotNull
 	default String getContent() {
-		return getAsString();
+		return getAsString(null);
 	}
 
 	default boolean equalsArray(@NotNull HeaderArray o) {
@@ -28,19 +30,32 @@ public interface HeaderArray extends HeaderValue, HeaderArrayItem, HeaderItem {
 
 	@Override
 	@NotNull
-	default String getAsString() {
-		StringBuilder sb = new StringBuilder(getItems().size() * 10);
-		sb.append('{');
+	default String getAsString(@Nullable IndentedStringBuilder indentedBuilder) {
+		if (indentedBuilder == null) {
+			StringBuilder sb = new StringBuilder(getItems().size() * 10);
+			sb.append('{');
+			int i = 0;
+			for (HeaderArrayItem ai : getItems()) {
+				sb.append(ai.getAsString(null));
+				if (i != getItems().size() - 1) {
+					sb.append(',');
+				}
+				i++;
+			}
+			sb.append('}');
+			return sb.toString();
+		}
+		indentedBuilder.append('{');
 		int i = 0;
 		for (HeaderArrayItem ai : getItems()) {
-			sb.append(ai.getAsString());
+			indentedBuilder.append(ai.getAsString(indentedBuilder));
 			if (i != getItems().size() - 1) {
-				sb.append(',');
+				indentedBuilder.append(',');
 			}
 			i++;
 		}
-		sb.append("}");
-		return sb.toString();
+		indentedBuilder.append('}');
+		return indentedBuilder.toString();
 	}
 
 }

@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* 
+* added a parameter to header getAsString() methods for indentation purposes
 
 **Fixed:**
-* 
+* when a header assignment had no value (thing=; for example), the test case was checking for value as empty Java string rather than `"\"\""`
 
 **Notes:**
 * June 23:

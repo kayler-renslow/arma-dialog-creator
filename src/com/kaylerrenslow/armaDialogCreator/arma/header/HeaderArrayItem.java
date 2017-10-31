@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
@@ -14,7 +16,7 @@ public interface HeaderArrayItem extends HeaderItem {
 
 	@Override
 	@NotNull
-	default String getAsString() {
+	default String getAsString(@Nullable IndentedStringBuilder sb) {
 		return getValue().getContent();
 	}
 }

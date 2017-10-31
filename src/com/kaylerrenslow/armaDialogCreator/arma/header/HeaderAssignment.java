@@ -1,6 +1,8 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
@@ -16,7 +18,12 @@ public interface HeaderAssignment extends HeaderItem {
 
 	@Override
 	@NotNull
-	default String getAsString() {
-		return String.format("%s = %s\n", getVariableName(), getValue().getContent());
+	default String getAsString(@Nullable IndentedStringBuilder indentedBuilder) {
+		String s = String.format("%s = %s;\n", getVariableName(), getValue().getContent());
+		if (indentedBuilder == null) {
+			return s;
+		}
+		indentedBuilder.append(s);
+		return indentedBuilder.toString();
 	}
 }
