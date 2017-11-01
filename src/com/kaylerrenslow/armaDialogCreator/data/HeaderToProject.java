@@ -196,7 +196,7 @@ public class HeaderToProject {
 				dialogDir.mkdir();
 			}
 
-			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogClassName, workspace));
+			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir.getName(), workspace));
 		}
 
 		dataContext.setCurrentProject(project);
@@ -251,6 +251,7 @@ public class HeaderToProject {
 		ProjectSaveXmlWriter writer = new ProjectSaveXmlWriter(project, structureMain, structureBg);
 		try {
 			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), dialogClassName));
+			System.out.println("HeaderToProject.saveToWorkspace project.getProjectSaveFile()=" + project.getProjectSaveFile());
 			writer.write(null);
 		} catch (IOException e) {
 			convertError(dialogClassName, bundle.getString("Convert.FailReason.write_file_fail"));

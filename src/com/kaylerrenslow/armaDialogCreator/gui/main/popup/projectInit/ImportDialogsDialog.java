@@ -155,12 +155,11 @@ public class ImportDialogsDialog extends WizardStageDialog {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						new CouldNotLoadProjectDialog(e).show();
+						finalizingStep.projectFailedToLoad(new ProjectInit.NewProject(null, ""), e);
 					}
 				});
 				return false;
 			}
-
 
 			Platform.runLater(new Runnable() {
 				@Override
@@ -404,7 +403,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 
 		}
 
-		public void setProjectToLoad(ProjectInit projectInit) {
+		public void setProjectToLoad(@NotNull ProjectInit projectInit) {
 			this.projectInit = projectInit;
 			completeStep(true);
 			lblBody.setText(bundle.getString("ImportDialogs.Step.Final.ready"));
@@ -413,6 +412,14 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		@NotNull
 		public ProjectInit getProjectInit() {
 			return projectInit;
+		}
+
+		public void projectFailedToLoad(@NotNull ProjectInit newProject, @NotNull Exception e) {
+			this.projectInit = newProject;
+			completeStep(true);
+			lblBody.setText(bundle.getString("ImportDialogs.Step.Final.failed"));
+
+			new CouldNotLoadProjectDialog(e).show();
 		}
 	}
 

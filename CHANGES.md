@@ -2,10 +2,12 @@
 * 
 
 **Changed:**
-* added a parameter to header getAsString() methods for indentation purposes
+* 
 
 **Fixed:**
-* when a header assignment had no value (thing=; for example), the test case was checking for value as empty Java string rather than `"\"\""`
+* HeaderToProject was creating a directory for the project that doesn't exist, but it wasn't actually being used as the save location
+* ImportDialogsDialog wasn't reporting errors to the user when the project couldn't be loaded. The dialog was also getting stuck on "Finalizing" when the project failed to load. Both of the issues have been fixed.
+
 
 **Notes:**
 * June 23:
