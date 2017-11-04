@@ -59,10 +59,10 @@ class ControlPropertyEditorContainer extends HBox {
 		this.controlProperty = property;
 
 		resetPropertyValueEditor();
+		init();
 
 		setAlignment(Pos.TOP_LEFT);
 		setMaxWidth(Double.MAX_VALUE);
-		init();
 	}
 
 	private void init() {
@@ -127,6 +127,7 @@ class ControlPropertyEditorContainer extends HBox {
 			} else {
 				inheritanceMenuItem.setText(bundle.getString("inherit"));
 			}
+			inheritanceMenuItem.setVisible(controlClass.getExtendClass() != null);
 			hideIfInherited(ControlPropertyEditorContainer.this.hideIfInherited);
 			return null;
 		};
@@ -138,7 +139,7 @@ class ControlPropertyEditorContainer extends HBox {
 					propertyInheritUpdate.apply(null);
 				} else if (data instanceof ControlPropertyMacroUpdate) {
 					ControlPropertyMacroUpdate macroUpdate = (ControlPropertyMacroUpdate) data;
-					updatePropertyInputMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
+					updateStackPanePropertyInputWithNewMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
 				}
 			}
 		};
@@ -161,13 +162,13 @@ class ControlPropertyEditorContainer extends HBox {
 		miDefaultEditor.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.DEFAULT);
+				updateStackPanePropertyInputWithNewMode(ControlPropertyValueEditor.EditMode.DEFAULT);
 			}
 		});
 		miMacro.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
+				updateStackPanePropertyInputWithNewMode(ControlPropertyValueEditor.EditMode.MACRO);
 			}
 		});
 		miConvert.setOnAction(new EventHandler<ActionEvent>() {
@@ -300,7 +301,7 @@ class ControlPropertyEditorContainer extends HBox {
 			menuButtonOptions.getItems().add(miNoEdit);
 		}
 
-		updateContainer();
+		updateEditMode();
 		propertyInheritUpdate.apply(null);
 	}
 
@@ -321,17 +322,26 @@ class ControlPropertyEditorContainer extends HBox {
 		}
 	}
 
-	private void updateContainer() {
-		inheritanceMenuItem.setVisible(controlClass.getExtendClass() != null);
+	/**
+	 Will invoke {@link #updateStackPanePropertyInputWithNewMode(ControlPropertyValueEditor.EditMode)}
+	 based upon the current property's value and macro
+	 */
+	private void updateEditMode() {
 		if (getControlProperty().getMacro() != null) {
-			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.MACRO);
+			updateStackPanePropertyInputWithNewMode(ControlPropertyValueEditor.EditMode.MACRO);
 		} else {
-			updatePropertyInputMode(ControlPropertyValueEditor.EditMode.DEFAULT);
+			updateStackPanePropertyInputWithNewMode(ControlPropertyValueEditor.EditMode.DEFAULT);
 		}
 	}
 
+	/**
+	 Will update the {@link #stackPanePropertyInput}
+	 to present the correct editor ({@link #currentValueEditor()} or a Macro editor).
+
+	 @param mode the mode to set to
+	 */
 	@SuppressWarnings("unchecked")
-	private void updatePropertyInputMode(ControlPropertyValueEditor.EditMode mode) {
+	private void updateStackPanePropertyInputWithNewMode(@NotNull ControlPropertyValueEditor.EditMode mode) {
 		if (mode == ControlPropertyValueEditor.EditMode.MACRO) {
 			MacroGetterButton<? extends SerializableValue> macroGetterButton = new MacroGetterButton(currentValueEditor().getMacroPropertyType(), currentValueEditor().getControlProperty().getMacro());
 
@@ -346,11 +356,6 @@ class ControlPropertyEditorContainer extends HBox {
 				}
 			});
 		} else {
-			if (controlProperty.getValue() == null && controlProperty.getMacro() == null) {
-				currentValueEditor().clearListeners();
-				resetPropertyValueEditor();
-				return;
-			}
 			if (controlProperty.getMacro() != null) {
 				if (!askClearMacro()) {
 					return;
@@ -386,7 +391,7 @@ class ControlPropertyEditorContainer extends HBox {
 		propertyValueEditor.refresh();
 		controlClass.getControlClassUpdateGroup().addListener(this.controlClassUpdateListener);
 		getControlProperty().getControlPropertyUpdateGroup().addListener(this.controlPropertyUpdateListener);
-		updateContainer();
+		updateEditMode();
 	}
 
 	@NotNull
@@ -426,6 +431,7 @@ class ControlPropertyEditorContainer extends HBox {
 			stackPanePropertyInput.setPadding(Insets.EMPTY);
 		}
 
+		updateEditMode();
 		updateContainerInheritanceTint();
 	}
 
