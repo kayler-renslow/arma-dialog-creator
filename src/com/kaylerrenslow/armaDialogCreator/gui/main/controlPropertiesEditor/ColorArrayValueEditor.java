@@ -48,7 +48,13 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 			editor.show(btnBrackets, x, y);
 			editor.showingProperty().addListener((observable, oldValue, showing) -> {
 				if (!showing && !editor.isCancelled()) {
-					valueObserver.updateValue(new SVColorArray(editor.getColor()));
+					if (editor.getColor() == null) {
+						valueObserver.updateValue(null);
+						colorPicker.setValue(null);
+					} else {
+						valueObserver.updateValue(new SVColorArray(editor.getColor()));
+						colorPicker.setValue(editor.getColor());
+					}
 				}
 			});
 		});

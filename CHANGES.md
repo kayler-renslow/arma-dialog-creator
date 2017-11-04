@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* refactored everywhere that a FileOutputStream was used and UTF-8 encoding was needed. Now using UTF8FileWriter
+* 
 
 **Fixed:**
-* 
+* when using the "Convert Type" dialog for a raw Color value, using the array edit popup menu in the ColorArrayValueEditor wasn't updating the ColorPicker
 
 
 **Notes:**
