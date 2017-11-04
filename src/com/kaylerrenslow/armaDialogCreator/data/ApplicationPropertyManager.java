@@ -4,11 +4,13 @@ import com.kaylerrenslow.armaDialogCreator.data.xml.ApplicationPropertyXmlLoader
 import com.kaylerrenslow.armaDialogCreator.data.xml.XmlParseException;
 import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
+import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Element;
 
+import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
@@ -105,12 +107,9 @@ class ApplicationPropertyManager {
 		}
 	}
 
-	void saveApplicationProperties() throws IOException {
-		final String applicationProperty_f = "<application-property name='%s'>%s</application-property>";
+	void saveApplicationProperties() throws TransformerException {
+		XmlWriter writer = new XmlWriter(appPropertiesFile, "config");
 
-		FileOutputStream fos = new FileOutputStream(appPropertiesFile);
-
-		fos.write("<?xml version='1.0' encoding='UTF-8' ?>\n<config>".getBytes());
 		String value;
 		for (ApplicationProperty p : ApplicationProperty.values()) {
 			if (applicationProperties.getValue(p) == null) {
@@ -122,11 +121,12 @@ class ApplicationPropertyManager {
 					value = p.toStringMethod.toString(applicationProperties.getValue(p));
 				}
 			}
-			fos.write(String.format(applicationProperty_f, p.getName(), value).getBytes());
+			Element applicationPropertyEle = writer.appendElementToRoot("application-property");
+			applicationPropertyEle.setAttribute("name", p.getName());
+			writer.appendTextNode(value, applicationPropertyEle);
 		}
-		fos.write("</config>".getBytes());
-		fos.flush();
-		fos.close();
+
+		writer.writeToFile(-1);
 	}
 
 

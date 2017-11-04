@@ -2,13 +2,11 @@
 * 
 
 **Changed:**
-* 
+* refactored everywhere that a FileOutputStream was used and UTF-8 encoding was needed. Now using UTF8FileWriter
 
 **Fixed:**
 * 
 
-
-EVERYWHERE WE WRITE TO FILE, INCLUDING PREPROCESSOR, WE NEED TO WRITE IN UTF-8 ENCODING.
 
 **Notes:**
 * June 23:

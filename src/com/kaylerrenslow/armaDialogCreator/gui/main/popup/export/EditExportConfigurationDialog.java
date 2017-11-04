@@ -27,9 +27,9 @@ import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ResourceBundle;
 
 /**
@@ -265,16 +265,16 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 				lblDisplayFileExportPreview.setText(ProjectExporter.getDisplayFileName(configuration));
 				lblMacrosFileExportPreview.setText(ProjectExporter.getMacrosFileName(configuration));
 
-				ByteArrayOutputStream outDisplay = new ByteArrayOutputStream();
-				ByteArrayOutputStream outMacros = new ByteArrayOutputStream();
+				StringWriter outDisplay = new StringWriter();
+				StringWriter outMacros = new StringWriter();
 				try {
 					ProjectExporter.exportDisplayAndMacros(configuration, outDisplay, outMacros);
 				} catch (Exception e) {
 					textAreaDisplay.setText("Could not export: " + e.getMessage());
 					ExceptionHandler.error(e);
 				}
-				textAreaDisplay.setText(new String(outDisplay.toByteArray()));
-				textAreaMacros.setText(new String(outMacros.toByteArray()));
+				textAreaDisplay.setText(outDisplay.toString());
+				textAreaMacros.setText(outMacros.toString());
 			}
 		});
 
@@ -306,10 +306,10 @@ public class EditExportConfigurationDialog extends StageDialog<VBox> {
 			}
 			lblFileName.setText(configuration.getCustomClassesExportFileName());
 			try {
-				ByteArrayOutputStream stm = new ByteArrayOutputStream();
-				ProjectExporter.exportWorkspaceCustomControls(configuration, stm);
+				StringWriter writer = new StringWriter();
+				ProjectExporter.exportWorkspaceCustomControls(configuration, writer);
 
-				textArea.setText(new String(stm.toByteArray()));
+				textArea.setText(writer.toString());
 			} catch (IOException e) {
 				textArea.setText("Couldn't export custom controls.");
 				ExceptionHandler.error(e);

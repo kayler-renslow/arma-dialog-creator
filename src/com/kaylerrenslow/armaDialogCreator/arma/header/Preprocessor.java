@@ -8,6 +8,7 @@ import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.expression.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UTF8FileWriter;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -65,7 +66,7 @@ class Preprocessor {
 	private final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
 
 	/** Stream to write the fully preprocessed results to. This is currently a {@link FileOutputStream} for {@link #temporaryFullyPreprocessedResultFile} */
-	private final OutputStream writeSteam;
+	private final Writer writer;
 	private final File temporaryFullyPreprocessedResultFile;
 	protected final LinkedList<File> processingFiles = new LinkedList<>();
 	protected final LinkedList<File> processedFiles = new LinkedList<>();
@@ -90,7 +91,7 @@ class Preprocessor {
 
 		temporaryFullyPreprocessedResultFile = preprocessedResults;
 
-		writeSteam = new FileOutputStream(temporaryFullyPreprocessedResultFile);
+		writer = new UTF8FileWriter(temporaryFullyPreprocessedResultFile);
 	}
 
 
@@ -130,8 +131,8 @@ class Preprocessor {
 		StringBuilderReference br = new StringBuilderReference(new StringBuilder(0));
 		processNow(processFile, null, br);
 
-		writeSteam.flush();
-		writeSteam.close();
+		writer.flush();
+		writer.close();
 
 		expressionInterpreter.shutdownAndDisable();
 
@@ -157,8 +158,8 @@ class Preprocessor {
 		StringBuilder oldBuilder = builderReference.getBuilder();
 
 		// Add the old builder's contents. This will be invoked at the start of preprocessing and when an #include has been discovered
-		writeSteam.write(oldBuilder.toString().getBytes());
-		writeSteam.flush();
+		writer.write(oldBuilder.toString());
+		writer.flush();
 
 		// Create a new builder for the new file.
 		StringBuilder textContent = new StringBuilder((int) toProcess.length());
@@ -171,8 +172,8 @@ class Preprocessor {
 		//process the file given
 		doProcess(toProcess, builderReference);
 
-		writeSteam.write(builderReference.getBuilder().toString().getBytes());
-		writeSteam.flush();
+		writer.write(builderReference.getBuilder().toString());
+		writer.flush();
 
 		//reset the builder reference for reading a new part
 		builderReference.setBuilder(new StringBuilder(Math.max(10, oldBuilder.capacity() - oldBuilder.length())));

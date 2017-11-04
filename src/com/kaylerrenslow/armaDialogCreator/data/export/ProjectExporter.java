@@ -10,13 +10,13 @@ import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.IndentedStringBuilder;
+import com.kaylerrenslow.armaDialogCreator.util.UTF8FileWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.Writer;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
@@ -37,7 +37,7 @@ public class ProjectExporter {
 	 Exports the whole {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
 
 	 @param configuration config to use
-	 @see #exportDisplayAndMacros(OutputStream, OutputStream)
+	 @see #exportDisplayAndMacros(Writer, Writer)
 	 */
 	public static void exportProject(@NotNull ProjectExportConfiguration configuration) throws IOException {
 		new ProjectExporter(configuration).exportProject();
@@ -50,25 +50,25 @@ public class ProjectExporter {
 	 The streams will not be closed once this method finishes!
 
 	 @param configuration config to use
-	 @param displayOutputStream stream to use for writing the {@link Project#getEditingDisplay()}
-	 @param macrosOutputStream stream to use for writing {@link Project#getMacroRegistry()}, or null to write to same
+	 @param displayWriter writer to use for writing the {@link Project#getEditingDisplay()}
+	 @param macrosWriter writer to use for writing {@link Project#getMacroRegistry()}, or null to write to same
 	 file as <code>displayOutputStream</code>
 	 */
 	public static void exportDisplayAndMacros(@NotNull ProjectExportConfiguration configuration,
-											  @NotNull OutputStream displayOutputStream,
-											  @Nullable OutputStream macrosOutputStream) throws IOException {
-		new ProjectExporter(configuration).exportDisplayAndMacros(displayOutputStream, macrosOutputStream);
+											  @NotNull Writer displayWriter,
+											  @Nullable Writer macrosWriter) throws IOException {
+		new ProjectExporter(configuration).exportDisplayAndMacros(displayWriter, macrosWriter);
 	}
 
 	/**
 	 Exports {@link Project#getWorkspaceCustomControlClassRegistry()} to the given output stream.
 
 	 @param configuration config to use
-	 @param stream stream to use
+	 @param writer stream to use
 	 */
 	public static void exportWorkspaceCustomControls(@NotNull ProjectExportConfiguration configuration,
-													 @NotNull OutputStream stream) throws IOException {
-		new ProjectExporter(configuration).exportWorkspaceCustomControls(stream);
+													 @NotNull Writer writer) throws IOException {
+		new ProjectExporter(configuration).exportWorkspaceCustomControls(writer);
 	}
 
 	@NotNull
@@ -112,19 +112,19 @@ public class ProjectExporter {
 		return (type.getPropertyValuesSize() > 1) ? "{" + ret + "}" : ret.toString();
 	}
 
-	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull OutputStream stream) throws IOException {
+	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull Writer writer) throws IOException {
 		ProjectExporter exporter = new ProjectExporter(configuration);
-		BufferedIndentedStringBuilder builder = getBuilder(stream);
+		BufferedIndentedStringBuilder builder = getBuilder(writer);
 		exporter.writeControlClass(builder, controlClass, null);
-		stream.write(builder.toString().getBytes());
-		stream.flush();
+		writer.write(builder.toString());
+		writer.flush();
 	}
 
-	private static BufferedIndentedStringBuilder getBuilder(@NotNull OutputStream outputStream) {
+	private static BufferedIndentedStringBuilder getBuilder(@NotNull Writer writer) {
 		return new BufferedIndentedStringBuilder(4, true, 20000/*20 kb*/, s -> {
 			try {
-				outputStream.write(s.getBytes());
-				outputStream.flush();
+				writer.write(s);
+				writer.flush();
 			} catch (IOException e) {
 				throw new IllegalStateException(e);
 			}
@@ -149,7 +149,7 @@ public class ProjectExporter {
 	/**
 	 Exports the {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
 	 <p>
-	 This invokes {@link #exportDisplayAndMacros(OutputStream, OutputStream)} and {@link #exportWorkspaceCustomControls()}
+	 This invokes {@link #exportDisplayAndMacros(Writer, Writer)} and {@link #exportWorkspaceCustomControls()}
 	 */
 	public void exportProject() throws IOException {
 		initConfExportDirectory();
@@ -159,20 +159,20 @@ public class ProjectExporter {
 
 		File exportDisplayFile = conf.getFileForExportDirectory(getDisplayFileName(conf));
 		exportDisplayFile.createNewFile();
-		FileOutputStream fosDisplay = new FileOutputStream(exportDisplayFile);
+		UTF8FileWriter fosDisplay = new UTF8FileWriter(exportDisplayFile);
 
-		FileOutputStream fosMacros = null;
+		Writer writerMacros = null;
 		if (conf.shouldExportMacrosToFile()) {
 			final File macrosExportFile = conf.getFileForExportDirectory(getMacrosFileName(conf));
 			macrosExportFile.createNewFile();
-			fosMacros = new FileOutputStream(macrosExportFile);
+			writerMacros = new UTF8FileWriter(macrosExportFile);
 		}
 
-		exportDisplayAndMacros(fosDisplay, fosMacros);
+		exportDisplayAndMacros(fosDisplay, writerMacros);
 
 		fosDisplay.close();
-		if (fosMacros != null) {
-			fosMacros.close();
+		if (writerMacros != null) {
+			writerMacros.close();
 		}
 
 		this.exportWorkspaceCustomControls();
@@ -191,31 +191,31 @@ public class ProjectExporter {
 	 Exports the {@link ProjectExportConfiguration#getProject()} to the given output streams.
 	 The streams will not be closed once this method finishes!
 
-	 @param displayOutputStream stream to use for writing the {@link Project#getEditingDisplay()}
-	 @param macrosOutputStream stream to use for writing {@link Project#getMacroRegistry()}, or null to write to same
-	 file as <code>displayOutputStream</code>
+	 @param displayWriter stream to use for writing the {@link Project#getEditingDisplay()}
+	 @param macrosWriter stream to use for writing {@link Project#getMacroRegistry()}, or null to write to same
+	 file as <code>displayWriter</code>
 	 */
-	public void exportDisplayAndMacros(@NotNull OutputStream displayOutputStream, @Nullable OutputStream macrosOutputStream)
+	public void exportDisplayAndMacros(@NotNull Writer displayWriter, @Nullable Writer macrosWriter)
 			throws IOException {
-		if (macrosOutputStream == null || !conf.shouldExportMacrosToFile()) {
-			macrosOutputStream = displayOutputStream; //save the macros inside the display header file
+		if (macrosWriter == null || !conf.shouldExportMacrosToFile()) {
+			macrosWriter = displayWriter; //save the macros inside the display header file
 		}
 
-		displayStringBuilder = getBuilder(displayOutputStream);
-		macrosStringBuilder = getBuilder(macrosOutputStream);
+		displayStringBuilder = getBuilder(displayWriter);
+		macrosStringBuilder = getBuilder(macrosWriter);
 
 		exportMacros(macrosStringBuilder);
 		//write remainder stuff
-		macrosOutputStream.write(macrosStringBuilder.toString().getBytes());
+		macrosWriter.write(macrosStringBuilder.toString());
 
 		exportDisplay(displayStringBuilder);
 
 		//write the remainder of the string builders
-		displayOutputStream.write(displayStringBuilder.toString().getBytes());
+		displayWriter.write(displayStringBuilder.toString());
 
 		//one last flush
-		displayOutputStream.flush();
-		macrosOutputStream.flush();
+		displayWriter.flush();
+		macrosWriter.flush();
 
 		//don't close streams
 
@@ -226,16 +226,16 @@ public class ProjectExporter {
 
 		File exportFile = conf.getFileForExportDirectory(conf.getCustomClassesExportFileName());
 		exportFile.createNewFile();
-		FileOutputStream fos = new FileOutputStream(exportFile);
+		UTF8FileWriter writer = new UTF8FileWriter(exportFile);
 
-		exportWorkspaceCustomControls(fos);
+		exportWorkspaceCustomControls(writer);
 
-		fos.flush();
-		fos.close();
+		writer.flush();
+		writer.close();
 	}
 
-	public void exportWorkspaceCustomControls(@NotNull OutputStream stream) throws IOException {
-		IndentedStringBuilder stringBuilder = getBuilder(stream);
+	public void exportWorkspaceCustomControls(@NotNull Writer writer) throws IOException {
+		IndentedStringBuilder stringBuilder = getBuilder(writer);
 
 		if (conf.shouldPlaceAdcNotice()) {
 			writelnComment(stringBuilder, bundle.getString("Misc.adc_export_notice"));
@@ -270,9 +270,9 @@ public class ProjectExporter {
 		writeln(stringBuilder, "#endif");
 
 		//write remainder of text
-		stream.write(stringBuilder.toString().getBytes());
+		writer.write(stringBuilder.toString());
 
-		stream.flush();
+		writer.flush();
 		//don't close stream
 	}
 

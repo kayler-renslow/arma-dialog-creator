@@ -37,8 +37,8 @@ import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -373,18 +373,18 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private String getPreviewText() {
-		ByteArrayOutputStream stream = new ByteArrayOutputStream(128);
+		StringWriter writer = new StringWriter(128);
 		try {
 			if (getTaComment().getText() != null && getTaComment().getText().length() > 0) {
-				stream.write("/*\n".getBytes());
-				stream.write(getTaComment().getText().getBytes());
-				stream.write("\n*/\n".getBytes());
+				writer.write("/*\n");
+				writer.write(getTaComment().getText());
+				writer.write("\n*/\n");
 			}
-			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getControlClass(), stream);
-			stream.close();
+			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getControlClass(), writer);
+			writer.close();
 		} catch (IOException e) {
 			ExceptionHandler.error(e);
 		}
-		return stream.toString();
+		return writer.toString();
 	}
 }

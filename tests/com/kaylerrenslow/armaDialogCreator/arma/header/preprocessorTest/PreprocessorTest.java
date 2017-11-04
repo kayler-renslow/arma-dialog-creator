@@ -4,12 +4,12 @@ import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent;
 import com.kaylerrenslow.armaDialogCreator.arma.header.DefineMacroContent.DefineValue;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserHelpers;
 import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderTestUtil;
+import com.kaylerrenslow.armaDialogCreator.util.UTF8FileWriter;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.concurrent.BlockingQueue;
@@ -627,8 +627,8 @@ public class PreprocessorTest {
 	@NotNull
 	private static File createFileFromText(@NotNull String textToWrite) throws Exception {
 		File f = HeaderTestUtil.getFile("preprocessorTest/createdFiles/test" + createdFileCount.incrementAndGet() + ".h");
-		FileOutputStream fos = new FileOutputStream(f);
-		fos.write(textToWrite.getBytes());
+		UTF8FileWriter fos = new UTF8FileWriter(f);
+		fos.write(textToWrite);
 		fos.flush();
 		fos.close();
 		return f;
