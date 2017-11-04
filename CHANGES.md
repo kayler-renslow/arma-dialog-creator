@@ -1,13 +1,18 @@
 **Added:**
-* 
+* XmlWriter class tests for utf-8 and utf-16
 
 **Changed:**
-* 
+* rewrote XmlWriterOutputStream to fix encoding issue and renamed the class to XmlWriter
+* refactored StringTableXmlWriter to utilize the XmlWriter encoding fix
+* refactored ProjectSaveXmlWriter to utilize the XmlWriter encoding fix
+* refactored ProjectXmlUtil to utilize XmlWriter encoding fix
+* refactored ResourceRegistryXmlWriter to utilize XmlWriter encoding fix
 
 **Fixed:**
-* HeaderToProject was creating a directory for the project that doesn't exist, but it wasn't actually being used as the save location
-* ImportDialogsDialog wasn't reporting errors to the user when the project couldn't be loaded. The dialog was also getting stuck on "Finalizing" when the project failed to load. Both of the issues have been fixed.
+* 
 
+
+EVERYWHERE WE WRITE TO FILE, INCLUDING PREPROCESSOR, WE NEED TO WRITE IN UTF-8 ENCODING.
 
 **Notes:**
 * June 23:

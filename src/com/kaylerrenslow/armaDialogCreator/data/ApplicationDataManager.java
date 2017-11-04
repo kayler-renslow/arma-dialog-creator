@@ -14,8 +14,8 @@ import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.io.IOException;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 
@@ -166,17 +166,20 @@ public class ApplicationDataManager {
 	}
 
 	/** Saves the project. If exception is thrown, project wasn't successfully saved. */
-	public void saveProject() throws IOException {
+	public void saveProject() throws TransformerException {
 		saveProject(false);
 	}
 
-	private void saveProject(boolean rescue) throws IOException {
+	private void saveProject(boolean rescue) throws TransformerException {
 		if (applicationData == null) {
 			return;
 		}
 		Project project = applicationData.getCurrentProject();
 		if (!project.getProjectSaveDirectory().exists()) {
-			project.getProjectSaveDirectory().mkdirs();
+			boolean made = project.getProjectSaveDirectory().mkdirs();
+			if (!made) {
+				throw new TransformerException("Couldn't made project parent directories");
+			}
 		}
 		new ProjectSaveXmlWriter(
 				project,
@@ -188,7 +191,7 @@ public class ApplicationDataManager {
 	public void saveGlobalResources() {
 		try {
 			ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose();
-		} catch (IOException e) {
+		} catch (TransformerException e) {
 			ExceptionHandler.error(e);
 		}
 	}
@@ -212,7 +215,7 @@ public class ApplicationDataManager {
 			saveGlobalResources();
 			try {
 				saveProject();
-			} catch (IOException e) {
+			} catch (TransformerException e) {
 				ExceptionHandler.error(e);
 			}
 		}
@@ -230,7 +233,7 @@ public class ApplicationDataManager {
 	public boolean rescueSave() {
 		try {
 			saveProject(true);
-		} catch (IOException e) {
+		} catch (TransformerException e) {
 			return false;
 		}
 		return true;

@@ -8,12 +8,12 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.DataContext;
 import com.kaylerrenslow.armaDialogCreator.util.ValueConverter;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
+import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Function;
 
@@ -29,22 +29,22 @@ public class ProjectXmlUtil {
 	/**
 	 Loads a {@link ControlClassSpecification} from xml.
 
-	 @param containerElement element that contains the xml tags written by {@link #writeControlClassSpecification(XmlWriterOutputStream, ControlClassSpecification)}
+	 @param containerElement element that contains the xml tags written by {@link #writeControlClassSpecification(XmlWriter, ControlClassSpecification, Element)}
 	 @param context used for loading {@link ControlPropertySpecification} via {@link #loadControlProperty(String, Element, DataContext, XmlErrorRecorder)}
 	 */
+	@NotNull
 	public static List<ControlClassSpecification> loadControlClassSpecifications(@NotNull Element containerElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		List<Element> classSpecElements = XmlUtil.getChildElementsWithTagName(containerElement, "class-spec");
 		List<ControlClassSpecification> specs = new ArrayList<>(classSpecElements.size());
 
 		for (Element classSpecElement : classSpecElements) {
 			ControlClassSpecification specification = loadControlClassSpecification(classSpecElement, context, recorder);
-			if (specification != null) {
-				specs.add(specification);
-			}
+			specs.add(specification);
 		}
 		return specs;
 	}
 
+	@NotNull
 	public static ControlClassSpecification loadControlClassSpecification(@NotNull Element classSpecElement, @Nullable DataContext context, @NotNull XmlErrorRecorder recorder) {
 		String className = classSpecElement.getAttribute("name");
 		String extend = classSpecElement.getAttribute("extend").trim();
@@ -133,23 +133,17 @@ public class ProjectXmlUtil {
 
 	}
 
-	public static void writeCustomControls(@NotNull XmlWriterOutputStream stm,
-										   @NotNull CustomControlClassRegistry registry) throws IOException {
-		String customControlClasses = "custom-controls";
-		stm.writeBeginTag(customControlClasses);
-		final String customControl = "custom-control";
-		final String comment = "comment";
+	public static void writeCustomControls(@NotNull XmlWriter writer, @NotNull CustomControlClassRegistry registry, @NotNull Element addToEle) {
+		Element customControlsEle = writer.appendElementToElement("custom-controls", addToEle);
+
 		for (CustomControlClass customClass : registry.getControlClassList()) {
-			stm.writeBeginTag(customControl);
-			ProjectXmlUtil.writeControlClassSpecification(stm, customClass.newSpecification());
+			Element controlClassEle = writer.appendElementToElement("custom-control", customControlsEle);
+			ProjectXmlUtil.writeControlClassSpecification(writer, customClass.newSpecification(), controlClassEle);
 			if (customClass.getComment() != null) {
-				stm.writeBeginTag(comment);
-				stm.write(customClass.getComment());
-				stm.writeCloseTag(comment);
+				Element commentEle = writer.appendElementToElement("comment", controlClassEle);
+				writer.appendTextNode(customClass.getComment(), commentEle);
 			}
-			stm.writeCloseTag(customControl);
 		}
-		stm.writeCloseTag(customControlClasses);
 	}
 
 	/**
@@ -165,21 +159,17 @@ public class ProjectXmlUtil {
 												@Nullable DataContext context,
 												@NotNull XmlErrorRecorder recorder,
 												@NotNull Function<ControlClassSpecification, ?> customClassParsed
-	) throws IOException {
-		final String customControls = "custom-controls";
-		final String customControl = "custom-control";
-		final String comment = "comment";
-		final String classSpec = "class-spec";
-		List<Element> customControlsElementGroups = XmlUtil.getChildElementsWithTagName(controlsElement, customControls);
+	) {
+		List<Element> customControlsElementGroups = XmlUtil.getChildElementsWithTagName(controlsElement, "custom-controls");
 		for (Element customControlClassesGroup : customControlsElementGroups) {
-			List<Element> customControlElements = XmlUtil.getChildElementsWithTagName(customControlClassesGroup, customControl);
+			List<Element> customControlElements = XmlUtil.getChildElementsWithTagName(customControlClassesGroup, "custom-control");
 			for (Element customControlElement : customControlElements) {
-				List<Element> controlClassSpecs = XmlUtil.getChildElementsWithTagName(customControlElement, classSpec);
+				List<Element> controlClassSpecs = XmlUtil.getChildElementsWithTagName(customControlElement, "class-spec");
 				if (controlClassSpecs.size() <= 0) {
 					continue;
 				}
 				ControlClassSpecification spec = loadControlClassSpecification(controlClassSpecs.get(0), context, recorder);
-				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, comment);
+				List<Element> commentElements = XmlUtil.getChildElementsWithTagName(customControlElement, "comment");
 				String commentContent = null;
 				if (commentElements.size() > 0) {
 					commentContent = XmlUtil.getImmediateTextContent(commentElements.get(0));
@@ -194,103 +184,97 @@ public class ProjectXmlUtil {
 	/**
 	 Writes a {@link ControlClassSpecification} to xml.
 
-	 @param stm xml writer stream
+	 @param writer xml writer
 	 @param specification specification to write
+	 @param addToEle element to append the xml to
 	 */
-	public static void writeControlClassSpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlClassSpecification specification) throws IOException {
-		stm.writeBeginTag(String.format(
-				"class-spec name='%s'%s", specification.getClassName(),
-				specification.getExtendClassName() != null ? String.format(" extend='%s'", specification.getExtendClassName()) : "")
-		);
+	public static void writeControlClassSpecification(@NotNull XmlWriter writer, @NotNull ControlClassSpecification specification, @NotNull Element addToEle) {
+		Element classSpecEle = writer.appendElementToElement("class-spec", addToEle);
+		classSpecEle.setAttribute("name", specification.getClassName());
+		if (specification.getExtendClassName() != null) {
+			classSpecEle.setAttribute("extend", specification.getExtendClassName());
+		}
 
 		//required control properties
 		if (specification.getRequiredProperties().size() > 0) {
-			final String requiredProperties = "required-properties";
-			stm.writeBeginTag(requiredProperties);
+			Element requiredPropertiesEle = writer.appendElementToElement("required-properties", classSpecEle);
 			for (ControlPropertySpecification property : specification.getRequiredControlProperties()) {
 				if (property.getValue() == null) {
-					writeMissingControlPropertyValue(stm, property);
+					writeMissingControlPropertyValue(writer, property, requiredPropertiesEle);
 				} else {
-					writeControlPropertySpecification(stm, property);
+					writeControlPropertySpecification(writer, property, requiredPropertiesEle);
 				}
 			}
-			stm.writeCloseTag(requiredProperties);
 		}
 
 		//optional control properties
 		if (specification.getOptionalProperties().size() > 0) {
-			final String optionalProperties = "optional-properties";
-			stm.writeBeginTag(optionalProperties);
+			Element optionalPropertiesEle = writer.appendElementToElement("optional-properties", classSpecEle);
 			for (ControlPropertySpecification property : specification.getOptionalControlProperties()) {
 				if (property.getValue() == null) {
-					writeMissingControlPropertyValue(stm, property);
+					writeMissingControlPropertyValue(writer, property, optionalPropertiesEle);
 				} else {
-					writeControlPropertySpecification(stm, property);
+					writeControlPropertySpecification(writer, property, optionalPropertiesEle);
 				}
 			}
-			stm.writeCloseTag(optionalProperties);
 		}
 
 		//overridden properties
 		if (specification.getInheritedProperties().size() > 0) {
-			final String inheritedProperties = "inherit-properties";
-			stm.writeBeginTag(inheritedProperties);
+			Element inheritPropertiesEle = writer.appendElementToElement("inherit-properties", classSpecEle);
 			for (ControlPropertySpecification property : specification.getInheritedProperties()) {
-				writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
+				writeInheritControlPropertyLookup(writer, property.getPropertyLookup(), inheritPropertiesEle);
 			}
-			stm.writeCloseTag(inheritedProperties);
 		}
 
 		//required sub classes
 		if (specification.getRequiredNestedClasses().size() > 0) {
-			final String requiredClasses = "required-classes";
-			stm.writeBeginTag(requiredClasses);
+			Element requiredClassesEle = writer.appendElementToElement("required-classes", classSpecEle);
 			for (ControlClassSpecification s : specification.getRequiredNestedClasses()) {
-				writeControlClassSpecification(stm, s);
+				writeControlClassSpecification(writer, s, requiredClassesEle);
 			}
-			stm.writeCloseTag(requiredClasses);
 		}
 
 		//optional sub classes
 		if (specification.getOptionalNestedClasses().size() > 0) {
-			final String optionalClasses = "optional-classes";
-			stm.writeBeginTag(optionalClasses);
+			Element optionalClassesEle = writer.appendElementToElement("optional-classes", classSpecEle);
 			for (ControlClassSpecification s : specification.getOptionalNestedClasses()) {
-				writeControlClassSpecification(stm, s);
+				writeControlClassSpecification(writer, s, optionalClassesEle);
 			}
-			stm.writeCloseTag(optionalClasses);
 		}
-
-		stm.writeCloseTag("class-spec");
 	}
 
 	/**
-	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only {@link ControlProperty#getPropertyLookup()}
-	 is written. This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriterOutputStream, ControlPropertyLookupConstant)} for each {@link ControlProperty} in
-	 <code>properties</code>
+	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}.
+	 Only {@link ControlProperty#getPropertyLookup()} is written.
+	 This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriter, ControlPropertyLookupConstant, Element)}
+	 for each {@link ControlProperty} in <code>properties</code>
 
-	 @param stm xml writer stream
+	 @param writer xml writer
 	 @param properties properties to write
-	 @throws IOException
+	 @param addToEle element to add XML to
 	 */
-	public static void writeInheritedControlProperties(@NotNull XmlWriterOutputStream stm, @NotNull Iterable<ControlProperty> properties) throws IOException {
+	public static void writeInheritedControlProperties(@NotNull XmlWriter writer, @NotNull Iterable<ControlProperty> properties,
+													   @NotNull Element addToEle) {
 		for (ControlProperty property : properties) {
-			writeInheritControlPropertyLookup(stm, property.getPropertyLookup());
+			writeInheritControlPropertyLookup(writer, property.getPropertyLookup(), addToEle);
 		}
 	}
 
 	/**
-	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}. Only
-	 {@link ControlPropertyLookupConstant#getPropertyType()} is written.
+	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}.
+	 Only {@link ControlPropertyLookupConstant#getPropertyType()} is written.
 
-	 @param stm xml writer stream
+	 @param writer xml writer
 	 @param lookup lookup to write
-	 @throws IOException
+	 @param addToEle element to add XML to
 	 */
-	public static void writeInheritControlPropertyLookup(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup) throws IOException {
-		stm.write("<inherit-property id='" + lookup.getPropertyId() + "' />");
+	public static void writeInheritControlPropertyLookup(@NotNull XmlWriter writer, @NotNull ControlPropertyLookupConstant lookup, @NotNull Element addToEle) {
+		Element inheritPropertyEle = writer.appendElementToElement("inherit-property", addToEle);
+		inheritPropertyEle.setAttribute("id", lookup.getPropertyId() + "");
 	}
 
+	@NotNull
 	public static List<ControlPropertyLookup> loadInheritedControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
 		List<Element> inheritPropertyElements = XmlUtil.getChildElementsWithTagName(parent, "inherit-property");
 		List<ControlPropertyLookup> list = new LinkedList<>();
@@ -304,37 +288,45 @@ public class ProjectXmlUtil {
 		return list;
 	}
 
-	private static void writeMissingControlPropertyValue(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification property) throws IOException {
-		stm.write("<undefined id='" + property.getPropertyLookup().getPropertyId() + "'");
+	private static void writeMissingControlPropertyValue(@NotNull XmlWriter writer, @NotNull ControlPropertySpecification property,
+														 @NotNull Element addToEle) {
+		Element undefinedEle = writer.appendElementToElement("undefined", addToEle);
+		undefinedEle.setAttribute("id", property.getPropertyLookup().getPropertyId() + "");
 		if (property.getMacroKey() != null) {
-			stm.write(" macro-key='" + property.getMacroKey() + "'");
+			undefinedEle.setAttribute("macro-key", property.getMacroKey());
 		}
-		stm.write("/>");
 	}
 
 
-	public static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlProperty cprop) throws IOException {
-		writeControlProperty(stm, cprop.getPropertyLookup(), cprop.getMacro() == null ? null : cprop.getMacro().getKey(), cprop.getValue());
+	public static void writeControlProperty(@NotNull XmlWriter writer, @NotNull ControlProperty cprop, @NotNull Element addToEle) {
+		writeControlProperty(
+				writer,
+				cprop.getPropertyLookup(),
+				cprop.getMacro() == null ? null : cprop.getMacro().getKey(),
+				cprop.getValue(),
+				addToEle
+		);
 	}
 
-	public static void writeControlPropertySpecification(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertySpecification specification) throws IOException {
-		writeControlProperty(stm, specification.getPropertyLookup(), specification.getMacroKey(), specification.getValue());
+	public static void writeControlPropertySpecification(@NotNull XmlWriter writer, @NotNull ControlPropertySpecification specification, @NotNull Element addToEle) {
+		writeControlProperty(writer, specification.getPropertyLookup(), specification.getMacroKey(), specification.getValue(), addToEle);
 	}
 
-	private static void writeControlProperty(@NotNull XmlWriterOutputStream stm, @NotNull ControlPropertyLookupConstant lookup, @Nullable String macroKey, @Nullable SerializableValue value)
-			throws IOException {
+	private static void writeControlProperty(@NotNull XmlWriter stm, @NotNull ControlPropertyLookupConstant lookup,
+											 @Nullable String macroKey, @Nullable SerializableValue value, @NotNull Element addToEle) {
 		if (value == null) {
 			return;
 		}
-		stm.writeBeginTag(String.format("property id='%d'%s%s",
-				lookup.getPropertyId(),
-				macroKey == null ? "" : String.format(" macro-key='%s'", macroKey),
-				value.getPropertyType() != lookup.getPropertyType() ? String.format(" ptype='%s'", value.getPropertyType().getId()) : ""
-				)
-		);
+		Element propertyEle = stm.appendElementToElement("property", addToEle);
+		propertyEle.setAttribute("id", lookup.getPropertyId() + "");
+		if (macroKey != null) {
+			propertyEle.setAttribute("macro-key", macroKey);
+		}
+		if (value.getPropertyType() != lookup.getPropertyType()) {
+			propertyEle.setAttribute("ptype", value.getPropertyType().getId() + "");
+		}
 
-		writeValue(stm, value);
-		stm.writeCloseTag("property");
+		writeValue(stm, value, propertyEle);
 	}
 
 	/**
@@ -396,11 +388,10 @@ public class ProjectXmlUtil {
 	/**
 	 Writes the given {@link SerializableValue} as a series of &lt;v&gt; tags. Example:"&lt;v&gt;1&lt;/v&gt;&lt;v&gt;0&lt;/v&gt;"
 	 */
-	public static void writeValue(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
+	public static void writeValue(@NotNull XmlWriter stm, @NotNull SerializableValue svalue, @NotNull Element addToEle) {
 		for (String value : svalue.getAsStringArray()) {
-			stm.write("<v>");
-			stm.write(XmlWriterOutputStream.esc(value));
-			stm.write("</v>");
+			Element vEle = stm.appendElementToElement("v", addToEle);
+			stm.appendTextNode(value, vEle);
 		}
 	}
 

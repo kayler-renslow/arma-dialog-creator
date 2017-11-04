@@ -24,6 +24,7 @@ import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
@@ -253,7 +254,7 @@ public class HeaderToProject {
 			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), dialogClassName));
 			System.out.println("HeaderToProject.saveToWorkspace project.getProjectSaveFile()=" + project.getProjectSaveFile());
 			writer.write(null);
-		} catch (IOException e) {
+		} catch (TransformerException e) {
 			convertError(dialogClassName, bundle.getString("Convert.FailReason.write_file_fail"));
 		}
 

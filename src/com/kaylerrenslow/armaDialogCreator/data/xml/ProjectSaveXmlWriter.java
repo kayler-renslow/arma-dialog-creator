@@ -7,19 +7,22 @@ import com.kaylerrenslow.armaDialogCreator.control.*;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
 import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
-import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.w3c.dom.Element;
 
+import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.io.IOException;
 
 /**
- Created by Kayler on 08/02/2016.
- */
+ Class for writing {@link Project} to an XML file
+
+ @author Kayler
+ @since 08/02/2016 */
 public class ProjectSaveXmlWriter {
 	/**
 	 Current version of when the project was saved. If the export ever changes format, this number should change as well.
@@ -52,200 +55,170 @@ public class ProjectSaveXmlWriter {
 
 	 @param saveFile if null, will use {@link Project#getProjectSaveFile()} as the write file, otherwise will write
 	 to this file
-	 @throws IOException
+	 @throws TransformerException when file couldn't be written
 	 */
-	public void write(@Nullable File saveFile) throws IOException {
+	public void write(@Nullable File saveFile) throws TransformerException {
 		saveFile = saveFile == null ? projectSaveXml : saveFile;
 
-		XmlWriterOutputStream stm = new XmlWriterOutputStream(saveFile);
+		XmlWriter writer = new XmlWriter(saveFile, "project");
+		writer.getRootElement().setAttribute("name", project.getProjectName());
+		writer.getRootElement().setAttribute("save-version", SAVE_VERSION + "");
+		writer.getRootElement().setAttribute("save-time", System.currentTimeMillis() + "");
 
-		stm.writeDefaultProlog();
-		stm.write(
-				String.format(
-						"<project name='%s' save-version='%d' save-time='%d'>",
-						esc(project.getProjectName()),
-						SAVE_VERSION,
-						System.currentTimeMillis()
-				)
-		);
-
-		stm.write("<project-description>");
-		stm.write(esc(project.getProjectDescription() != null ? project.getProjectDescription() : ""));
-		stm.write("</project-description>");
+		Element projectDescriptionEle = writer.appendElementToRoot("project-description");
+		writer.appendTextNode(project.getProjectDescription() != null ? project.getProjectDescription() : "", projectDescriptionEle);
 
 		if (project.getStringTable() != null) {
-			stm.writeBeginTag("stringtable");
-			stm.write(project.getStringTable().getFile().getAbsolutePath());
-			stm.writeCloseTag("stringtable");
+			Element stringtableEle = writer.appendElementToRoot("stringtable");
+			writer.appendTextNode(project.getStringTable().getFile().getAbsolutePath(), stringtableEle);
 		}
 
-		writeResources(stm, project.getResourceRegistry());
-		writeMacros(stm);
-		writeDisplay(stm, project.getEditingDisplay());
+		ResourceRegistryXmlWriter.write(project.getResourceRegistry(), writer, writer.getRootElement());
 
-		ProjectXmlUtil.writeCustomControls(stm, project.getProjectCustomControlClassRegistry());
+		writeMacros(writer);
+		writeDisplay(writer, project.getEditingDisplay());
 
-		writeProjectExportConfiguration(stm, project.getExportConfiguration());
+		ProjectXmlUtil.writeCustomControls(writer, project.getProjectCustomControlClassRegistry(), writer.getRootElement());
 
-		stm.write("</project>");
+		{//write the project export configuration
+			ProjectExportConfiguration c = project.getExportConfiguration();
+			Element exportConfigEle = writer.appendElementToRoot("export-config");
 
-		stm.flush();
-		stm.close();
+			writeProjectExportConfigurationAttribute(writer, exportConfigEle, "export-class-name", c.getExportClassName());
+			writeProjectExportConfigurationAttribute(writer, exportConfigEle, "export-location", c.getExportDirectory().getPath());
+			writeProjectExportConfigurationAttribute(writer, exportConfigEle, "place-adc-notice", c.shouldPlaceAdcNotice() + "");
+			writeProjectExportConfigurationAttribute(writer, exportConfigEle, "export-macros-to-file", c.shouldExportMacrosToFile() + "");
+			writeProjectExportConfigurationAttribute(writer, exportConfigEle, "export-file-type-ext", c.getHeaderFileType().getExtension());
+		}
+
+		writer.writeToFile(-1);
 
 		writeWorkspaceCustomControlClassRegistry();
 	}
 
-	private void writeWorkspaceCustomControlClassRegistry() throws IOException {
-		XmlWriterOutputStream stm = new XmlWriterOutputStream(project.getWorkspaceCustomControlClassesFile());
-		stm.writeDefaultProlog();
-		stm.writeBeginTag("custom-classes");
-		ProjectXmlUtil.writeCustomControls(stm, project.getWorkspaceCustomControlClassRegistry());
-		stm.writeCloseTag("custom-classes");
-		stm.flush();
-		stm.close();
+	private void writeWorkspaceCustomControlClassRegistry() throws TransformerException {
+		XmlWriter writer = new XmlWriter(project.getWorkspaceCustomControlClassesFile(), "custom-classes");
+		ProjectXmlUtil.writeCustomControls(writer, project.getWorkspaceCustomControlClassRegistry(), writer.getRootElement());
+		writer.writeToFile(-1);
 	}
 
-	private void writeProjectExportConfiguration(XmlWriterOutputStream stm, @NotNull ProjectExportConfiguration configuration) throws IOException {
-		stm.write("<export-config>");
-		writeProjectExportConfigurationAttribute(stm, "export-class-name", configuration.getExportClassName());
-		writeProjectExportConfigurationAttribute(stm, "export-location", configuration.getExportDirectory().getPath());
-		writeProjectExportConfigurationAttribute(stm, "place-adc-notice", configuration.shouldPlaceAdcNotice() + "");
-		writeProjectExportConfigurationAttribute(stm, "export-macros-to-file", configuration.shouldExportMacrosToFile() + "");
-		writeProjectExportConfigurationAttribute(stm, "export-file-type-ext", configuration.getHeaderFileType().getExtension());
-		stm.write("</export-config>");
+	private void writeProjectExportConfigurationAttribute(@NotNull XmlWriter writer, @NotNull Element exportConfig,
+														  @NotNull String attributeName, @NotNull String value) {
+		Element configAttributeEle = writer.appendElementToElement("config-attribute", exportConfig);
+		configAttributeEle.setAttribute("name", attributeName);
+		writer.appendTextNode(value, configAttributeEle);
 	}
 
-	private void writeProjectExportConfigurationAttribute(XmlWriterOutputStream stm, @NotNull String attributeName, @NotNull String value) throws IOException {
-		stm.write(String.format("<config-attribute name='%s'>", attributeName));
-		stm.write(value);
-		stm.write("</config-attribute>");
-	}
 
-	private void writeResources(XmlWriterOutputStream stm, @NotNull ResourceRegistry resourceRegistry) throws IOException {
-		new ResourceRegistryXmlWriter(resourceRegistry).write(stm);
-	}
+	private void writeDisplay(@NotNull XmlWriter writer, @NotNull ArmaDisplay editingDisplay) {
+		Element displayEle = writer.appendElementToRoot("display");
 
-	private void writeDisplay(@NotNull XmlWriterOutputStream stm, @NotNull ArmaDisplay editingDisplay) throws IOException {
-		stm.write("<display>");
-
-		writeDisplayProperties(stm, editingDisplay);
-
-		stm.write("<display-controls type='background'>");
-		writeControls(stm, treeStructureBg.getRoot());
-		stm.write("</display-controls>");
-
-		stm.write("<display-controls type='main'>");
-		writeControls(stm, treeStructureMain.getRoot());
-		stm.write("</display-controls>");
-
-		stm.write("</display>");
-	}
-
-	private void writeDisplayProperties(@NotNull XmlWriterOutputStream stm, @NotNull ArmaDisplay display) throws IOException {
-		for (DisplayProperty property : display.getDisplayProperties()) {
+		//write display properties
+		for (DisplayProperty property : editingDisplay.getDisplayProperties()) {
 			if (property.getValue() == null) {
 				continue;
 			}
-			stm.write(String.format("<display-property id='%s'>", property.getPropertyLookup().getPropertyId()));
-			writeValue(stm, property.getValue());
-			stm.write("</display-property>");
+			Element displayPropertyEle = writer.appendElementToElement("display-property", displayEle);
+			displayPropertyEle.setAttribute("id", property.getPropertyLookup().getPropertyId() + "");
+
+			writeValue(writer, property.getValue(), displayPropertyEle);
 		}
+
+		{
+			Element displayControlsEle = writer.appendElementToElement("display-controls", displayEle);
+			displayControlsEle.setAttribute("type", "background");
+			writeControls(writer, treeStructureBg.getRoot(), displayControlsEle);
+		}
+
+		{
+			Element displayControlsEle = writer.appendElementToElement("display-controls", displayEle);
+			displayControlsEle.setAttribute("type", "main");
+			writeControls(writer, treeStructureMain.getRoot(), displayControlsEle);
+		}
+
 	}
 
-	private void writeControls(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> parent) throws IOException {
+	private void writeControls(@NotNull XmlWriter writer, @NotNull TreeNode<ArmaControl> parent, @NotNull Element addToEle) {
 		for (TreeNode<ArmaControl> treeNode : parent.getChildren()) {
 			if (treeNode.isFolder()) {
-				writeFolder(stm, treeNode);
+				Element folderEle = writer.appendElementToElement("folder", addToEle);
+				folderEle.setAttribute("name", treeNode.getName());
+				writeControls(writer, treeNode, folderEle);
 			} else {
-				writeControl(stm, treeNode, treeNode.getData());
+				writeControl(writer, treeNode, treeNode.getData(), addToEle);
 			}
 		}
 
 	}
 
-	private void writeFolder(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> treeNode) throws IOException {
-		stm.write(String.format("<folder name='%s'>", esc(treeNode.getName())));
-		writeControls(stm, treeNode);
-		stm.write("</folder>");
-	}
+	private void writeControl(@NotNull XmlWriter writer, @NotNull TreeNode<ArmaControl> treeNode,
+							  @NotNull ArmaControl control, @NotNull Element addToEle) {
+		final boolean isControlGroup = control instanceof ArmaControlGroup;
 
-	private void writeControl(@NotNull XmlWriterOutputStream stm, @NotNull TreeNode<ArmaControl> treeNode, @NotNull ArmaControl control) throws IOException {
-		final String controlGroupStr = "control-group";
-		final String controlStr = "control";
-		boolean controlGroup = control instanceof ArmaControlGroup;
-		boolean enabled = control.getRenderer().isEnabled();
-		boolean ghost = control.getRenderer().isGhost();
-
-		stm.write(String.format("<%s control-id='%d' class-name='%s'%s%s%s>",
-				controlGroup ? controlGroupStr : controlStr,
-				control.getControlType().getTypeId(),
-				control.getClassName(),
-				control.getExtendClass() != null ? String.format(" extend-class='%s'", control.getExtendClass()
-						.getClassName()) : "",
-				!enabled ? " enabled='f'" : "",
-				ghost ? " ghost='t'" : ""
-				)
-		);
+		Element controlEle = writer.appendElementToElement(isControlGroup ? "control-group" : "control", addToEle);
+		controlEle.setAttribute("control-id", control.getControlType().getTypeId() + "");
+		controlEle.setAttribute("class-name", control.getClassName());
+		if (control.getExtendClass() != null) {
+			controlEle.setAttribute("extend-class", control.getExtendClass().getClassName());
+		}
+		if (!control.getRenderer().isEnabled()) {
+			controlEle.setAttribute("enabled", "f");
+		}
+		if (control.getRenderer().isGhost()) {
+			controlEle.setAttribute("ghost", "t");
+		}
 
 		//write control properties
 		for (ControlProperty cprop : control.getDefinedProperties()) {
 			if (control.getTempPropertiesReadOnly().contains(cprop)) {
 				continue;
 			}
-			ProjectXmlUtil.writeControlProperty(stm, cprop);
+			ProjectXmlUtil.writeControlProperty(writer, cprop, controlEle);
 		}
 
-		ProjectXmlUtil.writeInheritedControlProperties(stm, control.getInheritedProperties());
+		ProjectXmlUtil.writeInheritedControlProperties(writer, control.getInheritedProperties(), controlEle);
 
-		if (controlGroup) {
-			writeControls(stm, treeNode);
+		if (isControlGroup) {
+			writeControls(writer, treeNode, controlEle);
 		}
 
 		if (control.getRequiredNestedClasses().size() > 0) {
-			final String reqNestedClasses = "nested-required";
-			stm.writeBeginTag(reqNestedClasses);
+			Element nestedRequiredEle = writer.appendElementToElement("nested-required", controlEle);
+
 			for (ControlClass nested : control.getRequiredNestedClasses()) {
 				if (control.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}
-				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
+				ProjectXmlUtil.writeControlClassSpecification(writer, new ControlClassSpecification(nested, false), nestedRequiredEle);
 			}
-			stm.writeCloseTag(reqNestedClasses);
 		}
 
 		if (control.getOptionalNestedClasses().size() > 0) {
-			final String optNestedClasses = "nested-optional";
-			stm.writeBeginTag(optNestedClasses);
+			Element nestedOptionalEle = writer.appendElementToElement("nested-optional", controlEle);
 			for (ControlClass nested : control.getOptionalNestedClasses()) {
 				if (control.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}
-				ProjectXmlUtil.writeControlClassSpecification(stm, new ControlClassSpecification(nested, false));
+				ProjectXmlUtil.writeControlClassSpecification(writer, new ControlClassSpecification(nested, false), nestedOptionalEle);
 			}
-			stm.writeCloseTag(optNestedClasses);
 		}
 
-		stm.write(("</" + (controlGroup ? controlGroupStr : controlStr) + ">"));
 	}
 
-	private void writeMacros(@NotNull XmlWriterOutputStream stm) throws IOException {
-		stm.write("<macros>");
+	private void writeMacros(@NotNull XmlWriter writer) {
+		Element macrosEle = writer.appendElementToRoot("macros");
 
 		ProjectMacroRegistry registry = project.getMacroRegistry();
 		for (Macro macro : registry.getMacros()) {
-			stm.write(String.format("<macro key='%s' property-type-id='%d' comment='%s'>", macro.getKey(), macro.getPropertyType().getId(), esc(macro.getComment())));
-			writeValue(stm, macro.getValue());
-			stm.write("</macro>");
+			Element macroEle = writer.appendElementToElement("macro", macrosEle);
+			macroEle.setAttribute("key", macro.getKey());
+			macroEle.setAttribute("property-type", macro.getPropertyType().getId() + "");
+			macroEle.setAttribute("comment", macro.getComment());
+			writeValue(writer, macro.getValue(), macroEle);
 		}
-
-		stm.write("</macros>");
 	}
 
-	private void writeValue(@NotNull XmlWriterOutputStream stm, @NotNull SerializableValue svalue) throws IOException {
-		ProjectXmlUtil.writeValue(stm, svalue);
-	}
-
-	private static String esc(String value) {
-		return value.replaceAll("'", "&#39;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+	private void writeValue(@NotNull XmlWriter writer, @NotNull SerializableValue svalue, @NotNull Element addToEle) {
+		ProjectXmlUtil.writeValue(writer, svalue, addToEle);
 	}
 }

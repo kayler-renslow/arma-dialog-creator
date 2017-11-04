@@ -4,10 +4,11 @@ import com.kaylerrenslow.armaDialogCreator.arma.stringtable.Language;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTable;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableWriter;
+import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Element;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -24,70 +25,54 @@ public class StringTableXmlWriter implements StringTableWriter {
 		writerWrapper.writeTable();
 	}
 
-	private static class StringTableXmlWriterWrapper extends XmlWriterOutputStream {
+	private static class StringTableXmlWriterWrapper extends XmlWriter {
 
 		private StringTable t;
 
 		public StringTableXmlWriterWrapper(@NotNull StringTable table) throws IOException {
-			super(table.getFile());
+			super(table.getFile(), PROJECT);
 			this.t = table;
 		}
 
-		public void writeTable() throws IOException {
+		public void writeTable() {
 			LinkedList<Package> packages = new LinkedList<>();
 			LinkedList<StringTableKey> noPackages = new LinkedList<>();
 			preloadKeys(packages, noPackages);
 
-			writeDefaultProlog();
-			write(NEW_LINE);
-			writeBeginTag(String.format("%s %s=\"%s\"", PROJECT, PROJECT_NAME, t.getStringTableProjectName()));
-			write(NEW_LINE);
+			getRootElement().setAttribute(PROJECT_NAME, t.getStringTableProjectName());
 
 			for (StringTableKey key : noPackages) {
-				writeKey(key, 1);
+				writeKey(key, getRootElement());
 			}
 			for (Package p : packages) {
-				byte[] tab = tab(1);
-				write(tab);
-				writeBeginTag(String.format("%s %s=\"%s\"", PACKAGE, NAME, p.getName()));
-				write(NEW_LINE);
+				Element pakage = appendElementToRoot(PACKAGE);
+				pakage.setAttribute(NAME, p.getName());
 
 				for (StringTableKey key : p.getKeys()) {
-					writeKey(key, 2);
+					writeKey(key, pakage);
 				}
 
 				for (Container c : p.getContainers()) {
-					writeContainer(c, 2);
+					writeContainer(c, pakage);
 				}
 
-				write(tab);
-				writeCloseTag(PACKAGE);
-				write(NEW_LINE);
 			}
-			writeCloseTag(PROJECT);
-
 		}
 
-		private void writeContainer(@NotNull Container container, int tabAmount) throws IOException {
-			byte[] tab = tab(tabAmount);
-			write(tab);
-			writeBeginTag(String.format("%s %s=\"%s\"", CONTAINER, NAME, container.getName()));
-			write(NEW_LINE);
+		private void writeContainer(@NotNull Container container, @NotNull Element addTo) {
+			Element containerEle = appendElementToElement(CONTAINER, addTo);
+			containerEle.setAttribute(NAME, container.getName());
 
 			for (StringTableKey key : container.getKeys()) {
-				writeKey(key, tabAmount + 1);
+				writeKey(key, containerEle);
 			}
 
 			for (Container c : container.getContainers()) {
-				writeContainer(c, tabAmount + 1);
+				writeContainer(c, containerEle);
 			}
-
-			write(tab);
-			writeCloseTag(CONTAINER);
-			write(NEW_LINE);
 		}
 
-		private void preloadKeys(LinkedList<Package> packages, LinkedList<StringTableKey> noPackages) {
+		private void preloadKeys(@NotNull LinkedList<Package> packages, @NotNull LinkedList<StringTableKey> noPackages) {
 			for (StringTableKey key : t.getKeys()) {
 				if (key.getPath().noPackageName()) {
 					noPackages.add(key);
@@ -147,30 +132,14 @@ public class StringTableXmlWriter implements StringTableWriter {
 			}
 		}
 
-		private void writeKey(@NotNull StringTableKey key, int tabAmount) throws IOException {
-			byte[] tab = tab(tabAmount);
-			write(tab);
-			writeBeginTag(String.format("%s %s=\"%s\"", KEY, ID, key.getId()));
-			write(NEW_LINE);
+		private void writeKey(@NotNull StringTableKey key, @NotNull Element addTo) {
+			Element keyEle = appendElementToElement(KEY, addTo);
+			keyEle.setAttribute(ID, key.getId());
 
-			byte[] tab1 = tab(tabAmount + 1);
 			for (Map.Entry<Language, String> entry : key.getLanguageTokenMap().entrySet()) {
-				write(tab1);
-				writeBeginTag(entry.getKey().getName());
-				write(entry.getValue());
-				writeCloseTag(entry.getKey().getName());
-				write(NEW_LINE);
+				Element languageEle = appendElementToElement(entry.getKey().getName(), keyEle);
+				appendTextNode(entry.getValue(), languageEle);
 			}
-
-			write(tab);
-			writeCloseTag(KEY);
-			write(NEW_LINE);
-		}
-
-		private byte[] tab(int amount) {
-			byte[] tabs = new byte[amount];
-			Arrays.fill(tabs, (byte) '\t');
-			return tabs;
 		}
 	}
 

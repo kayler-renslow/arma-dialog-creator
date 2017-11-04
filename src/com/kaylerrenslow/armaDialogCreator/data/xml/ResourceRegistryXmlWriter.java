@@ -4,80 +4,73 @@ import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.WorkspaceResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
+import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
+import org.w3c.dom.Element;
 
+import javax.xml.transform.TransformerException;
 import java.io.IOException;
 
 /**
  Created by Kayler on 09/08/2016.
  */
 public class ResourceRegistryXmlWriter {
-	protected ResourceRegistry resourceRegistry;
 
 	public static class WorkspaceResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
-		public WorkspaceResourceRegistryXmlWriter() {
-			super(WorkspaceResourceRegistry.getInstance());
+
+		/**
+		 Writes the {@link WorkspaceResourceRegistry} to file
+
+		 @throws TransformerException when the XML couldn't be written
+		 */
+		public static void writeAndClose() throws TransformerException {
+			new WorkspaceResourceRegistryXmlWriter().doWriteAndClose();
 		}
 
-		private WorkspaceResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
-			super(resourceRegistry);
-		}
-
-		@NotNull
-		private XmlWriterOutputStream getXmlWriterOutputStream(@NotNull WorkspaceResourceRegistry registry) throws IOException {
+		private void doWriteAndClose() throws TransformerException {
+			WorkspaceResourceRegistry registry = WorkspaceResourceRegistry.getInstance();
 			if (!registry.getResourcesFile().exists()) {
-				registry.getResourcesFile().createNewFile();
+				boolean made = registry.getResourcesFile().getParentFile().mkdirs();
+				if (!made) {
+					throw new TransformerException("Couldn't create parent directories for resource file");
+				}
+				try {
+					boolean created = registry.getResourcesFile().createNewFile();
+					if (!created) {
+						throw new TransformerException("Couldn't create parent resource file");
+					}
+				} catch (IOException e) {
+					throw new TransformerException(e);
+				}
 			}
 			if (registry.getResourcesFile().isDirectory()) {
-				throw new IOException("registry xml file is a directory");
+				throw new RuntimeException("registry xml file is a directory");
 			}
-			return new XmlWriterOutputStream(registry.getResourcesFile());
-		}
 
-
-		@Override
-		public void write(@NotNull XmlWriterOutputStream fos) throws IOException {
-			fos.writeDefaultProlog();
-			super.write(fos);
-		}
-
-		public static void writeAndClose() throws IOException {
-			writeAndClose(WorkspaceResourceRegistry.getInstance());
-		}
-
-
-		public static void writeAndClose(@NotNull WorkspaceResourceRegistry registry) throws IOException {
-			new WorkspaceResourceRegistryXmlWriter(registry).doWriteAndClose();
-		}
-
-		public void doWriteAndClose() throws IOException {
-			XmlWriterOutputStream fos = getXmlWriterOutputStream((WorkspaceResourceRegistry) this.resourceRegistry);
-			write(fos);
-			fos.flush();
-			fos.close();
+			XmlWriter writer = new XmlWriter(registry.getResourcesFile(), "external-resources");
+			write(registry, writer, writer.getRootElement());
+			writer.writeToFile(-1);
 		}
 	}
 
-	public ResourceRegistryXmlWriter(@NotNull ResourceRegistry resourceRegistry) {
-		this.resourceRegistry = resourceRegistry;
-	}
+	/**
+	 Writes the given {@link ResourceRegistry} to the provided XML element. This will not write anything to file
 
-	public void write(@NotNull XmlWriterOutputStream stm) throws IOException {
-		stm.write("<external-resources>");
+	 @param resourceRegistry the registry
+	 @param writer the writer
+	 @param writeToEle element to write to
+	 */
+	public static void write(@NotNull ResourceRegistry resourceRegistry, @NotNull XmlWriter writer, @NotNull Element writeToEle) {
+		Element externalResourcesEle = writer.appendElementToElement("external-resources", writeToEle);
 		for (ExternalResource resource : resourceRegistry.getResourceList()) {
-			writeResource(stm, resource);
-		}
-		stm.write("</external-resources>");
-	}
 
-	private void writeResource(@NotNull XmlWriterOutputStream fos, ExternalResource resource) throws IOException {
-		StringBuilder attrs = new StringBuilder();
-		for (KeyValueString keyValue : resource.getProperties()) {
-			attrs.append(String.format("<resource-property key='%s'>%s</resource-property>", keyValue.getKey(), keyValue.getValue()));
+			Element externalResourceEle = writer.appendElementToElement("external-resource", externalResourcesEle);
+			writer.appendTextNode(resource.getExternalFile().getPath(), externalResourceEle);
+			for (KeyValueString keyValue : resource.getProperties()) {
+				Element resourcePropertyEle = writer.appendElementToElement("resource-property", externalResourceEle);
+				resourcePropertyEle.setAttribute("key", keyValue.getKey());
+				writer.appendTextNode(keyValue.getValue(), resourcePropertyEle);
+			}
 		}
-		fos.write("<external-resource>");
-		fos.write(resource.getExternalFile().getPath());
-		fos.write(attrs.toString());
-		fos.write("</external-resource>");
 	}
 }
