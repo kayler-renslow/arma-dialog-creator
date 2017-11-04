@@ -316,26 +316,25 @@ public class ControlClass {
 		if (this.getClassName().equals(other.getClassName())) {
 			return true;
 		}
+		if (getExtendClass() == null) {
+			return false;
+		}
+		if (other.getExtendClass() == null) {
+			return false;
+		}
 		//Check for loops, like its a graph.
 
 		//If we can get from this to other, there would be a loop if we extend other.
 		//Therefore, we should return true (because there would be a loop)
 		LinkedList<ControlClass> toVisit = new LinkedList<>();
 		HashSet<String> visited = new HashSet<>();
-		toVisit.add(this);
+		toVisit.add(this.getExtendClass());
 		while (!toVisit.isEmpty()) {
 			ControlClass visit = toVisit.pop();
 			if (visit.getClassName().equals(other.getClassName())) {
 				return true;
 			}
 			visited.add(visit.getClassName());
-
-			for (ControlClass child : visit.mySubClasses) {
-				if (visited.contains(child.getClassName())) {
-					continue;
-				}
-				toVisit.add(child);
-			}
 
 			ControlClass extendClass = visit.getExtendClass();
 			if (extendClass == null || visited.contains(extendClass.getClassName())) {

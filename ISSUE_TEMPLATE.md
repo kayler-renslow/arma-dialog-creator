@@ -1,5 +1,5 @@
 ### Version and Build
-Type your version info and build info here. (Version looks something like 1.0.0 and build is just a number)
+Type your version info **and** build number. (Version looks something like 1.0.0 and build is just a number)
 
 ### Summary
 One or two concise sentences about the issue (i.e. "error on importing").

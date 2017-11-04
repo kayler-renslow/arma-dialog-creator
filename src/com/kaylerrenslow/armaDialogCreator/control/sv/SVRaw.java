@@ -19,7 +19,7 @@ public final class SVRaw extends SerializableValue {
 		@Override
 		public SVRaw convert(DataContext context, @NotNull String... values) throws Exception {
 			//This converter is a placeholder to adhere to PropertyType specifications
-			//and shouldn't ever be used
+			//and shouldn't ever be used. Reason is because it doesn't allow for passing in a revert type (type to convert Raw back into)
 			throw new IllegalStateException();
 		}
 	};
