@@ -309,9 +309,18 @@ public class ControlClassInheritanceTests {
 		TestControlClass hintRep = newTestControlClass();
 		hintRep.setClassName("HintRep");
 
+		TestControlClass thingText = newTestControlClass();
+		thingText.setClassName("ThingText");
+
 		hint.extendControlClass(rscText);
 		hintRep.extendControlClass(hint);
 		assertEquals(false, hint.hasInheritanceLoop(rscText));
+		assertEquals(true, hint.hasInheritanceLoop(hint));
+
+		thingText.extendControlClass(rscText);
+		assertEquals(false, thingText.hasInheritanceLoop(hint));
+		thingText.extendControlClass(hint);
+		assertEquals(false, thingText.hasInheritanceLoop(rscText));
 	}
 
 	private static TestControlClass newTestControlClass() {

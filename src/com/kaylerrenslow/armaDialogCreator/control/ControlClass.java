@@ -302,7 +302,9 @@ public class ControlClass {
 	}
 
 	/**
-	 Check if the given class is part of this {@link ControlClass}'s inheritance tree.
+	 Check if the given class will create an inheritance loop if this ControlClass were to extend it.
+	 The given class may already be in the current inheritance tree,
+	 but as long as there is not a cyclic dependence/inheritance, this method will return false.
 	 If <code>other=={@link #getExtendClass()}</code>, then will return false.
 
 	 @param other other class
