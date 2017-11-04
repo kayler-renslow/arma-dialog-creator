@@ -5,7 +5,7 @@
 * 
 
 **Fixed:**
-* when using the "Convert Type" dialog for a raw Color value, using the array edit popup menu in the ColorArrayValueEditor wasn't updating the ColorPicker
+* 
 
 
 **Notes:**

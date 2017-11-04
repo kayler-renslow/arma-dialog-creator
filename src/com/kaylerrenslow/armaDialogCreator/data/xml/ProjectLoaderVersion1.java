@@ -200,7 +200,12 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_macro_property_type_f"), propertyTypeAttr)));
 					continue;
 				}
-				SerializableValue value = getValue(macro, propertyType, macroElement);
+				SerializableValue value = null;
+				if (propertyType == PropertyType.Raw) {
+					value = ProjectXmlUtil.loadRawValue("MacroRegistry", null, macroElement, this.loader);
+				} else {
+					value = getValue("MacroRegistry", propertyType, macroElement);
+				}
 				if (value == null) {
 					continue;
 				}
