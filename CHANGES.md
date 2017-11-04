@@ -1,12 +1,8 @@
 **Added:**
-* XmlWriter class tests for utf-8 and utf-16
+* 
 
 **Changed:**
-* rewrote XmlWriterOutputStream to fix encoding issue and renamed the class to XmlWriter
-* refactored StringTableXmlWriter to utilize the XmlWriter encoding fix
-* refactored ProjectSaveXmlWriter to utilize the XmlWriter encoding fix
-* refactored ProjectXmlUtil to utilize XmlWriter encoding fix
-* refactored ResourceRegistryXmlWriter to utilize XmlWriter encoding fix
+* 
 
 **Fixed:**
 * 

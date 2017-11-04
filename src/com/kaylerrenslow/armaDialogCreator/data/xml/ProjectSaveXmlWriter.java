@@ -212,7 +212,7 @@ public class ProjectSaveXmlWriter {
 		for (Macro macro : registry.getMacros()) {
 			Element macroEle = writer.appendElementToElement("macro", macrosEle);
 			macroEle.setAttribute("key", macro.getKey());
-			macroEle.setAttribute("property-type", macro.getPropertyType().getId() + "");
+			macroEle.setAttribute("property-type-id", macro.getPropertyType().getId() + "");
 			macroEle.setAttribute("comment", macro.getComment());
 			writeValue(writer, macro.getValue(), macroEle);
 		}

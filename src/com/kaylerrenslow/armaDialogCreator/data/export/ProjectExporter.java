@@ -443,11 +443,16 @@ public class ProjectExporter {
 				continue;
 			}
 			if (property.getMacro() != null) {
+				Macro m = property.getMacro();
 				StringTableKey stringKey = null;
 				if (property.getMacro() instanceof StringTableKey) {
 					stringKey = (StringTableKey) property.getMacro();
 				}
-				stringBuilder.append(String.format(itemFormatString, property.getName(), stringKey != null ? stringKey.getHeaderMacroId() : property.getMacro().getKey()));
+				String format = itemFormatString;
+				if (m.getValue().getPropertyType().getPropertyValuesSize() != 1) {
+					format = itemArrayFormatString;
+				}
+				stringBuilder.append(String.format(format, property.getName(), stringKey != null ? stringKey.getHeaderMacroId() : property.getMacro().getKey()));
 			} else {
 				if (property.getValue().getAsStringArray().length == 1) {
 					stringBuilder.append(
