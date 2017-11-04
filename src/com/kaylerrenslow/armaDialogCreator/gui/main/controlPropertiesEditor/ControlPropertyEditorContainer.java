@@ -284,8 +284,6 @@ class ControlPropertyEditorContainer extends HBox {
 						}
 						controlProperty.setValue(newValue);
 					}
-				} else {
-					throw new IllegalStateException("control property should have raw value");
 				}
 			}
 			resetPropertyValueEditor();
