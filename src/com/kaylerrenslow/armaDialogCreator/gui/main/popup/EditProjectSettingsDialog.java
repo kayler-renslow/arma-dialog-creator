@@ -58,6 +58,6 @@ public class EditProjectSettingsDialog extends StageDialog<VBox> {
 
 	@NotNull
 	public String getProjectDescription() {
-		return taProjectDesc.getText();
+		return taProjectDesc.getText() == null ? "" : taProjectDesc.getText();
 	}
 }

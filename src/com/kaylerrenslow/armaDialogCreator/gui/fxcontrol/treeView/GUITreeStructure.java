@@ -41,7 +41,10 @@ public class GUITreeStructure<T> implements TreeStructure<T> {
 
 		TreeNode.Simple<Tv> rootAsNode = new TreeNode.Simple<>(null, "~ROOT", false);
 		for (TreeItem<Td> child : treeView.getRoot().getChildren()) {
-			buildStructure(converter, child, rootAsNode);
+			TreeNode.Simple<Tv> treeItemAsNode = getNode(converter, child);
+			rootAsNode.getChildren().add(treeItemAsNode);
+
+			buildStructure(converter, child, treeItemAsNode);
 		}
 
 		return new GUITreeStructure<>(rootAsNode);
@@ -50,9 +53,7 @@ public class GUITreeStructure<T> implements TreeStructure<T> {
 	private static <Td extends TreeItemData, Tv> void buildStructure(
 			@NotNull TreeDataToValueConverter<Td, Tv> converter,
 			@NotNull TreeItem<Td> treeItem,
-			@NotNull TreeNode<Tv> parentAsTreeNode) {
-		TreeNode.Simple<Tv> treeItemAsNode = getNode(converter, treeItem);
-		parentAsTreeNode.getChildren().add(treeItemAsNode);
+			@NotNull TreeNode<Tv> treeItemAsNode) {
 
 		for (TreeItem<Td> child : treeItem.getChildren()) {
 			TreeNode.Simple<Tv> childAsNode = getNode(converter, child);

@@ -70,22 +70,34 @@ public class Project implements SpecificationRegistry {
 		projectSaveFile = info.getProjectXmlFile();
 	}
 
+	/** @return {@link ApplicationDataManager#getCurrentProject()} */
 	@NotNull
 	public static Project getCurrentProject() {
 		return ApplicationDataManager.getInstance().getCurrentProject();
 	}
 
-	/** Get the .xml file for the project */
+	/**
+	 Get the .xml file for the project. This file is not guaranteed to exist.
+	 It is guaranteed to exist when the project is saved.
+
+	 @return the .xml file
+	 */
 	@NotNull
 	public File getProjectSaveFile() {
 		return projectSaveFile;
 	}
 
+	/** @return the {@link StringTable} instance for the project, or null if not set */
 	@Nullable
 	public StringTable getStringTable() {
 		return stringTable;
 	}
 
+	/**
+	 Set the {@link StringTable} instance for the project or remove it
+
+	 @param stringTable the instance to use
+	 */
 	public void setStringTable(@Nullable StringTable stringTable) {
 		this.stringTable = stringTable;
 		if (stringTable != null) {
@@ -103,6 +115,7 @@ public class Project implements SpecificationRegistry {
 		return new File(projectSaveDirectory.getPath() + "\\" + fileName);
 	}
 
+	/** @return the user's name for the project */
 	@NotNull
 	public String getProjectName() {
 		return projectName;
@@ -154,20 +167,29 @@ public class Project implements SpecificationRegistry {
 		while (dest.exists()) {
 			dest = workspace.getFileForName(directoryName + " (" + c + ")");
 		}
-		Files.move(projectSaveDirectory.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		if (projectSaveFile.exists()) {
+			Files.move(projectSaveDirectory.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		}
 		this.projectSaveDirectory = dest;
 		this.projectSaveFile = getFileForName(PROJECT_SAVE_FILE_NAME);
 	}
 
+	/** @return the project's user description */
 	@Nullable
 	public String getProjectDescription() {
 		return projectDescription;
 	}
 
+	/**
+	 Set the project's description
+
+	 @param projectDescription the description
+	 */
 	public void setProjectDescription(@Nullable String projectDescription) {
 		this.projectDescription = projectDescription;
 	}
 
+	/** @return the directory which {@link #getProjectSaveFile()} exists in */
 	@NotNull
 	public File getProjectSaveDirectory() {
 		return projectSaveDirectory;
