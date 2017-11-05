@@ -17,7 +17,6 @@ import static junit.framework.Assert.assertEquals;
  @since 04/28/2017 */
 public class HeaderParserHelpers {
 
-
 	public static void assertPreprocessLine(@NotNull String expect, @NotNull File processFile, @Nullable HashMap<String, DefineMacroContent.DefineValue> toInsert) throws Exception {
 		Preprocessor p = new Preprocessor(processFile, new HeaderParserContext(HeaderTestUtil.getTemporaryResultsFile()));
 		if (toInsert != null) {
@@ -25,11 +24,17 @@ public class HeaderParserHelpers {
 		}
 		p.preprocessStack.add(new Preprocessor.PreprocessState(processFile));
 
-		Preprocessor.PreprocessorInputStream stream = p.run();
-
-		byte[] arr = new byte[stream.available()];
-		stream.read(arr);
-		assertEquals(expect.trim(), new String(arr).trim());
+		Preprocessor.PreprocessorFileReader reader = p.run();
+		char[] buf = new char[1024];
+		StringBuilder sb = new StringBuilder();
+		while (true) {
+			int read = reader.read(buf);
+			if (read < 0) {
+				break;
+			}
+			sb.append(buf);
+		}
+		assertEquals(expect.trim(), sb.toString().trim());
 	}
 
 	public static void testEquivalence(HeaderFile headerFile, HeaderClass expected) {

@@ -8,6 +8,7 @@ import com.kaylerrenslow.armaDialogCreator.data.HeaderConversionException;
 import com.kaylerrenslow.armaDialogCreator.expression.*;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.ScreenDimension;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
+import com.kaylerrenslow.armaDialogCreator.util.UTF8FileReader;
 import com.kaylerrenslow.armaDialogCreator.util.UTF8FileWriter;
 import org.intellij.lang.annotations.RegExp;
 import org.jetbrains.annotations.NotNull;
@@ -102,7 +103,7 @@ class Preprocessor {
 	 @throws Exception when error occurred
 	 */
 	@NotNull
-	public PreprocessorInputStream run() throws Exception {
+	public Preprocessor.PreprocessorFileReader run() throws Exception {
 		if (preprocessed) {
 			throw new IllegalStateException("preprocessor already run");
 		}
@@ -136,7 +137,7 @@ class Preprocessor {
 
 		expressionInterpreter.shutdownAndDisable();
 
-		return new PreprocessorInputStream(temporaryFullyPreprocessedResultFile);
+		return new PreprocessorFileReader(temporaryFullyPreprocessedResultFile);
 	}
 
 	/**
@@ -910,42 +911,17 @@ class Preprocessor {
 	 A simple wrapper {@link InputStream} so we can easily change how preprocessed results are stored,
 	 without changing how the results are read
 	 */
-	protected static class PreprocessorInputStream extends InputStream {
-
-		private final FileInputStream fis;
+	protected static class PreprocessorFileReader extends UTF8FileReader {
 
 		/**
-		 Create a new {@link InputStream} that reads the fully preprocessed file's contents
+		 Create a new Reader that reads the fully preprocessed file's contents
 
 		 @param preprocessedFile the file that contains the fully preprocessed contents
 		 */
-		protected PreprocessorInputStream(@NotNull File preprocessedFile) {
-			try {
-				fis = new FileInputStream(preprocessedFile);
-			} catch (FileNotFoundException e) {
-				throw new IllegalArgumentException("preprocessedFile wasn't found!", e);
-			}
+		protected PreprocessorFileReader(@NotNull File preprocessedFile) throws FileNotFoundException {
+			super(preprocessedFile);
 		}
 
-		@Override
-		public int available() throws IOException {
-			return fis.available();
-		}
-
-		@Override
-		public int read(@NotNull byte[] b) throws IOException {
-			return super.read(b);
-		}
-
-		@Override
-		public int read(@NotNull byte[] b, int off, int len) throws IOException {
-			return super.read(b, off, len);
-		}
-
-		@Override
-		public int read() throws IOException {
-			return fis.read();
-		}
 	}
 
 	private static class UnaryCommandValueProviderImpl implements UnaryCommandValueProvider {

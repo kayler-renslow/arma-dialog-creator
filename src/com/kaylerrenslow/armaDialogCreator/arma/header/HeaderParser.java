@@ -85,14 +85,14 @@ public class HeaderParser {
 		HeaderFile headerFile = new HeaderFile(getParsingFile());
 
 		Preprocessor pre = new Preprocessor(parsingFile, parserContext);
-		Preprocessor.PreprocessorInputStream fileContentStream = pre.run();
+		Preprocessor.PreprocessorFileReader fileContentStream = pre.run();
 
 		parseText(headerFile, fileContentStream);
 
 		return headerFile;
 	}
 
-	private void parseText(@NotNull HeaderFile parsingFile, @NotNull Preprocessor.PreprocessorInputStream fileContentStream) throws HeaderParseException {
+	private void parseText(@NotNull HeaderFile parsingFile, @NotNull Preprocessor.PreprocessorFileReader fileContentStream) throws HeaderParseException {
 		HeaderAntlrLexer l = getLexer(fileContentStream);
 		HeaderAntlrParser p = getParser(new CommonTokenStream(l));
 		l.getErrorListeners().clear();
@@ -134,9 +134,9 @@ public class HeaderParser {
 	}
 
 	@NotNull
-	private HeaderAntlrLexer getLexer(@NotNull Preprocessor.PreprocessorInputStream s) {
+	private HeaderAntlrLexer getLexer(@NotNull Preprocessor.PreprocessorFileReader r) {
 		try {
-			return new HeaderAntlrLexer(new ANTLRInputStream(s));
+			return new HeaderAntlrLexer(CharStreams.fromReader(r));
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
