@@ -1,7 +1,5 @@
 **Added:**
-* test cases for XmlLoader encoding stuff
-* XmlLoader will now attempt to re-read the XML file in UTF-16. 
-    This should help resolve any issues of reading old XML files created by ADC that were encoded incorrectly
+* 
 
 **Changed:**
 * 

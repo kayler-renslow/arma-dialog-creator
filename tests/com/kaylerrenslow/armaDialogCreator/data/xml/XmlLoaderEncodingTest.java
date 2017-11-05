@@ -43,6 +43,8 @@ public class XmlLoaderEncodingTest {
 		File f = getFile("encodingTestBad2.xml");
 		FileOutputStream fos = new FileOutputStream(f);
 		//purposefully write the XML in non utf-8 to make sure that the XmlLoader will re-read the file in UTF-16
+
+		//this test exists because this was one way that ADC wrote XML files before encoding fix. Java uses UTF-16 internally.
 		fos.write("<?xml version=\"1.0\" encoding=\"utf-8\" ?>".getBytes());
 		fos.write("<bad-encoding-test>~!@#$%^&amp;*()_+`1234567890-=[]{}\\|&lt;&gt;?,./abcdefÄä</bad-encoding-test>".getBytes());
 		fos.flush();
