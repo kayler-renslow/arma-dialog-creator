@@ -1377,8 +1377,6 @@ public class ControlClass {
 			} else {
 				overrideNestedClass(update.getNested().getClassName());
 			}
-		} else {
-			throw new IllegalStateException("unknown handled update:" + data.getClass().getName());
 		}
 	}
 

@@ -4,6 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
+ This update is created at the end of {@link ControlProperty#inherit(ControlProperty)}.
+
+ @see PreemptiveControlPropertyInheritUpdate
  @author Kayler
  @since 11/20/2016 */
 public class ControlPropertyInheritUpdate implements ControlPropertyUpdate {

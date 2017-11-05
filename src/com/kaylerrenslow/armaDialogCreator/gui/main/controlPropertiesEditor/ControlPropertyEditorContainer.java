@@ -137,9 +137,15 @@ class ControlPropertyEditorContainer extends HBox {
 			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
 				if (data instanceof ControlPropertyInheritUpdate) {
 					propertyInheritUpdate.apply(null);
+					resetPropertyValueEditor();
 				} else if (data instanceof ControlPropertyMacroUpdate) {
 					ControlPropertyMacroUpdate macroUpdate = (ControlPropertyMacroUpdate) data;
 					updateStackPanePropertyInputWithNewMode(macroUpdate.getNewMacro() != null ? ControlPropertyValueEditor.EditMode.MACRO : ControlPropertyValueEditor.EditMode.DEFAULT);
+				} else if (data instanceof PreemptiveControlPropertyInheritUpdate) {
+					// this is to prevent github issue https://github.com/kayler-renslow/arma-dialog-creator/issues/17
+					// which is about the control property updating it's value to a type that the currentValueEditor()
+					// isn't expecting and creating a class cast exception
+					currentValueEditor().clearListeners();
 				}
 			}
 		};
@@ -407,6 +413,9 @@ class ControlPropertyEditorContainer extends HBox {
 	 {@link ControlPropertyValueEditor#clearListeners()}.
 	 */
 	private void resetPropertyValueEditor() {
+		if (propertyValueEditor != null) {
+			propertyValueEditor.clearListeners();
+		}
 		propertyValueEditor = constructNewPropertyValueEditor();
 		HBox.setHgrow(stackPanePropertyInput, propertyValueEditor.displayFullWidth() ?
 				Priority.ALWAYS : Priority.NEVER

@@ -305,6 +305,7 @@ public class ControlProperty {
 	 <li>Value update</li>
 	 <li>Custom data update</li>
 	 <li>Set to a {@link Macro}, or removed it</li>
+	 <li>{@link #inherit(ControlProperty)} is invoked</li>
 	 </ul>
 	 */
 	@NotNull
@@ -415,8 +416,6 @@ public class ControlProperty {
 		} else if (update instanceof ControlPropertyInheritUpdate) {
 			ControlPropertyInheritUpdate update1 = (ControlPropertyInheritUpdate) update;
 			inherit(update1.getInheritedProperty());
-		} else {
-			throw new IllegalArgumentException("WARNING: ControlProperty.update(): unknown control property update:" + update);
 		}
 	}
 
@@ -476,7 +475,9 @@ public class ControlProperty {
 	/**
 	 Inherit values, macro, and custom data from the given {@link ControlProperty}.
 	 If the property is inherited and then this method is invoked again with <code>inherit</code>==null, the
-	 previous values, macro, and custom data will be given back to this property
+	 previous values, macro, and custom data will be given back to this property. This method will emit a
+	 {@link ControlPropertyInheritUpdate} for {@link #getControlPropertyUpdateGroup()} after the values have been set.
+	 This method will also emit a {@link PreemptiveControlPropertyInheritUpdate} at the start of this method.
 
 	 @param inherit property to inherit, or null to remove any inheritance
 	 */
@@ -487,6 +488,7 @@ public class ControlProperty {
 		if (inherit != null && inherit.inherited == this) {
 			throw new IllegalArgumentException("circular inheritance");
 		}
+		controlPropertyUpdateGroup.update(new PreemptiveControlPropertyInheritUpdate(this, inherit));
 		ControlProperty oldInherited = inherited;
 		inherited = inherit;
 		if (inherit == null) {
