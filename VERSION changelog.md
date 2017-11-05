@@ -1,4 +1,4 @@
-**Release date:** tbd
+**Release date:** November 5, 2017
 
 **Added:**
 * 
