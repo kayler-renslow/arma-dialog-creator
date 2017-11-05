@@ -72,9 +72,9 @@ public class ProjectSaveXmlWriter {
 	 @param saveFile if null, will use {@link Project#getProjectSaveFile()} as the write file, otherwise will write
 	 to this file
 	 @param appendWorkspaceCustomControlClasses true if the current Workspace {@link CustomControlClass} instance
-	 written in({@link Project#getWorkspaceCustomControlClassesFile()}) should not be overridden and instead be preserved
+	 written in {@link Project#getWorkspaceCustomControlClassesFile()} should not be overridden and instead be preserved
 	 and the {@link Project} that is being saved will have its Workspace {@link CustomControlClass} instances appended. If false,
-	 the entire file will be overidden with the current {@link Project#getWorkspaceCustomControlClassRegistry()}
+	 the entire file will be overwritten with the current {@link Project#getWorkspaceCustomControlClassRegistry()}
 	 @throws TransformerException when file couldn't be written
 	 */
 	public void write(@Nullable File saveFile, boolean appendWorkspaceCustomControlClasses) throws TransformerException {

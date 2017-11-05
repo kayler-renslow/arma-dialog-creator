@@ -2,7 +2,7 @@
 * 
 
 **Changed:**
-* HeaderToProject will now concatenate old Custom Control Classes instead of complete overwrite the file
+* 
 
 **Fixed:**
 * 
