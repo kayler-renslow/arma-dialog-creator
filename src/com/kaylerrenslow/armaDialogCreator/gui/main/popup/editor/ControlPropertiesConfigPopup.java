@@ -123,13 +123,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		myScene.setFill(Color.TRANSPARENT);
 		myRootElement.setPadding(new Insets(20.0));
-		myRootElement.setMaxHeight(720d); //prevent the element from being godly large
 		myRootElement.setMinWidth(520);
+		myRootElement.setMaxWidth(720);
 		myRootElement.setFillWidth(true);
 	}
 
 	private void initializeToControl() {
 		editorPane = new ControlPropertiesEditorPane(this.control);
+		editorPane.setMaxHeight(720d); //prevent the element from being godly large
 
 		Color bg = this.control.getRenderer().getBackgroundColor();
 
@@ -315,12 +316,12 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 		ScrollPane borderPaneScrollPane = new ScrollPane(borderPane);
 		borderPaneScrollPane.setFitToWidth(false);
-		borderPaneScrollPane.setFitToHeight(true);
+		borderPaneScrollPane.setFitToHeight(false);
+		borderPaneScrollPane.setMinHeight(50);
 		borderPaneScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		borderPaneScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
 		borderPaneScrollPane.setPadding(new Insets(5));
 		borderPaneScrollPane.setStyle("-fx-background-color:transparent;");
-		VBox.setVgrow(borderPane, Priority.ALWAYS);
 		myRootElement.getChildren().add(borderPaneScrollPane);
 	}
 
