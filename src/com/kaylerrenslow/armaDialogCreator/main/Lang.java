@@ -77,7 +77,7 @@ public interface Lang {
 
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";
-		String VERSION = "1.0.2";
+		String VERSION = "1.0.3";
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 	}
 
