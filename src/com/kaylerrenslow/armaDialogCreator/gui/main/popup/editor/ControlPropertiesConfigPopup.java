@@ -69,7 +69,10 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private final ValueListener<String> classNameListener = new ValueListener<String>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
+			newValue = newValue == null ? "" : newValue;
+			String newClassName = newValue;
 			lblClassName.setText(newValue);
+			lblClassName.setTooltip(new Tooltip(newClassName));
 		}
 	};
 	private final ReadOnlyValueListener<ControlClass> controlClassExtendListener = new ReadOnlyValueListener<ControlClass>() {
@@ -276,8 +279,10 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 
 		{
-			lblClassName = new Label(control.getClassName());
+			lblClassName = new Label();
 			lblClassName.setFont(Font.font(16));
+			//update the label through the listener instance
+			classNameListener.valueUpdated(control.getClassNameObserver(), null, control.getClassName());
 		}
 		Label lblColon = new Label(":");
 		lblColon.setFont(lblClassName.getFont());
@@ -307,7 +312,16 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		);
 		//help distance the left side from right
 		BorderPane.setMargin(hboxLeft, new Insets(0, 40, 0, 0));
-		myRootElement.getChildren().add(borderPane);
+
+		ScrollPane borderPaneScrollPane = new ScrollPane(borderPane);
+		borderPaneScrollPane.setFitToWidth(false);
+		borderPaneScrollPane.setFitToHeight(true);
+		borderPaneScrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+		borderPaneScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+		borderPaneScrollPane.setPadding(new Insets(5));
+		borderPaneScrollPane.setStyle("-fx-background-color:transparent;");
+		VBox.setVgrow(borderPane, Priority.ALWAYS);
+		myRootElement.getChildren().add(borderPaneScrollPane);
 	}
 
 	@Override
