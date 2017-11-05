@@ -62,6 +62,8 @@ public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 			close();
 		});
 		footer.getRightContainer().getChildren().add(0, btnDelete);
+
+		setComboBoxScope(toEdit.getScope());
 	}
 
 	@Override

@@ -295,6 +295,15 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		return items;
 	}
 
+	/**
+	 Set which scope is selected for the combobox used to select {@link CustomControlClass.Scope}
+
+	 @param scope the scope to select
+	 */
+	protected void setComboBoxScope(@NotNull CustomControlClass.Scope scope) {
+		comboBoxScope.getSelectionModel().select(scope);
+	}
+
 	protected void hideBaseControlMenuButton(boolean hidden) {
 		lblBaseControl.setVisible(!hidden);
 	}
