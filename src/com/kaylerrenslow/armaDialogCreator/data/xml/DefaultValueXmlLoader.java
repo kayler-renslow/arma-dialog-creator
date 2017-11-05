@@ -9,15 +9,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
-import java.io.InputStream;
+import java.io.Reader;
 import java.util.List;
 
 /**
  @author Kayler
  @since 11/22/2016 */
 public class DefaultValueXmlLoader extends XmlLoader {
-	public DefaultValueXmlLoader(@NotNull InputStream is, @Nullable DataContext context) throws XmlParseException {
-		super(is, context, DataKeys.ENV);
+	public DefaultValueXmlLoader(@NotNull Reader r, @Nullable DataContext context) throws XmlParseException {
+		super(r, context, DataKeys.ENV);
 	}
 
 	public SerializableValue fetchValue(@NotNull ControlPropertyLookupConstant constantToFetch) {

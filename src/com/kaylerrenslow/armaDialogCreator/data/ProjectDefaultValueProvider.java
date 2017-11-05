@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +50,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 			if (is == null) {
 				return;
 			}
-			DefaultValueXmlLoader loader = new DefaultValueXmlLoader(is, data);
+			DefaultValueXmlLoader loader = new DefaultValueXmlLoader(new InputStreamReader(is), data);
 
 			for (ControlPropertyLookupConstant lookup : tofetch) {
 				valuesMap.put(lookup.getPropertyName(), loader.fetchValue(lookup));
