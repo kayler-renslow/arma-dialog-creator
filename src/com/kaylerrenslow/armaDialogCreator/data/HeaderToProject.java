@@ -252,7 +252,7 @@ public class HeaderToProject {
 		ProjectSaveXmlWriter writer = new ProjectSaveXmlWriter(project, structureMain, structureBg);
 		try {
 			callback.message(String.format(bundle.getString("Status.saving_dialog_f"), dialogClassName));
-			writer.write(null);
+			writer.write(null, true);
 		} catch (TransformerException e) {
 			convertError(dialogClassName, bundle.getString("Convert.FailReason.write_file_fail"));
 		}

@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.data.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,9 +9,10 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 11/19/2016 */
-public interface MacroRegistry {
+public interface MacroRegistry extends Registry {
 
 	/** Get a {@link Macro} instance from the given name. Will return null if key couldn't be matched */
 	@Nullable
 	Macro findMacroByKey(@NotNull String macroKey);
+
 }

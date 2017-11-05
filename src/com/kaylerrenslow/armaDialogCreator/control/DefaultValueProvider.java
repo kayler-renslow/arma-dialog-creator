@@ -12,6 +12,7 @@ import java.util.List;
  @author Kayler
  @since 11/22/2016 */
 public interface DefaultValueProvider {
+
 	/**
 	 Get a default value for the given property lookup. This will not be called before
 	 {@link #prefetchValues(List, Context)}.

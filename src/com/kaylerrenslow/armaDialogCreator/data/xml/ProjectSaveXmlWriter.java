@@ -10,13 +10,17 @@ import com.kaylerrenslow.armaDialogCreator.data.ProjectMacroRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeStructure;
+import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.xml.transform.TransformerException;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  Class for writing {@link Project} to an XML file
@@ -51,13 +55,29 @@ public class ProjectSaveXmlWriter {
 	}
 
 	/**
-	 Write the xml.
+	 Write the xml. This invokes {@link #write(File, boolean)} with <code>appendWorkspaceCustomControlClasses</code>
+	 set to false
 
 	 @param saveFile if null, will use {@link Project#getProjectSaveFile()} as the write file, otherwise will write
 	 to this file
 	 @throws TransformerException when file couldn't be written
 	 */
 	public void write(@Nullable File saveFile) throws TransformerException {
+		write(saveFile, false);
+	}
+
+	/**
+	 Write the xml.
+
+	 @param saveFile if null, will use {@link Project#getProjectSaveFile()} as the write file, otherwise will write
+	 to this file
+	 @param appendWorkspaceCustomControlClasses true if the current Workspace {@link CustomControlClass} instance
+	 written in({@link Project#getWorkspaceCustomControlClassesFile()}) should not be overridden and instead be preserved
+	 and the {@link Project} that is being saved will have its Workspace {@link CustomControlClass} instances appended. If false,
+	 the entire file will be overidden with the current {@link Project#getWorkspaceCustomControlClassRegistry()}
+	 @throws TransformerException when file couldn't be written
+	 */
+	public void write(@Nullable File saveFile, boolean appendWorkspaceCustomControlClasses) throws TransformerException {
 		saveFile = saveFile == null ? projectSaveXml : saveFile;
 
 		XmlWriter writer = new XmlWriter(saveFile, "project");
@@ -93,12 +113,26 @@ public class ProjectSaveXmlWriter {
 
 		writer.writeToFile(-1);
 
-		writeWorkspaceCustomControlClassRegistry();
+		writeWorkspaceCustomControlClassRegistry(appendWorkspaceCustomControlClasses);
 	}
 
-	private void writeWorkspaceCustomControlClassRegistry() throws TransformerException {
-		XmlWriter writer = new XmlWriter(project.getWorkspaceCustomControlClassesFile(), "custom-classes");
+	private void writeWorkspaceCustomControlClassRegistry(boolean appendWorkspaceCustomControlClasses) throws TransformerException {
+		File writeFile = project.getWorkspaceCustomControlClassesFile();
+		List<Element> elementsToAppend = new ArrayList<>();
+		if (appendWorkspaceCustomControlClasses) {
+			try {
+				XmlLoader loader = new XmlLoader(writeFile, null);
+				elementsToAppend.addAll(XmlUtil.getChildElementsWithTagName(loader.getDocumentElement(), "*"));
+			} catch (XmlParseException e) {
+				e.printStackTrace();
+			}
+		}
+		XmlWriter writer = new XmlWriter(writeFile, "custom-classes");
 		ProjectXmlUtil.writeCustomControls(writer, project.getWorkspaceCustomControlClassRegistry(), writer.getRootElement());
+		for (Element element : elementsToAppend) {
+			Node imported = writer.getDocument().importNode(element, true);
+			writer.getRootElement().appendChild(imported);
+		}
 		writer.writeToFile(-1);
 	}
 

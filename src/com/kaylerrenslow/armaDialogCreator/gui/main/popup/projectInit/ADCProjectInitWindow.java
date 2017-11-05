@@ -418,7 +418,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 			public ImportTab() {
 				VBox root = getTabVbox(20);
-				Label lblOpenProject = new Label(bundle.getString("import_project_title"));
+				Label lblImportProject = new Label(bundle.getString("import_project_title"));
 				Label lblLocateDesc = new Label(bundle.getString("locate_description_ext_tip"));
 				lblLocateDesc.setWrapText(true);
 
@@ -440,7 +440,14 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					projectInitWindow.ok();
 
 				});
-				root.getChildren().addAll(lblOpenProject, lblLocateDesc, btnLocate);
+				ScrollPane scrollPaneDesc = new ScrollPane(lblLocateDesc);
+				scrollPaneDesc.setFitToWidth(true);
+				root.getChildren().addAll(
+						lblImportProject,
+						new Label(bundle.getString("locate_description_ext_pretip")),
+						scrollPaneDesc,
+						btnLocate
+				);
 
 				tabImport.setContent(root);
 

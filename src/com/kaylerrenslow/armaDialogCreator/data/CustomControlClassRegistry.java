@@ -1,6 +1,9 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClass;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassRegistry;
+import com.kaylerrenslow.armaDialogCreator.control.ControlClassSpecification;
+import com.kaylerrenslow.armaDialogCreator.control.CustomControlClass;
 import com.kaylerrenslow.armaDialogCreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,12 +20,13 @@ import java.util.List;
 public class CustomControlClassRegistry implements ControlClassRegistry, Iterable<CustomControlClass> {
 	private final List<CustomControlClass> controlClassList = new LinkedList<>();
 	private final ReadOnlyList<CustomControlClass> controlClassReadOnlyList = new ReadOnlyList<>(controlClassList);
-	private final SpecificationRegistry specReg;
 	private final CustomControlClass.Scope scope;
+	private final Project project;
 
-	public CustomControlClassRegistry(@NotNull SpecificationRegistry specReg, @NotNull CustomControlClass.Scope scope) {
-		this.specReg = specReg;
+	public CustomControlClassRegistry(@NotNull CustomControlClass.Scope scope,
+									  @NotNull Project project) {
 		this.scope = scope;
+		this.project = project;
 	}
 
 	/**
@@ -57,7 +61,7 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 	 */
 	@NotNull
 	public CustomControlClass addControlClass(@NotNull ControlClassSpecification controlClass) {
-		CustomControlClass ccc = new CustomControlClass(controlClass, specReg, scope);
+		CustomControlClass ccc = new CustomControlClass(controlClass, project, scope);
 		controlClassList.add(ccc);
 		return ccc;
 	}
@@ -111,6 +115,11 @@ public class CustomControlClassRegistry implements ControlClassRegistry, Iterabl
 			}
 		}
 		return null;
+	}
+
+	@NotNull
+	public Project getProject() {
+		return project;
 	}
 
 	/**

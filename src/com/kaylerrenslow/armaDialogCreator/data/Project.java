@@ -64,8 +64,8 @@ public class Project implements SpecificationRegistry {
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
 		resourceRegistry = new ResourceRegistry(this);
-		projectCustomControlClassRegistry = new CustomControlClassRegistry(this, CustomControlClass.Scope.Project);
-		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(this, CustomControlClass.Scope.Workspace);
+		projectCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Project, this);
+		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Workspace, this);
 
 		projectSaveFile = info.getProjectXmlFile();
 	}

@@ -4,7 +4,7 @@
 * 
 
 **Changed:**
-* 
+* Importing will now concatenate old Custom Control Classes instead of complete overwrite the existing Custom Control Classes
 
 **Fixed:**
 * XML UTF-8 encoding issue

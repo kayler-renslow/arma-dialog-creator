@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
+import com.kaylerrenslow.armaDialogCreator.data.Registry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 11/19/2016 */
-public interface ControlClassRegistry {
+public interface ControlClassRegistry extends Registry {
 
 	/**
 	 Will get the {@link ControlClass} by the given name
@@ -17,4 +18,5 @@ public interface ControlClassRegistry {
 	 */
 	@Nullable
 	ControlClass findControlClassByName(@NotNull String className);
+
 }
