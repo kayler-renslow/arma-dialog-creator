@@ -57,6 +57,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 		}
 
 		private void handleMove(ControlListChange<ArmaControl> change) {
+			System.out.println("EditorComponentTreeView.handleMove");
 			ControlMove<ArmaControl> moved = change.getMoved();
 			ArmaControl movedControl = moved.getMovedControl();
 			if (!moved.isEntryUpdate()) {
@@ -69,10 +70,18 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 					if (groupTreeItem == null) {
 						throw new IllegalStateException(group.getClassName());
 					}
-					groupTreeItem.getChildren().add(moved.getDestinationIndex(), movedControlTreeItem);
+					if (moved.getDestinationIndex() >= groupTreeItem.getChildren().size()) {
+						groupTreeItem.getChildren().add(movedControlTreeItem);
+					} else {
+						groupTreeItem.getChildren().add(moved.getDestinationIndex(), movedControlTreeItem);
+					}
 				} else {
 					//insert into root
-					getRoot().getChildren().add(moved.getDestinationIndex(), movedControlTreeItem);
+					if (moved.getDestinationIndex() >= getRoot().getChildren().size()) {
+						getRoot().getChildren().add(movedControlTreeItem);
+					} else {
+						getRoot().getChildren().add(moved.getDestinationIndex(), movedControlTreeItem);
+					}
 				}
 			} else {
 				//remove from this tree view
@@ -96,7 +105,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				if (groupTreeItem == null) {
 					throw new IllegalStateException(group.getClassName());
 				}
-				groupTreeItem.getChildren().add(added.getIndex(), newControlTreeItem);
+				if (added.getIndex() >= groupTreeItem.getChildren().size()) {
+					groupTreeItem.getChildren().add(newControlTreeItem);
+				} else {
+					groupTreeItem.getChildren().add(added.getIndex(), newControlTreeItem);
+				}
 			} else {
 				//add to root
 				if (added.getIndex() >= getRoot().getChildren().size()) {
