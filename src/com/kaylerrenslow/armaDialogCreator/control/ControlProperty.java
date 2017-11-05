@@ -477,7 +477,7 @@ public class ControlProperty {
 	 If the property is inherited and then this method is invoked again with <code>inherit</code>==null, the
 	 previous values, macro, and custom data will be given back to this property. This method will emit a
 	 {@link ControlPropertyInheritUpdate} for {@link #getControlPropertyUpdateGroup()} after the values have been set.
-	 This method will also emit a {@link PreemptiveControlPropertyInheritUpdate} at the start of this method.
+	 This method will also emit a {@link PreemptiveControlPropertyInheritUpdate} before the value update and before {@link ControlPropertyInheritUpdate}.
 
 	 @param inherit property to inherit, or null to remove any inheritance
 	 */
