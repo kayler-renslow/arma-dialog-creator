@@ -99,7 +99,11 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 				groupTreeItem.getChildren().add(added.getIndex(), newControlTreeItem);
 			} else {
 				//add to root
-				getRoot().getChildren().add(added.getIndex(), newControlTreeItem);
+				if (added.getIndex() >= getRoot().getChildren().size()) {
+					getRoot().getChildren().add(newControlTreeItem);
+				} else {
+					getRoot().getChildren().add(added.getIndex(), newControlTreeItem);
+				}
 			}
 		}
 
