@@ -7,6 +7,7 @@
 **Fixed:**
 * 
 
+TODO: ADD IMPLEMENTATION TO RE-ENCODE XML FILES!
 
 **Notes:**
 * June 23:
