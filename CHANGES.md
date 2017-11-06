@@ -5,8 +5,7 @@
 * 
 
 **Fixed:**
-* Project's not properly loading custom control classes' inherited properties
-* custom control classes weren't storing inherited properties when initialized from a specification
+* 
 
 **Notes:**
 * June 23:
