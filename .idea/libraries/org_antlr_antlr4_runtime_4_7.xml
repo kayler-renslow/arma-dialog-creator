@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="org.antlr:antlr4-runtime:4.7" type="repository">
+    <properties maven-id="org.antlr:antlr4-runtime:4.7" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/antlr4-runtime-4.7.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/lib/antlr4-runtime-4.7-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/antlr4-runtime-4.7-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
