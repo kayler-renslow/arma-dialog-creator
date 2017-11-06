@@ -43,7 +43,7 @@ public class ProjectXmlLoader extends XmlLoader {
 	public static ProjectParseResult parseProjectXmlFile(@NotNull ProjectInfo info, @NotNull ApplicationData data) throws XmlParseException {
 		ProjectXmlLoader loader = new ProjectXmlLoader(info.getProjectXmlFile(), data, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
 		ProjectVersionLoader versionLoader = getVersionLoader(info, loader);
-		versionLoader.parseDocument();
+		versionLoader.readDocument();
 		return new ProjectParseResult(versionLoader.project, versionLoader.treeStructureMain, versionLoader.treeStructureBg, loader.getErrors());
 	}
 
@@ -77,7 +77,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 	}
 
-	public static class ProjectParseResult extends XmlLoader.ParseResult {
+	public static class ProjectParseResult extends ParseResult {
 
 		private final Project project;
 		private final TreeStructure<ArmaControl> treeStructureMain;

@@ -1,13 +1,16 @@
 package com.kaylerrenslow.armaDialogCreator.main;
 
 import com.kaylerrenslow.armaDialogCreator.data.*;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ParseError;
 import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
+import com.kaylerrenslow.armaDialogCreator.data.xml.WorkspaceCustomControlClassXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.gui.img.ADCImages;
 import com.kaylerrenslow.armaDialogCreator.gui.main.ADCMainWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.ADCWindow;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasView;
 import com.kaylerrenslow.armaDialogCreator.gui.main.CanvasViewColors;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.CouldNotLoadProjectDialog;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.CouldNotLoadWorkspaceCustomControlClassesDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit.ProjectImproperResultDialog;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -237,13 +240,16 @@ public final class ArmaDialogCreator extends Application {
 				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
 
 				ProjectXmlLoader.ProjectParseResult result = null;
+				boolean newProject = false;
+				final List<ParseError> parseErrors = new ArrayList<>();
+
 				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
 					try {
 						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
-
 						applicationData.setCurrentProject(result.getProject());
+						parseErrors.addAll(result.getErrors());
 					} catch (Exception e) {
-						applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
+						newProject = true;
 						INSTANCE.showLater.add(new Runnable() {
 							@Override
 							public void run() {
@@ -252,7 +258,18 @@ public final class ArmaDialogCreator extends Application {
 						});
 					}
 				} else {
-					applicationData.setCurrentProject(new Project(applicationData, config.getProjectInfo()));
+					newProject = true;
+				}
+				if (newProject) {
+					Project project = new Project(applicationData, config.getProjectInfo());
+					applicationData.setCurrentProject(project);
+					try {
+						WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);
+						loader.readDocument();
+						parseErrors.addAll(loader.getErrors());
+					} catch (Exception e) {
+						new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
+					}
 				}
 
 				ApplicationDataManager.getInstance().initializeDone();
@@ -266,10 +283,8 @@ public final class ArmaDialogCreator extends Application {
 						);
 						adcWindow.show();
 
-						if (finalResult != null) {
-							if (finalResult.getErrors().size() > 0) {
-								new ProjectImproperResultDialog(finalResult).showAndWait();
-							}
+						if (parseErrors.size() > 0) {
+							new ProjectImproperResultDialog(parseErrors).showAndWait();
 						}
 
 						for (Runnable run : INSTANCE.showLater) {

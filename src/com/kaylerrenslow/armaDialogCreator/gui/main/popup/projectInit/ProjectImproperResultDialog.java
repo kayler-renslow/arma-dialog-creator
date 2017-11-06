@@ -1,7 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
 import com.kaylerrenslow.armaDialogCreator.data.xml.ParseError;
-import com.kaylerrenslow.armaDialogCreator.data.xml.ProjectXmlLoader;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
@@ -14,6 +13,7 @@ import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -23,7 +23,7 @@ import java.util.ResourceBundle;
  @since 11/23/2016 */
 public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 
-	public ProjectImproperResultDialog(@NotNull ProjectXmlLoader.ProjectParseResult result) {
+	public ProjectImproperResultDialog(@NotNull List<ParseError> errors) {
 		super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), null, false, true, false);
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		setTitle(bundle.getString("ProjectResultErrorPopup.popup_title"));
@@ -39,7 +39,7 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 
 		root.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.errors_title")));
 		root.getChildren().add(new Separator(Orientation.HORIZONTAL));
-		for (ParseError error : result.getErrors()) {
+		for (ParseError error : errors) {
 			VBox vbErrorMsg = new VBox(5);
 			vbErrorMsg.setFillWidth(true);
 			vbErrorMsg.getChildren().addAll(

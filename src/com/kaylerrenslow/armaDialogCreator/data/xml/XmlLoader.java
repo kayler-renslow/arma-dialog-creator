@@ -116,19 +116,6 @@ class XmlLoader implements XmlErrorRecorder {
 		return document;
 	}
 
-	static class ParseResult {
-		private final ArrayList<ParseError> errors;
-
-		protected ParseResult(ArrayList<ParseError> errors) {
-			this.errors = errors;
-		}
-
-		@NotNull
-		public ArrayList<ParseError> getErrors() {
-			return errors;
-		}
-	}
-
 	@Override
 	public final ArrayList<ParseError> getErrors() {
 		return errors;

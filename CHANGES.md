@@ -2,10 +2,11 @@
 * 
 
 **Changed:**
-* 
+* made a class to handle loading Control Classes in order
+* created a class for loading Workspace Custom Control Classes
 
 **Fixed:**
-* 
+* Workspace scoped Custom Control Classes wasn't loading when a new project was created
 
 **Notes:**
 * June 23:
@@ -18,6 +19,7 @@
     * undoing raw value through changelog works, but editor container doesn't update
 * July 7: we should support inheriting nested classes (should be option in control property config popup).
     * be sure to update HeaderToProject
-
+* November 6: we need to rewrite how projects and workspace level stuff is loaded. It is terribly written
+    * we also need tests for loading projects
 
 **XSlider's border isn't correct at launch for "Lots of Controls project" (it's black instead of the texture color)**

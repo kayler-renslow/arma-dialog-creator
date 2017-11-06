@@ -18,8 +18,8 @@ public abstract class ProjectVersionLoader {
 	protected Project project;
 	protected Document document;
 	public final ProjectXmlLoader loader;
-	protected TreeStructure<ArmaControl> treeStructureMain = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
-	protected TreeStructure<ArmaControl> treeStructureBg = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
+	protected final TreeStructure<ArmaControl> treeStructureMain = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
+	protected final TreeStructure<ArmaControl> treeStructureBg = new TreeStructure.Simple<>(new TreeNode.Simple<>(null, "", false));
 	
 	
 	protected ProjectVersionLoader(ProjectXmlLoader loader) throws XmlParseException {
@@ -31,8 +31,8 @@ public abstract class ProjectVersionLoader {
 	public void addError(ParseError error) {
 		loader.addError(error);
 	}
-	
-	public void parseDocument() throws XmlParseException {
+
+	public void readDocument() throws XmlParseException {
 		
 	}
 }

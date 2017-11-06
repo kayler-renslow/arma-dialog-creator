@@ -15,15 +15,16 @@ import com.kaylerrenslow.armaDialogCreator.data.ProjectInfo;
 import com.kaylerrenslow.armaDialogCreator.data.export.HeaderFileType;
 import com.kaylerrenslow.armaDialogCreator.data.export.ProjectExportConfiguration;
 import com.kaylerrenslow.armaDialogCreator.data.tree.TreeNode;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ControlClassXmlHelper.ControlExtendJob;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ControlClassXmlHelper.ControlNestedClassesJob;
+import com.kaylerrenslow.armaDialogCreator.data.xml.ControlClassXmlHelper.CreateCustomControlClassJob;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -35,11 +36,10 @@ import java.util.ResourceBundle;
  @since 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
-	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
 	private final ProjectInfo info;
 	private ArmaResolution resolution;
 	private Env env;
-	private ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
+	private final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
 
 	protected ProjectLoaderVersion1(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
@@ -47,13 +47,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 	@Override
-	public void parseDocument() throws XmlParseException {
+	public void readDocument() throws XmlParseException {
 		loadProject();
-
-		Collections.sort(jobs);
-		for (AfterLoadJob job : jobs) {
-			job.doWork(project, this);
-		}
 	}
 
 	private void loadProject() throws XmlParseException {
@@ -63,11 +58,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(this.loader.applicationData, info);
 			project.setProjectName(projectName);
+
+			ControlClassXmlHelper controlClassXmlHelper = new ControlClassXmlHelper(project, this.loader);
+
 			loadStringtableXml();
 			loadMacroRegistry();
-			loadCustomControlClassRegistries();
+			loadCustomControlClassRegistries(controlClassXmlHelper);
 
-			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros());
+			ArmaDisplay editingDisplay = fetchEditingDisplay(project.getMacroRegistry().getMacros(), controlClassXmlHelper);
 			if (editingDisplay != null) {
 				project.setEditingDisplay(editingDisplay);
 			}
@@ -75,6 +73,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
 			fetchExportConfiguration();
 			loadResourceRegistry();
+
+			controlClassXmlHelper.runJobs();
 
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
@@ -157,20 +157,16 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		}
 	}
 
-	private void loadCustomControlClassRegistries() throws Exception {
+	private void loadCustomControlClassRegistries(@NotNull ControlClassXmlHelper controlClassXmlHelper) throws Exception {
 		//load workspace custom control classes
-		if (project.getWorkspaceCustomControlClassesFile().exists()) {
-			XmlLoader xmlLoader = new XmlLoader(project.getWorkspaceCustomControlClassesFile(), dataContext, this.loader.keys);
-			ProjectXmlUtil.loadCustomControlClasses(xmlLoader.document.getDocumentElement(), dataContext, this.loader,
-					controlClassSpecification -> {
-						jobs.add(new CreateCustomControlClassJob(controlClassSpecification, false));
-						return null;
-					}
-			);
-		}
+		WorkspaceCustomControlClassXmlLoader workspaceLoader = new WorkspaceCustomControlClassXmlLoader(
+				this.loader.applicationData, controlClassXmlHelper, this.project
+		);
+		workspaceLoader.readDocument();
+
 		ProjectXmlUtil.loadCustomControlClasses(document.getDocumentElement(), dataContext, this.loader,
 				controlClassSpecification -> {
-					jobs.add(new CreateCustomControlClassJob(controlClassSpecification, true));
+					controlClassXmlHelper.addJob(new CreateCustomControlClassJob(controlClassSpecification, true));
 					return null;
 				}
 		);
@@ -225,7 +221,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return null;
 	}
 
-	private ArmaDisplay fetchEditingDisplay(List<Macro> macros) {
+	private ArmaDisplay fetchEditingDisplay(List<Macro> macros, ControlClassXmlHelper controlClassXmlHelper) {
 		List<Element> displayElements = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "display");
 		if (displayElements.size() <= 0) {
 			return null;
@@ -263,14 +259,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			controlsType = displayControlElement.getAttribute("type");
 			switch (controlsType) {
 				case "background": {
-					controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros);
+					controls = buildStructureAndGetControls(treeStructureBg.getRoot(), displayControlElement, macros, controlClassXmlHelper);
 					for (ArmaControl control : controls) {
 						display.getBackgroundControls().add(control);
 					}
 					break;
 				}
 				case "main": {
-					controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros);
+					controls = buildStructureAndGetControls(treeStructureMain.getRoot(), displayControlElement, macros, controlClassXmlHelper);
 					for (ArmaControl control : controls) {
 						display.getControls().add(control);
 					}
@@ -281,7 +277,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return display;
 	}
 
-	private List<ArmaControl> buildStructureAndGetControls(TreeNode<ArmaControl> parent, Element parentElement, List<Macro> macros) {
+	private List<ArmaControl> buildStructureAndGetControls(TreeNode<ArmaControl> parent, Element parentElement,
+														   List<Macro> macros, ControlClassXmlHelper controlClassXmlHelper) {
 		List<ArmaControl> controls = new LinkedList<>();
 		List<Element> tagElements = XmlUtil.getChildElementsWithTagName(parentElement, "*");
 		ArmaControl control;
@@ -289,7 +286,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		for (Element controlElement : tagElements) {
 			switch (controlElement.getTagName()) {
 				case "control": {
-					control = getControl(controlElement, macros);
+					control = getControl(controlElement, macros, controlClassXmlHelper);
 					if (control == null) {
 						return controls;
 					}
@@ -298,14 +295,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 					break;
 				}
 				case "control-group": {
-					control = getControl(controlElement, macros);
+					control = getControl(controlElement, macros, controlClassXmlHelper);
 					if (control == null) {
 						return controls;
 					}
 					ArmaControlGroup group = (ArmaControlGroup) control;
 					treeNode = new TreeNode.Simple<>(group, group.getClassName(), false);
 					parent.getChildren().add(treeNode);
-					List<ArmaControl> controlsToAdd = buildStructureAndGetControls(treeNode, controlElement, macros);
+					List<ArmaControl> controlsToAdd = buildStructureAndGetControls(treeNode, controlElement, macros, controlClassXmlHelper);
 					for (ArmaControl add : controlsToAdd) {
 						group.getControls().add(add);
 					}
@@ -314,7 +311,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				case "folder": {
 					treeNode = new TreeNode.Simple<>(null, controlElement.getAttribute("name"), true);
 					parent.getChildren().add(treeNode);
-					controls.addAll(buildStructureAndGetControls(treeNode, controlElement, macros));
+					controls.addAll(buildStructureAndGetControls(treeNode, controlElement, macros, controlClassXmlHelper));
 					continue;
 				}
 				default: {
@@ -327,7 +324,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return controls;
 	}
 
-	private ArmaControl getControl(Element controlElement, List<Macro> macros) {
+	private ArmaControl getControl(Element controlElement, List<Macro> macros,
+								   ControlClassXmlHelper controlClassXmlHelper) {
 		//enabled setup
 		boolean enabled = true;
 		{
@@ -415,14 +413,14 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			nestedOptional = ProjectXmlUtil.loadControlClassSpecifications(optNestedClassesElementGroups.get(0), dataContext, this.loader);
 		}
 
-		jobs.add(new ControlNestedClassesJob(control, nestedRequired, nestedOptional));
+		controlClassXmlHelper.addJob(new ControlNestedClassesJob(control, nestedRequired, nestedOptional));
 
 		List<ControlPropertyLookup> inheritControlProperties = ProjectXmlUtil.loadInheritedControlProperties(controlElement, this.loader);
 
 		//add extend job if needed
 		String extendClassName = controlElement.getAttribute("extend-class");
 		if (extendClassName.length() > 0) {
-			jobs.add(new ControlExtendJob(extendClassName, control, inheritControlProperties));
+			controlClassXmlHelper.addJob(new ControlExtendJob(extendClassName, control, inheritControlProperties));
 		}
 
 		//must set ghost state first since ghost=!visible && !enabled
@@ -438,138 +436,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	}
 
 
-	private interface AfterLoadJob extends Comparable<AfterLoadJob> {
-		void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader);
-	}
 
-	private class CreateCustomControlClassJob implements AfterLoadJob {
-
-		private ControlClassSpecification spec;
-		private final boolean loadInProjectRegistry;
-
-		public CreateCustomControlClassJob(@NotNull ControlClassSpecification spec, boolean loadInProjectRegistry) {
-			this.spec = spec;
-			this.loadInProjectRegistry = loadInProjectRegistry;
-		}
-
-		@Override
-		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			CustomControlClass customControlClass = new CustomControlClass(
-					spec, project,
-					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
-			);
-			project.addCustomControlClass(customControlClass);
-		}
-
-		@Override
-		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
-			if (o instanceof CreateCustomControlClassJob) {
-				CreateCustomControlClassJob other = (CreateCustomControlClassJob) o;
-				if (other.spec.getExtendClassName() == null) {
-					//let other load first
-					return 1;
-				}
-				if (spec.getExtendClassName() == null) {
-					//run this first
-					return -1;
-				}
-				if (spec.getExtendClassName().equals(other.spec.getClassName())) {
-					//allow the other to load first
-					return 1;
-				}
-				if (other.spec.getExtendClassName().equals(spec.getClassName())) {
-					//let this job load first
-					return -1;
-				}
-
-			}
-			return -1;
-		}
-	}
-
-	private class ControlNestedClassesJob implements AfterLoadJob {
-
-		private final ControlClass addToMe;
-		private final List<ControlClassSpecification> requiredNested;
-		private final List<ControlClassSpecification> optionalNested;
-
-		public ControlNestedClassesJob(@NotNull ControlClass addToMe, @Nullable List<ControlClassSpecification> requiredNested, @Nullable List<ControlClassSpecification> optionalNested) {
-			this.addToMe = addToMe;
-			this.requiredNested = requiredNested;
-			this.optionalNested = optionalNested;
-		}
-
-		@Override
-		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			if (requiredNested != null) {
-				for (ControlClassSpecification nested : requiredNested) {
-					loadClass(project, nested);
-				}
-			}
-			if (optionalNested != null) {
-				for (ControlClassSpecification nested : optionalNested) {
-					loadClass(project, nested);
-				}
-			}
-		}
-
-		private void loadClass(@NotNull Project project, ControlClassSpecification nested) {
-			try {
-				ControlClass nestedClass = addToMe.findNestedClass(nested.getClassName());
-				nestedClass.setTo(nested.constructNewControlClass(project));
-			} catch (IllegalArgumentException ignore) {
-
-			}
-		}
-
-		@Override
-		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
-			if (o instanceof ControlNestedClassesJob) {
-				return 0;
-			}
-			return 1;
-		}
-	}
-
-	private class ControlExtendJob implements AfterLoadJob {
-		private final String extendThisControlClassName;
-		private final ArmaControl setMyExtend;
-		private final List<ControlPropertyLookup> inheritProperties;
-
-		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ControlPropertyLookup> inheritProperties) {
-			this.extendThisControlClassName = extendThisControlClassName;
-			this.setMyExtend = setMyExtend;
-			this.inheritProperties = inheritProperties;
-		}
-
-
-		@Override
-		public void doWork(@NotNull Project project, @NotNull ProjectVersionLoader loader) {
-			ControlClass cc = project.findControlClassByName(extendThisControlClassName);
-
-			if (cc == null) {
-				loader.addError(new ParseError(
-						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
-						bundle.getString("ProjectLoad.no_extend_class_recover")
-				));
-				return;
-			}
-
-			setMyExtend.extendControlClass(cc);
-			for (ControlPropertyLookup inheritProperty : inheritProperties) {
-				setMyExtend.inheritProperty(inheritProperty);
-			}
-		}
-
-		@Override
-		public int compareTo(@NotNull ProjectLoaderVersion1.AfterLoadJob o) {
-			if (o instanceof ControlExtendJob) {
-				return 0;
-			}
-			//always let other jobs go before this one
-			return 1;
-		}
-	}
 
 
 }
