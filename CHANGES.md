@@ -2,10 +2,10 @@
 * 
 
 **Changed:**
-* 
+* updated ControlPropertyEventLookup to newest wiki details
 
 **Fixed:**
-* ProjectExporter not appending [] to property with Raw value that is an array
+* 
 
 **Notes:**
 * June 23:
