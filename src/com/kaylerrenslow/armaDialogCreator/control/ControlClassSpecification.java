@@ -21,7 +21,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	private final ReadOnlyList<ControlClassSpecification> requiredNestedClasses;
 	private final ReadOnlyList<ControlClassSpecification> optionalNestedClasses;
 	private final ReadOnlyList<ControlPropertyLookupConstant> requiredPropertiesLookup, optionalPropertiesLookup;
-	private final List<ControlPropertySpecification> inheritedProperties = new LinkedList<>();
+	private final List<ControlPropertyLookupConstant> inheritedProperties = new LinkedList<>();
 	private @Nullable String extendClass;
 	private String comment;
 
@@ -34,8 +34,11 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 @param requiredNestedClasses required nested classes
 	 @param optionalNestedClasses optional nested classes
 	 */
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull List<ControlPropertySpecification> requiredProperties, @NotNull List<ControlPropertySpecification> optionalProperties,
-									 @NotNull List<ControlClassSpecification> requiredNestedClasses, @NotNull List<ControlClassSpecification> optionalNestedClasses) {
+	public ControlClassSpecification(@NotNull String controlClassName,
+									 @NotNull List<ControlPropertySpecification> requiredProperties,
+									 @NotNull List<ControlPropertySpecification> optionalProperties,
+									 @NotNull List<ControlClassSpecification> requiredNestedClasses,
+									 @NotNull List<ControlClassSpecification> optionalNestedClasses) {
 		this.controlClassName = controlClassName;
 		if (requiredProperties instanceof ReadOnlyList) {
 			this.requiredProperties = (ReadOnlyList<ControlPropertySpecification>) requiredProperties;
@@ -89,7 +92,9 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 @param optionalProperties optional properties
 	 @see #ControlClassSpecification(String, List, List, List, List)
 	 */
-	public ControlClassSpecification(@NotNull String controlClassName, @NotNull List<ControlPropertySpecification> requiredProperties, @NotNull List<ControlPropertySpecification> optionalProperties) {
+	public ControlClassSpecification(@NotNull String controlClassName,
+									 @NotNull List<ControlPropertySpecification> requiredProperties,
+									 @NotNull List<ControlPropertySpecification> optionalProperties) {
 		this(controlClassName, requiredProperties, optionalProperties, ControlClassSpecification.EMPTY, ControlClassSpecification.EMPTY);
 	}
 
@@ -99,8 +104,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	/**
-	 Constructs a specification from the given {@link ControlClass}. If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClass#getRequiredProperties()} and
-	 {@link ControlClass#getOptionalProperties()} will be deep copied via {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. Also,
+	 Constructs a specification from the given {@link ControlClass}.
+	 If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClass#getRequiredProperties()} and
+	 {@link ControlClass#getOptionalProperties()} will be deep copied via
+	 {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. Also,
 	 any nested classes would be deep copied as well. If <code>deepCopy</code> is false , will shallow copy the values.
 
 	 @param controlClass class to use
@@ -155,6 +162,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 
 		if (controlClass.getExtendClass() != null) {
 			setExtendClass(controlClass.getExtendClass().getClassName());
+		}
+
+		for (ControlProperty inheritedProperty : controlClass.getInheritedProperties()) {
+			getInheritedProperties().add(inheritedProperty.getPropertyLookup());
 		}
 	}
 
@@ -215,45 +226,10 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 	@NotNull
-	public List<ControlPropertySpecification> getInheritedProperties() {
+	public List<ControlPropertyLookupConstant> getInheritedProperties() {
 		return inheritedProperties;
 	}
 
-	/**
-	 Overrides the given property lookup and adds it to {@link #getInheritedProperties()}
-
-	 @param lookup lookup to match
-	 @throws IllegalArgumentException when lookup couldn't be matched
-	 */
-	public void overrideProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		ControlPropertySpecification match = findProperty(lookup);
-		getInheritedProperties().remove(match);
-	}
-
-	/**
-	 De-overrides the given property lookup
-
-	 @param lookup property to remove from {@link #getInheritedProperties()}
-	 @throws IllegalArgumentException when lookup couldn't be matched
-	 */
-	public void removeOverriddenProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		getInheritedProperties().add(findInheritedProperty(lookup));
-	}
-
-	/**
-	 Get a {@link ControlPropertySpecification} with the given lookup
-
-	 @return the matched instance, or null if nothing could be matched
-	 */
-	@Nullable
-	public ControlPropertySpecification findInheritedProperty(@NotNull ControlPropertyLookupConstant lookup) {
-		for (ControlPropertySpecification propertySpecification : inheritedProperties) {
-			if (propertySpecification.getPropertyLookup() == lookup) {
-				return propertySpecification;
-			}
-		}
-		return null;
-	}
 
 	/** Just invokes {@link ControlClass#ControlClass(ControlClassSpecification, SpecificationRegistry)} with this instance provided */
 	@NotNull
@@ -266,19 +242,38 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	 with this instance provided
 	 */
 	@NotNull
-	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry, @Nullable DefaultValueProvider.Context context) {
+	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry,
+												 @Nullable DefaultValueProvider.Context context) {
 		return new ControlClass(this, registry, context);
 	}
 
 	/**
-	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and {@link #getOptionalControlProperties()}
+	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and
+	 {@link #getOptionalControlProperties()}
 
 	 @param lookup the lookup to fetch instance for
 	 @return the instance
 	 @throws IllegalArgumentException if nothing could be matched
+	 @see #findPropertySpecificationNullable(ControlPropertyLookupConstant)
 	 */
 	@NotNull
-	public ControlPropertySpecification findProperty(@NotNull ControlPropertyLookupConstant lookup) {
+	public ControlPropertySpecification findPropertySpecification(@NotNull ControlPropertyLookupConstant lookup) {
+		ControlPropertySpecification spec = findPropertySpecificationNullable(lookup);
+		if (spec != null) {
+			return spec;
+		}
+		throw new IllegalArgumentException("couldn't find property " + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]");
+	}
+
+	/**
+	 Find a {@link ControlClassSpecification} instance between {@link #getRequiredControlProperties()} and
+	 {@link #getOptionalControlProperties()}
+
+	 @param lookup the lookup to fetch instance for
+	 @return the instance, or null if couldn't be found
+	 */
+	@Nullable
+	public ControlPropertySpecification findPropertySpecificationNullable(@NotNull ControlPropertyLookupConstant lookup) {
 		for (ControlPropertySpecification property : getRequiredControlProperties()) {
 			if (property.getPropertyLookup() == lookup) {
 				return property;
@@ -289,7 +284,7 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 				return property;
 			}
 		}
-		throw new IllegalArgumentException("couldn't find property " + lookup.getPropertyName() + "[" + lookup.getPropertyId() + "]");
+		return null;
 	}
 
 	@Nullable

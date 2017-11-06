@@ -12,6 +12,7 @@ public class CreateNewCustomControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 		NewCustomControlClassDialog dialog = new NewCustomControlClassDialog();
+		dialog.show();
 		if (dialog.wasCancelled()) {
 			return;
 		}

@@ -234,6 +234,10 @@ public class ControlClass {
 			}
 			extendControlClass(extendMe);
 		}
+
+		for (ControlPropertyLookupConstant inheritedProperty : specification.getInheritedProperties()) {
+			inheritProperty(inheritedProperty);
+		}
 	}
 
 	private void afterPropertyAndNestedClassConstruction() {

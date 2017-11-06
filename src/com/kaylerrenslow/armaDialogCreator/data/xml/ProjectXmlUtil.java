@@ -53,7 +53,7 @@ public class ProjectXmlUtil {
 		}
 		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
 		List<ControlPropertySpecification> optionalProperties = new LinkedList<>();
-		List<ControlPropertyLookup> overriddenProperties = new LinkedList<>();
+		List<ControlPropertyLookup> inheritProperties = new LinkedList<>();
 		List<ControlClassSpecification> requiredClasses = ControlClassSpecification.EMPTY;
 		List<ControlClassSpecification> optionalClasses = ControlClassSpecification.EMPTY;
 
@@ -72,9 +72,9 @@ public class ProjectXmlUtil {
 		}
 
 		//overridden control properties
-		List<Element> overriddenPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "overridden-properties");
-		if (overriddenPropertyElementGroups.size() > 0) {
-			overriddenProperties = loadInheritedControlProperties(overriddenPropertyElementGroups.get(0), recorder);
+		List<Element> inheritPropertyElementGroups = XmlUtil.getChildElementsWithTagName(classSpecElement, "inherit-properties");
+		if (inheritPropertyElementGroups.size() > 0) {
+			inheritProperties = loadInheritedControlProperties(inheritPropertyElementGroups.get(0), recorder);
 		}
 
 
@@ -92,12 +92,14 @@ public class ProjectXmlUtil {
 			requiredClasses = loadControlClassSpecifications(optionalClassElementGroup, context, recorder);
 		}
 
-		ControlClassSpecification specification = new ControlClassSpecification(className, requiredProperties, optionalProperties, requiredClasses, optionalClasses);
-		for (ControlPropertyLookup overriden : overriddenProperties) {
-			specification.overrideProperty(overriden);
-		}
-
+		ControlClassSpecification specification = new ControlClassSpecification(className,
+				requiredProperties,
+				optionalProperties,
+				requiredClasses,
+				optionalClasses
+		);
 		specification.setExtendClass(extend);
+		specification.getInheritedProperties().addAll(inheritProperties);
 
 		return specification;
 	}
@@ -222,8 +224,8 @@ public class ProjectXmlUtil {
 		//overridden properties
 		if (specification.getInheritedProperties().size() > 0) {
 			Element inheritPropertiesEle = writer.appendElementToElement("inherit-properties", classSpecEle);
-			for (ControlPropertySpecification property : specification.getInheritedProperties()) {
-				writeInheritControlPropertyLookup(writer, property.getPropertyLookup(), inheritPropertiesEle);
+			for (ControlPropertyLookupConstant propertyLookup : specification.getInheritedProperties()) {
+				writeInheritControlPropertyLookup(writer, propertyLookup, inheritPropertiesEle);
 			}
 		}
 

@@ -168,8 +168,8 @@ public class ControlClassTest_DeepInheritance {
 	//
 	//		SerializableValue nestedClassValue1 = new SVString("nestedClassValue1");
 	//		SerializableValue nestedClassValue2 = new SVString("nestedClassValue2");
-	//		hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).setValue(nestedClassValue1);
-	//		hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).setValue(nestedClassValue2);
+	//		hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).setValue(nestedClassValue1);
+	//		hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).setValue(nestedClassValue2);
 	//
 	//		hintWithNestedClass2.extendControlClass(hintWithNestedClass);
 	//		empty.extendControlClass(hintWithNestedClass2);
@@ -177,9 +177,9 @@ public class ControlClassTest_DeepInheritance {
 	//
 	//		hintWithNestedClass2.inheritNestedClass(hintWithNestedClass_nestedClassName);
 	//
-	//		assertEquals(nestedClassValue1, hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
-	//		assertEquals(nestedClassValue1, empty.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
-	//		assertEquals(nestedClassValue1, empty2.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
+	//		assertEquals(nestedClassValue1, hintWithNestedClass2.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).getValue());
+	//		assertEquals(nestedClassValue1, empty.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).getValue());
+	//		assertEquals(nestedClassValue1, empty2.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).getValue());
 	//	}
 
 	static final ControlPropertyLookupConstant[] requiredProperties = {
