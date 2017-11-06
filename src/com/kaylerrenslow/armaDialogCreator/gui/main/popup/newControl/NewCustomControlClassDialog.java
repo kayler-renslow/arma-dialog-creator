@@ -355,18 +355,25 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 	@Override
 	protected void ok() {
-		if (inClassName.getValue() == null) {
-			beep();
-			inClassName.requestFocus();
+		if (!checkIfEntriesValid()) {
 			return;
 		}
-		CustomControlClass customControlClass = getCustomControlClass();
-		project.addCustomControlClass(customControlClass);
 		super.ok();
 	}
 
+	/** @return true if entries are valid, false otherwise */
+	protected boolean checkIfEntriesValid() {
+		if (inClassName.getValue() == null) {
+			beep();
+			inClassName.requestFocus();
+			return false;
+		}
+		return true;
+	}
+
+	/** @return a {@link CustomControlClass} instance that was created */
 	@NotNull
-	protected CustomControlClass getCustomControlClass() {
+	public CustomControlClass getCustomControlClass() {
 		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), comboBoxScope.getValue());
 		customControlClass.setComment(taComment.getText());
 		return customControlClass;

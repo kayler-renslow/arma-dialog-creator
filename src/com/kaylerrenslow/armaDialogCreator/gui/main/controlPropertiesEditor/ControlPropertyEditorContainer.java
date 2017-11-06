@@ -217,7 +217,7 @@ class ControlPropertyEditorContainer extends HBox {
 				propertyValueEditor.clearListeners();
 
 				if (getControlProperty().isInherited()) {
-					getControlProperty().inherit(null);
+					controlClass.overrideProperty(getControlProperty().getPropertyLookup());
 				} else {
 					boolean inherited = controlClass.inheritProperty(getControlProperty().getPropertyLookup());
 					if (!inherited) {

@@ -29,8 +29,7 @@ public class CustomControlClass {
 
 	/**
 	 Construct a new custom control class with the given {@link ControlClass} instance.
-	 The given instance will be the underlying instance for {@link #getControlClass()} and a new
-	 {@link ControlClassSpecification} will be created with the instance via {@link ControlClassSpecification(ControlClass)}.
+	 The given instance will be the underlying instance for {@link #getControlClass()}.
 
 	 @param controlClass instance to use
 	 @param scope the scope of this {@link CustomControlClass}

@@ -68,6 +68,9 @@ public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 
 	@Override
 	protected void ok() {
+		if (!checkIfEntriesValid()) {
+			return;
+		}
 		for (ControlClassUpdate update : updates) {
 			toEdit.getControlClass().update(update, false);
 		}

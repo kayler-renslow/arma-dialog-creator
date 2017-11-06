@@ -481,7 +481,7 @@ public class ControlProperty {
 
 	 @param inherit property to inherit, or null to remove any inheritance
 	 */
-	public void inherit(@Nullable ControlProperty inherit) {
+	protected void inherit(@Nullable ControlProperty inherit) {
 		if (inherited == inherit) {
 			return;
 		}
