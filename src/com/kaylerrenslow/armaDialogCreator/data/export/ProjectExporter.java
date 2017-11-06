@@ -5,6 +5,7 @@ import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaControlGroup;
 import com.kaylerrenslow.armaDialogCreator.arma.control.ArmaDisplay;
 import com.kaylerrenslow.armaDialogCreator.arma.stringtable.StringTableKey;
 import com.kaylerrenslow.armaDialogCreator.control.*;
+import com.kaylerrenslow.armaDialogCreator.control.sv.SVRaw;
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
 import com.kaylerrenslow.armaDialogCreator.data.CustomControlClassRegistry;
 import com.kaylerrenslow.armaDialogCreator.data.Project;
@@ -443,21 +444,34 @@ public class ProjectExporter {
 				continue;
 			}
 			if (property.getMacro() != null) {
+				String format = itemFormatString;
 				Macro m = property.getMacro();
 				StringTableKey stringKey = null;
 				if (property.getMacro() instanceof StringTableKey) {
 					stringKey = (StringTableKey) property.getMacro();
 				}
-				String format = itemFormatString;
 				if (m.getValue().getPropertyType().getPropertyValuesSize() != 1) {
 					format = itemArrayFormatString;
+				} else if (m.getValue() instanceof SVRaw) {
+					String rawString = ((SVRaw) m.getValue()).getString().trim();
+					if (rawString.charAt(0) == '{') {
+						format = itemArrayFormatString;
+					}
 				}
+
 				stringBuilder.append(String.format(format, property.getName(), stringKey != null ? stringKey.getHeaderMacroId() : property.getMacro().getKey()));
 			} else {
 				if (property.getValue().getAsStringArray().length == 1) {
+					String format = itemFormatString;
+					if (property.getValue() instanceof SVRaw) {
+						String rawString = ((SVRaw) property.getValue()).getString().trim();
+						if (rawString.charAt(0) == '{') {
+							format = itemArrayFormatString;
+						}
+					}
 					stringBuilder.append(
 							String.format(
-									itemFormatString,
+									format,
 									property.getName(),
 									getExportValueString(property.getValue(), property.getPropertyType(), conf.getExportDirectory().getAbsolutePath())
 							)

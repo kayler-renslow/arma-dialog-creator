@@ -2,11 +2,10 @@
 * 
 
 **Changed:**
-* made a class to handle loading Control Classes in order
-* created a class for loading Workspace Custom Control Classes
+* 
 
 **Fixed:**
-* Workspace scoped Custom Control Classes wasn't loading when a new project was created
+* ProjectExporter not appending [] to property with Raw value that is an array
 
 **Notes:**
 * June 23:
