@@ -33,7 +33,7 @@ public class ApplicationDataManager {
 	@NotNull
 	public Workspace loadWorkspace(@NotNull File workspaceDir) {
 		if (!workspaceDir.exists()) {
-			workspaceDir.mkdirs();
+			boolean made = workspaceDir.mkdirs();
 		}
 		workspace = new Workspace(workspaceDir);
 		ApplicationProperty.LAST_WORKSPACE.put(ApplicationDataManager.getApplicationProperties(), workspaceDir);
@@ -56,6 +56,9 @@ public class ApplicationDataManager {
 	public void initializeDone() {
 		try {
 			WorkspaceResourceRegistry globalResourceRegistry = workspace.getGlobalResourceRegistry();
+			if (!globalResourceRegistry.getResourcesFile().exists()) {
+				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
+			}
 			new ResourceRegistryXmlLoader(globalResourceRegistry.getResourcesFile(), null)
 					.load(globalResourceRegistry);
 		} catch (Exception e) {
@@ -190,7 +193,7 @@ public class ApplicationDataManager {
 
 	public void saveGlobalResources() {
 		try {
-			ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose();
+			ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
 		} catch (TransformerException e) {
 			ExceptionHandler.error(e);
 		}

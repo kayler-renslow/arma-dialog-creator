@@ -25,11 +25,11 @@ public class Workspace {
 	 @param workspaceDirectory the directory for the workspace. The directory must exist, or an exception will be thrown
 	 */
 	public Workspace(@NotNull File workspaceDirectory) {
-		if (!workspaceDirectory.isDirectory()) {
-			throw new IllegalArgumentException("workspaceDirectory isn't a directory");
-		}
 		if (!workspaceDirectory.exists()) {
 			throw new IllegalArgumentException("workspaceDirectory doesn't exist");
+		}
+		if (!workspaceDirectory.isDirectory()) {
+			throw new IllegalArgumentException("workspaceDirectory isn't a directory");
 		}
 		this.workspaceDirectory = workspaceDirectory;
 		globalResourceRegistry = new WorkspaceResourceRegistry(this);

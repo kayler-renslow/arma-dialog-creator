@@ -1,4 +1,4 @@
-**Release date:** November 6, 2017
+**Release date:** November 8, 2017
 
 **Added:**
 * 
@@ -7,7 +7,4 @@
 * 
 
 **Fixed:**
-* https://github.com/kayler-renslow/arma-dialog-creator/issues/25
-* https://github.com/kayler-renslow/arma-dialog-creator/issues/14
-* https://github.com/kayler-renslow/arma-dialog-creator/issues/27
-* https://github.com/kayler-renslow/arma-dialog-creator/issues/23
+* Project's not loading in a new, empty workspace

@@ -1,10 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.data;
 
-import com.kaylerrenslow.armaDialogCreator.data.xml.ResourceRegistryXmlWriter;
-import com.kaylerrenslow.armaDialogCreator.main.ExceptionHandler;
 import org.jetbrains.annotations.NotNull;
-
-import javax.xml.transform.TransformerException;
 
 /**
  A {@link WorkspaceResourceRegistry} is a workspace level {@link ResourceRegistry}.
@@ -16,13 +12,6 @@ public class WorkspaceResourceRegistry extends ResourceRegistry {
 
 	protected WorkspaceResourceRegistry(@NotNull Workspace workspace) {
 		super(workspace.getFileInAdcDirectory("resources/global-resources.xml"));
-		if (!getResourcesFile().exists()) {
-			try {
-				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose();
-			} catch (TransformerException e) {
-				ExceptionHandler.error(e);
-			}
-		}
 	}
 
 	/**
@@ -34,5 +23,4 @@ public class WorkspaceResourceRegistry extends ResourceRegistry {
 	public static WorkspaceResourceRegistry getInstance() {
 		return Workspace.getWorkspace().getGlobalResourceRegistry();
 	}
-
 }

@@ -22,7 +22,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -52,10 +51,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 	private static final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 
+	private final ValueObserver<File> workspaceDirectoryObserver = new ValueObserver<>(null);
+
 	public ADCProjectInitWindow() {
 		super(ArmaDialogCreator.getPrimaryStage(), bundle.getString("window_title"), true);
 
-		workspaceSelectionStep = new WorkspaceSelectionStep();
+		workspaceSelectionStep = new WorkspaceSelectionStep(this);
 		initWizardStep = new ProjectInitWizardStep(this);
 
 		addWizardStep(workspaceSelectionStep);
@@ -74,7 +75,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 	@NotNull
 	public File getWorkspaceDirectory() {
-		return workspaceSelectionStep.getWorkspaceDirectory();
+		return workspaceDirectoryObserver.getValue();
 	}
 
 	@Override
@@ -93,10 +94,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 	}
 
 	private static class WorkspaceSelectionStep extends WizardStep<VBox> {
-		private File workspaceDirectory;
+		private final ADCProjectInitWindow adcProjectInitWindow;
+		private @NotNull File workspaceDirectory;
 
-		public WorkspaceSelectionStep() {
+		public WorkspaceSelectionStep(@NotNull ADCProjectInitWindow adcProjectInitWindow) {
 			super(new VBox(20));
+			this.adcProjectInitWindow = adcProjectInitWindow;
 			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.getValue();
 			if (workspaceDirectory == null) {
 				workspaceDirectory = Workspace.DEFAULT_WORKSPACE_DIRECTORY;
@@ -126,9 +129,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		}
 
-		@NotNull
-		public File getWorkspaceDirectory() {
-			return workspaceDirectory;
+		@Override
+		protected void stepLeft(boolean movingForward) {
+			adcProjectInitWindow.workspaceDirectoryObserver.updateValue(workspaceDirectory);
 		}
 	}
 
@@ -339,7 +342,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					}
 				});
 
-				root.getChildren().addAll(lblOpenProject, initKnownProjects(), new Label(bundle.getString("open_from_file_title")), btnLocateProject);
+				root.getChildren().addAll(
+						lblOpenProject,
+						new VBox(0, new Label(bundle.getString("detected_projects")), lvKnownProjects),
+						new Label(bundle.getString("open_from_file_title")),
+						btnLocateProject
+				);
 
 				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectInfo>() {
 					@Override
@@ -358,42 +366,48 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						projectConfigSet.updateValue(selected != null);
 					}
 				});
+				projectInitWindow.workspaceDirectoryObserver.addListener((observer, oldValue, newValue) -> {
+					reloadKnownProjects();
+				});
 			}
 
-			private Node initKnownProjects() {
-				fetchProjects();
-				for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
-					lvKnownProjects.getItems().add(result.getProjectInfo());
-				}
-				return new VBox(0, new Label(bundle.getString("detected_projects")), lvKnownProjects);
-			}
+			private void reloadKnownProjects() {
+				lvKnownProjects.getItems().clear();
+				parsedKnownProjects.clear();
 
-			private void fetchProjects() {
 				File[] files = projectInitWindow.getWorkspaceDirectory().listFiles();
-				if (files != null) {
-					for (File f : files) {
-						if (f.isDirectory()) {
-							File[] projectFiles = f.listFiles(new FilenameFilter() {
-								@Override
-								public boolean accept(File dir, String name) {
-									return name.equals(Project.PROJECT_SAVE_FILE_NAME);
-								}
-							});
-							if (projectFiles == null) {
-								continue;
+				if (files == null) {
+					return;
+				}
+				for (File f : files) {
+					if (f.isDirectory()) {
+						File[] projectFiles = f.listFiles(new FilenameFilter() {
+							@Override
+							public boolean accept(File dir, String name) {
+								return name.equals(Project.PROJECT_SAVE_FILE_NAME);
 							}
-							for (File projectFile : projectFiles) {
-								try {
-									ProjectXmlLoader.ProjectPreviewParseResult result = ProjectXmlLoader.previewParseProjectXmlFile(projectFile);
-									parsedKnownProjects.add(result);
-								} catch (XmlParseException e) {
-									continue;
-								}
+						});
+						if (projectFiles == null) {
+							continue;
+						}
+						for (File projectFile : projectFiles) {
+							try {
+								ProjectXmlLoader.ProjectPreviewParseResult result = ProjectXmlLoader.previewParseProjectXmlFile(projectFile);
+								parsedKnownProjects.add(result);
+							} catch (XmlParseException e) {
+								e.printStackTrace();
+								continue;
 							}
 						}
 					}
+
+				}
+
+				for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
+					lvKnownProjects.getItems().add(result.getProjectInfo());
 				}
 			}
+
 
 			@Override
 			public ProjectInit getResult() {

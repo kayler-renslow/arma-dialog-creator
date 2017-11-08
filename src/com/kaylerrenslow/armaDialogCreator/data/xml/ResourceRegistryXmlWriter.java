@@ -2,6 +2,7 @@ package com.kaylerrenslow.armaDialogCreator.data.xml;
 
 import com.kaylerrenslow.armaDialogCreator.data.ExternalResource;
 import com.kaylerrenslow.armaDialogCreator.data.ResourceRegistry;
+import com.kaylerrenslow.armaDialogCreator.data.Workspace;
 import com.kaylerrenslow.armaDialogCreator.data.WorkspaceResourceRegistry;
 import com.kaylerrenslow.armaDialogCreator.util.KeyValueString;
 import com.kaylerrenslow.armaDialogCreator.util.XmlWriter;
@@ -21,14 +22,15 @@ public class ResourceRegistryXmlWriter {
 		/**
 		 Writes the {@link WorkspaceResourceRegistry} to file
 
+		 @param workspace the {@link Workspace} to write resources for
 		 @throws TransformerException when the XML couldn't be written
 		 */
-		public static void writeAndClose() throws TransformerException {
-			new WorkspaceResourceRegistryXmlWriter().doWriteAndClose();
+		public static void writeAndClose(@NotNull Workspace workspace) throws TransformerException {
+			new WorkspaceResourceRegistryXmlWriter().doWriteAndClose(workspace);
 		}
 
-		private void doWriteAndClose() throws TransformerException {
-			WorkspaceResourceRegistry registry = WorkspaceResourceRegistry.getInstance();
+		private void doWriteAndClose(@NotNull Workspace workspace) throws TransformerException {
+			WorkspaceResourceRegistry registry = workspace.getGlobalResourceRegistry();
 			if (!registry.getResourcesFile().exists()) {
 				boolean made = registry.getResourcesFile().getParentFile().mkdirs();
 				if (!made) {
