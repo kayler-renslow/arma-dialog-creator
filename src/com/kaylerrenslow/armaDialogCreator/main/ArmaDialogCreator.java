@@ -268,7 +268,9 @@ public final class ArmaDialogCreator extends Application {
 						loader.readDocument();
 						parseErrors.addAll(loader.getErrors());
 					} catch (Exception e) {
-						new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
+						INSTANCE.showLater.add(() -> {
+							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
+						});
 					}
 				}
 

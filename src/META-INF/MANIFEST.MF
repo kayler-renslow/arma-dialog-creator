@@ -4,10 +4,10 @@ JavaFX-Version: 8.0
 Created-By: JavaFX Packager
 Main-Class: com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator
 Name: com/kaylerrenslow/armaDialogCreator/
-Implementation-Version: 1.0.3+build_unversioned
+Implementation-Version: 1.0.4+build_unversioned
 Implementation-URL: https://github.com/kayler-renslow/arma-dialog-creator/releases
 Specification-Title: Arma Dialog Creator
-Specification-Version: 1.0.3
+Specification-Version: 1.0.4
 Specification-Vendor: https://github.com/kayler-renslow/arma-dialog-creator
 Build-Number: unversioned
 Class-Path: adc_updater.jar
