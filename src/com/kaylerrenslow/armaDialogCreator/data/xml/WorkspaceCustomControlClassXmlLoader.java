@@ -44,14 +44,13 @@ public class WorkspaceCustomControlClassXmlLoader extends XmlLoader {
 	/** Reads the parsed XML and loads the {@link CustomControlClass} instances */
 	public void readDocument() throws XmlParseException {
 		try {
-			if (project.getWorkspaceCustomControlClassesFile().exists()) {
-				ProjectXmlUtil.loadCustomControlClasses(this.document.getDocumentElement(), dataContext, this,
-						controlClassSpecification -> {
-							controlClassXmlHelper.addJob(new CreateCustomControlClassJob(controlClassSpecification, false));
-							return null;
-						}
-				);
-			}
+			ProjectXmlUtil.loadCustomControlClasses(this.document.getDocumentElement(), dataContext, this,
+					controlClassSpecification -> {
+						controlClassXmlHelper.addJob(new CreateCustomControlClassJob(controlClassSpecification, false));
+						return null;
+					}
+			);
+
 			if (runControlClassXmlHelperJobs) {
 				controlClassXmlHelper.runJobs();
 			}

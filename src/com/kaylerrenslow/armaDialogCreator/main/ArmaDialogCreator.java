@@ -264,9 +264,11 @@ public final class ArmaDialogCreator extends Application {
 					Project project = new Project(applicationData, config.getProjectInfo());
 					applicationData.setCurrentProject(project);
 					try {
-						WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);
-						loader.readDocument();
-						parseErrors.addAll(loader.getErrors());
+						if (project.getWorkspaceCustomControlClassesFile().exists()) {
+							WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);
+							loader.readDocument();
+							parseErrors.addAll(loader.getErrors());
+						}
 					} catch (Exception e) {
 						INSTANCE.showLater.add(() -> {
 							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
