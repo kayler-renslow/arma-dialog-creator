@@ -14,9 +14,8 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
 import com.kaylerrenslow.armaDialogCreator.data.ImageHelper;
 import com.kaylerrenslow.armaDialogCreator.expression.Env;
+import com.kaylerrenslow.armaDialogCreator.gui.FontMetrics;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.CanvasContext;
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -193,7 +192,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 
 			boolean outOfBounds = section.textWidth + rowWidth > controlWidth;
 			if (outOfBounds) {
-				FontMetrics fm = Toolkit.getToolkit().getFontLoader().getFontMetrics(section.font);
+				FontMetrics fontMetrics = new FontMetrics(section.font);
 				StringBuilder sb = new StringBuilder(section.text);
 				//break the text into multiple lines
 				while (section.textWidth + rowWidth > controlWidth) {
@@ -333,9 +332,9 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				font = TextHelper.getFont(resolution, textSizePercent);
 			}
 
-			FontMetrics fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
-			this.textWidth = (int) fontMetrics.computeStringWidth(text);
-			this.textHeight = (int) fontMetrics.getLineHeight();
+			FontMetrics fontMetrics = new FontMetrics(font);
+			this.textWidth = fontMetrics.computeStringWidth(text);
+			this.textHeight = fontMetrics.getLineHeight();
 		}
 	}
 

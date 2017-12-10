@@ -5,7 +5,6 @@ import com.kaylerrenslow.armaDialogCreator.util.Reference;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,21 +15,21 @@ import java.util.function.Function;
  @see HeaderParser
  @since 03/19/2017 */
 public class HeaderFile {
-	private final File file;
-	private List<HeaderAssignment> assignmentsMutable = new LinkedList<>();
-	private HeaderAssignmentList assignments = new HeaderAssignmentList(assignmentsMutable);
-	private List<HeaderClass> classesMutable = new LinkedList<>();
-	private HeaderClassList classes = new HeaderClassList(null, classesMutable);
+	private final String filePath;
+	private final List<HeaderAssignment> assignmentsMutable = new LinkedList<>();
+	private final HeaderAssignmentList assignments = new HeaderAssignmentList(assignmentsMutable);
+	private final List<HeaderClass> classesMutable = new LinkedList<>();
+	private final HeaderClassList classes = new HeaderClassList(null, classesMutable);
 	private final HashMap<HeaderClass, HeaderClass> inheritanceHelper = new HashMap<>();
 
-	protected HeaderFile(@NotNull File file) {
-		this.file = file;
+	protected HeaderFile(@NotNull String filePath) {
+		this.filePath = filePath;
 	}
 
-	/** Get the file that was parsed via {@link HeaderParser#parse()} */
+	/** @return the file path that was parsed via {@link HeaderParser#parse()} */
 	@NotNull
-	public File getFile() {
-		return file;
+	public String getPath() {
+		return filePath;
 	}
 
 	/**

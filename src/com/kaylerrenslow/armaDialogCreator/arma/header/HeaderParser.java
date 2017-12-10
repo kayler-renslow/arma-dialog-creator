@@ -26,10 +26,10 @@ public class HeaderParser {
 	private static final char EOT = 3; //end of text
 	private static final String S_EOT = bundle.getString("Error.HeaderParser.eot");
 
-	private final File parsingFile;
+	private final HeaderFileTextProvider parsingFile;
 	private final HeaderParserContext parserContext;
 
-	protected HeaderParser(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException {
+	protected HeaderParser(@NotNull HeaderFileTextProvider parsingFile, @NotNull File tempDirectory) throws IOException {
 		this.parsingFile = parsingFile;
 		if (tempDirectory.exists() && !tempDirectory.isDirectory()) {
 			throw new IllegalArgumentException("tempDirectory is not a directory");
@@ -50,17 +50,30 @@ public class HeaderParser {
 	 */
 	@NotNull
 	public static HeaderFile parse(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
+		return parse(new HeaderFileTextProvider.BasicFileInput(parsingFile), tempDirectory);
+	}
+
+	/**
+	 Create a new header parser, preprocess the header file, parse the file,
+	 and return a {@link HeaderFile} instance containing the results.
+
+	 @param parsingFile the header file to parse
+	 @param tempDirectory a directory
+	 @return the result
+	 */
+	@NotNull
+	public static HeaderFile parse(@NotNull HeaderFileTextProvider parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
 		HeaderParser p = new HeaderParser(parsingFile, tempDirectory);
 		return p.parse();
 	}
 
-	/**@return the header file being parsed (.h, .hh, etc)*/
+	/** @return the header file path being parsed (.h, .hh, etc) */
 	@NotNull
-	public File getParsingFile() {
-		return parsingFile;
+	public String getParsingFilePath() {
+		return parsingFile.getFilePath();
 	}
 
-	/**@return all macros discovered (#include, #ifdef, #else, #define, etc)*/
+	/** @return all macros discovered (#include, #ifdef, #else, #define, etc) */
 	@NotNull
 	public List<HeaderMacro> getMacros() {
 		return parserContext.getMacros();
@@ -82,7 +95,7 @@ public class HeaderParser {
 	}
 
 	private HeaderFile doParse() throws Exception {
-		HeaderFile headerFile = new HeaderFile(getParsingFile());
+		HeaderFile headerFile = new HeaderFile(parsingFile.getFilePath());
 
 		Preprocessor pre = new Preprocessor(parsingFile, parserContext);
 		Preprocessor.PreprocessorFileReader fileContentStream = pre.run();

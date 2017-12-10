@@ -5,7 +5,6 @@ import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import com.kaylerrenslow.armaDialogCreator.util.BrowserUtil;
-import com.sun.javafx.runtime.VersionInfo;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
@@ -17,7 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-import java.awt.*;
+import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.ResourceBundle;
@@ -40,7 +39,7 @@ public class AboutDialog extends StageDialog<VBox> {
 
 		String version = Lang.Application.VERSION;
 		String build = ArmaDialogCreator.getManifest().getMainAttributes().getValue("Build-Number");
-		String javafx = VersionInfo.getRuntimeVersion();
+		String javafx = System.getProperty("javafx.runtime.version");
 		String java = System.getProperty("java.version");
 
 		myRootElement.getChildren().addAll(

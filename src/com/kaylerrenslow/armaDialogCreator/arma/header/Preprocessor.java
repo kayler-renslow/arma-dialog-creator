@@ -58,7 +58,7 @@ class Preprocessor {
 	);
 
 	/** The file where the preprocessing began */
-	private final File processFile;
+	private final HeaderFileTextProvider processFile;
 	/** Provided via {@link HeaderParser} */
 	private final HeaderParserContext parserContext;
 	/** Set to true if this preprocessor instance has been run via {@link #run()} */
@@ -69,8 +69,8 @@ class Preprocessor {
 	/** Stream to write the fully preprocessed results to. This is currently a {@link FileOutputStream} for {@link #temporaryFullyPreprocessedResultFile} */
 	private final Writer writer;
 	private final File temporaryFullyPreprocessedResultFile;
-	protected final LinkedList<File> processingFiles = new LinkedList<>();
-	protected final LinkedList<File> processedFiles = new LinkedList<>();
+	protected final LinkedList<String> processingFiles = new LinkedList<>();
+	protected final LinkedList<String> processedFiles = new LinkedList<>();
 	protected final LinkedList<PreprocessState> preprocessStack = new LinkedList<>();
 	protected final HashMap<String, DefineValue> defined = new HashMap<>();
 	private final Env preprocessorEnv = new PreprocessorEnv();
@@ -78,17 +78,32 @@ class Preprocessor {
 	private final ExpressionInterpreter expressionInterpreter = ExpressionInterpreter.newInstance();
 
 	/**
-	 Create a new, one time use, preprocessor for header files
+	 Create a new, one time use, preprocessor for header files.
+	 This will wrap processFile in a {@link HeaderFileTextProvider.BasicFileInput} instance
 
 	 @param processFile The file to fully preprocess
 	 @param parserContext context to use
 	 */
 	public Preprocessor(@NotNull File processFile, @NotNull HeaderParserContext parserContext) throws IOException {
+		this(new HeaderFileTextProvider.BasicFileInput(processFile), parserContext);
+	}
+
+	/**
+	 Create a new, one time use, preprocessor for header files.
+	 This will wrap processFile in a {@link HeaderFileTextProvider.BasicFileInput} instance
+
+	 @param processFile the {@link HeaderFileTextProvider} that will be used to retrieve text from a file and fully preprocess it
+	 @param parserContext context to use
+	 */
+	public Preprocessor(@NotNull HeaderFileTextProvider processFile, @NotNull HeaderParserContext parserContext) throws IOException {
 		this.processFile = processFile;
 		this.parserContext = parserContext;
 
-		File preprocessedResults = new File(parserContext.getTempDirectory().getAbsolutePath() + "/" + processFile.getName() + ".preprocessed");
+		File preprocessedResults = new File(parserContext.getTempDirectory().getAbsolutePath() + "/" + processFile.getFileName() + ".preprocessed");
 		preprocessedResults.createNewFile();
+		if (!preprocessedResults.exists()) {
+			throw new IOException("Couldn't create the .preprocessed result file");
+		}
 
 		temporaryFullyPreprocessedResultFile = preprocessedResults;
 
@@ -141,19 +156,23 @@ class Preprocessor {
 	}
 
 	/**
-	 Setup the preprocessor for preprocessing the given file and then preprocess it with {@link #doProcess(File, StringBuilderReference)}.
+	 Setup the preprocessor for preprocessing the given file and then preprocess it with {@link #doProcess(HeaderFileTextProvider, StringBuilderReference)}.
 
 	 @param toProcess the file to preprocess
 	 @param parentFile if null, the processor has just been started. If not null, the file that invoked this (needs #include) will be this parameter
 	 @param builderReference where to write preprocess output
 	 @throws Exception when error occurred
 	 */
-	private void processNow(@NotNull File toProcess, @Nullable File parentFile, @NotNull StringBuilderReference builderReference) throws Exception {
-		if (processingFiles.contains(toProcess)) {
+	private void processNow(@NotNull HeaderFileTextProvider toProcess, @Nullable HeaderFileTextProvider parentFile, @NotNull StringBuilderReference builderReference) throws Exception {
+		if (processingFiles.contains(toProcess.getFilePath())) {
 			if (parentFile == null) {
 				throw new IllegalStateException("parentFile shouldn't be null here");
 			}
-			error(String.format(bundle.getString("Error.Preprocessor.Parse.circular_include_f"), toProcess.getName(), parentFile.getName()));
+			error(String.format(
+					bundle.getString("Error.Preprocessor.Parse.circular_include_f"),
+					toProcess.getFileName(),
+					parentFile.getFileName()
+			));
 		}
 		//store the old builder so that after processNow finishes on the requested file, the builderReference can be reset
 		StringBuilder oldBuilder = builderReference.getBuilder();
@@ -163,11 +182,11 @@ class Preprocessor {
 		writer.flush();
 
 		// Create a new builder for the new file.
-		StringBuilder textContent = new StringBuilder((int) toProcess.length());
+		StringBuilder textContent = new StringBuilder((int) toProcess.getFileLength());
 		builderReference.setBuilder(textContent);
 
 		//update state and place the toProcess file on the processing files stack
-		processingFiles.add(toProcess);
+		processingFiles.add(toProcess.getFileName());
 		preprocessStack.push(new PreprocessState(toProcess));
 
 		//process the file given
@@ -190,11 +209,11 @@ class Preprocessor {
 
 	 @param processFile the file to preprocess
 	 @param fileContent where to write the results to. This reference will change if an #include is discovered.
-	 See {@link #processNow(File, File, StringBuilderReference)} implementation for more info.
+	 See {@link #processNow(HeaderFileTextProvider, HeaderFileTextProvider, StringBuilderReference)} implementation for more info.
 	 @throws Exception when error occurred
 	 */
-	private void doProcess(@NotNull File processFile, @NotNull StringBuilderReference fileContent) throws Exception {
-		Scanner scan = new Scanner(processFile);
+	private void doProcess(@NotNull HeaderFileTextProvider processFile, @NotNull StringBuilderReference fileContent) throws Exception {
+		Scanner scan = processFile.newTextScanner();
 		String line;
 
 		int ifCount = 0; //>0 if current line is inside (#ifdef or #ifndef) and before #endif
@@ -335,7 +354,7 @@ class Preprocessor {
 
 					String filePath = macroContent.substring(1, rightMatchIndex);
 
-					File f = processFile.getParentFile().toPath().resolve(filePath).toFile();
+					HeaderFileTextProvider f = processFile.resolvePath(filePath);
 					if (f == null) {
 						error(String.format(bundle.getString("Error.Preprocessor.Parse.bad_file_path_f"), filePath));
 					}
@@ -683,7 +702,7 @@ class Preprocessor {
 					break;
 				}
 				case "__FILE__": {
-					buffer.append(currentState().processingFile.getName());
+					buffer.append(currentState().processingFile.getFileName());
 					break;
 				}
 				default: {
@@ -774,7 +793,7 @@ class Preprocessor {
 		return new HeaderParseException(String.format(
 				bundle.getString("Error.Preprocessor.Parse.error_wrapper_f"),
 				currentState().lineNumber,
-				currentState().processingFile.getAbsolutePath(),
+				currentState().processingFile.getFilePath(),
 				s
 		));
 	}
@@ -840,10 +859,14 @@ class Preprocessor {
 
 	protected static class PreprocessState {
 		private int lineNumber = 0;
-		private final File processingFile;
+		private final HeaderFileTextProvider processingFile;
+
+		public PreprocessState(@NotNull HeaderFileTextProvider processingFile) {
+			this.processingFile = processingFile;
+		}
 
 		public PreprocessState(@NotNull File processingFile) {
-			this.processingFile = processingFile;
+			this.processingFile = new HeaderFileTextProvider.BasicFileInput(processingFile);
 		}
 	}
 

@@ -2,7 +2,10 @@
 * 
 
 **Changed:**
-* 
+* made Preprocessor and HeaderParser independent of java.io.File to make way for parsing completely from RAM.
+  This will be very useful for Arma IntelliJ Plugin since IntelliJ decides when to save files to disk
+* Made the application work with Java 9
+* Made the project use Java 9 sdk
 
 **Fixed:**
 * 
@@ -22,3 +25,5 @@
     * we also need tests for loading projects
 
 **XSlider's border isn't correct at launch for "Lots of Controls project" (it's black instead of the texture color)**
+
+**WE NEED TO FINISH IMPLEMENTING com.kaylerrenslow.armaDialogCreator.gui.FontMetrics**

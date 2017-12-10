@@ -1,4 +1,4 @@
-**Release date:** November 8, 2017
+**Release date:** 
 
 **Added:**
 * 
@@ -7,4 +7,4 @@
 * 
 
 **Fixed:**
-* Project's not loading in a new, empty workspace
+* 

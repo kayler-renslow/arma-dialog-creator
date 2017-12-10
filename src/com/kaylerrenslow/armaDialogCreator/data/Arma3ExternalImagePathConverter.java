@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  @author Kayler
@@ -20,7 +21,7 @@ public class Arma3ExternalImagePathConverter {
 	}
 
 	private final HashMap<String, String> extToInternalMap = new HashMap<>();
-	private final HashMap<String, Image> cache = new HashMap<>();
+	private final ConcurrentHashMap<String, Image> cache = new ConcurrentHashMap<>();
 
 	private Arma3ExternalImagePathConverter() {
 		final String prefix = "/com/kaylerrenslow/armaDialogCreator/arma/icons/";

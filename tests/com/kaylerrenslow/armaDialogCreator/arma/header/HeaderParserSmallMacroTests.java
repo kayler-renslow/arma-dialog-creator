@@ -1,5 +1,6 @@
 package com.kaylerrenslow.armaDialogCreator.arma.header;
 
+import com.kaylerrenslow.armaDialogCreator.arma.header.HeaderFileTextProvider.BasicFileInput;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -12,7 +13,7 @@ public class HeaderParserSmallMacroTests {
 
 	@Test
 	public void parseHeaderTest() throws Exception {
-		HeaderParser p = new HeaderParser(HeaderTestUtil.getFile("headerTest1.h"), HeaderTestUtil.getTemporaryResultsFile());
+		HeaderParser p = new HeaderParser(new BasicFileInput(HeaderTestUtil.getFile("headerTest1.h")), HeaderTestUtil.getTemporaryResultsFile());
 		p.parse();
 
 		HeaderMacro[] macros = {

@@ -7,11 +7,10 @@ import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookup;
 import com.kaylerrenslow.armaDialogCreator.control.ControlPropertyLookupConstant;
 import com.kaylerrenslow.armaDialogCreator.control.ControlStyle;
 import com.kaylerrenslow.armaDialogCreator.control.sv.*;
+import com.kaylerrenslow.armaDialogCreator.gui.FontMetrics;
 import com.kaylerrenslow.armaDialogCreator.gui.uicanvas.Resolution;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateGroupListener;
 import com.kaylerrenslow.armaDialogCreator.util.UpdateListenerGroup;
-import com.sun.javafx.tk.FontMetrics;
-import com.sun.javafx.tk.Toolkit;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -355,7 +354,7 @@ public class BasicTextRenderer {
 
 	public void setFont(@NotNull Font font) {
 		this.font = font;
-		this.fontMetrics = Toolkit.getToolkit().getFontLoader().getFontMetrics(font);
+		this.fontMetrics = new FontMetrics(font);
 		this.setText(this.textInOriginalCase); //update text width and line height
 		clearCachedBrokenLines();
 	}
