@@ -97,7 +97,7 @@ public class HeaderToProject {
 		callback.progressUpdate(0, -1);
 		callback.message(bundle.getString("Status.parsing"));
 		try {
-			headerFile = HeaderParser.parse(descExt, workspace.getFileInAdcDirectory("temp"));
+			headerFile = HeaderParser.parse(descExt, workspace.getFileInAdcDirectory("temp")).getFile();
 		} catch (HeaderParseException e) {
 			throw new HeaderConversionException(e.getMessage(), e);
 		} catch (IOException e2) {

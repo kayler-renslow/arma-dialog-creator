@@ -15,7 +15,10 @@ public class HeaderParserLargeTest {
 
 	@Test
 	public void parseHeaderTest1() throws Exception {
-		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test1Files/largeTestRoot.h"), HeaderTestUtil.getTemporaryResultsFile());
+		HeaderFile headerFile = HeaderParser.parse(
+				HeaderTestUtil.getFile("largeTest/test1Files/largeTestRoot.h"),
+				HeaderTestUtil.getTemporaryResultsFile()
+		).getFile();
 
 		HeaderClass expected = hClass("-root class", null,
 				assign("author", wrap("K-Town")),
@@ -69,7 +72,10 @@ public class HeaderParserLargeTest {
 
 	@Test
 	public void parseHeaderTest2() throws Exception {
-		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test2Files/largeTest2.h"), HeaderTestUtil.getTemporaryResultsFile());
+		HeaderFile headerFile = HeaderParser.parse(
+				HeaderTestUtil.getFile("largeTest/test2Files/largeTest2.h"),
+				HeaderTestUtil.getTemporaryResultsFile()
+		).getFile();
 
 		HeaderClass expected = hClass("-root class", null,
 				hClass("DevStuff", null,
@@ -86,7 +92,10 @@ public class HeaderParserLargeTest {
 
 	@Test
 	public void parseHeaderTest3() throws Exception {
-		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test3Files/largeTest3.h"), HeaderTestUtil.getTemporaryResultsFile());
+		HeaderFile headerFile = HeaderParser.parse(
+				HeaderTestUtil.getFile("largeTest/test3Files/largeTest3.h"),
+				HeaderTestUtil.getTemporaryResultsFile()
+		).getFile();
 
 		HeaderClass hClassOne = hClass(
 				"Sound_Man_one",
@@ -115,7 +124,10 @@ public class HeaderParserLargeTest {
 
 	@Test
 	public void parseHeaderTest4() throws Exception {
-		HeaderFile headerFile = HeaderParser.parse(HeaderTestUtil.getFile("largeTest/test4Files/largeTest4.h"), HeaderTestUtil.getTemporaryResultsFile());
+		HeaderFile headerFile = HeaderParser.parse(
+				HeaderTestUtil.getFile("largeTest/test4Files/largeTest4.h"),
+				HeaderTestUtil.getTemporaryResultsFile()
+		).getFile();
 
 		HeaderClass expected = hClass("-root class", null,
 				hClass(

@@ -1,11 +1,11 @@
 **Added:**
-* 
+* support for retrieving #define macros after header parse
 
 **Changed:**
-* finished FontMetrics class
+*
 
 **Fixed:**
-* 
+* PreprocessorTest was failing because files didn't exist.
 
 **Notes:**
 * June 23:

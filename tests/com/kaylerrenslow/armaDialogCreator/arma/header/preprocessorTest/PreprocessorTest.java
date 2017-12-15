@@ -225,11 +225,11 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuote() throws Exception {
 		/*
-		* #define STRINGIFY(s) #s;
-		* #define FOO 456
-		* test1 = STRINGIFY(123); //test1 = "123";
-		* test2 = STRINGIFY(FOO); //test2 = "456";
-		*/
+		 * #define STRINGIFY(s) #s;
+		 * #define FOO 456
+		 * test1 = STRINGIFY(123); //test1 = "123";
+		 * test2 = STRINGIFY(FOO); //test2 = "456";
+		 */
 		String base = "test1 = STRINGIFY(123);test2 = STRINGIFY(FOO);";
 		String expect = "test1 = \"123\";test2 = \"456\";";
 
@@ -246,8 +246,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuote2() throws Exception {
 		/*
-		* #define STRINGIFY(s) #s;
-		*/
+		 * #define STRINGIFY(s) #s;
+		 */
 		String base = "STRINGIFY(quote)";
 		String expect = "\"quote\"";
 
@@ -261,8 +261,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuote3() throws Exception {
 		/*
-		* #define STRINGIFY(s) #s;
-		*/
+		 * #define STRINGIFY(s) #s;
+		 */
 		String base = "STRINGIFY(quote);";
 		String expect = "\"quote\";";
 
@@ -276,8 +276,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuote4() throws Exception {
 		/*
-		* #define STRINGIFY(s) #s;
-		*/
+		 * #define STRINGIFY(s) #s;
+		 */
 		String base = "STRINGIFY(quote)fail";
 		String expect = base;
 
@@ -291,8 +291,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuoteLiteral() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "TEST(\"CAR\")";
 		String expect = "\"CAR\"";
 
@@ -306,8 +306,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuoteLiteralSemicolon() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "TEST(\"CAR\");";
 		String expect = "\"CAR\";";
 
@@ -321,8 +321,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuoteLiteralAssignment() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "msg=TEST(\"CAR\");";
 		String expect = "msg=\"CAR\";";
 
@@ -336,8 +336,8 @@ public class PreprocessorTest {
 	@Test
 	public void replaceParameterQuoteLiteralAssignment2() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "msg=TEST(\"CAR VROOM VROOM\");";
 		String expect = "msg=\"CAR VROOM VROOM\";";
 
@@ -384,8 +384,8 @@ public class PreprocessorTest {
 	@Test
 	public void commentTest() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "//msg=TEST(\"CAR VROOM VROOM\");";
 		String expect = base; //doesn't preprocess comments
 
@@ -399,8 +399,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "/*msg=TEST(\"CAR VROOM VROOM\");*/";
 		String expect = base; //doesn't preprocess comments
 
@@ -414,8 +414,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest2() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/";
 		String expect = base; //doesn't preprocess comments
 
@@ -429,8 +429,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest3() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/hello=1;";
 		String expect = base; //doesn't preprocess comments
 
@@ -444,8 +444,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest4() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "hello=1;/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/hello=1;";
 		String expect = base; //doesn't preprocess comments
 
@@ -459,8 +459,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest5() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "hello=/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/ TEST(\"CAR\");";
 		String expect = "hello=/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/ \"CAR\";";
 
@@ -474,8 +474,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest6() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "hello=/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/ TEST(\"CAR\");";
 		String expect = "hello=/*msg=TEST(\"CAR fdsfdsfsdsfsVROOM VROOM\");*/ \"CAR\";";
 
@@ -489,8 +489,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest7() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "hello=/*\n\n\n*/ TEST(\"CAR\");";
 		String expect = "hello=/*\n\n\n*/ \"CAR\";";
 
@@ -504,8 +504,8 @@ public class PreprocessorTest {
 	@Test
 	public void blockCommentTest8() throws Exception {
 		/*
-		* #define TEST(s) s;
-		*/
+		 * #define TEST(s) s;
+		 */
 		String base = "/**/";
 		String expect = "/**/";
 
@@ -627,6 +627,10 @@ public class PreprocessorTest {
 	@NotNull
 	private static File createFileFromText(@NotNull String textToWrite) throws Exception {
 		File f = HeaderTestUtil.getFile("preprocessorTest/createdFiles/test" + createdFileCount.incrementAndGet() + ".h");
+		if (!f.exists()) {
+			f.getParentFile().mkdirs();
+			f.createNewFile();
+		}
 		UTF8FileWriter fos = new UTF8FileWriter(f);
 		fos.write(textToWrite);
 		fos.flush();
