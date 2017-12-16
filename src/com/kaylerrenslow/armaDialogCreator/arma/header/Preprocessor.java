@@ -587,7 +587,7 @@ class Preprocessor {
 
 		StringBuilderReference buffer = new StringBuilderReference(new StringBuilder());
 
-		String entryValueText = entry.getValue().getText();
+		String entryValueText = entry.getValue().getResultTemplateText();
 
 		if (entry.getValue() instanceof ParameterDefineValue) {
 			if (parameterText == null) {
@@ -668,7 +668,7 @@ class Preprocessor {
 							continue;
 						}
 						if (entry1.getKey().equals(paramArg)) {
-							paramArg = entry1.getValue().getText();
+							paramArg = entry1.getValue().getResultTemplateText();
 							break;
 						}
 					}
@@ -840,10 +840,10 @@ class Preprocessor {
 								}
 								DefineMacroContent.StringDefineValue sdv = (DefineMacroContent.StringDefineValue) defined.getValue();
 								try {
-									return expressionInterpreter.evaluate(sdv.getText(), preprocessorEnv).get();
+									return expressionInterpreter.evaluate(sdv.getResultTemplateText(), preprocessorEnv).get();
 								} catch (Exception e) {
 									throw new RuntimeException(
-											String.format(bundle.getString("Error.Preprocessor.Parse.couldnt_evaluate_macro_body_f"), sdv.getText()),
+											String.format(bundle.getString("Error.Preprocessor.Parse.couldnt_evaluate_macro_body_f"), sdv.getResultTemplateText()),
 											e
 									);
 								}

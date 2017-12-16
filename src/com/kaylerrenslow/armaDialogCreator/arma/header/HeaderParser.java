@@ -10,9 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.BitSet;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  A parser for Arma 3 header files (.h, .hh, etc)
@@ -42,29 +40,58 @@ public class HeaderParser {
 
 	/**
 	 Create a new header parser, preprocess the header file, parse the file,
-	 and return a {@link HeaderFile} instance containing the results.
+	 and return a {@link HeaderParseResult} instance containing the results.
 
 	 @param parsingFile the header file to parse
 	 @param tempDirectory a directory
 	 @return the result
 	 */
 	@NotNull
-	public static HeaderFile parse(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
+	public static HeaderParseResult parse(@NotNull File parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
 		return parse(new HeaderFileTextProvider.BasicFileInput(parsingFile), tempDirectory);
 	}
 
 	/**
 	 Create a new header parser, preprocess the header file, parse the file,
-	 and return a {@link HeaderFile} instance containing the results.
+	 and return a {@link HeaderParseResult} instance containing the results.
 
 	 @param parsingFile the header file to parse
 	 @param tempDirectory a directory
 	 @return the result
 	 */
 	@NotNull
-	public static HeaderFile parse(@NotNull HeaderFileTextProvider parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
+	public static HeaderParseResult parse(@NotNull HeaderFileTextProvider parsingFile, @NotNull File tempDirectory) throws IOException, HeaderParseException {
 		HeaderParser p = new HeaderParser(parsingFile, tempDirectory);
-		return p.parse();
+		HeaderFile file = p.parse();
+
+		Map<String, String> defineMacros = new HashMap<>();
+		for (HeaderMacro macro : p.getMacros()) {
+			if (!(macro.getContent() instanceof DefineMacroContent)) {
+				continue;
+			}
+			DefineMacroContent define = (DefineMacroContent) macro.getContent();
+			DefineMacroContent.DefineValue defineValue = define.getDefinedValue();
+			if (defineValue instanceof DefineMacroContent.ParameterDefineValue) {
+				DefineMacroContent.ParameterDefineValue paramDefineValue = (DefineMacroContent.ParameterDefineValue) defineValue;
+				StringBuilder key = new StringBuilder();
+				key.append(define.getDefinedVar());
+				key.append('(');
+				int i = 0;
+				for (String param : paramDefineValue.getParams()) {
+					key.append(param);
+					if (i != paramDefineValue.getParams().length - 1) {
+						key.append(',');
+					}
+					i++;
+				}
+				key.append(')');
+				defineMacros.put(key.toString(), defineValue.getResultTemplateText());
+			} else if (defineValue instanceof DefineMacroContent.StringDefineValue) {
+				DefineMacroContent.StringDefineValue stringDefineValue = (DefineMacroContent.StringDefineValue) defineValue;
+				defineMacros.put(define.getDefinedVar(), stringDefineValue.getResultTemplateText());
+			}
+		}
+		return new HeaderParseResult(file, defineMacros);
 	}
 
 	/** @return the header file path being parsed (.h, .hh, etc) */

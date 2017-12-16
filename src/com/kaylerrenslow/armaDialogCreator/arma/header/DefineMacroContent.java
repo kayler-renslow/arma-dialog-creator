@@ -62,7 +62,7 @@ public class DefineMacroContent implements HeaderMacroContent {
 		}
 
 		@NotNull
-		public String getText() {
+		public String getResultTemplateText() {
 			return text;
 		}
 
@@ -97,7 +97,7 @@ public class DefineMacroContent implements HeaderMacroContent {
 
 		@Override
 		@NotNull
-		public String getText() {
+		public String getResultTemplateText() {
 			return text;
 		}
 
@@ -122,6 +122,6 @@ public class DefineMacroContent implements HeaderMacroContent {
 	}
 
 	public interface DefineValue {
-		@NotNull String getText();
+		@NotNull String getResultTemplateText();
 	}
 }
