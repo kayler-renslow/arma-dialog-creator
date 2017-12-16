@@ -30,6 +30,6 @@ public class FontMetrics {
 
 	/** @return the font's line height */
 	public int getLineHeight() {
-		return (int) t.getLayoutBounds().getHeight(); //todo
+		return (int) t.getLayoutBounds().getHeight();
 	}
 }
