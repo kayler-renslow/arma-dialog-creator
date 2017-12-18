@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.*;
@@ -61,7 +60,7 @@ public class HeaderToProject {
 	 */
 	@NotNull
 	public static List<KeyValue<String, File>> convertAndSaveToWorkspace(@NotNull File workspaceDir, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback c)
-			throws FileNotFoundException, HeaderConversionException {
+			throws HeaderConversionException {
 		return new HeaderToProject(new Workspace(workspaceDir), descExt, c).run();
 	}
 
@@ -92,7 +91,7 @@ public class HeaderToProject {
 		}
 	}
 
-	private List<KeyValue<String, File>> run() throws FileNotFoundException, HeaderConversionException {
+	private List<KeyValue<String, File>> run() throws HeaderConversionException {
 		List<KeyValue<String, File>> ret = new ArrayList<>();
 		callback.progressUpdate(0, -1);
 		callback.message(bundle.getString("Status.parsing"));
