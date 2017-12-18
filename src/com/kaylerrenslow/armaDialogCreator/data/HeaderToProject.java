@@ -272,7 +272,14 @@ public class HeaderToProject {
 		if (arrayOfControlsAssignment instanceof HeaderArrayAssignment) {
 			arrayOfControls = ((HeaderArrayAssignment) arrayOfControlsAssignment).getArray();
 		} else {
+			if (arrayOfControlsAssignment == null) {
+				return;
+			}
 			convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
+		}
+
+		if (arrayOfControls == null) {
+			return;
 		}
 
 		List<HeaderArrayItem> items = arrayOfControls.getItems();
