@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.List;
 
 import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
 
@@ -16,6 +15,13 @@ import static com.kaylerrenslow.armaDialogCreator.installer.ADCInstaller.bundle;
  @author kayler
  @since 4/10/17 */
 public class ADCInstallerTask extends Task<File> {
+	/** Extract only what we need */
+	private static final String[] toExtract = {
+			"adc_updater.jar",
+			"adc.jar",
+			"Arma Dialog Creator.exe"
+	};
+
 	private final File extractDirectory;
 	private final InstallPackage installPackage;
 
@@ -44,14 +50,12 @@ public class ADCInstallerTask extends Task<File> {
 	protected File call() throws Exception {
 		updateProgress(-1, 1);
 
-		List<String> toExtract = installPackage.getAllToExtract();
-
 		if (!installPackage.packageExists()) {
 			message(bundle.getString("Installer.extract_package_dne"));
 			cancel();
 			return null;
 		}
-		final int MAX_PROGRESS = 1 /*backup*/ + toExtract.size() * 2 /*extract and verify*/ + 1 /*delete backup*/ + 1/*done*/;
+		final int MAX_PROGRESS = 1 /*backup*/ + toExtract.length * 2 /*extract and verify*/ + 1 /*delete backup*/ + 1/*done*/;
 		updateProgress(0, MAX_PROGRESS);
 
 		int progress = 0;
