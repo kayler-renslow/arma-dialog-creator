@@ -33,7 +33,7 @@ public class ADCStandaloneProgressWindow {
 	public ADCStandaloneProgressWindow(@NotNull Stage stage) {
 		this.stage = stage;
 
-		stage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
+		stage.getIcons().add(new Image("/app.png"));
 
 		root = new VBox(5);
 		stage.setScene(new Scene(new StackPane(root)));
@@ -43,7 +43,7 @@ public class ADCStandaloneProgressWindow {
 		root.setAlignment(Pos.CENTER);
 		root.setPadding(new Insets(10));
 
-		root.getChildren().add(new ImageView("/com/kaylerrenslow/armaDialogCreator/pwindow/adc_title.png"));
+		root.getChildren().add(new ImageView("/adc_title.png"));
 
 		progressBar.setMaxWidth(Double.MAX_VALUE);
 		root.getChildren().add(progressBar);

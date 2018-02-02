@@ -42,7 +42,7 @@ class InstallerConfigWindow {
 	public InstallerConfigWindow(@NotNull Stage stage, @NotNull File initInstallDir) {
 		this.stage = stage;
 		stage.setTitle(bundle.getString("InstallerWindow.window_title"));
-		stage.getIcons().addAll(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
+		stage.getIcons().addAll(new Image("/app.png"));
 
 		this.installDir = initInstallDir;
 
