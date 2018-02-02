@@ -61,6 +61,9 @@ public class HeaderToProject {
 	@NotNull
 	public static List<KeyValue<String, File>> convertAndSaveToWorkspace(@NotNull File workspaceDir, @NotNull File descExt, @NotNull HeaderToProject.ConversionCallback c)
 			throws HeaderConversionException {
+		if (!workspaceDir.exists()) {
+			workspaceDir.mkdirs();
+		}
 		return new HeaderToProject(new Workspace(workspaceDir), descExt, c).run();
 	}
 
