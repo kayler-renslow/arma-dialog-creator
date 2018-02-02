@@ -14,6 +14,7 @@ import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
@@ -125,11 +126,11 @@ public class ADCReleaseAutomation {
 		{
 			File updateConfig = new File(workingDirectoryPath + INSTALL_JAR_DIR + "update.properties");
 			updateConfig.createNewFile();
-			FileOutputStream fos = new FileOutputStream(updateConfig);
-			fos.write(String.format("updateJar=%s\n", updateJarName).getBytes());
-			fos.write(String.format("version=%s\n", version).getBytes());
-			fos.flush();
-			fos.close();
+			Writer out = new OutputStreamWriter(new FileOutputStream(updateConfig), StandardCharsets.UTF_8);
+			out.write(String.format("updateJar=%s\n", updateJarName));
+			out.write(String.format("version=%s\n", version));
+			out.flush();
+			out.close();
 		}
 
 		//rename the current installer jar to the update jar name
@@ -190,22 +191,22 @@ public class ADCReleaseAutomation {
 		exportNew(new File(templateFilePath), new File(destTemplateFilePath));
 	}
 
-	private void exportNew(File template, File out) {
+	private void exportNew(File template, File fout) {
 		if (!template.exists()) {
 			throw new IllegalStateException("template should exist. Current path:" + template.getPath());
 		}
 		try {
-			FileInputStream fis = new FileInputStream(template);
-			FileOutputStream fos = new FileOutputStream(out);
-			int in;
+			Reader in = new InputStreamReader(new FileInputStream(template), StandardCharsets.UTF_8);
+			Writer out = new OutputStreamWriter(new FileOutputStream(fout), StandardCharsets.UTF_8);
+			int c;
 			boolean startVariable = false;
 			StringBuilder variable = new StringBuilder();
-			while ((in = fis.read()) >= 0) {
+			while ((c = in.read()) >= 0) {
 				if (startVariable) {
-					if (in == '$') {
+					if (c == '$') {
 						startVariable = false;
 					} else {
-						variable.append((char) in);
+						variable.append((char) c);
 						continue;
 					}
 
@@ -213,19 +214,19 @@ public class ADCReleaseAutomation {
 
 					switch (varName) {
 						case "ADC_LAUNCHER_PROJECT_OUT_PATH": {
-							fos.write((workingDirectoryPath + "\\out\\artifacts\\adc_launcher_jar").getBytes());
+							out.write((workingDirectoryPath + "\\out\\artifacts\\adc_launcher_jar"));
 							break;
 						}
 						case "ADC_INSTALLER_PROJECT_OUT_PATH": {
-							fos.write((workingDirectoryPath + "\\out\\artifacts\\adc_installer_jar").getBytes());
+							out.write((workingDirectoryPath + "\\out\\artifacts\\adc_installer_jar"));
 							break;
 						}
 						case "VERSION": {
-							fos.write(Lang.Application.VERSION.getBytes());
+							out.write(Lang.Application.VERSION);
 							break;
 						}
 						case "BUILD_NUMBER": {
-							fos.write(getBuildNumber().getBytes());
+							out.write(getBuildNumber());
 							break;
 						}
 						default: {
@@ -233,17 +234,17 @@ public class ADCReleaseAutomation {
 						}
 					}
 				} else {
-					if (in == '$') {
+					if (c == '$') {
 						startVariable = true;
 						variable = new StringBuilder();
 						continue;
 					}
-					fos.write(in);
+					out.write(c);
 				}
 			}
-			fos.flush();
-			fos.close();
-			fis.close();
+			out.flush();
+			out.close();
+			in.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
