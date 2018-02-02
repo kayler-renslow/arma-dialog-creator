@@ -1,12 +1,14 @@
 package com.kaylerrenslow.armaDialogCreator.gui.main.popup.projectInit;
 
 import com.kaylerrenslow.armaDialogCreator.data.xml.ParseError;
+import com.kaylerrenslow.armaDialogCreator.gui.main.popup.SimpleErrorDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Separator;
@@ -56,6 +58,13 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 			);
 			if (error.recovered()) {
 				vbErrorMsg.getChildren().add(getLabel(bundle.getString("ProjectResultErrorPopup.recover_message") + " " + error.getRecoverMessage()));
+			}
+			if (error.getException() != null) {
+				Button button = new Button(bundle.getString("ProjectResultErrorPopup.view_error"));
+				button.setOnAction(event -> {
+					new SimpleErrorDialog<Label>(ProjectImproperResultDialog.this.myStage, null, error.getException(), null).show();
+				});
+				vbErrorMsg.getChildren().add(button);
 			}
 
 			root.getChildren().add(vbErrorMsg);

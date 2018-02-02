@@ -438,7 +438,12 @@ public class ProjectXmlUtil {
 		try {
 			value = SerializableValue.constructNew(dataContext, propertyType, values);
 		} catch (Exception e) {
-			recorder.addError(new ParseError(String.format(bundle.getString("ProjectLoad.could_not_create_value_f"), requester, Arrays.toString(values))));
+			recorder.addError(
+					new ParseError(
+							String.format(bundle.getString("ProjectLoad.could_not_create_value_f"), requester, Arrays.toString(values)),
+							e
+					)
+			);
 			return null;
 		}
 		return value;
