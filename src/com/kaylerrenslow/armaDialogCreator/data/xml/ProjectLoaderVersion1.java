@@ -423,6 +423,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 			controlClassXmlHelper.addJob(new ControlExtendJob(extendClassName, control, inheritControlProperties));
 		}
 
+		controlClassXmlHelper.registerExistingControlClass(control);
+
 		//must set ghost state first since ghost=!visible && !enabled
 		//and we don't want to overwrite enabled when ghost is set
 		control.getRenderer().setGhost(ghost);

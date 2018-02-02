@@ -19,6 +19,7 @@ import java.util.*;
  @since 11/06/2017 */
 class ControlClassXmlHelper {
 	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+	private final Set<String> existingClasses = new HashSet<>();
 	private final Project project;
 	private final XmlErrorRecorder recorder;
 	private boolean runJobs = false;
@@ -52,7 +53,8 @@ class ControlClassXmlHelper {
 	private LinkedList<AfterLoadJob> sortJobs() {
 		LinkedList<AfterLoadJob> jobsSorted = new LinkedList<>();
 
-		HashSet<String> createdClasses = new HashSet<>();
+		HashSet<String> createdClasses = new HashSet<>(existingClasses);
+
 		while (!jobs.isEmpty()) {
 			Iterator<AfterLoadJob> iter = jobs.iterator();
 			boolean didWork = false;
@@ -93,11 +95,25 @@ class ControlClassXmlHelper {
 				}
 			}
 			if (!didWork) {
-				throw new IllegalStateException("Job sorting: Went through all jobs for an iteration and did nothing (this error prevents infinite loop)!");
+				throw new IllegalStateException("Job sorting: Went through all jobs for an iteration and did nothing (this error prevents infinite loop)!"
+						+ "jobs=:" + jobs
+				);
 			}
 		}
 
 		return jobsSorted;
+	}
+
+	/**
+	 Used to register a class that already is instantiated
+	 and thus can be extended immediately when {@link #runJobs()} is invoked.
+	 <p>
+	 This method ensures that {@link ControlClass} instances are instantiated in proper order.
+
+	 @see ControlClass#extendControlClass(ControlClass)
+	 */
+	public void registerExistingControlClass(@NotNull ControlClass controlClass) {
+		existingClasses.add(controlClass.getClassName());
 	}
 
 	protected interface AfterLoadJob {
@@ -157,6 +173,15 @@ class ControlClassXmlHelper {
 			} catch (IllegalArgumentException ignore) {
 
 			}
+		}
+
+		@Override
+		public String toString() {
+			return "ControlNestedClassesJob{" +
+					"addToMe=" + addToMe +
+					", requiredNested=" + requiredNested +
+					", optionalNested=" + optionalNested +
+					'}';
 		}
 	}
 
