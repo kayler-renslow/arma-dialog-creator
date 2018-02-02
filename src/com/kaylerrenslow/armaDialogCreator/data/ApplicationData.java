@@ -80,12 +80,8 @@ public class ApplicationData extends DataContext {
 		return ApplicationDataManager.getInstance().getApplicationData();
 	}
 
-	/**
-	 Set the current {@link Project} instance.
-
-	 @param project instance to use
-	 */
-	public void setCurrentProject(@NotNull Project project) {
+	/** Sets {@link #getCurrentProject()} */
+	protected void setProject(Project project) {
 		this.currentProject = project;
 	}
 

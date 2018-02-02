@@ -202,8 +202,6 @@ public class HeaderToProject {
 			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir.getName(), workspace));
 		}
 
-		dataContext.setCurrentProject(project);
-
 		callback.progressUpdate(++progress, maxProgress);
 
 		//todo add macros to macro registry?

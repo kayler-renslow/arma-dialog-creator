@@ -48,7 +48,9 @@ public class Project implements SpecificationRegistry {
 	private Workspace workspace;
 
 	/**
-	 Create a new instance.
+	 Create a new instance. This will also assign this {@link Project} instance to the provided {@link ApplicationData},
+	 which in turn means that the provided {@link ApplicationData} will have this instance returned when {@link ApplicationData#getCurrentProject()}
+	 is invoked.
 
 	 @param applicationData the {@link ApplicationData} instance to use. See class level doc for more info.
 	 @param info info to create {@link Project} with
@@ -68,6 +70,7 @@ public class Project implements SpecificationRegistry {
 		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Workspace, this);
 
 		projectSaveFile = info.getProjectXmlFile();
+		applicationData.setProject(this);
 	}
 
 	/** @return {@link ApplicationDataManager#getCurrentProject()} */

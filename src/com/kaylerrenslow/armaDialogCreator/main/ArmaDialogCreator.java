@@ -246,7 +246,6 @@ public final class ArmaDialogCreator extends Application {
 				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
 					try {
 						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
-						applicationData.setCurrentProject(result.getProject());
 						parseErrors.addAll(result.getErrors());
 					} catch (Exception e) {
 						newProject = true;
@@ -262,7 +261,6 @@ public final class ArmaDialogCreator extends Application {
 				}
 				if (newProject) {
 					Project project = new Project(applicationData, config.getProjectInfo());
-					applicationData.setCurrentProject(project);
 					try {
 						if (project.getWorkspaceCustomControlClassesFile().exists()) {
 							WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);
