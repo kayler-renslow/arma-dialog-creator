@@ -33,7 +33,7 @@ public class ADCStandaloneProgressWindow {
 	public ADCStandaloneProgressWindow(@NotNull Stage stage) {
 		this.stage = stage;
 
-		stage.getIcons().add(new Image("/app.png"));
+		stage.getIcons().add(new Image("/com/kaylerrenslow/armaDialogCreator/pwindow/app.png"));
 
 		root = new VBox(5);
 		stage.setScene(new Scene(new StackPane(root)));
