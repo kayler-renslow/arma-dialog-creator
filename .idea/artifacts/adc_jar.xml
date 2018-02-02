@@ -4,8 +4,6 @@
     <root id="archive" name="adc.jar">
       <element id="module-output" name="Arma Dialog Creator" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-java8.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit-4.12.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/junit.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/hamcrest-core-1.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/richtextfx-0.7-M2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/wellbehavedfx-0.3.jar" path-in-jar="/" />
