@@ -10,10 +10,7 @@ import com.kaylerrenslow.armaDialogCreator.main.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  Helps with loading {@link ControlClass} and {@link CustomControlClass} instances in proper order
@@ -24,6 +21,7 @@ class ControlClassXmlHelper {
 	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
 	private final Project project;
 	private final XmlErrorRecorder recorder;
+	private boolean runJobs = false;
 
 	public ControlClassXmlHelper(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
 		this.project = project;
@@ -34,14 +32,75 @@ class ControlClassXmlHelper {
 		jobs.add(job);
 	}
 
+	/**
+	 Sorts the jobs to ensure correct application state and then invokes them. Note: this method can only
+	 be invoked once. If invoked a second time, an {@link IllegalStateException} will be thrown.
+
+	 @throws IllegalStateException
+	 */
 	public void runJobs() {
-		Collections.sort(jobs);
-		for (AfterLoadJob job : jobs) {
+		if (runJobs) {
+			throw new IllegalStateException("Already invoked runJobs()");
+		}
+		runJobs = true;
+		for (AfterLoadJob job : sortJobs()) {
 			job.doWork(project, recorder);
 		}
 	}
 
-	protected interface AfterLoadJob extends Comparable<AfterLoadJob> {
+	@NotNull
+	private LinkedList<AfterLoadJob> sortJobs() {
+		LinkedList<AfterLoadJob> jobsSorted = new LinkedList<>();
+
+		HashSet<String> createdClasses = new HashSet<>();
+		while (!jobs.isEmpty()) {
+			Iterator<AfterLoadJob> iter = jobs.iterator();
+			boolean didWork = false;
+			while (iter.hasNext()) {
+				AfterLoadJob iterJob = iter.next();
+				if (iterJob instanceof CreateCustomControlClassJob) {
+					CreateCustomControlClassJob job = (CreateCustomControlClassJob) iterJob;
+					if (job.spec.getExtendClassName() == null) {
+						createdClasses.add(job.spec.getClassName());
+						jobsSorted.add(iterJob);
+						iter.remove();
+						didWork = true;
+					} else {
+						if (createdClasses.contains(job.spec.getExtendClassName())) {
+							createdClasses.add(job.spec.getClassName());
+							jobsSorted.add(iterJob);
+							iter.remove();
+							didWork = true;
+						}
+					}
+				} else if (iterJob instanceof ControlExtendJob) {
+					ControlExtendJob job = (ControlExtendJob) iterJob;
+					if (createdClasses.contains(job.extendThisControlClassName)) {
+						createdClasses.add(job.setMyExtend.getClassName());
+						jobsSorted.add(iterJob);
+						iter.remove();
+						didWork = true;
+					}
+				} else if (iterJob instanceof ControlNestedClassesJob) {
+					ControlNestedClassesJob job = (ControlNestedClassesJob) iterJob;
+					if (createdClasses.contains(job.addToMe.getClassName())) {
+						jobsSorted.add(iterJob);
+						iter.remove();
+						didWork = true;
+					}
+				} else {
+					throw new IllegalStateException("Unexpected and unhandled job type: " + iterJob.getClass());
+				}
+			}
+			if (!didWork) {
+				throw new IllegalStateException("Job sorting: Went through all jobs for an iteration and did nothing (this error prevents infinite loop)!");
+			}
+		}
+
+		return jobsSorted;
+	}
+
+	protected interface AfterLoadJob {
 		void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder);
 	}
 
@@ -62,31 +121,6 @@ class ControlClassXmlHelper {
 					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
 			);
 			project.addCustomControlClass(customControlClass);
-		}
-
-		@Override
-		public int compareTo(@NotNull AfterLoadJob o) {
-			if (o instanceof CreateCustomControlClassJob) {
-				CreateCustomControlClassJob other = (CreateCustomControlClassJob) o;
-				if (other.spec.getExtendClassName() == null) {
-					//let other load first
-					return 1;
-				}
-				if (spec.getExtendClassName() == null) {
-					//run this first
-					return -1;
-				}
-				if (spec.getExtendClassName().equals(other.spec.getClassName())) {
-					//allow the other to load first
-					return 1;
-				}
-				if (other.spec.getExtendClassName().equals(spec.getClassName())) {
-					//let this job load first
-					return -1;
-				}
-
-			}
-			return -1;
 		}
 	}
 
@@ -124,14 +158,6 @@ class ControlClassXmlHelper {
 
 			}
 		}
-
-		@Override
-		public int compareTo(@NotNull AfterLoadJob o) {
-			if (o instanceof ControlNestedClassesJob) {
-				return 0;
-			}
-			return 1;
-		}
 	}
 
 	public static class ControlExtendJob implements AfterLoadJob {
@@ -163,15 +189,6 @@ class ControlClassXmlHelper {
 			for (ControlPropertyLookup inheritProperty : inheritProperties) {
 				setMyExtend.inheritProperty(inheritProperty);
 			}
-		}
-
-		@Override
-		public int compareTo(@NotNull AfterLoadJob o) {
-			if (o instanceof ControlExtendJob) {
-				return 0;
-			}
-			//always let other jobs go before this one
-			return 1;
 		}
 	}
 }

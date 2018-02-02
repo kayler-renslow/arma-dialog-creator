@@ -1,5 +1,5 @@
 **Added:**
-* support for retrieving #define macros after header parse
+* 
 
 **Changed:**
 *
