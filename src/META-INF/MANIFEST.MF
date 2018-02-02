@@ -1,17 +1,13 @@
 Manifest-Version: 1.0
-JavaFX-Preloader-Class: com.kaylerrenslow.armaDialogCreator.main.ADCPr
- eloader
-Implementation-Version: 1.0.6+build_unversioned
-Build-Number: unversioned
-Specification-Vendor: https://github.com/kayler-renslow/arma-dialog-cr
- eator
-Specification-Title: Arma Dialog Creator
-Class-Path: adc_updater.jar
-Main-Class: com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator
-Name: com/kaylerrenslow/armaDialogCreator/
+JavaFX-Preloader-Class: com.kaylerrenslow.armaDialogCreator.main.ADCPreloader
 JavaFX-Version: 8.0
 Created-By: JavaFX Packager
-Implementation-URL: https://github.com/kayler-renslow/arma-dialog-crea
- tor/releases
+Main-Class: com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator
+Name: com/kaylerrenslow/armaDialogCreator/
+Implementation-Version: 1.0.6+build_unversioned
+Implementation-URL: https://github.com/kayler-renslow/arma-dialog-creator/releases
+Specification-Title: Arma Dialog Creator
 Specification-Version: 1.0.6
-
+Specification-Vendor: https://github.com/kayler-renslow/arma-dialog-creator
+Build-Number: unversioned
+Class-Path: adc_updater.jar
