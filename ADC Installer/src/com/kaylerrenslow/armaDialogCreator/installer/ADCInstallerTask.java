@@ -43,7 +43,7 @@ public class ADCInstallerTask extends Task<File> {
 
 	@NotNull
 	private String getDestPath(@NotNull String fileName) {
-		return extractDirectory.getAbsolutePath() + "/" + fileName;
+		return extractDirectory.getAbsolutePath() + File.separator + fileName;
 	}
 
 	@Override

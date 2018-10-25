@@ -42,7 +42,7 @@ public class ResourceRegistry {
 	/** Get the path for the given filename relative to the {@link #getResourcesDirectory()} path. */
 	@NotNull
 	public File getFileForName(@NotNull String fileName) {
-		return new File(getResourcesDirectory().getAbsolutePath() + "/" + fileName);
+		return new File(getResourcesDirectory().getAbsolutePath() + File.separator + fileName);
 	}
 
 	@NotNull

@@ -14,7 +14,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" scope="TEST" name="junit" level="project" />
     <orderEntry type="library" name="annotations-java8" level="project" />
-    <orderEntry type="library" name="org.fxmisc.richtext:richtextfx:0.7-M2" level="project" />
+    <orderEntry type="library" name="org.fxmisc.richtext:richtextfx:0.9.1" level="project" />
     <orderEntry type="module" module-name="ADC Updater" />
     <orderEntry type="library" name="org.antlr:antlr4-runtime:4.7" level="project" />
   </component>

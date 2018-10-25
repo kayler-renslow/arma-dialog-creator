@@ -115,7 +115,7 @@ public class Project implements SpecificationRegistry {
 	 @return File instance that is project_path\fileName
 	 */
 	public File getFileForName(@NotNull String fileName) {
-		return new File(projectSaveDirectory.getPath() + "\\" + fileName);
+		return new File(projectSaveDirectory.getPath() + File.separator + fileName);
 	}
 
 	/** @return the user's name for the project */

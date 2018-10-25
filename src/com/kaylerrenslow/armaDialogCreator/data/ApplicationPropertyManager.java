@@ -25,7 +25,7 @@ class ApplicationPropertyManager {
 		if (OS.contains("WIN")) {
 			return System.getenv("APPDATA");
 		} else if (OS.contains("MAC")) {
-			return System.getProperty("user.home") + "/Library/Application Support";
+			return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support";
 		} else if (OS.contains("NUX")) {
 			return System.getProperty("user.home");
 		}
@@ -35,13 +35,13 @@ class ApplicationPropertyManager {
 	/**
 	 Appdata folder
 	 */
-	private final File appdataFolder = new File(defaultDirectory() + "/Arma Dialog Creator");
+	private final File appdataFolder = new File(defaultDirectory() + File.separator + "Arma Dialog Creator");
 	/**
 	 DataContext holds all application properties
 	 */
 	private DataContext applicationProperties = new DataContext();
 
-	private final File appPropertiesFile = new File(appdataFolder.getPath() + "/config.xml");
+	private final File appPropertiesFile = new File(appdataFolder.getPath() + File.separator + "config.xml");
 
 	/** Location of Arma 3 tools. Arma 3 tools has some executables valuable to Arma Dialog Creator, such as .paa converter */
 	private File a3ToolsDir;

@@ -81,7 +81,7 @@ public class ProjectExportConfiguration {
 
 	@NotNull
 	public File getFileForExportDirectory(@NotNull String fileName) {
-		return new File(exportDirectory.getAbsolutePath() + "/" + fileName);
+		return new File(exportDirectory.getAbsolutePath() + File.separator + fileName);
 	}
 
 	/** @return the file name that a {@link Project}'s {@link CustomControlClass} instances will be written to. */

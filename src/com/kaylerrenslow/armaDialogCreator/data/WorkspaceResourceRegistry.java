@@ -2,6 +2,8 @@ package com.kaylerrenslow.armaDialogCreator.data;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
+
 /**
  A {@link WorkspaceResourceRegistry} is a workspace level {@link ResourceRegistry}.
  This {@link ResourceRegistry} has the option to share resources between projects.
@@ -11,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 public class WorkspaceResourceRegistry extends ResourceRegistry {
 
 	protected WorkspaceResourceRegistry(@NotNull Workspace workspace) {
-		super(workspace.getFileInAdcDirectory("resources/global-resources.xml"));
+		super(workspace.getFileInAdcDirectory("resources" + File.separator + "global-resources.xml"));
 	}
 
 	/**
