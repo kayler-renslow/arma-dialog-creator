@@ -13,7 +13,12 @@ import java.util.Arrays;
  @since 05/22/2016. */
 public class ControlProperty {
 
-	private final ValueListener<?> macroListener = new ValueListener<Object>() {
+	private final Macro.MacroValueDependency<?> macroListener = new Macro.MacroValueDependency() {
+		@Override
+		public void macroDeleted(@NotNull Macro macro) {
+			ControlProperty.this.setValueToMacro(null);
+		}
+
 		@Override
 		public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 			if (myMacro == null) {
@@ -168,12 +173,12 @@ public class ControlProperty {
 		}
 		Macro oldMacro = this.myMacro;
 		if (newMacro == null) {
-			myMacro.getValueObserver().removeListener(macroListener);
+			myMacro.removeDependency(macroListener);
 			this.myMacro = null;
 			setValue(beforeMacroValue, ControlPropertyValueUpdate.ValueOrigin.MACRO);
 		} else {
 			this.myMacro = newMacro;
-			this.myMacro.getValueObserver().addListener(macroListener);
+			this.myMacro.addDependency(macroListener);
 			beforeMacroValue = valueObserver.getValue();
 			setValue(this.myMacro.getValue(), ControlPropertyValueUpdate.ValueOrigin.MACRO);
 		}

@@ -73,6 +73,11 @@ public class ValueObserver<V> implements Observable {
 		valueListeners.remove(listener);
 	}
 
+	@NotNull
+	public LinkedList<ValueListener<V>> getValueListeners() {
+		return valueListeners;
+	}
+
 	@Override
 	public void addListener(@NotNull InvalidationListener listener) {
 		invalidationListeners.add(listener);

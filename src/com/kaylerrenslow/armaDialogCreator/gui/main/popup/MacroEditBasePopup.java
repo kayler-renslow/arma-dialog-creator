@@ -9,6 +9,7 @@ import com.kaylerrenslow.armaDialogCreator.expression.Env;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.InputField;
 import com.kaylerrenslow.armaDialogCreator.gui.fxcontrol.inputfield.MacroIdentifierChecker;
 import com.kaylerrenslow.armaDialogCreator.gui.main.controlPropertiesEditor.ValueEditor;
+import com.kaylerrenslow.armaDialogCreator.gui.popup.SimpleResponseDialog;
 import com.kaylerrenslow.armaDialogCreator.gui.popup.StageDialog;
 import com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator;
 import com.kaylerrenslow.armaDialogCreator.main.HelpUrls;
@@ -20,10 +21,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Node;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.IndexRange;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.stage.StageStyle;
@@ -189,7 +187,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 
 	/** Return a new Macro instance with the current settings. */
 	@Nullable
-	protected Macro<? extends SerializableValue> getMacro() {
+	protected Macro<? extends SerializableValue> getNewMacro() {
 		if (!checkFields()) {
 			return null;
 		}
@@ -198,6 +196,27 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 		return m;
 	}
 
+	protected void addDeleteButton() {
+		if (initialMacro == null) {
+			throw new IllegalStateException("initialMacro is null.");
+		}
+		Button btnDelete = new Button(bundle.getString("Popups.MacroEdit.delete_macro"));
+		btnDelete.setOnAction(event -> {
+			SimpleResponseDialog d = new SimpleResponseDialog(
+					ArmaDialogCreator.getPrimaryStage(),
+					bundle.getString("Popups.MacroEdit.delete_macro_confirm_title"),
+					String.format(bundle.getString("Popups.MacroEdit.delete_macro_confirm_f"), initialMacro), true, true, false
+			);
+			d.show();
+			if (d.wasCancelled()) {
+				return;
+			}
+			initialMacro.getDependencyList().removeDependencies();
+			Project.getCurrentProject().getMacroRegistry().removeMacro(initialMacro);
+			close();
+		});
+		footer.getRightContainer().getChildren().add(0, btnDelete);
+	}
 
 	private class MacroChecker extends MacroIdentifierChecker {
 		@Override

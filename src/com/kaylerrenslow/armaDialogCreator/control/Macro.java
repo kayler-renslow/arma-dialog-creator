@@ -1,6 +1,7 @@
 package com.kaylerrenslow.armaDialogCreator.control;
 
 import com.kaylerrenslow.armaDialogCreator.control.sv.SerializableValue;
+import com.kaylerrenslow.armaDialogCreator.util.ValueListener;
 import com.kaylerrenslow.armaDialogCreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,10 @@ public interface Macro<T extends SerializableValue> {
 		getValueObserver().updateValue(value);
 	}
 
-	/** Get the {@link ValueObserver} */
+	/**
+	 Get the {@link ValueObserver}. Do NOT add listeners to this value observer!
+	 Use {@link #addDependency(MacroValueDependency)} and {@link #removeDependency(MacroValueDependency)} instead.
+	 */
 	@NotNull
 	ValueObserver<T> getValueObserver();
 
@@ -61,8 +65,50 @@ public interface Macro<T extends SerializableValue> {
 	/** Set the macro type */
 	void setMacroType(@NotNull MacroType myType);
 
+	@NotNull
+	DependencyList<T> getDependencyList();
+
+	default void addDependency(@NotNull Macro.MacroValueDependency<T> listener) {
+		getDependencyList().bindToMacro(listener);
+	}
+
+	default void removeDependency(@NotNull Macro.MacroValueDependency<T> listener) {
+		getDependencyList().unbindToMacro(listener);
+	}
+
 	static <T extends SerializableValue> Macro<T> newMacro(@NotNull String key, @NotNull T value) {
 		return new BasicMacro<>(key, value);
+	}
+
+	class DependencyList<T extends SerializableValue> {
+		private final Macro<T> myMacro;
+
+		public DependencyList(@NotNull Macro<T> macro) {
+			this.myMacro = macro;
+		}
+
+		public void bindToMacro(@NotNull Macro.MacroValueDependency<T> listener) {
+			myMacro.getValueObserver().addListener(listener);
+		}
+
+		public void unbindToMacro(@NotNull Macro.MacroValueDependency<T> listener) {
+			myMacro.getValueObserver().removeListener(listener);
+		}
+
+		public void removeDependencies() {
+			for (ValueListener<T> listener : myMacro.getValueObserver().getValueListeners()) {
+				if (listener instanceof Macro.MacroValueDependency) {
+					MacroValueDependency mvl = (MacroValueDependency) listener;
+					mvl.macroDeleted(myMacro);
+				}
+			}
+			myMacro.getValueObserver().getValueListeners().clear();
+		}
+	}
+
+	interface MacroValueDependency<T extends SerializableValue> extends ValueListener<T> {
+		/** Invoked when the Macro is marked for deletion by the user and all dependencies should be resolved. */
+		void macroDeleted(@NotNull Macro<T> macro);
 	}
 
 	class BasicMacro<T extends SerializableValue> implements Macro<T> {
@@ -71,12 +117,13 @@ public interface Macro<T extends SerializableValue> {
 		protected ValueObserver<T> valueObserver;
 		protected String comment;
 		protected MacroType myType = MacroType.USER_DEFINED;
+		private final DependencyList<T> myDependencyList = new DependencyList<>(this);
 
 		/**
 		 A macro is referenced by a key and the result is text that is appended into the ending .h file.
+
 		 @param key the key (prefered to be all caps)
 		 @param value the value (Object.toString() will be used to get end result)
-
 		 */
 		public BasicMacro(@NotNull String key, @NotNull T value) {
 			getKeyObserver().updateValue(key); //do not change to setKey
@@ -120,6 +167,12 @@ public interface Macro<T extends SerializableValue> {
 		@Override
 		public void setMacroType(@NotNull MacroType myType) {
 			this.myType = myType;
+		}
+
+		@Override
+		@NotNull
+		public DependencyList<T> getDependencyList() {
+			return myDependencyList;
 		}
 
 		/**
