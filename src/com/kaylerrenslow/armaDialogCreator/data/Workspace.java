@@ -13,7 +13,7 @@ import java.io.File;
  @see Project
  @since 11/23/2016 */
 public class Workspace {
-	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(FileSystemView.getFileSystemView().getDefaultDirectory() + "/Arma Dialog Creator");
+	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(FileSystemView.getFileSystemView().getDefaultDirectory() + File.separator + "Arma Dialog Creator");
 
 	private final File workspaceDirectory;
 	private final WorkspaceResourceRegistry globalResourceRegistry;
@@ -69,7 +69,7 @@ public class Workspace {
 	 */
 	@NotNull
 	public String getFilePathForName(@NotNull String fileName) {
-		return workspaceDirectory.getPath() + "\\" + fileName;
+		return workspaceDirectory.getPath() + File.separator + fileName;
 	}
 
 	/**
@@ -91,6 +91,6 @@ public class Workspace {
 	/** @return file in "{@link #getWorkspaceDirectory()}/.adc/<code>fileName</code>" */
 	@NotNull
 	public File getFileInAdcDirectory(@NotNull String fileName) {
-		return getFileForName(".adc/" + fileName);
+		return getFileForName(".adc" + File.separator + fileName);
 	}
 }
