@@ -4,10 +4,10 @@
     <root id="archive" name="adc_installer.jar">
       <element id="module-output" name="ADC Installer" />
       <element id="module-output" name="ADC Standalone Progress Window" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-java8.jar" path-in-jar="/" />
       <element id="directory" name="META-INF">
         <element id="file-copy" path="$PROJECT_DIR$/ADC Installer/META-INF/MANIFEST.MF" />
       </element>
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-java8.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
