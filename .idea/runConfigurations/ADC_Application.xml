@@ -1,17 +1,10 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ADC Application" type="Application" factoryName="Application">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
-    <option name="MAIN_CLASS_NAME" value="com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="-logInitProgress" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="ENABLE_SWING_INSPECTOR" value="false" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
+    <option name="MAIN_CLASS_NAME" value="com.armadialogcreator.main.ArmaDialogCreator" />
     <module name="Arma Dialog Creator" />
-    <envs />
-    <method />
+    <option name="PROGRAM_PARAMETERS" value="-logInitProgress" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

@@ -1,1 +1,0 @@
-use icofx and open the 256x256.png. icofx will then present many different sizes. we need down to 16x16. export to ico

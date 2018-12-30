@@ -1,0 +1,17 @@
+package com.armadialogcreator.gui.fxcontrol.treeView;
+
+import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ Created by Kayler on 06/08/2016.
+ */
+public interface TreeItemDataCreator<Tv, Td extends TreeItemEntry> {
+	/**
+	 Returns a new instance of a TreeItemData instance.
+
+	 @return new instance, or null if abort creation of TreeItemData
+	 */
+	@Nullable Td createNew(@NotNull EditableTreeView<Tv, Td> treeView);
+}

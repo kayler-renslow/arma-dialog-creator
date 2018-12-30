@@ -1,9 +1,9 @@
 Manifest-Version: 1.0
-JavaFX-Preloader-Class: com.kaylerrenslow.armaDialogCreator.main.ADCPreloader
+JavaFX-Preloader-Class: com.armadialogcreator.main.ADCPreloader
 JavaFX-Version: 8.0
 Created-By: JavaFX Packager
-Main-Class: com.kaylerrenslow.armaDialogCreator.main.ArmaDialogCreator
-Name: com/kaylerrenslow/armaDialogCreator/
+Main-Class: com.armadialogcreator.main.ArmaDialogCreator
+Name: com/armadialogcreator
 Implementation-Version: $VERSION$+build_$BUILD_NUMBER$
 Implementation-URL: https://github.com/kayler-renslow/arma-dialog-creator/releases
 Specification-Title: Arma Dialog Creator

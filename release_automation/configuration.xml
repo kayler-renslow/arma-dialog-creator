@@ -2,9 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-	<jar>/home/kayler/IdeaProjects/arma-dialog-creator\out\artifacts\Arma_Dialog_Creator\adc_launcher.jar</jar>
-	<outfile>/home/kayler/IdeaProjects/arma-dialog-creator\out\artifacts\Arma_Dialog_Creator\Arma Dialog Creator.exe
-	</outfile>
+	<jar>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\adc_launcher_jar\adc_launcher.jar</jar>
+	<outfile>D:\Archive\Intellij Files\Arma Tools\Arma Dialog Creator\out\artifacts\adc_launcher_jar\Arma Dialog Creator.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -19,7 +18,7 @@
     <path></path>
     <bundledJre64Bit>false</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
-    <minVersion>1.8.0_51</minVersion>
+	  <minVersion>1.8.0_51</minVersion>
     <maxVersion></maxVersion>
     <jdkPreference>preferJre</jdkPreference>
     <runtimeBits>64/32</runtimeBits>
