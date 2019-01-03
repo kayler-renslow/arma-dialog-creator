@@ -1,21 +1,18 @@
 package com.armadialogcreator.gui.main;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.data.DataKeys;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;
-import com.armadialogcreator.gui.main.editor.*;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
 import com.armadialogcreator.gui.notification.NotificationPane;
 import com.armadialogcreator.gui.notification.Notifications;
-import com.armadialogcreator.gui.uicanvas.CanvasComponent;
-import com.armadialogcreator.gui.uicanvas.CanvasControl;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.collections.ListChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -91,12 +88,12 @@ class ADCCanvasView extends HBox implements CanvasView {
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
-				return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
+				return new DefaultComponentContextMenu(/*((ArmaControlRenderer) component).getMyControl()*/);
 			}
 		});
 		uiCanvasEditor.getDoubleClickUpdateGroup().addListener((group, clickedControl) -> {
 			if (clickedControl != null && clickedControl == uiCanvasEditor.getSelection().getFirst()) {
-				DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) clickedControl);
+				//DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) clickedControl);
 			}
 		});
 		uiCanvasEditor.setCanvasContextMenu(new CanvasContextMenu());

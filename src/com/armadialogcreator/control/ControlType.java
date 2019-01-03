@@ -1,6 +1,6 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 

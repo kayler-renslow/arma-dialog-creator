@@ -4,7 +4,7 @@ import com.armadialogcreator.control.CustomControlClass;
 import com.armadialogcreator.data.CustomControlClassRegistry;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Label;

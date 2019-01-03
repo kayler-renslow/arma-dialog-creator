@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.event.ActionEvent;

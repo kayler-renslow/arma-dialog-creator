@@ -1,7 +1,7 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.control.sv.SVControlStyleGroup;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;

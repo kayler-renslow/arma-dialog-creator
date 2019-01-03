@@ -1,7 +1,7 @@
 package com.armadialogcreator.expression;
 
 import com.armadialogcreator.arma.util.ArmaPrecision;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.CharSequenceReader;
 import org.jetbrains.annotations.NotNull;
 

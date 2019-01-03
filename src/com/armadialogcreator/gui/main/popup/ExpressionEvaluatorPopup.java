@@ -1,14 +1,14 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
+import com.armadialogcreator.ProgramArgument;
 import com.armadialogcreator.data.ApplicationData;
 import com.armadialogcreator.expression.*;
+import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SyntaxTextArea;
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.main.ProgramArgument;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import javafx.application.Platform;
 import javafx.concurrent.Task;

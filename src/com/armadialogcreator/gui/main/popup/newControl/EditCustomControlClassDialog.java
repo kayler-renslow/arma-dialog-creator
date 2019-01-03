@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.main.popup.newControl;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.ControlClass;
 import com.armadialogcreator.control.ControlClassUpdate;
 import com.armadialogcreator.control.CustomControlClass;
 import com.armadialogcreator.data.Project;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.gui.SimpleResponseDialog;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.scene.control.Button;

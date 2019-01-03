@@ -2,13 +2,13 @@ package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
+import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ControlProperty;
 import com.armadialogcreator.control.ControlPropertyLookup;
 import com.armadialogcreator.control.ControlPropertyLookupConstant;
 import com.armadialogcreator.control.ControlStyle;
 import com.armadialogcreator.control.sv.*;
 import com.armadialogcreator.gui.FontMetrics;
-import com.armadialogcreator.gui.uicanvas.Resolution;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.scene.canvas.GraphicsContext;

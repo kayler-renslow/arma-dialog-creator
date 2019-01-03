@@ -1,5 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.util.StructuredTextParseException;
 import com.armadialogcreator.arma.util.StructuredTextParser;
@@ -7,12 +9,10 @@ import com.armadialogcreator.arma.util.TextSection;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.StringTableXmlWriter;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.main.popup.InputDialog;
 import com.armadialogcreator.gui.main.stringtable.StringTableEditorPopup;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;

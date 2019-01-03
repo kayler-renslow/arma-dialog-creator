@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.*;
 import com.armadialogcreator.control.sv.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.RawChecker;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueListener;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;

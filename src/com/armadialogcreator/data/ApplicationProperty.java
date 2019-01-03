@@ -1,6 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.CustomToString;
 import com.armadialogcreator.util.Key;
 import com.armadialogcreator.util.ValueConverter;

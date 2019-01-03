@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="ADC Application debug FRENCH" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="com.armadialogcreator.main.ArmaDialogCreator" />
+    <option name="MAIN_CLASS_NAME" value="com.armadialogcreator.ArmaDialogCreator" />
     <module name="Arma Dialog Creator" />
     <option name="PROGRAM_PARAMETERS" value="-logInitProgress -showDebugFeatures -nosplash" />
     <option name="VM_PARAMETERS" value="-Duser.country=CA -Duser.language=fr" />

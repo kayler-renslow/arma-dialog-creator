@@ -1,5 +1,6 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
@@ -17,8 +18,7 @@ import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.ProjectSaveXmlWriter;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.Reference;
 import org.jetbrains.annotations.NotNull;

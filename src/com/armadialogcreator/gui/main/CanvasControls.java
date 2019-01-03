@@ -1,14 +1,14 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.arma.control.ArmaControl;
+import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.img.ADCImages;
-import com.armadialogcreator.gui.main.editor.UICanvasConfiguration;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;

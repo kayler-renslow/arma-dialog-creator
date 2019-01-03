@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.gui.main.CanvasViewColors;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.canvas.CanvasViewColors;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;

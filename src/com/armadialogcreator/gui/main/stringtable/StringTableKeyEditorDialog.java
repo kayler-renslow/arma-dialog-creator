@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main.stringtable;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.stringtable.StringTableKey;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;

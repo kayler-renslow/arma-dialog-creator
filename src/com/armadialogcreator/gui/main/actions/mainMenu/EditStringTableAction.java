@@ -1,5 +1,8 @@
 package com.armadialogcreator.gui.main.actions.mainMenu;
 
+import com.armadialogcreator.ADCStatic;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.Workspace;
@@ -7,10 +10,7 @@ import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.StringTableXmlWriter;
 import com.armadialogcreator.data.xml.XmlParseException;
 import com.armadialogcreator.gui.main.stringtable.StringTableEditorPopup;
-import com.armadialogcreator.main.ADCStatic;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.stage.FileChooser;

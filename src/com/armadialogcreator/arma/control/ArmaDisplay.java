@@ -1,10 +1,10 @@
 package com.armadialogcreator.arma.control;
 
+import com.armadialogcreator.canvas.CanvasDisplay;
+import com.armadialogcreator.canvas.DisplayControlList;
+import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.DisplayProperty;
 import com.armadialogcreator.control.DisplayPropertyLookup;
-import com.armadialogcreator.gui.uicanvas.CanvasDisplay;
-import com.armadialogcreator.gui.uicanvas.DisplayControlList;
-import com.armadialogcreator.gui.uicanvas.Resolution;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.ListMergeIterator;
 import com.armadialogcreator.util.UpdateListenerGroup;

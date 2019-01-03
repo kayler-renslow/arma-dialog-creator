@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.impl.XSliderControl;
 import com.armadialogcreator.arma.util.ArmaResolution;
@@ -12,7 +13,6 @@ import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

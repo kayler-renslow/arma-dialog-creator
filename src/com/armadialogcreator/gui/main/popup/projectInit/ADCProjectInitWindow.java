@@ -1,17 +1,21 @@
 
 package com.armadialogcreator.gui.main.popup.projectInit;
 
+import com.armadialogcreator.ADCStatic;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
+import com.armadialogcreator.LocaleDescriptor;
 import com.armadialogcreator.data.*;
 import com.armadialogcreator.data.xml.ProjectInit;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
 import com.armadialogcreator.data.xml.XmlParseException;
+import com.armadialogcreator.gui.WizardStageDialog;
+import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.gui.main.ADCWindow;
+import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.gui.main.popup.ADCMustRestartDialog;
-import com.armadialogcreator.gui.popup.WizardStageDialog;
-import com.armadialogcreator.gui.popup.WizardStep;
-import com.armadialogcreator.main.*;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;

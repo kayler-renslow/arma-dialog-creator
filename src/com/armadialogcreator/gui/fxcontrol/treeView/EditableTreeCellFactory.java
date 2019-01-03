@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.fxcontrol.treeView;
 
 
-import com.armadialogcreator.main.ExceptionHandler;
+import com.armadialogcreator.ExceptionHandler;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;

@@ -1,16 +1,16 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.arma.util.PositionCalculator;
+import com.armadialogcreator.canvas.Resolution;
+import com.armadialogcreator.canvas.ScreenDimension;
 import com.armadialogcreator.control.Macro;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.expression.UnaryCommandValueProvider;
 import com.armadialogcreator.expression.Value;
-import com.armadialogcreator.gui.uicanvas.Resolution;
-import com.armadialogcreator.gui.uicanvas.ScreenDimension;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import com.armadialogcreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

@@ -2,9 +2,9 @@ package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
+import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ControlPropertyLookupConstant;
 import com.armadialogcreator.control.sv.SVColor;
-import com.armadialogcreator.gui.uicanvas.Region;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;

@@ -1,15 +1,15 @@
 package com.armadialogcreator.gui.main.stringtable;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.stringtable.*;
+import com.armadialogcreator.gui.GenericResponseFooter;
+import com.armadialogcreator.gui.SimpleResponseDialog;
+import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
 import com.armadialogcreator.gui.img.ADCImages;
-import com.armadialogcreator.gui.popup.GenericResponseFooter;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;

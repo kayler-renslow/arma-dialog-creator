@@ -1,20 +1,20 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.control.Macro;
 import com.armadialogcreator.control.PropertyType;
 import com.armadialogcreator.control.sv.SVExpression;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.gui.SimpleResponseDialog;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.MacroIdentifierChecker;
+import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ValueEditor;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;

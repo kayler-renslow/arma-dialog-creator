@@ -4,7 +4,7 @@ import com.armadialogcreator.control.*;
 import com.armadialogcreator.control.sv.SVRaw;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.data.CustomControlClassRegistry;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.ValueConverter;
 import com.armadialogcreator.util.XmlUtil;

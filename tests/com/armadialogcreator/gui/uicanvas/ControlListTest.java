@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.uicanvas;
 
+import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.util.Reference;
 import org.junit.Test;
 

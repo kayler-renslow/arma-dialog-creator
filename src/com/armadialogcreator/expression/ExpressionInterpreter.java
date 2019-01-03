@@ -1,7 +1,7 @@
 package com.armadialogcreator.expression;
 
-import com.armadialogcreator.main.ADCExecutors;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.ADCExecutors;
+import com.armadialogcreator.lang.Lang;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.IntervalSet;
 import org.antlr.v4.runtime.misc.ParseCancellationException;

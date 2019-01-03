@@ -2,9 +2,9 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.data.*;
-import com.armadialogcreator.gui.uicanvas.*;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;

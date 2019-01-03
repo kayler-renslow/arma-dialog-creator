@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.data.ApplicationProperty;
 import com.armadialogcreator.data.ImagesTool;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.gui.StagePopup;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;

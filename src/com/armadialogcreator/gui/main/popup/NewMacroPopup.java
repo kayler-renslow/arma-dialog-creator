@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 
 
 /**

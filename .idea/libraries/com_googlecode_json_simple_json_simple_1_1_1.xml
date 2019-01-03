@@ -3,7 +3,6 @@
     <properties maven-id="com.googlecode.json-simple:json-simple:1.1.1" />
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/json-simple-1.1.1.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/junit-4.10.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/hamcrest-core-1.1.jar!/" />
     </CLASSES>
     <JAVADOC />

@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.fxControls;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;

@@ -7,7 +7,7 @@ import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeViewMenuItemBuilder;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;

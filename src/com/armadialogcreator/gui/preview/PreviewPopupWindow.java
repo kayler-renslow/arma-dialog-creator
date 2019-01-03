@@ -1,15 +1,15 @@
 package com.armadialogcreator.gui.preview;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.data.ApplicationData;
 import com.armadialogcreator.data.DataKeys;
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.gui.StagePopup;
+import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;

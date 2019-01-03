@@ -1,7 +1,7 @@
 package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.util.Texture;
-import com.armadialogcreator.gui.uicanvas.Region;
+import com.armadialogcreator.canvas.Region;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;

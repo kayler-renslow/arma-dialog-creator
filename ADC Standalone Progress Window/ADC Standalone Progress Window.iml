@@ -8,6 +8,8 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="annotations-java8" level="project" />
+    <orderEntry type="module" module-name="ADC JavaFX" />
+    <orderEntry type="library" name="org.jetbrains:annotations:16.0.2" level="project" />
+    <orderEntry type="module" module-name="ADC Lang" />
   </component>
 </module>

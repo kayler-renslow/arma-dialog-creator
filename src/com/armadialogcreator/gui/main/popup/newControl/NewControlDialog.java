@@ -1,18 +1,18 @@
 package com.armadialogcreator.gui.main.popup.newControl;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.control.ControlType;
 import com.armadialogcreator.control.ControlTypeGroup;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
 import com.armadialogcreator.gui.fxcontrol.CBMBGroupMenu;
 import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
 import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;

@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.help;
 
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.HelpUrls;
+import com.armadialogcreator.gui.main.BrowserUtil;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

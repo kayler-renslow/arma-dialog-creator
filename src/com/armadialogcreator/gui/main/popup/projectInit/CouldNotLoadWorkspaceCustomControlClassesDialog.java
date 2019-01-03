@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.popup.projectInit;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.Label;
 import org.jetbrains.annotations.NotNull;
 

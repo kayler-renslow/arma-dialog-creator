@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.main.displayPropertiesEditor;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.control.DisplayProperty;
 import com.armadialogcreator.control.DisplayPropertyLookup;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ValueEditor;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueListener;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;

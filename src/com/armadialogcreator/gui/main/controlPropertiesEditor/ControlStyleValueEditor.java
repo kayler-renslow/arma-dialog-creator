@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.controlPropertiesEditor;
 import com.armadialogcreator.control.ControlStyle;
 import com.armadialogcreator.control.sv.SVControlStyleGroup;
 import com.armadialogcreator.gui.fxcontrol.CheckMenuButton;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.collections.ListChangeListener;

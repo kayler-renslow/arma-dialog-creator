@@ -7,7 +7,7 @@ import com.armadialogcreator.gui.main.fxControls.HistoryListItem;
 import com.armadialogcreator.gui.main.fxControls.HistoryListItemSubInfo;
 import com.armadialogcreator.gui.main.fxControls.HistoryListPopup;
 import com.armadialogcreator.gui.main.fxControls.HistoryListProvider;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.EpochPresentation;
 import com.armadialogcreator.util.ReadOnlyList;
 import javafx.scene.Node;

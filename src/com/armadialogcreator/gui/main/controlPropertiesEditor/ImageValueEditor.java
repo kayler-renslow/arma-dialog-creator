@@ -1,11 +1,11 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
+import com.armadialogcreator.ADCStatic;
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.sv.SVImage;
 import com.armadialogcreator.data.Workspace;
 import com.armadialogcreator.gui.main.popup.ConvertImageTask;
-import com.armadialogcreator.main.ADCStatic;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;

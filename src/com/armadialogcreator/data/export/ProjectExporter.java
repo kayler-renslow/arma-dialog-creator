@@ -9,7 +9,7 @@ import com.armadialogcreator.control.sv.SVRaw;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.data.CustomControlClassRegistry;
 import com.armadialogcreator.data.Project;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.IndentedStringBuilder;
 import com.armadialogcreator.util.UTF8FileWriter;
 import org.jetbrains.annotations.NotNull;

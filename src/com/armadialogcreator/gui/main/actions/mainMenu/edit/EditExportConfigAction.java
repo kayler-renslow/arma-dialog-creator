@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.popup.export.EditExportConfigurationDialog;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

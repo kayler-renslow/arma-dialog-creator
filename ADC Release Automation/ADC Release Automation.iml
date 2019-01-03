@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Arma Dialog Creator" />
     <orderEntry type="library" name="zip4j-1.3.2" level="project" />
+    <orderEntry type="library" name="org.jetbrains:annotations:16.0.2" level="project" />
   </component>
 </module>

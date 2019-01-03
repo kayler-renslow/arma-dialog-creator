@@ -1,7 +1,7 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.data.DataKeys;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.MissingResourceException;

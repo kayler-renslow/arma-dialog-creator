@@ -1,6 +1,6 @@
 package com.armadialogcreator.arma.util;
 
-import com.armadialogcreator.gui.uicanvas.ScreenDimension;
+import com.armadialogcreator.canvas.ScreenDimension;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

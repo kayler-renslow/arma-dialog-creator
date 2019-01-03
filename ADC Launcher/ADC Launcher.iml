@@ -8,5 +8,6 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ADC Updater" />
+    <orderEntry type="module" module-name="ADC JavaFX" />
   </component>
 </module>

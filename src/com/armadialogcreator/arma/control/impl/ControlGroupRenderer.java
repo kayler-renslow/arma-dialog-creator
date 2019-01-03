@@ -4,8 +4,8 @@ import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.util.ArmaResolution;
+import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.gui.uicanvas.CanvasContext;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 

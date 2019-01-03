@@ -5,7 +5,7 @@ import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.notification.BoxNotification;
 import com.armadialogcreator.gui.notification.Notification;
 import com.armadialogcreator.gui.notification.Notifications;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

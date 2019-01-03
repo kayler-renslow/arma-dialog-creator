@@ -1,8 +1,8 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.data.xml.ApplicationPropertyXmlLoader;
 import com.armadialogcreator.data.xml.XmlParseException;
-import com.armadialogcreator.main.ExceptionHandler;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;

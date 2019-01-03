@@ -1,6 +1,6 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 
 /**

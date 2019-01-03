@@ -7,7 +7,7 @@ import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;
 import com.armadialogcreator.expression.Value;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;

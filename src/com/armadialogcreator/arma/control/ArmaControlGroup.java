@@ -2,11 +2,11 @@ package com.armadialogcreator.arma.control;
 
 import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.util.ArmaResolution;
+import com.armadialogcreator.canvas.CanvasControlGroup;
+import com.armadialogcreator.canvas.ControlList;
+import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.*;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.gui.uicanvas.CanvasControlGroup;
-import com.armadialogcreator.gui.uicanvas.ControlList;
-import com.armadialogcreator.gui.uicanvas.Resolution;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;

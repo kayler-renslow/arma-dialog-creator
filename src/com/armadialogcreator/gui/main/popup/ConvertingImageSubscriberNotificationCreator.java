@@ -4,7 +4,7 @@ import com.armadialogcreator.data.ImagesTool;
 import com.armadialogcreator.gui.notification.BoxNotification;
 import com.armadialogcreator.gui.notification.Notification;
 import com.armadialogcreator.gui.notification.Notifications;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

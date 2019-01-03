@@ -1,6 +1,6 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.Key;
 import org.jetbrains.annotations.NotNull;

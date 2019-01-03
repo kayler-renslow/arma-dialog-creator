@@ -1,16 +1,16 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.ControlClass;
 import com.armadialogcreator.control.CustomControlClass;
 import com.armadialogcreator.data.Project;
+import com.armadialogcreator.gui.SimpleResponseDialog;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.fxControls.ControlClassMenuButton;
 import com.armadialogcreator.gui.main.fxControls.ControlClassMenuItem;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;

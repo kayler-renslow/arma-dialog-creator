@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
-import com.armadialogcreator.main.ArmaDialogCreator;
+import com.armadialogcreator.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

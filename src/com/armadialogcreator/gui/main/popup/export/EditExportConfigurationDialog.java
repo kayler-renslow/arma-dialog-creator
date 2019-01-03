@@ -1,19 +1,19 @@
 package com.armadialogcreator.gui.main.popup.export;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.data.export.HeaderFileType;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
 import com.armadialogcreator.data.export.ProjectExporter;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.gui.img.ADCImagePaths;
+import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.gui.main.displayPropertiesEditor.DisplayPropertiesEditorPane;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.HelpUrls;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.util.BrowserUtil;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;

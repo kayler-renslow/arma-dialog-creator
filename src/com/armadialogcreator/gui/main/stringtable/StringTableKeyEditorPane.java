@@ -1,16 +1,16 @@
 package com.armadialogcreator.gui.main.stringtable;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.stringtable.KnownLanguage;
 import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.stringtable.StringTableKey;
+import com.armadialogcreator.gui.SimpleResponseDialog;
+import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.img.ADCImages;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueListener;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;

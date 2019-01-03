@@ -6,13 +6,17 @@
         <element id="file-copy" path="$PROJECT_DIR$/src/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="Arma Dialog Creator" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/lib/annotations-java8.jar" path-in-jar="/" />
+      <element id="module-output" name="ADC Canvas" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/antlr4-runtime-4.7.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/reactfx-2.0-M5.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/richtextfx-0.9.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/undofx-2.1.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/flowless-0.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/wellbehavedfx-0.3.3.jar" path-in-jar="/" />
+      <element id="module-output" name="ADC JavaFX" />
+      <element id="library" level="project" name="openjfx11" />
+      <element id="module-output" name="ADC Util" />
+      <element id="library" level="project" name="org.jetbrains:annotations:16.0.2" />
     </root>
   </artifact>
 </component>

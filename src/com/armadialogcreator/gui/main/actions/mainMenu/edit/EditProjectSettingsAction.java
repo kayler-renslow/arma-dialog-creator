@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.popup.EditProjectSettingsDialog;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;

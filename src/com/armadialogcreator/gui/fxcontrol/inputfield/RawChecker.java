@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.fxcontrol.inputfield;
 
 import com.armadialogcreator.control.PropertyType;
 import com.armadialogcreator.control.sv.SVRaw;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

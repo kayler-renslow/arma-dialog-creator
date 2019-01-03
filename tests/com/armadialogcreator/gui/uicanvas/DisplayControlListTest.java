@@ -1,5 +1,8 @@
 package com.armadialogcreator.gui.uicanvas;
 
+import com.armadialogcreator.canvas.ControlList;
+import com.armadialogcreator.canvas.ControlListChange;
+import com.armadialogcreator.canvas.ControlListChangeListener;
 import com.armadialogcreator.util.Reference;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;

@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;

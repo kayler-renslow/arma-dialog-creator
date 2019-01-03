@@ -1,8 +1,8 @@
 package com.armadialogcreator.arma.util;
 
-import com.armadialogcreator.gui.uicanvas.Resolution;
-import com.armadialogcreator.gui.uicanvas.ScreenDimension;
-import com.armadialogcreator.gui.uicanvas.UIScale;
+import com.armadialogcreator.canvas.Resolution;
+import com.armadialogcreator.canvas.ScreenDimension;
+import com.armadialogcreator.canvas.UIScale;
 import com.armadialogcreator.util.UpdateListenerGroup;
 
 /**

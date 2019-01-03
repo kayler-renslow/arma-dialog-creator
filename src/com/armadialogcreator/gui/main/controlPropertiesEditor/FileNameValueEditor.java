@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.sv.SVFileName;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.scene.Node;

@@ -19,7 +19,7 @@ import com.armadialogcreator.data.xml.ControlClassXmlHelper.ControlExtendJob;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.ControlNestedClassesJob;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.CreateCustomControlClassJob;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;

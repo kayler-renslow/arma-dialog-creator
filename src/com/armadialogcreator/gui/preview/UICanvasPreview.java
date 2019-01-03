@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.preview;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.canvas.Resolution;
+import com.armadialogcreator.canvas.UICanvas;
 import com.armadialogcreator.gui.main.CanvasView;
-import com.armadialogcreator.gui.uicanvas.CanvasContext;
-import com.armadialogcreator.gui.uicanvas.Resolution;
-import com.armadialogcreator.gui.uicanvas.UICanvas;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 

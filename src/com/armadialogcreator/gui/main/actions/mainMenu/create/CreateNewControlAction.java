@@ -1,12 +1,12 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.ControlType;
 import com.armadialogcreator.data.DataKeys;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

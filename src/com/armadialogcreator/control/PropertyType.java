@@ -1,7 +1,7 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.control.sv.*;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 

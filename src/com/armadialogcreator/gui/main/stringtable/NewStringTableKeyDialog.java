@@ -7,7 +7,7 @@ import com.armadialogcreator.arma.stringtable.StringTableKey;
 import com.armadialogcreator.arma.stringtable.impl.StringTableKeyImpl;
 import com.armadialogcreator.gui.fxcontrol.CheckMenuButton;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;

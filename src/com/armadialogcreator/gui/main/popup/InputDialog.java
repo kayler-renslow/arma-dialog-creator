@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.StageDialog;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.scene.Node;

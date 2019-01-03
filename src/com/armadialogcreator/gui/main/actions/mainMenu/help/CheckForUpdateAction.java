@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.help;
 
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.updater.github.ReleaseInfo;
 import com.armadialogcreator.updater.tasks.AdcVersionCheckTask;
 import javafx.concurrent.Task;

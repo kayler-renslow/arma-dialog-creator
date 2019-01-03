@@ -1,7 +1,7 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.data.ApplicationProperty;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;

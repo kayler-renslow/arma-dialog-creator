@@ -8,7 +8,7 @@ import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.popup.ChooseMacroDialog;
 import com.armadialogcreator.gui.main.popup.EditMacroPopup;
 import com.armadialogcreator.gui.main.stringtable.StringTableKeyEditorDialog;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

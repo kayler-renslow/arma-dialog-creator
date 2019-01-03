@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.uicanvas;
 
+import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import com.armadialogcreator.util.ValueObserver;

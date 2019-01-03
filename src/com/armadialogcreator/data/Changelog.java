@@ -1,6 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.main.ArmaDialogCreator;
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;

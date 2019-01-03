@@ -4,7 +4,7 @@ import com.armadialogcreator.control.sv.SVSound;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;

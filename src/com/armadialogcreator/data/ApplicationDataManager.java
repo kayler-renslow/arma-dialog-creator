@@ -1,12 +1,12 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.data.xml.ProjectSaveXmlWriter;
 import com.armadialogcreator.data.xml.ResourceRegistryXmlLoader;
 import com.armadialogcreator.data.xml.ResourceRegistryXmlWriter;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;

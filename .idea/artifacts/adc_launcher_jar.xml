@@ -9,6 +9,9 @@
       <element id="module-output" name="ADC Updater" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/json-simple-1.1.1.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/hamcrest-core-1.1.jar" path-in-jar="/" />
+      <element id="module-output" name="ADC JavaFX" />
+      <element id="library" level="project" name="openjfx11" />
+      <element id="library" level="project" name="org.jetbrains:annotations:16.0.2" />
     </root>
   </artifact>
 </component>

@@ -1,6 +1,6 @@
 package com.armadialogcreator.arma.header;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.CharSequenceReader;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
@@ -18,7 +18,7 @@ import java.util.*;
  @author Kayler
  @since 03/19/2017 */
 public class HeaderParser {
-	private static final ResourceBundle bundle = Lang.getBundle("arma.header.HeaderParserBundle");
+	private static final ResourceBundle bundle = Lang.getBundle("HeaderParserBundle");
 	private static final String S_EOF = bundle.getString("Error.HeaderParser.eof");
 	private static final char EOF = 26;
 	private static final char EOT = 3; //end of text

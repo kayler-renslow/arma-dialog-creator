@@ -1,5 +1,8 @@
 package com.armadialogcreator.gui.uicanvas;
 
+import com.armadialogcreator.canvas.CanvasDisplay;
+import com.armadialogcreator.canvas.DisplayControlList;
+import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;

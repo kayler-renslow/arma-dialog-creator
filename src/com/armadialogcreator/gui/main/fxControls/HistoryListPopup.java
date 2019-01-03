@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.fxControls;
 
-import com.armadialogcreator.gui.popup.StagePopup;
-import com.armadialogcreator.main.ArmaDialogCreator;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.StagePopup;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;

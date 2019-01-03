@@ -1,6 +1,6 @@
 package com.armadialogcreator.arma.util;
 
-import com.armadialogcreator.gui.uicanvas.UIScale;
+import com.armadialogcreator.canvas.UIScale;
 import org.jetbrains.annotations.NotNull;
 
 /**

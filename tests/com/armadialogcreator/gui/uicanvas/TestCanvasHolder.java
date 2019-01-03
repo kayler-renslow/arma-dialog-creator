@@ -1,5 +1,7 @@
 package com.armadialogcreator.gui.uicanvas;
 
+import com.armadialogcreator.canvas.ControlHolder;
+import com.armadialogcreator.canvas.ControlList;
 import com.armadialogcreator.util.DataContext;
 
 /**

@@ -11,7 +11,7 @@ import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.gui.main.stringtable.StringTableLanguageTokenEditor;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;

@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 

@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.arma.control.ArmaControl;
+import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;
-import com.armadialogcreator.gui.main.editor.UICanvasConfiguration;
 import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;

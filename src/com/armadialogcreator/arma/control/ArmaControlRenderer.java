@@ -1,16 +1,16 @@
 package com.armadialogcreator.arma.control;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.util.ArmaPrecision;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.PositionCalculator;
+import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ControlClass;
 import com.armadialogcreator.control.ControlProperty;
 import com.armadialogcreator.control.ControlPropertyLookup;
 import com.armadialogcreator.control.ControlPropertyLookupConstant;
 import com.armadialogcreator.control.sv.*;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.gui.uicanvas.*;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;

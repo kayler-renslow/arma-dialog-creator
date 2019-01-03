@@ -1,0 +1,27 @@
+<component name="libraryTable">
+  <library name="openjfx11">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx-swt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.base.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.controls.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.fxml.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.graphics.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.media.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.swing.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/javafx.web.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <NATIVE>
+      <root url="file://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/bin" />
+    </NATIVE>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.base" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.controls" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.fxml" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.graphics" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.media" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.swing" />
+      <root url="jar://$PROJECT_DIR$/lib/openjfx-11.0.1_windows-x64_bin-sdk/javafx-sdk-11.0.1/lib/src.zip!/javafx.web" />
+    </SOURCES>
+  </library>
+</component>

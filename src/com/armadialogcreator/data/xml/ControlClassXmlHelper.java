@@ -6,7 +6,7 @@ import com.armadialogcreator.control.ControlClassSpecification;
 import com.armadialogcreator.control.ControlPropertyLookup;
 import com.armadialogcreator.control.CustomControlClass;
 import com.armadialogcreator.data.Project;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

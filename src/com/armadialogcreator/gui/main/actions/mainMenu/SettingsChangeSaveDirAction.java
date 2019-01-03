@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.main.popup.ChangeDirectoriesDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

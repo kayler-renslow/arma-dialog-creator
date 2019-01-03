@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.img.ADCImagePaths;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.RadioMenuItem;

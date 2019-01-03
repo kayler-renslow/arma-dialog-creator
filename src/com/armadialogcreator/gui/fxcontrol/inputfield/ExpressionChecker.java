@@ -4,7 +4,7 @@ import com.armadialogcreator.control.sv.SVExpression;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

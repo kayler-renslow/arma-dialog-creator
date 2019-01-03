@@ -1,14 +1,14 @@
 package com.armadialogcreator.gui.main;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
+import com.armadialogcreator.canvas.ScreenDimension;
 import com.armadialogcreator.data.DataKeys;
 import com.armadialogcreator.data.ImagesTool;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberDialog;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberNotificationCreator;
-import com.armadialogcreator.gui.uicanvas.ScreenDimension;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;

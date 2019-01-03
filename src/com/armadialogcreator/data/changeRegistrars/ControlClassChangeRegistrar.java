@@ -2,11 +2,11 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.canvas.ControlListChange;
 import com.armadialogcreator.control.*;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.data.*;
-import com.armadialogcreator.gui.uicanvas.ControlListChange;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;

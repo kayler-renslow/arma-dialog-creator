@@ -1,13 +1,13 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.data.ChangeUpdateFailedException;
 import com.armadialogcreator.data.Changelog;
 import com.armadialogcreator.data.ChangelogUpdate;
 import com.armadialogcreator.gui.notification.BoxNotification;
 import com.armadialogcreator.gui.notification.Notification;
 import com.armadialogcreator.gui.notification.Notifications;
-import com.armadialogcreator.main.ExceptionHandler;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.event.ActionEvent;

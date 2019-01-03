@@ -1,11 +1,11 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.PropertyType;
 import com.armadialogcreator.control.sv.SerializableValue;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.gui.popup.StageDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;

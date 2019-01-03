@@ -1,8 +1,11 @@
 package com.armadialogcreator.gui.main;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ProgramArgument;
 import com.armadialogcreator.arma.stringtable.KnownLanguage;
 import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.util.ArmaUIScale;
+import com.armadialogcreator.canvas.UIScale;
 import com.armadialogcreator.data.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.img.ADCImages;
@@ -20,10 +23,7 @@ import com.armadialogcreator.gui.main.actions.mainMenu.help.WikiUrlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.view.*;
 import com.armadialogcreator.gui.main.popup.AboutDialog;
 import com.armadialogcreator.gui.main.popup.ExpressionEvaluatorPopup;
-import com.armadialogcreator.gui.uicanvas.UIScale;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
-import com.armadialogcreator.main.ProgramArgument;
+import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;

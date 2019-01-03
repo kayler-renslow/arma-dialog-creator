@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol.inputfield;
 
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.regex.Pattern;

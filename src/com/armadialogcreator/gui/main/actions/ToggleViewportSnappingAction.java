@@ -1,8 +1,8 @@
 
 package com.armadialogcreator.gui.main.actions;
 
-import com.armadialogcreator.gui.main.editor.UICanvasConfiguration;
-import com.armadialogcreator.main.ArmaDialogCreator;
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.canvas.UICanvasConfiguration;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 

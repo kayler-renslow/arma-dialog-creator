@@ -1,12 +1,11 @@
 package com.armadialogcreator.gui.main.treeview;
 
+import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.StringChecker;
-import com.armadialogcreator.gui.main.editor.DefaultComponentContextMenu;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
-import com.armadialogcreator.gui.popup.SimpleResponseDialog;
-import com.armadialogcreator.main.ArmaDialogCreator;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
@@ -41,7 +40,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		miConfigProperties.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				DefaultComponentContextMenu.showControlPropertiesPopup(entryClicked.getMyArmaControl());
+				//DefaultComponentContextMenu.showControlPropertiesPopup(entryClicked.getMyArmaControl());
 			}
 		});
 		getItems().add(miConfigProperties);

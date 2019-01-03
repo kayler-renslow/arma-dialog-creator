@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.control.*;
 import com.armadialogcreator.gui.main.popup.EditNestedControlClassDialog;
-import com.armadialogcreator.main.Lang;
+import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.geometry.Insets;

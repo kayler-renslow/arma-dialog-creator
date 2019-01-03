@@ -1,9 +1,9 @@
 
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.data.xml.ProjectInit;
 import com.armadialogcreator.gui.main.popup.projectInit.ADCProjectInitWindow;
-import com.armadialogcreator.main.ArmaDialogCreator;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Calendar;
