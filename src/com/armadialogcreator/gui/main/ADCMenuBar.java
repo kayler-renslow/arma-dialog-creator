@@ -8,7 +8,7 @@ import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
 import com.armadialogcreator.data.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.TestAction;
@@ -42,16 +42,16 @@ class ADCMenuBar extends MenuBar {
 
 	/*File*/
 	final MenuItem file_open = addOnAction(new MenuItem(bundle.getString("file_open")), new FileOpenAction());
-	final MenuItem file_save = addOnAction(new MenuItem(bundle.getString("file_save"), new ImageView(ADCImages.ICON_SAVE)), new FileSaveAction());
-	final MenuItem file_export = addOnAction(new MenuItem(bundle.getString("file_export"), new ImageView(ADCImages.ICON_EXPORT)), new FileExportAction());
+	final MenuItem file_save = addOnAction(new MenuItem(bundle.getString("file_save"), new ImageView(ADCIcons.ICON_SAVE)), new FileSaveAction());
+	final MenuItem file_export = addOnAction(new MenuItem(bundle.getString("file_export"), new ImageView(ADCIcons.ICON_EXPORT)), new FileExportAction());
 	final MenuItem file_closeProject = addOnAction(new MenuItem(bundle.getString("file_close_project")), new FileCloseProjectAction());
 	final MenuItem file_exit = addOnAction(new MenuItem(bundle.getString("file_exit")), new FileExitAction());
 	final MenuItem file_restart = addOnAction(new MenuItem(bundle.getString("file_restart")), new FileRestartAction());
 
 
 	/*Edit*/
-	final MenuItem edit_undo = new MenuItem(bundle.getString("edit_undo"), new ImageView(ADCImages.ICON_UNDO));
-	final MenuItem edit_redo = new MenuItem(bundle.getString("edit_redo"), new ImageView(ADCImages.ICON_REDO));
+	final MenuItem edit_undo = new MenuItem(bundle.getString("edit_undo"), new ImageView(ADCIcons.ICON_UNDO));
+	final MenuItem edit_redo = new MenuItem(bundle.getString("edit_redo"), new ImageView(ADCIcons.ICON_REDO));
 
 	{
 		edit_redo.setOnAction(new EditRedoAction(edit_redo));

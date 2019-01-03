@@ -1,5 +1,7 @@
 package com.armadialogcreator.gui.img;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  Created by Kayler on 05/17/2016.
  */
@@ -34,7 +36,11 @@ public abstract class ADCImagePaths {
 
 	public static final String ABOUT_HEADER = pathPrefix + "adc_title.png";
 
-	private static String getIcon(String name) {
+	public static String getIcon(@NotNull String name) {
 		return pathPrefix + "icons/" + name;
+	}
+
+	public static String getControlIcon(@NotNull String name) {
+		return pathPrefix + "icons/controls/" + name;
 	}
 }

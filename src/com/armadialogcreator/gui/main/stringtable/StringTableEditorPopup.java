@@ -7,7 +7,7 @@ import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
@@ -65,7 +65,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		noPackageName = bundle.getString("StringTable.no_package");
 		noContainerName = bundle.getString("StringTable.no_container");
 
-		Button btnInsert = new Button("", new ImageView(ADCImages.ICON_PLUS));
+		Button btnInsert = new Button("", new ImageView(ADCIcons.ICON_PLUS));
 		btnInsert.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.Tab.Edit.insert_key_tooltip")));
 		btnInsert.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -82,7 +82,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 				editTab.getListView().scrollTo(newKey);
 			}
 		});
-		Button btnRemove = new Button("", new ImageView(ADCImages.ICON_MINUS));
+		Button btnRemove = new Button("", new ImageView(ADCIcons.ICON_MINUS));
 		btnRemove.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.Tab.Edit.remove_key_tooltip")));
 		btnRemove.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -109,7 +109,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		tabPane = new StringTableEditorTabPane(this, table, btnRemove.disableProperty(), this);
 
 		btnRemove.setDisable(tabPane.getEditTab().getListView().getSelectionModel().isEmpty());
-		Button btnRefresh = new Button("", new ImageView(ADCImages.ICON_REFRESH));
+		Button btnRefresh = new Button("", new ImageView(ADCIcons.ICON_REFRESH));
 		btnRefresh.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.ToolBar.reload_tooltip")));
 		btnRefresh.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -138,7 +138,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 			}
 		});
-		Button btnSave = new Button("", new ImageView(ADCImages.ICON_SAVE));
+		Button btnSave = new Button("", new ImageView(ADCIcons.ICON_SAVE));
 		btnSave.setTooltip(new Tooltip(bundle.getString("StringTableEditorPopup.ToolBar.save_tooltip")));
 		btnSave.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -250,7 +250,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			root.setPadding(new Insets(10));
 			root.setFillWidth(true);
 			setContent(root);
-			setGraphic(new ImageView(ADCImages.ICON_GEAR));
+			setGraphic(new ImageView(ADCIcons.ICON_GEAR));
 			setClosable(false);
 
 			ComboBox<Language> comboBoxLanguage = new ComboBox<>();

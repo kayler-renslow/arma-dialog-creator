@@ -5,13 +5,14 @@ import com.armadialogcreator.data.*;
 import com.armadialogcreator.data.xml.ParseError;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
 import com.armadialogcreator.data.xml.WorkspaceCustomControlClassXmlLoader;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.CanvasView;
 import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadProjectDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadWorkspaceCustomControlClassesDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.ProjectImproperResultDialog;
+import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.lang.Lang;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -128,7 +129,7 @@ public final class ArmaDialogCreator extends Application {
 		this.primaryStage = primaryStage;
 		Thread.currentThread().setName("Arma Dialog Creator JavaFX Thread");
 		primaryStage.setOnCloseRequest(new ArmaDialogCreatorWindowCloseEvent());
-		primaryStage.getIcons().add(ADCImages.ICON_ADC);
+		primaryStage.getIcons().add(ADCIcons.ICON_ADC);
 		primaryStage.setTitle(Lang.Application.APPLICATION_TITLE);
 
 		//load main window
@@ -333,7 +334,7 @@ public final class ArmaDialogCreator extends Application {
 	}
 
 	public static void setToDarkTheme(boolean set) {
-		final String darkTheme = "/com/armadialogcreator/gui/dark.css";
+		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
 		if (set) {
 			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
 			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;

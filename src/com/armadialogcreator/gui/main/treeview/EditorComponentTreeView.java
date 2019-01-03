@@ -8,7 +8,7 @@ import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeDataToValueConverter;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeUtil;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.util.Key;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -576,7 +576,7 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 
 
 	static ImageView createFolderIcon() {
-		return new ImageView(ADCImages.ICON_FOLDER);
+		return new ImageView(ADCIcons.ICON_FOLDER);
 	}
 
 	private static class BooleanEdit {

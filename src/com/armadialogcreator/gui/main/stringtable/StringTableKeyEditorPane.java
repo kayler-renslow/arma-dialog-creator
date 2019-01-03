@@ -8,7 +8,7 @@ import com.armadialogcreator.arma.stringtable.StringTableKey;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueListener;
@@ -331,8 +331,8 @@ class StringTableKeyEditorPane extends StackPane {
 
 			HBox hboxInsertRemove;
 			{
-				Button btnRemove = new Button("", new ImageView(ADCImages.ICON_MINUS));
-				Button btnInsert = new Button("", new ImageView(ADCImages.ICON_PLUS));
+				Button btnRemove = new Button("", new ImageView(ADCIcons.ICON_MINUS));
+				Button btnInsert = new Button("", new ImageView(ADCIcons.ICON_PLUS));
 				hboxInsertRemove = new HBox(5, btnRemove, btnInsert);
 
 				btnRemove.setOnAction(e -> {

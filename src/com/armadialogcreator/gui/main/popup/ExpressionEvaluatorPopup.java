@@ -8,6 +8,7 @@ import com.armadialogcreator.expression.*;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SyntaxTextArea;
 import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
 import javafx.application.Platform;
@@ -247,7 +248,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 		);
 
 		public CodeAreaPane() {
-			getStylesheets().add("/com/armadialogcreator/gui/expressionSyntax.css");
+			getStylesheets().add(ADCStyleSheets.getStylesheet("expressionSyntax.css"));
 			//			setParagraphGraphicFactory(LineNumberFactory.get(this));
 			richChanges()
 					.filter(c -> !c.getInserted().equals(c.getRemoved()))

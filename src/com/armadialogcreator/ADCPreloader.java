@@ -3,7 +3,7 @@
 package com.armadialogcreator;
 
 import com.armadialogcreator.gui.img.ADCImagePaths;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.application.Preloader;
 import javafx.event.EventHandler;
@@ -68,7 +68,7 @@ public class ADCPreloader extends Preloader {
 		});
 
 		preloaderStage.setTitle(Lang.Application.APPLICATION_TITLE);
-		preloaderStage.getIcons().add(ADCImages.ICON_ADC);
+		preloaderStage.getIcons().add(ADCIcons.ICON_ADC);
 		progressIndicator.setMaxWidth(48d);
 		progressIndicator.setMaxHeight(progressIndicator.getMaxWidth());
 

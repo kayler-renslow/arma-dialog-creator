@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol;
 
+import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.fxmisc.richtext.Caret;
@@ -29,7 +30,7 @@ public class SyntaxTextArea extends CodeArea {
 
 	private void init() {
 		setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
-		getStylesheets().add("/com/armadialogcreator/gui/richfx.css");
+		getStylesheets().add(ADCStyleSheets.getStylesheet("richfx.css"));
 		getStyleClass().add("syntax-text-area");
 		caretPositionProperty().addListener(new ChangeListener<Integer>() {
 			@Override

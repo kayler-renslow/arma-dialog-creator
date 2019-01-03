@@ -14,7 +14,7 @@ import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
 import com.armadialogcreator.lang.Lang;
@@ -223,7 +223,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 	private void addHeader(ArmaControl control) {
-		Button btnAutoSize = new Button("", new ImageView(ADCImages.ICON_AUTO_SIZE));
+		Button btnAutoSize = new Button("", new ImageView(ADCIcons.ICON_AUTO_SIZE));
 		btnAutoSize.setTooltip(new Tooltip(bundle.getString("auto_size")));
 		btnAutoSize.setOnAction(event1 -> {
 			myStage.sizeToScene();

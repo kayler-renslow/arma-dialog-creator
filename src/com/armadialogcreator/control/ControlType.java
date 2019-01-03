@@ -1,5 +1,6 @@
 package com.armadialogcreator.control;
 
+import com.armadialogcreator.gui.img.ADCImagePaths;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
@@ -171,7 +172,7 @@ public enum ControlType {
 
 
 	private static Image getImage(String image, boolean custom) {
-		return new Image("/com/armadialogcreator/gui/img/icons/controls/" + (custom ? "custom." : "") + image);
+		return new Image(ADCImagePaths.getControlIcon((custom ? "custom." : "") + image));
 	}
 
 

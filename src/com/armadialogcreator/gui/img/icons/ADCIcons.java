@@ -1,11 +1,12 @@
-package com.armadialogcreator.gui.img;
+package com.armadialogcreator.gui.img.icons;
 
+import com.armadialogcreator.gui.img.ADCImagePaths;
 import javafx.scene.image.Image;
 
 /**
  Created by Kayler on 10/07/2016.
  */
-public class ADCImages {
+public class ADCIcons {
 	public static final Image ICON_ADC = new Image(ADCImagePaths.ICON_APP);
 	public static final Image ICON_FOLDER = new Image(ADCImagePaths.ICON_FOLDER);
 	public static final Image ICON_UNDO = new Image(ADCImagePaths.ICON_UNDO);

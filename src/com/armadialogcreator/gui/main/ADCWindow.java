@@ -9,6 +9,7 @@ import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberDialog;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberNotificationCreator;
+import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -53,7 +54,7 @@ public class ADCWindow implements ADCMainWindow {
 			}
 		});
 		Scene scene = new Scene(rootElement);
-		scene.getStylesheets().add("/com/armadialogcreator/gui/misc.css");
+		scene.getStylesheets().add(ADCStyleSheets.getStylesheet("misc.css"));
 		this.stage.setScene(scene);
 
 		ImagesTool.subscribeToConversion(new ConvertingImageSubscriberDialog());

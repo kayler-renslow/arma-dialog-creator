@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
@@ -219,14 +219,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		//buttons for moving bg controls up/down hierarchy
 		Button btnBgControlMoveUp, btnBgControlMoveDown, btnBgControlMoveUpInto, btnBgControlMoveDownInto, btnBgControlMoveUpOut, btnBgControlMoveDownOut;
 		{
-			btnBgControlMoveUp = new Button("", new ImageView(ADCImages.ICON_UP_ARROW));
+			btnBgControlMoveUp = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW));
 			btnBgControlMoveUp.setOnAction(event -> {
 				funcMoveUpHandler.apply(treeViewBg);
 			});
 			btnBgControlMoveUp.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
-			btnBgControlMoveDown = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW));
+			btnBgControlMoveDown = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW));
 			btnBgControlMoveDown.setOnAction(event -> {
 				funcMoveDownHandler.apply(treeViewBg);
 			});
@@ -234,14 +234,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnBgControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
 
-			btnBgControlMoveUpInto = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_INTO));
+			btnBgControlMoveUpInto = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_INTO));
 			btnBgControlMoveUpInto.setOnAction(event -> {
 				funcMoveUpIntoHandler.apply(treeViewBg);
 			});
 			btnBgControlMoveUpInto.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
 
-			btnBgControlMoveDownInto = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_INTO));
+			btnBgControlMoveDownInto = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_INTO));
 			btnBgControlMoveDownInto.setOnAction(event -> {
 				funcMoveDownIntoHandler.apply(treeViewBg);
 			});
@@ -249,14 +249,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnBgControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
 
 
-			btnBgControlMoveUpOut = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_OUT));
+			btnBgControlMoveUpOut = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_OUT));
 			btnBgControlMoveUpOut.setOnAction(event -> {
 				funcMoveUpOutHandler.apply(treeViewBg);
 			});
 			btnBgControlMoveUpOut.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
 
-			btnBgControlMoveDownOut = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_OUT));
+			btnBgControlMoveDownOut = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_OUT));
 			btnBgControlMoveDownOut.setOnAction(event -> {
 				funcMoveDownOutHandler.apply(treeViewBg);
 			});
@@ -295,14 +295,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		//buttons for moving controls up/down hierarchy
 		Button btnControlMoveUp, btnControlMoveDown, btnControlMoveUpInto, btnControlMoveDownInto, btnControlMoveUpOut, btnControlMoveDownOut;
 		{
-			btnControlMoveUp = new Button("", new ImageView(ADCImages.ICON_UP_ARROW));
+			btnControlMoveUp = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW));
 			btnControlMoveUp.setOnAction(event -> {
 				funcMoveUpHandler.apply(treeViewMain);
 			});
 			btnControlMoveUp.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
-			btnControlMoveDown = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW));
+			btnControlMoveDown = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW));
 			btnControlMoveDown.setOnAction(event -> {
 				funcMoveDownHandler.apply(treeViewMain);
 			});
@@ -310,14 +310,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
 
 
-			btnControlMoveUpInto = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_INTO));
+			btnControlMoveUpInto = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_INTO));
 			btnControlMoveUpInto.setOnAction(event -> {
 				funcMoveUpIntoHandler.apply(treeViewMain);
 			});
 			btnControlMoveUpInto.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
 
-			btnControlMoveDownInto = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_INTO));
+			btnControlMoveDownInto = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_INTO));
 			btnControlMoveDownInto.setOnAction(event -> {
 				funcMoveDownIntoHandler.apply(treeViewMain);
 			});
@@ -325,14 +325,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			btnControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
 
 
-			btnControlMoveUpOut = new Button("", new ImageView(ADCImages.ICON_UP_ARROW_OUT));
+			btnControlMoveUpOut = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_OUT));
 			btnControlMoveUpOut.setOnAction(event -> {
 				funcMoveUpOutHandler.apply(treeViewMain);
 			});
 			btnControlMoveUpOut.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
 
-			btnControlMoveDownOut = new Button("", new ImageView(ADCImages.ICON_DOWN_ARROW_OUT));
+			btnControlMoveDownOut = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_OUT));
 			btnControlMoveDownOut.setOnAction(event -> {
 				funcMoveDownOutHandler.apply(treeViewMain);
 			});

@@ -5,7 +5,7 @@ import com.armadialogcreator.control.sv.SVColorArray;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
-import com.armadialogcreator.gui.img.ADCImages;
+import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;
@@ -40,7 +40,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 	private final ValueObserver<SVColorArray> valueObserver = new ValueObserver<>(null);
 
 	public ColorArrayValueEditor() {
-		Button btnBrackets = new Button("", new ImageView(ADCImages.ICON_BRACKETS));
+		Button btnBrackets = new Button("", new ImageView(ADCIcons.ICON_BRACKETS));
 		btnBrackets.setOnAction(event -> {
 			ArrayEditorPopup editor = new ArrayEditorPopup(colorPicker.getValue());
 			double x = btnBrackets.localToScreen(0, 0).getX();

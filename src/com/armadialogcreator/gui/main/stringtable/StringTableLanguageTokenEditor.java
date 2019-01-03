@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.stringtable;
 
 import com.armadialogcreator.gui.fxcontrol.SyntaxTextArea;
+import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import org.fxmisc.richtext.model.StyleSpans;
 import org.fxmisc.richtext.model.StyleSpansBuilder;
 
@@ -17,7 +18,7 @@ public class StringTableLanguageTokenEditor extends SyntaxTextArea {
 	private static final Pattern PATTERN = Pattern.compile("(%[0-9]+)");
 
 	public StringTableLanguageTokenEditor() {
-		getStylesheets().add("/com/armadialogcreator/gui/formatString.css");
+		getStylesheets().add(ADCStyleSheets.getStylesheet("formatString.css"));
 		richChanges()
 				.filter(c -> !c.getInserted().equals(c.getRemoved()))
 				.subscribe(c -> {
