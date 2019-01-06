@@ -1,7 +1,6 @@
 package com.armadialogcreator.canvas;
 
-import com.armadialogcreator.util.UpdateGroupListener;
-import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -15,39 +14,39 @@ import org.jetbrains.annotations.NotNull;
  @since 11/21/2016 */
 public class DisplayControlList<C extends CanvasControl> extends ControlList<C> {
 
-	private final UpdateListenerGroup<ControlListChange<C>> updateGroup = new UpdateListenerGroup<>();
-	private final ControlListChangeListener<C> changeListener = new ControlListChangeListener<C>() {
+	private final UpdateListenerGroup<ListObserverChange<C>> updateGroup = new UpdateListenerGroup<>();
+	private final ListObserverListener<C> changeListener = new ListObserverListener<C>() {
 		@Override
 		@SuppressWarnings("unchecked")
-		public void onChanged(ControlList<C> controlList, ControlListChange<C> change) {
+		public void onChanged(@NotNull ListObserver<C> list, @NotNull ListObserverChange<C> change) {
 			if (change.wasAdded()) {
-				CanvasControl addedControl = change.getAdded().getControl();
+				CanvasControl addedControl = change.getAdded().getAdded();
 				if (addedControl instanceof CanvasControlGroup) {
 					setChangeListener(((CanvasControlGroup) addedControl).getControls(), true);
 				}
 
 				addedControl.getDisplayObserver().updateValue(getDisplay());
 			} else if (change.wasSet()) {
-				CanvasControl newControl = change.getSet().getNewControl();
+				CanvasControl newControl = change.getSet().getNew();
 				if (newControl instanceof CanvasControlGroup) {
 					setChangeListener(((CanvasControlGroup) newControl).getControls(), true);
 				}
 				newControl.getDisplayObserver().updateValue(getDisplay());
 
-				CanvasControl oldControl = change.getSet().getOldControl();
+				CanvasControl oldControl = change.getSet().getOld();
 				if (oldControl instanceof CanvasControlGroup) {
 					setChangeListener(((CanvasControlGroup) oldControl).getControls(), false);
 				}
 				oldControl.getDisplayObserver().updateValue(null);
 			} else if (change.wasRemoved()) {
-				CanvasControl removedControl = change.getRemoved().getControl();
+				CanvasControl removedControl = change.getRemoved().getRemoved();
 				if (removedControl instanceof CanvasControlGroup) {
 					setChangeListener(((CanvasControlGroup) removedControl).getControls(), false);
 				}
 				removedControl.getDisplayObserver().updateValue(null);
 			} else if (change.wasMoved()) {
-				ControlMove<C> moved = change.getMoved();
-				CanvasControl movedControl = moved.getMovedControl();
+				ListObserverChangeMove<C> moved = change.getMoved();
+				CanvasControl movedControl = moved.getMoved();
 				if (movedControl instanceof CanvasControlGroup) {
 					//if entry update, then the control moved out of the display
 					//if not entry update. then the control moved in display
@@ -93,7 +92,7 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 	}
 
 	/**
-	 Get an update group that listens for {@link ControlListChange} between all controls
+	 Get an update group that listens for {@link ListObserverChange} between all controls
 	 in the list and in the {@link CanvasControlGroup#getControls()}.
 	 <p>
 	 The data send for each {@link UpdateGroupListener#update(UpdateListenerGroup, Object)} shouldn't
@@ -102,7 +101,7 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 	 @return the group instance
 	 */
 	@NotNull
-	public UpdateListenerGroup<ControlListChange<C>> getUpdateGroup() {
+	public UpdateListenerGroup<ListObserverChange<C>> getUpdateGroup() {
 		return updateGroup;
 	}
 

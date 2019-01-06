@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.control.sv.SVFileName;
+import com.armadialogcreator.core.sv.SVFileName;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;

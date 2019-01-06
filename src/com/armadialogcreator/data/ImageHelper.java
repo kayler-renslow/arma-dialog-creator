@@ -1,7 +1,7 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.control.sv.SVImage;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SVImage;
+import com.armadialogcreator.core.sv.SerializableValue;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

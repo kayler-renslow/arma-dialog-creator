@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVArray;
-import com.armadialogcreator.control.sv.SVRaw;
+import com.armadialogcreator.core.sv.SVArray;
+import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.RawChecker;
 import com.armadialogcreator.util.ReadOnlyValueObserver;

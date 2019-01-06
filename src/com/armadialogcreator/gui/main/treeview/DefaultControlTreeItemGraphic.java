@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.control.sv.SVColor;
+import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;

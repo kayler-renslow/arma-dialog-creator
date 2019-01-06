@@ -10,13 +10,17 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.fxmisc.richtext:richtextfx:0.9.1" level="project" />
+    <orderEntry type="library" exported="" name="org.fxmisc.richtext:richtextfx:0.9.1" level="project" />
+    <orderEntry type="library" exported="" name="org.antlr:antlr4-runtime:4.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="junit:junit:4.12" level="project" />
     <orderEntry type="module" module-name="ADC Updater" />
-    <orderEntry type="library" name="org.antlr:antlr4-runtime:4.7" level="project" />
     <orderEntry type="module" module-name="ADC Canvas" />
     <orderEntry type="module" module-name="ADC Util" />
     <orderEntry type="module" module-name="ADC JavaFX" />
-    <orderEntry type="library" name="junit:junit:4.12" level="project" />
     <orderEntry type="module" module-name="ADC Lang" />
+    <orderEntry type="module" module-name="ADC Application" />
+    <orderEntry type="module" module-name="ADC Core" />
+    <orderEntry type="module" module-name="ADC Expression" />
+    <orderEntry type="module" module-name="ADC Images" />
   </component>
 </module>

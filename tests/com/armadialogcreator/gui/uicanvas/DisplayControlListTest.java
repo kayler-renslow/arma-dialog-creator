@@ -1,11 +1,6 @@
 package com.armadialogcreator.gui.uicanvas;
 
-import com.armadialogcreator.canvas.ControlList;
-import com.armadialogcreator.canvas.ControlListChange;
-import com.armadialogcreator.canvas.ControlListChangeListener;
-import com.armadialogcreator.util.Reference;
-import com.armadialogcreator.util.UpdateGroupListener;
-import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
@@ -27,9 +22,9 @@ public class DisplayControlListTest {
 		Reference<Boolean> set = new Reference<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new RuntimeException();
 				}
@@ -54,9 +49,9 @@ public class DisplayControlListTest {
 
 		Reference<Boolean> set = new Reference<>(false);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new RuntimeException();
 				}
@@ -83,9 +78,9 @@ public class DisplayControlListTest {
 		display.getControls().add(control0);
 		display.getControls().add(control1);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new RuntimeException();
 				}
@@ -113,18 +108,18 @@ public class DisplayControlListTest {
 		display.getControls().add(control0);
 		display.getControls().add(control1);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
 				controlsUpdated.setValue(data.wasMoved());
 			}
 		});
-		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
@@ -166,18 +161,18 @@ public class DisplayControlListTest {
 		display.getControls().add(control1);
 		display.getControls().add(group);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
 				controlsUpdated.setValue(data.wasMoved());
 			}
 		});
-		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
@@ -218,18 +213,18 @@ public class DisplayControlListTest {
 		display.getControls().add(control1);
 		display.getControls().add(group);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
 				controlsUpdated.setValue(data.wasMoved());
 			}
 		});
-		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
@@ -275,25 +270,25 @@ public class DisplayControlListTest {
 
 		display.getBackgroundControls().add(groupInBackground);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
 				controlsUpdated.setValue(data.wasMoved());
 			}
 		});
-		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				bgControlsUpdated.setValue(true);
 			}
 		});
 
-		groupInBackground.getControls().addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		groupInBackground.getControls().addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				controlInbgControlsUpdated.setValue(change.wasMoved());
 			}
 		});
@@ -340,25 +335,25 @@ public class DisplayControlListTest {
 
 		display.getBackgroundControls().add(groupInBackground);
 
-		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				if (data == null) {
 					throw new IllegalStateException();
 				}
 				controlsUpdated.setValue(data.wasMoved());
 			}
 		});
-		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ControlListChange<TestCanvasControl>>() {
+		display.getBackgroundControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<TestCanvasControl>> group, @Nullable ControlListChange<TestCanvasControl> data) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<TestCanvasControl>> group, @Nullable ListObserverChange<TestCanvasControl> data) {
 				bgControlsUpdated.setValue(true);
 			}
 		});
 
-		groupInBackground.getControls().addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		groupInBackground.getControls().addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				controlInbgControlsUpdated.setValue(change.wasMoved());
 			}
 		});

@@ -1,44 +1,71 @@
 package com.armadialogcreator.util;
 
+import javafx.beans.InvalidationListener;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.LinkedList;
+import org.jetbrains.annotations.Nullable;
 
 /**
  A wrapper class for a {@link ValueObserver} instance that provides read-only functionality
 
  @author Kayler
  @since 09/16/2016. */
-public class ReadOnlyValueObserver<V> {
+public class ReadOnlyValueObserver<V> extends ValueObserver<V> {
 	private final ValueObserver<V> observer;
-	private final LinkedList<ReadOnlyValueListener<V>> listeners = new LinkedList<>();
 
 	public ReadOnlyValueObserver(@NotNull ValueObserver<V> observer) {
 		this.observer = observer;
-		observer.addListener(new ValueListener<V>() {
-			@Override
-			public void valueUpdated(@NotNull ValueObserver<V> observer, V oldValue, V newValue) {
-				for (ReadOnlyValueListener<V> listener : listeners) {
-					listener.valueUpdated(ReadOnlyValueObserver.this, oldValue, newValue);
-				}
-			}
-		});
 	}
 
-	/** Set the listener that listens to the state of the value. The listener will only be added once. If it exists in the listeners list, nothing will happen. */
-	public void addListener(@NotNull ReadOnlyValueListener<V> listener) {
-		if (listeners.contains(listener)) {
-			return;
-		}
-		this.listeners.add(listener);
+	@Override
+	@NotNull
+	public ReadOnlyValueObserver<V> getReadOnlyValueObserver() {
+		return this;
 	}
 
-	/** Remove the listener from the list. Returns true if the listener was inside the list */
-	public void removeListener(@NotNull ReadOnlyValueListener<V> listener) {
-		listeners.remove(listener);
+	@Override
+	public void updateValue(@Nullable V newValue) {
+
 	}
 
+	@Nullable
+	@Override
 	public V getValue() {
 		return observer.getValue();
+	}
+
+	@Override
+	public void addListener(@NotNull ValueListener<V> listener) {
+		observer.addListener(listener);
+	}
+
+	@Override
+	public void removeListener(@NotNull ValueListener<V> listener) {
+		observer.removeListener(listener);
+	}
+
+	@Override
+	@NotNull
+	public ReadOnlyList<ValueListener<V>> getListeners() {
+		return observer.getListeners();
+	}
+
+	@Override
+	public void clearListeners() {
+		observer.clearListeners();
+	}
+
+	@Override
+	public void invalidate() {
+		observer.invalidate();
+	}
+
+	@Override
+	public void addListener(@NotNull InvalidationListener listener) {
+		observer.addListener(listener);
+	}
+
+	@Override
+	public void removeListener(@NotNull InvalidationListener listener) {
+		observer.removeListener(listener);
 	}
 }

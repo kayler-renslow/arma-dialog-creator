@@ -3,15 +3,14 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.canvas.ControlList;
+import com.armadialogcreator.canvas.DisplayControlList;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeDataToValueConverter;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeUtil;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
-import com.armadialogcreator.util.Key;
-import com.armadialogcreator.util.UpdateGroupListener;
-import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.img.icons.ADCIcons;
+import com.armadialogcreator.util.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
@@ -36,10 +35,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 	private final ContextMenu controlCreationContextMenu = new EditorTreeViewContextMenu(this);
 	private ArmaDisplay editingDisplay;
 	private final boolean backgroundControlEditor;
-	private final UpdateGroupListener<ControlListChange<ArmaControl>> controlListChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
+	private final UpdateGroupListener<ListObserverChange<ArmaControl>> controlListChangeListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, @Nullable ControlListChange<ArmaControl> change) {
+		public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, @Nullable ListObserverChange<ArmaControl> change) {
 			if (change == null) {
 				throw new IllegalArgumentException("change is null");
 			}
@@ -56,10 +55,10 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 
-		private void handleMove(ControlListChange<ArmaControl> change) {
+		private void handleMove(ListObserverChange<ArmaControl> change) {
 			System.out.println("EditorComponentTreeView.handleMove");
-			ControlMove<ArmaControl> moved = change.getMoved();
-			ArmaControl movedControl = moved.getMovedControl();
+			ListObserverChangeMove<ArmaControl> moved = change.getMoved();
+			ArmaControl movedControl = moved.getMoved();
 			if (!moved.isEntryUpdate()) {
 				//add to this tree view
 				TreeItem<T> movedControlTreeItem = createTreeItemForControl(movedControl);
@@ -94,9 +93,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 
-		private void handleAdd(ControlListChange<ArmaControl> change) {
-			ControlAdd<ArmaControl> added = change.getAdded();
-			ArmaControl newControl = added.getControl();
+		private void handleAdd(ListObserverChange<ArmaControl> change) {
+			ListObserverChangeAdd<ArmaControl> added = change.getAdded();
+			ArmaControl newControl = added.getAdded();
 			TreeItem<T> newControlTreeItem = createTreeItemForControl(newControl);
 			if (newControl.getHolder() instanceof ArmaControlGroup) {
 				//add to group
@@ -120,9 +119,9 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			}
 		}
 
-		private void handleRemove(ControlListChange<ArmaControl> change) {
-			ControlRemove<ArmaControl> removed = change.getRemoved();
-			ArmaControl removedControl = removed.getControl();
+		private void handleRemove(ListObserverChange<ArmaControl> change) {
+			ListObserverChangeRemove<ArmaControl> removed = change.getRemoved();
+			ArmaControl removedControl = removed.getRemoved();
 			TreeItem<T> removedTreeItem = TREE_ITEM_KEY.get(removedControl.getUserData());
 			if (removedTreeItem == null) {
 				throw new IllegalStateException(removedControl.getClassName());
@@ -131,20 +130,20 @@ public class EditorComponentTreeView<T extends TreeItemEntry> extends EditableTr
 			removedControl.getUserData().put(TREE_ITEM_KEY, null);
 		}
 
-		private void handleSet(ControlListChange<ArmaControl> change) {
-			ControlSet<ArmaControl> set = change.getSet();
+		private void handleSet(ListObserverChange<ArmaControl> change) {
+			ListObserverChangeSet<ArmaControl> set = change.getSet();
 
 			//remove old control tree item
-			ArmaControl oldControl = set.getOldControl();
+			ArmaControl oldControl = set.getOld();
 			TreeItem<T> oldControlTreeItem = TREE_ITEM_KEY.get(oldControl.getUserData());
 			if (oldControlTreeItem == null) {
-				throw new IllegalStateException(set.getOldControl().getClassName());
+				throw new IllegalStateException(set.getOld().getClassName());
 			}
 			oldControlTreeItem.getParent().getChildren().remove(oldControlTreeItem);
 			oldControl.getUserData().put(TREE_ITEM_KEY, null);
 
 			//insert new tree item
-			ArmaControl newControl = set.getNewControl();
+			ArmaControl newControl = set.getNew();
 			TreeItem<T> newControlTreeItem = createTreeItemForControl(newControl);
 			if (newControl.getHolder() instanceof ArmaControlGroup) {
 				//add to group

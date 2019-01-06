@@ -14,12 +14,17 @@ import java.util.List;
 
  @author Kayler
  @since 05/31/2016. */
-public class ValueObserver<V> implements Observable {
+public class ValueObserver<V> implements Observable, Observer<ValueListener<V>> {
 	private V value;
-	private final LinkedList<ValueListener<V>> valueListeners = new LinkedList<>();
+	private final List<ValueListener<V>> valueListeners = new LinkedList<>();
+	private final ReadOnlyList<ValueListener<V>> valueListenersRO = new ReadOnlyList<>(valueListeners);
 	private ReadOnlyValueObserver<V> readOnlyValueObserver;
 
 	private final List<InvalidationListener> invalidationListeners = new LinkedList<>();
+
+	public ValueObserver() {
+		this(null);
+	}
 
 	public ValueObserver(@Nullable V value) {
 		this.value = value;
@@ -70,12 +75,30 @@ public class ValueObserver<V> implements Observable {
 
 	/** Remove the listener from the list */
 	public void removeListener(@NotNull ValueListener<V> listener) {
+		listener.listenerDetached();
 		valueListeners.remove(listener);
 	}
 
 	@NotNull
-	public LinkedList<ValueListener<V>> getValueListeners() {
-		return valueListeners;
+	public ReadOnlyList<ValueListener<V>> getListeners() {
+		return valueListenersRO;
+	}
+
+	@Override
+	public void clearListeners() {
+		for (ValueListener l : valueListeners) {
+			l.listenerDetached();
+		}
+		valueListeners.clear();
+		invalidationListeners.clear();
+	}
+
+	@Override
+	public void invalidate() {
+		for (ValueListener l : valueListeners) {
+			l.observerDeleted();
+		}
+		clearListeners();
 	}
 
 	@Override

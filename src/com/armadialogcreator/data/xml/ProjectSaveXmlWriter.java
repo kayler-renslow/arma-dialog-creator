@@ -3,8 +3,8 @@ package com.armadialogcreator.data.xml;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.ProjectMacroRegistry;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
@@ -93,7 +93,7 @@ public class ProjectSaveXmlWriter {
 			writer.appendTextNode(project.getStringTable().getFile().getAbsolutePath(), stringtableEle);
 		}
 
-		ResourceRegistryXmlWriter.write(project.getResourceRegistry(), writer, writer.getRootElement());
+		ResourceRegistryXmlWriter.write(project.getFileDependencyRegistry(), writer, writer.getRootElement());
 
 		writeMacros(writer);
 		writeDisplay(writer, project.getEditingDisplay());

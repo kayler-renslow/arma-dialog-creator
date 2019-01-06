@@ -1,6 +1,8 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
@@ -9,10 +11,10 @@ import com.armadialogcreator.arma.header.*;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.stringtable.StringTableKey;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SVRaw;
-import com.armadialogcreator.control.sv.SerializableValue;
-import com.armadialogcreator.control.sv.SerializableValueConstructionException;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVRaw;
+import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SerializableValueConstructionException;
 import com.armadialogcreator.data.tree.TreeNode;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
@@ -87,7 +89,7 @@ public class HeaderToProject {
 		this.dataContext = new ApplicationData();
 
 		resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
-		env = DataKeys.ENV.get(dataContext);
+		env = Env.ENV.get(dataContext);
 
 		if (resolution == null || env == null) {
 			throw new IllegalArgumentException("dataContext doesn't have DataKeys.ARMA_RESOLUTION and/or DataKeys.ENV");
@@ -199,7 +201,7 @@ public class HeaderToProject {
 				dialogDir.mkdir();
 			}
 
-			project = new Project(dataContext, new ProjectInfo(dialogClassName, dialogDir.getName(), workspace));
+			project = new Project(dataContext, new ProjectDescriptor(dialogClassName, dialogDir.getName(), workspace));
 		}
 
 		callback.progressUpdate(++progress, maxProgress);

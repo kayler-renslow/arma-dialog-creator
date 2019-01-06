@@ -1,7 +1,7 @@
 package com.armadialogcreator.arma.stringtable;
 
-import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.control.sv.SVString;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;

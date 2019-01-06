@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.control.Macro;
+import com.armadialogcreator.core.Macro;
 import org.jetbrains.annotations.NotNull;
 
 /**

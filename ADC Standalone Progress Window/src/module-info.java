@@ -4,6 +4,6 @@
 module ADC.Standalone.ProgressWindow {
 	requires transitive ADC.JavaFX;
 
-	requires transitive annotations;
+	requires annotations;
 	exports com.armadialogcreator.pwindow;
 }

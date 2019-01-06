@@ -2,8 +2,8 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.img.ADCImagePaths;
 import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.img.ADCImagePaths;
 import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

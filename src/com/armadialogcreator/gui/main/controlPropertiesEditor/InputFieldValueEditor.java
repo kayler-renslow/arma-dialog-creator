@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVExpression;
-import com.armadialogcreator.control.sv.SVRaw;
-import com.armadialogcreator.control.sv.SVString;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVRaw;
+import com.armadialogcreator.core.sv.SVString;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;

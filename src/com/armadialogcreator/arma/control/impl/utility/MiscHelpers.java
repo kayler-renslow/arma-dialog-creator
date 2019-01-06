@@ -1,11 +1,11 @@
 package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.control.AllowedStyleProvider;
-import com.armadialogcreator.control.sv.SVControlStyleGroup;
-import com.armadialogcreator.control.sv.SVExpression;
-import com.armadialogcreator.control.sv.SVString;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.AllowedStyleProvider;
+import com.armadialogcreator.core.sv.SVControlStyleGroup;
+import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVString;
+import com.armadialogcreator.core.sv.SerializableValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;

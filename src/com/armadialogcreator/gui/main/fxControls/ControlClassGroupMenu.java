@@ -11,7 +11,7 @@
  */
 package com.armadialogcreator.gui.main.fxControls;
 
-import com.armadialogcreator.control.ControlClass;
+import com.armadialogcreator.core.ControlClass;
 import com.armadialogcreator.gui.fxcontrol.CBMBGroupMenu;
 
 /**

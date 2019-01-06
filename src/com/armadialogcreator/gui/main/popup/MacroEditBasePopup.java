@@ -2,10 +2,10 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
-import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.control.PropertyType;
-import com.armadialogcreator.control.sv.SVExpression;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.SimpleResponseDialog;
@@ -211,7 +211,6 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 			if (d.wasCancelled()) {
 				return;
 			}
-			initialMacro.getDependencyList().removeDependencies();
 			Project.getCurrentProject().getMacroRegistry().removeMacro(initialMacro);
 			close();
 		});

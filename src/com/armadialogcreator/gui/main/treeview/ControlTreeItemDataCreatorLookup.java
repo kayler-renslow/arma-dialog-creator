@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.control.ControlType;
+import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.treeview.dataCreator.*;
 

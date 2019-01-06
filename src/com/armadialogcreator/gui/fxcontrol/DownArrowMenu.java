@@ -19,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
  @since 12/24/2016 */
 public class DownArrowMenu extends StackPane {
 	public static final Image ICON_DOWN_ARROW = new Image(
-			"/com/armadialogcreator/gui/img/icons/down_triangle.png"
+			"/com/armadialogcreator/img/icons/down_triangle.png"
 	);
 
 	private final ContextMenu popupMenu = new ContextMenu();

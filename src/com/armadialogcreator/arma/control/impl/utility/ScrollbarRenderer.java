@@ -2,9 +2,9 @@ package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.control.TintedImageHelperRenderer;
-import com.armadialogcreator.control.ControlClass;
-import com.armadialogcreator.control.ControlPropertyLookupConstant;
-import com.armadialogcreator.control.sv.SVColor;
+import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;

@@ -1,8 +1,8 @@
 
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
-import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.gui.main.popup.ChooseMacroDialog;
 import com.armadialogcreator.gui.main.popup.EditMacroPopup;
 import javafx.event.ActionEvent;

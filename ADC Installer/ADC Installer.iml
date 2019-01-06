@@ -11,5 +11,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ADC Standalone Progress Window" />
     <orderEntry type="module" module-name="ADC JavaFX" />
+    <orderEntry type="library" exported="" name="org.jetbrains:annotations:16.0.2" level="project" />
   </component>
 </module>

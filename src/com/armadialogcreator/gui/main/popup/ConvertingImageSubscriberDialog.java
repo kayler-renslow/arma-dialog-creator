@@ -136,7 +136,7 @@ public class ConvertingImageSubscriberDialog extends StagePopup<VBox>
 
 			myStage.initModality(Modality.APPLICATION_MODAL);
 			myRootElement.setPadding(new Insets(10));
-			myRootElement.getChildren().addAll(new HBox(10, new ImageView("/com/armadialogcreator/gui/img/icons/error64.png"), new Label(message)));
+			myRootElement.getChildren().addAll(new HBox(10, new ImageView("/com/armadialogcreator/img/icons/error64.png"), new Label(message)));
 			myStage.setMinWidth(340d);
 
 			myRootElement.getChildren().addAll(new Separator(Orientation.HORIZONTAL), getBoundResponseFooter(false, true, false));

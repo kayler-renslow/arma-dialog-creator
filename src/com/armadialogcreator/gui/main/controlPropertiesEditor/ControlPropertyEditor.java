@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.ControlProperty;
+import com.armadialogcreator.core.ControlProperty;
 import org.jetbrains.annotations.NotNull;
 
 /**

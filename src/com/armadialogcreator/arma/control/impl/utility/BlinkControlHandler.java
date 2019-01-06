@@ -1,9 +1,9 @@
 package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
-import com.armadialogcreator.control.ControlPropertyLookup;
-import com.armadialogcreator.control.ControlPropertyLookupConstant;
-import com.armadialogcreator.control.sv.SVNumericValue;
+import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.sv.SVNumericValue;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 

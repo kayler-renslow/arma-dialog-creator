@@ -1,6 +1,6 @@
 package com.armadialogcreator.arma.control.impl.utility;
 
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

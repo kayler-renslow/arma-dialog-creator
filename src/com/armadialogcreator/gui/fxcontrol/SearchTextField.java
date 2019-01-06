@@ -27,7 +27,7 @@ public class SearchTextField extends StackPane {
 	private static final String STYLE_CLASS = "search-text-field";
 	private static final String STYLE_CLASS_FOCUSED = "search-text-field-focused";
 
-	public static final Image SEARCH_ICON = new Image("/com/armadialogcreator/gui/img/icons/search.png");
+	public static final Image SEARCH_ICON = new Image("/com/armadialogcreator/img/icons/search.png");
 
 	private final TextField tf;
 

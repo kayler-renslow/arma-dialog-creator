@@ -8,11 +8,9 @@ import com.armadialogcreator.arma.stringtable.StringTableKey;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ReadOnlyValueListener;
-import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -55,9 +53,9 @@ class StringTableKeyEditorPane extends StackPane {
 		taValue.setWrapText(true);
 
 		languagePane = new LanguageSelectionPane(defaultPreviewLanguage);
-		languagePane.getChosenLanguageObserver().addListener(new ReadOnlyValueListener<Language>() {
+		languagePane.getChosenLanguageObserver().addListener(new ValueListener<Language>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language selected) {
+			public void valueUpdated(@NotNull ValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language selected) {
 				if (key == null || selected == null) {
 					taValue.replaceText("");
 				} else {

@@ -1,17 +1,17 @@
 package com.armadialogcreator.data.xml;
 
+import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SVControlStyleGroup;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVControlStyleGroup;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.DataKeys;
 import com.armadialogcreator.data.Project;
-import com.armadialogcreator.data.ProjectInfo;
 import com.armadialogcreator.data.export.HeaderFileType;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
 import com.armadialogcreator.data.tree.TreeNode;
@@ -36,12 +36,12 @@ import java.util.ResourceBundle;
  @since 08/07/2016. */
 public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 
-	private final ProjectInfo info;
+	private final ProjectDescriptor info;
 	private ArmaResolution resolution;
 	private Env env;
 	private final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
 
-	protected ProjectLoaderVersion1(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
+	protected ProjectLoaderVersion1(@NotNull ProjectDescriptor info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
 		super(loader);
 		this.info = info;
 	}
@@ -54,7 +54,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private void loadProject() throws XmlParseException {
 		try {
 			resolution = DataKeys.ARMA_RESOLUTION.get(dataContext);
-			env = DataKeys.ENV.get(dataContext);
+			env = Env.ENV.get(dataContext);
 			String projectName = document.getDocumentElement().getAttribute("name");
 			project = new Project(this.loader.applicationData, info);
 			project.setProjectName(projectName);
@@ -153,7 +153,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private void loadResourceRegistry() {
 		List<Element> externalResourcesElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "external-resources");
 		for (Element externalResourcesElementGroup : externalResourcesElementGroups) {
-			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getResourceRegistry(), externalResourcesElementGroup);
+			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getFileDependencyRegistry(), externalResourcesElementGroup);
 		}
 	}
 

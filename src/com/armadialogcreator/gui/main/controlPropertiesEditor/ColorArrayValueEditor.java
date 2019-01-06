@@ -1,11 +1,11 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.control.sv.SVColorArray;
+import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;

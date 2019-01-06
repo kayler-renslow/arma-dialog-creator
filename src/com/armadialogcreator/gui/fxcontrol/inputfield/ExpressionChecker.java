@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol.inputfield;
 
-import com.armadialogcreator.control.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;

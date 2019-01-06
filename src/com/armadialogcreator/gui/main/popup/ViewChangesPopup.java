@@ -2,11 +2,11 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.data.ChangeDescriptor;
 import com.armadialogcreator.data.Changelog;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.fxControls.HistoryListItem;
 import com.armadialogcreator.gui.main.fxControls.HistoryListItemSubInfo;
 import com.armadialogcreator.gui.main.fxControls.HistoryListPopup;
 import com.armadialogcreator.gui.main.fxControls.HistoryListProvider;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.EpochPresentation;
 import com.armadialogcreator.util.ReadOnlyList;

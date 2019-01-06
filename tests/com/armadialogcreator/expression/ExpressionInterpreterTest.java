@@ -1,6 +1,6 @@
 package com.armadialogcreator.expression;
 
-import com.armadialogcreator.arma.util.ArmaPrecision;
+import com.armadialogcreator.util.ArmaPrecision;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.After;

@@ -7,10 +7,9 @@ import com.armadialogcreator.canvas.CanvasControl;
 import com.armadialogcreator.canvas.CanvasDisplay;
 import com.armadialogcreator.canvas.ControlHolder;
 import com.armadialogcreator.canvas.Resolution;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SVExpression;
-import com.armadialogcreator.control.sv.SVInteger;
-import com.armadialogcreator.data.DataKeys;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -75,11 +74,11 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		//This used for ControlProperty documentation so that each property can have its own documentation for each ControlType
 		//and each nested ControlClass
 		for (ControlProperty property : getAllChildProperties()) {
-			DataKeys.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name());
+			ControlPropertyDocumentationProvider.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name());
 		}
 		for (ControlClass nested : getAllNestedClasses()) {
 			for (ControlProperty property : nested.getAllChildProperties()) {
-				DataKeys.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name() + "/" + nested.getClassName());
+				ControlPropertyDocumentationProvider.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name() + "/" + nested.getClassName());
 			}
 		}
 	}

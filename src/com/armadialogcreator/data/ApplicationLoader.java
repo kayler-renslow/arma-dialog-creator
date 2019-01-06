@@ -2,6 +2,8 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.xml.ProjectInit;
 import com.armadialogcreator.gui.main.popup.projectInit.ADCProjectInitWindow;
 import org.jetbrains.annotations.NotNull;
@@ -36,13 +38,13 @@ public class ApplicationLoader {
 		Workspace workspace = applicationDataManager.loadWorkspace(projectInitWindow.getWorkspaceDirectory());
 
 		ProjectInit init = projectInitWindow.getProjectInit();
-		ProjectInfo project;
+		ProjectDescriptor project;
 
 		LoadType loadType;
 
 		if (init instanceof ProjectInit.OpenProject) {
 			ProjectInit.OpenProject openProject = (ProjectInit.OpenProject) init;
-			project = openProject.getProjectXmlInfo();
+			project = openProject.getProjectXmlDescriptor();
 			loadType = LoadType.LOAD;
 		} else {
 			loadType = LoadType.NEW_PROJECT;
@@ -57,7 +59,7 @@ public class ApplicationLoader {
 
 			projectName = (projectName != null && projectName.length() > 0) ? projectName : getTemplateProjectName();
 			projectName = projectName.trim();
-			project = new ProjectInfo(projectName, projectName, workspace);
+			project = new ProjectDescriptor(projectName, projectName, workspace);
 		}
 
 		return new ApplicationLoadConfig(project, loadType, workspace);
@@ -76,11 +78,11 @@ public class ApplicationLoader {
 
 
 	public static class ApplicationLoadConfig {
-		private final ProjectInfo newProject;
+		private final ProjectDescriptor newProject;
 		private final LoadType loadType;
 		private final Workspace workspace;
 
-		private ApplicationLoadConfig(@NotNull ProjectInfo newProject, @NotNull LoadType loadType,
+		private ApplicationLoadConfig(@NotNull ProjectDescriptor newProject, @NotNull LoadType loadType,
 									  @NotNull Workspace workspace) {
 			this.newProject = newProject;
 			this.loadType = loadType;
@@ -93,7 +95,7 @@ public class ApplicationLoader {
 		}
 
 		@NotNull
-		public ProjectInfo getProjectInfo() {
+		public ProjectDescriptor getProjectDescriptor() {
 			return newProject;
 		}
 

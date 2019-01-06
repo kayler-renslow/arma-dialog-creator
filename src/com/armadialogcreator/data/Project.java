@@ -1,11 +1,12 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.application.*;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.canvas.UICanvasEditor;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.ValueObserver;
@@ -21,13 +22,13 @@ import java.util.List;
 
 /**
  A Project holds the its location to where all saved data is, the current display the {@link UICanvasEditor} is editing,
- the {@link ProjectMacroRegistry} instance, as well as all {@link ExternalResource}s.
+ the {@link ProjectMacroRegistry} instance, as well as all {@link FileDependency}s.
  <p>
  A project needs an {@link ApplicationData} instance for the project's {@link DefaultValueProvider} instance.
 
  @author Kayler
  @since 07/19/2016. */
-public class Project implements SpecificationRegistry {
+public class Project extends com.armadialogcreator.application.Project /*TODO extends is temporary*/ implements SpecificationRegistry {
 	public static final String PROJECT_SAVE_FILE_NAME = "project.xml";
 
 	private final ApplicationData applicationData;
@@ -38,7 +39,7 @@ public class Project implements SpecificationRegistry {
 
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
 	private final ProjectMacroRegistry macroRegistry;
-	private final ResourceRegistry resourceRegistry;
+	private final FileDependencyRegistry fileDependencyRegistry;
 	private final CustomControlClassRegistry projectCustomControlClassRegistry;
 	private ProjectExportConfiguration exportConfiguration;
 
@@ -54,23 +55,24 @@ public class Project implements SpecificationRegistry {
 	 is invoked.
 
 	 @param applicationData the {@link ApplicationData} instance to use. See class level doc for more info.
-	 @param info info to create {@link Project} with
+	 @param descriptor descriptor to create {@link Project} with
 	 */
-	public Project(@NotNull ApplicationData applicationData, @NotNull ProjectInfo info) {
+	public Project(@NotNull ApplicationData applicationData, @NotNull ProjectDescriptor descriptor) {
+		super(descriptor);
 		this.applicationData = applicationData;
-		this.projectName = info.getProjectName();
-		this.workspace = info.getWorkspace();
-		this.projectSaveDirectory = info.getProjectDirectory();
+		this.projectName = descriptor.getProjectName();
+		this.workspace = descriptor.getWorkspace();
+		this.projectSaveDirectory = descriptor.getProjectDirectory();
 
 		exportConfiguration = ProjectExportConfiguration.newDefaultConfiguration(this);
 
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
-		resourceRegistry = new ResourceRegistry(this);
+		fileDependencyRegistry = new ProjectFileDependencyRegistry(this);
 		projectCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Project, this);
 		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Workspace, this);
 
-		projectSaveFile = info.getProjectXmlFile();
+		projectSaveFile = descriptor.getProjectXmlFile();
 		applicationData.setProject(this);
 	}
 
@@ -221,8 +223,8 @@ public class Project implements SpecificationRegistry {
 	}
 
 	@NotNull
-	public ResourceRegistry getResourceRegistry() {
-		return resourceRegistry;
+	public FileDependencyRegistry getFileDependencyRegistry() {
+		return fileDependencyRegistry;
 	}
 
 	/**

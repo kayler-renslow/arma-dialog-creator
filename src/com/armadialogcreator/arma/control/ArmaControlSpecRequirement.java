@@ -1,8 +1,8 @@
 package com.armadialogcreator.arma.control;
 
-import com.armadialogcreator.control.ControlClassRequirementSpecification;
-import com.armadialogcreator.control.ControlPropertyLookup;
-import com.armadialogcreator.control.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.ControlClassRequirementSpecification;
+import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ControlPropertyLookupConstant;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 

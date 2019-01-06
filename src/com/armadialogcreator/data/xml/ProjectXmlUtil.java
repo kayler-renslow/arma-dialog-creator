@@ -1,8 +1,8 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SVRaw;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVRaw;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.CustomControlClassRegistry;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;

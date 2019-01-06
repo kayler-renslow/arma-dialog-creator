@@ -2,6 +2,8 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.application.WorkspaceFileDependencyRegistry;
 import com.armadialogcreator.data.xml.ProjectSaveXmlWriter;
 import com.armadialogcreator.data.xml.ResourceRegistryXmlLoader;
 import com.armadialogcreator.data.xml.ResourceRegistryXmlWriter;
@@ -55,7 +57,7 @@ public class ApplicationDataManager {
 
 	public void initializeDone() {
 		try {
-			WorkspaceResourceRegistry globalResourceRegistry = workspace.getGlobalResourceRegistry();
+			WorkspaceFileDependencyRegistry globalResourceRegistry = workspace.getWorkspaceFileDependencyRegistry();
 			if (!globalResourceRegistry.getResourcesFile().exists()) {
 				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
 			}

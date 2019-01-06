@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 05/31/2016. */
-public interface ValueListener<V> {
+public interface ValueListener<V> extends ObserverListener {
 	/**
 	 The value was updated. However, the value is guaranteed to be different.
 

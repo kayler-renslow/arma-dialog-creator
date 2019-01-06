@@ -2,8 +2,8 @@
 
 package com.armadialogcreator;
 
-import com.armadialogcreator.gui.img.ADCImagePaths;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
+import com.armadialogcreator.img.ADCImagePaths;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.application.Preloader;
 import javafx.event.EventHandler;

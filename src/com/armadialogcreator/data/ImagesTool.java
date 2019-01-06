@@ -1,5 +1,9 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.application.FileDependency;
+import com.armadialogcreator.application.PaaImageFileDependency;
+import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.application.WorkspaceFileDependencyRegistry;
 import com.armadialogcreator.arma.util.ArmaTools;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,9 +40,9 @@ public class ImagesTool {
 	 {@link Workspace#getWorkspaceDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
 	 <p>
 	 This method will also automatically insert any converted paa images into
-	 {@link Workspace#getGlobalResourceRegistry()} with a {@link PaaImageExternalResource} instance.
+	 {@link Workspace#getWorkspaceFileDependencyRegistry()} with a {@link PaaImageFileDependency} instance.
 	 Because of this, a given image file could be a .paa image that was already converted. If the converted image
-	 already exists in {@link Workspace#getGlobalResourceRegistry()}, that converted file will be returned.
+	 already exists in {@link Workspace#getWorkspaceFileDependencyRegistry()}, that converted file will be returned.
 	 <p>
 	 If at any point the conversion is cancelled or fails, <code>imageFilePath</code>'s file will be returned.
 
@@ -70,26 +74,26 @@ public class ImagesTool {
 		}
 
 		if (imageFilePath.endsWith(".paa")) {
-			WorkspaceResourceRegistry globalResourceRegistry = workspace.getGlobalResourceRegistry();
+			WorkspaceFileDependencyRegistry globalResourceRegistry = workspace.getWorkspaceFileDependencyRegistry();
 
-			ExternalResource resource = globalResourceRegistry.getResourceByFile(imageFile);
+			FileDependency resource = globalResourceRegistry.getDependencyInstanceByFile(imageFile);
 			File convertDest = globalResourceRegistry.getFileForName(imageFile.getName() + ".png");
 			if (resource == null) {
 				ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
-				PaaImageExternalResource newResource = tool.convert();
+				PaaImageFileDependency newResource = tool.convert();
 				if (newResource != null) {
-					globalResourceRegistry.addResource(newResource);
+					globalResourceRegistry.addDependency(newResource);
 					return newResource.getConvertedImage();
 				}
 			} else {
-				String convertedPaaPath = resource.getPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE);
+				String convertedPaaPath = resource.getPropertyValue(PaaImageFileDependency.KEY_CONVERTED_IMAGE);
 				File convertedImageFile = convertedPaaPath == null ? imageFile : new File(convertedPaaPath);
 				if (!convertedImageFile.exists() || convertedImageFile == imageFile) {
 					ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
-					PaaImageExternalResource r = tool.convert();
+					PaaImageFileDependency r = tool.convert();
 					if (r != null) {
 						File newConvertedFile = r.getConvertedImage();
-						resource.setPropertyValue(PaaImageExternalResource.KEY_CONVERTED_IMAGE, newConvertedFile.getAbsolutePath());
+						resource.setPropertyValue(PaaImageFileDependency.KEY_CONVERTED_IMAGE, newConvertedFile.getAbsolutePath());
 						return newConvertedFile;
 					}
 				}
@@ -111,7 +115,7 @@ public class ImagesTool {
 	}
 
 	@Nullable
-	private PaaImageExternalResource convert() {
+	private PaaImageFileDependency convert() {
 		File a3Tools = callback.arma3ToolsDirectory();
 		if (a3Tools == null) {
 			callback.conversionCancelled(paaImage);
@@ -141,7 +145,7 @@ public class ImagesTool {
 
 		callback.conversionSucceeded(paaImage, convertDestFile);
 
-		return new PaaImageExternalResource(paaImage, convertDestFile);
+		return new PaaImageFileDependency(paaImage, convertDestFile);
 	}
 
 	/**

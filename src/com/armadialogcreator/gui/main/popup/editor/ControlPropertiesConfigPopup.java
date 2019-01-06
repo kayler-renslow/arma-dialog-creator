@@ -5,18 +5,17 @@ import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.canvas.CanvasDisplay;
-import com.armadialogcreator.canvas.ControlListChange;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SVColor;
-import com.armadialogcreator.control.sv.SVNumericValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVColor;
+import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.*;
 import javafx.beans.value.ChangeListener;
@@ -75,9 +74,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setTooltip(new Tooltip(newClassName));
 		}
 	};
-	private final ReadOnlyValueListener<ControlClass> controlClassExtendListener = new ReadOnlyValueListener<ControlClass>() {
+	private final ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
 		@Override
-		public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
 			if (newValue == null) {
 				menuButtonExtendControls.chooseItem((ControlClass) null);
 			} else {
@@ -90,19 +89,19 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
-	private final UpdateGroupListener<ControlListChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
+	private final UpdateGroupListener<ListObserverChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, ControlListChange<ArmaControl> data) {
+		public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, ListObserverChange<ArmaControl> data) {
 			if (data.wasMoved()) {
-				if (data.getMoved().getMovedControl() == control) {
+				if (data.getMoved().getMoved() == control) {
 					checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
 				}
 			} else if (data.wasRemoved()) {
-				if (data.getRemoved().getControl() == control) {
+				if (data.getRemoved().getRemoved() == control) {
 					close();
 				}
 			} else if (data.wasSet()) {
-				if (data.getSet().getOldControl() == control) {
+				if (data.getSet().getOld() == control) {
 					close();
 				}
 			}
@@ -272,9 +271,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (control.getExtendClass() != null) {
 			menuButtonExtendControls.chooseItem(control.getExtendClass());
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addListener(new ReadOnlyValueListener<ControlClass>() {
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ControlClass>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
+			public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
 				control.extendControlClass(selected);
 			}
 		});

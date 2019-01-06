@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.PropertyType;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import javafx.scene.Node;

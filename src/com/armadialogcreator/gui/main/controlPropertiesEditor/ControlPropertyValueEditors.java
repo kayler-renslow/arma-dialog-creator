@@ -1,14 +1,12 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.*;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.RawChecker;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ReadOnlyValueListener;
-import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -161,9 +159,9 @@ class ControlPropertyValueEditors {
 	static class FileNameEditor extends FileNameValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVFileName> editorValueListener = new ReadOnlyValueListener<SVFileName>() {
+		private final ValueListener<SVFileName> editorValueListener = new ValueListener<SVFileName>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVFileName> observer, SVFileName oldValue, SVFileName newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVFileName> observer, SVFileName oldValue, SVFileName newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -217,9 +215,9 @@ class ControlPropertyValueEditors {
 	static class ControlStyleEditor extends ControlStyleValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVControlStyleGroup> editorValueListener = new ReadOnlyValueListener<SVControlStyleGroup>() {
+		private final ValueListener<SVControlStyleGroup> editorValueListener = new ValueListener<SVControlStyleGroup>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVControlStyleGroup> observer, SVControlStyleGroup oldValue, SVControlStyleGroup newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVControlStyleGroup> observer, SVControlStyleGroup oldValue, SVControlStyleGroup newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -309,9 +307,9 @@ class ControlPropertyValueEditors {
 
 		private final ControlProperty controlProperty;
 		private final PropertyType macroType;
-		private final ReadOnlyValueListener<C> editorValueListener = new ReadOnlyValueListener<C>() {
+		private final ValueListener<C> editorValueListener = new ValueListener<C>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<C> observer, C oldValue, C newValue) {
+			public void valueUpdated(@NotNull ValueObserver<C> observer, C oldValue, C newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -425,9 +423,9 @@ class ControlPropertyValueEditors {
 	static class ColorArrayEditor extends ColorArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVColorArray> valueEditorListener = new ReadOnlyValueListener<SVColorArray>() {
+		private final ValueListener<SVColorArray> valueEditorListener = new ValueListener<SVColorArray>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVColorArray> observer, SVColorArray oldValue, SVColorArray newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVColorArray> observer, SVColorArray oldValue, SVColorArray newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -486,9 +484,9 @@ class ControlPropertyValueEditors {
 	static class HexColorEditor extends HexColorValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVHexColor> valueEditorListener = new ReadOnlyValueListener<SVHexColor>() {
+		private final ValueListener<SVHexColor> valueEditorListener = new ValueListener<SVHexColor>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVHexColor> observer, SVHexColor oldValue,
+			public void valueUpdated(@NotNull ValueObserver<SVHexColor> observer, SVHexColor oldValue,
 									 SVHexColor newValue) {
 				controlProperty.setValue(newValue);
 			}
@@ -553,9 +551,9 @@ class ControlPropertyValueEditors {
 	static class BooleanChoiceBoxEditor extends BooleanValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVBoolean> editorValueListener = new ReadOnlyValueListener<SVBoolean>() {
+		private final ValueListener<SVBoolean> editorValueListener = new ValueListener<SVBoolean>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVBoolean> observer, SVBoolean oldValue, SVBoolean newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -619,9 +617,9 @@ class ControlPropertyValueEditors {
 	static class ArrayEditor extends ArrayValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVArray> editorValueListener = new ReadOnlyValueListener<SVArray>() {
+		private final ValueListener<SVArray> editorValueListener = new ValueListener<SVArray>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVArray> observer, SVArray oldValue, SVArray newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVArray> observer, SVArray oldValue, SVArray newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -680,9 +678,9 @@ class ControlPropertyValueEditors {
 	static class FontChoiceBoxEditor extends FontValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVFont> editorValueListener = new ReadOnlyValueListener<SVFont>() {
+		private final ValueListener<SVFont> editorValueListener = new ValueListener<SVFont>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVFont> observer, SVFont oldValue, SVFont newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVFont> observer, SVFont oldValue, SVFont newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -741,9 +739,9 @@ class ControlPropertyValueEditors {
 	static class ImageEditor extends ImageValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVImage> editorValueListener = new ReadOnlyValueListener<SVImage>() {
+		private final ValueListener<SVImage> editorValueListener = new ValueListener<SVImage>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVImage> observer, SVImage oldValue, SVImage newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVImage> observer, SVImage oldValue, SVImage newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};
@@ -799,9 +797,9 @@ class ControlPropertyValueEditors {
 	static class SoundEditor extends SoundValueEditor implements ControlPropertyValueEditor {
 
 		private final ControlProperty controlProperty;
-		private final ReadOnlyValueListener<SVSound> editorValueListener = new ReadOnlyValueListener<SVSound>() {
+		private final ValueListener<SVSound> editorValueListener = new ValueListener<SVSound>() {
 			@Override
-			public void valueUpdated(@NotNull ReadOnlyValueObserver<SVSound> observer, SVSound oldValue, SVSound newValue) {
+			public void valueUpdated(@NotNull ValueObserver<SVSound> observer, SVSound oldValue, SVSound newValue) {
 				controlProperty.setValue(newValue);
 			}
 		};

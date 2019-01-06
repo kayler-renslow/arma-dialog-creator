@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.arma.stringtable.StringTableKey;
-import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.control.PropertyType;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.popup.ChooseMacroDialog;
 import com.armadialogcreator.gui.main.popup.EditMacroPopup;

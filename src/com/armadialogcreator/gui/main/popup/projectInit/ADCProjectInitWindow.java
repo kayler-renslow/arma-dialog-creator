@@ -5,7 +5,11 @@ import com.armadialogcreator.ADCStatic;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.LocaleDescriptor;
-import com.armadialogcreator.data.*;
+import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.data.ApplicationDataManager;
+import com.armadialogcreator.data.ApplicationProperty;
+import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.xml.ProjectInit;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
 import com.armadialogcreator.data.xml.XmlParseException;
@@ -304,7 +308,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public class OpenTab extends ProjectInitTab {
 
 			private final Tab tabOpen = new Tab(bundle.getString("tab_open"));
-			private final ListView<ProjectInfo> lvKnownProjects = new ListView<>();
+			private final ListView<ProjectDescriptor> lvKnownProjects = new ListView<>();
 			private final ADCProjectInitWindow projectInitWindow;
 			private LinkedList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
 			private ProjectXmlLoader.ProjectPreviewParseResult selectedParsedProject;
@@ -337,11 +341,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						} catch (XmlParseException e) {
 							return;
 						}
-						if (!lvKnownProjects.getItems().contains(result.getProjectInfo())) {
+						if (!lvKnownProjects.getItems().contains(result.getProjectDescriptor())) {
 							parsedKnownProjects.add(result);
-							lvKnownProjects.getItems().add(result.getProjectInfo());
+							lvKnownProjects.getItems().add(result.getProjectDescriptor());
 						}
-						lvKnownProjects.getSelectionModel().select(result.getProjectInfo());
+						lvKnownProjects.getSelectionModel().select(result.getProjectDescriptor());
 						lvKnownProjects.requestFocus();
 					}
 				});
@@ -353,12 +357,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						btnLocateProject
 				);
 
-				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectInfo>() {
+				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectDescriptor>() {
 					@Override
-					public void changed(ObservableValue<? extends ProjectInfo> observable, ProjectInfo oldValue, ProjectInfo selected) {
+					public void changed(ObservableValue<? extends ProjectDescriptor> observable, ProjectDescriptor oldValue, ProjectDescriptor selected) {
 						boolean matched = false;
 						for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
-							if (result.getProjectInfo().equals(selected)) {
+							if (result.getProjectDescriptor().equals(selected)) {
 								selectedParsedProject = result;
 								matched = true;
 								break;
@@ -408,7 +412,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				}
 
 				for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
-					lvKnownProjects.getItems().add(result.getProjectInfo());
+					lvKnownProjects.getItems().add(result.getProjectDescriptor());
 				}
 			}
 

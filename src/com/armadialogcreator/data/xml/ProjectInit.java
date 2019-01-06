@@ -1,6 +1,6 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.data.ProjectInfo;
+import com.armadialogcreator.application.ProjectDescriptor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,8 +42,8 @@ public interface ProjectInit {
 		}
 
 		@NotNull
-		public ProjectInfo getProjectXmlInfo() {
-			return parseResult.getProjectInfo();
+		public ProjectDescriptor getProjectXmlDescriptor() {
+			return parseResult.getProjectDescriptor();
 		}
 	}
 }

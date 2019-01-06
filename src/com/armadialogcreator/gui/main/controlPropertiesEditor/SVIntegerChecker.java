@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVInteger;
+import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IntegerChecker;
 import org.jetbrains.annotations.NotNull;

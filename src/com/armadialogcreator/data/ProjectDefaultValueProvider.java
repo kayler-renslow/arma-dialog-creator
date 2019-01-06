@@ -1,8 +1,8 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.control.ControlPropertyLookupConstant;
-import com.armadialogcreator.control.DefaultValueProvider;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.DefaultValueProvider;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.xml.DefaultValueXmlLoader;
 import com.armadialogcreator.data.xml.XmlParseException;
 import org.jetbrains.annotations.NotNull;

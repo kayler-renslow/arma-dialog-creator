@@ -1,10 +1,10 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.control.ControlClass;
-import com.armadialogcreator.control.ControlClassSpecification;
-import com.armadialogcreator.control.ControlPropertyLookup;
-import com.armadialogcreator.control.CustomControlClass;
+import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassSpecification;
+import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.CustomControlClass;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;

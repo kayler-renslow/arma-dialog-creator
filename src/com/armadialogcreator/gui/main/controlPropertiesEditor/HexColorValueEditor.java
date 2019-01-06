@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVHexColor;
+import com.armadialogcreator.core.sv.SVHexColor;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.event.ActionEvent;

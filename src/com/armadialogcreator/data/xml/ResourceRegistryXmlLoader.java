@@ -1,7 +1,7 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.data.ExternalResource;
-import com.armadialogcreator.data.ResourceRegistry;
+import com.armadialogcreator.application.FileDependency;
+import com.armadialogcreator.application.FileDependencyRegistry;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.XmlUtil;
@@ -22,7 +22,7 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 	 Construct a loader for an xml file that has the root tag "external-resources".
 	 This constructed loader is used explicitly for {@link ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter}.
 	 <br>
-	 If you wish to load resources into an existing registry, use {@link #loadRegistryFromElement(ResourceRegistry, Element)}
+	 If you wish to load resources into an existing registry, use {@link #loadRegistryFromElement(FileDependencyRegistry, Element)}
 
 	 @param xmlFile file that contains the resource registry external resources
 	 @param context data context
@@ -32,7 +32,7 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 		super(xmlFile, context, null);
 	}
 
-	public static void loadRegistryFromElement(@NotNull ResourceRegistry resourceRegistry, @NotNull Element externalResourcesTag) {
+	public static void loadRegistryFromElement(@NotNull FileDependencyRegistry fileDependencyRegistry, @NotNull Element externalResourcesTag) {
 		if (!externalResourcesTag.getTagName().equals("external-resources")) {
 			throw new IllegalArgumentException("externalResourcesTag does not have the tag name 'external-resources'");
 		}
@@ -45,12 +45,12 @@ public class ResourceRegistryXmlLoader extends XmlLoader {
 				String key = resourcePropertyElement.getAttribute("key");
 				keyValues[i] = new KeyValueString(key, XmlUtil.getImmediateTextContent(resourcePropertyElement).trim());
 			}
-			ExternalResource externalResource = new ExternalResource(new File(XmlUtil.getImmediateTextContent(externalResourceElement).trim()), keyValues);
-			resourceRegistry.addResource(externalResource);
+			FileDependency fileDependency = new FileDependency(new File(XmlUtil.getImmediateTextContent(externalResourceElement).trim()), keyValues);
+			fileDependencyRegistry.addDependency(fileDependency);
 		}
 	}
 
-	public void load(ResourceRegistry registry) {
+	public void load(FileDependencyRegistry registry) {
 		loadRegistryFromElement(registry, this.getDocumentElement());
 	}
 }

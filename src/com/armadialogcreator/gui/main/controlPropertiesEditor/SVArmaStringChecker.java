@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVString;
+import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import org.jetbrains.annotations.NotNull;

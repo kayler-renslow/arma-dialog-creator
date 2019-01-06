@@ -1,7 +1,7 @@
 
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
-import com.armadialogcreator.control.CustomControlClass;
+import com.armadialogcreator.core.CustomControlClass;
 import com.armadialogcreator.gui.main.popup.ChooseCustomControlClassDialog;
 import com.armadialogcreator.gui.main.popup.newControl.EditCustomControlClassDialog;
 import javafx.event.ActionEvent;

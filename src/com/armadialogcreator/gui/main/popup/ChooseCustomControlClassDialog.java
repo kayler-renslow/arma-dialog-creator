@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.control.CustomControlClass;
+import com.armadialogcreator.core.CustomControlClass;
 import com.armadialogcreator.data.CustomControlClassRegistry;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;

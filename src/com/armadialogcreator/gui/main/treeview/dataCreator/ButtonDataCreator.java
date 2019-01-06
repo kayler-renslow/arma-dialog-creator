@@ -4,7 +4,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.impl.ButtonControl;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.control.ControlType;
+import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.data.DataKeys;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.expression.Env;

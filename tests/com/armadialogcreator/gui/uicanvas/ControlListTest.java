@@ -1,7 +1,8 @@
 package com.armadialogcreator.gui.uicanvas;
 
-import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.util.Reference;
+import com.armadialogcreator.canvas.ControlList;
+import com.armadialogcreator.util.*;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.LinkedList;
@@ -30,9 +31,9 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
 					assertEquals(list, controlList);
 					return;
@@ -41,9 +42,9 @@ public class ControlListTest {
 					assertEquals(true, false);
 					return;
 				}
-				ControlRemove<TestCanvasControl> removed = change.getRemoved();
-				if (removed.getControl() != control0) {
-					assertEquals("Expected the removed control to be control0", control0, removed.getControl());
+				ListObserverChangeRemove<TestCanvasControl> removed = change.getRemoved();
+				if (removed.getRemoved() != control0) {
+					assertEquals("Expected the removed control to be control0", control0, removed.getRemoved());
 					return;
 				}
 				if (removed.getIndex() != 0) {
@@ -75,9 +76,9 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
 					assertEquals(list, controlList);
 					return;
@@ -86,17 +87,17 @@ public class ControlListTest {
 					assertEquals(true, false);
 					return;
 				}
-				ControlSet<TestCanvasControl> set = change.getSet();
+				ListObserverChangeSet<TestCanvasControl> set = change.getSet();
 				if (set.getIndex() != 0) {
 					assertEquals("Expected the set index to be 0", 0, set.getIndex());
 					return;
 				}
-				if (set.getNewControl() != control2) {
-					assertEquals("Expected control2 to be the new control", control2, set.getNewControl());
+				if (set.getNew() != control2) {
+					assertEquals("Expected control2 to be the new control", control2, set.getNew());
 					return;
 				}
-				if (set.getOldControl() != control0) {
-					assertEquals("Expected control0 to be the old control", control0, set.getOldControl());
+				if (set.getOld() != control0) {
+					assertEquals("Expected control0 to be the old control", control0, set.getOld());
 					return;
 				}
 
@@ -125,9 +126,9 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
 					assertEquals(list, controlList);
 					return;
@@ -136,9 +137,9 @@ public class ControlListTest {
 					assertEquals(true, false);
 					return;
 				}
-				ControlAdd<TestCanvasControl> added = change.getAdded();
-				if (added.getControl() != control2) {
-					assertEquals(control2, added.getControl());
+				ListObserverChangeAdd<TestCanvasControl> added = change.getAdded();
+				if (added.getAdded() != control2) {
+					assertEquals(control2, added.getAdded());
 					return;
 				}
 				if (added.getIndex() != 2) {
@@ -171,9 +172,9 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
 					assertEquals(list, controlList);
 					return;
@@ -182,21 +183,21 @@ public class ControlListTest {
 					assertEquals(true, false);
 					return;
 				}
-				ControlMove<TestCanvasControl> moved = change.getMoved();
-				if (moved.getDestinationHolder() != holder) {
-					assertEquals(holder, moved.getDestinationHolder());
+				ListObserverChangeMove<TestCanvasControl> moved = change.getMoved();
+				if (moved.getDestinationList() != holder.getControls()) {
+					assertEquals(holder.getControls(), moved.getDestinationList());
 					return;
 				}
 				if (moved.getDestinationIndex() != 1) {
 					assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
 					return;
 				}
-				if (moved.getMovedControl() != control0) {
-					assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
+				if (moved.getMoved() != control0) {
+					assertEquals("Expected moved control to be control0", control0, moved.getMoved());
 					return;
 				}
-				if (moved.getOldHolder() != holder) {
-					assertEquals(holder, moved.getOldHolder());
+				if (moved.getOldList() != holder.getControls()) {
+					assertEquals(holder.getControls(), moved.getOldList());
 					return;
 				}
 				if (moved.getOldIndex() != 0) {
@@ -233,23 +234,23 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				assertEquals(list, controlList);
 				assertEquals(true, change.wasMoved());
-				ControlMove<TestCanvasControl> moved = change.getMoved();
-				assertEquals(holder2, moved.getDestinationHolder());
+				ListObserverChangeMove<TestCanvasControl> moved = change.getMoved();
+				assertEquals(holder2.getControls(), moved.getDestinationList());
 				assertEquals("Expected destination index to be 1", 1, moved.getDestinationIndex());
-				assertEquals("Expected moved control to be control0", control0, moved.getMovedControl());
-				assertEquals(holder, moved.getOldHolder());
+				assertEquals("Expected moved control to be control0", control0, moved.getMoved());
+				assertEquals(holder.getControls(), moved.getOldList());
 				assertEquals("Expected old index to be 0", 0, moved.getOldIndex());
 				visited.setValue(true);
 			}
 		});
-		list2.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list2.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				assertEquals(list2, controlList);
 			}
 		});
@@ -277,9 +278,9 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ControlListChangeListener<TestCanvasControl>() {
+		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
-			public void onChanged(ControlList<TestCanvasControl> controlList, ControlListChange<TestCanvasControl> change) {
+			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (!visited.getValue() && !change.getMoved().isEntryUpdate()) {
 					throw new IllegalStateException("expected the entry update to happen first");
 				}

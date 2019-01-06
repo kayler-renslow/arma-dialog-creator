@@ -1,9 +1,9 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.data.ExternalResource;
-import com.armadialogcreator.data.ResourceRegistry;
-import com.armadialogcreator.data.Workspace;
-import com.armadialogcreator.data.WorkspaceResourceRegistry;
+import com.armadialogcreator.application.FileDependency;
+import com.armadialogcreator.application.FileDependencyRegistry;
+import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.application.WorkspaceFileDependencyRegistry;
 import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +20,7 @@ public class ResourceRegistryXmlWriter {
 	public static class WorkspaceResourceRegistryXmlWriter extends ResourceRegistryXmlWriter {
 
 		/**
-		 Writes the {@link WorkspaceResourceRegistry} to file
+		 Writes the {@link WorkspaceFileDependencyRegistry} to file
 
 		 @param workspace the {@link Workspace} to write resources for
 		 @throws TransformerException when the XML couldn't be written
@@ -30,9 +30,9 @@ public class ResourceRegistryXmlWriter {
 		}
 
 		private void doWriteAndClose(@NotNull Workspace workspace) throws TransformerException {
-			WorkspaceResourceRegistry registry = workspace.getGlobalResourceRegistry();
+			WorkspaceFileDependencyRegistry registry = workspace.getWorkspaceFileDependencyRegistry();
 			if (!registry.getResourcesFile().exists()) {
-				boolean made = registry.getResourcesFile().getParentFile().mkdirs();
+				boolean made = registry.getResourcesDirectory().mkdirs();
 				if (!made) {
 					throw new TransformerException("Couldn't create parent directories for resource file");
 				}
@@ -56,18 +56,18 @@ public class ResourceRegistryXmlWriter {
 	}
 
 	/**
-	 Writes the given {@link ResourceRegistry} to the provided XML element. This will not write anything to file
+	 Writes the given {@link FileDependencyRegistry} to the provided XML element. This will not write anything to file
 
-	 @param resourceRegistry the registry
+	 @param fileDependencyRegistry the registry
 	 @param writer the writer
 	 @param writeToEle element to write to
 	 */
-	public static void write(@NotNull ResourceRegistry resourceRegistry, @NotNull XmlWriter writer, @NotNull Element writeToEle) {
+	public static void write(@NotNull FileDependencyRegistry fileDependencyRegistry, @NotNull XmlWriter writer, @NotNull Element writeToEle) {
 		Element externalResourcesEle = writer.appendElementToElement("external-resources", writeToEle);
-		for (ExternalResource resource : resourceRegistry.getResourceList()) {
+		for (FileDependency resource : fileDependencyRegistry.getDependencyList()) {
 
 			Element externalResourceEle = writer.appendElementToElement("external-resource", externalResourcesEle);
-			writer.appendTextNode(resource.getExternalFile().getPath(), externalResourceEle);
+			writer.appendTextNode(resource.getExternalFileObserver().getValue().getPath(), externalResourceEle);
 			for (KeyValueString keyValue : resource.getProperties()) {
 				Element resourcePropertyEle = writer.appendElementToElement("resource-property", externalResourceEle);
 				resourcePropertyEle.setAttribute("key", keyValue.getKey());

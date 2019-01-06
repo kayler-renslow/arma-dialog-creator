@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.control.sv.SVSound;
+import com.armadialogcreator.core.sv.SVSound;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ArmaStringChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;

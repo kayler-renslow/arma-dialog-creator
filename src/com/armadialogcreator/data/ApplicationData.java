@@ -6,7 +6,7 @@ import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.arma.util.PositionCalculator;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.canvas.ScreenDimension;
-import com.armadialogcreator.control.Macro;
+import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.expression.UnaryCommandValueProvider;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
  Holds data that aren't specific to the current Project, but rather the entire application itself. Resets after
  {@link ArmaDialogCreator#loadNewProject(boolean)} is invoked.
  <p>
- Also stores an {@link Env} and {@link ArmaResolution} instance for ADC. Use keys {@link DataKeys#ENV} and {@link DataKeys#ARMA_RESOLUTION}
+ Also stores an {@link Env} and {@link ArmaResolution} instance for ADC. Use keys {@link Env#ENV} and {@link DataKeys#ARMA_RESOLUTION}
  to get the respected values.
 
  @author Kayler
@@ -31,7 +31,7 @@ public class ApplicationData extends DataContext {
 
 	protected ApplicationData() {
 		put(DataKeys.ARMA_RESOLUTION, new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT));
-		put(DataKeys.ENV, globalEnv);
+		put(Env.ENV, globalEnv);
 	}
 
 	private final SimpleEnv globalEnv = new SimpleEnv(new UnaryCommandValueProviderImpl(this)) {

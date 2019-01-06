@@ -2,8 +2,8 @@ package com.armadialogcreator.arma.control.impl;
 
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.control.ControlPropertyLookup;
-import com.armadialogcreator.control.SpecificationRegistry;
+import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 

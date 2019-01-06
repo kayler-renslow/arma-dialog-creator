@@ -2,11 +2,11 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.canvas.ControlListChange;
-import com.armadialogcreator.control.*;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.*;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ListObserverChange;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
@@ -70,16 +70,16 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		};
 
 		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
-		UpdateGroupListener<ControlListChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ControlListChange<ArmaControl>>() {
+		UpdateGroupListener<ListObserverChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlListChange<ArmaControl>> group, ControlListChange<ArmaControl> change) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, ListObserverChange<ArmaControl> change) {
 				if (change.wasAdded()) {
-					change.getAdded().getControl().getControlClassUpdateGroup().addListener(classUpdateListener);
+					change.getAdded().getAdded().getControlClassUpdateGroup().addListener(classUpdateListener);
 				} else if (change.wasRemoved()) {
-					change.getRemoved().getControl().getControlClassUpdateGroup().removeListener(classUpdateListener);
+					change.getRemoved().getRemoved().getControlClassUpdateGroup().removeListener(classUpdateListener);
 				} else if (change.wasSet()) {
-					change.getSet().getOldControl().getControlClassUpdateGroup().removeListener(classUpdateListener);
-					change.getSet().getNewControl().getControlClassUpdateGroup().addListener(classUpdateListener);
+					change.getSet().getOld().getControlClassUpdateGroup().removeListener(classUpdateListener);
+					change.getSet().getNew().getControlClassUpdateGroup().addListener(classUpdateListener);
 				}
 
 			}

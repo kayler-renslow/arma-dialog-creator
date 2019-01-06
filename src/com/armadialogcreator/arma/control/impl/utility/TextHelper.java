@@ -2,7 +2,7 @@ package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SerializableValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;

@@ -5,7 +5,6 @@ import com.armadialogcreator.data.*;
 import com.armadialogcreator.data.xml.ParseError;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
 import com.armadialogcreator.data.xml.WorkspaceCustomControlClassXmlLoader;
-import com.armadialogcreator.gui.img.icons.ADCIcons;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.CanvasView;
@@ -13,7 +12,9 @@ import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadProjectDialo
 import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadWorkspaceCustomControlClassesDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.ProjectImproperResultDialog;
 import com.armadialogcreator.gui.styles.ADCStyleSheets;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ADCExecutors;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -247,7 +248,7 @@ public final class ArmaDialogCreator extends Application {
 
 				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
 					try {
-						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectInfo(), applicationData);
+						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectDescriptor(), applicationData);
 						parseErrors.addAll(result.getErrors());
 					} catch (Exception e) {
 						newProject = true;
@@ -262,7 +263,7 @@ public final class ArmaDialogCreator extends Application {
 					newProject = true;
 				}
 				if (newProject) {
-					Project project = new Project(applicationData, config.getProjectInfo());
+					Project project = new Project(applicationData, config.getProjectDescriptor());
 					try {
 						if (project.getWorkspaceCustomControlClassesFile().exists()) {
 							WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);

@@ -2,13 +2,11 @@ package com.armadialogcreator.gui.main.displayPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.control.DisplayProperty;
-import com.armadialogcreator.control.DisplayPropertyLookup;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.DisplayProperty;
+import com.armadialogcreator.core.DisplayPropertyLookup;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ValueEditor;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ReadOnlyValueListener;
-import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.collections.FXCollections;
@@ -150,9 +148,9 @@ public class DisplayPropertiesEditorPane extends StackPane {
 
 			final ValueEditor editor = ValueEditor.getEditor(property.getPropertyLookup().getPropertyType(), ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
 			editor.setValue(property.getValue());
-			editor.getReadOnlyObserver().addListener(new ReadOnlyValueListener() {
+			editor.getReadOnlyObserver().addListener(new ValueListener() {
 				@Override
-				public void valueUpdated(@NotNull ReadOnlyValueObserver observer, Object oldValue, Object newValue) {
+				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
 					property.setValue((SerializableValue) newValue);
 				}
 			});

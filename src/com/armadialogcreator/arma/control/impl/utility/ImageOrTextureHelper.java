@@ -3,7 +3,7 @@ package com.armadialogcreator.arma.control.impl.utility;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.util.Texture;
 import com.armadialogcreator.arma.util.TextureParser;
-import com.armadialogcreator.control.sv.SerializableValue;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.ImageHelper;
 import javafx.application.Platform;
 import javafx.scene.image.Image;

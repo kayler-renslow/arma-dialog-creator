@@ -2,7 +2,7 @@ package com.armadialogcreator.arma.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import static com.armadialogcreator.arma.util.ArmaPrecision.format;
+import static com.armadialogcreator.util.ArmaPrecision.format;
 
 /**
  Converts screen positions and width/height to viewport positions and width/height, and vice versa.

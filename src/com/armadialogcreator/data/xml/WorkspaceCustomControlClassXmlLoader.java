@@ -1,6 +1,6 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.control.CustomControlClass;
+import com.armadialogcreator.core.CustomControlClass;
 import com.armadialogcreator.data.ApplicationData;
 import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.CreateCustomControlClassJob;

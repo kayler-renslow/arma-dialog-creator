@@ -1,14 +1,15 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.control.Macro;
-import com.armadialogcreator.control.MacroRegistry;
-import com.armadialogcreator.control.sv.SVNumericValue;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.MacroRegistry;
+import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Value;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -45,7 +46,15 @@ public class ProjectMacroRegistry implements MacroRegistry {
 	}
 
 	public void removeMacro(@NotNull Macro m) {
-		macros.removeIf(macro -> macro.equals(m));
+		Iterator<Macro> iter = macros.iterator();
+		while (iter.hasNext()) {
+			Macro macro = iter.next();
+			if (macro.equals(m)) {
+				m.getValueObserver().invalidate();
+				iter.remove();
+				break;
+			}
+		}
 	}
 
 	/**

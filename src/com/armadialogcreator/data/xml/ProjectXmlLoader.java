@@ -1,8 +1,13 @@
 package com.armadialogcreator.data.xml;
 
+import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.data.*;
+import com.armadialogcreator.data.ApplicationData;
+import com.armadialogcreator.data.DataKeys;
+import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.tree.TreeStructure;
+import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.Key;
@@ -40,8 +45,8 @@ public class ProjectXmlLoader extends XmlLoader {
 	 @throws XmlParseException when the file could not be properly parsed
 	 */
 	@NotNull
-	public static ProjectParseResult parseProjectXmlFile(@NotNull ProjectInfo info, @NotNull ApplicationData data) throws XmlParseException {
-		ProjectXmlLoader loader = new ProjectXmlLoader(info.getProjectXmlFile(), data, DataKeys.ENV, DataKeys.ARMA_RESOLUTION);
+	public static ProjectParseResult parseProjectXmlFile(@NotNull ProjectDescriptor info, @NotNull ApplicationData data) throws XmlParseException {
+		ProjectXmlLoader loader = new ProjectXmlLoader(info.getProjectXmlFile(), data, Env.ENV, DataKeys.ARMA_RESOLUTION);
 		ProjectVersionLoader versionLoader = getVersionLoader(info, loader);
 		versionLoader.readDocument();
 		return new ProjectParseResult(versionLoader.project, versionLoader.treeStructureMain, versionLoader.treeStructureBg, loader.getErrors());
@@ -59,7 +64,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		ProjectPreviewLoaderVersion1 versionLoader = new ProjectPreviewLoaderVersion1(projectSaveXml);
 		versionLoader.parseDocument();
 		return new ProjectPreviewParseResult(
-				new ProjectInfo(versionLoader.getProjectName(),
+				new ProjectDescriptor(versionLoader.getProjectName(),
 						projectSaveXml.getParentFile().getName(),
 						new Workspace(projectSaveXml.getParentFile().getParentFile())
 				),
@@ -68,7 +73,7 @@ public class ProjectXmlLoader extends XmlLoader {
 	}
 
 
-	private static ProjectVersionLoader getVersionLoader(@NotNull ProjectInfo info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
+	private static ProjectVersionLoader getVersionLoader(@NotNull ProjectDescriptor info, @NotNull ProjectXmlLoader loader) throws XmlParseException {
 		switch (loader.saveVersion) {
 			case "1":
 				return new ProjectLoaderVersion1(info, loader);
@@ -110,10 +115,10 @@ public class ProjectXmlLoader extends XmlLoader {
 
 	public static class ProjectPreviewParseResult {
 		private final ArrayList<ParseError> errors;
-		private final ProjectInfo projectInfo;
+		private final ProjectDescriptor projectDescriptor;
 
-		public ProjectPreviewParseResult(@NotNull ProjectInfo projectInfo, @NotNull ArrayList<ParseError> errors) {
-			this.projectInfo = projectInfo;
+		public ProjectPreviewParseResult(@NotNull ProjectDescriptor projectDescriptor, @NotNull ArrayList<ParseError> errors) {
+			this.projectDescriptor = projectDescriptor;
 			this.errors = errors;
 		}
 
@@ -123,8 +128,8 @@ public class ProjectXmlLoader extends XmlLoader {
 		}
 
 		@NotNull
-		public ProjectInfo getProjectInfo() {
-			return projectInfo;
+		public ProjectDescriptor getProjectDescriptor() {
+			return projectDescriptor;
 		}
 
 	}
