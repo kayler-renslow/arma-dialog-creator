@@ -95,7 +95,7 @@ public class ProjectSaveXmlWriter {
 			writer.appendTextNode(project.getStringTable().getFile().getAbsolutePath(), stringtableEle);
 		}
 
-		ResourceRegistryXmlWriter.write(project.getFileDependencyRegistry(), writer, writer.getRootElement());
+		//		ResourceRegistryXmlWriter.write(project.getFileDependencyRegistry(), writer, writer.getRootElement());
 
 		writeMacros(writer);
 		writeDisplay(writer, project.getEditingDisplay());

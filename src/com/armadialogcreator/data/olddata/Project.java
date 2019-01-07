@@ -1,6 +1,8 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.application.*;
+import com.armadialogcreator.application.FileDependency;
+import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.stringtable.StringTable;
@@ -39,7 +41,6 @@ public class Project extends com.armadialogcreator.application.Project /*TODO ex
 
 	private final ValueObserver<ArmaDisplay> editingDisplayObserver;
 	private final ProjectMacroRegistry macroRegistry;
-	private final FileDependencyRegistry fileDependencyRegistry;
 	private final CustomControlClassRegistry projectCustomControlClassRegistry;
 	private ProjectExportConfiguration exportConfiguration;
 
@@ -68,7 +69,6 @@ public class Project extends com.armadialogcreator.application.Project /*TODO ex
 
 		editingDisplayObserver = new ValueObserver<>(new ArmaDisplay());
 		macroRegistry = new ProjectMacroRegistry();
-		fileDependencyRegistry = new ProjectFileDependencyRegistry(this);
 		projectCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Project, this);
 		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Workspace, this);
 
@@ -220,11 +220,6 @@ public class Project extends com.armadialogcreator.application.Project /*TODO ex
 	@NotNull
 	public ProjectMacroRegistry getMacroRegistry() {
 		return macroRegistry;
-	}
-
-	@NotNull
-	public FileDependencyRegistry getFileDependencyRegistry() {
-		return fileDependencyRegistry;
 	}
 
 	/**

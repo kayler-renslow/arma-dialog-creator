@@ -28,42 +28,41 @@ public class MacroRegistry implements Registry {
 		return instance;
 	}
 
-	private ProjectMacros projectMacros;
-	private WorkspaceMacros workspaceMacros;
-	private ApplicationMacros applicationMacros;
+	@NotNull
+	private ProjectMacros projectMacros = new ProjectMacros();
+	@NotNull
+	private WorkspaceMacros workspaceMacros = new WorkspaceMacros();
+	@NotNull
+	private final ApplicationMacros applicationMacros = new ApplicationMacros();
+	@NotNull
 	private final SystemMacros systemMacros = new SystemMacros();
 
 	/** @return a {@link Macro} instance from the given name. Will return null if className couldn't be matched */
 	@Nullable
-	public Macro findMacroByName(@NotNull String className) {
-		Macro c = projectMacros.findMacroByName(className);
-		if (c != null) {
-			return c;
+	public Macro findMacroByName(@NotNull String macroKey) {
+		Macro m = projectMacros.findMacroByName(macroKey);
+		if (m != null) {
+			return m;
 		}
-		c = workspaceMacros.findMacroByName(className);
-		if (c != null) {
-			return c;
+		m = workspaceMacros.findMacroByName(macroKey);
+		if (m != null) {
+			return m;
 		}
-		c = applicationMacros.findMacroByName(className);
-		if (c != null) {
-			return c;
+		m = applicationMacros.findMacroByName(macroKey);
+		if (m != null) {
+			return m;
 		}
-		return systemMacros.findMacroByName(className);
+		return systemMacros.findMacroByName(macroKey);
 	}
 
 	@Override
-	public void applicationInitialized() {
+	public void applicationInitializing() {
 		systemMacros.loadSystemMacros();
+		ApplicationDataManager.getInstance().getApplicationDataList().add(applicationMacros);
 	}
 
 	@Override
 	public void applicationDataLoaded() {
-		for (ApplicationData d : ApplicationDataManager.getInstance().getApplicationDataList()) {
-			if (d instanceof ApplicationMacros) {
-				this.applicationMacros = (ApplicationMacros) d;
-				break;
-			}
-		}
 	}
 
 	@Override
@@ -72,7 +71,7 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void projectInitialized(@NotNull Project project) {
+	public void projectInitializing(@NotNull Project project) {
 	}
 
 	@Override
@@ -96,7 +95,7 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void workspaceInitialized(@NotNull Workspace workspace) {
+	public void workspaceInitializing(@NotNull Workspace workspace) {
 	}
 
 	@Override
@@ -120,9 +119,6 @@ public class MacroRegistry implements Registry {
 	 */
 	@NotNull
 	public ProjectMacros getProjectMacros() {
-		if (projectMacros == null) {
-			throw new IllegalStateException();
-		}
 		return projectMacros;
 	}
 
@@ -132,9 +128,6 @@ public class MacroRegistry implements Registry {
 	 */
 	@NotNull
 	public WorkspaceMacros getWorkspaceMacros() {
-		if (workspaceMacros == null) {
-			throw new IllegalStateException();
-		}
 		return workspaceMacros;
 	}
 
@@ -144,9 +137,6 @@ public class MacroRegistry implements Registry {
 	 */
 	@NotNull
 	public ApplicationMacros getApplicationMacros() {
-		if (applicationMacros == null) {
-			throw new IllegalStateException();
-		}
 		return applicationMacros;
 	}
 
@@ -165,7 +155,7 @@ public class MacroRegistry implements Registry {
 		return new ListsIterator<>(lists);
 	}
 
-	private static abstract class Base<T extends ADCData> implements ADCData<T> {
+	private static abstract class Base<T extends ADCData> implements ADCData {
 
 		protected final DataLevel myLevel;
 		private final ListObserver<Macro> macros = new ListObserver<>(new LinkedList<>());
@@ -204,7 +194,12 @@ public class MacroRegistry implements Registry {
 		public Configurable exportToConfigurable() {
 			Configurable config = new Configurable.Simple("macro-registry");
 			config.getConfigurableAttributes().add(new KeyValueString("level", myLevel.name()));
-			for (Macro configClass : macros) {
+			for (Macro macro : macros) {
+				Configurable.Simple mc = new Configurable.Simple("macro");
+				mc.getConfigurableAttributes().add(new KeyValueString("key", macro.getKey()));
+				mc.getConfigurableAttributes().add(new KeyValueString("comment", macro.getComment()));
+				mc.getConfigurableAttributes().add(new KeyValueString("type", macro.getPropertyType().getId() + ""));
+				mc.getNestedConfigurables().add(new SerializableValueConfigurable(macro.getValue()));
 				//todo
 			}
 			return config;
@@ -233,12 +228,6 @@ public class MacroRegistry implements Registry {
 		public ApplicationMacros() {
 			super(DataLevel.Application);
 		}
-
-		@Override
-		@NotNull
-		public ApplicationData constructNew() {
-			return new ApplicationMacros();
-		}
 	}
 
 	public static class WorkspaceMacros extends Base<WorkspaceData> implements WorkspaceData {
@@ -250,6 +239,7 @@ public class MacroRegistry implements Registry {
 		@Override
 		@NotNull
 		public WorkspaceData constructNew() {
+			getMacros().invalidate();
 			return new WorkspaceMacros();
 		}
 
@@ -264,6 +254,7 @@ public class MacroRegistry implements Registry {
 		@Override
 		@NotNull
 		public ProjectData constructNew() {
+			getMacros().invalidate();
 			return new ProjectMacros();
 		}
 

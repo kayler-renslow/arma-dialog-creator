@@ -9,7 +9,7 @@ public interface ApplicationStateSubscriber {
 	/**
 	 Called one time when ADC is launched. This method should be used to initialize any {@link ApplicationData} instances.
 	 */
-	void applicationInitialized();
+	void applicationInitializing();
 
 	/**
 	 Called one time when {@link ApplicationDataManager#getApplicationDataList()} is fully loaded and ready.
@@ -24,7 +24,7 @@ public interface ApplicationStateSubscriber {
 
 	 @param project new project that is initialized
 	 */
-	void projectInitialized(@NotNull Project project);
+	void projectInitializing(@NotNull Project project);
 
 	/**
 	 Called whenever a project's {@link Project#getProjectDataList()} is fully loaded and ready.
@@ -53,7 +53,7 @@ public interface ApplicationStateSubscriber {
 
 	 @param workspace new project that is initialized
 	 */
-	void workspaceInitialized(@NotNull Workspace workspace);
+	void workspaceInitializing(@NotNull Workspace workspace);
 
 	/**
 	 Called whenever a workspace is loaded into memory and ready to be accessed/modified by the main part of the program.

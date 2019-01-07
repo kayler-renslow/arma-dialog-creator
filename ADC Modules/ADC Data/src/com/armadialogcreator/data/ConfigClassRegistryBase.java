@@ -24,6 +24,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	private WorkspaceClasses<C> workspaceClasses = new WorkspaceClasses<>(this);
 	@NotNull
 	private ApplicationClasses<C> applicationClasses = new ApplicationClasses<>(this);
+	@NotNull
 	private final SystemClasses<C> systemClasses = new SystemClasses<>(this);
 
 	protected ConfigClassRegistryBase(@NotNull ConfigClassConfigurableHandler configurableHandler) {
@@ -49,8 +50,9 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	}
 
 	@Override
-	public void applicationInitialized() {
+	public void applicationInitializing() {
 		systemClasses.loadSystemConfigClasses();
+		ApplicationDataManager.getInstance().getApplicationDataList().add(applicationClasses);
 	}
 
 	@Override
@@ -64,7 +66,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	}
 
 	@Override
-	public void projectInitialized(@NotNull Project project) {
+	public void projectInitializing(@NotNull Project project) {
 	}
 
 	@Override
@@ -83,7 +85,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	}
 
 	@Override
-	public void workspaceInitialized(@NotNull Workspace workspace) {
+	public void workspaceInitializing(@NotNull Workspace workspace) {
 	}
 
 	@Override
@@ -135,23 +137,20 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		return new ListsIterator<>(lists);
 	}
 
+	@NotNull
 	protected ADCData constructNewContainer(@NotNull DataLevel myLevel) {
 		switch (myLevel) {
 			case System: {
 				return systemClasses; //no need to reinstantiate
 			}
 			case Application: {
-				this.applicationClasses.getClasses().invalidate();
-				this.applicationClasses = new ApplicationClasses<>(this);
-				return applicationClasses;
+				return applicationClasses; //no need to reinstantiate
 			}
 			case Project: {
-				this.projectClasses.getClasses().invalidate();
 				this.projectClasses = new ProjectClasses<>(this);
 				return projectClasses;
 			}
 			case Workspace: {
-				this.workspaceClasses.getClasses().invalidate();
 				this.workspaceClasses = new WorkspaceClasses<>(this);
 				return workspaceClasses;
 			}
@@ -162,7 +161,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	}
 
 
-	private static abstract class Base<C extends ConfigClass, D extends ADCData> implements ADCData<D> {
+	private static abstract class Base<C extends ConfigClass, D extends ADCData> implements ADCData {
 
 		protected final DataLevel myLevel;
 		private final ListObserver<C> classes = new ListObserver<>(new LinkedList<>());
@@ -251,12 +250,6 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		public ApplicationClasses(@NotNull ConfigClassRegistryBase<C> registry) {
 			super(registry, DataLevel.Application);
 		}
-
-		@NotNull
-		@Override
-		public ApplicationData constructNew() {
-			return (ApplicationData) registry.constructNewContainer(myLevel);
-		}
 	}
 
 	public static class WorkspaceClasses<C extends ConfigClass> extends Base<C, WorkspaceData> implements WorkspaceData {
@@ -268,6 +261,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		@NotNull
 		@Override
 		public WorkspaceData constructNew() {
+			getClasses().invalidate();
 			return (WorkspaceData) registry.constructNewContainer(myLevel);
 		}
 	}
@@ -281,6 +275,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		@NotNull
 		@Override
 		public ProjectData constructNew() {
+			getClasses().invalidate();
 			return (ProjectData) registry.constructNewContainer(myLevel);
 		}
 	}

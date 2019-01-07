@@ -7,8 +7,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 /**
- A {@link Workspace} is a directory for holding a set of {@link Project}s. It also has its own {@link FileDependencyRegistry},
- which is accessible via {@link WorkspaceFileDependencyRegistry#getInstance()} or {@link #getWorkspaceFileDependencyRegistry()}.
+ A {@link Workspace} is a directory for holding a set of {@link Project}s.
 
  @author Kayler
  @see Project
@@ -17,7 +16,6 @@ public class Workspace {
 	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(System.getProperty("user.home") + File.separator + "Arma Dialog Creator");
 
 	private final File workspaceDirectory;
-	private final WorkspaceFileDependencyRegistry globalResourceRegistry;
 	private final File adcDirectory;
 	private final ListObserver<WorkspaceData> workspaceDataList = new ListObserver<>(new ArrayList<>());
 
@@ -34,10 +32,15 @@ public class Workspace {
 			throw new IllegalArgumentException("workspaceDirectory isn't a directory");
 		}
 		this.workspaceDirectory = workspaceDirectory;
-		globalResourceRegistry = new WorkspaceFileDependencyRegistry(this);
 
 		adcDirectory = getFileForName(".adc");
-		adcDirectory.mkdirs();
+		if (!adcDirectory.exists()) {
+			adcDirectory.mkdirs();
+		}
+		File cacheDirectory = getFileInAdcDirectory("cache");
+		if (!cacheDirectory.exists()) {
+			cacheDirectory.mkdirs();
+		}
 	}
 
 	@NotNull
@@ -79,16 +82,6 @@ public class Workspace {
 		return workspaceDirectory.getPath() + File.separator + fileName;
 	}
 
-	/**
-	 Get a {@link FileDependencyRegistry} that is contained in this {@link Workspace#getWorkspaceDirectory()}.
-
-	 @return the instance
-	 */
-	@NotNull
-	public WorkspaceFileDependencyRegistry getWorkspaceFileDependencyRegistry() {
-		return globalResourceRegistry;
-	}
-
 	/** @return file in "{@link #getWorkspaceDirectory()}/.adc" */
 	@NotNull
 	public File getAdcDirectory() {
@@ -99,5 +92,11 @@ public class Workspace {
 	@NotNull
 	public File getFileInAdcDirectory(@NotNull String fileName) {
 		return getFileForName(".adc" + File.separator + fileName);
+	}
+
+	/** @return file in "{@link #getWorkspaceDirectory()}/.adc/cache/<code>fileName</code>" */
+	@NotNull
+	public File getFileInCacheDirectory(@NotNull String fileName) {
+		return getFileInAdcDirectory("cache" + File.separator + fileName);
 	}
 }

@@ -8,18 +8,7 @@ import org.jetbrains.annotations.NotNull;
  @author K
  @see DataLevel#System
  @since 01/06/2019 */
-public interface SystemData extends ADCData<SystemData> {
-	/**
-	 Default implementation returns "this" because this type of {@link ADCData} isn't stored in a list
-	 somewhere like {@link ApplicationDataManager#getApplicationDataList()} because it doesn't need to be saved to file.
-
-	 @return this
-	 */
-	@NotNull
-	@Override
-	default SystemData constructNew() {
-		return this; //no need to construct new because it's not stored in a file or in ApplicationDataManager
-	}
+public interface SystemData extends ADCData {
 
 	/** Default implementation does nothing */
 	@Override

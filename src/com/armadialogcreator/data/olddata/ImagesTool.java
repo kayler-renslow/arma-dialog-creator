@@ -1,9 +1,9 @@
 package com.armadialogcreator.data.olddata;
 
 import com.armadialogcreator.application.FileDependency;
-import com.armadialogcreator.application.PaaImageFileDependency;
+import com.armadialogcreator.application.FileDependencyRegistry;
+import com.armadialogcreator.application.RemappedFileDependency;
 import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.application.WorkspaceFileDependencyRegistry;
 import com.armadialogcreator.arma.util.ArmaTools;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -40,12 +40,12 @@ public class ImagesTool {
 	 {@link Workspace#getWorkspaceDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
 	 <p>
 	 This method will also automatically insert any converted paa images into
-	 {@link Workspace#getWorkspaceFileDependencyRegistry()} with a {@link PaaImageFileDependency} instance.
+	 {@link FileDependencyRegistry#getWorkspaceDependencies()}  ()} with a {@link RemappedFileDependency} instance.
 	 Because of this, a given image file could be a .paa image that was already converted. If the converted image
-	 already exists in {@link Workspace#getWorkspaceFileDependencyRegistry()}, that converted file will be returned.
+	 already exists in {@link FileDependencyRegistry#getWorkspaceDependencies()}, that converted file will be returned.
 	 <p>
 	 If at any point the conversion is cancelled or fails, <code>imageFilePath</code>'s file will be returned.
-
+	 <p>
 	 Note: if the conversion fails or is cancelled, the returned file may be a .paa image!
 
 	 @param imageFilePath the path to the image
@@ -74,30 +74,23 @@ public class ImagesTool {
 		}
 
 		if (imageFilePath.endsWith(".paa")) {
-			WorkspaceFileDependencyRegistry globalResourceRegistry = workspace.getWorkspaceFileDependencyRegistry();
+			FileDependencyRegistry.WorkspaceDependencies dependencies = FileDependencyRegistry.getInstance().getWorkspaceDependencies();
 
-			FileDependency resource = globalResourceRegistry.getDependencyInstanceByFile(imageFile);
-			File convertDest = globalResourceRegistry.getFileForName(imageFile.getName() + ".png");
-			if (resource == null) {
-				ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
-				PaaImageFileDependency newResource = tool.convert();
-				if (newResource != null) {
-					globalResourceRegistry.addDependency(newResource);
-					return newResource.getConvertedImage();
+			FileDependency dependency = dependencies.getDependencyInstanceByFile(imageFile);
+			File convertDest = workspace.getFileInCacheDirectory(System.currentTimeMillis() + ".png");
+
+			if (dependency instanceof RemappedFileDependency) {
+				RemappedFileDependency remapped = (RemappedFileDependency) dependency;
+				if (remapped.getFile().exists()) {
+					return remapped.getFile();
 				}
-			} else {
-				String convertedPaaPath = resource.getPropertyValue(PaaImageFileDependency.KEY_CONVERTED_IMAGE);
-				File convertedImageFile = convertedPaaPath == null ? imageFile : new File(convertedPaaPath);
-				if (!convertedImageFile.exists() || convertedImageFile == imageFile) {
-					ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
-					PaaImageFileDependency r = tool.convert();
-					if (r != null) {
-						File newConvertedFile = r.getConvertedImage();
-						resource.setPropertyValue(PaaImageFileDependency.KEY_CONVERTED_IMAGE, newConvertedFile.getAbsolutePath());
-						return newConvertedFile;
-					}
-				}
-				return convertedImageFile;
+			}
+
+			ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
+			RemappedFileDependency newDependency = tool.convert();
+			if (newDependency != null) {
+				dependencies.getDependencyList().add(newDependency);
+				return newDependency.getFile();
 			}
 		}
 
@@ -105,47 +98,47 @@ public class ImagesTool {
 	}
 
 	private final ImageConversionCallback callback;
-	private final File paaImage;
-	private File convertDestFile;
+	private final File paaFile;
+	private File pngFile;
 
-	private ImagesTool(@NotNull ImageConversionCallback callback, @NotNull File paaImage, @NotNull File convertDestFile) {
+	private ImagesTool(@NotNull ImageConversionCallback callback, @NotNull File paaFile, @NotNull File pngFile) {
 		this.callback = new ImageConversionCallbackWrapper(callback);
-		this.paaImage = paaImage;
-		this.convertDestFile = convertDestFile;
+		this.paaFile = paaFile;
+		this.pngFile = pngFile;
 	}
 
 	@Nullable
-	private PaaImageFileDependency convert() {
+	private RemappedFileDependency convert() {
 		File a3Tools = callback.arma3ToolsDirectory();
 		if (a3Tools == null) {
-			callback.conversionCancelled(paaImage);
+			callback.conversionCancelled(paaFile);
 			return null;
 		}
-		if (convertDestFile.exists()) {
-			String newFileName = callback.replaceExistingConvertedImage(paaImage, convertDestFile);
+		if (pngFile.exists()) {
+			String newFileName = callback.replaceExistingConvertedImage(paaFile, pngFile);
 			if (newFileName == null) {
-				callback.conversionCancelled(paaImage);
+				callback.conversionCancelled(paaFile);
 				return null;
 			}
-			File parent = convertDestFile.getAbsoluteFile().getParentFile();
-			convertDestFile = new File(parent.getAbsolutePath() + "/" + newFileName);
+			File parent = pngFile.getAbsoluteFile().getParentFile();
+			pngFile = new File(parent.getAbsolutePath() + File.separator + newFileName);
 		}
 		boolean good;
-		callback.conversionStarted(paaImage);
+		callback.conversionStarted(paaFile);
 		try {
-			good = ArmaTools.imageToPAA(a3Tools, paaImage, convertDestFile, 1000 * 10 /*ten seconds*/);
+			good = ArmaTools.imageToPAA(a3Tools, paaFile, pngFile, 1000 * 10 /*ten seconds*/);
 		} catch (IOException e) {
-			callback.conversionFailed(paaImage, e);
+			callback.conversionFailed(paaFile, e);
 			return null;
 		}
 		if (!good) {
-			callback.conversionFailed(paaImage, null);
+			callback.conversionFailed(paaFile, null);
 			return null;
 		}
 
-		callback.conversionSucceeded(paaImage, convertDestFile);
+		callback.conversionSucceeded(paaFile, pngFile);
 
-		return new PaaImageFileDependency(paaImage, convertDestFile);
+		return new RemappedFileDependency(paaFile, pngFile);
 	}
 
 	/**

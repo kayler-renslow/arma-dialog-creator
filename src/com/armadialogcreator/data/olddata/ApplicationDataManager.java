@@ -3,10 +3,7 @@ package com.armadialogcreator.data.olddata;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.application.WorkspaceFileDependencyRegistry;
 import com.armadialogcreator.data.xml.ProjectSaveXmlWriter;
-import com.armadialogcreator.data.xml.ResourceRegistryXmlLoader;
-import com.armadialogcreator.data.xml.ResourceRegistryXmlWriter;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.DataContext;
@@ -57,12 +54,12 @@ public class ApplicationDataManager {
 
 	public void initializeDone() {
 		try {
-			WorkspaceFileDependencyRegistry globalResourceRegistry = workspace.getWorkspaceFileDependencyRegistry();
-			if (!globalResourceRegistry.getResourcesFile().exists()) {
-				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
-			}
-			new ResourceRegistryXmlLoader(globalResourceRegistry.getResourcesFile(), null)
-					.load(globalResourceRegistry);
+			//			FileDependencyRegistry registry = workspace.getWorkspaceFileDependencyRegistry();
+			//			if (!registry.getResourcesFile().exists()) {
+			//				ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
+			//			}
+			//			new ResourceRegistryXmlLoader(registry.getResourcesFile(), null)
+			//					.load(registry);
 		} catch (Exception e) {
 			ExceptionHandler.error(e);
 		}
@@ -193,14 +190,6 @@ public class ApplicationDataManager {
 		).write(rescue ? new File(project.getProjectSaveFile().getAbsoluteFile() + ".rescue") : null);
 	}
 
-	public void saveGlobalResources() {
-		try {
-			ResourceRegistryXmlWriter.WorkspaceResourceRegistryXmlWriter.writeAndClose(workspace);
-		} catch (TransformerException e) {
-			ExceptionHandler.error(e);
-		}
-	}
-
 	/**
 	 Will save everything only if user agrees to save.
 
@@ -217,7 +206,6 @@ public class ApplicationDataManager {
 			return false;
 		}
 		if (dialog.saveProgress()) {
-			saveGlobalResources();
 			try {
 				saveProject();
 			} catch (TransformerException e) {

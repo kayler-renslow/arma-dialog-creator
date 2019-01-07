@@ -155,7 +155,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 	private void loadResourceRegistry() {
 		List<Element> externalResourcesElementGroups = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "external-resources");
 		for (Element externalResourcesElementGroup : externalResourcesElementGroups) {
-			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getFileDependencyRegistry(), externalResourcesElementGroup);
+			//			ResourceRegistryXmlLoader.loadRegistryFromElement(project.getFileDependencyRegistry(), externalResourcesElementGroup);
 		}
 	}
 

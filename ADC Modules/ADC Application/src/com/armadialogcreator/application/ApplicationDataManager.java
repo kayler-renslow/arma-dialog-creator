@@ -18,13 +18,6 @@ public class ApplicationDataManager {
 	private volatile Project project;
 	private volatile Workspace workspace;
 
-	protected void initializeSystemData() {
-
-		for (Class<?> c : SystemData.class.getClasses()) {
-			Class<? extends SystemData> sd = (Class<? extends SystemData>) c;
-		}
-	}
-
 	@NotNull
 	public ListObserver<ApplicationData> getApplicationDataList() {
 		return applicationDataList;

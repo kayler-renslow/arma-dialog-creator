@@ -11,7 +11,7 @@ public class ApplicationManager {
 			return;
 		}
 		for (ApplicationStateSubscriber sub : ApplicationDataManager.getInstance().getApplicationStateSubs()) {
-			sub.applicationInitialized();
+			sub.applicationInitializing();
 		}
 		initialized = true;
 		for (ApplicationStateSubscriber sub : ApplicationDataManager.getInstance().getApplicationStateSubs()) {
