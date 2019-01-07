@@ -40,7 +40,7 @@ public class SerializableValueConfigurable implements Configurable {
 	@Override
 	@NotNull
 	public String getConfigurableName() {
-		return "values";
+		return "sv";
 	}
 
 	@Override

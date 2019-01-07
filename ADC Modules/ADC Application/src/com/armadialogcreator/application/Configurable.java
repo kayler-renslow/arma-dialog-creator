@@ -13,10 +13,14 @@ import java.util.List;
  @author K
  @since 01/06/2019 */
 public interface Configurable {
-	@NotNull List<Configurable> getNestedConfigurables();
+	@NotNull Iterable<Configurable> getNestedConfigurables();
 
 	/** XML safe attributes (attribute_name='attribute_value') */
-	@NotNull List<KeyValueString> getConfigurableAttributes();
+	@NotNull Iterable<KeyValueString> getConfigurableAttributes();
+
+	void addNestedConfigurable(@NotNull Configurable c);
+
+	void addAttribute(@NotNull String key, @NotNull String value);
 
 	/** An XML safe name (<get_name_result></get_name_result>). If empty string, <b>no data</b> will be saved to file. */
 	@NotNull
@@ -48,14 +52,24 @@ public interface Configurable {
 
 		@Override
 		@NotNull
-		public List<Configurable> getNestedConfigurables() {
+		public Iterable<Configurable> getNestedConfigurables() {
 			return nested;
 		}
 
 		@Override
 		@NotNull
-		public List<KeyValueString> getConfigurableAttributes() {
+		public Iterable<KeyValueString> getConfigurableAttributes() {
 			return atts;
+		}
+
+		@Override
+		public void addNestedConfigurable(@NotNull Configurable c) {
+			nested.add(c);
+		}
+
+		@Override
+		public void addAttribute(@NotNull String key, @NotNull String value) {
+			atts.add(new KeyValueString(key, value));
 		}
 
 		@Override
@@ -86,6 +100,16 @@ public interface Configurable {
 			//always return new list so that it is mutable (Collections.emptyList() isn't mutable)
 			// and so the previous use case of EMPTY doesn't carry over to a different use case of EMPTY
 			return new ArrayList<>();
+		}
+
+		@Override
+		public void addNestedConfigurable(@NotNull Configurable c) {
+
+		}
+
+		@Override
+		public void addAttribute(@NotNull String key, @NotNull String value) {
+
 		}
 
 		@Override

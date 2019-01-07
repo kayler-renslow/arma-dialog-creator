@@ -2,11 +2,10 @@ package com.armadialogcreator.util;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import org.w3c.dom.*;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -14,6 +13,38 @@ import java.util.List;
  Created by Kayler on 07/30/2016.
  */
 public class XmlUtil {
+
+	/**
+	 Get all children with the given <code>tagName</code> as a stream (if tagName is null, matches all nodes).
+	 */
+	@NotNull
+	public static Iterable<Element> getChildElementsWithTagNameIterable(@NotNull Element element, @Nullable String tagName) {
+		return new Iterable<>() {
+			@NotNull
+			@Override
+			public Iterator<Element> iterator() {
+				return new Iterator<>() {
+					NodeList list = element.getChildNodes();
+					int i = 0;
+					int lastCheckI = -1;
+
+					@Override
+					public boolean hasNext() {
+						while (lastCheckI != i && i < list.getLength() && list.item(i).getNodeType() != Node.ELEMENT_NODE) {
+							i++;
+						}
+						lastCheckI = i;
+						return i < list.getLength();
+					}
+
+					@Override
+					public Element next() {
+						return (Element) list.item(i++);
+					}
+				};
+			}
+		};
+	}
 
 	/**
 	 Get all children with the given <code>tagName</code>. If <code>tagName.equals("*")</code> or <code>tagName == null</code>, will return all child elements.
@@ -40,7 +71,10 @@ public class XmlUtil {
 		NodeList list = element.getChildNodes();
 		tagName = tagName(tagName);
 		for (int i = 0; i < list.getLength(); i++) {
-			testAdd(list.item(i), tagName, addToMe);
+			Node item = list.item(i);
+			if (testEquals(item, tagName)) {
+				addToMe.add((Element) item);
+			}
 		}
 	}
 
@@ -49,15 +83,11 @@ public class XmlUtil {
 		return tagName != null && tagName.equals("*") ? null : tagName;
 	}
 
-	private static Element testAdd(Node node, @Nullable String tagName, @NotNull List<Element> addToMe) {
+	private static boolean testEquals(Node node, @Nullable String tagName) {
 		if (node.getNodeType() == Node.ELEMENT_NODE) {
-			Element element = (Element) node;
-			if (tagName == null || node.getNodeName().equals(tagName)) {
-				addToMe.add(element);
-				return element;
-			}
+			return tagName == null || node.getNodeName().equals(tagName);
 		}
-		return null;
+		return false;
 	}
 
 	/**
@@ -109,5 +139,26 @@ public class XmlUtil {
 		return textContent.toString();
 	}
 
+	@NotNull
+	public static Iterable<Attr> iterateAttributes(@NotNull NamedNodeMap attributes) {
+		return new Iterable<>() {
+			@NotNull
+			@Override
+			public Iterator<Attr> iterator() {
+				return new Iterator<>() {
+					int i = 0;
 
+					@Override
+					public boolean hasNext() {
+						return i < attributes.getLength();
+					}
+
+					@Override
+					public Attr next() {
+						return (Attr) attributes.item(i++);
+					}
+				};
+			}
+		};
+	}
 }

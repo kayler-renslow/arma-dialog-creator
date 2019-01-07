@@ -2,7 +2,6 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.ListsIterator;
 import org.jetbrains.annotations.NotNull;
@@ -169,8 +168,7 @@ public class MacroRegistry implements Registry {
 
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
-			List<Configurable> nestedConfigs = config.getNestedConfigurables();
-			for (Configurable nested : nestedConfigs) {
+			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("macros")) {
 					//todo
 				}
@@ -181,13 +179,15 @@ public class MacroRegistry implements Registry {
 		@NotNull
 		public Configurable exportToConfigurable() {
 			Configurable config = new Configurable.Simple("macro-registry");
-			config.getConfigurableAttributes().add(new KeyValueString("level", myLevel.name()));
+			config.addAttribute("level", myLevel.name());
 			for (Macro macro : macros) {
 				Configurable.Simple mc = new Configurable.Simple("macro");
-				mc.getConfigurableAttributes().add(new KeyValueString("key", macro.getKey()));
-				mc.getConfigurableAttributes().add(new KeyValueString("comment", macro.getComment()));
-				mc.getConfigurableAttributes().add(new KeyValueString("type", macro.getPropertyType().getId() + ""));
-				mc.getNestedConfigurables().add(new SerializableValueConfigurable(macro.getValue()));
+				mc.addAttribute("key", macro.getKey());
+				if (macro.getComment() != null) {
+					mc.addAttribute("comment", macro.getComment());
+				}
+				mc.addAttribute("type", macro.getPropertyType().getId() + "");
+				mc.addNestedConfigurable(new SerializableValueConfigurable(macro.getValue()));
 				//todo
 			}
 			return config;

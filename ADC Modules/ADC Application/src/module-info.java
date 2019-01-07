@@ -4,6 +4,7 @@
 module ADC.Application {
 	requires ADC.Util;
 
+	requires java.xml;
 	requires annotations;
 
 	exports com.armadialogcreator.application;
