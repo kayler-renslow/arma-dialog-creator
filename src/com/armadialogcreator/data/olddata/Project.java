@@ -1,6 +1,5 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.application.FileDependency;
 import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaDisplay;
@@ -9,6 +8,7 @@ import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.canvas.UICanvasEditor;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.data.FileDependency;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.ValueObserver;

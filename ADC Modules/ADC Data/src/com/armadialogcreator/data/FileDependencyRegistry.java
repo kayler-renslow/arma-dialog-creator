@@ -1,5 +1,6 @@
-package com.armadialogcreator.application;
+package com.armadialogcreator.data;
 
+import com.armadialogcreator.application.*;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.ListsIterator;
 import org.jetbrains.annotations.NotNull;

@@ -1,10 +1,10 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.application.FileDependency;
-import com.armadialogcreator.application.FileDependencyRegistry;
-import com.armadialogcreator.application.RemappedFileDependency;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.util.ArmaTools;
+import com.armadialogcreator.data.FileDependency;
+import com.armadialogcreator.data.FileDependencyRegistry;
+import com.armadialogcreator.data.RemappedFileDependency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

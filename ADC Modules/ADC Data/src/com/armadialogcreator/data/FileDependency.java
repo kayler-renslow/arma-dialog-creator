@@ -1,4 +1,4 @@
-package com.armadialogcreator.application;
+package com.armadialogcreator.data;
 
 import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.NotNullValueObserver;
