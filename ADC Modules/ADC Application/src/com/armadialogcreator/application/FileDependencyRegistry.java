@@ -67,17 +67,13 @@ public class FileDependencyRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationDataLoaded() {
-	}
-
-	@Override
-	public void applicationExit() {
-
-	}
-
-	@Override
 	public void projectInitializing(@NotNull Project project) {
+		project.getProjectDataList().add(new ProjectDependencies());
+	}
 
+	@Override
+	public void workspaceInitializing(@NotNull Workspace workspace) {
+		workspace.getWorkspaceDataList().add(new WorkspaceDependencies());
 	}
 
 	@Override
@@ -91,24 +87,10 @@ public class FileDependencyRegistry implements Registry {
 	}
 
 	@Override
-	public void projectReady(@NotNull Project project) {
-
-	}
-
-	@Override
 	public void projectClosed(@NotNull Project project) {
-
+		projectDependencies.getDependencyList().invalidate();
 	}
 
-	@Override
-	public void workspaceInitializing(@NotNull Workspace workspace) {
-
-	}
-
-	@Override
-	public void workspaceReady(@NotNull Workspace workspace) {
-
-	}
 
 	@Override
 	public void workspaceDataLoaded(@NotNull Workspace workspace) {
@@ -120,6 +102,10 @@ public class FileDependencyRegistry implements Registry {
 		}
 	}
 
+	@Override
+	public void workspaceClosed(@NotNull Workspace workspace) {
+		workspaceDependencies.getDependencyList().invalidate();
+	}
 	@NotNull
 	public Iterable<FileDependency> iterateAllDependencies() {
 		List<List<FileDependency>> lists = new ArrayList<>(3);
@@ -129,7 +115,7 @@ public class FileDependencyRegistry implements Registry {
 		return new ListsIterator<>(lists);
 	}
 
-	private abstract static class Base<D extends ADCData> implements ADCDataRenewable<D>, ADCData {
+	private abstract static class Base<D extends ADCData> implements ADCData {
 		private final ListObserver<FileDependency> dependencyList = new ListObserver<>(new ArrayList<>());
 
 		@NotNull
@@ -175,29 +161,13 @@ public class FileDependencyRegistry implements Registry {
 
 	public static class ApplicationDependencies extends Base<ApplicationData> implements ApplicationData {
 
-		@NotNull
-		@Override
-		public ApplicationData constructNew() {
-			return this;
-		}
 	}
 
 	public static class WorkspaceDependencies extends Base<WorkspaceData> implements WorkspaceData {
-
-		@NotNull
-		@Override
-		public WorkspaceData constructNew() {
-			return new WorkspaceDependencies();
-		}
 
 	}
 
 	public static class ProjectDependencies extends Base<ProjectData> implements ProjectData {
 
-		@NotNull
-		@Override
-		public ProjectData constructNew() {
-			return new ProjectDependencies();
-		}
 	}
 }

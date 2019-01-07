@@ -12,14 +12,11 @@ package com.armadialogcreator.application;
  <p>
  The method {@link #getDataID()} will be used to identify in the saved config file which {@link WorkspaceData} instance gets
  what {@link Configurable}.
- <p>
- The method {@link #constructNew()} will be invoked every time a new {@link Workspace} is loaded and thus a new instance
- of {@link WorkspaceData} should be created that is independent from the previous workspace.
 
  @author K
  @see DataLevel#Workspace
  @see ApplicationStateSubscriber
  @since 01/04/2019 */
-public interface WorkspaceData extends ADCData, ADCDataRenewable<WorkspaceData> {
+public interface WorkspaceData extends ADCData {
 
 }

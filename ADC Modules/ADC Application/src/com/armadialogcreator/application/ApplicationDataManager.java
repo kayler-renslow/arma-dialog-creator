@@ -1,6 +1,7 @@
 package com.armadialogcreator.application;
 
 import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class ApplicationDataManager {
 
 	private final ListObserver<ApplicationData> applicationDataList = new ListObserver<>(new ArrayList<>());
 	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
+	private final UpdateListenerGroup<ApplicationState> applicationStateUpdateGroup = new UpdateListenerGroup<>();
 
 	private volatile Project project;
 	private volatile Workspace workspace;
@@ -30,11 +32,17 @@ public class ApplicationDataManager {
 
 	@NotNull
 	public Workspace getCurrentWorkspace() {
+		if (workspace == null) {
+			throw new IllegalStateException("workspace never initialized");
+		}
 		return workspace;
 	}
 
 	@NotNull
 	public Project getCurrentProject() {
+		if (project == null) {
+			throw new IllegalStateException("project never initialized");
+		}
 		return project;
 	}
 
@@ -53,5 +61,11 @@ public class ApplicationDataManager {
 	@NotNull
 	protected List<ApplicationStateSubscriber> getApplicationStateSubs() {
 		return subs;
+	}
+
+	/** A way of subscribing to state changes without needing to implement {@link ApplicationStateSubscriber} */
+	@NotNull
+	public UpdateListenerGroup<ApplicationState> getApplicationStateUpdateGroup() {
+		return applicationStateUpdateGroup;
 	}
 }

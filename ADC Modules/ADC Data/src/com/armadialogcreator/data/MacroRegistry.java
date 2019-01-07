@@ -62,55 +62,43 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationDataLoaded() {
-	}
-
-	@Override
-	public void applicationExit() {
-
-	}
-
-	@Override
 	public void projectInitializing(@NotNull Project project) {
+		project.getProjectDataList().add(new ProjectMacros());
 	}
 
 	@Override
 	public void projectDataLoaded(@NotNull Project project) {
 		for (ProjectData d : project.getProjectDataList()) {
 			if (d instanceof ProjectMacros) {
-				this.projectMacros = (ProjectMacros) d;
+				this.projectMacros = (ProjectMacros) d; //update to new macros
 				break;
 			}
 		}
 	}
 
 	@Override
-	public void projectReady(@NotNull Project project) {
-
-	}
-
-	@Override
 	public void projectClosed(@NotNull Project project) {
-
+		projectMacros.getMacros().invalidate();
 	}
 
 	@Override
 	public void workspaceInitializing(@NotNull Workspace workspace) {
-	}
-
-	@Override
-	public void workspaceReady(@NotNull Workspace workspace) {
-
+		workspace.getWorkspaceDataList().add(new WorkspaceMacros());
 	}
 
 	@Override
 	public void workspaceDataLoaded(@NotNull Workspace workspace) {
 		for (WorkspaceData d : workspace.getWorkspaceDataList()) {
 			if (d instanceof WorkspaceMacros) {
-				this.workspaceMacros = (WorkspaceMacros) d;
+				this.workspaceMacros = (WorkspaceMacros) d; //update to new macros
 				break;
 			}
 		}
+	}
+
+	@Override
+	public void workspaceClosed(@NotNull Workspace workspace) {
+		this.workspaceMacros.getMacros().invalidate();
 	}
 
 	/**
@@ -236,26 +224,12 @@ public class MacroRegistry implements Registry {
 			super(DataLevel.Workspace);
 		}
 
-		@Override
-		@NotNull
-		public WorkspaceData constructNew() {
-			getMacros().invalidate();
-			return new WorkspaceMacros();
-		}
-
 	}
 
 	public static class ProjectMacros extends Base<ProjectData> implements ProjectData {
 
 		public ProjectMacros() {
 			super(DataLevel.Project);
-		}
-
-		@Override
-		@NotNull
-		public ProjectData constructNew() {
-			getMacros().invalidate();
-			return new ProjectMacros();
 		}
 
 	}

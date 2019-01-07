@@ -12,14 +12,11 @@ package com.armadialogcreator.application;
  <p>
  The method {@link #getDataID()} will be used to identify in the saved config file which {@link ProjectData} instance gets
  what {@link Configurable}.
- <p>
- The method {@link #constructNew()} will be invoked every time a new {@link Project} is loaded and thus a new instance
- of {@link ProjectData} should be created that is independent from the previous project.
 
  @author K
  @see DataLevel#Project
  @see ApplicationStateSubscriber
  @since 01/04/2019 */
-public interface ProjectData extends ADCData, ADCDataRenewable<ProjectData> {
+public interface ProjectData extends ADCData {
 
 }
