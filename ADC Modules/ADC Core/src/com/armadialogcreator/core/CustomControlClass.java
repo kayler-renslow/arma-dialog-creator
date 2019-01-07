@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 /**
  A custom control class has two things: a specification and a implementation.
  The specification, provided by a {@link ControlClassSpecification} instance, is a way to construct the implementation,
- which is a {@link ControlClass} instance.
- There will only be one {@link ControlClass} instance per {@link CustomControlClass} instance and
- the {@link ControlClass} changes will be tracked (when an update happens via
- {@link ControlClass#getPropertyUpdateGroup()}, the {@link ControlClassSpecification} will update as well).
+ which is a {@link ControlClassOld} instance.
+ There will only be one {@link ControlClassOld} instance per {@link CustomControlClass} instance and
+ the {@link ControlClassOld} changes will be tracked (when an update happens via
+ {@link ControlClassOld#getPropertyUpdateGroup()}, the {@link ControlClassSpecification} will update as well).
  This update tracking will only happen between this class instance and {@link #getControlClass()}.
- Editing the {@link ControlClassSpecification} will not change the {@link ControlClass} implementation.
+ Editing the {@link ControlClassSpecification} will not change the {@link ControlClassOld} implementation.
 
  @author Kayler
  @since 11/13/2016 */
@@ -21,20 +21,20 @@ public class CustomControlClass {
 		Project, Workspace
 	}
 
-	private final ControlClass controlClass;
+	private final ControlClassOld controlClass;
 	private final DataContext programData = new DataContext();
 	private String comment;
 	private Scope scope;
 
 
 	/**
-	 Construct a new custom control class with the given {@link ControlClass} instance.
+	 Construct a new custom control class with the given {@link ControlClassOld} instance.
 	 The given instance will be the underlying instance for {@link #getControlClass()}.
 
 	 @param controlClass instance to use
 	 @param scope the scope of this {@link CustomControlClass}
 	 */
-	public CustomControlClass(@NotNull ControlClass controlClass, @NotNull Scope scope) {
+	public CustomControlClass(@NotNull ControlClassOld controlClass, @NotNull Scope scope) {
 		this.controlClass = controlClass;
 		this.scope = scope;
 	}
@@ -43,7 +43,7 @@ public class CustomControlClass {
 	 Construct a new custom control class with the given specification
 
 	 @param specification specification to use
-	 @param registry the {@link SpecificationRegistry} used to construct a new {@link ControlClass} for {@link #getControlClass()}
+	 @param registry the {@link SpecificationRegistry} used to construct a new {@link ControlClassOld} for {@link #getControlClass()}
 	 @param scope the scope of this {@link CustomControlClass}
 	 */
 	public CustomControlClass(@NotNull ControlClassSpecification specification,
@@ -54,9 +54,9 @@ public class CustomControlClass {
 		this.scope = scope;
 	}
 
-	/** @return the {@link ControlClass} instance. This instance will remain constant. */
+	/** @return the {@link ControlClassOld} instance. This instance will remain constant. */
 	@NotNull
-	public ControlClass getControlClass() {
+	public ControlClassOld getControlClass() {
 		return controlClass;
 	}
 

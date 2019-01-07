@@ -1,10 +1,12 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.data.tree.TreeNode;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.util.ParseError;
+import com.armadialogcreator.util.XmlParseException;
 import org.w3c.dom.Document;
 
 /**
@@ -23,9 +25,9 @@ public abstract class ProjectVersionLoader {
 	
 	
 	protected ProjectVersionLoader(ProjectXmlLoader loader) throws XmlParseException {
-		this.document = loader.document;
+		this.document = loader.getDocument();
 		this.loader = loader;
-		this.dataContext = loader.dataContext;
+		this.dataContext = loader.getDataContext();
 	}
 	
 	public void addError(ParseError error) {

@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.armadialogcreator.util.ValueListener;

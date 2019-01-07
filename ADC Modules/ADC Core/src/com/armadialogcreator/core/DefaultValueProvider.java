@@ -56,7 +56,7 @@ public interface DefaultValueProvider {
 		/**
 		 Get the {@link Context} that created this {@link Context}. Example use case of this is having a
 		 {@link ControlTypeContext} as a parent and a {@link ControlClassNameContext} as its child. This could signify that
-		 a {@link ControlClass} with a {@link ControlType} is trying to access a nested class in {@link ControlClass#getAllNestedClasses()}.
+		 a {@link ControlClassOld} with a {@link ControlType} is trying to access a nested class in {@link ControlClassOld#getAllNestedClasses()}.
 		 */
 		@Nullable
 		public Context getParentContext() {
@@ -65,7 +65,7 @@ public interface DefaultValueProvider {
 	}
 
 	/**
-	 A {@link Context} for retrieving values by a {@link ControlClass#getClassName()}
+	 A {@link Context} for retrieving values by a {@link ControlClassOld#getClassName()}
 
 	 @since July 26, 2017
 	 */
@@ -81,7 +81,7 @@ public interface DefaultValueProvider {
 			this.controlClassName = controlClassName;
 		}
 
-		/** The class name of a {@link ControlClass} */
+		/** The class name of a {@link ControlClassOld} */
 		@NotNull
 		public String getControlClassName() {
 			return controlClassName;

@@ -8,7 +8,7 @@ import com.armadialogcreator.core.MacroType;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.gui.main.stringtable.StringTableLanguageTokenEditor;
 import com.armadialogcreator.lang.Lang;

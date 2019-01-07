@@ -4,7 +4,7 @@ import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.*;
+import com.armadialogcreator.data.olddata.*;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ListObserverChange;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -21,7 +21,7 @@ import java.util.function.Function;
 /**
  Tracks changes made to {@link Project#getEditingDisplay()} and its {@link ArmaDisplay#getControls()} and
  {@link ArmaDisplay#getBackgroundControls()} lists. For each {@link ArmaControl} in those
- two lists, {@link ControlClass#getControlClassUpdateGroup()} will be used to get
+ two lists, {@link ControlClassOld#getControlClassUpdateGroup()} will be used to get
  {@link Change} instances to undo/redo.
 
  @author Kayler
@@ -120,7 +120,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 	private static class ControlClassChange implements Change {
 
 		private final ControlClassChangeRegistrar registrar;
-		/** {@link ControlClass} name that triggered the change */
+		/** {@link ControlClassOld} name that triggered the change */
 		private final String className;
 		private final ControlClassUpdate classUpdate;
 		private String shortName, description;
@@ -160,7 +160,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			className = classUpdate.getOwnerControlClass().getClassName();
 			this.classUpdate = classUpdate;
 
-			ControlClass controlClass = classUpdate.getOwnerControlClass();
+			ControlClassOld controlClass = classUpdate.getOwnerControlClass();
 			@NotNull ChangeAction action;
 			if (classUpdate instanceof ControlClassRenameUpdate) {
 				//
@@ -306,7 +306,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 									* that are undefined (value is null). Since property value updates handle setting
 									* properties to null or not, it is not necessary to re-inherit/re-override
 									* inherited properties that were undefined at the time of extending because its
-									* handled implicitly by ControlClass.extendControlClass().
+									 * handled implicitly by ControlClassOld.extendControlClass().
 									*/
 									return oldUpdate.wasOverridden();
 								}
@@ -335,7 +335,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 			String propertyName = propertyUpdate.getControlProperty().getName();
 			ControlProperty updatedProperty = propertyUpdate.getControlProperty();
 
-			//Use the class name as a prefix to prevent 2 different ControlClass' updates that had the same property names conflicting with each other.
+			//Use the class name as a prefix to prevent 2 different ControlClassOld' updates that had the same property names conflicting with each other.
 			//Using an ending null character to separate class name from property name
 			stringForCheckingIfSimilar = classUpdate.getOwnerControlClass().getClassName() + "\0" + propertyName;
 

@@ -1,19 +1,21 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlClassSpecification;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.CustomControlClass;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ParseError;
+import com.armadialogcreator.util.XmlErrorRecorder;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
 /**
- Helps with loading {@link ControlClass} and {@link CustomControlClass} instances in proper order
+ Helps with loading {@link ControlClassOld} and {@link CustomControlClass} instances in proper order
 
  @author Kayler
  @since 11/06/2017 */
@@ -108,11 +110,11 @@ class ControlClassXmlHelper {
 	 Used to register a class that already is instantiated
 	 and thus can be extended immediately when {@link #runJobs()} is invoked.
 	 <p>
-	 This method ensures that {@link ControlClass} instances are instantiated in proper order.
+	 This method ensures that {@link ControlClassOld} instances are instantiated in proper order.
 
-	 @see ControlClass#extendControlClass(ControlClass)
+	 @see ControlClassOld#extendControlClass(ControlClassOld)
 	 */
-	public void registerExistingControlClass(@NotNull ControlClass controlClass) {
+	public void registerExistingControlClass(@NotNull ControlClassOld controlClass) {
 		existingClasses.add(controlClass.getClassName());
 	}
 
@@ -142,11 +144,11 @@ class ControlClassXmlHelper {
 
 	public static class ControlNestedClassesJob implements AfterLoadJob {
 
-		private final ControlClass addToMe;
+		private final ControlClassOld addToMe;
 		private final List<ControlClassSpecification> requiredNested;
 		private final List<ControlClassSpecification> optionalNested;
 
-		public ControlNestedClassesJob(@NotNull ControlClass addToMe, @Nullable List<ControlClassSpecification> requiredNested, @Nullable List<ControlClassSpecification> optionalNested) {
+		public ControlNestedClassesJob(@NotNull ControlClassOld addToMe, @Nullable List<ControlClassSpecification> requiredNested, @Nullable List<ControlClassSpecification> optionalNested) {
 			this.addToMe = addToMe;
 			this.requiredNested = requiredNested;
 			this.optionalNested = optionalNested;
@@ -168,7 +170,7 @@ class ControlClassXmlHelper {
 
 		private void loadClass(@NotNull Project project, ControlClassSpecification nested) {
 			try {
-				ControlClass nestedClass = addToMe.findNestedClass(nested.getClassName());
+				ControlClassOld nestedClass = addToMe.findNestedClass(nested.getClassName());
 				nestedClass.setTo(nested.constructNewControlClass(project));
 			} catch (IllegalArgumentException ignore) {
 
@@ -199,7 +201,7 @@ class ControlClassXmlHelper {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
-			ControlClass cc = project.findControlClassByName(extendThisControlClassName);
+			ControlClassOld cc = project.findControlClassByName(extendThisControlClassName);
 
 			if (cc == null) {
 				final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");

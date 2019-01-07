@@ -2,6 +2,7 @@ package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.arma.stringtable.*;
 import com.armadialogcreator.arma.stringtable.impl.StringTableKeyImpl;
+import com.armadialogcreator.util.XmlParseException;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;

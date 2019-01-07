@@ -6,7 +6,7 @@ import com.armadialogcreator.arma.control.impl.utility.*;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
@@ -129,7 +129,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 
 		{
-			ControlClass scrollBar = myControl.findNestedClass(ListboxControl.NestedClassName_ListScrollBar);
+			ControlClassOld scrollBar = myControl.findNestedClass(ListboxControl.NestedClassName_ListScrollBar);
 
 			scrollbarRenderer = new ScrollbarRenderer(scrollBar, this,
 					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,

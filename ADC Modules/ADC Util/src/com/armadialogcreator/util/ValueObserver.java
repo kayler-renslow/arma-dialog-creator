@@ -94,14 +94,6 @@ public class ValueObserver<V> implements Observable, Observer<ValueListener<V>> 
 	}
 
 	@Override
-	public void invalidate() {
-		for (ValueListener l : valueListeners) {
-			l.observerDeleted();
-		}
-		clearListeners();
-	}
-
-	@Override
 	public void addListener(@NotNull InvalidationListener listener) {
 		invalidationListeners.add(listener);
 	}

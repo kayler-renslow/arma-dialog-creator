@@ -3,19 +3,19 @@ package com.armadialogcreator.core;
 import org.jetbrains.annotations.NotNull;
 
 /**
- An update for when a {@link ControlClass} is inherited in {@link ControlClass}, but it wasn't in the
- {@link ControlClass} originally.
+ An update for when a {@link ControlClassOld} is inherited in {@link ControlClassOld}, but it wasn't in the
+ {@link ControlClassOld} originally.
 
  @author Kayler
- @see ControlClass#extendControlClass(ControlClass)
+ @see ControlClassOld#extendControlClass(ControlClassOld)
  @since 06/12/2017 */
 public class ControlClassTemporaryNestedClassUpdate implements ControlClassUpdate {
-	private final ControlClass ownerControlClass;
-	private ControlClass nestedClass;
+	private final ControlClassOld ownerControlClass;
+	private ControlClassOld nestedClass;
 	private final boolean added;
 
-	public ControlClassTemporaryNestedClassUpdate(@NotNull ControlClass ownerControlClass,
-												  @NotNull ControlClass nestedClass, boolean added) {
+	public ControlClassTemporaryNestedClassUpdate(@NotNull ControlClassOld ownerControlClass,
+												  @NotNull ControlClassOld nestedClass, boolean added) {
 		this.ownerControlClass = ownerControlClass;
 		this.nestedClass = nestedClass;
 		this.added = added;
@@ -23,12 +23,12 @@ public class ControlClassTemporaryNestedClassUpdate implements ControlClassUpdat
 
 	@Override
 	@NotNull
-	public ControlClass getOwnerControlClass() {
+	public ControlClassOld getOwnerControlClass() {
 		return ownerControlClass;
 	}
 
 	@NotNull
-	public ControlClass getNestedClass() {
+	public ControlClassOld getNestedClass() {
 		return nestedClass;
 	}
 

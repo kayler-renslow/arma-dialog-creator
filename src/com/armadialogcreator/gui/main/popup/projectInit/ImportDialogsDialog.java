@@ -1,16 +1,16 @@
 package com.armadialogcreator.gui.main.popup.projectInit;
 
-import com.armadialogcreator.data.HeaderConversionException;
-import com.armadialogcreator.data.HeaderToProject;
+import com.armadialogcreator.data.olddata.HeaderConversionException;
+import com.armadialogcreator.data.olddata.HeaderToProject;
 import com.armadialogcreator.data.xml.ProjectInit;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
-import com.armadialogcreator.data.xml.XmlParseException;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.CheckboxSelectionPane;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
+import com.armadialogcreator.util.XmlParseException;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.Task;
@@ -155,7 +155,24 @@ public class ImportDialogsDialog extends WizardStageDialog {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
-						finalizingStep.projectFailedToLoad(new ProjectInit.NewProject(null, ""), e);
+						String m = "";
+						switch (e.getReason()) {
+							case Other: {
+								break;
+							}
+							case FailedParse: {
+								m = Lang.ApplicationBundle().getString("XmlParse.failed_to_read_xml");
+								break;
+							}
+							case FailedReEncode: {
+								m = Lang.ApplicationBundle().getString("XmlParse.failed_to_re-encode_xml");
+								break;
+							}
+							default: {
+								throw new IllegalStateException();
+							}
+						}
+						finalizingStep.projectFailedToLoad(new ProjectInit.NewProject(null, ""), e, m);
 					}
 				});
 				return false;
@@ -414,12 +431,12 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			return projectInit;
 		}
 
-		public void projectFailedToLoad(@NotNull ProjectInit newProject, @NotNull Exception e) {
+		public void projectFailedToLoad(@NotNull ProjectInit newProject, @NotNull Exception e, @Nullable String additionalInfo) {
 			this.projectInit = newProject;
 			completeStep(true);
 			lblBody.setText(bundle.getString("ImportDialogs.Step.Final.failed"));
 
-			new CouldNotLoadProjectDialog(e).show();
+			new CouldNotLoadProjectDialog(e, additionalInfo).show();
 		}
 	}
 

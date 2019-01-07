@@ -9,11 +9,11 @@ import com.armadialogcreator.arma.control.impl.utility.TooltipRenderer;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.TextSection;
 import com.armadialogcreator.canvas.CanvasContext;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.*;
-import com.armadialogcreator.data.ImageHelper;
+import com.armadialogcreator.data.olddata.ImageHelper;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.FontMetrics;
 import javafx.scene.canvas.GraphicsContext;
@@ -106,7 +106,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		});
 
 		{
-			ControlClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
+			ControlClassOld attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
 			addValueListener(attributes, ControlPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {

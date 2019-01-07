@@ -4,7 +4,7 @@ import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.util.Texture;
 import com.armadialogcreator.arma.util.TextureParser;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.ImageHelper;
+import com.armadialogcreator.data.olddata.ImageHelper;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;

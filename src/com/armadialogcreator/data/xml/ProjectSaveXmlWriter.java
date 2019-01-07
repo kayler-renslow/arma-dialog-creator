@@ -5,11 +5,13 @@ import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.Project;
-import com.armadialogcreator.data.ProjectMacroRegistry;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
+import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.data.olddata.ProjectMacroRegistry;
 import com.armadialogcreator.data.tree.TreeNode;
 import com.armadialogcreator.data.tree.TreeStructure;
+import com.armadialogcreator.util.XmlLoader;
+import com.armadialogcreator.util.XmlParseException;
 import com.armadialogcreator.util.XmlUtil;
 import com.armadialogcreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
@@ -219,7 +221,7 @@ public class ProjectSaveXmlWriter {
 		if (control.getRequiredNestedClasses().size() > 0) {
 			Element nestedRequiredEle = writer.appendElementToElement("nested-required", controlEle);
 
-			for (ControlClass nested : control.getRequiredNestedClasses()) {
+			for (ControlClassOld nested : control.getRequiredNestedClasses()) {
 				if (control.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}
@@ -229,7 +231,7 @@ public class ProjectSaveXmlWriter {
 
 		if (control.getOptionalNestedClasses().size() > 0) {
 			Element nestedOptionalEle = writer.appendElementToElement("nested-optional", controlEle);
-			for (ControlClass nested : control.getOptionalNestedClasses()) {
+			for (ControlClassOld nested : control.getOptionalNestedClasses()) {
 				if (control.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}

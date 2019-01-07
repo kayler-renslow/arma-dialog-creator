@@ -6,7 +6,7 @@ import com.armadialogcreator.arma.control.impl.utility.*;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
@@ -112,7 +112,7 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		});
 
 		{
-			ControlClass comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
+			ControlClassOld comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
 
 			scrollbarRenderer = new ScrollbarRenderer(comboScrollBar, this,
 					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,

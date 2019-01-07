@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main.popup.newControl;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlClassUpdate;
 import com.armadialogcreator.core.CustomControlClass;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -24,7 +24,7 @@ public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 
 	private final CustomControlClass toEdit;
 	private final LinkedList<ControlClassUpdate> updates = new LinkedList<>();
-	private final ControlClass duplicate;
+	private final ControlClassOld duplicate;
 
 	public EditCustomControlClassDialog(@NotNull CustomControlClass toEdit) {
 		this.toEdit = toEdit;

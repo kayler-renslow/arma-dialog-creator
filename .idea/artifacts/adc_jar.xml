@@ -21,6 +21,7 @@
       <element id="module-output" name="ADC Core" />
       <element id="module-output" name="ADC Expression" />
       <element id="module-output" name="ADC Images" />
+      <element id="module-output" name="ADC Data" />
     </root>
   </artifact>
 </component>

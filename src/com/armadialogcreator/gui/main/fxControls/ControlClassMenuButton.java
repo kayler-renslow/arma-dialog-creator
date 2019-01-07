@@ -1,13 +1,13 @@
 package com.armadialogcreator.gui.main.fxControls;
 
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
 import javafx.scene.Node;
 
 /**
  Created by Kayler on 10/19/2016.
  */
-public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClass> {
+public class ControlClassMenuButton extends ComboBoxMenuButton<ControlClassOld> {
 
 	public ControlClassMenuButton(boolean allowClear, String placeholderText, Node placeholderGraphic) {
 		super(allowClear, placeholderText, placeholderGraphic);

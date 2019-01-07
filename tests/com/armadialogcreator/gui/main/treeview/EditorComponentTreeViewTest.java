@@ -54,7 +54,7 @@ public class EditorComponentTreeViewTest extends Application {
 
 		@Nullable
 		@Override
-		public ControlClass findControlClassByName(@NotNull String className) {
+		public ControlClassOld findControlClassByName(@NotNull String className) {
 			return null;
 		}
 

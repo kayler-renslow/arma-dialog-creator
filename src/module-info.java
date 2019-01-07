@@ -11,6 +11,7 @@ module Arma.Dialog.Creator {
 	requires ADC.Lang;
 	requires ADC.Images;
 	requires ADC.Expression;
+	requires ADC.Data;
 
 	requires annotations;
 	requires antlr4.runtime;

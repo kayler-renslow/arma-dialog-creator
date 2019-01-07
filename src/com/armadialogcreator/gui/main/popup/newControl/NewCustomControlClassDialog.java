@@ -4,12 +4,12 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlPropertyUpdate;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.CustomControlClass;
-import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.export.ProjectExporter;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
@@ -128,7 +128,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					if (getEditorPane() == null) {
 						return;
 					}
-					ControlClass editClass = getEditorPane().getControlClass();
+					ControlClassOld editClass = getEditorPane().getControlClass();
 					if (newValue != null) {
 						if (editClass.hasInheritanceLoop(newValue)) {
 							SimpleResponseDialog dialog = new SimpleResponseDialog(
@@ -142,7 +142,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 							);
 							dialog.setStageSize(400, 120);
 							dialog.show();
-							extendClassMenuButton.chooseItem((ControlClass) null);
+							extendClassMenuButton.chooseItem((ControlClassOld) null);
 							return;
 						}
 					}
@@ -207,7 +207,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					}
 					if (selectedItem.getUserData() instanceof ArmaControlLookup) {
 						ArmaControlLookup lookup = (ArmaControlLookup) selectedItem.getUserData();
-						ControlClass cc = new ControlClass(
+						ControlClassOld cc = new ControlClassOld(
 								"Custom_" + lookup.controlType.getNameAsClassName(),
 								lookup.specProvider,
 								project
@@ -290,9 +290,9 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		return items;
 	}
 
-	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
+	private List<CBMBMenuItem<ControlClassOld>> getCustomControlClassesItems() {
 		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
-		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
+		List<CBMBMenuItem<ControlClassOld>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));
 		}
@@ -313,12 +313,12 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	/**
-	 Set the editor to the given {@link ControlClass} instance.
-	 <b>Beware: the given {@link ControlClass} will be edited regardless of whether the user presses ok or not.</b>
+	 Set the editor to the given {@link ControlClassOld} instance.
+	 <b>Beware: the given {@link ControlClassOld} will be edited regardless of whether the user presses ok or not.</b>
 
 	 @param controlClass instance to edit
 	 */
-	protected void setToControlClass(@NotNull ControlClass controlClass) {
+	protected void setToControlClass(@NotNull ControlClassOld controlClass) {
 		if (editorPane != null) {
 			removeListeners();
 		}

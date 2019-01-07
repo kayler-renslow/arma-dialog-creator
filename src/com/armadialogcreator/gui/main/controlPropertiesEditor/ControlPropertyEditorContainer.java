@@ -5,7 +5,7 @@ import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.core.sv.SerializableValueConversionException;
-import com.armadialogcreator.data.ApplicationData;
+import com.armadialogcreator.data.olddata.ApplicationData;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
@@ -40,7 +40,7 @@ class ControlPropertyEditorContainer extends HBox {
 	private static final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
 	private static final ControlPropertyDocumentationProvider lookupDocProvider = new ControlPropertyDocumentationProvider();
 
-	private final ControlClass controlClass;
+	private final ControlClassOld controlClass;
 	private final ControlProperty controlProperty;
 
 	private final StackPane stackPanePropertyInput = new StackPane();
@@ -53,7 +53,7 @@ class ControlPropertyEditorContainer extends HBox {
 	private boolean hideIfInherited;
 	private Node stackPaneTint;
 
-	public ControlPropertyEditorContainer(@NotNull ControlClass controlClass, @NotNull ControlProperty property) {
+	public ControlPropertyEditorContainer(@NotNull ControlClassOld controlClass, @NotNull ControlProperty property) {
 		super(5);
 		this.controlClass = controlClass;
 		this.controlProperty = property;

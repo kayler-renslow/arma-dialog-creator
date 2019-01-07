@@ -11,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 public enum TestControlPropertyLookup implements ControlPropertyLookupConstant {
 
 	/**
-	 NEVER USE THIS in a {@link ControlClass} or {@link ControlClassSpecification}, <b>including testing related ones</b>.
+	 NEVER USE THIS in a {@link ControlClassOld} or {@link ControlClassSpecification}, <b>including testing related ones</b>.
 	 If you do use this, you are defeating the purpose of this instance, which is for guaranteeing no {@link ControlPropertyLookupConstant} is found via a
-	 {@link ControlClass#findProperty(ControlPropertyLookupConstant)} related method.
+	 {@link ControlClassOld#findProperty(ControlPropertyLookupConstant)} related method.
 	 */
 	FAKE("**FAKE PROPERTY**", null),
 	/***/

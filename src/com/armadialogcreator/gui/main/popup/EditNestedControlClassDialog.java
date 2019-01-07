@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.CustomControlClass;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- Dialog window that allows for editing a ({@link ControlClass}). This dialog is specialized towards editing
- nested {@link ControlClass} instances. This editor will not allow editing of the {@link ControlClass#getClassName()}.
+ Dialog window that allows for editing a ({@link ControlClassOld}). This dialog is specialized towards editing
+ nested {@link ControlClassOld} instances. This editor will not allow editing of the {@link ControlClassOld#getClassName()}.
  It has a {@link ControlPropertiesEditorPane} embedded into it.
 
  @author Kayler
@@ -40,9 +40,9 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	/**
-	 @param controlClass the {@link ControlClass} to edit/mutate
+	 @param controlClass the {@link ControlClassOld} to edit/mutate
 	 */
-	public EditNestedControlClassDialog(@NotNull ControlClass controlClass) {
+	public EditNestedControlClassDialog(@NotNull ControlClassOld controlClass) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
 		setTitle(bundle.getString("Popups.EditNestedControlClass.popup_title"));
 
@@ -94,7 +94,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 							);
 							dialog.setStageSize(400, 120);
 							dialog.show();
-							extendClassMenuButton.chooseItem((ControlClass) null);
+							extendClassMenuButton.chooseItem((ControlClassOld) null);
 							return;
 						}
 					}
@@ -125,10 +125,10 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 		myStage.sizeToScene();
 	}
 
-	private List<CBMBMenuItem<ControlClass>> getCustomControlClassesItems() {
+	private List<CBMBMenuItem<ControlClassOld>> getCustomControlClassesItems() {
 		Project project = Project.getCurrentProject();
 		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
-		List<CBMBMenuItem<ControlClass>> items = new ArrayList<>(cccList.size());
+		List<CBMBMenuItem<ControlClassOld>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
 			items.add(new ControlClassMenuItem(ccc.getControlClass()));
 		}

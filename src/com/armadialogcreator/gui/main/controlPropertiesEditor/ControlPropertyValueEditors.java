@@ -55,7 +55,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ControlPropertyOptionEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		ControlPropertyOptionEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			super(10, 5);
 			setAlignment(Pos.CENTER_LEFT);
 			setPadding(new Insets(2));
@@ -172,7 +172,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public FileNameEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		public FileNameEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			setValue((SVFileName) controlProperty.getValue());
 			initListeners();
@@ -228,7 +228,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public ControlStyleEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		public ControlStyleEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			if (control.getSpecProvider() instanceof AllowedStyleProvider) {
 				AllowedStyleProvider specProvider = (AllowedStyleProvider) control.getSpecProvider();
 				ArrayList<ControlStyle> moveAfterSeparator = new ArrayList<>();
@@ -325,7 +325,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		InputFieldEditor(@NotNull PropertyType macroType, @NotNull ControlClass control, @NotNull ControlProperty
+		InputFieldEditor(@NotNull PropertyType macroType, @NotNull ControlClassOld control, @NotNull ControlProperty
 				controlProperty, InputFieldDataChecker checker, @Nullable String promptText) {
 			super(checker);
 			this.macroType = macroType;
@@ -374,14 +374,14 @@ class ControlPropertyValueEditors {
 	}
 
 	static class StringEditor extends InputFieldEditor<SVString> {
-		StringEditor(ControlClass control, ControlProperty controlProperty) {
+		StringEditor(ControlClassOld control, ControlProperty controlProperty) {
 			super(PropertyType.String, control, controlProperty, new SVArmaStringChecker(),
 					Lang.LookupBundle().getString("PropertyType.string"));
 		}
 	}
 
 	static class FloatEditor extends InputFieldEditor<SVExpression> {
-		FloatEditor(ControlClass control, ControlProperty controlProperty) {
+		FloatEditor(ControlClassOld control, ControlProperty controlProperty) {
 			super(PropertyType.Float, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_FLOAT),
 					Lang.LookupBundle().getString("PropertyType.float")
@@ -390,7 +390,7 @@ class ControlPropertyValueEditors {
 	}
 
 	static class IntegerEditor extends InputFieldEditor<SVExpression> {
-		IntegerEditor(ControlClass control, ControlProperty controlProperty) {
+		IntegerEditor(ControlClassOld control, ControlProperty controlProperty) {
 			super(PropertyType.Int, control, controlProperty,
 					new ExpressionChecker(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment(), ExpressionChecker.TYPE_INT),
 					Lang.LookupBundle().getString("PropertyType.int")
@@ -399,7 +399,7 @@ class ControlPropertyValueEditors {
 	}
 
 	static class RawEditor extends InputFieldEditor<SVRaw> {
-		RawEditor(ControlClass control, ControlProperty controlProperty) {
+		RawEditor(ControlClassOld control, ControlProperty controlProperty) {
 			super(PropertyType.Raw, control, controlProperty,
 					new RawChecker(controlProperty.getInitialPropertyType()),
 					Lang.LookupBundle().getString("PropertyType.raw")
@@ -408,7 +408,7 @@ class ControlPropertyValueEditors {
 	}
 
 	static class SQFEditor extends InputFieldEditor<SVString> {
-		SQFEditor(ControlClass control, ControlProperty controlProperty) {
+		SQFEditor(ControlClassOld control, ControlProperty controlProperty) {
 			super(PropertyType.SQF, control, controlProperty,
 					new SQFDataChecker(),
 					"SQF"
@@ -436,7 +436,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ColorArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		ColorArrayEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			SVColorArray value = (SVColorArray) controlProperty.getValue();
 			setValue(value);
@@ -498,7 +498,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		HexColorEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		HexColorEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			boolean validData = controlProperty.getValue() != null;
 			if (validData) {
@@ -564,7 +564,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		BooleanChoiceBoxEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		BooleanChoiceBoxEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			boolean validData = controlProperty.getValue() != null;
@@ -630,7 +630,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ArrayEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		ArrayEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVArray) controlProperty.getValue());
@@ -691,7 +691,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		FontChoiceBoxEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		FontChoiceBoxEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVFont) controlProperty.getValue());
@@ -752,7 +752,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		ImageEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		ImageEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 
 			setValue((SVImage) controlProperty.getValue());
@@ -810,7 +810,7 @@ class ControlPropertyValueEditors {
 			}
 		};
 
-		public SoundEditor(@NotNull ControlClass control, @NotNull ControlProperty controlProperty) {
+		public SoundEditor(@NotNull ControlClassOld control, @NotNull ControlProperty controlProperty) {
 			this.controlProperty = controlProperty;
 			setValue((SVSound) controlProperty.getValue());
 			initListeners();

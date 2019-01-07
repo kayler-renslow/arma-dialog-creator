@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControl extends ControlClass implements CanvasControl<ArmaControl> {
+public class ArmaControl extends ControlClassOld implements CanvasControl<ArmaControl> {
 	/** Type of the control */
 	private ControlType controlType = ControlType.Static;
 
@@ -72,11 +72,11 @@ public class ArmaControl extends ControlClass implements CanvasControl<ArmaContr
 		accessProperty = findOptionalProperty(ControlPropertyLookup.ACCESS);
 
 		//This used for ControlProperty documentation so that each property can have its own documentation for each ControlType
-		//and each nested ControlClass
+		//and each nested ControlClassOld
 		for (ControlProperty property : getAllChildProperties()) {
 			ControlPropertyDocumentationProvider.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name());
 		}
-		for (ControlClass nested : getAllNestedClasses()) {
+		for (ControlClassOld nested : getAllNestedClasses()) {
 			for (ControlProperty property : nested.getAllChildProperties()) {
 				ControlPropertyDocumentationProvider.CONTROL_PROPERTY_DOCUMENTATION_PATH.put(property.getUserData(), controlType.name() + "/" + nested.getClassName());
 			}

@@ -3,6 +3,8 @@ package com.armadialogcreator.data.xml;
 import com.armadialogcreator.arma.stringtable.*;
 import com.armadialogcreator.arma.stringtable.impl.StringTableImpl;
 import com.armadialogcreator.arma.stringtable.impl.StringTableKeyImpl;
+import com.armadialogcreator.util.XmlLoader;
+import com.armadialogcreator.util.XmlParseException;
 import com.armadialogcreator.util.XmlUtil;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Used with {@link ControlClass#getPropertyUpdateGroup()}
+ Used with {@link ControlClassOld#getPropertyUpdateGroup()}
 
  @author Kayler
  @since 08/11/2016. */

@@ -6,7 +6,7 @@ import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.core.DisplayProperty;
 import com.armadialogcreator.core.DisplayPropertyLookup;
 import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ListMergeIterator;
+import com.armadialogcreator.util.ListsIterator;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -54,8 +54,8 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 
 	@Override
 	@NotNull
-	public Iterator<ArmaControl> iteratorForAllControls(boolean backwards) {
-		return new ListMergeIterator<>(backwards, controlsMerged);
+	public Iterator<ArmaControl> iteratorForAllControls(boolean reverse) {
+		return new ListsIterator<>(controlsMerged, reverse);
 	}
 
 	@NotNull

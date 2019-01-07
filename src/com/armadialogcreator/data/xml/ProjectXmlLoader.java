@@ -3,18 +3,17 @@ package com.armadialogcreator.data.xml;
 import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.data.ApplicationData;
-import com.armadialogcreator.data.DataKeys;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.ApplicationData;
+import com.armadialogcreator.data.olddata.DataKeys;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.Key;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  Loads a project from a .xml save file.
@@ -78,7 +77,7 @@ public class ProjectXmlLoader extends XmlLoader {
 			case "1":
 				return new ProjectLoaderVersion1(info, loader);
 			default:
-				throw new XmlParseException(Lang.getBundle("ProjectXmlParseBundle").getString("ProjectLoad.not_a_project_save"));
+				throw new XmlParseException(XmlParseException.Reason.Other, Lang.getBundle("ProjectXmlParseBundle").getString("ProjectLoad.not_a_project_save"));
 		}
 	}
 
@@ -89,7 +88,7 @@ public class ProjectXmlLoader extends XmlLoader {
 		private final TreeStructure<ArmaControl> treeStructureBg;
 
 		private ProjectParseResult(Project project, TreeStructure<ArmaControl> treeStructureMain,
-								   TreeStructure<ArmaControl> treeStructureBg, ArrayList<ParseError> errors) {
+								   TreeStructure<ArmaControl> treeStructureBg, List<ParseError> errors) {
 			super(errors);
 			this.project = project;
 			this.treeStructureMain = treeStructureMain;
@@ -114,16 +113,16 @@ public class ProjectXmlLoader extends XmlLoader {
 	}
 
 	public static class ProjectPreviewParseResult {
-		private final ArrayList<ParseError> errors;
+		private final List<ParseError> errors;
 		private final ProjectDescriptor projectDescriptor;
 
-		public ProjectPreviewParseResult(@NotNull ProjectDescriptor projectDescriptor, @NotNull ArrayList<ParseError> errors) {
+		public ProjectPreviewParseResult(@NotNull ProjectDescriptor projectDescriptor, @NotNull List<ParseError> errors) {
 			this.projectDescriptor = projectDescriptor;
 			this.errors = errors;
 		}
 
 		@NotNull
-		public ArrayList<ParseError> getErrors() {
+		public List<ParseError> getErrors() {
 			return errors;
 		}
 

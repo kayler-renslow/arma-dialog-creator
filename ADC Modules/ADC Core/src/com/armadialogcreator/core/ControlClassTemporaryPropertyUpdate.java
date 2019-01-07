@@ -3,16 +3,16 @@ package com.armadialogcreator.core;
 import org.jetbrains.annotations.NotNull;
 
 /**
- An update for when a {@link ControlProperty} is inherited/overridden in {@link ControlClass}, but it wasn't in the {@link ControlClass} originally.
+ An update for when a {@link ControlProperty} is inherited/overridden in {@link ControlClassOld}, but it wasn't in the {@link ControlClassOld} originally.
 
  @author Kayler
  @since 06/12/2017 */
 public class ControlClassTemporaryPropertyUpdate implements ControlClassUpdate {
-	private final ControlClass controlClass;
+	private final ControlClassOld controlClass;
 	private final ControlProperty property;
 	private final boolean added;
 
-	public ControlClassTemporaryPropertyUpdate(@NotNull ControlClass controlClass, @NotNull ControlProperty property, boolean added) {
+	public ControlClassTemporaryPropertyUpdate(@NotNull ControlClassOld controlClass, @NotNull ControlProperty property, boolean added) {
 		this.controlClass = controlClass;
 		this.property = property;
 		this.added = added;
@@ -20,7 +20,7 @@ public class ControlClassTemporaryPropertyUpdate implements ControlClassUpdate {
 
 	@Override
 	@NotNull
-	public ControlClass getOwnerControlClass() {
+	public ControlClassOld getOwnerControlClass() {
 		return controlClass;
 	}
 

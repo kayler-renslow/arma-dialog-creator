@@ -7,8 +7,8 @@ import com.armadialogcreator.arma.stringtable.StringTableKey;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.CustomControlClassRegistry;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.CustomControlClassRegistry;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.IndentedStringBuilder;
 import com.armadialogcreator.util.UTF8FileWriter;
@@ -113,7 +113,7 @@ public class ProjectExporter {
 		return (type.getPropertyValuesSize() > 1) ? "{" + ret + "}" : ret.toString();
 	}
 
-	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClass controlClass, @NotNull Writer writer) throws IOException {
+	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClassOld controlClass, @NotNull Writer writer) throws IOException {
 		ProjectExporter exporter = new ProjectExporter(configuration);
 		BufferedIndentedStringBuilder builder = getBuilder(writer);
 		exporter.writeControlClass(builder, controlClass, null);
@@ -279,7 +279,7 @@ public class ProjectExporter {
 
 	private void exportCustomControlClasses(@NotNull IndentedStringBuilder stringBuilder,
 											@NotNull CustomControlClassRegistry registry) throws IOException {
-		for (ControlClass cc : sortControlClasses(registry.controlClassIterator())) {
+		for (ControlClassOld cc : sortControlClasses(registry.controlClassIterator())) {
 			for (CustomControlClass ccc : registry) {
 				if (cc == ccc.getControlClass()) {
 					if (ccc.getComment() != null && ccc.getComment().trim().length() > 0) {
@@ -391,11 +391,11 @@ public class ProjectExporter {
 		});
 	}
 
-	private void writeControlClass(@NotNull IndentedStringBuilder stringBuilder, @NotNull ControlClass controlClass,
+	private void writeControlClass(@NotNull IndentedStringBuilder stringBuilder, @NotNull ControlClassOld controlClass,
 								   @Nullable Function<IndentedStringBuilder, Void> insertBodyFunc) {
 		writeClass(stringBuilder, controlClass.getClassName(), controlClass.getExtendClass() == null ? null : controlClass.getExtendClass().getClassName(), sb -> {
 			writeControlProperties(sb, controlClass.getAllChildProperties());
-			for (ControlClass nested : sortControlClasses(controlClass.getAllNestedClasses())) {
+			for (ControlClassOld nested : sortControlClasses(controlClass.getAllNestedClasses())) {
 				writeControlClass(stringBuilder, nested, null);
 			}
 			if (insertBodyFunc != null) {
@@ -511,13 +511,13 @@ public class ProjectExporter {
 	 Combines all classes into a list and "sorts" them. This isn't a normal sort however.
 	 How it works:
 	 <ol>
-	 <li>The {@link ControlClass} instances that have no extend class
-	 ({@link ControlClass#getExtendClass()} == null) will appear at the start of the list</li>
-	 <li>If a {@link ControlClass} has an extend class, it will be appended after it's extend class has been appended to the list.</li>
-	 <li>If a {@link ControlClass} has an extend class that isn't in this iterable, it will be added to the end of the list</li>
+	 <li>The {@link ControlClassOld} instances that have no extend class
+	 ({@link ControlClassOld#getExtendClass()} == null) will appear at the start of the list</li>
+	 <li>If a {@link ControlClassOld} has an extend class, it will be appended after it's extend class has been appended to the list.</li>
+	 <li>If a {@link ControlClassOld} has an extend class that isn't in this iterable, it will be added to the end of the list</li>
 	 </ol>
 	 */
-	private static <T extends ControlClass> Iterable<T> sortControlClasses(@NotNull Iterable<T> controlClasses) {
+	private static <T extends ControlClassOld> Iterable<T> sortControlClasses(@NotNull Iterable<T> controlClasses) {
 		LinkedList<T> toVisit = new LinkedList<>();
 		for (T cc : controlClasses) {
 			toVisit.add(cc);

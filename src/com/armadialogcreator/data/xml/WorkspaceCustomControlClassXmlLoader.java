@@ -1,9 +1,11 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.core.CustomControlClass;
-import com.armadialogcreator.data.ApplicationData;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.ApplicationData;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.CreateCustomControlClassJob;
+import com.armadialogcreator.util.XmlLoader;
+import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

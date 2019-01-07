@@ -11,13 +11,13 @@
  */
 package com.armadialogcreator.gui.main.fxControls;
 
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.gui.fxcontrol.CBMBGroupMenu;
 
 /**
  @author Kayler
  @since 11/15/2016 */
-public class ControlClassGroupMenu extends CBMBGroupMenu<ControlClass> {
+public class ControlClassGroupMenu extends CBMBGroupMenu<ControlClassOld> {
 
 	public ControlClassGroupMenu(String groupName, ControlClassMenuItem... cbmbMenuItems) {
 		super(groupName, cbmbMenuItems);

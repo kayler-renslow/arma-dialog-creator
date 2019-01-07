@@ -8,7 +8,7 @@ import com.armadialogcreator.canvas.CanvasDisplay;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNumericValue;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.*;
@@ -55,7 +55,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
 	private Label lblClassName;
-	private ComboBoxMenuButton<ControlClass> menuButtonExtendControls;
+	private ComboBoxMenuButton<ControlClassOld> menuButtonExtendControls;
 	private CheckBox checkBoxIsBackgroundControl;
 	private final ValueListener<SVColor> backgroundColorListener = new ValueListener<SVColor>() {
 		@Override
@@ -74,14 +74,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setTooltip(new Tooltip(newClassName));
 		}
 	};
-	private final ValueListener<ControlClass> controlClassExtendListener = new ValueListener<ControlClass>() {
+	private final ValueListener<ControlClassOld> controlClassExtendListener = new ValueListener<ControlClassOld>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass newValue) {
+		public void valueUpdated(@NotNull ValueObserver<ControlClassOld> observer, ControlClassOld oldValue, ControlClassOld newValue) {
 			if (newValue == null) {
-				menuButtonExtendControls.chooseItem((ControlClass) null);
+				menuButtonExtendControls.chooseItem((ControlClassOld) null);
 			} else {
 				Project project = Project.getCurrentProject();
-				ControlClass controlClass = project.findControlClassByName(newValue.getClassName());
+				ControlClassOld controlClass = project.findControlClassByName(newValue.getClassName());
 				if (controlClass == null) {
 					return;
 				}
@@ -271,9 +271,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (control.getExtendClass() != null) {
 			menuButtonExtendControls.chooseItem(control.getExtendClass());
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ControlClass>() {
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ControlClassOld>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<ControlClass> observer, ControlClass oldValue, ControlClass selected) {
+			public void valueUpdated(@NotNull ValueObserver<ControlClassOld> observer, ControlClassOld oldValue, ControlClassOld selected) {
 				control.extendControlClass(selected);
 			}
 		});

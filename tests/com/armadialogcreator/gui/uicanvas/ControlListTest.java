@@ -31,7 +31,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
@@ -76,7 +76,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
@@ -126,7 +126,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
@@ -172,7 +172,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (controlList != list) {
@@ -234,7 +234,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				assertEquals(list, controlList);
@@ -248,7 +248,7 @@ public class ControlListTest {
 				visited.setValue(true);
 			}
 		});
-		list2.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list2.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				assertEquals(list2, controlList);
@@ -278,7 +278,7 @@ public class ControlListTest {
 
 		Reference<Boolean> visited = new Reference<>(false);
 
-		list.addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				if (!visited.getValue() && !change.getMoved().isEntryUpdate()) {

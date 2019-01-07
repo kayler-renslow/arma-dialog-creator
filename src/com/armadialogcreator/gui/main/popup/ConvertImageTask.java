@@ -2,8 +2,8 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
-import com.armadialogcreator.data.ApplicationProperty;
-import com.armadialogcreator.data.ImagesTool;
+import com.armadialogcreator.data.olddata.ApplicationProperty;
+import com.armadialogcreator.data.olddata.ImagesTool;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.lang.Lang;

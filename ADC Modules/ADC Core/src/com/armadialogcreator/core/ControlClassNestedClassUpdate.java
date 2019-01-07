@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
  @since 08/13/2017 */
 public class ControlClassNestedClassUpdate implements ControlClassUpdate {
 
-	private final ControlClass ownerControlClass;
-	private final ControlClass nested;
+	private final ControlClassOld ownerControlClass;
+	private final ControlClassOld nested;
 	private final ControlClassUpdate nestedClassUpdate;
 
-	public ControlClassNestedClassUpdate(@NotNull ControlClass ownerControlClass, @NotNull ControlClass nested, @NotNull ControlClassUpdate nestedClassUpdate) {
+	public ControlClassNestedClassUpdate(@NotNull ControlClassOld ownerControlClass, @NotNull ControlClassOld nested, @NotNull ControlClassUpdate nestedClassUpdate) {
 		this.ownerControlClass = ownerControlClass;
 		this.nested = nested;
 		this.nestedClassUpdate = nestedClassUpdate;
@@ -19,13 +19,13 @@ public class ControlClassNestedClassUpdate implements ControlClassUpdate {
 
 	@Override
 	@NotNull
-	public ControlClass getOwnerControlClass() {
+	public ControlClassOld getOwnerControlClass() {
 		return ownerControlClass;
 	}
 
-	/** @return the {@link ControlClass} that had an update (this is a nested {@link ControlClass} of {@link #getOwnerControlClass()}) */
+	/** @return the {@link ControlClassOld} that had an update (this is a nested {@link ControlClassOld} of {@link #getOwnerControlClass()}) */
 	@NotNull
-	public ControlClass getNested() {
+	public ControlClassOld getNested() {
 		return nested;
 	}
 

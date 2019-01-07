@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.main.popup.EditProjectSettingsDialog;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;

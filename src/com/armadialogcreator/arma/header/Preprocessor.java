@@ -5,7 +5,7 @@ import com.armadialogcreator.arma.header.DefineMacroContent.ParameterDefineValue
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.ScreenDimension;
-import com.armadialogcreator.data.HeaderConversionException;
+import com.armadialogcreator.data.olddata.HeaderConversionException;
 import com.armadialogcreator.expression.*;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UTF8FileReader;

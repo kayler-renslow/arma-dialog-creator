@@ -10,16 +10,18 @@ import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.DataKeys;
-import com.armadialogcreator.data.Project;
 import com.armadialogcreator.data.export.HeaderFileType;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
+import com.armadialogcreator.data.olddata.DataKeys;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.data.tree.TreeNode;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.ControlExtendJob;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.ControlNestedClassesJob;
 import com.armadialogcreator.data.xml.ControlClassXmlHelper.CreateCustomControlClassJob;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ParseError;
+import com.armadialogcreator.util.XmlParseException;
 import com.armadialogcreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
@@ -248,7 +250,7 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 				}
 
 			} catch (IllegalArgumentException e) {
-				addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_display_property_lookup_id_f"), lookupId), ParseError.genericRecover("-1")));
+				addError(new ParseError(String.format(bundle.getString("ProjectLoad.bad_display_property_lookup_id_f"), lookupId), genericRecover("-1")));
 			}
 		}
 
@@ -437,8 +439,8 @@ public class ProjectLoaderVersion1 extends ProjectVersionLoader {
 		return ProjectXmlUtil.loadValue(requester, controlPropertyElement, propertyType, dataContext, this.loader);
 	}
 
-
-
-
-
+	@NotNull
+	public static String genericRecover(String value) {
+		return String.format(Lang.ApplicationBundle().getString("XmlParse.generic_recover_message_f"), value);
+	}
 }

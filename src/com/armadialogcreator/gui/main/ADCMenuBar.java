@@ -6,7 +6,7 @@ import com.armadialogcreator.arma.stringtable.KnownLanguage;
 import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
-import com.armadialogcreator.data.ApplicationProperty;
+import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;

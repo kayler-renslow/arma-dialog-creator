@@ -73,9 +73,9 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 		list.deepIterator().forEach(c -> {
 			if (c instanceof CanvasControlGroup) {
 				if (add) {
-					((CanvasControlGroup) c).getControls().addChangeListener(changeListener);
+					((CanvasControlGroup) c).getControls().addListener(changeListener);
 				} else {
-					((CanvasControlGroup) c).getControls().removeChangeListener(changeListener);
+					((CanvasControlGroup) c).getControls().removeListener(changeListener);
 				}
 			}
 			if (add) {
@@ -85,9 +85,9 @@ public class DisplayControlList<C extends CanvasControl> extends ControlList<C> 
 			}
 		});
 		if (add) {
-			list.addChangeListener(changeListener);
+			list.addListener(changeListener);
 		} else {
-			list.removeChangeListener(changeListener);
+			list.removeListener(changeListener);
 		}
 	}
 

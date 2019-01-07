@@ -286,7 +286,7 @@ public class DisplayControlListTest {
 			}
 		});
 
-		groupInBackground.getControls().addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		groupInBackground.getControls().addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				controlInbgControlsUpdated.setValue(change.wasMoved());
@@ -351,7 +351,7 @@ public class DisplayControlListTest {
 			}
 		});
 
-		groupInBackground.getControls().addChangeListener(new ListObserverListener<TestCanvasControl>() {
+		groupInBackground.getControls().addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
 			public void onChanged(@NotNull ListObserver<TestCanvasControl> controlList, @NotNull ListObserverChange<TestCanvasControl> change) {
 				controlInbgControlsUpdated.setValue(change.wasMoved());

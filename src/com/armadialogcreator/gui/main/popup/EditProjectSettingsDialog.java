@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.Node;

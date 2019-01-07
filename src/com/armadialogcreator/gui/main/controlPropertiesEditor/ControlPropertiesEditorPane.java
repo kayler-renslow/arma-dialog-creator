@@ -24,7 +24,7 @@ import java.util.function.Function;
  @since 07/08/2016. */
 public class ControlPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
-	private ControlClass controlClass;
+	private ControlClassOld controlClass;
 	private boolean listenersAreValid = true;
 
 	private LinkedList<ControlPropertyInputDescriptor> propertyDescriptors = new LinkedList<>();
@@ -58,8 +58,8 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/**
 	 Creates the accordion according to the control class's specification.
-	 For the inputted values in the accordion, they are fetched from {@link ControlClass#getRequiredProperties()},
-	 {@link ControlClass#getOptionalPropertiesWithoutEvents()}, and {@link ControlClass#getEventProperties()}
+	 For the inputted values in the accordion, they are fetched from {@link ControlClassOld#getRequiredProperties()},
+	 {@link ControlClassOld#getOptionalPropertiesWithoutEvents()}, and {@link ControlClassOld#getEventProperties()}
 	 <p>
 	 It is important to note that when the control properties inside the control are edited,
 	 they will be updated in the control class as well. There is no copying of the controlClass's
@@ -67,7 +67,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	 @param controlClass control class that has the properties to edit
 	 */
-	public ControlPropertiesEditorPane(@NotNull ControlClass controlClass) {
+	public ControlPropertiesEditorPane(@NotNull ControlClassOld controlClass) {
 		this();
 		this.controlClass = controlClass;
 
@@ -104,9 +104,9 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Get the {@link ControlClass} being edited */
+	/** Get the {@link ControlClassOld} being edited */
 	@NotNull
-	public ControlClass getControlClass() {
+	public ControlClassOld getControlClass() {
 		return controlClass;
 	}
 
@@ -127,7 +127,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		VBox vboxClassCategories = new VBox(10);
 		vboxClassCategories.setPadding(new Insets(5));
 
-		Function<ControlClass, Node> funcGetClassNode = cc -> {
+		Function<ControlClassOld, Node> funcGetClassNode = cc -> {
 			MenuButton menuButton = new MenuButton(cc.getClassName());
 
 			MenuItem miEdit = new MenuItem(bundle.getString("edit_nested_class"));
@@ -167,7 +167,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			final boolean hasRequiredClasses = controlClass.getRequiredNestedClasses().size() > 0;
 			Label lblNoRequiredClasses = new Label(bundle.getString("no_classes"));
 			if (hasRequiredClasses) {
-				for (ControlClass nested : controlClass.getRequiredNestedClasses()) {
+				for (ControlClassOld nested : controlClass.getRequiredNestedClasses()) {
 					vboxRequired.getChildren().add(funcGetClassNode.apply(nested));
 				}
 			} else {
@@ -186,7 +186,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			Label lblNoOptionalClasses = new Label(bundle.getString("no_classes"));
 			VBox vboxOptional = new VBox(5);
 			if (hasOptionalClasses) {
-				for (ControlClass nested : controlClass.getOptionalNestedClasses()) {
+				for (ControlClassOld nested : controlClass.getOptionalNestedClasses()) {
 					vboxOptional.getChildren().add(funcGetClassNode.apply(nested));
 				}
 			} else {

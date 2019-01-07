@@ -6,7 +6,7 @@ import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.util.StructuredTextParseException;
 import com.armadialogcreator.arma.util.StructuredTextParser;
 import com.armadialogcreator.arma.util.TextSection;
-import com.armadialogcreator.data.Project;
+import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.StringTableXmlWriter;
 import com.armadialogcreator.gui.StageDialog;

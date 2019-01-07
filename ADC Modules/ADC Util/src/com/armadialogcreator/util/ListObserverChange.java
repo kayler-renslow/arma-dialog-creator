@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author Kayler
  @see ListObserver
- @see ListObserver#addChangeListener(ListObserverListener)
+ @see ListObserver#addListener(ListObserverListener)
  @since 08/12/2016 */
 public class ListObserverChange<E> {
 	public enum ChangeType {

@@ -1,5 +1,7 @@
 package com.armadialogcreator.data.xml;
 
+import com.armadialogcreator.util.XmlLoader;
+import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;

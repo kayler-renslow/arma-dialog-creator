@@ -1,8 +1,7 @@
 package com.armadialogcreator;
 
 import com.armadialogcreator.canvas.CanvasViewColors;
-import com.armadialogcreator.data.*;
-import com.armadialogcreator.data.xml.ParseError;
+import com.armadialogcreator.data.olddata.*;
 import com.armadialogcreator.data.xml.ProjectXmlLoader;
 import com.armadialogcreator.data.xml.WorkspaceCustomControlClassXmlLoader;
 import com.armadialogcreator.gui.main.ADCMainWindow;
@@ -15,6 +14,7 @@ import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ADCExecutors;
+import com.armadialogcreator.util.ParseError;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;

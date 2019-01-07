@@ -14,7 +14,7 @@ import java.util.*;
 
  @author Kayler
  @since 08/12/2016. */
-public class ListObserver<E> implements List<E> {
+public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E>> {
 	private final List<E> list;
 	private final LinkedList<ListObserverListener<E>> listeners = new LinkedList<>();
 	private final UpdateListenerGroup<Object> onClear = new UpdateListenerGroup<>();
@@ -228,7 +228,7 @@ public class ListObserver<E> implements List<E> {
 	}
 
 	/** Adds a listener. If the listener already has been added, will not be added again */
-	public void addChangeListener(@NotNull ListObserverListener<E> l) {
+	public void addListener(@NotNull ListObserverListener<E> l) {
 		if (listeners.contains(l)) {
 			return;
 		}
@@ -237,12 +237,23 @@ public class ListObserver<E> implements List<E> {
 
 	/**
 	 Removes a listener.
-
-	 @return true if the listener was added and not removed, false otherwise
 	 */
-	public boolean removeChangeListener(@NotNull ListObserverListener<E> l) {
-		return listeners.remove(l);
+	@Override
+	public void removeListener(@NotNull ListObserverListener<E> l) {
+		listeners.remove(l);
 	}
+
+	@Override
+	@NotNull
+	public ReadOnlyList<ListObserverListener<E>> getListeners() {
+		return new ReadOnlyList<>(listeners);
+	}
+
+	@Override
+	public void clearListeners() {
+		listeners.clear();
+	}
+
 
 	/** Invoked to notify all listeners of a change */
 	protected void notifyListeners(@NotNull ListObserverChange<E> change) {

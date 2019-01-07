@@ -2,7 +2,7 @@ package com.armadialogcreator.arma.control.impl.utility;
 
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.control.TintedImageHelperRenderer;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
@@ -28,7 +28,7 @@ public class ScrollbarRenderer {
 	public static final int SCROLLBAR_WIDTH = 16;
 	private static final int ARROW_HEIGHT = SCROLLBAR_WIDTH;
 
-	public ScrollbarRenderer(@NotNull ControlClass controlClass,
+	public ScrollbarRenderer(@NotNull ControlClassOld controlClass,
 							 @NotNull ArmaControlRenderer renderer,
 							 @NotNull ControlPropertyLookupConstant thumb,
 							 @NotNull ControlPropertyLookupConstant arrowFull,

@@ -55,11 +55,6 @@ public class ReadOnlyValueObserver<V> extends ValueObserver<V> {
 	}
 
 	@Override
-	public void invalidate() {
-		observer.invalidate();
-	}
-
-	@Override
 	public void addListener(@NotNull InvalidationListener listener) {
 		observer.addListener(listener);
 	}

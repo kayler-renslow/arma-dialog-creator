@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main.popup.projectInit;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.data.xml.ParseError;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ParseError;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;

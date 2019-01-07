@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  Created by Kayler on 08/12/2016.
  */
-public interface ListObserverListener<E> {
+public interface ListObserverListener<E> extends ObserverListener {
 	/**
 	 A change was invoked on the given {@link ListObserver}. Only one operation is performed at once. Therefore, only one of the following will be true:<br>
 	 <ul>

@@ -47,7 +47,7 @@ public class TestSpecRegistry implements SpecificationRegistry {
 
 	@Override
 	@Nullable
-	public ControlClass findControlClassByName(@NotNull String className) {
+	public ControlClassOld findControlClassByName(@NotNull String className) {
 		return null;
 	}
 

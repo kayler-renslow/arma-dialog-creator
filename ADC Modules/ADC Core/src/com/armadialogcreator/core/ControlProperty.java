@@ -9,20 +9,15 @@ import java.util.Arrays;
 
 /**
  @author Kayler
- @see ControlClass
+ @see ControlClassOld
  @since 05/22/2016. */
 public class ControlProperty {
 
 	private final ValueListener<?> macroValueListener = new ValueListener<Object>() {
 
 		@Override
-		public void observerDeleted() {
-			ControlProperty.this.setValueToMacro(null);
-		}
-
-		@Override
 		public void listenerDetached() {
-
+			ControlProperty.this.setValueToMacro(null);
 		}
 
 		@Override

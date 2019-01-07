@@ -4,22 +4,22 @@ import com.armadialogcreator.util.ValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Used when {@link ControlClass#setClassName(String)} is invoked, or when {@link ControlClass#getClassNameObserver()} is updated
+ Used when {@link ControlClassOld#setClassName(String)} is invoked, or when {@link ControlClassOld#getClassNameObserver()} is updated
  via {@link ValueObserver#updateValue(Object)}
 
  @author Kayler
  @since 11/16/16 */
 public class ControlClassRenameUpdate implements ControlClassUpdate {
-	private ControlClass updated;
+	private ControlClassOld updated;
 	private final String oldName;
 	private final String newName;
 
 	/**
-	 @param updated the updated {@link ControlClass}
+	 @param updated the updated {@link ControlClassOld}
 	 @param oldName the old class name
 	 @param newName the new class name
 	 */
-	public ControlClassRenameUpdate(@NotNull ControlClass updated, @NotNull String oldName, @NotNull String newName) {
+	public ControlClassRenameUpdate(@NotNull ControlClassOld updated, @NotNull String oldName, @NotNull String newName) {
 		this.updated = updated;
 		this.oldName = oldName;
 		this.newName = newName;
@@ -27,7 +27,7 @@ public class ControlClassRenameUpdate implements ControlClassUpdate {
 
 	@Override
 	@NotNull
-	public ControlClass getOwnerControlClass() {
+	public ControlClassOld getOwnerControlClass() {
 		return updated;
 	}
 

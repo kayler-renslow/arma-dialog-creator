@@ -4,7 +4,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.data.DataKeys;
+import com.armadialogcreator.data.olddata.DataKeys;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;

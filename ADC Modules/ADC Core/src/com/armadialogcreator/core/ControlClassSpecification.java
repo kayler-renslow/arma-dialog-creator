@@ -98,22 +98,22 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 		this(controlClassName, requiredProperties, optionalProperties, ControlClassSpecification.EMPTY, ControlClassSpecification.EMPTY);
 	}
 
-	/** Create a specification from the given {@link ControlClass} and deep copy the class */
-	public ControlClassSpecification(@NotNull ControlClass controlClass) {
+	/** Create a specification from the given {@link ControlClassOld} and deep copy the class */
+	public ControlClassSpecification(@NotNull ControlClassOld controlClass) {
 		this(controlClass, true);
 	}
 
 	/**
-	 Constructs a specification from the given {@link ControlClass}.
-	 If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClass#getRequiredProperties()} and
-	 {@link ControlClass#getOptionalProperties()} will be deep copied via
+	 Constructs a specification from the given {@link ControlClassOld}.
+	 If <code>deepCopy</code> is true, the {@link ControlProperty}'s from {@link ControlClassOld#getRequiredProperties()} and
+	 {@link ControlClassOld#getOptionalProperties()} will be deep copied via
 	 {@link ControlPropertySpecification#ControlPropertySpecification(ControlProperty, boolean)}. Also,
 	 any nested classes would be deep copied as well. If <code>deepCopy</code> is false , will shallow copy the values.
 
 	 @param controlClass class to use
 	 @param deepCopy true to deep copy, false otherwise
 	 */
-	public ControlClassSpecification(@NotNull ControlClass controlClass, boolean deepCopy) {
+	public ControlClassSpecification(@NotNull ControlClassOld controlClass, boolean deepCopy) {
 		this.controlClassName = controlClass.getClassName();
 
 		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
@@ -128,13 +128,13 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 			this.optionalNestedClasses = new ReadOnlyList<>(optionalNested);
 			this.requiredNestedClasses = new ReadOnlyList<>(requiredNested);
 
-			for (ControlClass nested : controlClass.getRequiredNestedClasses()) {
+			for (ControlClassOld nested : controlClass.getRequiredNestedClasses()) {
 				if (controlClass.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}
 				requiredNested.add(new ControlClassSpecification(nested, true));
 			}
-			for (ControlClass nested : controlClass.getOptionalNestedClasses()) {
+			for (ControlClassOld nested : controlClass.getOptionalNestedClasses()) {
 				if (controlClass.getTempNestedClassesReadOnly().contains(nested)) {
 					continue;
 				}
@@ -231,20 +231,20 @@ public class ControlClassSpecification implements ControlClassRequirementSpecifi
 	}
 
 
-	/** Just invokes {@link ControlClass#ControlClass(ControlClassSpecification, SpecificationRegistry)} with this instance provided */
+	/** Just invokes {@link ControlClassOld#ControlClassOld(ControlClassSpecification, SpecificationRegistry)} with this instance provided */
 	@NotNull
-	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry) {
-		return new ControlClass(this, registry);
+	public ControlClassOld constructNewControlClass(@NotNull SpecificationRegistry registry) {
+		return new ControlClassOld(this, registry);
 	}
 
 	/**
-	 Just invokes {@link ControlClass#ControlClass(ControlClassSpecification, SpecificationRegistry, DefaultValueProvider.Context)}
+	 Just invokes {@link ControlClassOld#ControlClassOld(ControlClassSpecification, SpecificationRegistry, DefaultValueProvider.Context)}
 	 with this instance provided
 	 */
 	@NotNull
-	public ControlClass constructNewControlClass(@NotNull SpecificationRegistry registry,
-												 @Nullable DefaultValueProvider.Context context) {
-		return new ControlClass(this, registry, context);
+	public ControlClassOld constructNewControlClass(@NotNull SpecificationRegistry registry,
+													@Nullable DefaultValueProvider.Context context) {
+		return new ControlClassOld(this, registry, context);
 	}
 
 	/**

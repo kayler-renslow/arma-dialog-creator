@@ -19,12 +19,27 @@ public class ProjectFileDependencyRegistry extends FileDependencyRegistry {
 	}
 
 	@Override
+	public void applicationDataLoaded() {
+
+	}
+
+	@Override
 	public void applicationExit() {
 
 	}
 
 	@Override
-	public void projectLoaded(@NotNull Project project) {
+	public void projectInitialized(@NotNull Project project) {
+
+	}
+
+	@Override
+	public void projectDataLoaded(@NotNull Project project) {
+
+	}
+
+	@Override
+	public void projectReady(@NotNull Project project) {
 
 	}
 
@@ -34,7 +49,17 @@ public class ProjectFileDependencyRegistry extends FileDependencyRegistry {
 	}
 
 	@Override
-	public void workspaceLoaded(@NotNull Workspace workspace) {
+	public void workspaceInitialized(@NotNull Workspace workspace) {
+
+	}
+
+	@Override
+	public void workspaceReady(@NotNull Workspace workspace) {
+
+	}
+
+	@Override
+	public void workspaceDataLoaded(@NotNull Workspace workspace) {
 
 	}
 }

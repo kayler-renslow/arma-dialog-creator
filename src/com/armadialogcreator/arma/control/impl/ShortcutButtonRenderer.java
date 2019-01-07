@@ -5,7 +5,7 @@ import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.arma.control.impl.utility.*;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasContext;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.ControlPropertyLookupConstant;
@@ -161,7 +161,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		);
 
 		//nested classes
-		ControlClass hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
+		ControlClassOld hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
 		{
 			addValueListener(hitZone, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -189,7 +189,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ControlClass textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
+		ControlClassOld textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
 		{
 			addValueListener(textPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -217,7 +217,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ControlClass shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
+		ControlClassOld shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
 		{
 			addValueListener(shortcutPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {

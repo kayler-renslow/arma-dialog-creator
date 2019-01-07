@@ -154,7 +154,7 @@ public enum ControlType {
 		return icon;
 	}
 
-	/** The icon used to designate that the {@link ControlClass} using this type is from {@link CustomControlClass} */
+	/** The icon used to designate that the {@link ControlClassOld} using this type is from {@link CustomControlClass} */
 	@NotNull
 	public Image getCustomIcon() {
 		return customIcon;

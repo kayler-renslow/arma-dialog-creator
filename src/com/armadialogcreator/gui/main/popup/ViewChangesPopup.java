@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.data.ChangeDescriptor;
-import com.armadialogcreator.data.Changelog;
+import com.armadialogcreator.data.olddata.ChangeDescriptor;
+import com.armadialogcreator.data.olddata.Changelog;
 import com.armadialogcreator.gui.main.fxControls.HistoryListItem;
 import com.armadialogcreator.gui.main.fxControls.HistoryListItemSubInfo;
 import com.armadialogcreator.gui.main.fxControls.HistoryListPopup;

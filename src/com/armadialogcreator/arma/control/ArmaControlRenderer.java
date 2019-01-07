@@ -4,7 +4,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.PositionCalculator;
 import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.ControlClassOld;
 import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.ControlPropertyLookupConstant;
@@ -496,10 +496,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Adds a value listener to the given {@link ControlClass} with the provided lookup.
+	 Adds a value listener to the given {@link ControlClassOld} with the provided lookup.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull ControlClass owner, ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> l) {
+	public void addValueListener(@NotNull ControlClassOld owner, ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> l) {
 		ControlProperty property = owner.findProperty(lookup);
 		property.addValueListener(l);
 		l.valueUpdated(property.getValueObserver(), property.getValue(), property.getValue());

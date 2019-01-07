@@ -3,24 +3,24 @@ package com.armadialogcreator.core;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Update triggered when a property was inherited or overridden in a {@link ControlClass}
+ Update triggered when a property was inherited or overridden in a {@link ControlClassOld}
 
  @author Kayler
  @since 11/16/2016 */
 public class ControlClassInheritPropertyUpdate implements ControlClassUpdate {
-	private final ControlClass controlClass;
+	private final ControlClassOld controlClass;
 	private final ControlProperty property;
 	private final boolean inherited;
 	private final boolean updatingExtendClass;
 
 	/**
-	 @param controlClass {@link ControlClass} that was updated
+	 @param controlClass {@link ControlClassOld} that was updated
 	 @param property the {@link ControlProperty} that was inherited/overridden
 	 @param inherited true if it was inherited, false if was overridden
 	 @param updatingExtendClass true if the inherit update was caused by
-	 {@link ControlClass#extendControlClass(ControlClass)}, false otherwise
+	 {@link ControlClassOld#extendControlClass(ControlClassOld)}, false otherwise
 	 */
-	public ControlClassInheritPropertyUpdate(@NotNull ControlClass controlClass, @NotNull ControlProperty property,
+	public ControlClassInheritPropertyUpdate(@NotNull ControlClassOld controlClass, @NotNull ControlProperty property,
 											 boolean inherited, boolean updatingExtendClass) {
 		this.controlClass = controlClass;
 		this.property = property;
@@ -49,12 +49,12 @@ public class ControlClassInheritPropertyUpdate implements ControlClassUpdate {
 	}
 
 	@Override
-	public @NotNull ControlClass getOwnerControlClass() {
+	public @NotNull ControlClassOld getOwnerControlClass() {
 		return controlClass;
 	}
 
 	/**
-	 @return true if the inherit update was caused by {@link ControlClass#extendControlClass(ControlClass)},
+	 @return true if the inherit update was caused by {@link ControlClassOld#extendControlClass(ControlClassOld)},
 	 false otherwise
 	 */
 	public boolean isUpdatingExtendClass() {

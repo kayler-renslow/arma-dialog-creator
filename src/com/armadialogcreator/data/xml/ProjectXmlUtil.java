@@ -3,12 +3,9 @@ package com.armadialogcreator.data.xml;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.CustomControlClassRegistry;
+import com.armadialogcreator.data.olddata.CustomControlClassRegistry;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
-import com.armadialogcreator.util.XmlUtil;
-import com.armadialogcreator.util.XmlWriter;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Element;
@@ -247,7 +244,7 @@ public class ProjectXmlUtil {
 	}
 
 	/**
-	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}.
+	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ControlPropertyLookupConstant)}.
 	 Only {@link ControlProperty#getPropertyLookup()} is written.
 	 This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriter, ControlPropertyLookupConstant, Element)}
 	 for each {@link ControlProperty} in <code>properties</code>
@@ -264,7 +261,7 @@ public class ProjectXmlUtil {
 	}
 
 	/**
-	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClass#overrideProperty(ControlPropertyLookupConstant)}.
+	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ControlPropertyLookupConstant)}.
 	 Only {@link ControlPropertyLookupConstant#getPropertyType()} is written.
 
 	 @param writer xml writer
