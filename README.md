@@ -1,5 +1,10 @@
 # ![logo](http://i.imgur.com/qDMUPCz.png) Arma Dialog Creator 
 
+[![GitHub issues](https://img.shields.io/github/issues/kayler-renslow/arma-dialog-creator.svg)](https://github.com/kayler-renslow/arma-dialog-creator/issues)
+[![GitHub license](https://img.shields.io/github/license/kayler-renslow/arma-dialog-creator.svg)](https://raw.githubusercontent.com/kayler-renslow/arma-dialog-creator/master/LICENSE)
+[![Github All Releases](https://img.shields.io/github/downloads/kayler-renslow/arma-dialog-creator/total.svg)](https://github.com/kayler-renslow/arma-dialog-creator/releases)
+[![Github latest version](https://img.shields.io/github/release/kayler-renslow/arma-dialog-creator.svg?label=latest%20version)](https://github.com/kayler-renslow/arma-dialog-creator/releases/latest)
+
 ### About
 Arma Dialog Creator is a tool for creating dialogs for Arma 3. The tool was designed from the beginning to be completely independent from header files (*.h, *.hpp, *.hh), which is how Arma's engine interprets how to create the dialogs. All editing is done with specialized editors such as a color picker and Font chooser.
 
