@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.old.ControlStyle;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.gui.fxcontrol.CheckMenuButton;
 import com.armadialogcreator.lang.Lang;

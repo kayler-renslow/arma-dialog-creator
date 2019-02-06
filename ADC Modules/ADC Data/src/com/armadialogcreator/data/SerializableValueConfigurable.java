@@ -20,7 +20,7 @@ public class SerializableValueConfigurable implements Configurable {
 
 	@Override
 	@NotNull
-	public List<Configurable> getNestedConfigurables() {
+	public Iterable<Configurable> getNestedConfigurables() {
 		String[] stringArray = sv.getAsStringArray();
 		List<Configurable> vs = new ArrayList<>(stringArray.length);
 		for (String s : stringArray) {
@@ -33,8 +33,18 @@ public class SerializableValueConfigurable implements Configurable {
 
 	@Override
 	@NotNull
-	public List<KeyValueString> getConfigurableAttributes() {
+	public Iterable<KeyValueString> getConfigurableAttributes() {
 		return new ArrayList<>();
+	}
+
+	@Override
+	public void addNestedConfigurable(@NotNull Configurable c) {
+
+	}
+
+	@Override
+	public void addAttribute(@NotNull String key, @NotNull String value) {
+
 	}
 
 	@Override

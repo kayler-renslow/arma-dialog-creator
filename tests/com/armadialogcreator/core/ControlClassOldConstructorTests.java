@@ -1,5 +1,6 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;

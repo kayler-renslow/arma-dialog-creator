@@ -1,7 +1,7 @@
 package com.armadialogcreator.data.olddata;
 
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.MacroRegistry;
+import com.armadialogcreator.core.old.MacroRegistry;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Value;
 import com.armadialogcreator.util.ReadOnlyList;

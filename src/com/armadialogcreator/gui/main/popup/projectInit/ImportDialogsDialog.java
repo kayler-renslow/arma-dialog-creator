@@ -2,8 +2,7 @@ package com.armadialogcreator.gui.main.popup.projectInit;
 
 import com.armadialogcreator.data.olddata.HeaderConversionException;
 import com.armadialogcreator.data.olddata.HeaderToProject;
-import com.armadialogcreator.data.xml.ProjectInit;
-import com.armadialogcreator.data.xml.ProjectXmlLoader;
+import com.armadialogcreator.data.oldprojectloader.ProjectInit;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.CheckboxSelectionPane;
@@ -148,9 +147,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			//wait for the JavaFX thread to tell what project file to load
 			File projectFile = (File) messageQToTask.take();
 
-			ProjectXmlLoader.ProjectPreviewParseResult parseResult;
+			ProjectXmlReader.ProjectPreviewParseResult parseResult;
 			try {
-				parseResult = ProjectXmlLoader.previewParseProjectXmlFile(projectFile);
+				parseResult = ProjectXmlReader.previewParseProjectXmlFile(projectFile);
 			} catch (XmlParseException e) {
 				Platform.runLater(new Runnable() {
 					@Override

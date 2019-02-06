@@ -2,12 +2,12 @@ package com.armadialogcreator.gui.main.actions.mainMenu;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
-import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.arma.util.StructuredTextParseException;
 import com.armadialogcreator.arma.util.StructuredTextParser;
 import com.armadialogcreator.arma.util.TextSection;
+import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.data.xml.DefaultStringTableXmlParser;
+import com.armadialogcreator.data.oldprojectloader.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.StringTableXmlWriter;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopup;

@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.stringtable;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
-import com.armadialogcreator.arma.stringtable.*;
+import com.armadialogcreator.core.stringtable.*;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StagePopup;

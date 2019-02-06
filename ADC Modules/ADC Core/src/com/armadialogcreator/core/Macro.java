@@ -1,7 +1,8 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.util.ValueObserver;
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/05/2016. */
-public interface Macro<T extends SerializableValue> {
+public interface Macro {
 
 	/** Get the key */
 	@NotNull
@@ -24,26 +25,26 @@ public interface Macro<T extends SerializableValue> {
 	}
 
 	@NotNull
-	ValueObserver<String> getKeyObserver();
+	NotNullValueObserver<String> getKeyObserver();
 
 	/** Get the value */
 	@NotNull
-	default T getValue() {
+	default SerializableValue getValue() {
 		return getValueObserver().getValue();
 	}
 
 	/** Set the value */
-	default void setValue(@NotNull T value) {
+	default void setValue(@NotNull SerializableValue value) {
 		getValueObserver().updateValue(value);
 	}
 
 	/**
-	 @return the {@link ValueObserver}.
+	 @return the {@link NotNullValueObserver}.
 	 */
 	@NotNull
-	ValueObserver<T> getValueObserver();
+	NotNullValueObserver<SerializableValue> getValueObserver();
 
-	/** Get the comment that describes the macro. Is user defined. */
+	/** @return the comment that describes the macro. Is user defined. */
 	@Nullable
 	String getComment();
 
@@ -56,23 +57,16 @@ public interface Macro<T extends SerializableValue> {
 		return getValue().getPropertyType();
 	}
 
-	/** Get the macro type */
 	@NotNull
-	MacroType getMacroType();
-
-	/** Set the macro type */
-	void setMacroType(@NotNull MacroType myType);
-
-	static <T extends SerializableValue> Macro<T> newMacro(@NotNull String key, @NotNull T value) {
+	static Macro newMacro(@NotNull String key, @NotNull SerializableValue value) {
 		return new BasicMacro<>(key, value);
 	}
 
-	class BasicMacro<T extends SerializableValue> implements Macro<T> {
+	class BasicMacro<T extends SerializableValue> implements Macro {
 
-		private ValueObserver<String> keyObserver = new ValueObserver<>(null);
-		protected ValueObserver<T> valueObserver;
-		protected String comment;
-		protected MacroType myType = MacroType.USER_DEFINED;
+		private final NotNullValueObserver<String> keyObserver;
+		private final NotNullValueObserver<SerializableValue> valueObserver;
+		private String comment;
 
 		/**
 		 A macro is referenced by a key and the result is text that is appended into the ending .h file.
@@ -81,13 +75,13 @@ public interface Macro<T extends SerializableValue> {
 		 @param value the value (Object.toString() will be used to get end result)
 		 */
 		public BasicMacro(@NotNull String key, @NotNull T value) {
-			getKeyObserver().updateValue(key); //do not change to setKey
-			this.valueObserver = new ValueObserver<>(value);
+			keyObserver = new NotNullValueObserver<>(key);
+			this.valueObserver = new NotNullValueObserver<>(value);
 		}
 
 		@Override
 		@NotNull
-		public ValueObserver<T> getValueObserver() {
+		public NotNullValueObserver<SerializableValue> getValueObserver() {
 			return valueObserver;
 		}
 
@@ -109,19 +103,8 @@ public interface Macro<T extends SerializableValue> {
 
 		@NotNull
 		@Override
-		public ValueObserver<String> getKeyObserver() {
+		public NotNullValueObserver<String> getKeyObserver() {
 			return keyObserver;
-		}
-
-		@Override
-		@NotNull
-		public MacroType getMacroType() {
-			return myType;
-		}
-
-		@Override
-		public void setMacroType(@NotNull MacroType myType) {
-			this.myType = myType;
 		}
 
 		/**

@@ -3,11 +3,10 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.util.ListObserver;
-import com.armadialogcreator.util.ListsIterator;
+import com.armadialogcreator.util.ListsArrayIterator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -19,7 +18,7 @@ public class MacroRegistry implements Registry {
 	private static final MacroRegistry instance = new MacroRegistry();
 
 	static {
-		ApplicationDataManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.getInstance().addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -57,17 +56,17 @@ public class MacroRegistry implements Registry {
 	@Override
 	public void applicationInitializing() {
 		systemMacros.loadSystemMacros();
-		ApplicationDataManager.getInstance().getApplicationDataList().add(applicationMacros);
+		ApplicationDataManager.getInstance().getDataList().add(applicationMacros);
 	}
 
 	@Override
 	public void projectInitializing(@NotNull Project project) {
-		project.getProjectDataList().add(new ProjectMacros());
+		project.getDataList().add(new ProjectMacros());
 	}
 
 	@Override
 	public void projectDataLoaded(@NotNull Project project) {
-		for (ProjectData d : project.getProjectDataList()) {
+		for (ProjectData d : project.getDataList()) {
 			if (d instanceof ProjectMacros) {
 				this.projectMacros = (ProjectMacros) d; //update to new macros
 				break;
@@ -82,12 +81,12 @@ public class MacroRegistry implements Registry {
 
 	@Override
 	public void workspaceInitializing(@NotNull Workspace workspace) {
-		workspace.getWorkspaceDataList().add(new WorkspaceMacros());
+		workspace.getDataList().add(new WorkspaceMacros());
 	}
 
 	@Override
 	public void workspaceDataLoaded(@NotNull Workspace workspace) {
-		for (WorkspaceData d : workspace.getWorkspaceDataList()) {
+		for (WorkspaceData d : workspace.getDataList()) {
 			if (d instanceof WorkspaceMacros) {
 				this.workspaceMacros = (WorkspaceMacros) d; //update to new macros
 				break;
@@ -134,15 +133,15 @@ public class MacroRegistry implements Registry {
 
 	@NotNull
 	public Iterable<Macro> iterateAllMacros() {
-		List<List<Macro>> lists = new ArrayList<>(4);
-		lists.add(getProjectMacros().getMacros());
-		lists.add(getWorkspaceMacros().getMacros());
-		lists.add(getApplicationMacros().getMacros());
-		lists.add(getSystemMacros().getMacros());
-		return new ListsIterator<>(lists);
+		List<Macro>[] lists = new List[4];
+		lists[0] = getProjectMacros().getMacros();
+		lists[1] = getWorkspaceMacros().getMacros();
+		lists[2] = getApplicationMacros().getMacros();
+		lists[3] = getSystemMacros().getMacros();
+		return new ListsArrayIterator<>(lists);
 	}
 
-	private static abstract class Base<T extends ADCData> implements ADCData {
+	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;
 		private final ListObserver<Macro> macros = new ListObserver<>(new LinkedList<>());
@@ -176,9 +175,7 @@ public class MacroRegistry implements Registry {
 		}
 
 		@Override
-		@NotNull
-		public Configurable exportToConfigurable() {
-			Configurable config = new Configurable.Simple("macro-registry");
+		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", myLevel.name());
 			for (Macro macro : macros) {
 				Configurable.Simple mc = new Configurable.Simple("macro");
@@ -190,7 +187,6 @@ public class MacroRegistry implements Registry {
 				mc.addNestedConfigurable(new SerializableValueConfigurable(macro.getValue()));
 				//todo
 			}
-			return config;
 		}
 
 		@Override
@@ -200,7 +196,7 @@ public class MacroRegistry implements Registry {
 		}
 	}
 
-	public static class SystemMacros extends Base<SystemData> implements SystemData {
+	public static class SystemMacros extends Base implements SystemData {
 
 		public SystemMacros() {
 			super(DataLevel.System);
@@ -211,14 +207,14 @@ public class MacroRegistry implements Registry {
 		}
 	}
 
-	public static class ApplicationMacros extends Base<ApplicationData> implements ApplicationData {
+	public static class ApplicationMacros extends Base implements ApplicationData {
 
 		public ApplicationMacros() {
 			super(DataLevel.Application);
 		}
 	}
 
-	public static class WorkspaceMacros extends Base<WorkspaceData> implements WorkspaceData {
+	public static class WorkspaceMacros extends Base implements WorkspaceData {
 
 		protected WorkspaceMacros() {
 			super(DataLevel.Workspace);
@@ -226,7 +222,7 @@ public class MacroRegistry implements Registry {
 
 	}
 
-	public static class ProjectMacros extends Base<ProjectData> implements ProjectData {
+	public static class ProjectMacros extends Base implements ProjectData {
 
 		public ProjectMacros() {
 			super(DataLevel.Project);

@@ -4,109 +4,252 @@ import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author K
  @since 01/03/2019 */
 public class ApplicationManager {
-	private boolean applicationInitialized = false;
-	private boolean workspaceLoaded = false;
-	private boolean projectLoaded = false;
+	private static final String PROJECT_SAVE_FILE_NAME = "project.adc";
+	private static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
+	private static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
 
+	private static final ApplicationManager instance = new ApplicationManager();
+
+	@NotNull
+	public static ApplicationManager getInstance() {
+		return instance;
+	}
+
+	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
+	private final UpdateListenerGroup<ApplicationState> stateUpdateGroup = new UpdateListenerGroup<>();
+	private boolean applicationInitialized = false;
+
+	private volatile Project project;
+	private volatile Workspace workspace;
+	
 	public void initializeApplication() {
 		if (applicationInitialized) {
 			return;
 		}
-		ApplicationDataManager adm = ApplicationDataManager.getInstance();
-		UpdateListenerGroup<ApplicationState> group = adm.getApplicationStateUpdateGroup();
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
+		for (ApplicationStateSubscriber sub : subs) {
 			sub.applicationInitializing();
 		}
-		group.update(ApplicationState.ApplicationInitializing);
+		stateUpdateGroup.update(ApplicationState.ApplicationInitializing);
+
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.systemDataInitializing();
+		}
+		stateUpdateGroup.update(ApplicationState.SystemDataInitializing);
+
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.systemDataLoaded();
+		}
+		stateUpdateGroup.update(ApplicationState.SystemDataLoaded);
 
 		//todo load configurables
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
+		for (ApplicationStateSubscriber sub : subs) {
 			sub.applicationDataLoaded();
 		}
-		group.update(ApplicationState.ApplicationDataLoaded);
+		stateUpdateGroup.update(ApplicationState.ApplicationDataLoaded);
 
 		applicationInitialized = true;
 	}
 
+
+	public void addStateSubscriber(@NotNull ApplicationStateSubscriber sub) {
+		subs.add(sub);
+	}
+
+	@NotNull
+	protected List<ApplicationStateSubscriber> getApplicationStateSubs() {
+		return subs;
+	}
+
+	/** A way of subscribing to state changes without needing to implement {@link ApplicationStateSubscriber} */
+	@NotNull
+	public UpdateListenerGroup<ApplicationState> getApplicationStateUpdateGroup() {
+		return stateUpdateGroup;
+	}
+
+	@NotNull
+	public Workspace getCurrentWorkspace() {
+		if (workspace == null) {
+			throw new IllegalStateException("workspace never initialized");
+		}
+		return workspace;
+	}
+
+	@NotNull
+	public Project getCurrentProject() {
+		if (project == null) {
+			throw new IllegalStateException("project never initialized");
+		}
+		return project;
+	}
+	
 	public void loadWorkspace(@NotNull File workspaceDirectory) {
-		ApplicationDataManager adm = ApplicationDataManager.getInstance();
-		UpdateListenerGroup<ApplicationState> group = adm.getApplicationStateUpdateGroup();
-
-		if (workspaceLoaded) {
-			Workspace w = adm.getCurrentWorkspace();
-			w.getWorkspaceDataList().invalidate();
-			for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-				sub.workspaceClosed(w);
+		if (workspace != null) {
+			workspace.getDataList().invalidate();
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.workspaceClosed(workspace);
 			}
-			group.update(ApplicationState.WorkspaceClosed);
+			stateUpdateGroup.update(ApplicationState.WorkspaceClosed);
 		}
 
-		Workspace w = new Workspace(workspaceDirectory);
+		Workspace newWorkspace = new Workspace(workspaceDirectory);
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.workspaceInitializing(w);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.workspaceInitializing(newWorkspace);
 		}
-		group.update(ApplicationState.WorkspaceInitializing);
+		stateUpdateGroup.update(ApplicationState.WorkspaceInitializing);
 
 		//todo load configurables
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.workspaceDataLoaded(w);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.workspaceDataLoaded(newWorkspace);
 		}
-		group.update(ApplicationState.WorkspaceDataLoaded);
+		stateUpdateGroup.update(ApplicationState.WorkspaceDataLoaded);
 
-		adm.setWorkspace(w);
+		this.workspace = newWorkspace;
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.workspaceReady(w);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.workspaceReady(newWorkspace);
 		}
-		group.update(ApplicationState.WorkspaceReady);
-
-		workspaceLoaded = true;
+		stateUpdateGroup.update(ApplicationState.WorkspaceReady);
+		
 	}
 
 	public void loadProject(@NotNull ProjectDescriptor descriptor) {
-		ApplicationDataManager adm = ApplicationDataManager.getInstance();
-		UpdateListenerGroup<ApplicationState> group = adm.getApplicationStateUpdateGroup();
-
-		if (projectLoaded) {
-			Project p = adm.getCurrentProject();
-			p.getProjectDataList().invalidate();
-			for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-				sub.projectClosed(p);
+		if (project != null) {
+			project.getDataList().invalidate();
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.projectClosed(project);
 			}
-			group.update(ApplicationState.ProjectClosed);
+			stateUpdateGroup.update(ApplicationState.ProjectClosed);
 		}
 
-		Project p = new Project(descriptor);
+		Project newProject = new Project(descriptor);
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.projectInitializing(p);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.projectInitializing(newProject);
 		}
-		group.update(ApplicationState.ProjectInitializing);
+		stateUpdateGroup.update(ApplicationState.ProjectInitializing);
 
 		//todo load configurables
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.projectDataLoaded(p);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.projectDataLoaded(newProject);
 		}
-		group.update(ApplicationState.ProjectDataLoaded);
+		stateUpdateGroup.update(ApplicationState.ProjectDataLoaded);
 
-		adm.setProject(p);
+		this.project = newProject;
 
-		for (ApplicationStateSubscriber sub : adm.getApplicationStateSubs()) {
-			sub.projectReady(p);
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.projectReady(newProject);
 		}
-		group.update(ApplicationState.ProjectReady);
+		stateUpdateGroup.update(ApplicationState.ProjectReady);
 
-		projectLoaded = true;
+	}
 
+	public void saveProject() {
+
+	}
+
+	/**
+	 Set the directory where the project is saved.
+	 The project's save path will be relative to {@link Workspace#getWorkspaceDirectory()}
+	 <p>
+	 If the project directory name already exists, a (x) will be appended to the name
+
+	 @param project the project to change
+	 @param directoryName the new directory name for the project.
+	 @throws IOException when the file system couldn't do the move
+	 */
+	public void setProjectDirectoryName(@NotNull Project project, @NotNull String directoryName) throws IOException {
+		Workspace workspace = project.getWorkspace();
+		File dest = workspace.getFileForName(directoryName);
+		int c = 1;
+		while (dest.exists()) {
+			dest = workspace.getFileForName(directoryName + " (" + c + ")");
+		}
+		if (project.getFileForName(PROJECT_SAVE_FILE_NAME).exists()) {
+			Files.move(project.getProjectSaveDirectory().toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
+		}
+		project.setProjectSaveFile(new File(dest.getAbsolutePath() + File.separator + PROJECT_SAVE_FILE_NAME));
+	}
+
+	public void closeApplication() {
+		if (!applicationInitialized) {
+			return;
+		}
+
+		if (workspace != null) {
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.workspaceClosed(workspace);
+			}
+			stateUpdateGroup.update(ApplicationState.ProjectClosed);
+		}
+
+		if (project != null) {
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.projectClosed(project);
+			}
+			stateUpdateGroup.update(ApplicationState.ProjectClosed);
+		}
+
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.applicationExit();
+		}
+		stateUpdateGroup.update(ApplicationState.ApplicationExit);
+	}
+
+	public void restartApplication() {
+		//todo
+		//		try {
+		//			final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
+		//			final File currentJar = new File(ArmaDialogCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+		//
+		//			/* is it a jar file? */
+		//			if (!currentJar.getName().endsWith(".jar")) {
+		//				return;
+		//			}
+		//
+		//			/* Build command: java -jar application.jar */
+		//			final ArrayList<String> command = new ArrayList<>();
+		//			command.add(javaBin);
+		//			command.add("-jar");
+		//			command.add(currentJar.getPath());
+		//
+		//			final ProcessBuilder builder = new ProcessBuilder(command);
+		//			if (askToSave) {
+		//				ERROR todo
+		//				//ApplicationDataManager.getInstance().askSaveAll();
+		//			}
+		//			builder.start();
+		//			System.exit(0);
+		//		} catch (Exception e) {
+		//			ExceptionHandler.error(e);
+		//		}
+	}
+
+	@NotNull
+	public static File getFileInApplicationDirectory(@NotNull String file) {
+		final String append = File.separator + "Arma Dialog Creator" + File.separator + file;
+		String OS = System.getProperty("os.name").toUpperCase();
+		if (OS.contains("WIN")) {
+			return new File(System.getenv("APPDATA") + append);
+		} else if (OS.contains("MAC")) {
+			return new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + append);
+		} else if (OS.contains("NUX")) {
+			return new File(System.getProperty("user.home") + append);
+		}
+		return new File(System.getProperty("user.dir") + append);
 	}
 }

@@ -1,6 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationDataManager;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.Workspace;
@@ -18,7 +18,7 @@ public class ApplicationStateChangeLogger implements ApplicationStateSubscriber 
 	private static final ApplicationStateChangeLogger instance = new ApplicationStateChangeLogger();
 
 	static {
-		ApplicationDataManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.getInstance().addStateSubscriber(instance);
 	}
 
 	@NotNull

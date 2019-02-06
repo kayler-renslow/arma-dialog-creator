@@ -1,9 +1,9 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.core.ControlClassOld;
-import com.armadialogcreator.core.ControlClassRegistry;
-import com.armadialogcreator.core.ControlClassSpecification;
-import com.armadialogcreator.core.CustomControlClass;
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlClassRegistry;
+import com.armadialogcreator.core.old.ControlClassSpecification;
+import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

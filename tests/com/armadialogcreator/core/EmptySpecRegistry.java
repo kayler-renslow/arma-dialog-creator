@@ -1,5 +1,9 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.old.DefaultValueProvider;
+import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

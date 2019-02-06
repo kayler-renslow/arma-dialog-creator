@@ -3,7 +3,6 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.ProgramArgument;
-import com.armadialogcreator.data.olddata.ApplicationData;
 import com.armadialogcreator.expression.*;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SyntaxTextArea;
@@ -183,7 +182,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 					} else {
 						returnValueString = bundle.getString("CodeArea.error");
 						consoleString = e.getMessage();
-						if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
+						if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
 							e.printStackTrace(System.out);
 						}
 					}

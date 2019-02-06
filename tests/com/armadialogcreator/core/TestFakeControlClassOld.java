@@ -1,5 +1,8 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlClassSpecification;
+
 import java.util.Collections;
 
 /**

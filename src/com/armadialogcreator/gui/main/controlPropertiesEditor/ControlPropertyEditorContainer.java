@@ -1,11 +1,11 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.core.sv.SerializableValueConversionException;
-import com.armadialogcreator.data.olddata.ApplicationData;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;

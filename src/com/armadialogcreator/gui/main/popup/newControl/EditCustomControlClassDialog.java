@@ -1,9 +1,9 @@
 package com.armadialogcreator.gui.main.popup.newControl;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.ControlClassOld;
-import com.armadialogcreator.core.ControlClassUpdate;
-import com.armadialogcreator.core.CustomControlClass;
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlClassUpdate;
+import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.lang.Lang;

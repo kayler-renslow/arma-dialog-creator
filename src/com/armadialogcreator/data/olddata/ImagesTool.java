@@ -4,7 +4,6 @@ import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.util.ArmaTools;
 import com.armadialogcreator.data.FileDependency;
 import com.armadialogcreator.data.FileDependencyRegistry;
-import com.armadialogcreator.data.RemappedFileDependency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +39,7 @@ public class ImagesTool {
 	 {@link Workspace#getWorkspaceDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
 	 <p>
 	 This method will also automatically insert any converted paa images into
-	 {@link FileDependencyRegistry#getWorkspaceDependencies()}  ()} with a {@link RemappedFileDependency} instance.
+	 {@link FileDependencyRegistry#getWorkspaceDependencies()}.
 	 Because of this, a given image file could be a .paa image that was already converted. If the converted image
 	 already exists in {@link FileDependencyRegistry#getWorkspaceDependencies()}, that converted file will be returned.
 	 <p>
@@ -79,18 +78,18 @@ public class ImagesTool {
 			FileDependency dependency = dependencies.getDependencyInstanceByFile(imageFile);
 			File convertDest = workspace.getFileInCacheDirectory(System.currentTimeMillis() + ".png");
 
-			if (dependency instanceof RemappedFileDependency) {
-				RemappedFileDependency remapped = (RemappedFileDependency) dependency;
-				if (remapped.getFile().exists()) {
-					return remapped.getFile();
+			if (dependency != null) {
+				File remapped = dependency.getRemappedFile();
+				if (remapped.exists() && remapped.getName().endsWith(".png")) {
+					return dependency.getRemappedFile();
 				}
 			}
 
 			ImagesTool tool = new ImagesTool(callback, imageFile, convertDest);
-			RemappedFileDependency newDependency = tool.convert();
+			FileDependency newDependency = tool.convert();
 			if (newDependency != null) {
 				dependencies.getDependencyList().add(newDependency);
-				return newDependency.getFile();
+				return newDependency.getRemappedFile();
 			}
 		}
 
@@ -108,7 +107,7 @@ public class ImagesTool {
 	}
 
 	@Nullable
-	private RemappedFileDependency convert() {
+	private FileDependency convert() {
 		File a3Tools = callback.arma3ToolsDirectory();
 		if (a3Tools == null) {
 			callback.conversionCancelled(paaFile);
@@ -138,7 +137,9 @@ public class ImagesTool {
 
 		callback.conversionSucceeded(paaFile, pngFile);
 
-		return new RemappedFileDependency(paaFile, pngFile);
+		FileDependency dependency = new FileDependency(paaFile);
+		dependency.remapFile(pngFile);
+		return dependency;
 	}
 
 	/**

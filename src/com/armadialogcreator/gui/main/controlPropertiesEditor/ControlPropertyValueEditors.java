@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
@@ -70,7 +70,7 @@ class ControlPropertyValueEditors {
 				throw new IllegalStateException("options shouldn't be null");
 			}
 			radioButtons = new ArrayList<>(lookup.getOptions().length);
-			for (ControlPropertyOption option : lookup.getOptions()) {
+			for (ControlPropertyOptionOld option : lookup.getOptions()) {
 				if (option == null) {
 					throw new IllegalStateException("option shouldn't be null");
 				}

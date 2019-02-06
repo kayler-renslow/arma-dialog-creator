@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.old.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ReadOnlyValueObserver;

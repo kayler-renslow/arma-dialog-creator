@@ -5,11 +5,26 @@ package com.armadialogcreator.application;
  @since 01/06/2019 */
 public enum ApplicationState {
 	/**
-	 Called one time when ADC is launched. This method should be used to initialize any {@link ApplicationData} instances.
+	 Called one time when ADC is launched.
 	 */
 	ApplicationInitializing,
 	/**
-	 Called one time when {@link ApplicationDataManager#getApplicationDataList()} is fully loaded and ready.
+	 Called one time after {@link #ApplicationInitializing}.
+	 This state should be used to initialize any {@link SystemData} instances
+	 */
+	SystemDataInitializing,
+	/**
+	 Called one time after {@link #SystemDataInitializing}.
+	 All {@link SystemData} instances should be fully loaded and ready after this state.
+	 */
+	SystemDataLoaded,
+
+	/**
+	 Called after {@link #SystemDataLoaded}. This state should be used to initialize any {@link ApplicationData} instances.
+	 */
+	ApplicationDataInitializing,
+	/**
+	 Called one time after {@link #ApplicationInitializing} {@link ApplicationDataManager#getDataList()} is fully loaded and ready.
 	 */
 	ApplicationDataLoaded,
 	/** Called one time when ADC is about to close */
@@ -19,16 +34,17 @@ public enum ApplicationState {
 	 */
 	ProjectInitializing,
 	/**
-	 Called whenever a project's {@link Project#getProjectDataList()} is fully loaded and ready.
+	 Called after {@link #ProjectInitializing}. In this state, a project's {@link Project#getDataList()} is fully loaded and ready.
 	 */
 	ProjectDataLoaded,
 	/**
-	 Called whenever a project is loaded into memory and ready to be accessed/modified by the main part of the program.
+	 Called after {@link #ProjectDataLoaded}.
+	 In this state, a project is loaded into memory and ready to be accessed/modified by the main part of the program.
 	 */
 	ProjectReady,
 	/**
 	 Called whenever a project is closed.
-	 This method can be called when the application is exiting or the user is just loading a new project.
+	 This state can be called when the application is exiting or the user is just loading a new project.
 	 */
 	ProjectClosed,
 	/**
@@ -40,12 +56,12 @@ public enum ApplicationState {
 	 */
 	WorkspaceDataLoaded,
 	/**
-	 Called whenever a workspace's {@link Workspace#getWorkspaceDataList()} is fully loaded and ready.
+	 Called whenever a workspace's {@link Workspace#getDataList()} is fully loaded and ready.
 	 */
 	WorkspaceReady,
 	/**
 	 Called whenever a workspace is closed.
-	 This method can be called when the application is exiting or the user is just loading a new workspace.
+	 This state can be called when the application is exiting or the user is just loading a new workspace.
 	 */
 	WorkspaceClosed
 }

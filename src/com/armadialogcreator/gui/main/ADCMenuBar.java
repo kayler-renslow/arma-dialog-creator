@@ -2,10 +2,10 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ProgramArgument;
-import com.armadialogcreator.arma.stringtable.KnownLanguage;
-import com.armadialogcreator.arma.stringtable.Language;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
+import com.armadialogcreator.core.stringtable.KnownLanguage;
+import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
@@ -207,7 +207,7 @@ class ADCMenuBar extends MenuBar {
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);
-		if (ArmaDialogCreator.containsUnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
+		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
 			this.getMenus().add(new Menu("Debug", null, addOnAction(new MenuItem("Debug Menu"), new TestAction())));
 		}
 

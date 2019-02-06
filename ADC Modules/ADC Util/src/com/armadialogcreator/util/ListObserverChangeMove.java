@@ -54,7 +54,7 @@ public class ListObserverChangeMove<E> {
 	 Return true if this update comes from the moved element being moved into it's new
 	 list via {@link ListObserver#move(int, ListObserver, int)},
 	 or false if this update captures the moved
-	 control leaving the old list.
+	 element leaving the old list.
 
 	 @see ListObserver#move(int, ListObserver, int)
 	 */

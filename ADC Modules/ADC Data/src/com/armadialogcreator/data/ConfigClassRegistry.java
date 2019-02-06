@@ -1,6 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationDataManager;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.core.ConfigClass;
@@ -13,20 +13,21 @@ import java.util.List;
  @since 01/04/2019 */
 public class ConfigClassRegistry extends ConfigClassRegistryBase<ConfigClass> {
 
-	private static final ConfigClassRegistry instance = new ConfigClassRegistry(new ConfigClassConfigurableHandler() {
+	private static final ConfigClassRegistry instance = new ConfigClassRegistry(new ConfigClassConfigurableHandler<>() {
 		@Override
-		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List classes) {
+		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List<ConfigClass> classes) {
 
 		}
 
 		@Override
-		public @NotNull Configurable exportToConfigurable(@NotNull List classes, @NotNull DataLevel level) {
-			return null;
+		public void exportToConfigurable(@NotNull Configurable config, @NotNull List<ConfigClass> classes, @NotNull DataLevel level) {
+
 		}
+
 	});
 
 	static {
-		ApplicationDataManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.getInstance().addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -34,7 +35,7 @@ public class ConfigClassRegistry extends ConfigClassRegistryBase<ConfigClass> {
 		return instance;
 	}
 
-	protected ConfigClassRegistry(@NotNull ConfigClassConfigurableHandler configurableHandler) {
+	protected ConfigClassRegistry(@NotNull ConfigClassConfigurableHandler<ConfigClass> configurableHandler) {
 		super(configurableHandler);
 	}
 }

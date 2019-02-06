@@ -8,7 +8,7 @@ package com.armadialogcreator.application;
 public enum DataLevel {
 	/**
 	 Pre-existing data on the user's computer.
-	 This is used when data is being used from Arma 3 or from files independent from ADC (stringtable.xml, images, etc)
+	 This is used when data is being used from Arma 3 or from data built inside ADC itself
 	 */
 	System,
 	/**

@@ -58,7 +58,8 @@ public class ReadOnlyList<E> implements List<E> {
 
 	@Override
 	public E remove(int index) {
-		throw new UnsupportedOperationException();
+		noMutateException();
+		return null;
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package com.armadialogcreator.data.xml;
 
-import com.armadialogcreator.arma.stringtable.*;
+import com.armadialogcreator.core.stringtable.*;
 import com.armadialogcreator.util.XmlWriter;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;

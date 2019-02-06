@@ -1,5 +1,8 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlPropertyOptionOld;
+import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 public interface ConfigPropertyKey {
 	/** @return all values that the property can be, or null if not using options. */
 	@Nullable
-	ControlPropertyOption[] getOptions();
+	ReadOnlyList<ControlPropertyOptionOld> getOptions();
 
 	/** @return the name associated with the property. Is not guaranteed to be unique. */
 	@NotNull

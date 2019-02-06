@@ -43,22 +43,24 @@ public class ReadOnlyMap<K, V> implements Map<K, V> {
 
 	@Override
 	public V put(K key, V value) {
-		throw new UnsupportedOperationException();
+		noMutateException();
+		return null;
 	}
 
 	@Override
 	public V remove(Object key) {
-		throw new UnsupportedOperationException();
+		noMutateException();
+		return null;
 	}
 
 	@Override
 	public void putAll(@NotNull Map<? extends K, ? extends V> m) {
-		throw new UnsupportedOperationException();
+		noMutateException();
 	}
 
 	@Override
 	public void clear() {
-		throw new UnsupportedOperationException();
+		noMutateException();
 	}
 
 	@NotNull
@@ -77,5 +79,9 @@ public class ReadOnlyMap<K, V> implements Map<K, V> {
 	@Override
 	public Set<Entry<K, V>> entrySet() {
 		return map.entrySet();
+	}
+
+	private void noMutateException() {
+		throw new IllegalStateException("can't mutate read only list");
 	}
 }

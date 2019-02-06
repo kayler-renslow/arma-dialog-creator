@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.stringtable;
 
-import com.armadialogcreator.arma.stringtable.Language;
+import com.armadialogcreator.core.stringtable.Language;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.jetbrains.annotations.NotNull;

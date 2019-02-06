@@ -3,7 +3,7 @@ package com.armadialogcreator.arma.control.impl.utility;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlRenderer;
 import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.core.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;

@@ -13,7 +13,10 @@ public class XmlParseException extends Exception {
 		/** Xml failed to be re-encoded */
 		FailedReEncode,
 		/** Unknown Xml parsing or loading error. Check the exception message for (possibly) more info */
-		Other
+		Other,
+		/** File couldn't be found to parse */
+		FileNotFound
+
 	}
 
 	@NotNull

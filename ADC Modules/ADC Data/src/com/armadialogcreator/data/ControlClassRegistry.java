@@ -1,9 +1,9 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationDataManager;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.application.DataLevel;
-import com.armadialogcreator.core.ControlClass;
+import com.armadialogcreator.core.RequirementsConfigClass;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -11,22 +11,22 @@ import java.util.List;
 /**
  @author K
  @since 01/04/2019 */
-public class ControlClassRegistry extends ConfigClassRegistryBase<ControlClass> {
+public class ControlClassRegistry extends ConfigClassRegistryBase<RequirementsConfigClass> {
 
-	private static final ControlClassRegistry instance = new ControlClassRegistry(new ConfigClassConfigurableHandler() {
+	private static final ControlClassRegistry instance = new ControlClassRegistry(new ConfigClassConfigurableHandler<>() {
 		@Override
-		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List classes) {
+		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List<RequirementsConfigClass> classes) {
 
 		}
 
 		@Override
-		public @NotNull Configurable exportToConfigurable(@NotNull List classes, @NotNull DataLevel level) {
-			return null;
+		public void exportToConfigurable(@NotNull Configurable config, @NotNull List<RequirementsConfigClass> classes, @NotNull DataLevel level) {
+
 		}
 	});
 
 	static {
-		ApplicationDataManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.getInstance().addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -35,7 +35,7 @@ public class ControlClassRegistry extends ConfigClassRegistryBase<ControlClass> 
 	}
 
 
-	protected ControlClassRegistry(@NotNull ConfigClassConfigurableHandler configurableHandler) {
+	protected ControlClassRegistry(@NotNull ConfigClassConfigurableHandler<RequirementsConfigClass> configurableHandler) {
 		super(configurableHandler);
 	}
 }

@@ -1,8 +1,5 @@
 package com.armadialogcreator.lang;
 
-import com.armadialogcreator.util.CustomToString;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Locale;
@@ -15,24 +12,8 @@ public interface Lang {
 
 	Locale[] SUPPORTED_LOCALES = {Locale.US};
 
-	LocaleConverter LOCALE_CONVERTER = new LocaleConverter();
-
-	class LocaleConverter implements ValueConverter<Locale>, CustomToString<Locale> {
-
-		@Override
-		public String toString(Locale value) {
-			return value.toLanguageTag();
-		}
-
-		@Override
-		public Locale convert(DataContext context, @NotNull String... values) throws Exception {
-			return Locale.forLanguageTag(values[0]);
-		}
-
-	}
-
 	/**
-	 Get a bundle with "com.armadialogcreator" prepended
+	 Get a bundle with "com.armadialogcreator.lang." prepended
 
 	 @param bundleName name of bundle (be sure to include package information if needed)
 	 @return the bundle
@@ -77,7 +58,7 @@ public interface Lang {
 
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";
-		String VERSION = "1.0.7";
+		String VERSION = "2019.1.0";
 		String APPLICATION_TITLE = APPLICATION_NAME + " " + VERSION;
 	}
 

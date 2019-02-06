@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.stringtable;
 
-import com.armadialogcreator.arma.stringtable.Language;
-import com.armadialogcreator.arma.stringtable.StringTableKeyPath;
+import com.armadialogcreator.core.stringtable.Language;
+import com.armadialogcreator.core.stringtable.StringTableKeyPath;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

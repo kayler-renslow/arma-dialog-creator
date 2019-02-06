@@ -1,37 +1,27 @@
 package com.armadialogcreator;
 
-import com.armadialogcreator.canvas.CanvasViewColors;
-import com.armadialogcreator.data.olddata.*;
-import com.armadialogcreator.data.xml.ProjectXmlLoader;
-import com.armadialogcreator.data.xml.WorkspaceCustomControlClassXmlLoader;
-import com.armadialogcreator.gui.main.ADCMainWindow;
+import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.gui.main.ADCWindow;
-import com.armadialogcreator.gui.main.CanvasView;
-import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadProjectDialog;
-import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadWorkspaceCustomControlClassesDialog;
-import com.armadialogcreator.gui.main.popup.projectInit.ProjectImproperResultDialog;
-import com.armadialogcreator.gui.styles.ADCStyleSheets;
+import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ADCExecutors;
-import com.armadialogcreator.util.ParseError;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
-import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
-import java.util.function.Function;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.jar.Manifest;
 
 /**
@@ -39,13 +29,10 @@ import java.util.jar.Manifest;
 
  @author Kayler
  @since 05/11/2016. */
-public final class ArmaDialogCreator extends Application {
+public final class ArmaDialogCreator extends Application implements ApplicationStateSubscriber {
 
 	private static ArmaDialogCreator INSTANCE;
-	private static Locale locale = ApplicationProperty.LOCALE.getDefaultValue();
-	private static Manifest adcManifest;
 	private static Thread JavaFXThread;
-	private static Thread initializingThread;
 
 	/**
 	 Launches the Arma Dialog Creator. Only one instance is allowed to be opened at a time per Java process.
@@ -76,36 +63,39 @@ public final class ArmaDialogCreator extends Application {
 
 	private Stage primaryStage;
 	private ADCWindow mainWindow;
-	private ApplicationDataManager applicationDataManager;
-
-	private final LinkedList<Runnable> showLater = new LinkedList<>();
 
 	public ArmaDialogCreator() {
 		if (INSTANCE != null) {
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
+		ApplicationManager.getInstance().addStateSubscriber(this);
 	}
 
 	@Override
 	public void init() throws Exception {
-		int progress = 0;
+		ApplicationManager.getInstance().initializeApplication();
 
-		applicationDataManager = new ApplicationDataManager();
-		locale = ApplicationProperty.LOCALE.get(ApplicationDataManager.getApplicationProperties());
+		Thread t = new Thread(() -> {
+			int progress = 0;
+			if (!containsUnnamedLaunchParameter(ProgramArgument.NoSplash)) {
+				for (; progress < 100; progress++) {
+					try {
+						Thread.sleep(40);
+					} catch (InterruptedException ignore) {
 
-		if (!containsUnamedLaunchParameter(ProgramArgument.NoSplash)) {
-			for (; progress < 100; progress++) {
-				Thread.sleep(40);
-				notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
+					}
+					notifyPreloaderLog(new Preloader.ProgressNotification(progress / 100.0));
+				}
 			}
-		}
+		});
 
-
+		t.start();
+		t.join();
 	}
 
 	private void notifyPreloaderLog(Preloader.PreloaderNotification notification) {
-		if (containsUnamedLaunchParameter(ProgramArgument.LogInitProgress)) {
+		if (containsUnnamedLaunchParameter(ProgramArgument.LogInitProgress)) {
 			if (notification instanceof Preloader.ProgressNotification) {
 				System.out.println("Preloader Log Progress: " + ((Preloader.ProgressNotification) notification).getProgress());
 			} else if (notification instanceof Preloader.StateChangeNotification) {
@@ -135,257 +125,168 @@ public final class ArmaDialogCreator extends Application {
 
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
-
-		setToDarkTheme(ApplicationProperty.DARK_THEME.get(ArmaDialogCreator.getApplicationDataManager().getApplicationProperties()));
-
-		loadNewProject(false);
 	}
 
 	@NotNull
 	public static Manifest getManifest() {
-		if (adcManifest == null) {
-			try {
-				Enumeration<URL> resources = ArmaDialogCreator.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
-				while (resources.hasMoreElements()) {
-					Manifest manifest = new Manifest(resources.nextElement().openStream());
-					String specTitle = manifest.getMainAttributes().getValue("Specification-Title");
-					if (specTitle != null && specTitle.equals("Arma Dialog Creator")) {
-						adcManifest = manifest;
-						break;
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return adcManifest;
-	}
-
-	@NotNull
-	public static Locale getCurrentLocale() {
-		return locale;
-	}
-
-	/**
-	 Closes the application after asking if user wants to save.
-
-	 @param reply function to use (null if not to use) when the user has made their response.
-	 The parameter is whether or not the application is closing. Return type of cuntion is ignored.
-	 */
-	public static void closeApplication(@Nullable Function<Boolean, Void> reply) {
-		if (!ApplicationDataManager.getInstance().askSaveAll()) {
-			if (reply != null) {
-				reply.apply(false);
-			}
-			return;
-		}
-		//do not execute window closing event
-		if (reply != null) {
-			reply.apply(true);
-		}
-		Platform.exit();
-
-		return;
-	}
-
-	public static void restartApplication(boolean askToSave) {
+		Exception e = null;
 		try {
-			final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-			final File currentJar = new File(ArmaDialogCreator.class.getProtectionDomain().getCodeSource().getLocation().toURI());
-
-  		/* is it a jar file? */
-			if (!currentJar.getName().endsWith(".jar")) {
-				return;
-			}
-
-  		/* Build command: java -jar application.jar */
-			final ArrayList<String> command = new ArrayList<>();
-			command.add(javaBin);
-			command.add("-jar");
-			command.add(currentJar.getPath());
-
-			final ProcessBuilder builder = new ProcessBuilder(command);
-			if (askToSave) {
-				ApplicationDataManager.getInstance().askSaveAll();
-			}
-			builder.start();
-			System.exit(0);
-		} catch (Exception e) {
-			ExceptionHandler.error(e);
-		}
-	}
-
-	public static void loadNewProject() {
-		loadNewProject(true);
-	}
-
-	private static void loadNewProject(boolean askToSave) {
-		if (askToSave) {
-			if (!ApplicationDataManager.getInstance().askSaveAll()) {
-				return;
-			}
-		}
-
-		ADCWindow adcWindow = getADCWindow();
-		adcWindow.getStage().close();
-
-
-		ApplicationDataManager.getInstance().beginInitializing();
-		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
-
-		adcWindow.preInit();
-		adcWindow.getStage().show();
-
-		Task<Boolean> task = new Task<Boolean>() {
-			@Override
-			protected Boolean call() throws Exception {
-				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
-
-				ProjectXmlLoader.ProjectParseResult result = null;
-				boolean newProject = false;
-				final List<ParseError> parseErrors = new ArrayList<>();
-
-				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
-					try {
-						result = ProjectXmlLoader.parseProjectXmlFile(config.getProjectDescriptor(), applicationData);
-						parseErrors.addAll(result.getErrors());
-					} catch (Exception e) {
-						newProject = true;
-						INSTANCE.showLater.add(new Runnable() {
-							@Override
-							public void run() {
-								new CouldNotLoadProjectDialog(e).show();
-							}
-						});
-					}
-				} else {
-					newProject = true;
+			Enumeration<URL> resources = ArmaDialogCreator.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+			while (resources.hasMoreElements()) {
+				Manifest manifest = new Manifest(resources.nextElement().openStream());
+				String specTitle = manifest.getMainAttributes().getValue("Specification-Title");
+				if (specTitle != null && specTitle.equals("Arma Dialog Creator")) {
+					return manifest;
 				}
-				if (newProject) {
-					Project project = new Project(applicationData, config.getProjectDescriptor());
-					try {
-						if (project.getWorkspaceCustomControlClassesFile().exists()) {
-							WorkspaceCustomControlClassXmlLoader loader = new WorkspaceCustomControlClassXmlLoader(applicationData, null, project);
-							loader.readDocument();
-							parseErrors.addAll(loader.getErrors());
-						}
-					} catch (Exception e) {
-						INSTANCE.showLater.add(() -> {
-							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
-						});
-					}
-				}
-
-				ApplicationDataManager.getInstance().initializeDone();
-
-				final ProjectXmlLoader.ProjectParseResult finalResult = result;
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						adcWindow.initialize(finalResult != null ? finalResult.getTreeStructureBg() : null,
-								finalResult != null ? finalResult.getTreeStructureMain() : null
-						);
-						adcWindow.show();
-
-						if (parseErrors.size() > 0) {
-							new ProjectImproperResultDialog(parseErrors).showAndWait();
-						}
-
-						for (Runnable run : INSTANCE.showLater) {
-							run.run();
-						}
-						INSTANCE.showLater.clear();
-					}
-				});
-
-				return true;
 			}
-		};
-		task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-			ExceptionHandler.fatal(newValue);
-		});
-
-		initializingThread = new Thread(task);
-		initializingThread.setName("ADC - Project Initializing Thread");
-		initializingThread.setDaemon(false);
-		initializingThread.start();
+		} catch (IOException ioe) {
+			e = ioe;
+		}
+		throw new RuntimeException(e);
 	}
 
-	/**
-	 Get the {@link CanvasView} for the program
+	//	public static void loadNewProject() {
+	//		loadNewProject(true);
+	//	}
+	//
+	//	private static void loadNewProject(boolean askToSave) {
+	//		if (askToSave) {
+	//			if (!ApplicationDataManager.getInstance().askSaveAll()) {
+	//				return;
+	//			}
+	//		}
+	//
+	//		ADCWindow adcWindow = getADCWindow();
+	//		adcWindow.getStage().close();
+	//
+	//
+	//		ApplicationDataManager.getInstance().beginInitializing();
+	//		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
+	//
+	//		adcWindow.preInit();
+	//		adcWindow.getStage().show();
+	//
+	//		Task<Boolean> task = new Task<Boolean>() {
+	//			@Override
+	//			protected Boolean call() throws Exception {
+	//				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
+	//
+	//				ProjectXmlReader.ProjectParseResult result = null;
+	//				boolean newProject = false;
+	//				final List<ParseError> parseErrors = new ArrayList<>();
+	//
+	//				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
+	//					try {
+	//						result = ProjectXmlReader.parseProjectXmlFile(config.getProjectDescriptor(), applicationData);
+	//						parseErrors.addAll(result.getErrors());
+	//					} catch (Exception e) {
+	//						newProject = true;
+	//						INSTANCE.showLater.add(new Runnable() {
+	//							@Override
+	//							public void run() {
+	//								new CouldNotLoadProjectDialog(e).show();
+	//							}
+	//						});
+	//					}
+	//				} else {
+	//					newProject = true;
+	//				}
+	//				if (newProject) {
+	//					Project project = new Project(applicationData, config.getProjectDescriptor());
+	//					try {
+	//						if (project.getWorkspaceCustomControlClassesFile().exists()) {
+	//							WorkspaceCustomControlClassXmlReader loader = new WorkspaceCustomControlClassXmlReader(applicationData, null, project);
+	//							loader.readDocument();
+	//							parseErrors.addAll(loader.getErrors());
+	//						}
+	//					} catch (Exception e) {
+	//						INSTANCE.showLater.add(() -> {
+	//							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
+	//						});
+	//					}
+	//				}
+	//
+	//				ApplicationDataManager.getInstance().initializeDone();
+	//
+	//				final ProjectXmlReader.ProjectParseResult finalResult = result;
+	//				Platform.runLater(new Runnable() {
+	//					@Override
+	//					public void run() {
+	//						adcWindow.initialize(finalResult != null ? finalResult.getTreeStructureBg() : null,
+	//								finalResult != null ? finalResult.getTreeStructureMain() : null
+	//						);
+	//						adcWindow.show();
+	//
+	//						if (parseErrors.size() > 0) {
+	//							new ProjectImproperResultDialog(parseErrors).showAndWait();
+	//						}
+	//
+	//						for (Runnable run : INSTANCE.showLater) {
+	//							run.run();
+	//						}
+	//						INSTANCE.showLater.clear();
+	//					}
+	//				});
+	//
+	//				return true;
+	//			}
+	//		};
+	//		task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
+	//			ExceptionHandler.fatal(newValue);
+	//		});
+	//
+	//		initializingThread = new Thread(task);
+	//		initializingThread.setName("ADC - Project Initializing Thread");
+	//		initializingThread.setDaemon(false);
+	//		initializingThread.start();
+	//	}
 
-	 @throws IllegalStateException when this method is invoked when the {@link #getPrimaryStage()} is not showing ({@link Stage#isShowing()}==false)
-	 */
 	@NotNull
-	public static CanvasView getCanvasView() {
-		return INSTANCE.mainWindow.getCanvasView();
-	}
-
 	public static Stage getPrimaryStage() {
 		return INSTANCE.primaryStage;
 	}
 
-	private static ADCWindow getADCWindow() {
-		return INSTANCE.mainWindow;
-	}
-
-	public static ADCMainWindow getMainWindow() {
-		return INSTANCE.mainWindow;
-	}
-
-	public static void setToDarkTheme(boolean set) {
-		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
-		if (set) {
-			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
-			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;
-			INSTANCE.primaryStage.getScene().getStylesheets().add(darkTheme);
-		} else {
-			CanvasViewColors.EDITOR_BG = CanvasViewColors.DEFAULT_EDITOR_BG;
-			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
-			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
-		}
-		if (getADCWindow().isShowing()) {
-			getCanvasView().updateCanvas();
-		}
-		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
-		getApplicationDataManager().saveApplicationProperties();
-	}
-
+	//	public static void setToDarkTheme(boolean set) {
+	//		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
+	//		if (set) {
+	//			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
+	//			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;
+	//			INSTANCE.primaryStage.getScene().getStylesheets().add(darkTheme);
+	//		} else {
+	//			CanvasViewColors.EDITOR_BG = CanvasViewColors.DEFAULT_EDITOR_BG;
+	//			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
+	//			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
+	//		}
+	//		if (getADCWindow().isShowing()) {
+	//			getCanvasView().updateCanvas();
+	//		}
+	//		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
+	//		getApplicationDataManager().saveApplicationProperties();
+	//	}
+	//
 	@NotNull
-	public static ApplicationDataManager getApplicationDataManager() {
-		return INSTANCE.applicationDataManager;
-	}
-
-	public static ApplicationData getApplicationData() {
-		return INSTANCE.applicationDataManager.getApplicationData();
-	}
-
-	/** Run the given runnable on the JavaFX thread after the application's main window has been initialized */
-	public static void runAfterMainWindowLoaded(@NotNull Runnable runnable) {
-		INSTANCE.showLater.add(runnable);
-	}
-
 	public static Parameters getLaunchParameters() {
 		return INSTANCE.getParameters();
 	}
 
-	public static boolean containsUnamedLaunchParameter(@NotNull ProgramArgument argument) {
+	public static boolean containsUnnamedLaunchParameter(@NotNull ProgramArgument argument) {
 		return getLaunchParameters().getUnnamed().contains(argument.getArgKey());
 	}
 
-	/** Gets the JavaFX thread */
+	/** @return the JavaFX thread */
 	@NotNull
 	public static Thread getJavaFXThread() {
 		return JavaFXThread;
 	}
 
-	@Nullable
-	public static Thread getInitializingThread() {
-		if (getApplicationDataManager().isInitializing()) {
-			return initializingThread;
-		}
-		return null;
+	/**
+	 Do not call this method directly.
+
+	 @see ApplicationManager#closeApplication()
+	 */
+	@Override
+	public void applicationExit() {
+		Platform.exit();
 	}
 
 	private static class ArmaDialogCreatorWindowCloseEvent implements EventHandler<WindowEvent> {
@@ -395,7 +296,12 @@ public final class ArmaDialogCreator extends Application {
 			/*we want to keep the Arma Dialog Creator window still open when asking to save progress before exiting.
 			Consuming the event will keep window open and then we call closeApplication to execute the closing procedure and in turn, close the window*/
 			event.consume();
-			closeApplication(null);
+			AskSaveProjectDialog dialog = new AskSaveProjectDialog();
+			dialog.show();
+			if (dialog.saveProgress()) {
+				ApplicationManager.getInstance().saveProject();
+			}
+			ApplicationManager.getInstance().closeApplication();
 		}
 	}
 }

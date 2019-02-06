@@ -17,7 +17,6 @@ import java.util.*;
 public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E>> {
 	private final List<E> list;
 	private final LinkedList<ListObserverListener<E>> listeners = new LinkedList<>();
-	private final UpdateListenerGroup<Object> onClear = new UpdateListenerGroup<>();
 
 	public ListObserver(@NotNull List<E> list) {
 		this.list = list;
@@ -27,13 +26,9 @@ public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E
 	@Override
 	public void clear() {
 		list.clear();
-		onClear.update(null);
-	}
-
-	/** Listeners for when the list is cleared. */
-	@NotNull
-	public UpdateListenerGroup<Object> getOnClear() {
-		return onClear;
+		ListObserverChange<E> change = new ListObserverChange<>(this);
+		change.setCleared();
+		notifyListeners(change);
 	}
 
 	@Override

@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
 public interface ConfigurableManager {
 	void loadFromConfigurable(@NotNull Configurable config);
 
-	@NotNull Configurable exportToConfigurable();
+	void exportToConfigurable(@NotNull Configurable configurable);
 }

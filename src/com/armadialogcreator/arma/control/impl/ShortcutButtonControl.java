@@ -3,7 +3,7 @@ package com.armadialogcreator.arma.control.impl;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyList;

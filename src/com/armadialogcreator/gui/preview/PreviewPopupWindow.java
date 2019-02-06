@@ -5,8 +5,6 @@ import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.data.olddata.ApplicationData;
-import com.armadialogcreator.data.olddata.DataKeys;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;

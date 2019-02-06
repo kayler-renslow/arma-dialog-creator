@@ -2,7 +2,7 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.olddata.*;
 import com.armadialogcreator.lang.Lang;

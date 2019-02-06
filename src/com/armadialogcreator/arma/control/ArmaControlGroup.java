@@ -5,7 +5,7 @@ import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasControlGroup;
 import com.armadialogcreator.canvas.ControlList;
 import com.armadialogcreator.canvas.Resolution;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyList;

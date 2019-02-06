@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
-import com.armadialogcreator.data.olddata.ApplicationDataManager;
 import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.notification.BoxNotification;
 import com.armadialogcreator.gui.notification.Notification;

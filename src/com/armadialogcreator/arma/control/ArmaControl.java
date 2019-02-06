@@ -7,7 +7,7 @@ import com.armadialogcreator.canvas.CanvasControl;
 import com.armadialogcreator.canvas.CanvasDisplay;
 import com.armadialogcreator.canvas.ControlHolder;
 import com.armadialogcreator.canvas.Resolution;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;

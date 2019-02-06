@@ -1,10 +1,10 @@
 package com.armadialogcreator.gui.main.stringtable;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.stringtable.KnownLanguage;
-import com.armadialogcreator.arma.stringtable.Language;
-import com.armadialogcreator.arma.stringtable.StringTable;
-import com.armadialogcreator.arma.stringtable.StringTableKey;
+import com.armadialogcreator.core.stringtable.KnownLanguage;
+import com.armadialogcreator.core.stringtable.Language;
+import com.armadialogcreator.core.stringtable.StringTable;
+import com.armadialogcreator.core.stringtable.StringTableKey;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;

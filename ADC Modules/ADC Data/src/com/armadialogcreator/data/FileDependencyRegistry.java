@@ -19,7 +19,7 @@ public class FileDependencyRegistry implements Registry {
 	private static final FileDependencyRegistry instance = new FileDependencyRegistry();
 
 	static {
-		ApplicationDataManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.getInstance().addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -64,22 +64,22 @@ public class FileDependencyRegistry implements Registry {
 
 	@Override
 	public void applicationInitializing() {
-		ApplicationDataManager.getInstance().getApplicationDataList().add(applicationDependencies);
+		ApplicationDataManager.getInstance().getDataList().add(applicationDependencies);
 	}
 
 	@Override
 	public void projectInitializing(@NotNull Project project) {
-		project.getProjectDataList().add(new ProjectDependencies());
+		project.getDataList().add(new ProjectDependencies());
 	}
 
 	@Override
 	public void workspaceInitializing(@NotNull Workspace workspace) {
-		workspace.getWorkspaceDataList().add(new WorkspaceDependencies());
+		workspace.getDataList().add(new WorkspaceDependencies());
 	}
 
 	@Override
 	public void projectDataLoaded(@NotNull Project project) {
-		for (ProjectData d : project.getProjectDataList()) {
+		for (ProjectData d : project.getDataList()) {
 			if (d instanceof ProjectDependencies) {
 				this.projectDependencies = (ProjectDependencies) d;
 				break;
@@ -95,7 +95,7 @@ public class FileDependencyRegistry implements Registry {
 
 	@Override
 	public void workspaceDataLoaded(@NotNull Workspace workspace) {
-		for (WorkspaceData d : workspace.getWorkspaceDataList()) {
+		for (WorkspaceData d : workspace.getDataList()) {
 			if (d instanceof WorkspaceDependencies) {
 				this.workspaceDependencies = (WorkspaceDependencies) d;
 				break;
@@ -127,7 +127,7 @@ public class FileDependencyRegistry implements Registry {
 		@Nullable
 		public FileDependency getDependencyInstanceByFile(@NotNull File f) {
 			for (FileDependency resource : dependencyList) {
-				if (resource.getExternalFileObserver().getValue().equals(f)) {
+				if (resource.getOriginalFileObserver().getValue().equals(f)) {
 					return resource;
 				}
 			}
@@ -146,17 +146,10 @@ public class FileDependencyRegistry implements Registry {
 		}
 
 		@Override
-		public @NotNull Configurable exportToConfigurable() {
+		public void exportToConfigurable(@NotNull Configurable configurable) {
 			for (FileDependency d : dependencyList) {
-				if (d instanceof RemappedFileDependency) {
 
-				} else if (d instanceof ExportableFileDependency) {
-
-				} else {
-
-				}
 			}
-			return null;
 		}
 	}
 

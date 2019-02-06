@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.popup.editor;
 
-import com.armadialogcreator.core.ControlProperty;
+import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.Label;

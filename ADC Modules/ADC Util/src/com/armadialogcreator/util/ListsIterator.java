@@ -22,11 +22,7 @@ public class ListsIterator<T> implements Iterable<T>, ListIterator<T>, Iterator<
 		this.reverse = reverse;
 		if (reverse) {
 			for (List<T> l : lists) {
-				ListIterator<T> iterator = l.listIterator();
-				while (iterator.hasNext()) { //iterate to end so that we can call hasPrevious and previous()
-					iterator.next();
-				}
-				itersStack.addFirst(iterator);
+				itersStack.addFirst(l.listIterator(l.size()));
 			}
 		} else {
 			for (List<T> l : lists) {

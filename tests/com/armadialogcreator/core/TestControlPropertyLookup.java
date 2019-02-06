@@ -1,5 +1,6 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +30,7 @@ public enum TestControlPropertyLookup implements ControlPropertyLookupConstant {
 
 	@Nullable
 	@Override
-	public ControlPropertyOption[] getOptions() {
+	public ControlPropertyOptionOld[] getOptions() {
 		return resemble != null ? resemble.getOptions() : null;
 	}
 

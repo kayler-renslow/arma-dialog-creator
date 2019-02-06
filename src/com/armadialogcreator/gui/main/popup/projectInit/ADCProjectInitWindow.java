@@ -7,17 +7,14 @@ import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.LocaleDescriptor;
 import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.data.olddata.ApplicationDataManager;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.data.xml.ProjectInit;
-import com.armadialogcreator.data.xml.ProjectXmlLoader;
+import com.armadialogcreator.data.oldprojectloader.ProjectInit;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.BrowserUtil;
-import com.armadialogcreator.gui.main.popup.ADCMustRestartDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.ValueListener;
@@ -170,19 +167,19 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			for (Locale locale : Lang.SUPPORTED_LOCALES) {
 				comboBoxLanguage.getItems().add(new LocaleDescriptor(locale));
 			}
-			comboBoxLanguage.getSelectionModel().select(new LocaleDescriptor(ArmaDialogCreator.getCurrentLocale()));
+			comboBoxLanguage.getSelectionModel().select(new LocaleDescriptor(Locale.US));
 			comboBoxLanguage.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<LocaleDescriptor>() {
 				@Override
 				public void changed(ObservableValue<? extends LocaleDescriptor> observable, LocaleDescriptor oldValue, LocaleDescriptor newValue) {
 					if (newValue == null) {
 						return;
 					}
-					ApplicationProperty.LOCALE.put(ApplicationDataManager.getApplicationProperties(), newValue.getLocale());
-					ApplicationDataManager.getInstance().saveApplicationProperties();
-					boolean restart = ADCMustRestartDialog.getResponse();
-					if (restart) {
-						ArmaDialogCreator.restartApplication(false);
-					}
+					//					ApplicationProperty.LOCALE.put(ApplicationDataManager.getApplicationProperties(), newValue.getLocale());
+					//					ApplicationDataManager.getInstance().saveApplicationProperties();
+					//					boolean restart = ADCMustRestartDialog.getResponse();
+					//					if (restart) {
+					//						ArmaDialogCreator.restartApplication(false);
+					//					}
 				}
 			});
 
@@ -310,9 +307,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			private final Tab tabOpen = new Tab(bundle.getString("tab_open"));
 			private final ListView<ProjectDescriptor> lvKnownProjects = new ListView<>();
 			private final ADCProjectInitWindow projectInitWindow;
-			private LinkedList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
-			private ProjectXmlLoader.ProjectPreviewParseResult selectedParsedProject;
-			private ReadOnlyList<ProjectXmlLoader.ProjectPreviewParseResult> parsedKnownProjectsRo = new ReadOnlyList<>(parsedKnownProjects);
+			private LinkedList<ProjectXmlReader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
+			private ProjectXmlReader.ProjectPreviewParseResult selectedParsedProject;
+			private ReadOnlyList<ProjectXmlReader.ProjectPreviewParseResult> parsedKnownProjectsRo = new ReadOnlyList<>(parsedKnownProjects);
 
 			public OpenTab(ADCProjectInitWindow projectInitWindow) {
 				this.projectInitWindow = projectInitWindow;
@@ -335,9 +332,9 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						if (chosen == null) {
 							return;
 						}
-						ProjectXmlLoader.ProjectPreviewParseResult result;
+						ProjectXmlReader.ProjectPreviewParseResult result;
 						try {
-							result = ProjectXmlLoader.previewParseProjectXmlFile(chosen);
+							result = ProjectXmlReader.previewParseProjectXmlFile(chosen);
 						} catch (XmlParseException e) {
 							return;
 						}
@@ -361,7 +358,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					@Override
 					public void changed(ObservableValue<? extends ProjectDescriptor> observable, ProjectDescriptor oldValue, ProjectDescriptor selected) {
 						boolean matched = false;
-						for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
+						for (ProjectXmlReader.ProjectPreviewParseResult result : parsedKnownProjects) {
 							if (result.getProjectDescriptor().equals(selected)) {
 								selectedParsedProject = result;
 								matched = true;
@@ -400,7 +397,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						}
 						for (File projectFile : projectFiles) {
 							try {
-								ProjectXmlLoader.ProjectPreviewParseResult result = ProjectXmlLoader.previewParseProjectXmlFile(projectFile);
+								ProjectXmlReader.ProjectPreviewParseResult result = ProjectXmlReader.previewParseProjectXmlFile(projectFile);
 								parsedKnownProjects.add(result);
 							} catch (XmlParseException e) {
 								e.printStackTrace();
@@ -411,7 +408,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 				}
 
-				for (ProjectXmlLoader.ProjectPreviewParseResult result : parsedKnownProjects) {
+				for (ProjectXmlReader.ProjectPreviewParseResult result : parsedKnownProjects) {
 					lvKnownProjects.getItems().add(result.getProjectDescriptor());
 				}
 			}
@@ -428,7 +425,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			}
 
 			@NotNull
-			public ReadOnlyList<ProjectXmlLoader.ProjectPreviewParseResult> getParsedKnownProjects() {
+			public ReadOnlyList<ProjectXmlReader.ProjectPreviewParseResult> getParsedKnownProjects() {
 				return parsedKnownProjectsRo;
 			}
 		}

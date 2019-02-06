@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  @since 08/12/2016 */
 public class ListObserverChange<E> {
 	public enum ChangeType {
-		Add, Set, Remove, Move
+		Add, Set, Remove, Clear, Move
 	}
 
 	private final ListObserver<E> modifiedList;
@@ -52,6 +52,11 @@ public class ListObserverChange<E> {
 		changeType = ChangeType.Move;
 	}
 
+	void setCleared() {
+		checkType();
+		this.changeType = ChangeType.Clear;
+	}
+
 	private void checkType() {
 		if (changeType != null) {
 			throw new IllegalStateException("only one changeType is allowed at once");
@@ -82,6 +87,12 @@ public class ListObserverChange<E> {
 	public boolean wasMoved() {
 		return changeType == ChangeType.Move;
 	}
+
+	/** @return {@link #getChangeType()}=={@link ChangeType#Clear} */
+	public boolean wasCleared() {
+		return this.changeType == ChangeType.Clear;
+	}
+
 
 	/**
 	 @return the {@link ListObserverChangeSet} update
@@ -130,6 +141,5 @@ public class ListObserverChange<E> {
 		}
 		return moved;
 	}
-
 
 }

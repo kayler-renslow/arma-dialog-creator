@@ -12,12 +12,12 @@ import java.util.ArrayList;
  @author Kayler
  @see Project
  @since 11/23/2016 */
-public class Workspace {
+public class Workspace implements ADCDataListManager<WorkspaceData> {
 	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(System.getProperty("user.home") + File.separator + "Arma Dialog Creator");
 
 	private final File workspaceDirectory;
 	private final File adcDirectory;
-	private final ListObserver<WorkspaceData> workspaceDataList = new ListObserver<>(new ArrayList<>());
+	private final ListObserver<WorkspaceData> dataList = new ListObserver<>(new ArrayList<>());
 
 	/**
 	 Construct a new instance
@@ -43,9 +43,10 @@ public class Workspace {
 		}
 	}
 
+	@Override
 	@NotNull
-	public ListObserver<WorkspaceData> getWorkspaceDataList() {
-		return workspaceDataList;
+	public ListObserver<WorkspaceData> getDataList() {
+		return dataList;
 	}
 
 	/** @return the File that is the workspace's directory that contains a bunch of {@link Project}'s */
@@ -55,13 +56,13 @@ public class Workspace {
 	}
 
 	/**
-	 Get the current {@link Workspace} instance that is saved in {@link ApplicationDataManager#getCurrentWorkspace()}.
+	 Get the current {@link Workspace} instance that is saved in {@link ApplicationManager#getCurrentWorkspace()}.
 
 	 @return instance
 	 */
 	@NotNull
 	public static Workspace getWorkspace() {
-		return ApplicationDataManager.getInstance().getCurrentWorkspace();
+		return ApplicationManager.getInstance().getCurrentWorkspace();
 	}
 
 	/**

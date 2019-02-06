@@ -4,7 +4,6 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ParseError;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;

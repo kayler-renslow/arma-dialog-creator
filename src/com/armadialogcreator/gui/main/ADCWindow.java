@@ -3,7 +3,6 @@ package com.armadialogcreator.gui.main;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.canvas.ScreenDimension;
-import com.armadialogcreator.data.olddata.DataKeys;
 import com.armadialogcreator.data.olddata.ImagesTool;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.FXUtil;

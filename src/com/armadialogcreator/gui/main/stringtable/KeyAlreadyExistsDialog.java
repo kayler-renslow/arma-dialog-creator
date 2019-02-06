@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.stringtable;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.stringtable.StringTableKey;
+import com.armadialogcreator.core.stringtable.StringTableKey;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;

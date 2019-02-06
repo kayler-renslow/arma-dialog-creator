@@ -3,8 +3,8 @@ package com.armadialogcreator.gui.main.treeview.dataCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.impl.ProgressControl;
 import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.core.SpecificationRegistry;
+import com.armadialogcreator.core.old.ControlType;
+import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 

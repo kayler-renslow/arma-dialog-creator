@@ -1,5 +1,8 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.old.SpecificationRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

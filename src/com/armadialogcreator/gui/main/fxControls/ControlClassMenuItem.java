@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.fxControls;
 
-import com.armadialogcreator.core.ControlClassOld;
+import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
 import com.armadialogcreator.gui.fxcontrol.ImageContainer;
 import org.jetbrains.annotations.Nullable;

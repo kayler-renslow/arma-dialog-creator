@@ -1,9 +1,9 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.core.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.DefaultValueProvider;
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.old.DefaultValueProvider;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.xml.DefaultValueXmlLoader;
+import com.armadialogcreator.data.oldprojectloader.DefaultValueXmlReader;
 import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,7 +50,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 			if (is == null) {
 				return;
 			}
-			DefaultValueXmlLoader loader = new DefaultValueXmlLoader(new InputStreamReader(is), data);
+			DefaultValueXmlReader loader = new DefaultValueXmlReader(new InputStreamReader(is), data);
 
 			for (ControlPropertyLookupConstant lookup : tofetch) {
 				valuesMap.put(lookup.getPropertyName(), loader.fetchValue(lookup));

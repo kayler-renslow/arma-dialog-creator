@@ -3,10 +3,11 @@ package com.armadialogcreator.data.olddata;
 import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.arma.stringtable.Language;
-import com.armadialogcreator.arma.stringtable.StringTable;
 import com.armadialogcreator.canvas.UICanvasEditor;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.old.*;
+import com.armadialogcreator.core.stringtable.Language;
+import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.FileDependency;
 import com.armadialogcreator.data.export.ProjectExportConfiguration;
@@ -72,7 +73,7 @@ public class Project extends com.armadialogcreator.application.Project /*TODO ex
 		projectCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Project, this);
 		workspaceCustomControlClassRegistry = new CustomControlClassRegistry(CustomControlClass.Scope.Workspace, this);
 
-		projectSaveFile = descriptor.getProjectXmlFile();
+		projectSaveFile = descriptor.getProjectSaveFile();
 		applicationData.setProject(this);
 	}
 

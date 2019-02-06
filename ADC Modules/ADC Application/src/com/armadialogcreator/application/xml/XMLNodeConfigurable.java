@@ -29,7 +29,7 @@ public class XMLNodeConfigurable implements Configurable {
 			@Override
 			public Iterator<Configurable> iterator() {
 				return new Iterator<Configurable>() {
-					Iterator<Element> iterator = XmlUtil.getChildElementsWithTagNameIterable(XMLNodeConfigurable.this.element, null).iterator();
+					Iterator<Element> iterator = XmlUtil.iterateChildElements(XMLNodeConfigurable.this.element).iterator();
 
 					@Override
 					public boolean hasNext() {
@@ -72,12 +72,12 @@ public class XMLNodeConfigurable implements Configurable {
 
 	@Override
 	public void addNestedConfigurable(@NotNull Configurable c) {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public void addAttribute(@NotNull String key, @NotNull String value) {
-
+		throw new UnsupportedOperationException();
 	}
 
 	@Override

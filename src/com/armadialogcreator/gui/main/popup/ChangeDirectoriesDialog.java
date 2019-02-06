@@ -3,7 +3,6 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.util.ArmaTools;
-import com.armadialogcreator.data.olddata.ApplicationDataManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;

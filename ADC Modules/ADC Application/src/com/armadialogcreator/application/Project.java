@@ -5,42 +5,35 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 
 /**
  @author K
  @since 01/03/2019 */
-public class Project {
-	public static final String PROJECT_SAVE_FILE_NAME = "project.xml";
-
+public class Project implements ADCDataListManager<ProjectData> {
 	private String projectName;
 	private String projectDescription;
-	private File projectSaveDirectory;
 	private File projectSaveFile;
 
 	private Workspace workspace;
-	private final ListObserver<ProjectData> projectDataList = new ListObserver<>(new ArrayList<>());
+	private final ListObserver<ProjectData> dataList = new ListObserver<>(new ArrayList<>());
 
 	public Project(@NotNull ProjectDescriptor descriptor) {
 		this.projectName = descriptor.getProjectName();
 		this.workspace = descriptor.getWorkspace();
-		this.projectSaveDirectory = descriptor.getProjectDirectory();
-
-		projectSaveFile = descriptor.getProjectXmlFile();
+		this.projectSaveFile = descriptor.getProjectSaveFile();
 	}
 
+	@Override
 	@NotNull
-	public ListObserver<ProjectData> getProjectDataList() {
-		return projectDataList;
+	public ListObserver<ProjectData> getDataList() {
+		return dataList;
 	}
 
-	/** @return {@link ApplicationDataManager#getCurrentProject()} */
+	/** @return {@link ApplicationManager#getCurrentProject()} */
 	@NotNull
 	public static Project getCurrentProject() {
-		return ApplicationDataManager.getInstance().getCurrentProject();
+		return ApplicationManager.getInstance().getCurrentProject();
 	}
 
 	/**
@@ -61,7 +54,7 @@ public class Project {
 	 @return File instance that is project_path\fileName
 	 */
 	public File getFileForName(@NotNull String fileName) {
-		return new File(projectSaveDirectory.getPath() + File.separator + fileName);
+		return new File(getProjectSaveDirectory().getPath() + File.separator + fileName);
 	}
 
 	/** @return the user's name for the project */
@@ -100,29 +93,6 @@ public class Project {
 		return sb.toString();
 	}
 
-
-	/**
-	 Set the directory where the project is saved.
-	 The project's save path will be relative to {@link Workspace#getWorkspaceDirectory()}
-	 <p>
-	 If the project directory name already exists, a (x) will be appended to the name
-
-	 @param directoryName the new directory name for the project.
-	 @throws IOException when the file system couldn't do the move
-	 */
-	public void setProjectDirectoryName(@NotNull String directoryName) throws IOException {
-		File dest = workspace.getFileForName(directoryName);
-		int c = 1;
-		while (dest.exists()) {
-			dest = workspace.getFileForName(directoryName + " (" + c + ")");
-		}
-		if (projectSaveFile.exists()) {
-			Files.move(projectSaveDirectory.toPath(), dest.toPath(), StandardCopyOption.ATOMIC_MOVE);
-		}
-		this.projectSaveDirectory = dest;
-		this.projectSaveFile = getFileForName(PROJECT_SAVE_FILE_NAME);
-	}
-
 	/** @return the project's user description */
 	@Nullable
 	public String getProjectDescription() {
@@ -141,7 +111,7 @@ public class Project {
 	/** @return the directory which {@link #getProjectSaveFile()} exists in */
 	@NotNull
 	public File getProjectSaveDirectory() {
-		return projectSaveDirectory;
+		return projectSaveFile.getParentFile();
 	}
 
 	@Override
@@ -157,5 +127,9 @@ public class Project {
 	@NotNull
 	public Workspace getWorkspace() {
 		return workspace;
+	}
+
+	void setProjectSaveFile(@NotNull File f) {
+		this.projectSaveFile = f;
 	}
 }

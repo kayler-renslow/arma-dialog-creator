@@ -5,15 +5,15 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author K
  @since 01/03/2019 */
-public class MissingConfigPropertyKeyException extends Exception {
-	private final ConfigPropertyKey key;
+public class MissingConfigPropertyKeyException extends RuntimeException {
+	private final String name;
 
-	public MissingConfigPropertyKeyException(@NotNull ConfigPropertyKey key) {
-		this.key = key;
+	public MissingConfigPropertyKeyException(@NotNull String name) {
+		this.name = name;
 	}
 
 	@NotNull
-	public ConfigPropertyKey getMissingKey() {
-		return key;
+	public String getMissingKey() {
+		return name;
 	}
 }

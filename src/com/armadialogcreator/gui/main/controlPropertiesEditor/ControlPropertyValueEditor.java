@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.core.ControlProperty;
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.old.ControlProperty;
+import com.armadialogcreator.core.old.PropertyType;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 

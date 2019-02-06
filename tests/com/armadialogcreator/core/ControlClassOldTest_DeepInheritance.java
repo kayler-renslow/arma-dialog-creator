@@ -1,5 +1,6 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.ReadOnlyList;

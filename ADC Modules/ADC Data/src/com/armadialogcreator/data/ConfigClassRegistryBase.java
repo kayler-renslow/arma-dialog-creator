@@ -2,7 +2,6 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.ListsIterator;
 import org.jetbrains.annotations.NotNull;
@@ -52,22 +51,22 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	@Override
 	public void applicationInitializing() {
 		systemClasses.loadSystemConfigClasses();
-		ApplicationDataManager.getInstance().getApplicationDataList().add(applicationClasses);
+		ApplicationDataManager.getInstance().getDataList().add(applicationClasses);
 	}
 
 	@Override
 	public void projectInitializing(@NotNull Project project) {
-		project.getProjectDataList().add(new ProjectClasses<>(this));
+		project.getDataList().add(new ProjectClasses<>(this));
 	}
 
 	@Override
 	public void workspaceInitializing(@NotNull Workspace workspace) {
-		workspace.getWorkspaceDataList().add(new WorkspaceClasses<>(this));
+		workspace.getDataList().add(new WorkspaceClasses<>(this));
 	}
 
 	@Override
 	public void projectDataLoaded(@NotNull Project project) {
-		for (ProjectData data : project.getProjectDataList()) {
+		for (ProjectData data : project.getDataList()) {
 			if (data instanceof ProjectClasses) {
 				this.projectClasses = (ProjectClasses<C>) data;
 			}
@@ -81,7 +80,7 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 
 	@Override
 	public void workspaceDataLoaded(@NotNull Workspace workspace) {
-		for (WorkspaceData data : workspace.getWorkspaceDataList()) {
+		for (WorkspaceData data : workspace.getDataList()) {
 			if (data instanceof WorkspaceClasses) {
 				this.workspaceClasses = (WorkspaceClasses<C>) data;
 			}
@@ -164,9 +163,8 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		}
 
 		@Override
-		@NotNull
-		public Configurable exportToConfigurable() {
-			return registry.configurableHandler.exportToConfigurable(classes, myLevel);
+		public void exportToConfigurable(@NotNull Configurable configurable) {
+			registry.configurableHandler.exportToConfigurable(configurable, classes, myLevel);
 		}
 
 		@Override
@@ -179,14 +177,13 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 	interface ConfigClassConfigurableHandler<C extends ConfigClass> {
 		void loadFromConfigurable(@NotNull Configurable config, @NotNull List<C> classes);
 
-		@NotNull Configurable exportToConfigurable(@NotNull List<C> classes, @NotNull DataLevel level);
+		void exportToConfigurable(@NotNull Configurable config, @NotNull List<C> classes, @NotNull DataLevel level);
 	}
 
 	static abstract class BaseConfigClassConfigurableHandler<C extends ConfigClass> implements ConfigClassConfigurableHandler<C> {
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List<C> classes) {
-			List<Configurable> nestedConfigs = config.getNestedConfigurables();
-			for (Configurable nested : nestedConfigs) {
+			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("config-class")) {
 					//todo
 				}
@@ -194,14 +191,11 @@ abstract class ConfigClassRegistryBase<C extends ConfigClass> implements Registr
 		}
 
 		@Override
-		@NotNull
-		public Configurable exportToConfigurable(@NotNull List<C> classes, @NotNull DataLevel level) {
-			Configurable config = new Configurable.Simple("macro-registry");
-			config.getConfigurableAttributes().add(new KeyValueString("level", level.name()));
+		public void exportToConfigurable(@NotNull Configurable config, @NotNull List<C> classes, @NotNull DataLevel level) {
+			config.addAttribute("level", level.name());
 			for (ConfigClass configClass : classes) {
 				//todo
 			}
-			return config;
 		}
 	}
 
