@@ -2,6 +2,7 @@ package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;

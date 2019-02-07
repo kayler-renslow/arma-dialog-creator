@@ -1,6 +1,8 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;

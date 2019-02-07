@@ -10,6 +10,7 @@ import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.header.*;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.stringtable.StringTableKey;

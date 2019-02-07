@@ -9,7 +9,7 @@ import com.armadialogcreator.canvas.Border;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlStyle;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;

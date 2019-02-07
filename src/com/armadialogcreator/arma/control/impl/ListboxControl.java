@@ -3,6 +3,7 @@ package com.armadialogcreator.arma.control.impl;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.arma.util.ArmaResolution;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVDouble;
 import com.armadialogcreator.expression.Env;

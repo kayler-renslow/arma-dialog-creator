@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.popup.newControl;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.core.old.ControlType;
-import com.armadialogcreator.core.old.ControlTypeGroup;
+import com.armadialogcreator.core.ControlTypeGroup;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
 import com.armadialogcreator.gui.fxcontrol.CBMBGroupMenu;

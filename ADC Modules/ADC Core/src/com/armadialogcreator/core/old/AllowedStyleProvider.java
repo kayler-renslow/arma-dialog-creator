@@ -1,5 +1,6 @@
 package com.armadialogcreator.core.old;
 
+import com.armadialogcreator.core.ControlStyle;
 import org.jetbrains.annotations.NotNull;
 
 /**

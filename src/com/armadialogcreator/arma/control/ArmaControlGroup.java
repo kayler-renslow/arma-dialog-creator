@@ -4,6 +4,7 @@ import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasControlGroup;
 import com.armadialogcreator.canvas.Resolution;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;

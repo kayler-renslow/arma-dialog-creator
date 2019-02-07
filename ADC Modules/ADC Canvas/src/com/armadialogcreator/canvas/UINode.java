@@ -14,25 +14,8 @@ public interface UINode {
 	/** @return the update group for when a re-render is requested for this node */
 	@NotNull UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup();
 
-	/**
-	 Appends a child to this node (the index or whatever doesn't matter)
-
-	 @throws IllegalStateException if {@link #acceptsChildren()} returns false
-	 */
-	void addChild(@NotNull UINode child);
-
-	/**
-	 Removes the given children from this node
-
-	 @throws IllegalStateException if {@link #acceptsChildren()} returns false
-	 */
-	void removeChild(@NotNull UINode child);
-
 	/** @return how many children this node has */
 	int getChildCount();
-
-	/** @return true if this node can have children, false if it can't */
-	boolean acceptsChildren();
 
 	/**
 	 @return an iterable that iterates the child nodes in the order such that the first node is rendered first

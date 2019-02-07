@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.olddata.Project;

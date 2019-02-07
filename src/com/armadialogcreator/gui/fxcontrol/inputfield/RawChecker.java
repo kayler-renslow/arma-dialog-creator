@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol.inputfield;
 
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;

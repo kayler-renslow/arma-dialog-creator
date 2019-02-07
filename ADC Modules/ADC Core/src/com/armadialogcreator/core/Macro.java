@@ -1,6 +1,5 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.old.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;

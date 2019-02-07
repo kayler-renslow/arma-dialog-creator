@@ -1,7 +1,7 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;

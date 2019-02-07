@@ -183,9 +183,8 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	}
 
 	/**
-	 Paints all nodes in {@link #getRootNode()}.
+	 Paints all nodes in {@link #getRootNode()} and will iterate each child's child as well.
 	 Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
-	 The background controls are painted first, then controls are painted
 	 */
 	protected void paintRootNode() {
 		paintNodes(rootNode);

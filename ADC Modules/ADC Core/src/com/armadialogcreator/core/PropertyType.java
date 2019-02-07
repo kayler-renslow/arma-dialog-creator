@@ -1,5 +1,6 @@
-package com.armadialogcreator.core.old;
+package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ValueConverter;

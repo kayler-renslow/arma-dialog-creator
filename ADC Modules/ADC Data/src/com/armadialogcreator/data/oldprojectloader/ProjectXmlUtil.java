@@ -1,5 +1,6 @@
 package com.armadialogcreator.data.oldprojectloader;
 
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;

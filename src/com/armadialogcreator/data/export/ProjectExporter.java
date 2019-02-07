@@ -4,6 +4,7 @@ import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.stringtable.StringTableKey;
 import com.armadialogcreator.core.sv.SVRaw;

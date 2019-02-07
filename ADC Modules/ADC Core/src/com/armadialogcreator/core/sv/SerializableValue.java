@@ -1,6 +1,6 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

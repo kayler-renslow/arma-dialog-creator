@@ -1,5 +1,6 @@
 package com.armadialogcreator.core.old;
 
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVBoolean;
 import com.armadialogcreator.core.sv.SVDouble;
 import com.armadialogcreator.core.sv.SVInteger;

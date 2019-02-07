@@ -1,4 +1,4 @@
-package com.armadialogcreator.core.old;
+package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.lang.Lang;

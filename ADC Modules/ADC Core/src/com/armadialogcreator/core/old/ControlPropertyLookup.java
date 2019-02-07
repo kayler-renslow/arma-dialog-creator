@@ -1,5 +1,6 @@
 package com.armadialogcreator.core.old;
 
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

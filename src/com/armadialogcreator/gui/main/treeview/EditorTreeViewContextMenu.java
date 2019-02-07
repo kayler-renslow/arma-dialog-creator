@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.core.old.ControlType;
-import com.armadialogcreator.core.old.ControlTypeGroup;
+import com.armadialogcreator.core.ControlTypeGroup;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;

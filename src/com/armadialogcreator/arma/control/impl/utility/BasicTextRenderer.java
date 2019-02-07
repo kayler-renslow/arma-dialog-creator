@@ -6,7 +6,7 @@ import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.old.ControlStyle;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.gui.FontMetrics;
 import com.armadialogcreator.util.UpdateGroupListener;
