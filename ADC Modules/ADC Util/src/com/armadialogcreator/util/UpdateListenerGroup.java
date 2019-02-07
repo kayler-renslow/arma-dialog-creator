@@ -40,7 +40,7 @@ public class UpdateListenerGroup<T> {
 		return updateListeners.remove(listener);
 	}
 
-	public void update(@Nullable T data) {
+	public void update(@NotNull T data) {
 		iterating = true;
 		Iterator<UpdateGroupListener<T>> iter = updateListeners.iterator();
 		while (iter.hasNext()) {

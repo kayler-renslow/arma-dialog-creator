@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  @since 02/06/2019 */
 public interface UINode {
 	/** @return an iterable that iterates all children in an order that doesn't need to matter */
-	@NotNull Iterable<UINode> iterateChildNodes();
+	@NotNull Iterable<? extends UINode> iterateChildNodes();
 
 	/** @return the update group for when a re-render is requested for this node */
 	@NotNull UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup();
@@ -22,7 +22,7 @@ public interface UINode {
 	 and the last iterated node is rendered last (is on top)
 	 */
 	@NotNull
-	Iterable<UINode> iterateChildrenInRenderOrder();
+	DeepUINodeIterable deepIterateChildren();
 
 	/**
 	 @return a {@link CanvasComponent} instance that will render what this node looks like,

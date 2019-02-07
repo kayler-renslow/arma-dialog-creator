@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.treeview.dataCreator;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.impl.ShortcutButtonControl;
+import com.armadialogcreator.control.impl.ShortcutButtonControl;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.core.old.ControlType;
 import com.armadialogcreator.data.olddata.Project;

@@ -6,7 +6,7 @@ import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
+import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.header.*;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.core.Macro;

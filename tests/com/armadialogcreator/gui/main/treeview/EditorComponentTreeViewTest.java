@@ -13,7 +13,7 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
+import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.ScreenDimension;

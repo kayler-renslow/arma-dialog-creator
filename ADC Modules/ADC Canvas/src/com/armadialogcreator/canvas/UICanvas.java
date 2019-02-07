@@ -127,9 +127,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	@SuppressWarnings("unchecked")
 	private void setUINodeListeners(boolean add) {
 		if (add) {
-			this.rootNode.renderUpdateGroup().removeListener(renderUpdateGroupListener);
-		} else {
 			this.rootNode.renderUpdateGroup().addListener(renderUpdateGroupListener);
+		} else {
+			this.rootNode.renderUpdateGroup().removeListener(renderUpdateGroupListener);
 		}
 	}
 
@@ -191,7 +191,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	}
 
 	private void paintNodes(@NotNull UINode node) {
-		for (UINode child : node.iterateChildrenInRenderOrder()) {
+		for (UINode child : node.deepIterateChildren()) {
 			paintNode(rootNode);
 			paintNodes(child);
 		}

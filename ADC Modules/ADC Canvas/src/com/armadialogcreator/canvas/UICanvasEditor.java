@@ -381,10 +381,10 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
 			{
 				UINode node;
-				for (int i = selection.numSelected() - 1; i >= 0; i--) {
+				for (int i = 0; i < selection.numSelected(); i++) {
 					node = selection.getSelected().get(i);
 					if (node.getComponent() == null) {
-						return;
+						continue;
 					}
 					if (node.getComponent().containsPoint(mousex, mousey)) {
 						selection.removeAllAndAdd(node); //only 1 can be selected
@@ -392,7 +392,7 @@ public class UICanvasEditor extends UICanvas {
 					}
 				}
 			}
-			for (UINode node : rootNode.iterateChildrenInRenderOrder()) {
+			for (UINode node : rootNode.deepIterateChildren()) {
 				if (node.getComponent() == null) {
 					continue;
 				}
@@ -401,7 +401,7 @@ public class UICanvasEditor extends UICanvas {
 				}
 				if (node.getComponent().containsPoint(mousex, mousey)) {
 					selection.removeAllAndAdd(node);
-					return;
+					continue; //continue to make sure we right click on front most component
 				}
 			}
 			selection.clearSelected();
@@ -422,10 +422,10 @@ public class UICanvasEditor extends UICanvas {
 					}
 					if (!keys.spaceDown()) { //if space is down, mouse over component should be selected
 						UINode node;
-						for (int i = selection.numSelected() - 1; i >= 0; i--) {
+						for (int i = 0; i < selection.numSelected(); i++) {
 							node = selection.getSelected().get(i);
 							if (node.getComponent() == null) {
-								return;
+								continue;
 							}
 							if (node.getComponent().containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
 								return;
@@ -739,7 +739,7 @@ public class UICanvasEditor extends UICanvas {
 		updateContextMenu();
 		mouseOverNode = null;
 
-		for (UINode node : rootNode.iterateChildrenInRenderOrder()) {
+		for (UINode node : rootNode.deepIterateChildren()) {
 			if (node.getComponent() == null) {
 				continue;
 			}
@@ -770,7 +770,7 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			for (UINode node : rootNode.iterateChildrenInRenderOrder()) {
+			for (UINode node : rootNode.deepIterateChildren()) {
 				if (node.getComponent() == null) {
 					continue;
 				}
@@ -802,10 +802,10 @@ public class UICanvasEditor extends UICanvas {
 		Edge edge;
 		setReadyForScale(null, Edge.None);
 		UINode component;
-		for (int i = selection.numSelected() - 1; i >= 0; i--) {
+		for (int i = 0; i < selection.numSelected(); i++) {
 			component = selection.getSelected().get(i);
 			if (component.getComponent() == null) {
-				return;
+				continue;
 			}
 			if (!component.getComponent().isEnabled()) {
 				continue;

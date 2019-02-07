@@ -4,7 +4,6 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.canvas.CanvasDisplay;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNumericValue;

@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.popup.newControl;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.HelpUrls;
-import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
+import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlPropertyUpdate;
 import com.armadialogcreator.core.old.ControlType;
