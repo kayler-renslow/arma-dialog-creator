@@ -3,7 +3,6 @@ package com.armadialogcreator.arma.control;
 import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasControlGroup;
-import com.armadialogcreator.canvas.ControlList;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.expression.Env;
@@ -31,6 +30,7 @@ public class ArmaControlGroup extends ArmaControl implements CanvasControlGroup<
 		super(name, lookup, resolution, env, registry);
 	}
 
+	@NotNull
 	@Override
 	public ControlList<ArmaControl> getControls() {
 		return controlsList;

@@ -3,8 +3,6 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.canvas.ControlList;
-import com.armadialogcreator.canvas.DisplayControlList;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeDataToValueConverter;

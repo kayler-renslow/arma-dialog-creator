@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 06/18/2016.
@@ -14,15 +15,16 @@ public interface Resolution {
 	int getScreenHeight();
 
 	/** Set the screen dimension (must be 16:9 ratio) */
-	void setScreenDimension(ScreenDimension dimension);
+	void setScreenDimension(@NotNull ScreenDimension dimension);
 
 	/** Set the UIScale */
-	void setUIScale(UIScale uiScale);
+	void setUIScale(@NotNull UIScale uiScale);
 
+	@NotNull
 	UIScale getUIScale();
 
 	/** Sets all properties of this resolution equal to r */
-	void setTo(Resolution r);
+	void setTo(@NotNull Resolution r);
 
 	/** Get the viewport screen x position (this is where the viewport's x is zeroed) */
 	int getViewportX();
@@ -48,6 +50,7 @@ public interface Resolution {
 	/** Get the viewport screen height as a floating point number */
 	double getViewportHeightF();
 
+	@NotNull
 	UpdateListenerGroup<Resolution> getUpdateGroup();
 
 	/** @return the screen's aspect ratio */

@@ -2,7 +2,6 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.canvas.DisplayControlList;
 import com.armadialogcreator.data.olddata.*;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.*;

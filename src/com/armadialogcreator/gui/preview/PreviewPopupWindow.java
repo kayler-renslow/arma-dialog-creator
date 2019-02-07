@@ -109,7 +109,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		previewCanvas = new UICanvasPreview(resolution, armaDisplay, focusHandler);
 		myRootElement.getChildren().add(previewCanvas);
 
-		previewCanvas.setDisplay(armaDisplay);
+		previewCanvas.setRootNode(armaDisplay);
 		previewCanvas.updateResolution(resolution);
 	}
 

@@ -4,6 +4,7 @@ import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.canvas.ScreenDimension;
 import com.armadialogcreator.canvas.UIScale;
 import com.armadialogcreator.util.UpdateListenerGroup;
+import org.jetbrains.annotations.NotNull;
 
 /**
  Stores screen resolution information and methods for retrieving viewport width and height as well as the viewport x and y positions
@@ -44,26 +45,27 @@ public class ArmaResolution implements Resolution {
 	}
 	
 	/** Get the ui scale constant (based upon Arma 3 values) */
+	@NotNull
 	@Override
 	public UIScale getUIScale() {
 		return uiScale;
 	}
 	
 	/** Set the screen dimension (must be 16:9 ratio) */
-	public void setScreenDimension(ScreenDimension dimension) {
+	public void setScreenDimension(@NotNull ScreenDimension dimension) {
 		this.screenWidth = dimension.width;
 		this.screenHeight = dimension.height;
 		recalc();
 	}
 	
 	/** Set the ui scale constant */
-	public void setUIScale(UIScale uiScale) {
+	public void setUIScale(@NotNull UIScale uiScale) {
 		this.uiScale = uiScale;
 		recalc();
 	}
 	
 	@Override
-	public void setTo(Resolution r) {
+	public void setTo(@NotNull Resolution r) {
 		this.screenWidth = r.getScreenWidth();
 		this.screenHeight = r.getScreenHeight();
 		this.uiScale = r.getUIScale();
@@ -179,6 +181,7 @@ public class ArmaResolution implements Resolution {
 	}
 	
 	/** Get the update group. This update group is notified of updates whenever the resolution changes viewport size, screen size, or safeZone positions */
+	@NotNull
 	public UpdateListenerGroup<Resolution> getUpdateGroup() {
 		return updateGroup;
 	}

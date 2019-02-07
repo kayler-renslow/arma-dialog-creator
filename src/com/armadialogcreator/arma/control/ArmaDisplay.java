@@ -1,7 +1,6 @@
 package com.armadialogcreator.arma.control;
 
 import com.armadialogcreator.canvas.CanvasDisplay;
-import com.armadialogcreator.canvas.DisplayControlList;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.core.old.DisplayProperty;
 import com.armadialogcreator.core.old.DisplayPropertyLookup;
@@ -139,6 +138,7 @@ public class ArmaDisplay implements CanvasDisplay<ArmaControl> {
 		return null;
 	}
 
+	@NotNull
 	@Override
 	public DataContext getUserData() {
 		return userdata;

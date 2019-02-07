@@ -15,6 +15,15 @@ public class UpdateListenerGroup<T> {
 	private final LinkedList<UpdateGroupListener<T>> newListeners = new LinkedList<>();
 	private boolean iterating = false; //prevent CoModificationException
 
+	/** Use this for when the T doesn't matter */
+	public static final class NoData {
+		private NoData() {
+		}
+	}
+
+	public static final NoData NoDataInstance = new NoData();
+
+
 	/** Will add the given listener. If the listener has already been added, will do nothing (no duplicates allowed). */
 	public void addListener(@NotNull UpdateGroupListener<T> listener) {
 		if (updateListeners.contains(listener)) {
