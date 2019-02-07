@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.preview;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.util.Reference;
+import com.armadialogcreator.util.SGAS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,8 +47,8 @@ public class ControlFocusHandler {
 	 If no control can have focus, no control will get focus.
 	 */
 	public void autoFocusToControl() {
-		Reference<ArmaControl> focusToMe = new Reference<>();
-		Reference<ArmaControl> lastControl = new Reference<>();
+		SGAS<ArmaControl> focusToMe = new SGAS<>();
+		SGAS<ArmaControl> lastControl = new SGAS<>();
 		armaDisplay.getControls().deepIterator().forEach(armaControl -> {
 			setControlFocused(armaControl, false);
 			if (armaControl.getRenderer().requestingFocus()) {

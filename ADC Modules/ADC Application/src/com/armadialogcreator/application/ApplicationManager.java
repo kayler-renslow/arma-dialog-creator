@@ -194,7 +194,7 @@ public class ApplicationManager {
 			for (ApplicationStateSubscriber sub : subs) {
 				sub.workspaceClosed(workspace);
 			}
-			stateUpdateGroup.update(ApplicationState.ProjectClosed);
+			stateUpdateGroup.update(ApplicationState.WorkspaceClosed);
 		}
 
 		if (project != null) {

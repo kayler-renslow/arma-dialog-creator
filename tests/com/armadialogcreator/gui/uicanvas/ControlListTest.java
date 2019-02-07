@@ -29,7 +29,7 @@ public class ControlListTest {
 		list.add(control1);
 		list.add(control2);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
@@ -74,7 +74,7 @@ public class ControlListTest {
 		list.add(control0);
 		list.add(control1);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
@@ -124,7 +124,7 @@ public class ControlListTest {
 		list.add(control0);
 		list.add(control1);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
@@ -170,7 +170,7 @@ public class ControlListTest {
 		list.add(control1);
 		list.add(control2);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
@@ -232,7 +232,7 @@ public class ControlListTest {
 		list.add(control1);
 		list.add(control2);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override
@@ -276,7 +276,7 @@ public class ControlListTest {
 		list.add(control1);
 		list.add(control2);
 
-		Reference<Boolean> visited = new Reference<>(false);
+		SGAS<Boolean> visited = new SGAS<>(false);
 
 		list.addListener(new ListObserverListener<TestCanvasControl>() {
 			@Override

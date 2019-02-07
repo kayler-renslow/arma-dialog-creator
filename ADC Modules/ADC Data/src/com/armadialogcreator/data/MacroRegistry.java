@@ -3,12 +3,11 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.util.ListObserver;
-import com.armadialogcreator.util.ListsArrayIterator;
+import com.armadialogcreator.util.QuadIterable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  @author K
@@ -133,12 +132,12 @@ public class MacroRegistry implements Registry {
 
 	@NotNull
 	public Iterable<Macro> iterateAllMacros() {
-		List<Macro>[] lists = new List[4];
-		lists[0] = getProjectMacros().getMacros();
-		lists[1] = getWorkspaceMacros().getMacros();
-		lists[2] = getApplicationMacros().getMacros();
-		lists[3] = getSystemMacros().getMacros();
-		return new ListsArrayIterator<>(lists);
+		return new QuadIterable<>(
+				getProjectMacros().getMacros(),
+				getWorkspaceMacros().getMacros(),
+				getApplicationMacros().getMacros(),
+				getSystemMacros().getMacros()
+		);
 	}
 
 	private static abstract class Base implements ADCData {

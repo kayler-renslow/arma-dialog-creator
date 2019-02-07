@@ -19,7 +19,7 @@ public class DisplayControlListTest {
 	public void add() throws Exception {
 		TestCanvasControl control0 = new TestCanvasControl("control0");
 
-		Reference<Boolean> set = new Reference<>(false);
+		SGAS<Boolean> set = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
@@ -47,7 +47,7 @@ public class DisplayControlListTest {
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
 
-		Reference<Boolean> set = new Reference<>(false);
+		SGAS<Boolean> set = new SGAS<>(false);
 
 		display.getControls().getUpdateGroup().addListener(new UpdateGroupListener<ListObserverChange<TestCanvasControl>>() {
 			@Override
@@ -72,7 +72,7 @@ public class DisplayControlListTest {
 		TestCanvasControl control0 = new TestCanvasControl("control0");
 		TestCanvasControl control1 = new TestCanvasControl("control1");
 
-		Reference<Boolean> set = new Reference<>(false);
+		SGAS<Boolean> set = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
@@ -101,8 +101,8 @@ public class DisplayControlListTest {
 		TestCanvasControl control0 = new TestCanvasControl("control0");
 		TestCanvasControl control1 = new TestCanvasControl("control1");
 
-		Reference<Boolean> controlsUpdated = new Reference<>(false);
-		Reference<Boolean> bgControlsUpdated = new Reference<>(false);
+		SGAS<Boolean> controlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> bgControlsUpdated = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
@@ -153,8 +153,8 @@ public class DisplayControlListTest {
 		TestCanvasControlGroup group = new TestCanvasControlGroup("group");
 		group.getControls().add(new TestCanvasControl("groupControl"));
 
-		Reference<Boolean> controlsUpdated = new Reference<>(false);
-		Reference<Boolean> bgControlsUpdated = new Reference<>(false);
+		SGAS<Boolean> controlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> bgControlsUpdated = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
@@ -205,8 +205,8 @@ public class DisplayControlListTest {
 
 		TestCanvasControlGroup group = new TestCanvasControlGroup("group");
 
-		Reference<Boolean> controlsUpdated = new Reference<>(false);
-		Reference<Boolean> bgControlsUpdated = new Reference<>(false);
+		SGAS<Boolean> controlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> bgControlsUpdated = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
@@ -259,9 +259,9 @@ public class DisplayControlListTest {
 
 		TestCanvasControlGroup groupInBackground = new TestCanvasControlGroup("groupInBackground");
 
-		Reference<Boolean> controlsUpdated = new Reference<>(false);
-		Reference<Boolean> controlInbgControlsUpdated = new Reference<>(false);
-		Reference<Boolean> bgControlsUpdated = new Reference<>(false);
+		SGAS<Boolean> controlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> controlInbgControlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> bgControlsUpdated = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);
@@ -324,9 +324,9 @@ public class DisplayControlListTest {
 
 		TestCanvasControlGroup groupInBackground = new TestCanvasControlGroup("groupInBackground");
 
-		Reference<Boolean> controlsUpdated = new Reference<>(false);
-		Reference<Boolean> controlInbgControlsUpdated = new Reference<>(false);
-		Reference<Boolean> bgControlsUpdated = new Reference<>(false);
+		SGAS<Boolean> controlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> controlInbgControlsUpdated = new SGAS<>(false);
+		SGAS<Boolean> bgControlsUpdated = new SGAS<>(false);
 
 		TestCanvasDisplay display = new TestCanvasDisplay();
 		display.getControls().add(control0);

@@ -22,7 +22,7 @@ import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
-import com.armadialogcreator.util.Reference;
+import com.armadialogcreator.util.SGAS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -291,7 +291,7 @@ public class HeaderToProject {
 				convertError(ownerDialogName, String.format(bundle.getString("Convert.FailReason.controls_assignment_not_array_f"), arrayOfControlsAssignment.getVariableName()));
 				break;
 			}
-			Reference<HeaderClass> matchedClassRef = new Reference<>();
+			SGAS<HeaderClass> matchedClassRef = new SGAS<>();
 			String className = v.getContent();
 			headerFile.traverseDownwards((headerClass -> {
 				if (headerClass.classNameEquals(className, true)) {
