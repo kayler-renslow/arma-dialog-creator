@@ -6,6 +6,7 @@ import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +37,7 @@ public class MiscHelpers {
 	 @return a {@link SVControlStyleGroup} for the given {@link SerializableValue}, or null if can't be created
 	 */
 	@Nullable
-	public static SVControlStyleGroup getGroup(@Nullable SerializableValue value, @NotNull ArmaControl control) {
+	public static SVControlStyleGroup getGroup(@NotNull Env env, @Nullable SerializableValue value, @NotNull ArmaControl control) {
 		if (value instanceof SVControlStyleGroup) {
 			return (SVControlStyleGroup) value;
 		}
@@ -47,6 +48,7 @@ public class MiscHelpers {
 			//attempt to create one
 			try {
 				return SVControlStyleGroup.getGroupFromString(
+						env,
 						value.toString(),
 						control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
 				);

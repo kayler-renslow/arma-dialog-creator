@@ -161,6 +161,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		initializing = false;
 	}
 
+	@NotNull
+	public Env getEnv() {
+		return env;
+	}
+
 	/**
 	 Invoked when the x, y, width, or height of the control is updated. Default implementation does nothing.
 

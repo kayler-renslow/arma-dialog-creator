@@ -1,13 +1,13 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.canvas.FontMetrics;
+import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.canvas.Resolution;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -117,7 +117,7 @@ public class BasicTextRenderer {
 		if (style != null) {
 			renderer.addValueListener(style,
 					(observer, oldValue, newValue) -> {
-						newValue = MiscHelpers.getGroup(newValue, control);
+						newValue = MiscHelpers.getGroup(this.renderer.getEnv(), newValue, control);
 						if (newValue != null) {
 							SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 

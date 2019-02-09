@@ -51,7 +51,4 @@ public class ProjectDescriptor {
 		return projectSaveFile.equals(that.projectSaveFile);
 	}
 
-	public String toString() {
-		return projectName;
-	}
 }

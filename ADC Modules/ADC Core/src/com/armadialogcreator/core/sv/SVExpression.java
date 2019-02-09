@@ -1,14 +1,12 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;
 import com.armadialogcreator.expression.Value;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
@@ -26,18 +24,10 @@ public class SVExpression extends SerializableValue implements SVNumericValue {
 
 	private static final ExpressionInterpreter SHARED_INTERPRETER = ExpressionInterpreter.newInstance();
 
-	/**
-	 {@link ValueConverter} instance for {@link SVExpression} values. The {@link DataContext} parameter in the {@link ValueConverter#convert(DataContext, String...)}
-	 method must contain a non-null entry with key {@link Env#ENV}, or {@link IllegalArgumentException} will be thrown from {@link ValueConverter#convert(DataContext, String...)}.
-	 */
-	public static final ValueConverter<SVExpression> CONVERTER = new ValueConverter<SVExpression>() {
+	public static final StringArrayConverter<SVExpression> CONVERTER = new StringArrayConverter<>() {
 
 		@Override
-		public SVExpression convert(DataContext context, @NotNull String... values) throws Exception {
-			Env env = Env.ENV.get(context);
-			if (env == null) {
-				throw new IllegalArgumentException("context key is missing:" + Env.ENV);
-			}
+		public SVExpression convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVExpression(values[0], env);
 		}
 	};

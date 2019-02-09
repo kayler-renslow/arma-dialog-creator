@@ -1,9 +1,8 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,12 +39,12 @@ public abstract class SerializableValue {
 	 <p>
 	 In the case that <code>fromType</code> is {@link PropertyType#Raw},
 	 will always return false if <code>toType</code> is not {@link PropertyType} itself.
-	 To convert {@link PropertyType#Raw}, use {@link SVRaw#newSubstituteTypeValue(DataContext)}.
+	 To convert {@link PropertyType#Raw}, use {@link SVRaw#newSubstituteTypeValue(Env)}.
 
 	 @param fromType from
 	 @param toType to
 	 @return true if convertible, false if not
-	 @see #convert(DataContext, SerializableValue, PropertyType)
+	 @see #convert(Env, SerializableValue, PropertyType)
 	 */
 	public static boolean isConvertible(@NotNull PropertyType fromType, @NotNull PropertyType toType) {
 		if (fromType == toType) {
@@ -118,7 +117,7 @@ public abstract class SerializableValue {
 	 A safe way of converting a {@link SerializableValue} into a different one, i.e. {@link SVString} to {@link SVFont}.
 	 If <code>newPropertyType</code> is equal to the current type, <code>convertMe</code> will be returned.
 
-	 @param dataContext context to use
+	 @param env env to use
 	 @param convertMe value to convert
 	 @param newPropertyType property type to convert to
 	 @return the new value
@@ -127,7 +126,7 @@ public abstract class SerializableValue {
 	 returns false on {@link SerializableValue#getPropertyType()} and <code>newPropertyType</code>
 	 */
 	@NotNull
-	public static SerializableValue convert(@Nullable DataContext dataContext, @NotNull SerializableValue convertMe, @NotNull PropertyType newPropertyType) throws SerializableValueConversionException {
+	public static SerializableValue convert(@NotNull Env env, @NotNull SerializableValue convertMe, @NotNull PropertyType newPropertyType) throws SerializableValueConversionException {
 		if (convertMe.getPropertyType() == newPropertyType) {
 			return convertMe;
 		}
@@ -135,7 +134,7 @@ public abstract class SerializableValue {
 			throw new IllegalArgumentException("types are not convertible:" + convertMe.getPropertyType() + ", " + newPropertyType);
 		}
 		try {
-			return constructNew(dataContext, newPropertyType, convertMe.getAsStringArray());
+			return constructNew(env, newPropertyType, convertMe.getAsStringArray());
 		} catch (SerializableValueConstructionException e) {
 			throw new SerializableValueConversionException(e.getMessage());
 		}
@@ -144,16 +143,16 @@ public abstract class SerializableValue {
 	/**
 	 Get the appropriate {@link SerializableValue} instance for the given {@link PropertyType}
 
-	 @param dataContext context to use
+	 @param env env to use
 	 @param type type
 	 @param values values to use
 	 @return the new instance
 	 @throws SerializableValueConstructionException when the value could not be created
 	 */
 	@NotNull
-	public static SerializableValue constructNew(@Nullable DataContext dataContext, @NotNull PropertyType type, @NotNull String... values) {
+	public static SerializableValue constructNew(@NotNull Env env, @NotNull PropertyType type, @NotNull String... values) {
 		try {
-			SerializableValue value = doConstructNew(dataContext, type, values);
+			SerializableValue value = doConstructNew(env, type, values);
 			if (value != null) {
 				return value;
 			}
@@ -163,8 +162,8 @@ public abstract class SerializableValue {
 		}
 	}
 
-	private static SerializableValue doConstructNew(@Nullable DataContext dataContext, @NotNull PropertyType type, @NotNull String[] values) throws Exception {
-		return type.getConverter().convert(dataContext, values);
+	private static SerializableValue doConstructNew(@NotNull Env env, @NotNull PropertyType type, @NotNull String[] values) throws Exception {
+		return type.getConverter().convert(env, values);
 	}
 
 	//

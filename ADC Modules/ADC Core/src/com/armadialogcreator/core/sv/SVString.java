@@ -1,17 +1,16 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** A generic wrapper implementation for a String. */
 public final class SVString extends SerializableValue {
 
-	public static final ValueConverter<SVString> CONVERTER = new ValueConverter<SVString>() {
+	public static final StringArrayConverter<SVString> CONVERTER = new StringArrayConverter<SVString>() {
 		@Override
-		public SVString convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVString convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVString(values[0]);
 		}
 	};

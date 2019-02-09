@@ -9,7 +9,6 @@ import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.Reader;
-import java.util.List;
 
 /**
  @author Kayler
@@ -20,11 +19,12 @@ public class DefaultValueXmlReader extends XmlReader {
 	}
 
 	public SerializableValue fetchValue(@NotNull ControlPropertyLookupConstant constantToFetch) {
-		List<Element> propertyElements = XmlUtil.getChildElementsWithTagName(getDocumentElement(), "property");
-		for (Element propertyElement : propertyElements) {
-			String popertyNameAttr = propertyElement.getAttribute("name");
-			if (popertyNameAttr.equals(constantToFetch.getPropertyName())) {
-				return ProjectXmlUtil.loadValue(constantToFetch.getPropertyName(), propertyElement, constantToFetch.getPropertyType(), dataContext, this);
+		for (Element e : XmlUtil.iterateChildElements(getDocumentElement())) {
+			if (e.getNodeName().equals("property")) {
+				String popertyNameAttr = e.getAttribute("name");
+				if (popertyNameAttr.equals(constantToFetch.getPropertyName())) {
+					//					return ProjectXmlUtil.loadValue(constantToFetch.getPropertyName(), e, constantToFetch.getPropertyType(), dataContext, this);
+				}
 			}
 		}
 		return null;

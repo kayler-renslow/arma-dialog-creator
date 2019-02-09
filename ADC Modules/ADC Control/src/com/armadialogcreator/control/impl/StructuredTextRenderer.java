@@ -1,19 +1,22 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.FontMetrics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.TextSection;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TextHelper;
 import com.armadialogcreator.control.impl.utility.TextShadow;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
-import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.TextSection;
-import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
-import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.core.sv.SVColor;
+import com.armadialogcreator.core.sv.SVColorArray;
+import com.armadialogcreator.core.sv.SVHexColor;
+import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -292,10 +295,10 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				case Img: {
 					String img = section.getAttributes().get("image");
 					if (img != null) {
-						ImageHelper.getImageAsync(new SVString(img), image1 -> {
-							this.image = image1;
-							return null;
-						});
+						//						ImageHelper.getImageAsync(new SVString(img), image1 -> {
+						//							this.image = image1;
+						//							return null;
+						//						});
 					}
 					break;
 				}

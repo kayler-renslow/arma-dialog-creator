@@ -1,8 +1,7 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.expression.Env;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,9 +12,9 @@ import org.jetbrains.annotations.NotNull;
  @since 05/23/2016. */
 public class SVHexColor extends SerializableValue implements SVColor {
 
-	public static final ValueConverter<SVHexColor> CONVERTER = new ValueConverter<SVHexColor>() {
+	public static final StringArrayConverter<SVHexColor> CONVERTER = new StringArrayConverter<SVHexColor>() {
 		@Override
-		public SVHexColor convert(DataContext context, @NotNull String... values) {
+		public SVHexColor convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVHexColor(values[0]);
 		}
 	};

@@ -1,6 +1,7 @@
 package com.armadialogcreator.application;
 
 import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -93,7 +94,20 @@ public class ApplicationManager {
 		}
 		return project;
 	}
-	
+
+	@NotNull
+	public List<ProjectPreview> getProjectsForWorkspace(@NotNull Workspace workspace) {
+		List<ProjectPreview> previews = new ArrayList<>();
+		//todo
+		return previews;
+	}
+
+	@NotNull
+	public ProjectPreview getPreviewForProjectFile(@NotNull File f) throws XmlParseException {
+		//todo
+		return null;
+	}
+
 	public void loadWorkspace(@NotNull File workspaceDirectory) {
 		if (workspace != null) {
 			workspace.getDataList().invalidate();
@@ -104,6 +118,7 @@ public class ApplicationManager {
 		}
 
 		Workspace newWorkspace = new Workspace(workspaceDirectory);
+		newWorkspace.initialize();
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.workspaceInitializing(newWorkspace);

@@ -1,14 +1,14 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.canvas.Border;
 import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
@@ -72,7 +72,7 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		});
 
 		addValueListener(ControlPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
-			newValue = MiscHelpers.getGroup(newValue, control);
+			newValue = MiscHelpers.getGroup(this.env, newValue, control);
 			if (newValue != null) {
 				SVControlStyleGroup g = (SVControlStyleGroup) newValue;
 				horizProgress = g.hasStyle(ControlStyle.HORIZONTAL);

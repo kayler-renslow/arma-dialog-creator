@@ -23,5 +23,6 @@
     <orderEntry type="module" module-name="ADC Expression" />
     <orderEntry type="module" module-name="ADC Images" />
     <orderEntry type="module" module-name="ADC Data" />
+    <orderEntry type="module" module-name="ADC Control" />
   </component>
 </module>

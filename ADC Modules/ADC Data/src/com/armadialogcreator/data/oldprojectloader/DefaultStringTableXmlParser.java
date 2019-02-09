@@ -1,19 +1,15 @@
 package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.core.stringtable.*;
-import com.armadialogcreator.data.StringTableImpl;
-import com.armadialogcreator.data.StringTableKeyImpl;
-import com.armadialogcreator.util.XmlParseException;
-import com.armadialogcreator.util.XmlReader;
-import com.armadialogcreator.util.XmlUtil;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.collections.ObservableMap;
+import com.armadialogcreator.data.SimpleStringTable;
+import com.armadialogcreator.data.SimpleStringTableKey;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -40,18 +36,20 @@ public class DefaultStringTableXmlParser extends XmlReader implements StringTabl
 	public StringTable createStringTableInstance() throws IOException {
 		Element rootElement = document.getDocumentElement();
 
-		ObservableList<StringTableKey> tableKeys = FXCollections.observableArrayList();
+		ListObserver<StringTableKey> tableKeys = new ListObserver<>(new ArrayList<>());
 		fetchKeys(rootElement, new StringTableKeyPath(null), tableKeys);
 
 		loadPackageElements(rootElement, tableKeys);
 		loadContainerElements(rootElement, new StringTableKeyPath(null), tableKeys);
 
-		return new StringTableImpl(this.xmlFile, tableKeys, rootElement.getAttribute(StringTableXmlConstants.PROJECT_NAME));
+		return new SimpleStringTable(this.xmlFile, tableKeys, rootElement.getAttribute(StringTableXmlConstants.PROJECT_NAME));
 	}
 
 	private void loadPackageElements(Element element, List<StringTableKey> tableKeys) {
-		List<Element> packageElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.PACKAGE);
-		for (Element packageElement : packageElements) {
+		for (Element packageElement : XmlUtil.iterateChildElements(element)) {
+			if (!packageElement.getNodeName().equals(StringTableXmlConstants.PACKAGE)) {
+				continue;
+			}
 			String packageName = packageElement.getAttribute(StringTableXmlConstants.NAME);
 			StringTableKeyPath path = new StringTableKeyPath(packageName);
 
@@ -61,8 +59,10 @@ public class DefaultStringTableXmlParser extends XmlReader implements StringTabl
 	}
 
 	private void loadContainerElements(Element element, StringTableKeyPath path, List<StringTableKey> tableKeys) {
-		List<Element> containerElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.CONTAINER);
-		for (Element containerElement : containerElements) {
+		for (Element containerElement : XmlUtil.iterateChildElements(element)) {
+			if (!containerElement.getNodeName().equals(StringTableXmlConstants.CONTAINER)) {
+				continue;
+			}
 			String containerName = containerElement.getAttribute(StringTableXmlConstants.NAME);
 			path.getContainers().add(containerName);
 
@@ -74,15 +74,16 @@ public class DefaultStringTableXmlParser extends XmlReader implements StringTabl
 	}
 
 	private void fetchKeys(Element element, StringTableKeyPath path, List<StringTableKey> tableKeys) {
-		List<Element> keyElements = XmlUtil.getChildElementsWithTagName(element, StringTableXmlConstants.KEY);
 
-		for (Element keyElement : keyElements) {
+		for (Element keyElement : XmlUtil.iterateChildElements(element)) {
+			if (!keyElement.getNodeName().equals(StringTableXmlConstants.KEY)) {
+				continue;
+			}
 			String id = keyElement.getAttribute(StringTableXmlConstants.ID).trim();
 
 			if (id.length() > 0) {
-				List<Element> valueElements = XmlUtil.getChildElementsWithTagName(keyElement, null);
-				ObservableMap<Language, String> map = FXCollections.observableMap(new HashMap<>(valueElements.size()));
-				for (Element valueElement : valueElements) {
+				MapObserver<Language, String> map = new MapObserver<>(new HashMap<>());
+				for (Element valueElement : XmlUtil.iterateChildElements(element)) {
 					Language language;
 					String langName = valueElement.getTagName();
 					try {
@@ -92,7 +93,7 @@ public class DefaultStringTableXmlParser extends XmlReader implements StringTabl
 					}
 					map.put(language, XmlUtil.getImmediateTextContent(valueElement));
 				}
-				tableKeys.add(new StringTableKeyImpl(id, path.deepCopy(), map));
+				tableKeys.add(new SimpleStringTableKey(id, path.deepCopy(), map));
 			}
 		}
 	}

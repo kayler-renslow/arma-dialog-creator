@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.preview;
 
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.util.SGAS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

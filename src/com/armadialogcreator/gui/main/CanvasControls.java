@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main;
 
-import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.canvas.UICanvasConfiguration;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;

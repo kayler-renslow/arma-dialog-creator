@@ -1,16 +1,15 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
 /** A generic wrapper implementation for an int. */
 public class SVInteger extends SerializableValue implements SVNumericValue {
 
-	public static final ValueConverter<SVInteger> CONVERTER = new ValueConverter<SVInteger>() {
+	public static final StringArrayConverter<SVInteger> CONVERTER = new StringArrayConverter<SVInteger>() {
 		@Override
-		public SVInteger convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVInteger convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVInteger(Integer.parseInt(values[0]));
 		}
 	};

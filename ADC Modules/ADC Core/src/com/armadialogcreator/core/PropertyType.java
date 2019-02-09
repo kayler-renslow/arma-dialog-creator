@@ -3,7 +3,6 @@ package com.armadialogcreator.core;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.LinkedList;
@@ -45,15 +44,15 @@ public enum PropertyType {
 
 	private final int propertyValuesSize;
 	private final String displayName;
-	private final ValueConverter<? extends SerializableValue> converter;
+	private final StringArrayConverter<? extends SerializableValue> converter;
 	private final int id;
 	private int[] quoteIndexes;
 
-	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName) {
+	PropertyType(int id, StringArrayConverter<? extends SerializableValue> converter, String displayName) {
 		this(id, converter, displayName, 1);
 	}
 
-	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName, boolean exportHasQuotes) {
+	PropertyType(int id, StringArrayConverter<? extends SerializableValue> converter, String displayName, boolean exportHasQuotes) {
 		if (PropertyTypeHelper.usedIds.contains(id)) {
 			throw new IllegalStateException("used id:" + id);
 		}
@@ -69,7 +68,7 @@ public enum PropertyType {
 		}
 	}
 
-	PropertyType(int id, ValueConverter<? extends SerializableValue> converter, String displayName, int propertyValueSize, int... quoteIndexes) {
+	PropertyType(int id, StringArrayConverter<? extends SerializableValue> converter, String displayName, int propertyValueSize, int... quoteIndexes) {
 		if (PropertyTypeHelper.usedIds.contains(id)) {
 			throw new IllegalStateException("used id:" + id);
 		}
@@ -129,7 +128,7 @@ public enum PropertyType {
 	}
 
 	@NotNull
-	public ValueConverter<? extends SerializableValue> getConverter() {
+	public StringArrayConverter<? extends SerializableValue> getConverter() {
 		return converter;
 	}
 

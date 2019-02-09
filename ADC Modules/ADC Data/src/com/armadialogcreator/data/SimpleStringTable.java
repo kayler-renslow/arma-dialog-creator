@@ -11,12 +11,12 @@ import java.util.ArrayList;
 /**
  @author Kayler
  @since 12/12/2016 */
-class StringTableImpl implements StringTable {
+public class SimpleStringTable implements StringTable {
 	private File file;
 	private ListObserver<StringTableKey> keys;
 	private String projectName;
 
-	public StringTableImpl(@NotNull File file, @NotNull ListObserver<StringTableKey> keys, @NotNull String projectName) {
+	public SimpleStringTable(@NotNull File file, @NotNull ListObserver<StringTableKey> keys, @NotNull String projectName) {
 		this.file = file;
 		this.keys = keys;
 		this.projectName = projectName;
@@ -56,6 +56,6 @@ class StringTableImpl implements StringTable {
 		for (StringTableKey key : this.keys) {
 			keys.add(key.deepCopy());
 		}
-		return new StringTableImpl(file, keys, projectName);
+		return new SimpleStringTable(file, keys, projectName);
 	}
 }

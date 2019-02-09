@@ -1,6 +1,7 @@
 package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.application.Project;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlClassSpecification;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
@@ -130,11 +131,11 @@ class ControlClassXmlHelper {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
-			CustomControlClass customControlClass = new CustomControlClass(
-					spec, project,
-					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
-			);
-			project.addCustomControlClass(customControlClass);
+			//			CustomControlClass customControlClass = new CustomControlClass(
+			//					spec, project,
+			//					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
+			//			);
+			//			project.addCustomControlClass(customControlClass);
 		}
 	}
 
@@ -167,7 +168,7 @@ class ControlClassXmlHelper {
 		private void loadClass(@NotNull Project project, ControlClassSpecification nested) {
 			try {
 				ControlClassOld nestedClass = addToMe.findNestedClass(nested.getClassName());
-				nestedClass.setTo(nested.constructNewControlClass(project));
+				//				nestedClass.setTo(nested.constructNewControlClass(project));
 			} catch (IllegalArgumentException ignore) {
 
 			}
@@ -197,21 +198,21 @@ class ControlClassXmlHelper {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
-			ControlClassOld cc = project.findControlClassByName(extendThisControlClassName);
-
-			if (cc == null) {
-				final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
-				recorder.addError(new ParseError(
-						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
-						bundle.getString("ProjectLoad.no_extend_class_recover")
-				));
-				return;
-			}
-
-			setMyExtend.extendControlClass(cc);
-			for (ControlPropertyLookup inheritProperty : inheritProperties) {
-				setMyExtend.inheritProperty(inheritProperty);
-			}
+			//			ControlClassOld cc = project.findControlClassByName(extendThisControlClassName);
+			//
+			//			if (cc == null) {
+			//				final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
+			//				recorder.addError(new ParseError(
+			//						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
+			//						bundle.getString("ProjectLoad.no_extend_class_recover")
+			//				));
+			//				return;
+			//			}
+			//
+			//			setMyExtend.extendControlClass(cc);
+			//			for (ControlPropertyLookup inheritProperty : inheritProperties) {
+			//				setMyExtend.inheritProperty(inheritProperty);
+			//			}
 		}
 	}
 }

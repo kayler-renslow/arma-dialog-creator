@@ -5,18 +5,18 @@ import com.armadialogcreator.ADCStatic;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.LocaleDescriptor;
-import com.armadialogcreator.application.ProjectDescriptor;
+import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.ProjectPreview;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.data.oldprojectloader.ProjectInit;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ReadOnlyList;
+import com.armadialogcreator.util.NotNullValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import com.armadialogcreator.util.XmlParseException;
@@ -36,10 +36,7 @@ import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 /**
  Used for setting up the initial {@link Project}. This window is shown before {@link ADCWindow}.
@@ -56,7 +53,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 	private static final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 
-	private final ValueObserver<File> workspaceDirectoryObserver = new ValueObserver<>(null);
+	private final NotNullValueObserver<Workspace> workspaceObserver = new NotNullValueObserver<>(new Workspace(Workspace.DEFAULT_WORKSPACE_DIRECTORY));
 
 	public ADCProjectInitWindow() {
 		super(ArmaDialogCreator.getPrimaryStage(), bundle.getString("window_title"), true);
@@ -79,8 +76,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 	}
 
 	@NotNull
-	public File getWorkspaceDirectory() {
-		return workspaceDirectoryObserver.getValue();
+	private Workspace getWorkspace() {
+		return workspaceObserver.getValue();
 	}
 
 	@Override
@@ -136,7 +133,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		@Override
 		protected void stepLeft(boolean movingForward) {
-			adcProjectInitWindow.workspaceDirectoryObserver.updateValue(workspaceDirectory);
+			adcProjectInitWindow.workspaceObserver.updateValue(new Workspace(workspaceDirectory));
 		}
 	}
 
@@ -305,11 +302,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public class OpenTab extends ProjectInitTab {
 
 			private final Tab tabOpen = new Tab(bundle.getString("tab_open"));
-			private final ListView<ProjectDescriptor> lvKnownProjects = new ListView<>();
+			private final ListView<ProjectPreview> lvKnownProjects = new ListView<>();
 			private final ADCProjectInitWindow projectInitWindow;
-			private LinkedList<ProjectXmlReader.ProjectPreviewParseResult> parsedKnownProjects = new LinkedList<>();
-			private ProjectXmlReader.ProjectPreviewParseResult selectedParsedProject;
-			private ReadOnlyList<ProjectXmlReader.ProjectPreviewParseResult> parsedKnownProjectsRo = new ReadOnlyList<>(parsedKnownProjects);
+			private List<ProjectPreview> parsedKnownProjects = new ArrayList<>();
+			private ProjectPreview selectedParsedProject;
 
 			public OpenTab(ADCProjectInitWindow projectInitWindow) {
 				this.projectInitWindow = projectInitWindow;
@@ -324,7 +320,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					@Override
 					public void handle(ActionEvent event) {
 						FileChooser fc = new FileChooser();
-						fc.setInitialDirectory(projectInitWindow.getWorkspaceDirectory());
+						fc.setInitialDirectory(projectInitWindow.getWorkspace().getWorkspaceDirectory());
 						fc.setTitle(bundle.getString("fc_locate_project_title"));
 						fc.getExtensionFilters().add(ADCStatic.PROJECT_XML_FC_FILTER);
 
@@ -332,17 +328,18 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						if (chosen == null) {
 							return;
 						}
-						ProjectXmlReader.ProjectPreviewParseResult result;
+						ProjectPreview preview = null;
 						try {
-							result = ProjectXmlReader.previewParseProjectXmlFile(chosen);
+							preview = ApplicationManager.getInstance().getPreviewForProjectFile(chosen);
 						} catch (XmlParseException e) {
+							new CouldNotLoadProjectDialog(e, chosen.getAbsolutePath()).show();
 							return;
 						}
-						if (!lvKnownProjects.getItems().contains(result.getProjectDescriptor())) {
-							parsedKnownProjects.add(result);
-							lvKnownProjects.getItems().add(result.getProjectDescriptor());
+						if (!lvKnownProjects.getItems().contains(preview)) {
+							parsedKnownProjects.add(preview);
+							lvKnownProjects.getItems().add(preview);
 						}
-						lvKnownProjects.getSelectionModel().select(result.getProjectDescriptor());
+						lvKnownProjects.getSelectionModel().select(preview);
 						lvKnownProjects.requestFocus();
 					}
 				});
@@ -354,12 +351,12 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						btnLocateProject
 				);
 
-				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectDescriptor>() {
+				lvKnownProjects.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<ProjectPreview>() {
 					@Override
-					public void changed(ObservableValue<? extends ProjectDescriptor> observable, ProjectDescriptor oldValue, ProjectDescriptor selected) {
+					public void changed(ObservableValue<? extends ProjectPreview> observable, ProjectPreview oldValue, ProjectPreview selected) {
 						boolean matched = false;
-						for (ProjectXmlReader.ProjectPreviewParseResult result : parsedKnownProjects) {
-							if (result.getProjectDescriptor().equals(selected)) {
+						for (ProjectPreview result : parsedKnownProjects) {
+							if (result.equals(selected)) {
 								selectedParsedProject = result;
 								matched = true;
 								break;
@@ -368,10 +365,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						if (!matched) {
 							throw new IllegalStateException("parsed project should have been matched");
 						}
-						projectConfigSet.updateValue(selected != null);
+						projectConfigSet.updateValue(true);
 					}
 				});
-				projectInitWindow.workspaceDirectoryObserver.addListener((observer, oldValue, newValue) -> {
+				projectInitWindow.workspaceObserver.addListener((observer, oldValue, newValue) -> {
 					reloadKnownProjects();
 				});
 			}
@@ -380,36 +377,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				lvKnownProjects.getItems().clear();
 				parsedKnownProjects.clear();
 
-				File[] files = projectInitWindow.getWorkspaceDirectory().listFiles();
-				if (files == null) {
-					return;
-				}
-				for (File f : files) {
-					if (f.isDirectory()) {
-						File[] projectFiles = f.listFiles(new FilenameFilter() {
-							@Override
-							public boolean accept(File dir, String name) {
-								return name.equals(Project.PROJECT_SAVE_FILE_NAME);
-							}
-						});
-						if (projectFiles == null) {
-							continue;
-						}
-						for (File projectFile : projectFiles) {
-							try {
-								ProjectXmlReader.ProjectPreviewParseResult result = ProjectXmlReader.previewParseProjectXmlFile(projectFile);
-								parsedKnownProjects.add(result);
-							} catch (XmlParseException e) {
-								e.printStackTrace();
-								continue;
-							}
-						}
-					}
+				List<ProjectPreview> previews = ApplicationManager.getInstance().getProjectsForWorkspace(projectInitWindow.getWorkspace());
+				parsedKnownProjects.addAll(previews);
 
-				}
-
-				for (ProjectXmlReader.ProjectPreviewParseResult result : parsedKnownProjects) {
-					lvKnownProjects.getItems().add(result.getProjectDescriptor());
+				for (ProjectPreview preview : parsedKnownProjects) {
+					lvKnownProjects.getItems().add(preview);
 				}
 			}
 
@@ -425,8 +397,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			}
 
 			@NotNull
-			public ReadOnlyList<ProjectXmlReader.ProjectPreviewParseResult> getParsedKnownProjects() {
-				return parsedKnownProjectsRo;
+			public List<ProjectPreview> getParsedKnownProjects() {
+				return parsedKnownProjects;
 			}
 		}
 
@@ -449,7 +421,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					if (descExt == null) {
 						return;
 					}
-					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow, projectInitWindow.getWorkspaceDirectory(), descExt);
+					ImportDialogsDialog d = new ImportDialogsDialog(projectInitWindow, projectInitWindow.getWorkspace().getWorkspaceDirectory(), descExt);
 					d.show();
 					if (d.wasCancelled()) {
 						return;

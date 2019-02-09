@@ -22,6 +22,7 @@
       <element id="module-output" name="ADC Expression" />
       <element id="module-output" name="ADC Images" />
       <element id="module-output" name="ADC Data" />
+      <element id="module-output" name="ADC Control" />
     </root>
   </artifact>
 </component>

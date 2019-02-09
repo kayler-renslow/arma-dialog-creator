@@ -93,27 +93,27 @@ public class ImageOrTextureHelper {
 		texture = null;
 		mode = Mode.LoadingImage;
 
-		ImageHelper.getImageAsync(value, image -> {
-			synchronized (ImageOrTextureHelper.this) {
-				//synchronized so that the mode and image to paint are set at the same time
-				if (image == null) {
-					this.image = null;
-					mode = Mode.ImageError;
-				} else {
-					this.image = image;
-					mode = Mode.Image;
-				}
-				Platform.runLater(() -> {
-					if (completionCallback != null) {
-						completionCallback.apply(mode);
-					}
-
-					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
-					renderer.requestRender();
-				});
-			}
-			return null;
-		});
+		//		ImageHelper.getImageAsync(value, image -> {
+		//			synchronized (ImageOrTextureHelper.this) {
+		//				//synchronized so that the mode and image to paint are set at the same time
+		//				if (image == null) {
+		//					this.image = null;
+		//					mode = Mode.ImageError;
+		//				} else {
+		//					this.image = image;
+		//					mode = Mode.Image;
+		//				}
+		//				Platform.runLater(() -> {
+		//					if (completionCallback != null) {
+		//						completionCallback.apply(mode);
+		//					}
+		//
+		//					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
+		//					renderer.requestRender();
+		//				});
+		//			}
+		//			return null;
+		//		});
 	}
 
 

@@ -26,14 +26,16 @@ public class Workspace implements ADCDataListManager<WorkspaceData> {
 	 */
 	public Workspace(@NotNull File workspaceDirectory) {
 		if (!workspaceDirectory.exists()) {
-			throw new IllegalArgumentException("workspaceDirectory doesn't exist");
+			throw new IllegalArgumentException();
 		}
 		if (!workspaceDirectory.isDirectory()) {
-			throw new IllegalArgumentException("workspaceDirectory isn't a directory");
+			throw new IllegalArgumentException();
 		}
 		this.workspaceDirectory = workspaceDirectory;
-
 		adcDirectory = getFileForName(".adc");
+	}
+
+	void initialize() {
 		if (!adcDirectory.exists()) {
 			adcDirectory.mkdirs();
 		}

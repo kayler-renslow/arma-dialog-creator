@@ -1,9 +1,10 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;
@@ -52,7 +53,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	ADCCanvasView() {
 
-		this.display = ArmaDialogCreator.getApplicationData().getCurrentProject().getEditingDisplay();
+		this.display = ApplicationManager.getInstance().getCurrentProject().getEditingDisplay();
 		canvasControls = new CanvasControls(this);
 
 		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);

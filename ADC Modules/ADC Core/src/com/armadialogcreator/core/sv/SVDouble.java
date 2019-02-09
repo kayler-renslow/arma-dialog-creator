@@ -1,8 +1,7 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
 import java.math.RoundingMode;
@@ -10,9 +9,9 @@ import java.text.DecimalFormat;
 
 /** A generic wrapper implementation for a double. */
 public class SVDouble extends SerializableValue implements SVNumericValue {
-	public static final ValueConverter<SVDouble> CONVERTER = new ValueConverter<SVDouble>() {
+	public static final StringArrayConverter<SVDouble> CONVERTER = new StringArrayConverter<SVDouble>() {
 		@Override
-		public SVDouble convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVDouble convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVDouble(Double.parseDouble(values[0]));
 		}
 	};

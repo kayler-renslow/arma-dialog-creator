@@ -1,15 +1,15 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.Texture;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.Texture;
+import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
@@ -257,7 +257,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	@Override
 	public void styleUpdate(@Nullable SerializableValue newValue) {
 		stylePropertyValue = newValue;
-		newValue = MiscHelpers.getGroup(newValue, myControl);
+		newValue = MiscHelpers.getGroup(this.env, newValue, myControl);
 		if (newValue != null) {
 			SVControlStyleGroup group = (SVControlStyleGroup) newValue;
 			keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
@@ -326,7 +326,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		if (value == null) {
 			return RenderType.Error;
 		}
-		value = MiscHelpers.getGroup(value, this.myControl);
+		value = MiscHelpers.getGroup(this.env, value, this.myControl);
 		if (value != null) {
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {

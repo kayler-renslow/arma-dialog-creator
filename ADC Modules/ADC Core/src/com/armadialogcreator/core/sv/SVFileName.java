@@ -1,11 +1,9 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.FilePathUser;
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.old.FilePathUser;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -13,9 +11,9 @@ import java.io.File;
  @author Kayler
  @since 06/19/2017 */
 public class SVFileName extends SerializableValue implements FilePathUser {
-	public static ValueConverter<SerializableValue> CONVERTER = new ValueConverter<SerializableValue>() {
+	public static StringArrayConverter<SerializableValue> CONVERTER = new StringArrayConverter<SerializableValue>() {
 		@Override
-		public SerializableValue convert(@Nullable DataContext context, @NotNull String... values) throws Exception {
+		public SerializableValue convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVFileName(new File(values[0]));
 		}
 	};
