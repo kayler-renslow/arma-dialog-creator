@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.core.old.AllowedStyleProvider;
+import com.armadialogcreator.core.AllowedStyleProvider;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVString;

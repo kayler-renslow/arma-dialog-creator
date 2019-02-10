@@ -4,6 +4,7 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ListObserver;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
@@ -14,16 +15,12 @@ import java.util.ArrayList;
 /**
  @author K
  @since 01/06/2019 */
+@ApplicationSingleton
 public class ApplicationStateChangeLogger implements ApplicationStateSubscriber {
-	private static final ApplicationStateChangeLogger instance = new ApplicationStateChangeLogger();
+	public static final ApplicationStateChangeLogger instance = new ApplicationStateChangeLogger();
 
 	static {
 		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static ApplicationStateChangeLogger getInstance() {
-		return instance;
 	}
 
 	private static final int LOG_SIZE_CAP = 30;

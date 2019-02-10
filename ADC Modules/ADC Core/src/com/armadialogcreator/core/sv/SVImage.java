@@ -1,7 +1,7 @@
 package com.armadialogcreator.core.sv;
 
+import com.armadialogcreator.core.FilePathUser;
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.core.old.FilePathUser;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

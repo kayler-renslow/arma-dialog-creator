@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.QuadIterable;
 import org.jetbrains.annotations.NotNull;
@@ -12,17 +13,13 @@ import java.util.LinkedList;
 /**
  @author K
  @since 01/04/2019 */
+@ApplicationSingleton
 public class MacroRegistry implements Registry {
 
-	private static final MacroRegistry instance = new MacroRegistry();
+	public static final MacroRegistry instance = new MacroRegistry();
 
 	static {
 		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static MacroRegistry getInstance() {
-		return instance;
 	}
 
 	@NotNull

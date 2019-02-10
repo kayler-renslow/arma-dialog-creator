@@ -1,4 +1,4 @@
-package com.armadialogcreator.canvas;
+package com.armadialogcreator.util;
 
 /**
  All 16:9 screen dimensions.

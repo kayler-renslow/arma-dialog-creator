@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 07/13/2016. */
 public class EditorTreeViewEditContextMenu extends ContextMenu {
-	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends TreeItemEntry> treeView,
+	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView,
 										 @NotNull ControlTreeItemEntry entryClicked) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		CheckMenuItem checkMenuItemEnable = new CheckMenuItem(bundle.getString("ContextMenu.ControlEdit.enable"));
@@ -68,7 +68,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		addCommon(treeView, entryClicked, bundle);
 	}
 
-	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends TreeItemEntry> treeView,
+	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView,
 										 @NotNull FolderTreeItemEntry entryClicked) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 
@@ -95,7 +95,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		addCommon(treeView, entryClicked, bundle);
 	}
 
-	private void addCommon(@NotNull EditorComponentTreeView<? extends TreeItemEntry> treeView, @NotNull TreeItemEntry entryClicked, ResourceBundle bundle) {
+	private void addCommon(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView, @NotNull UINodeTreeItemData entryClicked, ResourceBundle bundle) {
 		MenuItem miClearSelection = new MenuItem(bundle.getString("ContextMenu.ControlEdit.clear_selection"));
 		miClearSelection.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -133,7 +133,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		MenuItem miDuplicate = new MenuItem(bundle.getString("ContextMenu.ControlEdit.duplicate"));
 		getItems().add(miDuplicate);
 		miDuplicate.setOnAction(e -> {
-			TreeItem<? extends TreeItemEntry> selected = treeView.getSelectionModel().getSelectedItem();
+			TreeItem<? extends UINodeTreeItemData> selected = treeView.getSelectionModel().getSelectedItem();
 			if (selected == null) {
 				return;
 			}

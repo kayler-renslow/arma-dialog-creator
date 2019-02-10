@@ -4,9 +4,9 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
+import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlPropertyUpdate;
-import com.armadialogcreator.core.old.ControlType;
 import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.data.export.ProjectExporter;
 import com.armadialogcreator.data.olddata.Project;
@@ -69,7 +69,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 
 	private final UpdateGroupListener<ControlPropertyUpdate> controlClassListener = new UpdateGroupListener<ControlPropertyUpdate>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, @NotNull ControlPropertyUpdate data) {
 			updatePreview();
 		}
 	};

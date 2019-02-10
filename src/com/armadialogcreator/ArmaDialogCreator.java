@@ -7,6 +7,7 @@ import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ADCExecutors;
+import com.armadialogcreator.util.ApplicationSingleton;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -58,6 +59,36 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		Locale.setDefault(Locale.Category.FORMAT, Locale.US);
 
 		ExceptionHandler.init();
+
+		//load application singleton classes
+		try {
+			String[] classes = {
+					"com.armadialogcreator.ApplicationStateChangeLogger",
+					"com.armadialogcreator.ConfigClassRegistry",
+					"com.armadialogcreator.ControlClassRegistry",
+					"com.armadialogcreator.EditorManager",
+					"com.armadialogcreator.ExpressionEnvManager",
+					"com.armadialogcreator.FileDependencyRegistry",
+					"com.armadialogcreator.MacroRegistry",
+					"com.armadialogcreator.StringTableManager",
+			};
+
+			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();
+			Class<ApplicationSingleton> applicationSingletonAnnotation = (Class<ApplicationSingleton>) loader.loadClass("com.armadialogcreator.util.ApplicationSingleton");
+
+			for (String clazz : classes) {
+				try {
+					Class<?> aClass = loader.loadClass(clazz);
+					ApplicationSingleton annotation = aClass.getAnnotation(applicationSingletonAnnotation);
+					aClass.getField(annotation.field()).get(aClass); //this is how we invoke static block / initialize the class
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 		launch(args);
 	}
 

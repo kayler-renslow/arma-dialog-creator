@@ -57,6 +57,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 		map.clear();
 	}
 
+
 	/**
 	 Get the {@link ConfigProperty} instance for the given property name ({@link ConfigProperty#getName()}).
 
@@ -71,6 +72,33 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 			return c;
 		}
 		throw new MissingConfigPropertyKeyException(name);
+	}
+
+	/**
+	 Get the {@link ConfigProperty} instance for the given property name ({@link ConfigProperty#getName()}).
+
+	 @return the ControlProperty instance
+	 @throws MissingConfigPropertyKeyException when the key couldn't be found
+	 @see #findPropertyNullable(String)
+	 */
+	@NotNull
+	public final ConfigProperty findProperty(@NotNull ConfigPropertyKey key) throws MissingConfigPropertyKeyException {
+		ConfigProperty c = findPropertyNullable(key.getPropertyName());
+		if (c != null) {
+			return c;
+		}
+		throw new MissingConfigPropertyKeyException(key.getPropertyName());
+	}
+
+	/**
+	 Get the {@link ConfigProperty} instance for the given property name.
+
+	 @return the ControlProperty instance, or null if couldn't be found
+	 @see #findProperty(String)
+	 */
+	@Nullable
+	public final ConfigProperty findPropertyNullable(@NotNull ConfigPropertyKey key) {
+		return map.get(key.getPropertyName());
 	}
 
 	/**

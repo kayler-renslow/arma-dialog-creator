@@ -1,9 +1,8 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaControlRenderer;
-import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.armadialogcreator.util.ValueListener;
@@ -17,11 +16,11 @@ import org.jetbrains.annotations.Nullable;
 /**
  Created by Kayler on 06/07/2016.
  */
-public class ControlTreeItemEntry extends TreeItemEntry {
+public class ControlTreeItemEntry extends UINodeTreeItemData {
 	private final ArmaControl myArmaControl;
 
 	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, @NotNull ArmaControl control) {
-		super(control.getClassName(), cellType, graphic);
+		super(control.getClassName(), cellType, graphic, control);
 		this.myArmaControl = control;
 		myArmaControl.getClassNameObserver().addListener((observer, oldValue, newValue) -> {
 			setText(newValue);
@@ -103,21 +102,17 @@ public class ControlTreeItemEntry extends TreeItemEntry {
 	}
 
 	@Override
-	public void duplicate(@NotNull TreeView<? extends TreeItemEntry> treeView) {
+	public void duplicate(@NotNull TreeView<? extends UINodeTreeItemData> treeView) {
 		String newName = myArmaControl.getClassName() + "_copy1";
 		int i = 2;
-		Project p = Project.getCurrentProject();
-		while (p.findControlClassByName(newName) != null) {
+		ConfigClassRegistry registry = ConfigClassRegistry.instance;
+		while (registry.findConfigClassByName(newName) != null) {
 			newName = myArmaControl.getClassName() + "_copy" + i;
 			i++;
 		}
-		ArmaControl dup = myArmaControl.duplicate(newName, p);
-		if (myArmaControl.getHolder() == myArmaControl.getDisplay()) {
-			if (treeView == ArmaDialogCreator.getCanvasView().getBackgroundControlTreeView()) {
-				myArmaControl.getDisplay().getBackgroundControls().add(dup);
-				return;
-			}
-		}
-		myArmaControl.getHolder().getControls().add(dup);
+		ArmaControl dup = myArmaControl.duplicate(newName);
+		dup.setRootNode(myArmaControl.getRootNode());
+		dup.setParentNode(myArmaControl.getParentNode());
+		myArmaControl.getParentNode().addChild(dup);
 	}
 }

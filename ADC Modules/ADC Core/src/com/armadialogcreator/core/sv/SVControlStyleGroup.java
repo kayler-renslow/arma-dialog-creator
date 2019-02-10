@@ -1,8 +1,8 @@
 package com.armadialogcreator.core.sv;
 
+import com.armadialogcreator.core.AllowedStyleProvider;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.core.old.AllowedStyleProvider;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

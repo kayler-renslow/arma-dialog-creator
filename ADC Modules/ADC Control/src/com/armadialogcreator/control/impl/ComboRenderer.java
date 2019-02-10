@@ -1,14 +1,14 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;

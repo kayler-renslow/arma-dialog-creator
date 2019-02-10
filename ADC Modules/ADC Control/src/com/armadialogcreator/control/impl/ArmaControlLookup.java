@@ -3,7 +3,7 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.TestArmaControlRenderer;
-import com.armadialogcreator.core.old.ControlType;
+import com.armadialogcreator.core.ControlType;
 import org.jetbrains.annotations.NotNull;
 
 /**

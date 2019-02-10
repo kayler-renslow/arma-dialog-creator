@@ -1,8 +1,8 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.Resolution;
-import com.armadialogcreator.canvas.ScreenDimension;
 import com.armadialogcreator.canvas.UIScale;
+import com.armadialogcreator.util.ScreenDimension;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,12 +23,11 @@ public class ArmaResolution implements Resolution {
 	 Construct a resolution width the given screen dimension and ui scale
 	 
 	 @param screenDimension screen width and height (<b>must be 16:9 ratio</b>)
-	 @param scale ui scale constant
 	 */
-	public ArmaResolution(ScreenDimension screenDimension, ArmaUIScale scale) {
+	public ArmaResolution(@NotNull ScreenDimension screenDimension) {
 		this.screenWidth = screenDimension.width;
 		this.screenHeight = screenDimension.height;
-		this.uiScale = scale;
+		this.uiScale = ArmaUIScale.DEFAULT;
 		recalc();
 	}
 	

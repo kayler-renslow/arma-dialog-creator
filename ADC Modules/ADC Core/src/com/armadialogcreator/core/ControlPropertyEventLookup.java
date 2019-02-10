@@ -1,5 +1,6 @@
-package com.armadialogcreator.core.old;
+package com.armadialogcreator.core;
 
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

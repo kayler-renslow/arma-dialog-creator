@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.arma.control.ArmaControlGroup;
+import com.armadialogcreator.control.ArmaControlGroup;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import org.jetbrains.annotations.NotNull;
 

@@ -13,10 +13,9 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.ArmaUIScale;
-import com.armadialogcreator.canvas.ScreenDimension;
+import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
@@ -25,6 +24,7 @@ import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
+import com.armadialogcreator.util.ScreenDimension;
 import javafx.application.Application;
 import javafx.scene.control.TreeItem;
 import javafx.stage.Stage;
@@ -100,7 +100,7 @@ public class EditorComponentTreeViewTest extends Application {
 
 		public TestTreeView() {
 			super(true);
-			setToDisplay(new ArmaDisplay());
+			setToUINode(new ArmaDisplay());
 		}
 
 		@Override

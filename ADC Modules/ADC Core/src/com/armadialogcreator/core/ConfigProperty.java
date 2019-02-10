@@ -1,6 +1,6 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
 import javafx.beans.InvalidationListener;
@@ -92,6 +92,26 @@ public class ConfigProperty {
 			property.bindToMacro(boundMacro);
 		}
 		return property;
+	}
+
+	public void setValue(@NotNull SerializableValue value) {
+		getValueObserver().updateValue(value);
+	}
+
+	public void setValue(int i) {
+		getValueObserver().updateValue(new SVInteger(i));
+	}
+
+	public void setValue(boolean b) {
+		getValueObserver().updateValue(SVBoolean.get(b));
+	}
+
+	public void setValue(double d) {
+		getValueObserver().updateValue(new SVDouble(d));
+	}
+
+	public void setValue(@NotNull String s) {
+		getValueObserver().updateValue(new SVString(s));
 	}
 
 	private static class ReroutableValueObserver extends NotNullValueObserver<SerializableValue> {

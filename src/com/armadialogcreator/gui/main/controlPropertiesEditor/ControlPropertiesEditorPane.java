@@ -12,7 +12,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Function;
@@ -140,7 +139,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 			controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 				@Override
-				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @Nullable ControlClassUpdate data) {
+				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 					if (data instanceof ControlClassTemporaryNestedClassUpdate) {
 						ControlClassTemporaryNestedClassUpdate update = (ControlClassTemporaryNestedClassUpdate) data;
 						if (update.getNestedClass() == cc) {
@@ -197,7 +196,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 			controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 				@Override
-				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @Nullable ControlClassUpdate data) {
+				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 					if (data instanceof ControlClassTemporaryNestedClassUpdate) {
 						ControlClassTemporaryNestedClassUpdate update = (ControlClassTemporaryNestedClassUpdate) data;
 						if (update.isAdded()) {
@@ -256,7 +255,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @Nullable ControlClassUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 				if (optional) {
 					//we are going to add the temp properties to the optional titled pane
 					if (data instanceof ControlClassTemporaryPropertyUpdate) {

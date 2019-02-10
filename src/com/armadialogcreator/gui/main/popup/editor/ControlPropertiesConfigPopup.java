@@ -4,7 +4,11 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaControlGroup;
 import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.core.old.*;
+import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.ControlProperty;
+import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.data.olddata.Project;
@@ -90,7 +94,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	};
 	private final UpdateGroupListener<ListObserverChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, ListObserverChange<ArmaControl> data) {
+		public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, @NotNull ListObserverChange<ArmaControl> data) {
 			if (data.wasMoved()) {
 				if (data.getMoved().getMoved() == control) {
 					checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());

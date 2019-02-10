@@ -17,35 +17,55 @@ public class DeepUINodeIterable implements Iterable<UINode> {
 
 	@NotNull
 	@Override
-	public Iterator<UINode> iterator() {
-		return new Iterator<UINode>() {
-			Stack<Iterator<? extends UINode>> iterStack = new Stack<>();
+	public MyIterator iterator() {
+		return new MyIterator(iterable);
+	}
 
-			{
-				iterStack.push(iterable.iterator());
-			}
+	public static class MyIterator implements Iterator<UINode> {
+		private final Stack<Iterator<? extends UINode>> iterStack = new Stack<>();
 
-			boolean checked = false;
+		private boolean checked = false;
+		private int depth = 0;
 
-			@Override
-			public boolean hasNext() {
-				if (!checked) {
-					while (!iterStack.isEmpty() && !iterStack.peek().hasNext()) {
-						iterStack.pop();
-					}
-					checked = true;
+		public MyIterator(@NotNull Iterable<? extends UINode> iterable) {
+			iterStack.push(iterable.iterator());
+		}
+
+		@Override
+		public boolean hasNext() {
+			check();
+			return !iterStack.isEmpty() && iterStack.peek().hasNext();
+		}
+
+		private void check() {
+			if (!checked) {
+				while (!iterStack.isEmpty() && !iterStack.peek().hasNext()) {
+					iterStack.pop();
+					depth--;
 				}
-				return !iterStack.isEmpty() && iterStack.peek().hasNext();
+				checked = true;
 			}
+		}
 
-			@Override
-			public UINode next() {
-				UINode next = iterStack.peek().next();
-				if (next.getComponent() == null) {
-					iterStack.push(next.deepIterateChildren().iterator());
-				}
-				return next;
+		/**
+		 @return -1 if nothing left to iterate, 0 for first node, 1 for children of first node,
+		 2 for children of children of first node, etc.
+		 Initial value before first {@link #hasNext()} or {@link #next()} call is 0.
+		 */
+		public int getDepth() {
+			check();
+			return depth;
+		}
+
+		@Override
+		public UINode next() {
+			check();
+			UINode next = iterStack.peek().next();
+			if (next.getChildCount() > 0) {
+				iterStack.push(next.deepIterateChildren().iterator());
+				depth++;
 			}
-		};
+			return next;
+		}
 	}
 }

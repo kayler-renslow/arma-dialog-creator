@@ -69,7 +69,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
+			public void update(@NotNull UpdateListenerGroup<Resolution> group, @NotNull Resolution newResolution) {
 				if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
 					canvas.setWidth(newResolution.getScreenWidth());
 					canvas.setHeight(newResolution.getScreenHeight());

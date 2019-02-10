@@ -21,7 +21,7 @@ public class DisplayChangeRegistrar implements ChangeRegistrar {
 		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
 		UpdateGroupListener<ListObserverChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, ListObserverChange<ArmaControl> change) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, @NotNull ListObserverChange<ArmaControl> change) {
 				if (disableListener) {
 					return;
 				}

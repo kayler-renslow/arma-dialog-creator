@@ -1,9 +1,9 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;

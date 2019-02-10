@@ -4,6 +4,7 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -11,9 +12,10 @@ import java.util.List;
 /**
  @author K
  @since 01/04/2019 */
+@ApplicationSingleton
 public class ConfigClassRegistry extends ConfigClassRegistryBase<ConfigClass> {
 
-	private static final ConfigClassRegistry instance = new ConfigClassRegistry(new ConfigClassConfigurableHandler<>() {
+	public static final ConfigClassRegistry instance = new ConfigClassRegistry(new ConfigClassConfigurableHandler<>() {
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config, @NotNull List<ConfigClass> classes) {
 
@@ -28,11 +30,6 @@ public class ConfigClassRegistry extends ConfigClassRegistryBase<ConfigClass> {
 
 	static {
 		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static ConfigClassRegistry getInstance() {
-		return instance;
 	}
 
 	protected ConfigClassRegistry(@NotNull ConfigClassConfigurableHandler<ConfigClass> configurableHandler) {

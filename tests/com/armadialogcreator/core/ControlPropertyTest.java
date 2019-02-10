@@ -1,7 +1,6 @@
 package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.*;
 import org.junit.Test;
 

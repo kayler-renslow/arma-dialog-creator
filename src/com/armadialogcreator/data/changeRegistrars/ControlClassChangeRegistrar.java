@@ -2,6 +2,7 @@ package com.armadialogcreator.data.changeRegistrars;
 
 import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.control.ArmaDisplay;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.data.olddata.*;
@@ -37,7 +38,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 
 		UpdateGroupListener<ControlClassUpdate> classUpdateListener = new UpdateGroupListener<ControlClassUpdate>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 				if (disableListener) {
 					return;
 				}
@@ -72,7 +73,7 @@ public class ControlClassChangeRegistrar implements ChangeRegistrar {
 		ArmaDisplay display = data.getCurrentProject().getEditingDisplay();
 		UpdateGroupListener<ListObserverChange<ArmaControl>> listChangeListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, ListObserverChange<ArmaControl> change) {
+			public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, @NotNull ListObserverChange<ArmaControl> change) {
 				if (change.wasAdded()) {
 					change.getAdded().getAdded().getControlClassUpdateGroup().addListener(classUpdateListener);
 				} else if (change.wasRemoved()) {

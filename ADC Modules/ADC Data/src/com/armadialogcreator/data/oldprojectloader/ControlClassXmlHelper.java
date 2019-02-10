@@ -2,9 +2,9 @@ package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.old.CustomControlClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

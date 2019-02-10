@@ -1,5 +1,6 @@
 package com.armadialogcreator.canvas;
 
+import com.armadialogcreator.util.ScreenDimension;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 

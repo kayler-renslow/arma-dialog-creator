@@ -1,6 +1,7 @@
-package com.armadialogcreator.core.old;
+package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.old.ControlPropertyOptionOld;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,7 +17,7 @@ import java.util.List;
 
  @author Kayler
  @since 05/22/2016. */
-public enum ControlPropertyLookup implements ControlPropertyLookupConstant {
+public enum ControlPropertyLookup implements ControlPropertyLookupConstant, ConfigPropertyKey {
 	IDC(0, 0, "idc", PropertyType.Int),
 	X(1, 1, "x", PropertyType.Float),
 	Y(2, 2, "y", PropertyType.Float),

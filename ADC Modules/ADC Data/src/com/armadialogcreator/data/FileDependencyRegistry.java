@@ -1,6 +1,7 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
+import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.TripleIterable;
 import org.jetbrains.annotations.NotNull;
@@ -14,16 +15,12 @@ import java.util.ArrayList;
 
  @author Kayler
  @since 07/19/2016. */
+@ApplicationSingleton
 public class FileDependencyRegistry implements Registry {
-	private static final FileDependencyRegistry instance = new FileDependencyRegistry();
+	public static final FileDependencyRegistry instance = new FileDependencyRegistry();
 
 	static {
 		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static FileDependencyRegistry getInstance() {
-		return instance;
 	}
 
 	@NotNull

@@ -45,7 +45,7 @@ public class ControlProperty {
 	private final UpdateListenerGroup<ControlPropertyUpdate> controlPropertyUpdateGroup = new UpdateListenerGroup<>();
 	private final UpdateGroupListener<ControlPropertyUpdate> inheritListener = new UpdateGroupListener<ControlPropertyUpdate>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, @NotNull ControlPropertyUpdate data) {
 			ControlProperty.this.update(data, false);
 		}
 	};

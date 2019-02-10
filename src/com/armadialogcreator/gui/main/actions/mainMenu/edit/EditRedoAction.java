@@ -30,7 +30,7 @@ public class EditRedoAction implements EventHandler<ActionEvent> {
 		final Changelog changelog = Changelog.getInstance();
 		changelog.getChangeUpdateGroup().addListener(new UpdateGroupListener<ChangelogUpdate>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ChangelogUpdate> group, ChangelogUpdate newChange) {
+			public void update(@NotNull UpdateListenerGroup<ChangelogUpdate> group, @NotNull ChangelogUpdate newChange) {
 				switch (newChange.getType()) {
 					case CHANGE_ADDED: {
 						editRedoMenuItem.setDisable(true);

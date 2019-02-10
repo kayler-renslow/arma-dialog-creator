@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.fxcontrol.treeView;
 
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

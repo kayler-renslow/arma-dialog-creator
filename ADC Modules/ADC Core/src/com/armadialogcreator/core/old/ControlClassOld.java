@@ -1,5 +1,6 @@
 package com.armadialogcreator.core.old;
 
+import com.armadialogcreator.core.ControlPropertyEventLookup;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -63,7 +64,7 @@ public class ControlClassOld {
 	/** This listener is for handling any inheritance updates */
 	private final UpdateGroupListener<ControlClassUpdate> controlClassUpdateExtendListener = new UpdateGroupListener<ControlClassUpdate>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 			if (data instanceof ControlClassTemporaryPropertyUpdate) {
 				handleTempPropertyUpdate((ControlClassTemporaryPropertyUpdate) data);
 			} else if (data instanceof ControlClassTemporaryNestedClassUpdate) {
@@ -106,7 +107,7 @@ public class ControlClassOld {
 	};
 	private final UpdateGroupListener<ControlPropertyUpdate> controlPropertyListener = new UpdateGroupListener<ControlPropertyUpdate>() {
 		@Override
-		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+		public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, @NotNull ControlPropertyUpdate data) {
 			if (data instanceof ControlPropertyInheritUpdate) {
 				ControlPropertyInheritUpdate update = (ControlPropertyInheritUpdate) data;
 				controlClassUpdateGroup.update(

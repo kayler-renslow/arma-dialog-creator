@@ -1,16 +1,13 @@
 package com.armadialogcreator.gui.main;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
 import com.armadialogcreator.gui.notification.NotificationPane;
 import com.armadialogcreator.gui.notification.Notifications;
 import javafx.collections.ListChangeListener;
@@ -52,11 +49,10 @@ class ADCCanvasView extends HBox implements CanvasView {
 	private ArmaDisplay display;
 
 	ADCCanvasView() {
-
-		this.display = ApplicationManager.getInstance().getCurrentProject().getEditingDisplay();
+		EditorManager editorManager = EditorManager.instance;
+		this.display = editorManager.getEditingDisplay();
 		canvasControls = new CanvasControls(this);
-
-		this.uiCanvasEditor = new UICanvasEditor(DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()), canvasControls, display);
+		this.uiCanvasEditor = new UICanvasEditor(editorManager.getResolution(), canvasControls, display);
 		initializeUICanvasEditor(display);
 
 		//init notification pane
@@ -82,8 +78,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void initializeUICanvasEditor(@NotNull ArmaDisplay display) {
-		canvasControls.getTreeViewMain().setToDisplay(display);
-		canvasControls.getTreeViewBackground().setToDisplay(display);
+		canvasControls.getTreeViewMain().setToUINode(display);
+		canvasControls.getTreeViewBackground().setToUINode(display);
 
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
@@ -106,15 +102,15 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	private void syncTreeView(EditorComponentTreeView<? extends TreeItemEntry> treeView) {
-		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<CanvasControl>() {
+		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<UINode>() {
 			@Override
-			public void onChanged(Change<? extends CanvasControl> c) {
+			public void onChanged(Change<? extends UINode> c) {
 				if (selectFromTreeView) {
 					return;
 				}
 				selectFromCanvas = true;
 				List<ArmaControl> controlList = new ArrayList<>(uiCanvasEditor.getSelection().getSelected().size());
-				for (CanvasControl control : uiCanvasEditor.getSelection().getSelected()) {
+				for (UINode control : uiCanvasEditor.getSelection().getSelected()) {
 					if (control instanceof ArmaControl) {
 						controlList.add((ArmaControl) control);
 					}

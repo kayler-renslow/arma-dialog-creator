@@ -1,6 +1,5 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;

@@ -34,7 +34,7 @@ public class EditCustomControlClassDialog extends NewCustomControlClassDialog {
 		duplicate = toEdit.newSpecification().constructNewControlClass(Project.getCurrentProject());
 		UpdateGroupListener<ControlClassUpdate> listener = new UpdateGroupListener<ControlClassUpdate>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 				updates.add(data);
 			}
 		};

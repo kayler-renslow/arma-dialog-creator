@@ -8,22 +8,19 @@ import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.expression.Value;
+import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  @author K
  @since 01/07/2019 */
+@ApplicationSingleton
 public class ExpressionEnvManager implements ApplicationStateSubscriber {
-	private static final ExpressionEnvManager instance = new ExpressionEnvManager();
+	public static final ExpressionEnvManager instance = new ExpressionEnvManager();
 
 	static {
 		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static ExpressionEnvManager getInstance() {
-		return instance;
 	}
 
 	private final MyEnv env = new MyEnv();

@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.old.*;
@@ -103,7 +104,7 @@ class ControlPropertyEditorContainer extends HBox {
 
 		controlClassUpdateListener = new ControlClassUpdateListener(controlClass) {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, ControlClassUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 				if (data instanceof ControlClassExtendUpdate) {
 					ControlClassExtendUpdate update = (ControlClassExtendUpdate) data;
 					inheritanceMenuItem.setVisible(update.getNewExtendClass() != null);
@@ -135,7 +136,7 @@ class ControlPropertyEditorContainer extends HBox {
 
 		controlPropertyUpdateListener = new ControlPropertyUpdateListener(controlProperty) {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, ControlPropertyUpdate data) {
+			public void update(@NotNull UpdateListenerGroup<ControlPropertyUpdate> group, @NotNull ControlPropertyUpdate data) {
 				if (data instanceof ControlPropertyInheritUpdate) {
 					propertyInheritUpdate.apply(null);
 					resetPropertyValueEditor();

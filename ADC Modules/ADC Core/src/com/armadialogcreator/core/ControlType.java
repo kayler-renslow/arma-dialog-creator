@@ -1,6 +1,7 @@
-package com.armadialogcreator.core.old;
+package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.ControlTypeGroup;
+import com.armadialogcreator.core.old.ControlClassOld;
+import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.img.ADCImagePaths;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.image.Image;

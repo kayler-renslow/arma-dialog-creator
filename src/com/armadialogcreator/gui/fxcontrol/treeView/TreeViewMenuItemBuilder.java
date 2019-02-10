@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.fxcontrol.treeView;
 
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;

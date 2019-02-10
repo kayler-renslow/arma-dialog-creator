@@ -4,9 +4,9 @@ import com.armadialogcreator.canvas.FontMetrics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -172,7 +172,7 @@ public class BasicTextRenderer {
 
 		renderer.getResolutionUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution data) {
+			public void update(@NotNull UpdateListenerGroup<Resolution> group, @NotNull Resolution data) {
 				resolutionUpdate();
 			}
 		});

@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
+import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemData;
 import javafx.scene.Node;
@@ -8,11 +9,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 06/07/2016.
- */
-public abstract class TreeItemEntry extends TreeItemData {
-	public TreeItemEntry(@NotNull String text, @NotNull CellType cellType, @Nullable Node graphic) {
+ @author K
+ @since 02/09/2019 */
+public abstract class UINodeTreeItemData extends TreeItemData {
+	private final UINode node;
+
+	public UINodeTreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable Node graphic, @NotNull UINode node) {
 		super(text, cellType, graphic);
+		this.node = node;
+	}
+
+	@NotNull
+	public UINode getNode() {
+		return node;
 	}
 
 	/**
@@ -20,6 +29,5 @@ public abstract class TreeItemEntry extends TreeItemData {
 
 	 @param treeView the tree view that wants this entry to be duplicated
 	 */
-	public abstract void duplicate(@NotNull TreeView<? extends TreeItemEntry> treeView);
-
+	public abstract void duplicate(@NotNull TreeView<? extends UINodeTreeItemData> treeView);
 }

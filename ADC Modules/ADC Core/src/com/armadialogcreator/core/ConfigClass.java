@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 
@@ -108,6 +107,10 @@ public class ConfigClass {
 	@NotNull
 	public String getClassName() {
 		return classNameObserver.getValue();
+	}
+
+	public void setClassName(@NotNull String name) {
+		classNameObserver.updateValue(name);
 	}
 
 	public boolean isExtending() {
@@ -256,6 +259,24 @@ public class ConfigClass {
 		return propertiesInheritedOwnedByParent.findPropertyNullable(propertyName);
 	}
 
+	@NotNull
+	public ConfigProperty findProperty(@NotNull ConfigPropertyKey key) {
+		ConfigProperty property = findPropertyNullable(key);
+		if (property == null) {
+			throw new MissingConfigPropertyKeyException(key.getPropertyName());
+		}
+		return property;
+	}
+
+	@Nullable
+	public ConfigProperty findPropertyNullable(@NotNull ConfigPropertyKey key) {
+		ConfigProperty property = properties.findPropertyNullable(key);
+		if (property != null) {
+			return property;
+		}
+		return propertiesInheritedOwnedByParent.findPropertyNullable(key);
+	}
+
 	protected void makePropertySetImmutable() {
 		properties.makeImmutable();
 	}
@@ -291,28 +312,6 @@ public class ConfigClass {
 
 	@NotNull
 	public ReadOnlyIterable<ConfigProperty> iterateProperties() {
-		return new ReadOnlyIterable<>(new PropertiesIterable());
+		return new ReadOnlyIterable<>(new DoubleIterable<>(properties.iterable(), propertiesInheritedOwnedByParent.iterable()));
 	}
-
-	private class PropertiesIterable implements Iterable<ConfigProperty>, Iterator<ConfigProperty> {
-		Iterator<ConfigProperty> iter1 = properties.iterable().iterator();
-		Iterator<ConfigProperty> iter2 = propertiesInheritedOwnedByParent.iterable().iterator();
-
-		@NotNull
-		@Override
-		public Iterator<ConfigProperty> iterator() {
-			return this;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return iter1.hasNext() || iter2.hasNext();
-		}
-
-		@Override
-		public ConfigProperty next() {
-			return iter1.hasNext() ? iter1.next() : iter2.next();
-		}
-	}
-
 }
