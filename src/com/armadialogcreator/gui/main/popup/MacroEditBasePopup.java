@@ -6,7 +6,6 @@ import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;

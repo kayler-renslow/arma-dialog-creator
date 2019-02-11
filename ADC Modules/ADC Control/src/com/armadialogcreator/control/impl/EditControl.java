@@ -22,7 +22,7 @@ public class EditControl extends ArmaControl {
 
 	public EditControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 					   @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Edit, resolution, env, registry);
+		super(name, ArmaControlLookup.Edit, resolution, env);
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

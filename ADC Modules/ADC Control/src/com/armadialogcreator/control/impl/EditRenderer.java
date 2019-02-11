@@ -7,8 +7,8 @@ import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;
@@ -48,17 +48,16 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 		);
 		textRenderer.setAllowMultiLine(true);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 		{
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
 
-			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
-
 
 		addValueListener(ControlPropertyLookup.COLOR_DISABLED, (observer, oldValue, newValue)
 				-> {
@@ -68,11 +67,11 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
 
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
-		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
+		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(

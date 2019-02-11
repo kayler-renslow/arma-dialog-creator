@@ -14,8 +14,8 @@ public class ControlGroupControl extends ArmaControlGroup {
 
 	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env,
 							   @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.ControlsGroup, resolution, env, registry);
-		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
+		super(name, ArmaControlLookup.ControlsGroup, resolution, env);
+		findProperty(ControlPropertyLookup.IDC).setValue(idc);
 	}
 
 }

@@ -3,7 +3,6 @@ package com.armadialogcreator.gui.main.actions.mainMenu.file;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.data.export.ProjectExporter;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.popup.export.EditExportConfigurationDialog;
 import com.armadialogcreator.gui.notification.BoxNotification;

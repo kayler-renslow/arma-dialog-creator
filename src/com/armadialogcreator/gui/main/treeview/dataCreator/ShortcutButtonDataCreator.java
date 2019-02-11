@@ -5,7 +5,6 @@ import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.control.impl.ShortcutButtonControl;
 import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;

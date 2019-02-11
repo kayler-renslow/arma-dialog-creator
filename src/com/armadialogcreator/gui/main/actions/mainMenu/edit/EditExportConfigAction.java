@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.main.popup.export.EditExportConfigurationDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;

@@ -68,7 +68,6 @@ public class ArmaControlGroup extends ArmaControl {
 	public void addChild(@NotNull UINode node) {
 		children.add(node);
 		node.setParentNode(this);
-		node.setRootNode(this.rootNode);
 		updateGroup.update(new UINodeChange.AddChild(node));
 	}
 
@@ -76,18 +75,13 @@ public class ArmaControlGroup extends ArmaControl {
 	public void addChild(@NotNull UINode node, int index) {
 		children.add(index, node);
 		node.setParentNode(this);
-		node.setRootNode(this.rootNode);
 		updateGroup.update(new UINodeChange.AddChild(node, index));
 	}
 
 	@Override
 	public boolean removeChild(@NotNull UINode node) {
 		node.setParentNode(null);
-		node.setRootNode(null);
 		if (children.remove(node)) {
-			for (UINode child : node.deepIterateChildren()) {
-				child.setRootNode(null);
-			}
 			updateGroup.update(new UINodeChange.RemoveChild(node));
 			return true;
 		}
@@ -98,11 +92,7 @@ public class ArmaControlGroup extends ArmaControl {
 	public void removeChild(int index) {
 		UINode removed = children.remove(index);
 		if (removed != null) {
-			removed.setRootNode(null);
 			removed.setParentNode(null);
-			for (UINode child : removed.deepIterateChildren()) {
-				child.setRootNode(null);
-			}
 			updateGroup.update(new UINodeChange.RemoveChild(removed));
 		}
 	}
@@ -123,10 +113,6 @@ public class ArmaControlGroup extends ArmaControl {
 	public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
 		children.add(destIndex, child);
 		child.setParentNode(this);
-		child.setRootNode(this);
-		for (UINode node : child.deepIterateChildren()) {
-			node.setRootNode(this.rootNode);
-		}
 		updateGroup.update(new UINodeChange.MoveChild(child, oldParent, this, destIndex, false));
 	}
 

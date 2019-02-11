@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
+import com.armadialogcreator.control.ArmaUIScale;
+import com.armadialogcreator.data.EditorManager;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -16,6 +16,6 @@ public class ViewScreenUIScaleChangeAction implements ChangeListener<UIScale> {
 		if (newValue == null) {
 			newValue = ArmaUIScale.DEFAULT;
 		}
-		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setUIScale(newValue);
+		EditorManager.instance.getResolution().setUIScale(newValue);
 	}
 }

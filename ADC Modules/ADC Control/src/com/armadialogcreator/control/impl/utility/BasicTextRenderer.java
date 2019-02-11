@@ -4,9 +4,9 @@ import com.armadialogcreator.canvas.FontMetrics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -45,7 +45,7 @@ public class BasicTextRenderer {
 	private final UpdateCallback callback;
 
 	private Color textColor = Color.BLACK;
-	private ControlProperty sizeExProperty;
+	private ConfigProperty sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;
 
@@ -94,9 +94,9 @@ public class BasicTextRenderer {
 					}
 			);
 		}
-		ControlProperty textColorProp = control.findProperty(colorText);
+		ConfigProperty textColorProp = control.findProperty(colorText);
 		if (autoInitializeTextColor) {
-			textColorProp.setValueIfAbsent(true, new SVColorArray(renderer.getBackgroundColor().invert()));
+			textColorProp.setValue(new SVColorArray(renderer.getBackgroundColor().invert()));
 		}
 		renderer.addValueListener(colorText, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {

@@ -6,9 +6,9 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
@@ -45,13 +45,13 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		super(control, resolution, env);
 		this.border = new Border(2, Color.BLACK);
 		{
-			ControlProperty colorFrame = myControl.findProperty(ControlPropertyLookup.COLOR_FRAME);
-			addValueListener(colorFrame.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			ConfigProperty colorFrame = myControl.findProperty(ControlPropertyLookup.COLOR_FRAME);
+			addValueListener(colorFrame.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			colorFrame.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			colorFrame.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);

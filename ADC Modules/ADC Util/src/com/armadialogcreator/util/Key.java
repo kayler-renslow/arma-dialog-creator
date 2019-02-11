@@ -64,4 +64,9 @@ public class Key<V> {
 	public String toString() {
 		return name;
 	}
+
+	@NotNull
+	public V get(@NotNull DataContext context, @NotNull V defaultValue) {
+		return (V) context.getValue(this, defaultValue);
+	}
 }

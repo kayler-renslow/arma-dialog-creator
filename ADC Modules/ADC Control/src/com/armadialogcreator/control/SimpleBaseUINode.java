@@ -16,14 +16,12 @@ import java.util.List;
  @author K
  @since 02/06/2019 */
 public abstract class SimpleBaseUINode implements UINode {
-	protected UINode rootNode;
 	protected UINode parentNode;
 	protected final List<UINode> children = new LinkedList<>();
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 	protected final DataContext userData = new DataContext();
 
-	public SimpleBaseUINode(@Nullable UINode rootNode) {
-		this.rootNode = rootNode;
+	public SimpleBaseUINode() {
 	}
 
 	@Override
@@ -35,6 +33,7 @@ public abstract class SimpleBaseUINode implements UINode {
 	@Override
 	@NotNull
 	public UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup() {
+		UINode rootNode = getRootNode();
 		if (rootNode == null) {
 			return ArmaControlRenderer.UNIVERSAL_RENDER_GROUP;
 		}
@@ -61,10 +60,6 @@ public abstract class SimpleBaseUINode implements UINode {
 	public void addChild(@NotNull UINode node) {
 		children.add(node);
 		node.setParentNode(this);
-		node.setRootNode(this.rootNode);
-		for (UINode child : node.deepIterateChildren()) {
-			child.setRootNode(this.rootNode);
-		}
 		updateGroup.update(new UINodeChange.AddChild(node));
 	}
 
@@ -72,21 +67,13 @@ public abstract class SimpleBaseUINode implements UINode {
 	public void addChild(@NotNull UINode node, int index) {
 		children.add(index, node);
 		node.setParentNode(this);
-		node.setRootNode(this.rootNode);
-		for (UINode child : node.deepIterateChildren()) {
-			child.setRootNode(this.rootNode);
-		}
 		updateGroup.update(new UINodeChange.AddChild(node, index));
 	}
 
 	@Override
 	public boolean removeChild(@NotNull UINode node) {
 		node.setParentNode(null);
-		node.setRootNode(null);
 		if (children.remove(node)) {
-			for (UINode child : node.deepIterateChildren()) {
-				child.setRootNode(null);
-			}
 			updateGroup.update(new UINodeChange.RemoveChild(node));
 			return true;
 		}
@@ -94,16 +81,14 @@ public abstract class SimpleBaseUINode implements UINode {
 	}
 
 	@Override
-	public void removeChild(int index) {
+	@Nullable
+	public UINode removeChild(int index) {
 		UINode removed = children.remove(index);
 		if (removed != null) {
-			removed.setRootNode(null);
 			removed.setParentNode(null);
-			for (UINode child : removed.deepIterateChildren()) {
-				child.setRootNode(null);
-			}
 			updateGroup.update(new UINodeChange.RemoveChild(removed));
 		}
+		return removed;
 	}
 
 	@Override
@@ -121,10 +106,6 @@ public abstract class SimpleBaseUINode implements UINode {
 	@Override
 	public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
 		children.add(destIndex, child);
-		for (UINode node : child.deepIterateChildren()) {
-			node.setRootNode(this.rootNode);
-		}
-		child.setRootNode(this.rootNode);
 		child.setParentNode(this);
 		updateGroup.update(new UINodeChange.MoveChild(child, oldParent, this, destIndex, false));
 	}
@@ -147,15 +128,6 @@ public abstract class SimpleBaseUINode implements UINode {
 		return parentNode;
 	}
 
-	@Override
-	@Nullable
-	public UINode getRootNode() {
-		return rootNode;
-	}
-
-	public void setRootNode(@Nullable UINode rootNode) {
-		this.rootNode = rootNode;
-	}
 
 	public void setParentNode(@Nullable UINode parentNode) {
 		this.parentNode = parentNode;

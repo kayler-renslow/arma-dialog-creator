@@ -50,7 +50,7 @@ public class MiscHelpers {
 				return SVControlStyleGroup.getGroupFromString(
 						env,
 						value.toString(),
-						control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
+						null//control.getSpecProvider() instanceof AllowedStyleProvider ? (AllowedStyleProvider) control.getSpecProvider() : null
 				);
 			} catch (Exception ignore) {
 

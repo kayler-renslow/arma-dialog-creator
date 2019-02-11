@@ -14,6 +14,7 @@ module Arma.Dialog.Creator {
 	requires ADC.Data;
 	requires ADC.Control;
 
+
 	requires annotations;
 	requires antlr4.runtime;
 	requires richtextfx;

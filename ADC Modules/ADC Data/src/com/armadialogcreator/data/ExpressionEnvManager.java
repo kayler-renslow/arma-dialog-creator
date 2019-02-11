@@ -48,7 +48,7 @@ public class ExpressionEnvManager implements ApplicationStateSubscriber {
 			if (v != null) {
 				return v;
 			}
-			for (Macro m : MacroRegistry.getInstance().iterateAllMacros()) {
+			for (Macro m : MacroRegistry.instance.iterateAllMacros()) {
 				if (m.getKey().equals(identifier)) {
 					if (m.getValue() instanceof SVNumericValue) {
 						return new Value.NumVal(((SVNumericValue) m.getValue()).toDouble());

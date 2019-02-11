@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol.treeView;
 
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.MenuItem;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class TreeViewMenuItemBuilder {
 
-	private static <Tv, Td extends TreeItemEntry> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView<Tv, Td> treeView, @NotNull TreeItemDataCreator<Tv, Td> creator, CellType cellType) {
+	private static <Tv, Td extends UINodeTreeItemData> EventHandler<ActionEvent> createEvent(@NotNull EditableTreeView<Tv, Td> treeView, @NotNull TreeItemDataCreator<Tv, Td> creator, CellType cellType) {
 		return new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -35,7 +36,7 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new folder action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <Tv, E extends TreeItemEntry> void setNewFolderAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
+	public static <Tv, E extends UINodeTreeItemData> void setNewFolderAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.FOLDER));
 	}
 
@@ -47,7 +48,7 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new item action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <Tv, E extends TreeItemEntry> void setNewItemAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
+	public static <Tv, E extends UINodeTreeItemData> void setNewItemAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.LEAF));
 	}
 
@@ -59,11 +60,11 @@ public class TreeViewMenuItemBuilder {
 	 @param menuItem menu item that links the click action to the new folder action
 	 @throws IllegalStateException when the TreeItemData returned doesn't have the correct cell type
 	 */
-	public static <Tv, E extends TreeItemEntry> void setNewCompositeItemAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
+	public static <Tv, E extends UINodeTreeItemData> void setNewCompositeItemAction(@NotNull EditableTreeView<Tv, E> treeView, @NotNull TreeItemDataCreator<Tv, E> creator, @NotNull MenuItem menuItem) {
 		menuItem.setOnAction(createEvent(treeView, creator, CellType.COMPOSITE));
 	}
 
-	private static <Tv, E extends TreeItemEntry> void addChild(@NotNull EditableTreeView<Tv, E> treeView, @NotNull E treeItemData) {
+	private static <Tv, E extends UINodeTreeItemData> void addChild(@NotNull EditableTreeView<Tv, E> treeView, @NotNull E treeItemData) {
 		TreeItem<E> selected = treeView.getSelectedItem();
 		if (selected != null) {
 			if (selected.getValue().canHaveChildren()) {

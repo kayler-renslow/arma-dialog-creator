@@ -1,16 +1,14 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.util.ArmaPrecision;
-import com.armadialogcreator.util.UpdateListenerGroup;
-import com.armadialogcreator.util.ValueListener;
-import com.armadialogcreator.util.ValueObserver;
+import com.armadialogcreator.util.*;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
@@ -33,7 +31,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
-	protected final ControlProperty xProperty, yProperty, wProperty, hProperty;
+	protected final ConfigProperty xProperty, yProperty, wProperty, hProperty;
 	protected final Env env;
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
@@ -87,35 +85,35 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		});
 
-		xProperty = control.findRequiredProperty(ControlPropertyLookup.X);
-		yProperty = control.findRequiredProperty(ControlPropertyLookup.Y);
-		wProperty = control.findRequiredProperty(ControlPropertyLookup.W);
-		hProperty = control.findRequiredProperty(ControlPropertyLookup.H);
+		xProperty = control.findProperty(ControlPropertyLookup.X);
+		yProperty = control.findProperty(ControlPropertyLookup.Y);
+		wProperty = control.findProperty(ControlPropertyLookup.W);
+		hProperty = control.findProperty(ControlPropertyLookup.H);
 
-		final ValueListener<SerializableValue> positionValueListener = new ValueListener<SerializableValue>() {
+		final NotNullValueListener<SerializableValue> positionValueListener = new NotNullValueListener<SerializableValue>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<SerializableValue> observer, SerializableValue oldValue, SerializableValue newValue) {
+			public void valueUpdated(@NotNull NotNullValueObserver<SerializableValue> observer, @NotNull SerializableValue oldValue, @NotNull SerializableValue newValue) {
 				if (disablePositionPropertyListener) {
 					return;
 				}
 
 				if (xProperty.getValueObserver() == observer) {
-					if (xProperty.getValue() == null || !(xProperty.getValue() instanceof SVExpression)) {
+					if (!(xProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setXSilent((SVExpression) xProperty.getValue());
 				} else if (yProperty.getValueObserver() == observer) {
-					if (yProperty.getValue() == null || !(yProperty.getValue() instanceof SVExpression)) {
+					if (!(yProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setYSilent((SVExpression) yProperty.getValue());
 				} else if (wProperty.getValueObserver() == observer) {
-					if (wProperty.getValue() == null || !(wProperty.getValue() instanceof SVExpression)) {
+					if (!(wProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setWSilent((SVExpression) wProperty.getValue());
 				} else if (hProperty.getValueObserver() == observer) {
-					if (hProperty.getValue() == null || !(hProperty.getValue() instanceof SVExpression)) {
+					if (!(hProperty.getValue() instanceof SVExpression)) {
 						return;
 					}
 					setHSilent((SVExpression) hProperty.getValue());
@@ -483,21 +481,37 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Adds a value listener to {@link #myControl} with the provided lookup.
+	 Adds a value listener to {@link #myControl} with the provided {@link ConfigPropertyKey}.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> listener) {
-		addValueListener(myControl, lookup, listener);
+	public void addValueListener(@NotNull ConfigPropertyKey key, @NotNull NotNullValueListener<SerializableValue> listener) {
+		addValueListener(myControl, key.getPropertyName(), listener);
 	}
 
 	/**
-	 Adds a value listener to the given {@link ControlClassOld} with the provided lookup.
+	 Adds a value listener to {@link #myControl} with the provided property name.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull ControlClassOld owner, ControlPropertyLookupConstant lookup, @NotNull ValueListener<SerializableValue> l) {
-		ControlProperty property = owner.findProperty(lookup);
+	public void addValueListener(@NotNull String propertyName, @NotNull NotNullValueListener<SerializableValue> listener) {
+		addValueListener(myControl, propertyName, listener);
+	}
+
+	/**
+	 Adds a value listener to the given {@link ControlClassOld} with the provided property name.
+	 Afterwards, it invokes the listener with the current value.
+	 */
+	public void addValueListener(@NotNull ConfigClass owner, @NotNull String propertyName, @NotNull NotNullValueListener<SerializableValue> l) {
+		ConfigProperty property = owner.findProperty(propertyName);
 		property.addValueListener(l);
 		l.valueUpdated(property.getValueObserver(), property.getValue(), property.getValue());
+	}
+
+	/**
+	 Adds a value listener to the given {@link ControlClassOld} with the provided key.
+	 Invokes {@link #addValueListener(ConfigClass, String, NotNullValueListener)} using {@link ConfigPropertyKey#getPropertyName()}
+	 */
+	public void addValueListener(@NotNull ConfigClass owner, @NotNull ConfigPropertyKey key, @NotNull NotNullValueListener<SerializableValue> l) {
+		addValueListener(owner, key.getPropertyName(), l);
 	}
 
 	/**

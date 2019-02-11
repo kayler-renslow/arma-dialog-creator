@@ -1,4 +1,4 @@
-package com.armadialogcreator.data.oldprojectloader;
+package com.armadialogcreator.data;
 
 import com.armadialogcreator.core.stringtable.*;
 import com.armadialogcreator.data.SimpleStringTable;

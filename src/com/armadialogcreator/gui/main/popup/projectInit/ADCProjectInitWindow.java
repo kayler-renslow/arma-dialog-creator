@@ -9,7 +9,6 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ProjectPreview;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;

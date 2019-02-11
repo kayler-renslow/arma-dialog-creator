@@ -10,6 +10,8 @@ import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TextHelper;
 import com.armadialogcreator.control.impl.utility.TextShadow;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlProperty;
@@ -57,17 +59,19 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 	public StructuredTextRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findPropertyNullable(ControlPropertyLookup.COLOR_BACKGROUND);
 		{
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				} else if (newValue == null) {
-					//in Arma 3, colorBackground is an optional property
-					getBackgroundColorObserver().updateValue(new SVColorArray(Color.TRANSPARENT));
-				}
-			});
-			colorBackground.setValueIfAbsent(true, new SVColorArray(Color.TRANSPARENT));
+			if (colorBackground != null) {
+				addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
+					if (newValue instanceof SVColor) {
+						getBackgroundColorObserver().updateValue((SVColor) newValue);
+					}
+				});
+
+			} else {
+				//in Arma 3, colorBackground is an optional property
+				getBackgroundColorObserver().updateValue(new SVColorArray(Color.TRANSPARENT));
+			}
 		}
 
 		addValueListener(ControlPropertyLookup.TEXT, (observer, oldValue, newValue) -> {
@@ -108,7 +112,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		});
 
 		{
-			ControlClassOld attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
+			ConfigClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
 			addValueListener(attributes, ControlPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
@@ -118,7 +122,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				requestRender();
 			});
 			addValueListener(attributes, ControlPropertyLookup.ALIGN, (observer, oldValue, newValue) -> {
-				String alignment = newValue == null ? "" : newValue.toString();
+				String alignment = newValue.toString();
 				defaultSectionData.alignment = getAlignment(alignment);
 				requestRender();
 			});
@@ -133,8 +137,6 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			addValueListener(attributes, ControlPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					attributesSize = ((SVNumericValue) newValue).toDouble();
-				} else if (newValue == null) {
-					attributesSize = null;
 				}
 				updateSectionsFont();
 				requestRender();

@@ -3,6 +3,7 @@ package com.armadialogcreator.core;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
+import com.armadialogcreator.util.ValueListener;
 import javafx.beans.InvalidationListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -95,23 +96,47 @@ public class ConfigProperty {
 	}
 
 	public void setValue(@NotNull SerializableValue value) {
-		getValueObserver().updateValue(value);
+		cpvObserver.updateValue(value);
 	}
 
 	public void setValue(int i) {
-		getValueObserver().updateValue(new SVInteger(i));
+		cpvObserver.updateValue(new SVInteger(i));
 	}
 
 	public void setValue(boolean b) {
-		getValueObserver().updateValue(SVBoolean.get(b));
+		cpvObserver.updateValue(SVBoolean.get(b));
 	}
 
 	public void setValue(double d) {
-		getValueObserver().updateValue(new SVDouble(d));
+		cpvObserver.updateValue(new SVDouble(d));
 	}
 
 	public void setValue(@NotNull String s) {
-		getValueObserver().updateValue(new SVString(s));
+		cpvObserver.updateValue(new SVString(s));
+	}
+
+	public double getFloatValue() {
+		SerializableValue v = getValue();
+		if (v instanceof SVNumericValue) {
+			return ((SVNumericValue) v).toDouble();
+		}
+		throw new IllegalStateException();
+	}
+
+	public double getIntValue() {
+		SerializableValue v = getValue();
+		if (v instanceof SVNumericValue) {
+			return ((SVNumericValue) v).toInt();
+		}
+		throw new IllegalStateException();
+	}
+
+	public void addValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
+		cpvObserver.addListener(l);
+	}
+
+	public void removeValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
+		cpvObserver.removeListener(l);
 	}
 
 	private static class ReroutableValueObserver extends NotNullValueObserver<SerializableValue> {

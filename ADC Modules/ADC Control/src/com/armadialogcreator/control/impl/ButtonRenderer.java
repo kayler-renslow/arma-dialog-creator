@@ -9,8 +9,8 @@ import com.armadialogcreator.control.impl.utility.AlternatorHelper;
 import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
@@ -61,13 +61,13 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		);
 
 		{
-			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
 		addValueListener(ControlPropertyLookup.COLOR_SHADOW, (observer,
@@ -173,8 +173,8 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
 
 		tooltipRenderer = new TooltipRenderer(

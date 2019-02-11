@@ -1,5 +1,6 @@
 package com.armadialogcreator.core.old;
 
+import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.ReadOnlyList;
@@ -15,7 +16,7 @@ import java.util.Comparator;
 
  @author Kayler
  @since 09/15/2016. */
-public interface ControlPropertyLookupConstant {
+public interface ControlPropertyLookupConstant extends ConfigPropertyKey {
 	ReadOnlyList<ControlPropertyLookupConstant> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
 	/** @return all values that the property can be, or null if not using options. */

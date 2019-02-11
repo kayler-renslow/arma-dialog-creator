@@ -22,7 +22,7 @@ public class ProgressControl extends ArmaControl {
 
 	public ProgressControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						   @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Progress, resolution, env, registry);
+		super(name, ArmaControlLookup.Progress, resolution, env);
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

@@ -24,9 +24,9 @@ public class StaticControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
 	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Static, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
-		findProperty(ControlPropertyLookup.IDC).setDefaultValue(true, idc);
+		super(name, ArmaControlLookup.Static, resolution, env);
+		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
+		findProperty(ControlPropertyLookup.IDC).setValue(idc);
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

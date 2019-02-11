@@ -1,7 +1,6 @@
 package com.armadialogcreator.data.export;
 
 import com.armadialogcreator.core.old.CustomControlClass;
-import com.armadialogcreator.data.olddata.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

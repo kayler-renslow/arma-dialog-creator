@@ -29,7 +29,7 @@ public class ComboControl extends ArmaControl {
 	public static final String NestedClassName_ComboScrollBar = "ComboScrollBar";
 
 	public ComboControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Combo, resolution, env, registry);
+		super(name, ArmaControlLookup.Combo, resolution, env);
 
 		//force these value so that if the default value provider doesn't provide a value, there's still one present
 		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());

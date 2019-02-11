@@ -5,8 +5,8 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.expression.Env;
@@ -54,13 +54,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		tintedRightArrow.flipHorizontally();
 
 		{
-			ControlProperty bgColor = myControl.findProperty(ControlPropertyLookup.COLOR);
-			addValueListener(bgColor.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			ConfigProperty bgColor = myControl.findProperty(ControlPropertyLookup.COLOR);
+			addValueListener(bgColor.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			bgColor.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			bgColor.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);

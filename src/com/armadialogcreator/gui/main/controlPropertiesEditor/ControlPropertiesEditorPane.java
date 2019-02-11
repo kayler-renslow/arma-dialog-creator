@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
+import com.armadialogcreator.core.RequirementsConfigClass;
 import com.armadialogcreator.core.old.*;
 import com.armadialogcreator.gui.main.popup.EditNestedControlClassDialog;
 import com.armadialogcreator.lang.Lang;
@@ -66,7 +67,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	 @param controlClass control class that has the properties to edit
 	 */
-	public ControlPropertiesEditorPane(@NotNull ControlClassOld controlClass) {
+	public ControlPropertiesEditorPane(@NotNull RequirementsConfigClass controlClass) {
 		this();
 		this.controlClass = controlClass;
 

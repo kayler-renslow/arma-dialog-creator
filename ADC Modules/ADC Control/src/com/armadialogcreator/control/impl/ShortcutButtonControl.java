@@ -29,8 +29,8 @@ public class ShortcutButtonControl extends ArmaControl {
 	public static final String NestedClassName_TextPos = "TextPos";
 
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.ShortcutButton, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.NONE.getStyleGroup());
+		super(name, ArmaControlLookup.ShortcutButton, resolution, env);
+		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

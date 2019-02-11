@@ -8,7 +8,6 @@ import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.stringtable.StringTableKey;
 import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.gui.main.stringtable.StringTableLanguageTokenEditor;
 import com.armadialogcreator.lang.Lang;

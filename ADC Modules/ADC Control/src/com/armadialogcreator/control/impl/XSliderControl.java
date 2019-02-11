@@ -22,7 +22,7 @@ public class XSliderControl extends ArmaControl {
 
 	public XSliderControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						  @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.XSlider, resolution, env, registry);
+		super(name, ArmaControlLookup.XSlider, resolution, env);
 		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.SL_HORZ.getStyleGroup());
 	}
 

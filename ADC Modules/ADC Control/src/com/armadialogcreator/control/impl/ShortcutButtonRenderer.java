@@ -5,6 +5,8 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlProperty;
@@ -78,13 +80,13 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		);
 
 		{
-			ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
 		attachPicOrTexPropertyListener(ControlPropertyLookup.ANIM_TEXTURE_NORMAL, animTextureNormal);
@@ -149,8 +151,8 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
-		myControl.findProperty(ControlPropertyLookup.COLOR).setValueIfAbsent(true, new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValueIfAbsent(true, SVString.newEmptyString());
+		myControl.findProperty(ControlPropertyLookup.COLOR).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
@@ -161,7 +163,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		);
 
 		//nested classes
-		ControlClassOld hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
+		ConfigClass hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
 		{
 			addValueListener(hitZone, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -189,7 +191,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ControlClassOld textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
+		ConfigClass textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
 		{
 			addValueListener(textPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -217,7 +219,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ControlClassOld shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
+		ConfigClass shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
 		{
 			addValueListener(shortcutPos, ControlPropertyLookup.TOP, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {

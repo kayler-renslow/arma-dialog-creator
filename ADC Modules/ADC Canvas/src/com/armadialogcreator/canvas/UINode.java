@@ -51,8 +51,11 @@ public interface UINode {
 	 Removes the node at the specified index from the direct children of this node.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>null</code>
+
+	 @return the node that was removed, or null if no node was removed
 	 */
-	void removeChild(int index);
+	@Nullable
+	UINode removeChild(int index);
 
 	/**
 	 Moves the provided node to a new parent's children at an index.
@@ -84,7 +87,16 @@ public interface UINode {
 	 @return the top level node, or null if this node doesn't belong to a tree.
 	 If this node is the top level node, <code>this</code> will be returned
 	 */
-	@Nullable UINode getRootNode();
+	default @Nullable UINode getRootNode() {
+		if(getParentNode() == this) {
+			return this;
+		}
+		UINode node = getParentNode();
+		while(node != null && node != this) {
+			node = getParentNode();
+		}
+		return node;
+	}
 
 	/** @return the parent node of this node, or {@link #getRootNode()} if is the root node, or null if not member of a tree */
 	@Nullable UINode getParentNode();
@@ -92,8 +104,6 @@ public interface UINode {
 	/** Sets the parent node */
 	void setParentNode(@Nullable UINode newParent);
 
-	/** Sets the root node */
-	void setRootNode(@Nullable UINode newParent);
 
 	@Nullable
 	default UINode getFirstNonStructureAncestorNode() {

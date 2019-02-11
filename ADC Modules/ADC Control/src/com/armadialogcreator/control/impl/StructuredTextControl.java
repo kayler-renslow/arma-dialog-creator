@@ -27,7 +27,7 @@ public class StructuredTextControl extends ArmaControl {
 
 	public StructuredTextControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 								 @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Progress, resolution, env, registry);
+		super(name, ArmaControlLookup.Progress, resolution, env);
 		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 

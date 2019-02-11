@@ -1,7 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
 import com.armadialogcreator.core.stringtable.Language;
-import com.armadialogcreator.data.olddata.Project;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 

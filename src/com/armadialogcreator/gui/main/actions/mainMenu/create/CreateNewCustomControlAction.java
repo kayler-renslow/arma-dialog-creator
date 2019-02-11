@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.main.popup.newControl.NewCustomControlClassDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

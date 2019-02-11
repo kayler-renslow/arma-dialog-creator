@@ -21,8 +21,8 @@ public class ButtonControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
 	public ButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.Button, resolution, env, registry);
-		findProperty(ControlPropertyLookup.STYLE).setValueIfAbsent(true, ControlStyle.CENTER.getStyleGroup());
+		super(name, ArmaControlLookup.Button, resolution, env);
+		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

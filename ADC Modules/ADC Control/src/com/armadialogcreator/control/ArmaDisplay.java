@@ -5,6 +5,7 @@ import com.armadialogcreator.core.old.DisplayProperty;
 import com.armadialogcreator.core.old.DisplayPropertyLookup;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DoubleIterable;
+import com.armadialogcreator.util.Key;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
@@ -18,11 +19,11 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 06/14/2016. */
 public class ArmaDisplay implements UINode {
-
+	private static final Key<Boolean> KEY_NODE_IS_IN_BACKGROUND = new Key<>("ArmaDisplay.nodeInBackground", false);
 	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(-1);
 
-	private final SimpleBaseUINode controlNodes = new ControlsNode(this);
-	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this);
+	private final SimpleBaseUINode controlNodes = new ControlsNode(this, false);
+	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this, true);
 	private final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 
 	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
@@ -149,8 +150,9 @@ public class ArmaDisplay implements UINode {
 	}
 
 	@Override
-	public void removeChild(int index) {
-		controlNodes.removeChild(index);
+	@Nullable
+	public UINode removeChild(int index) {
+		return controlNodes.removeChild(index);
 	}
 
 	@Override
@@ -198,12 +200,6 @@ public class ArmaDisplay implements UINode {
 	}
 
 	@Override
-	public void setRootNode(@Nullable UINode newParent) {
-		//why are you calling this method on a display?
-		throw new IllegalStateException();
-	}
-
-	@Override
 	@NotNull
 	public DataContext getUserData() {
 		return controlNodes.getUserData();
@@ -215,9 +211,17 @@ public class ArmaDisplay implements UINode {
 		return updateGroup;
 	}
 
+	public boolean controlIsBackgroundControl(ArmaControl control) {
+		return KEY_NODE_IS_IN_BACKGROUND.get(control.getUserData(), false);
+	}
+
 	private static class ControlsNode extends SimpleBaseUINode {
-		public ControlsNode(@NotNull ArmaDisplay display) {
-			super(display);
+		private final ArmaDisplay display;
+		private final boolean background;
+
+		public ControlsNode(@NotNull ArmaDisplay display, boolean background) {
+			this.display = display;
+			this.background = background;
 		}
 
 		@Override
@@ -227,9 +231,54 @@ public class ArmaDisplay implements UINode {
 		}
 
 		@Override
+		public void addChild(@NotNull UINode node) {
+			super.addChild(node);
+			node.getUserData().put(KEY_NODE_IS_IN_BACKGROUND, background);
+		}
+
+		@Override
+		public void addChild(@NotNull UINode node, int index) {
+			super.addChild(node, index);
+			node.getUserData().put(KEY_NODE_IS_IN_BACKGROUND, background);
+		}
+
+		@Override
+		public boolean removeChild(@NotNull UINode node) {
+			node.getUserData().remove(KEY_NODE_IS_IN_BACKGROUND);
+			return super.removeChild(node);
+		}
+
+		@Override
 		@Nullable
-		public UINode getParentNode() {
-			return rootNode;
+		public UINode removeChild(int index) {
+			UINode removed = super.removeChild(index);
+			if (removed == null) {
+				return null;
+			}
+			removed.getUserData().remove(KEY_NODE_IS_IN_BACKGROUND);
+			return removed;
+		}
+
+		@Override
+		public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
+			child.getUserData().remove(KEY_NODE_IS_IN_BACKGROUND);
+			super.moveChild(child, newParent, destIndex);
+		}
+
+		@Override
+		public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
+			super.acceptMovedChild(child, oldParent, destIndex);
+			child.getUserData().put(KEY_NODE_IS_IN_BACKGROUND, background);
+		}
+
+		@Override
+		public void setParentNode(@Nullable UINode parentNode) {
+			super.setParentNode(parentNode);
+			if (parentNode != null && parentNode.getRootNode() == this.display) {
+				getUserData().put(KEY_NODE_IS_IN_BACKGROUND, background);
+			} else {
+				getUserData().remove(KEY_NODE_IS_IN_BACKGROUND);
+			}
 		}
 	}
 

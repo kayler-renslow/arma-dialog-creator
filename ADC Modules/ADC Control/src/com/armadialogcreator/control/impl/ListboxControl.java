@@ -29,7 +29,7 @@ public class ListboxControl extends ArmaControl {
 	public static final String NestedClassName_ListScrollBar = "ListScrollBar";
 
 	public ListboxControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		super(name, ArmaControlLookup.ListBox, resolution, env, registry);
+		super(name, ArmaControlLookup.ListBox, resolution, env);
 
 		//force these value so that if the default value provider doesn't provide a value, there's still one present
 		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());

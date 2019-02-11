@@ -11,4 +11,5 @@ module ADC.Control {
 	requires ADC.Util;
 
 	exports com.armadialogcreator.control;
+	exports com.armadialogcreator.control.impl; //todo delete this
 }

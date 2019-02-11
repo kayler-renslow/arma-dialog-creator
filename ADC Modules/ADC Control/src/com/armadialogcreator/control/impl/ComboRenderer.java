@@ -6,9 +6,9 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;
@@ -59,19 +59,19 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		);
 		textRenderer.setText("Placeholder");
 
-		ControlProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
 		{
-			addValueListener(colorBackground.getPropertyLookup(), (observer, oldValue, newValue) -> {
+			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
 				}
 			});
-			colorBackground.setValueIfAbsent(true, new SVColorArray(getBackgroundColor()));
+			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValueIfAbsent(true, new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.FONT).setValueIfAbsent(true, SVFont.DEFAULT);
+		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 
 		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
 
@@ -112,7 +112,7 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		});
 
 		{
-			ControlClassOld comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
+			ConfigClass comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
 
 			scrollbarRenderer = new ScrollbarRenderer(comboScrollBar, this,
 					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,

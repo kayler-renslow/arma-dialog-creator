@@ -9,7 +9,6 @@ import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlPropertyUpdate;
 import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.data.export.ProjectExporter;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
