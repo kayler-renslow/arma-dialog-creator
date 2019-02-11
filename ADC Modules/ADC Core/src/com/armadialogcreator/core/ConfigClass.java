@@ -15,7 +15,7 @@ public class ConfigClass {
 	private final NotNullValueObserver<String> classNameObserver;
 	private final ValueObserver<ConfigClass> extendClassObserver = new ValueObserver<>();
 	private final ConfigPropertySet properties = new ConfigPropertySet();
-	private final ConfigPropertySet propertiesInheritedOwnedByParent = new ConfigPropertySet();
+	private final Set<ConfigProperty> propertiesInheritedOwnedByParent = new HashSet<>();
 	private final MapObserverListener<String, ConfigProperty> extendPropertiesSetListener = new MapObserverListener<>() {
 		@Override
 		public void onChanged(@NotNull MapObserver<String, ConfigProperty> list, @NotNull MapObserverChange<String, ConfigProperty> change) {
@@ -27,7 +27,8 @@ public class ConfigClass {
 					ConfigProperty added = change.getPut().getValue();
 					ConfigProperty mine = findPropertyNullable(added.getName());
 					if (mine == null) {
-						propertiesInheritedOwnedByParent.addProperty(change.getPut().getValue());
+						propertiesInheritedOwnedByParent.remove(change.getPut().getValue());
+						properties.addProperty(change.getPut().getValue());
 					}
 					break;
 				}
@@ -36,18 +37,28 @@ public class ConfigClass {
 					throw new IllegalStateException();
 				}
 				case Remove: {
-					ConfigProperty removed = change.getRemoved().getValue();
-					if (propertiesInheritedOwnedByParent.removeProperty(removed.getName()) != null) {
+					if (propertiesInheritedOwnedByParent.contains(change.getRemoved().getValue())) {
+						//can't remove an inherited property
 						return;
 					}
-					ConfigProperty mine = properties.findPropertyNullable(removed.getName());
-					if (mine != null) {
-						mine.inherit(null);
+					ConfigProperty removed = change.getRemoved().getValue();
+					properties.removeProperty(removed.getName());
+					break;
+				}
+				case Clear: {
+					if (!propertiesInheritedOwnedByParent.isEmpty()) {
+						//can't remove inherited properties
+						Iterator<Map.Entry<String, ConfigProperty>> iterator = properties.iterator();
+						while (iterator.hasNext()) {
+							Map.Entry<String, ConfigProperty> entry = iterator.next();
+							if (propertiesInheritedOwnedByParent.contains(entry.getValue())) {
+								continue;
+							}
+							iterator.remove();
+						}
+						return;
 					}
-					break;
-				}
-				case Clear: {
-					propertiesInheritedOwnedByParent.clearProperties();
+					properties.clearProperties();
 					break;
 				}
 				case Replace: {
@@ -60,36 +71,7 @@ public class ConfigClass {
 			}
 		}
 	};
-	private final MapObserverListener<String, ConfigProperty> extendStrictlyPropertiesSetListener = new MapObserverListener<>() {
-		@Override
-		public void onChanged(@NotNull MapObserver<String, ConfigProperty> list, @NotNull MapObserverChange<String, ConfigProperty> change) {
-			switch (change.getChangeType()) {
-				case Put: {
-					propertiesInheritedOwnedByParent.addProperty(change.getPut().getValue());
-					break;
-				}
-				case Move: {
-					//shouldn't be able to move a property
-					throw new IllegalStateException();
-				}
-				case Remove: {
-					propertiesInheritedOwnedByParent.removeProperty(change.getRemoved().getKey());
-					break;
-				}
-				case Replace: {
-					//shouldn't be able to replace
-					throw new IllegalStateException();
-				}
-				case Clear: {
-					propertiesInheritedOwnedByParent.clearProperties();
-					break;
-				}
-				default: {
-					throw new IllegalStateException();
-				}
-			}
-		}
-	};
+
 	private final MapObserverListener<String, ConfigClass> extendNestedClassesSetListener = new MapObserverListener<>() {
 		@Override
 		public void onChanged(@NotNull MapObserver<String, ConfigClass> list, @NotNull MapObserverChange<String, ConfigClass> change) {
@@ -247,12 +229,11 @@ public class ConfigClass {
 		if (hasInheritanceLoop(configClass)) {
 			throw new ConfigClassInheritanceException();
 		}
-		propertiesInheritedOwnedByParent.clearProperties();
+		propertiesInheritedOwnedByParent.clear();
 		nestedClassesInheritedOwnedByParent.clear();
-		propertiesInheritedOwnedByParent.addAllProperties(configClass.propertiesInheritedOwnedByParent);
+		propertiesInheritedOwnedByParent.addAll(configClass.propertiesInheritedOwnedByParent);
 		nestedClassesInheritedOwnedByParent.putAll(configClass.nestedClassesInheritedOwnedByParent);
 
-		configClass.propertiesInheritedOwnedByParent.addPropertiesSetListener(extendStrictlyPropertiesSetListener);
 		configClass.properties.addPropertiesSetListener(extendPropertiesSetListener);
 		configClass.nestedClassesInheritedOwnedByParent.addListener(extendStrictlyNestedClassesSetListener);
 		configClass.nestedClasses.addListener(extendNestedClassesSetListener);
@@ -265,15 +246,13 @@ public class ConfigClass {
 		if (extendClass == null) {
 			return;
 		}
-		propertiesInheritedOwnedByParent.clearProperties();
+		propertiesInheritedOwnedByParent.clear();
 		nestedClassesInheritedOwnedByParent.clear();
-		extendClass.propertiesInheritedOwnedByParent.removePropertiesSetListener(extendStrictlyPropertiesSetListener);
 		extendClass.nestedClassesInheritedOwnedByParent.removeListener(extendStrictlyNestedClassesSetListener);
 		extendClass.properties.removePropertiesSetListener(extendPropertiesSetListener);
 		extendClass.nestedClasses.removeListener(extendNestedClassesSetListener);
-		for (Map.Entry<String, ConfigProperty> entry : properties) {
-			ConfigProperty property = entry.getValue();
-			property.inherit(null);
+		for (ConfigProperty property : propertiesInheritedOwnedByParent) {
+			properties.removeProperty(property.getName());
 		}
 		extendClassObserver.updateValue(null);
 	}
@@ -288,38 +267,32 @@ public class ConfigClass {
 		if (extending == null) {
 			throw new ConfigClassInheritanceException();
 		}
-		ConfigProperty property = extending.properties.findPropertyNullable(propertyName);
-		if (property == null) {
-			throw new MissingConfigPropertyKeyException(propertyName);
-		}
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
 		if (myProperty == null) {
-			propertiesInheritedOwnedByParent.addProperty(property);
+			ConfigProperty parentProperty = extending.properties.findPropertyNullable(propertyName);
+			if (parentProperty == null) {
+				throw new MissingConfigPropertyKeyException(propertyName);
+			}
+			propertiesInheritedOwnedByParent.add(parentProperty);
+			properties.addProperty(parentProperty);
 			return;
 		}
-		myProperty.inherit(property);
 	}
 
-	public void overrideConfigProperty(@NotNull String propertyName, boolean createIfAbsent) {
+	public void overrideConfigProperty(@NotNull String propertyName, @NotNull SerializableValue initialValue) {
 		ConfigClass extending = extendClassObserver.getValue();
 		if (extending == null) {
 			return;
 		}
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
 		if (myProperty == null) {
-			ConfigProperty removed = propertiesInheritedOwnedByParent.removeProperty(propertyName);
-			if (removed == null) {
-				throw new MissingConfigPropertyKeyException(propertyName);
+			propertiesInheritedOwnedByParent.remove(myProperty);
+			if (!properties.isImmutable()) {
+				return;
 			}
-			if (createIfAbsent) {
-				if (!properties.isImmutable()) {
-					return;
-				}
-				properties.addProperty(new ConfigProperty(propertyName, removed.getValue().deepCopy()));
-			}
+			properties.addProperty(new ConfigProperty(propertyName, initialValue));
 			return;
 		}
-		myProperty.inherit(null);
 	}
 
 	@NotNull
@@ -333,11 +306,7 @@ public class ConfigClass {
 
 	@Nullable
 	public ConfigProperty findPropertyNullable(@NotNull String propertyName) {
-		ConfigProperty property = properties.findPropertyNullable(propertyName);
-		if (property != null) {
-			return property;
-		}
-		return propertiesInheritedOwnedByParent.findPropertyNullable(propertyName);
+		return properties.findPropertyNullable(propertyName);
 	}
 
 	@NotNull
@@ -351,11 +320,7 @@ public class ConfigClass {
 
 	@Nullable
 	public ConfigProperty findPropertyNullable(@NotNull ConfigPropertyKey key) {
-		ConfigProperty property = properties.findPropertyNullable(key);
-		if (property != null) {
-			return property;
-		}
-		return propertiesInheritedOwnedByParent.findPropertyNullable(key);
+		return properties.findPropertyNullable(key);
 	}
 
 	protected void makePropertySetImmutable() {
@@ -370,7 +335,6 @@ public class ConfigClass {
 		if (properties.findPropertyNullable(propertyName) != null) {
 			throw new IllegalArgumentException();
 		}
-		propertiesInheritedOwnedByParent.removeProperty(propertyName); //do optimistic remove (if it's there, success. if not, who cares)
 		properties.addProperty(new ConfigProperty(propertyName, value));
 	}
 
@@ -379,10 +343,6 @@ public class ConfigClass {
 		ConfigClass extendClass = getExtendClass();
 		if (extendClass == null) {
 			return;
-		}
-		ConfigProperty parentProperty = extendClass.findPropertyNullable(propertyName);
-		if (parentProperty != null) {
-			propertiesInheritedOwnedByParent.addProperty(parentProperty);
 		}
 	}
 
@@ -393,7 +353,7 @@ public class ConfigClass {
 
 	@NotNull
 	public ReadOnlyIterable<ConfigProperty> iterateProperties() {
-		return new ReadOnlyIterable<>(new DoubleIterable<>(properties.iterable(), propertiesInheritedOwnedByParent.iterable()));
+		return new ReadOnlyIterable<>(new DoubleIterable<>(properties.iterable(), propertiesInheritedOwnedByParent));
 	}
 
 	@NotNull

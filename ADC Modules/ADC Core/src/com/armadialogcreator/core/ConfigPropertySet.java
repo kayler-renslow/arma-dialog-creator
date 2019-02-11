@@ -32,20 +32,28 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 			noMutateException();
 			return;
 		}
+		ConfigProperty existing = map.get(property.getName());
+		if (existing.isPersistent()) {
+			existing.mime(property);
+			return;
+		}
 		map.put(property.getName(), property);
 	}
 
 	public final boolean removeProperty(@NotNull ConfigProperty property) {
-		if (immutable) {
-			noMutateException();
-		}
-		return map.remove(property.getName(), property);
+		return removeProperty(property.getName()) != null;
 	}
 
 	@Nullable
 	public final ConfigProperty removeProperty(@NotNull String name) {
 		if (immutable) {
 			noMutateException();
+		}
+
+		ConfigProperty property = map.get(name);
+		if (property.isPersistent()) {
+			property.clearMime();
+			return null;
 		}
 		return map.remove(name);
 	}
@@ -98,7 +106,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	 */
 	@Nullable
 	public final ConfigProperty findPropertyNullable(@NotNull ConfigPropertyKey key) {
-		return map.get(key.getPropertyName());
+		return findPropertyNullable(key.getPropertyName());
 	}
 
 	/**
@@ -109,7 +117,11 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	 */
 	@Nullable
 	public final ConfigProperty findPropertyNullable(@NotNull String name) {
-		return map.get(name);
+		ConfigProperty property = map.get(name);
+		if (!property.isMiming() && property.isPersistent()) {
+			return null;
+		}
+		return property;
 	}
 
 	@NotNull

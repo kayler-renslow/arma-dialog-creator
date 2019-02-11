@@ -3,7 +3,6 @@ package com.armadialogcreator.core;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
-import com.armadialogcreator.util.ValueListener;
 import javafx.beans.InvalidationListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,74 +14,57 @@ import java.util.LinkedList;
  @since 01/03/2019 */
 public class ConfigProperty {
 	private final String name;
-	private final ConfigPropertyValue cpv;
-	private final ReroutableValueObserver cpvObserver;
-	private ConfigProperty inherited;
+	private Macro boundMacro;
+	private final ReroutableValueObserver valueObserver;
+	private final NotNullValueListener<SerializableValue> macroValueListener = new NotNullValueListener<>() {
+		@Override
+		public void valueUpdated(@NotNull NotNullValueObserver<SerializableValue> observer, @NotNull SerializableValue oldValue, @NotNull SerializableValue newValue) {
+			valueObserver.updateValue(newValue);
+		}
+	};
+	private boolean persistent;
 
 	public ConfigProperty(@NotNull String name, @NotNull SerializableValue initialValue) {
 		this.name = name;
-		this.cpv = new ConfigPropertyValue(initialValue);
-		cpvObserver = new ReroutableValueObserver(this.cpv);
+		this.valueObserver = new ReroutableValueObserver(initialValue);
+	}
+
+	@NotNull
+	public NotNullValueObserver<SerializableValue> getValueObserver() {
+		return valueObserver;
+	}
+
+	public void bindToMacro(@NotNull Macro m) {
+		boundMacro = m;
+		m.getValueObserver().addListener(macroValueListener);
+	}
+
+	public boolean clearMacro() {
+		if (boundMacro == null) {
+			return false;
+		}
+		boundMacro.getValueObserver().removeListener(macroValueListener);
+		boundMacro = null;
+		return true;
+	}
+
+	public boolean isBoundToMacro() {
+		return boundMacro != null;
+	}
+
+	@NotNull
+	public SerializableValue getValue() {
+		return valueObserver.getValue();
+	}
+
+	@Nullable
+	public Macro getBoundMacro() {
+		return boundMacro;
 	}
 
 	@NotNull
 	public String getName() {
 		return name;
-	}
-
-	@NotNull
-	public NotNullValueObserver<SerializableValue> getValueObserver() {
-		return cpvObserver;
-	}
-
-	@NotNull
-	public SerializableValue getValue() {
-		return cpvObserver.getValue();
-	}
-
-	public boolean isBoundToMacro() {
-		if (inherited != null) {
-			return inherited.isBoundToMacro();
-		}
-		return cpv.isBoundToMacro();
-	}
-
-	public void bindToMacro(@NotNull Macro m) {
-		if (inherited != null) {
-			inherited.bindToMacro(m);
-			return;
-		}
-		cpv.bindToMacro(m);
-	}
-
-	public void clearMacro() {
-		if (inherited != null) {
-			inherited.clearMacro();
-			return;
-		}
-		cpv.clearMacro();
-	}
-
-	public void inherit(@Nullable ConfigProperty property) {
-		if (property == this.inherited) {
-			//either both are null or equal so no point in continuing
-			return;
-		}
-		this.inherited = property;
-		if (property == null) {
-			cpvObserver.setRerouted(null);
-		} else {
-			cpvObserver.setRerouted(property.cpv.getValueObserver());
-		}
-	}
-
-	public boolean isInherited() {
-		return this.inherited != null;
-	}
-
-	@Nullable
-	public Macro getBoundMacro() {
-		return this.inherited != null ? inherited.getBoundMacro() : cpv.getBoundMacro();
 	}
 
 	@NotNull
@@ -96,23 +78,23 @@ public class ConfigProperty {
 	}
 
 	public void setValue(@NotNull SerializableValue value) {
-		cpvObserver.updateValue(value);
+		valueObserver.updateValue(value);
 	}
 
 	public void setValue(int i) {
-		cpvObserver.updateValue(new SVInteger(i));
+		valueObserver.updateValue(new SVInteger(i));
 	}
 
 	public void setValue(boolean b) {
-		cpvObserver.updateValue(SVBoolean.get(b));
+		valueObserver.updateValue(SVBoolean.get(b));
 	}
 
 	public void setValue(double d) {
-		cpvObserver.updateValue(new SVDouble(d));
+		valueObserver.updateValue(new SVDouble(d));
 	}
 
 	public void setValue(@NotNull String s) {
-		cpvObserver.updateValue(new SVString(s));
+		valueObserver.updateValue(new SVString(s));
 	}
 
 	public double getFloatValue() {
@@ -123,7 +105,7 @@ public class ConfigProperty {
 		throw new IllegalStateException();
 	}
 
-	public double getIntValue() {
+	public int getIntValue() {
 		SerializableValue v = getValue();
 		if (v instanceof SVNumericValue) {
 			return ((SVNumericValue) v).toInt();
@@ -132,11 +114,43 @@ public class ConfigProperty {
 	}
 
 	public void addValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
-		cpvObserver.addListener(l);
+		valueObserver.addListener(l);
 	}
 
 	public void removeValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
-		cpvObserver.removeListener(l);
+		valueObserver.removeListener(l);
+	}
+
+	void mime(@NotNull ConfigProperty property) {
+		valueObserver.setRerouted(property.getValueObserver());
+	}
+
+	void clearMime() {
+		valueObserver.setRerouted(null);
+	}
+
+	boolean isMiming() {
+		return valueObserver.rerouted != null;
+	}
+
+	public void setPersistent(boolean p) {
+		this.persistent = p;
+		if (!p) {
+			valueObserver.setRerouted(null);
+		}
+	}
+
+	public boolean isPersistent() {
+		return persistent;
+	}
+
+	public void setPersistentValue(@NotNull SerializableValue value) {
+		valueObserver.setPersistentValue(value);
+	}
+
+	@Override
+	public int hashCode() {
+		return name.hashCode();
 	}
 
 	private static class ReroutableValueObserver extends NotNullValueObserver<SerializableValue> {
@@ -156,8 +170,8 @@ public class ConfigProperty {
 			}
 		};
 
-		public ReroutableValueObserver(@NotNull ConfigPropertyValue cpv) {
-			super(cpv.getValueObserver().getValue());
+		public ReroutableValueObserver(@NotNull SerializableValue value) {
+			super(value);
 
 			super.addListener(new NotNullValueListener<>() {
 				@Override
@@ -177,7 +191,7 @@ public class ConfigProperty {
 			}
 			NotNullValueObserver<SerializableValue> old = this.rerouted;
 			this.rerouted = rerouted;
-			if (this.rerouted == null) {
+			if (rerouted == null) {
 				old.removeListener(reroutedValueListener);
 				return;
 			}
@@ -188,6 +202,12 @@ public class ConfigProperty {
 					l.valueUpdated(ReroutableValueObserver.this, this.getValue(), this.rerouted.getValue());
 				}
 			}
+		}
+
+		@NotNull
+		@Override
+		public SerializableValue getValue() {
+			return rerouted != null ? rerouted.getValue() : super.getValue();
 		}
 
 		@Override
@@ -240,7 +260,14 @@ public class ConfigProperty {
 			if (rerouted != null) {
 				rerouted.removeListener(reroutedValueListener);
 			}
+			rerouted = null;
+		}
+
+		public void setPersistentValue(@NotNull SerializableValue value) {
+			NotNullValueObserver<SerializableValue> old = rerouted;
+			rerouted = null;
+			updateValue(value);
+			rerouted = old;
 		}
 	}
-
 }
