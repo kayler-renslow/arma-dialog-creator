@@ -32,17 +32,17 @@ public class ControlClassOldTest_DeepInheritance {
 		SerializableValue colorText_rscText = new SVString("colorText RscText");
 		SerializableValue colorText_hint = new SVString("colorText Hint");
 
-		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
-		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
-		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+		rscText.findProperty(ConfigPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
 		hint.extendControlClass(rscText);
 		hintRep.extendControlClass(hint);
 
-		assertEquals(style, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(style, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(colorText_hint, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
-		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(style, hint.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(style, hintRep.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_hint, hintRep.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_hint, hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
 	}
 
 	@Test
@@ -58,19 +58,19 @@ public class ControlClassOldTest_DeepInheritance {
 		SerializableValue colorText_rscText = new SVString("colorText RscText");
 		SerializableValue colorText_hint = new SVString("colorText Hint");
 
-		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
-		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
-		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+		rscText.findProperty(ConfigPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
 		hint.extendControlClass(rscText);
 		hintRep.extendControlClass(hint);
 
-		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
+		hint.inheritProperty(ConfigPropertyLookup.COLOR_TEXT);
 
-		assertEquals(style, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(style, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(colorText_rscText, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
-		assertEquals(colorText_rscText, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(style, hint.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(style, hintRep.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_rscText, hintRep.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_rscText, hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
 	}
 
 	@Test
@@ -86,21 +86,21 @@ public class ControlClassOldTest_DeepInheritance {
 		SerializableValue colorText_rscText = new SVString("colorText RscText");
 		SerializableValue colorText_hint = new SVString("colorText Hint");
 
-		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
-		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
-		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+		rscText.findProperty(ConfigPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
 		hint.extendControlClass(rscText);
 		hintRep.extendControlClass(hint);
 
-		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
+		hint.inheritProperty(ConfigPropertyLookup.COLOR_TEXT);
 
-		hint.overrideProperty(ControlPropertyLookup.COLOR_TEXT);
+		hint.overrideProperty(ConfigPropertyLookup.COLOR_TEXT);
 
-		assertEquals(style, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(style, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(colorText_rscText, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
-		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(style, hint.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(style, hintRep.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_rscText, hintRep.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_hint, hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
 	}
 
 	@Test
@@ -123,9 +123,9 @@ public class ControlClassOldTest_DeepInheritance {
 		SerializableValue colorText_hint = new SVString("colorText Hint");
 		SerializableValue hintWithNestedClassPropertyValue = new SVString("hintWithNestedClassPropertyValue");
 
-		rscText.findProperty(ControlPropertyLookup.STYLE).setValue(style);
-		rscText.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
-		hint.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
+		rscText.findProperty(ConfigPropertyLookup.STYLE).setValue(style);
+		rscText.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_rscText);
+		hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(colorText_hint);
 
 		ControlClassOld hintWithNestedClass_controlClass = hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName);
 		hintWithNestedClass_controlClass.findProperty(hintWithNestedClass_propertyLookup).setValue(hintWithNestedClassPropertyValue);
@@ -136,7 +136,7 @@ public class ControlClassOldTest_DeepInheritance {
 		empty2.extendControlClass(empty);
 		hintRep.extendControlClass(hint);
 
-		hint.inheritProperty(ControlPropertyLookup.COLOR_TEXT);
+		hint.inheritProperty(ConfigPropertyLookup.COLOR_TEXT);
 
 		assertEquals(true, hintWithNestedClass_controlClass == empty.findNestedClass(hintWithNestedClass_nestedClassName));
 		assertEquals(true, hintWithNestedClass_controlClass == empty2.findNestedClass(hintWithNestedClass_nestedClassName));
@@ -150,10 +150,10 @@ public class ControlClassOldTest_DeepInheritance {
 		assertEquals(hintWithNestedClassPropertyValue, hintWithNestedClass.findNestedClass(hintWithNestedClass_nestedClassName).findProperty(hintWithNestedClass_propertyLookup).getValue());
 
 
-		assertEquals(null, hint.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(null, hintRep.findProperty(ControlPropertyLookup.STYLE).getValue());
-		assertEquals(colorText_hint, hintRep.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
-		assertEquals(colorText_hint, hint.findProperty(ControlPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(null, hint.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(null, hintRep.findProperty(ConfigPropertyLookup.STYLE).getValue());
+		assertEquals(colorText_hint, hintRep.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
+		assertEquals(colorText_hint, hint.findProperty(ConfigPropertyLookup.COLOR_TEXT).getValue());
 	}
 
 
@@ -183,15 +183,15 @@ public class ControlClassOldTest_DeepInheritance {
 	//		assertEquals(nestedClassValue1, empty2.findNestedClass(hintWithNestedClass_nestedClassName).findPropertySpecification(hintWithNestedClass_propertyLookup).getValue());
 	//	}
 
-	static final ControlPropertyLookupConstant[] requiredProperties = {
-			ControlPropertyLookup.STYLE
+	static final ConfigPropertyLookupConstant[] requiredProperties = {
+			ConfigPropertyLookup.STYLE
 	};
 
-	static final ControlPropertyLookupConstant[] optionalProperties = {
-			ControlPropertyLookup.COLOR_TEXT
+	static final ConfigPropertyLookupConstant[] optionalProperties = {
+			ConfigPropertyLookup.COLOR_TEXT
 	};
 
-	static final ControlPropertyLookup hintWithNestedClass_propertyLookup = ControlPropertyLookup.ANIM_TEXTURE_DEFAULT;
+	static final ConfigPropertyLookup hintWithNestedClass_propertyLookup = ConfigPropertyLookup.ANIM_TEXTURE_DEFAULT;
 
 	static final String hintWithNestedClass_nestedClassName = "HintWithNestedClass_NestedClass";
 
@@ -214,13 +214,13 @@ public class ControlClassOldTest_DeepInheritance {
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 							return new ReadOnlyList<>(Arrays.asList(requiredProperties));
 						}
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 						}
 					},
@@ -251,13 +251,13 @@ public class ControlClassOldTest_DeepInheritance {
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 							return new ReadOnlyList<>(Collections.emptyList());
 						}
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 						}
 					},
@@ -300,13 +300,13 @@ public class ControlClassOldTest_DeepInheritance {
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 							return new ReadOnlyList<>(Collections.emptyList());
 						}
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 						}
 					},
@@ -334,13 +334,13 @@ public class ControlClassOldTest_DeepInheritance {
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 							return new ReadOnlyList<>(Arrays.asList(requiredProperties));
 						}
 
 						@NotNull
 						@Override
-						public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+						public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 							return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 						}
 					},

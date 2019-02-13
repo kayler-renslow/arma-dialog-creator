@@ -387,7 +387,7 @@ public class ProjectLoaderVersion1 {
 	//
 	//		controlClassXmlHelper.addJob(new ControlNestedClassesJob(control, nestedRequired, nestedOptional));
 	//
-	//		List<ControlPropertyLookup> inheritControlProperties = ProjectXmlUtil.loadInheritedControlProperties(controlElement, this.loader);
+	//		List<ConfigPropertyLookup> inheritControlProperties = ProjectXmlUtil.loadInheritedControlProperties(controlElement, this.loader);
 	//
 	//		//add extend job if needed
 	//		String extendClassName = controlElement.getAttribute("extend-class");

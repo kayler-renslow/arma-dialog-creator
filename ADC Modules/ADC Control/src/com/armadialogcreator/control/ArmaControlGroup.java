@@ -6,9 +6,9 @@ import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.canvas.UINodeChange;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ListObserver;
@@ -120,19 +120,19 @@ public class ArmaControlGroup extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-							defaultRequiredProperties, new ControlPropertyLookup[]{
+					ArrayUtil.mergeArrays(ConfigPropertyLookupConstant.class,
+							defaultRequiredProperties, new ConfigPropertyLookup[]{
 							}));
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeArrays(ControlPropertyLookupConstant.class,
-							defaultOptionalProperties, new ControlPropertyLookup[]{
+					ArrayUtil.mergeArrays(ConfigPropertyLookupConstant.class,
+							defaultOptionalProperties, new ConfigPropertyLookup[]{
 							}));
 
 		}

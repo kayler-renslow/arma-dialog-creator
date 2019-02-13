@@ -1,15 +1,15 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Handles blinking period (commonly associated with
- {@link ControlPropertyLookup#BLINKING_PERIOD}).
+ {@link ConfigPropertyLookup#BLINKING_PERIOD}).
 
  @author Kayler
  @since 11/22/2016 */
@@ -20,7 +20,7 @@ public class BlinkControlHandler {
 	private boolean blinkIn = false;
 	private long blinkDurationPast = 0;
 
-	public BlinkControlHandler(@NotNull ArmaControlRenderer renderer, @NotNull ControlPropertyLookupConstant constant) {
+	public BlinkControlHandler(@NotNull ArmaControlRenderer renderer, @NotNull ConfigPropertyLookupConstant constant) {
 		renderer.addValueListener(constant, (observer, oldValue, newValue) -> {
 			if (newValue == null || !(newValue instanceof SVNumericValue)) {
 				blinkDurationSet = false;

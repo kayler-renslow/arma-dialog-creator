@@ -8,7 +8,7 @@ import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;
@@ -53,13 +53,13 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 	public ComboRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this,
-				null, ControlPropertyLookup.COLOR_TEXT,
-				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true, this
+				null, ConfigPropertyLookup.COLOR_TEXT,
+				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
+				ConfigPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setText("Placeholder");
 
-		ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
 		{
 			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
@@ -70,41 +70,41 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ControlPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
 			arrowEmpty_combo.updateAsync(newValue);
 		});
-		addValueListener(ControlPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
 			arrowFull_combo.updateAsync(newValue);
 		});
 
-		addValueListener(ControlPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelect = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 
-		addValueListener(ControlPropertyLookup.WHOLE_HEIGHT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.WHOLE_HEIGHT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				wholeHeight = ((SVNumericValue) newValue).toDouble();
 				updateMenuPixelHeight();
 				requestRender();
 			}
 		});
-		addValueListener(ControlPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
@@ -115,9 +115,9 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 			ConfigClass comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
 
 			scrollbarRenderer = new ScrollbarRenderer(comboScrollBar, this,
-					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,
-					ControlPropertyLookup.ARROW_EMPTY, ControlPropertyLookup.BORDER,
-					ControlPropertyLookup.COLOR
+					ConfigPropertyLookup.THUMB, ConfigPropertyLookup.ARROW_FULL,
+					ConfigPropertyLookup.ARROW_EMPTY, ConfigPropertyLookup.BORDER,
+					ConfigPropertyLookup.COLOR
 			);
 		}
 	}

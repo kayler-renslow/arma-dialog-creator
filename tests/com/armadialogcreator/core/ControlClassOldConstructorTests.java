@@ -37,8 +37,8 @@ public class ControlClassOldConstructorTests {
 				Collections.emptyList()
 		);
 
-		ControlPropertyLookupConstant[] requiredProperties = {ControlPropertyLookup.IDC, ControlPropertyLookup.X};
-		ControlPropertyLookupConstant[] optionalProperties = {ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.BLINKING_PERIOD};
+		ConfigPropertyLookupConstant[] requiredProperties = {ConfigPropertyLookup.IDC, ConfigPropertyLookup.X};
+		ConfigPropertyLookupConstant[] optionalProperties = {ConfigPropertyLookup.COLOR_TEXT, ConfigPropertyLookup.BLINKING_PERIOD};
 
 		ControlClassOld c = new ControlClassOld("className", new ControlClassRequirementSpecification() {
 			@NotNull
@@ -55,13 +55,13 @@ public class ControlClassOldConstructorTests {
 
 			@NotNull
 			@Override
-			public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+			public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 				return new ReadOnlyList<>(Arrays.asList(requiredProperties));
 			}
 
 			@NotNull
 			@Override
-			public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+			public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 				return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 			}
 		}, specRegistry);
@@ -89,12 +89,12 @@ public class ControlClassOldConstructorTests {
 	 This method will report any missing properties through the testing library.
 	 Note: This will not mutate the given arrays!
 	 */
-	private void testPropertiesEqual(ControlPropertyLookupConstant[] requiredProperties, ControlPropertyLookupConstant[] optionalProperties, ControlClassOld c) {
+	private void testPropertiesEqual(ConfigPropertyLookupConstant[] requiredProperties, ConfigPropertyLookupConstant[] optionalProperties, ControlClassOld c) {
 		requiredProperties = Arrays.copyOf(requiredProperties, requiredProperties.length);
 		optionalProperties = Arrays.copyOf(optionalProperties, optionalProperties.length);
 		{
 			for (int i = 0; i < requiredProperties.length; i++) {
-				ControlPropertyLookupConstant lookup = requiredProperties[i];
+				ConfigPropertyLookupConstant lookup = requiredProperties[i];
 				if (c.findRequiredPropertyNullable(lookup) != null) {
 					requiredProperties[i] = null;
 				}
@@ -103,22 +103,22 @@ public class ControlClassOldConstructorTests {
 
 		{
 			for (int i = 0; i < optionalProperties.length; i++) {
-				ControlPropertyLookupConstant lookup = optionalProperties[i];
+				ConfigPropertyLookupConstant lookup = optionalProperties[i];
 				if (c.findOptionalPropertyNullable(lookup) != null) {
 					optionalProperties[i] = null;
 				}
 
 			}
 		}
-		List<ControlPropertyLookupConstant> missingReq = new ArrayList<>();
-		List<ControlPropertyLookupConstant> missingOpt = new ArrayList<>();
+		List<ConfigPropertyLookupConstant> missingReq = new ArrayList<>();
+		List<ConfigPropertyLookupConstant> missingOpt = new ArrayList<>();
 		{
-			for (ControlPropertyLookupConstant lookup : requiredProperties) {
+			for (ConfigPropertyLookupConstant lookup : requiredProperties) {
 				if (lookup != null) {
 					missingReq.add(lookup);
 				}
 			}
-			for (ControlPropertyLookupConstant lookup : optionalProperties) {
+			for (ConfigPropertyLookupConstant lookup : optionalProperties) {
 				if (lookup != null) {
 					missingOpt.add(lookup);
 				}

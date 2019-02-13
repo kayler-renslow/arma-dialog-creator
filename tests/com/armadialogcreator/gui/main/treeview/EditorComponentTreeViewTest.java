@@ -16,10 +16,9 @@ import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.arma.util.ArmaResolution;
 import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.old.DefaultValueProvider;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.SimpleEnv;
@@ -64,12 +63,12 @@ public class EditorComponentTreeViewTest extends Application {
 
 		@Nullable
 		@Override
-		public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
+		public SerializableValue getDefaultValue(@NotNull ConfigPropertyLookupConstant lookup) {
 			return null;
 		}
 
 		@Override
-		public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
+		public void prefetchValues(@NotNull List<ConfigPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
 
 		}
 

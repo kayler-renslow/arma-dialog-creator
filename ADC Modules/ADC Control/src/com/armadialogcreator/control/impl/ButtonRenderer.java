@@ -10,7 +10,7 @@ import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
@@ -55,13 +55,13 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 
 	public ButtonRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
-		textRenderer = new BasicTextRenderer(control, this, ControlPropertyLookup.TEXT,
-				ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true, this
+		textRenderer = new BasicTextRenderer(control, this, ConfigPropertyLookup.TEXT,
+				ConfigPropertyLookup.COLOR_TEXT, ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
+				ConfigPropertyLookup.SHADOW, true, this
 		);
 
 		{
-			ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
 			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
@@ -70,22 +70,22 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
-		addValueListener(ControlPropertyLookup.COLOR_SHADOW, (observer,
-															  oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SHADOW, (observer,
+															 oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorShadow = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 
-		addValueListener(ControlPropertyLookup.OFFSET_X, (observer, oldValue,
-														  newValue) -> {
+		addValueListener(ConfigPropertyLookup.OFFSET_X, (observer, oldValue,
+														 newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				offsetX = ((SVNumericValue) newValue).toDouble();
 				requestRender();
 			}
 		});
-		addValueListener(ControlPropertyLookup.OFFSET_Y,
+		addValueListener(ConfigPropertyLookup.OFFSET_Y,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetY = ((SVNumericValue) newValue).toDouble();
@@ -93,7 +93,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.OFFSET_PRESSED_X,
+		addValueListener(ConfigPropertyLookup.OFFSET_PRESSED_X,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetPressedX = ((SVNumericValue) newValue).toDouble();
@@ -101,7 +101,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.OFFSET_PRESSED_Y,
+		addValueListener(ConfigPropertyLookup.OFFSET_PRESSED_Y,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						offsetPressedY = ((SVNumericValue) newValue).toDouble();
@@ -109,7 +109,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND_ACTIVE,
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND_ACTIVE,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBackgroundActive = ((SVColor) newValue).toJavaFXColor();
@@ -117,7 +117,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.COLOR_BACKGROUND_DISABLED,
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND_DISABLED,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBackgroundDisabled = ((SVColor) newValue).toJavaFXColor();
@@ -125,7 +125,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.COLOR_FOCUSED,
+		addValueListener(ConfigPropertyLookup.COLOR_FOCUSED,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorFocused = ((SVColor) newValue).toJavaFXColor();
@@ -133,7 +133,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.COLOR_FOCUSED2,
+		addValueListener(ConfigPropertyLookup.COLOR_FOCUSED2,
 				(observer, oldValue, newValue) -> {
 					if (newValue == null) {
 						colorFocused2 = null;
@@ -146,13 +146,13 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		addValueListener(ControlPropertyLookup.DEFAULT,
+		addValueListener(ConfigPropertyLookup.DEFAULT,
 				(observer, oldValue, newValue) -> {
 					requestFocus = newValue instanceof SVBoolean && ((SVBoolean) newValue).isTrue();
 					requestRender();
 				}
 		);
-		addValueListener(ControlPropertyLookup.BORDER_SIZE,
+		addValueListener(ConfigPropertyLookup.BORDER_SIZE,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVNumericValue) {
 						borderSize = ((SVNumericValue) newValue).toDouble();
@@ -162,7 +162,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					requestRender();
 				}
 		);
-		addValueListener(ControlPropertyLookup.COLOR_BORDER,
+		addValueListener(ConfigPropertyLookup.COLOR_BORDER,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						colorBorder = ((SVColor) newValue).toJavaFXColor();
@@ -170,19 +170,19 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 					}
 				}
 		);
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
+		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ConfigPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
 		requestRender();

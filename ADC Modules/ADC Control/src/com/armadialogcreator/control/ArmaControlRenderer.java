@@ -4,7 +4,7 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
@@ -85,10 +85,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		});
 
-		xProperty = control.findProperty(ControlPropertyLookup.X);
-		yProperty = control.findProperty(ControlPropertyLookup.Y);
-		wProperty = control.findProperty(ControlPropertyLookup.W);
-		hProperty = control.findProperty(ControlPropertyLookup.H);
+		xProperty = control.findProperty(ConfigPropertyLookup.X);
+		yProperty = control.findProperty(ConfigPropertyLookup.Y);
+		wProperty = control.findProperty(ConfigPropertyLookup.W);
+		hProperty = control.findProperty(ConfigPropertyLookup.H);
 
 		final NotNullValueListener<SerializableValue> positionValueListener = new NotNullValueListener<SerializableValue>() {
 			@Override

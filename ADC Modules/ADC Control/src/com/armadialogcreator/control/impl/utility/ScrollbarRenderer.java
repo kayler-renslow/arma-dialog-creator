@@ -2,8 +2,7 @@ package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.RequirementsConfigClass;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -30,11 +29,11 @@ public class ScrollbarRenderer {
 
 	public ScrollbarRenderer(@NotNull ConfigClass controlClass,
 							 @NotNull ArmaControlRenderer renderer,
-							 @NotNull ControlPropertyLookupConstant thumb,
-							 @NotNull ControlPropertyLookupConstant arrowFull,
-							 @NotNull ControlPropertyLookupConstant arrowEmpty,
-							 @NotNull ControlPropertyLookupConstant border,
-							 @Nullable ControlPropertyLookupConstant scrollbarColor
+							 @NotNull ConfigPropertyLookupConstant thumb,
+							 @NotNull ConfigPropertyLookupConstant arrowFull,
+							 @NotNull ConfigPropertyLookupConstant arrowEmpty,
+							 @NotNull ConfigPropertyLookupConstant border,
+							 @Nullable ConfigPropertyLookupConstant scrollbarColor
 	) {
 		this.renderer = renderer;
 		this.thumb = new ImageOrTextureHelper(renderer);

@@ -3,12 +3,8 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyEventLookup;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.old.ControlPropertySpecification;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SVDouble;
@@ -32,55 +28,55 @@ public class ListboxControl extends ArmaControl {
 		super(name, ArmaControlLookup.ListBox, resolution, env);
 
 		//force these value so that if the default value provider doesn't provide a value, there's still one present
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());
-		findProperty(ControlPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVDouble(0));
+		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.LB_TEXTURES.getStyleGroup());
+		findProperty(ConfigPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVDouble(0));
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
-							new ControlPropertyLookup[]{
-									ControlPropertyLookup.FONT,
-									ControlPropertyLookup.SIZE_EX,
-									ControlPropertyLookup.COLOR_DISABLED,
-									ControlPropertyLookup.COLOR_TEXT,
-									ControlPropertyLookup.COLOR_BACKGROUND,
-									ControlPropertyLookup.COLOR_SELECT,
-									ControlPropertyLookup.SOUND_SELECT,
-									ControlPropertyLookup.ROW_HEIGHT,
-									ControlPropertyLookup.MAX_HISTORY_DELAY
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
+							new ConfigPropertyLookup[]{
+									ConfigPropertyLookup.FONT,
+									ConfigPropertyLookup.SIZE_EX,
+									ConfigPropertyLookup.COLOR_DISABLED,
+									ConfigPropertyLookup.COLOR_TEXT,
+									ConfigPropertyLookup.COLOR_BACKGROUND,
+									ConfigPropertyLookup.COLOR_SELECT,
+									ConfigPropertyLookup.SOUND_SELECT,
+									ConfigPropertyLookup.ROW_HEIGHT,
+									ConfigPropertyLookup.MAX_HISTORY_DELAY
 							},
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.COLOR_SELECT_BACKGROUND,
-											ControlPropertyLookup.COLOR_SELECT_BACKGROUND2,
-											ControlPropertyLookup.COLOR_SELECT2,
-											ControlPropertyLookup.PERIOD,
-											ControlPropertyLookup.SHADOW,
-											ControlPropertyLookup.TOOLTIP,
-											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-											ControlPropertyLookup.BLINKING_PERIOD
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.COLOR_SELECT_BACKGROUND,
+											ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2,
+											ConfigPropertyLookup.COLOR_SELECT2,
+											ConfigPropertyLookup.PERIOD,
+											ConfigPropertyLookup.SHADOW,
+											ConfigPropertyLookup.TOOLTIP,
+											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ConfigPropertyLookup.BLINKING_PERIOD
 									},
 									//events
 									ControlPropertyEventLookup.allWithControlScope(),
 									ControlPropertyEventLookup.allWithListboxScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
@@ -92,11 +88,11 @@ public class ListboxControl extends ArmaControl {
 					Arrays.asList(
 							new ControlClassSpecification(
 									NestedClassName_ListScrollBar, Arrays.asList(
-									new ControlPropertySpecification(ControlPropertyLookup.COLOR),
-									new ControlPropertySpecification(ControlPropertyLookup.THUMB),
-									new ControlPropertySpecification(ControlPropertyLookup.ARROW_FULL),
-									new ControlPropertySpecification(ControlPropertyLookup.ARROW_EMPTY),
-									new ControlPropertySpecification(ControlPropertyLookup.BORDER)
+									new ControlPropertySpecification(ConfigPropertyLookup.COLOR),
+									new ControlPropertySpecification(ConfigPropertyLookup.THUMB),
+									new ControlPropertySpecification(ConfigPropertyLookup.ARROW_FULL),
+									new ControlPropertySpecification(ConfigPropertyLookup.ARROW_EMPTY),
+									new ControlPropertySpecification(ConfigPropertyLookup.BORDER)
 							), ControlPropertySpecification.EMPTY)
 					)
 			);

@@ -1,14 +1,10 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.old.DefaultValueProvider;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,12 +26,12 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 
 	@Nullable
 	@Override
-	public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
+	public SerializableValue getDefaultValue(@NotNull ConfigPropertyLookupConstant lookup) {
 		return valuesMap.get(lookup.getPropertyName());
 	}
 
 	@Override
-	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable Context context) {
+	public void prefetchValues(@NotNull List<ConfigPropertyLookupConstant> tofetch, @Nullable Context context) {
 //		try {
 //			String path;
 //			if (context != null) {
@@ -51,7 +47,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 //			}
 //			DefaultValueXmlReader loader = new DefaultValueXmlReader(new InputStreamReader(is), data);
 //
-//			for (ControlPropertyLookupConstant lookup : tofetch) {
+		//			for (ConfigPropertyLookupConstant lookup : tofetch) {
 //				valuesMap.put(lookup.getPropertyName(), loader.fetchValue(lookup));
 //			}
 //		} catch (XmlParseException ignore) {
@@ -64,7 +60,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 
 		LinkedList<Context> reverse = new LinkedList<>();
 		//Have the oldest ancestor (parent) be at index 0 and the newest child context at the end.
-		//This will make it so that if a ControlTypeContext is a parent of a ControlClassNameContext, the string will be
+		//This will make it so that if a ControlTypeContext is a parent of a ConfigClassNameContext, the string will be
 		//built as such: ControlType_ClassName
 		{
 			Context cur = context;
@@ -76,8 +72,8 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 		for (Context cur : reverse) {
 			if (cur instanceof DefaultValueProvider.ControlTypeContext) {
 				b.append(((ControlTypeContext) cur).getControlType().name());
-			} else if (cur instanceof ControlClassNameContext) {
-				b.append(((ControlClassNameContext) cur).getControlClassName());
+			} else if (cur instanceof ConfigClassNameContext) {
+				b.append(((ConfigClassNameContext) cur).getConfigClassName());
 			}
 			if (cur != reverse.getLast()) {
 				b.append("/");

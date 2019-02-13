@@ -3,11 +3,9 @@ package com.armadialogcreator.gui.main.popup.editor;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlProperty;
-import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.data.ConfigClassRegistry;
@@ -52,7 +50,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			false
 	);
 
-	private final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
+	private final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 
 	private ArmaControl control;
 	private ControlPropertiesEditorPane editorPane;
@@ -76,9 +74,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName.setTooltip(new Tooltip(newClassName));
 		}
 	};
-	private final ValueListener<ControlClassOld> controlClassExtendListener = new ValueListener<ControlClassOld>() {
+	private final ValueListener<ConfigClass> controlClassExtendListener = new ValueListener<ConfigClass>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<ControlClassOld> observer, ControlClassOld oldValue, ControlClassOld newValue) {
+		public void valueUpdated(@NotNull ValueObserver<ConfigClass> observer, ConfigClass oldValue, ConfigClass newValue) {
 			if (newValue == null) {
 				menuButtonExtendControls.chooseItem((ConfigClass) null);
 			} else {
@@ -236,7 +234,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			public void handle(ActionEvent event) {
 				WindowEvent windowEvent = new WindowEvent(myStage, WindowEvent.WINDOW_CLOSE_REQUEST);
 				myStage.getOnCloseRequest().handle(windowEvent);
-				List<ControlProperty> missing = editorPane.getMissingProperties();
+				List<String> missing = editorPane.getMissingProperties();
 				boolean goodValues = missing.size() == 0;
 				if (!windowEvent.isConsumed() && goodValues) {
 					close();
@@ -259,7 +257,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		for (CustomControlClass customControlClass : customControls) {
 			ImageContainer imageContainer = null;
 			try {
-				ControlProperty type = customControlClass.getControlClass().findProperty(ControlPropertyLookup.TYPE);
+				ConfigProperty type = customControlClass.getControlClass().findProperty(ConfigPropertyLookup.TYPE);
 				if (type.getValue() instanceof SVNumericValue) {
 					ControlType controlType = ControlType.findById(type.getIntValue());
 					imageContainer = new BorderedImageView(controlType.getCustomIcon());
@@ -273,9 +271,9 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (control.getExtendClass() != null) {
 			menuButtonExtendControls.chooseItem(control.getExtendClass());
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ControlClassOld>() {
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ConfigClass>() {
 			@Override
-			public void valueUpdated(@NotNull ValueObserver<ControlClassOld> observer, ControlClassOld oldValue, ControlClassOld selected) {
+			public void valueUpdated(@NotNull ValueObserver<ConfigClass> observer, ConfigClass oldValue, ConfigClass selected) {
 				control.extendControlClass(selected);
 			}
 		});

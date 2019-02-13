@@ -1,7 +1,6 @@
 package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVFont;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.core.sv.SVString;
@@ -9,11 +8,10 @@ import com.armadialogcreator.core.sv.SerializableValue;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
 
 /**
  Tests for {@link ControlClassOld} that tests inheritance ({@link ControlClassOld#extendControlClass(ControlClassOld)}
- and {@link ControlClassOld#overrideProperty(ControlPropertyLookupConstant)}) in many different ways
+ and {@link ControlClassOld#overrideProperty(ConfigPropertyLookupConstant)}) in many different ways
 
  @author Kayler
  @since 05/30/2017 */
@@ -24,7 +22,7 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
 		tcc.findRequiredProperty(constant).setValue(new SVString("Woah"));
 
 		tcc.extendControlClass(tcc2);
@@ -47,7 +45,7 @@ public class ControlClassOldInheritanceTests {
 		tcc2.setClassName("tcc2");
 		tcc.extendControlClass(tcc2);
 		SerializableValue jenny = new SVInteger(867_5309);
-		ControlPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
 		if (constant.getPropertyType() != PropertyType.Int) {
 			throw new IllegalStateException("propertyType for the lookup should be int for testing purposes");
 		}
@@ -64,7 +62,7 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
 		tcc.extendControlClass(tcc2);
-		ControlPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
 		if (constant.getPropertyType() != PropertyType.Int) {
 			// we need to make sure that the current value in the ControlClassOld will guarantee an update.
 			// an int to a font will require an update since we are expecting a font later in the test
@@ -88,7 +86,7 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld2 tcc2 = new TestControlClassOld2(new TestSpecRegistry());
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
+		ConfigPropertyLookupConstant constant = ConfigPropertyLookup.STYLE;
 		if (tcc.findPropertyNullable(constant) != null) {
 			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClassOld for testing purposes");
 		}
@@ -108,8 +106,8 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld2 tcc2 = new TestControlClassOld2(new TestSpecRegistry());
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = ControlPropertyLookup.IDC;
-		ControlPropertyLookupConstant constantLookalike = TestControlPropertyLookup.IDC;
+		ConfigPropertyLookupConstant constant = ConfigPropertyLookup.IDC;
+		ConfigPropertyLookupConstant constantLookalike = TestConfigPropertyLookup.IDC;
 
 		tcc2.findProperty(constant).setValue(new SVString("value"));
 
@@ -126,7 +124,7 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant constant = TestControlClassOld.requiredProperties[0];
 		SerializableValue oldValue = new SVString("Leroy Jenkins");
 		tcc.findProperty(constant).setValue(oldValue);
 
@@ -148,8 +146,8 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld tcc2 = newTestControlClass();
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = ControlPropertyLookup.IDC;
-		ControlPropertyLookupConstant constantLookalike = TestControlPropertyLookup.IDC;
+		ConfigPropertyLookupConstant constant = ConfigPropertyLookup.IDC;
+		ConfigPropertyLookupConstant constantLookalike = TestConfigPropertyLookup.IDC;
 		SerializableValue oldValue = new SVString("Leroy Jenkins");
 		tcc.findProperty(constant).setValue(oldValue);
 
@@ -171,7 +169,7 @@ public class ControlClassOldInheritanceTests {
 		TestControlClassOld tcc = newTestControlClass();
 		TestControlClassOld2 tcc2 = new TestControlClassOld2(new TestSpecRegistry());
 		tcc2.setClassName("tcc2");
-		ControlPropertyLookupConstant constant = ControlPropertyLookup.STYLE;
+		ConfigPropertyLookupConstant constant = ConfigPropertyLookup.STYLE;
 		if (tcc.findPropertyNullable(constant) != null) {
 			throw new IllegalStateException("the constant " + constant + " shouldn't exist in the ControlClassOld for testing purposes");
 		}

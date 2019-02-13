@@ -4,7 +4,7 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.RequirementsConfigClass;
 import com.armadialogcreator.core.old.ControlProperty;
@@ -62,14 +62,14 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererClass.getName() + " couldn't be instantiated.");
 		}
-		idcProperty = findProperty(ControlPropertyLookup.IDC);
+		idcProperty = findProperty(ConfigPropertyLookup.IDC);
 		idcProperty.setValue(-1);
-		accessProperty = findProperty(ControlPropertyLookup.ACCESS);
+		accessProperty = findProperty(ConfigPropertyLookup.ACCESS);
 	}
 
 
 	private void defineType(@NotNull ControlType type) {
-		findProperty(ControlPropertyLookup.TYPE).getValueObserver().updateValue(new SVInteger(type.getTypeId()));
+		findProperty(ConfigPropertyLookup.TYPE).getValueObserver().updateValue(new SVInteger(type.getTypeId()));
 		this.controlType = type;
 	}
 

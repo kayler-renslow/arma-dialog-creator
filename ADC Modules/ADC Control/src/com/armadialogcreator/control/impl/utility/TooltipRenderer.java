@@ -1,9 +1,9 @@
 package com.armadialogcreator.control.impl.utility;
 
+import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -22,10 +22,10 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 	private final BasicTextRenderer textRenderer;
 
 	public TooltipRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
-						   @NotNull ControlPropertyLookupConstant tooltipBackgroundColor,
-						   @NotNull ControlPropertyLookupConstant tooltipTextColor,
-						   @NotNull ControlPropertyLookupConstant tooltipBorderColor,
-						   @NotNull ControlPropertyLookupConstant tooltipText
+						   @NotNull ConfigPropertyLookupConstant tooltipBackgroundColor,
+						   @NotNull ConfigPropertyLookupConstant tooltipTextColor,
+						   @NotNull ConfigPropertyLookupConstant tooltipBorderColor,
+						   @NotNull ConfigPropertyLookupConstant tooltipText
 	) {
 		this.control = control;
 		textRenderer = new BasicTextRenderer(

@@ -3,12 +3,8 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyEventLookup;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.old.ControlPropertySpecification;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
@@ -30,7 +26,7 @@ public class ShortcutButtonControl extends ArmaControl {
 
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.ShortcutButton, resolution, env);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
+		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
@@ -42,24 +38,24 @@ public class ShortcutButtonControl extends ArmaControl {
 					Arrays.asList(
 							new ControlClassSpecification(
 									NestedClassName_HitZone, Arrays.asList(
-									new ControlPropertySpecification(ControlPropertyLookup.TOP),
-									new ControlPropertySpecification(ControlPropertyLookup.RIGHT),
-									new ControlPropertySpecification(ControlPropertyLookup.BOTTOM),
-									new ControlPropertySpecification(ControlPropertyLookup.LEFT)
+									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+									new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
+									new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
+									new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
 							), ControlPropertySpecification.EMPTY),
 							new ControlClassSpecification(
 									NestedClassName_ShortcutPos, Arrays.asList(
-									new ControlPropertySpecification(ControlPropertyLookup.TOP),
-									new ControlPropertySpecification(ControlPropertyLookup.LEFT),
-									new ControlPropertySpecification(ControlPropertyLookup.W),
-									new ControlPropertySpecification(ControlPropertyLookup.H)
+									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+									new ControlPropertySpecification(ConfigPropertyLookup.LEFT),
+									new ControlPropertySpecification(ConfigPropertyLookup.W),
+									new ControlPropertySpecification(ConfigPropertyLookup.H)
 							), ControlPropertySpecification.EMPTY),
 							new ControlClassSpecification(
 									NestedClassName_TextPos, Arrays.asList(
-									new ControlPropertySpecification(ControlPropertyLookup.TOP),
-									new ControlPropertySpecification(ControlPropertyLookup.RIGHT),
-									new ControlPropertySpecification(ControlPropertyLookup.BOTTOM),
-									new ControlPropertySpecification(ControlPropertyLookup.LEFT)
+									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+									new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
+									new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
+									new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
 							), ControlPropertySpecification.EMPTY)
 					)
 			);
@@ -67,61 +63,61 @@ public class ShortcutButtonControl extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
-							new ControlPropertyLookup[]{
-									ControlPropertyLookup.TEXT,
-									ControlPropertyLookup.ANIM_TEXTURE_NORMAL,
-									ControlPropertyLookup.ANIM_TEXTURE_DISABLED,
-									ControlPropertyLookup.ANIM_TEXTURE_OVER,
-									ControlPropertyLookup.ANIM_TEXTURE_PRESSED,
-									ControlPropertyLookup.ANIM_TEXTURE_FOCUSED,
-									ControlPropertyLookup.ANIM_TEXTURE_DEFAULT,
-									ControlPropertyLookup.TEXTURE_NO_SHORTCUT,
-									ControlPropertyLookup.COLOR,
-									ControlPropertyLookup.COLOR2,
-									ControlPropertyLookup.COLOR_FOCUSED,
-									ControlPropertyLookup.COLOR_DISABLED,
-									ControlPropertyLookup.COLOR_BACKGROUND_FOCUSED,
-									ControlPropertyLookup.COLOR_BACKGROUND,
-									ControlPropertyLookup.COLOR_BACKGROUND2,
-									ControlPropertyLookup.SOUND_PUSH,
-									ControlPropertyLookup.SOUND_CLICK,
-									ControlPropertyLookup.SOUND_ESCAPE,
-									ControlPropertyLookup.SOUND_ENTER,
-									ControlPropertyLookup.FONT,
-									ControlPropertyLookup.SIZE,
-									ControlPropertyLookup.SIZE_EX
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
+							new ConfigPropertyLookup[]{
+									ConfigPropertyLookup.TEXT,
+									ConfigPropertyLookup.ANIM_TEXTURE_NORMAL,
+									ConfigPropertyLookup.ANIM_TEXTURE_DISABLED,
+									ConfigPropertyLookup.ANIM_TEXTURE_OVER,
+									ConfigPropertyLookup.ANIM_TEXTURE_PRESSED,
+									ConfigPropertyLookup.ANIM_TEXTURE_FOCUSED,
+									ConfigPropertyLookup.ANIM_TEXTURE_DEFAULT,
+									ConfigPropertyLookup.TEXTURE_NO_SHORTCUT,
+									ConfigPropertyLookup.COLOR,
+									ConfigPropertyLookup.COLOR2,
+									ConfigPropertyLookup.COLOR_FOCUSED,
+									ConfigPropertyLookup.COLOR_DISABLED,
+									ConfigPropertyLookup.COLOR_BACKGROUND_FOCUSED,
+									ConfigPropertyLookup.COLOR_BACKGROUND,
+									ConfigPropertyLookup.COLOR_BACKGROUND2,
+									ConfigPropertyLookup.SOUND_PUSH,
+									ConfigPropertyLookup.SOUND_CLICK,
+									ConfigPropertyLookup.SOUND_ESCAPE,
+									ConfigPropertyLookup.SOUND_ENTER,
+									ConfigPropertyLookup.FONT,
+									ConfigPropertyLookup.SIZE,
+									ConfigPropertyLookup.SIZE_EX
 							},
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.DEFAULT,
-											ControlPropertyLookup.ACTION,
-											ControlPropertyLookup.SHADOW,
-											ControlPropertyLookup.BLINKING_PERIOD,
-											ControlPropertyLookup.PERIOD_FOCUS,
-											ControlPropertyLookup.PERIOD_OVER,
-											ControlPropertyLookup.SHORTCUTS,
-											ControlPropertyLookup.TOOLTIP,
-											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.DEFAULT,
+											ConfigPropertyLookup.ACTION,
+											ConfigPropertyLookup.SHADOW,
+											ConfigPropertyLookup.BLINKING_PERIOD,
+											ConfigPropertyLookup.PERIOD_FOCUS,
+											ConfigPropertyLookup.PERIOD_OVER,
+											ConfigPropertyLookup.SHORTCUTS,
+											ConfigPropertyLookup.TOOLTIP,
+											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
 									},
 									ControlPropertyEventLookup.allWithControlScope(),
 									ControlPropertyEventLookup.allWithButtonScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}

@@ -1,7 +1,6 @@
 package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -10,7 +9,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 /**
- Tests for find related methods (e.g. {@link ControlClassOld#findProperty(ControlPropertyLookupConstant)} and {@link ControlClassOld#findNestedClass(String)})
+ Tests for find related methods (e.g. {@link ControlClassOld#findProperty(ConfigPropertyLookupConstant)} and {@link ControlClassOld#findNestedClass(String)})
 
  @author Kayler
  @since 05/30/2017 */
@@ -54,7 +53,7 @@ public class ControlClassOldFindMethodsTests {
 	public void findRequiredProperty_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
 		try {
-			tcc.findRequiredProperty(TestControlPropertyLookup.FAKE);
+			tcc.findRequiredProperty(TestConfigPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -64,20 +63,20 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findRequiredProperty_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match", match, tcc.findRequiredProperty(match).getPropertyLookup());
 	}
 
 	@Test
 	public void findRequiredPropertyNullable_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findRequiredPropertyNullable(TestControlPropertyLookup.FAKE));
+		assertNull("Should be null", tcc.findRequiredPropertyNullable(TestConfigPropertyLookup.FAKE));
 	}
 
 	@Test
 	public void findRequiredPropertyNullable_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findRequiredPropertyNullable(match).getPropertyLookup());
 	}
 
@@ -85,7 +84,7 @@ public class ControlClassOldFindMethodsTests {
 	public void findOptionalProperty_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
 		try {
-			tcc.findOptionalProperty(TestControlPropertyLookup.FAKE);
+			tcc.findOptionalProperty(TestConfigPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -95,20 +94,20 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findOptionalProperty_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalProperty(match).getPropertyLookup());
 	}
 
 	@Test
 	public void findOptionalPropertyNullable_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findOptionalPropertyNullable(TestControlPropertyLookup.FAKE));
+		assertNull("Should be null", tcc.findOptionalPropertyNullable(TestConfigPropertyLookup.FAKE));
 	}
 
 	@Test
 	public void findOptionalPropertyNullable_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalPropertyNullable(match).getPropertyLookup());
 	}
 
@@ -116,7 +115,7 @@ public class ControlClassOldFindMethodsTests {
 	public void findProperty_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
 		try {
-			tcc.findProperty(TestControlPropertyLookup.FAKE);
+			tcc.findProperty(TestConfigPropertyLookup.FAKE);
 		} catch (IllegalArgumentException e) {
 			return;
 		}
@@ -127,34 +126,34 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findProperty_required_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findProperty(match).getPropertyLookup());
 	}
 
 	@Test
 	public void findProperty_optional_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findProperty(match).getPropertyLookup());
 	}
 
 	@Test
 	public void findPropertyNullable_fail() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		assertNull("Should be null", tcc.findPropertyNullable(TestControlPropertyLookup.FAKE));
+		assertNull("Should be null", tcc.findPropertyNullable(TestConfigPropertyLookup.FAKE));
 	}
 
 	@Test
 	public void findPropertyNullable_required_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyNullable(match).getPropertyLookup());
 	}
 
 	@Test
 	public void findPropertyNullable_optional_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyNullable(match).getPropertyLookup());
 	}
 
@@ -167,21 +166,21 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findPropertyByNameNullable_required_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 
 	@Test
 	public void findPropertyByNameNullable_optional_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 
 	@Test
 	public void findRequiredPropertyByName_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match", match, tcc.findRequiredPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 
@@ -194,14 +193,14 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findRequiredPropertyByNameNullable_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.requiredProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findRequiredPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 
 	@Test
 	public void findOptionalPropertyByNameNullable_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 
@@ -214,7 +213,7 @@ public class ControlClassOldFindMethodsTests {
 	@Test
 	public void findOptionalPropertyByNameNullableNullable_succeed() throws Exception {
 		TestControlClassOld tcc = newTestControlClass();
-		ControlPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
+		ConfigPropertyLookupConstant match = TestControlClassOld.optionalProperties[0];
 		assertEquals("Shouldn't be null and should match.", match, tcc.findOptionalPropertyByNameNullable(match.getPropertyName()).getPropertyLookup());
 	}
 

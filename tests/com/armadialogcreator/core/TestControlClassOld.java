@@ -37,10 +37,10 @@ class TestControlClassOld extends ControlClassOld {
 			)
 	);
 
-	/** All required {@link ControlPropertyLookupConstant} used */
-	static final ControlPropertyLookupConstant[] requiredProperties = {ControlPropertyLookup.IDC, ControlPropertyLookup.X};
-	/** All optional {@link ControlPropertyLookupConstant} used */
-	static final ControlPropertyLookupConstant[] optionalProperties = {ControlPropertyLookup.COLOR_TEXT, ControlPropertyLookup.BLINKING_PERIOD};
+	/** All required {@link ConfigPropertyLookupConstant} used */
+	static final ConfigPropertyLookupConstant[] requiredProperties = {ConfigPropertyLookup.IDC, ConfigPropertyLookup.X};
+	/** All optional {@link ConfigPropertyLookupConstant} used */
+	static final ConfigPropertyLookupConstant[] optionalProperties = {ConfigPropertyLookup.COLOR_TEXT, ConfigPropertyLookup.BLINKING_PERIOD};
 
 	public TestControlClassOld(@NotNull SpecificationRegistry registry) {
 		super("TestControlClassOld",
@@ -59,13 +59,13 @@ class TestControlClassOld extends ControlClassOld {
 
 					@NotNull
 					@Override
-					public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+					public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 						return new ReadOnlyList<>(Arrays.asList(requiredProperties));
 					}
 
 					@NotNull
 					@Override
-					public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+					public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 						return new ReadOnlyList<>(Arrays.asList(optionalProperties));
 					}
 				},

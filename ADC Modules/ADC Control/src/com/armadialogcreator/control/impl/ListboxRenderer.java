@@ -8,7 +8,7 @@ import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;
@@ -52,13 +52,13 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 	public ListboxRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this,
-				null, ControlPropertyLookup.COLOR_TEXT,
-				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true, this
+				null, ConfigPropertyLookup.COLOR_TEXT,
+				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
+				ConfigPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setText("Placeholder");
 
-		ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
 		{
 			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
@@ -69,26 +69,26 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
-		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ControlPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelect = ((SVColor) newValue).toJavaFXColor();
 			}
 			requestRender();
 		});
-		addValueListener(ControlPropertyLookup.COLOR_SELECT2, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT2, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelect2 = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == null) {
@@ -97,7 +97,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 		});
 
 
-		addValueListener(ControlPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == null) {
@@ -105,7 +105,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 			}
 			requestRender();
 		});
-		addValueListener(ControlPropertyLookup.COLOR_SELECT_BACKGROUND2, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorSelectBackground2 = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == null) {
@@ -114,14 +114,14 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 		});
 
 
-		addValueListener(ControlPropertyLookup.PERIOD, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.PERIOD, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				period = ((SVNumericValue) newValue).toDouble();
 				periodAlternator.setAlternateMillis((long) (period * 1000));
 			}
 		});
 
-		addValueListener(ControlPropertyLookup.ROW_HEIGHT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ROW_HEIGHT, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				rowHeight = ((SVNumericValue) newValue).toDouble();
 			}
@@ -132,9 +132,9 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 			ConfigClass scrollBar = myControl.findNestedClass(ListboxControl.NestedClassName_ListScrollBar);
 
 			scrollbarRenderer = new ScrollbarRenderer(scrollBar, this,
-					ControlPropertyLookup.THUMB, ControlPropertyLookup.ARROW_FULL,
-					ControlPropertyLookup.ARROW_EMPTY, ControlPropertyLookup.BORDER,
-					ControlPropertyLookup.COLOR
+					ConfigPropertyLookup.THUMB, ConfigPropertyLookup.ARROW_FULL,
+					ConfigPropertyLookup.ARROW_EMPTY, ConfigPropertyLookup.BORDER,
+					ConfigPropertyLookup.COLOR
 			);
 		}
 	}

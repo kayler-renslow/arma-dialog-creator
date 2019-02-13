@@ -1,7 +1,9 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
-import com.armadialogcreator.core.RequirementsConfigClass;
-import com.armadialogcreator.core.old.*;
+import com.armadialogcreator.core.ConfigClassSpecification;
+import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.ConfigPropertyCategory;
+import com.armadialogcreator.gui.fxcontrol.PlaceholderTitledPane;
 import com.armadialogcreator.gui.main.popup.EditNestedControlClassDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -14,7 +16,10 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 /**
@@ -24,7 +29,7 @@ import java.util.function.Function;
  @since 07/08/2016. */
 public class ControlPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
-	private ControlClassOld controlClass;
+	private ConfigClassSpecification configClassSpecification;
 	private boolean listenersAreValid = true;
 
 	private LinkedList<ControlPropertyInputDescriptor> propertyDescriptors = new LinkedList<>();
@@ -37,7 +42,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 	}
 
 	/**
-	 Tell all editors to stop listening to the {@link ControlProperty} values again.
+	 Tell all editors to stop listening to the {@link ConfigProperty} values again.
 	 Invoking is ideal when the pane is no longer needed. Invoking {@link #link()} after invoking this
 	 may create issues.
 	 */
@@ -48,7 +53,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Tell all editors to listen to the {@link ControlProperty} values. */
+	/** Tell all editors to listen to the {@link ConfigProperty} values. */
 	public void link() {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
 			descriptor.link();
@@ -57,28 +62,50 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 
 	/**
-	 Creates the accordion according to the control class's specification.
-	 For the inputted values in the accordion, they are fetched from {@link ControlClassOld#getRequiredProperties()},
-	 {@link ControlClassOld#getOptionalPropertiesWithoutEvents()}, and {@link ControlClassOld#getEventProperties()}
+	 Creates the accordion for editing all owned {@link ConfigClassSpecification#iterateProperties()} instances.
 	 <p>
 	 It is important to note that when the control properties inside the control are edited,
 	 they will be updated in the control class as well. There is no copying of the controlClass's
 	 control properties and everything is passed by reference.
 
-	 @param controlClass control class that has the properties to edit
+	 @param configClassSpecification control class that has the properties to edit
 	 */
-	public ControlPropertiesEditorPane(@NotNull RequirementsConfigClass controlClass) {
+	public ControlPropertiesEditorPane(@NotNull ConfigClassSpecification configClassSpecification) {
 		this();
-		this.controlClass = controlClass;
+		this.configClassSpecification = configClassSpecification;
+
+		PlaceholderTitledPane required = getPropertiesTitledPane(bundle.getString("required"), ConfigPropertyCategory.Required);
+		PlaceholderTitledPane optional = getPropertiesTitledPane(bundle.getString("optional"), ConfigPropertyCategory.Optional);
+		PlaceholderTitledPane events = getPropertiesTitledPane(bundle.getString("events"), ConfigPropertyCategory.Event);
+
+		for (ConfigProperty p : configClassSpecification.iterateProperties()) {
+			ConfigPropertyCategory propertyCat = configClassSpecification.getPropertyCategory(p);
+			switch (propertyCat) {
+				case Basic: //fall
+				case Optional: {
+
+					break;
+				}
+				case Event: {
+					break;
+				}
+				case User: {
+					break;
+				}
+				case Required: {
+					break;
+				}
+			}
+		}
 
 		accordion.getPanes().add(
-				getPropertiesTitledPane(bundle.getString("required"), controlClass.getRequiredProperties(), false)
+				required
 		);
 		accordion.getPanes().add(
-				getPropertiesTitledPane(bundle.getString("optional"), controlClass.getOptionalPropertiesWithoutEvents(), true)
+				optional
 		);
 		accordion.getPanes().add(
-				getPropertiesTitledPane(bundle.getString("events"), controlClass.getEventProperties(), true)
+				events
 		);
 		accordion.getPanes().add(getNestedClassesTitledPane());
 
@@ -97,26 +124,26 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 	}
 
-	/** Show only editors with properties that have no inherited value ({@link ControlProperty#getInherited()} == null) */
+	/** Show only editors with properties that aren't inherited ({@link ConfigClassSpecification#propertyIsInherited(ConfigProperty)}) */
 	public void hideInheritedProperties(boolean hide) {
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
 			descriptor.hideIfInherited(hide);
 		}
 	}
 
-	/** Get the {@link ControlClassOld} being edited */
+	/** Get the {@link ConfigClassSpecification} being edited */
 	@NotNull
-	public ControlClassOld getControlClass() {
-		return controlClass;
+	public ConfigClassSpecification getConfigClassSpecification() {
+		return configClassSpecification;
 	}
 
 	/** @return all missing properties (control properties that are required by have no valid data entered). */
 	@NotNull
-	public List<ControlProperty> getMissingProperties() {
-		List<ControlProperty> properties = new ArrayList<>(propertyDescriptors.size());
+	public List<String> getMissingProperties() {
+		List<String> properties = new ArrayList<>(propertyDescriptors.size());
 		for (ControlPropertyInputDescriptor descriptor : propertyDescriptors) {
-			if (descriptor.getControlProperty().getValue() == null && !descriptor.isOptional()) {
-				properties.add(descriptor.getControlProperty());
+			if (!descriptor.getValueEditor().hasValue() && !descriptor.isOptional()) {
+				properties.add(descriptor.getConfigProperty());
 			}
 		}
 		return properties;
@@ -138,7 +165,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 				dialog.show();
 			});
 
-			controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
+			configClassSpecification.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 				@Override
 				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 					if (data instanceof ControlClassTemporaryNestedClassUpdate) {
@@ -164,10 +191,10 @@ public class ControlPropertiesEditorPane extends StackPane {
 		vboxClassCategories.getChildren().add(new Label(bundle.getString("required_nested_classes")));
 		{
 			VBox vboxRequired = new VBox(5);
-			final boolean hasRequiredClasses = controlClass.getRequiredNestedClasses().size() > 0;
+			final boolean hasRequiredClasses = configClassSpecification.getRequiredNestedClasses().size() > 0;
 			Label lblNoRequiredClasses = new Label(bundle.getString("no_classes"));
 			if (hasRequiredClasses) {
-				for (ControlClassOld nested : controlClass.getRequiredNestedClasses()) {
+				for (ControlClassOld nested : configClassSpecification.getRequiredNestedClasses()) {
 					vboxRequired.getChildren().add(funcGetClassNode.apply(nested));
 				}
 			} else {
@@ -182,11 +209,11 @@ public class ControlPropertiesEditorPane extends StackPane {
 		//add optional nested
 		vboxClassCategories.getChildren().add(new Label(bundle.getString("optional_nested_classes")));
 		{
-			final boolean hasOptionalClasses = controlClass.getOptionalNestedClasses().size() > 0;
+			final boolean hasOptionalClasses = configClassSpecification.getOptionalNestedClasses().size() > 0;
 			Label lblNoOptionalClasses = new Label(bundle.getString("no_classes"));
 			VBox vboxOptional = new VBox(5);
 			if (hasOptionalClasses) {
-				for (ControlClassOld nested : controlClass.getOptionalNestedClasses()) {
+				for (ControlClassOld nested : configClassSpecification.getOptionalNestedClasses()) {
 					vboxOptional.getChildren().add(funcGetClassNode.apply(nested));
 				}
 			} else {
@@ -195,7 +222,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 			vboxClassCategories.getChildren().add(vboxOptional);
 
-			controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
+			configClassSpecification.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
 				@Override
 				public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
 					if (data instanceof ControlClassTemporaryNestedClassUpdate) {
@@ -231,104 +258,54 @@ public class ControlPropertiesEditorPane extends StackPane {
 		return tp;
 	}
 
-	/** Get a titled pane for the accordion that holds all control properties */
-	private TitledPane getPropertiesTitledPane(String title, Iterable<ControlProperty> properties, boolean optional) {
+	/** @return a titled pane for the accordion that holds all properties of a certain {@link ConfigPropertyCategory} */
+	@NotNull
+	private PlaceholderTitledPane getPropertiesTitledPane(@NotNull String title, @NotNull ConfigPropertyCategory category) {
 		final VBox vb = new VBox(10);
 		vb.setFillWidth(true);
 		vb.setPadding(new Insets(5));
-		final ScrollPane scrollPane = new ScrollPane(vb);
-		scrollPane.setFitToWidth(true);
-		scrollPane.setStyle("-fx-background-color:transparent");
-		final TitledPane tp = new TitledPane(title, scrollPane);
-		tp.setAnimated(false);
-		Iterator<ControlProperty> iterator = properties.iterator();
-
-		final boolean hasProperties = iterator.hasNext();
-		Label lblNoProperties = new Label(bundle.getString("ControlPropertiesConfig.no_properties_available"));
-
-		if (!hasProperties) {
-			vb.getChildren().add(lblNoProperties);
-		} else {
-			while (iterator.hasNext()) {
-				vb.getChildren().add(getControlPropertyEntry(iterator.next(), optional));
-			}
+		final Label lblNoProps = new Label(bundle.getString("ControlPropertiesConfig.no_properties_available"));
+		final PlaceholderTitledPane tp = new PlaceholderTitledPane(title, lblNoProps, vb, true);
+		final ScrollPane scrollPane = tp.getScrollPane();
+		if (scrollPane != null) {
+			scrollPane.setFitToWidth(true);
+			scrollPane.setStyle("-fx-background-color:transparent");
 		}
-
-		controlClass.getControlClassUpdateGroup().addListener(new UpdateGroupListener<ControlClassUpdate>() {
-			@Override
-			public void update(@NotNull UpdateListenerGroup<ControlClassUpdate> group, @NotNull ControlClassUpdate data) {
-				if (optional) {
-					//we are going to add the temp properties to the optional titled pane
-					if (data instanceof ControlClassTemporaryPropertyUpdate) {
-						ControlClassTemporaryPropertyUpdate update = (ControlClassTemporaryPropertyUpdate) data;
-						if (update.isAdded()) {
-							if (!hasProperties) {
-								vb.getChildren().remove(lblNoProperties);
-							}
-							vb.getChildren().add(ControlPropertiesEditorPane.this.getControlPropertyEntry(update.getProperty(), true));
-						} else {
-							if (!hasProperties) {
-								vb.getChildren().setAll(lblNoProperties);
-								return;
-							}
-							vb.getChildren().removeIf(node -> node.getUserData() == update.getProperty());
-						}
-					}
-				}
-			}
-
-			@Override
-			public boolean hasExpired() {
-				return !listenersAreValid;
-			}
-		});
+		tp.setAnimated(false);
 
 		return tp;
 	}
 
-	/** Get the pane that shows the name of the property as well as the controls to input data */
-	private Node getControlPropertyEntry(ControlProperty property, boolean optional) {
-		ControlPropertyEditorContainer container = new ControlPropertyEditorContainer(controlClass, property);
+	/** @return the a Node that has a label and an {@link ConfigPropertyEditor} in a form-like layout (lbl:container) */
+	@NotNull
+	private Node getConfigPropertyEntry(@NotNull ConfigProperty property) {
+		ConfigPropertyEditor container = new ConfigPropertyEditor(configClassSpecification, property);
 		ControlPropertyInputDescriptor descriptor = new ControlPropertyInputDescriptor(container);
 		propertyDescriptors.add(descriptor);
-		descriptor.setIsOptional(optional);
 		container.setUserData(property);
 		return container;
 	}
 
 
 	private static class ControlPropertyInputDescriptor {
-		private final ControlPropertyEditorContainer container;
+		private final ConfigPropertyEditor container;
 		private boolean optional;
 		private boolean nameFound = true;
 		private boolean hideIfInherited = false;
 
 
-		public ControlPropertyInputDescriptor(@NotNull ControlPropertyEditorContainer container) {
+		public ControlPropertyInputDescriptor(@NotNull ConfigPropertyEditor container) {
 			this.container = container;
 		}
 
 		@NotNull
-		public ControlPropertyValueEditor getValueEditor() {
-			return container.currentValueEditor();
+		public ConfigPropertyValueEditor getValueEditor() {
+			return container.getPropertyValueEditor();
 		}
 
-		public boolean isOptional() {
-			return optional;
-		}
-
-		/**
-		 Return true if the {@link ControlProperty} returned from {@link #getControlProperty()}
-		 is optional (not in required list returned from
-		 {@link ControlClassRequirementSpecification#getRequiredProperties()})
-		 */
-		public void setIsOptional(boolean optional) {
-			this.optional = optional;
-		}
-
-		/** Does same thing as {@link #getValueEditor()}.getControlProperty() */
-		public ControlProperty getControlProperty() {
-			return getValueEditor().getControlProperty();
+		/** Does same thing as {@link #getValueEditor()}.getConfigProperty() */
+		public ConfigProperty getConfigProperty() {
+			return getValueEditor().getConfigProperty();
 		}
 
 		public void unlink() {
@@ -340,12 +317,12 @@ public class ControlPropertiesEditorPane extends StackPane {
 		}
 
 		@NotNull
-		public ControlPropertyEditorContainer getContainer() {
+		public ConfigPropertyEditor getContainer() {
 			return container;
 		}
 
 		public void showIfNameContains(@NotNull String name) {
-			this.nameFound = name.length() == 0 || getControlProperty().getName().toLowerCase().contains(name);
+			this.nameFound = name.length() == 0 || getConfigProperty().getName().toLowerCase().contains(name);
 			setVisible();
 		}
 
@@ -357,7 +334,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 		private void setVisible() {
 			boolean visible;
-			if (getControlProperty().isInherited() && hideIfInherited) {
+			if (getConfigProperty().isInherited() && hideIfInherited) {
 				visible = false;
 			} else {
 				visible = nameFound;

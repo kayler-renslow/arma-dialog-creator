@@ -8,7 +8,7 @@ import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.Texture;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
@@ -57,15 +57,15 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		super(control, resolution, env);
 		pictureOrTextureHelper = new ImageOrTextureHelper(this);
 		textRenderer = new BasicTextRenderer(control, this,
-				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
-				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.TEXT, ConfigPropertyLookup.COLOR_TEXT,
+				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
+				ConfigPropertyLookup.SHADOW, true, this
 		);
 
 		textRenderer.setAllowMultiLine(true);
 
 		{
-			ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+			ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
 			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
@@ -74,10 +74,10 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
 
-		myControl.findProperty(ControlPropertyLookup.TILE_H).getValueObserver().addListener((observer, oldValue,
-																							 newValue) -> {
+		myControl.findProperty(ConfigPropertyLookup.TILE_H).getValueObserver().addListener((observer, oldValue,
+																							newValue) -> {
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileH = (int) expr.getNumVal();
@@ -85,8 +85,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 				requestRender();
 			}
 		});
-		myControl.findProperty(ControlPropertyLookup.TILE_W).getValueObserver().addListener((observer, oldValue,
-																							 newValue) -> {
+		myControl.findProperty(ConfigPropertyLookup.TILE_W).getValueObserver().addListener((observer, oldValue,
+																							newValue) -> {
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileW = (int) expr.getNumVal();
@@ -95,18 +95,18 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
+		myControl.findProperty(ConfigPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
 
-		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
 		renderTypeForStyle = getRenderTypeFromStyle();

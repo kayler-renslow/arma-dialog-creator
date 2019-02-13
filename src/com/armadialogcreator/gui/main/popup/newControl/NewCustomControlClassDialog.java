@@ -105,7 +105,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 						newValue = newValue != null ? newValue : "";
-						editorPane.getControlClass().setClassName(newValue);
+						editorPane.getConfigClassSpecification().setClassName(newValue);
 						updatePreview();
 					}
 				});
@@ -127,7 +127,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					if (getEditorPane() == null) {
 						return;
 					}
-					ControlClassOld editClass = getEditorPane().getControlClass();
+					ControlClassOld editClass = getEditorPane().getConfigClassSpecification();
 					if (newValue != null) {
 						if (editClass.hasInheritanceLoop(newValue)) {
 							SimpleResponseDialog dialog = new SimpleResponseDialog(
@@ -352,7 +352,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private void removeListeners() {
-		editorPane.getControlClass().getPropertyUpdateGroup().removeListener(controlClassListener);
+		editorPane.getConfigClassSpecification().getPropertyUpdateGroup().removeListener(controlClassListener);
 		editorPane.unlink();
 	}
 
@@ -377,7 +377,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	/** @return a {@link CustomControlClass} instance that was created */
 	@NotNull
 	public CustomControlClass getCustomControlClass() {
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getControlClass(), comboBoxScope.getValue());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getConfigClassSpecification(), comboBoxScope.getValue());
 		customControlClass.setComment(taComment.getText());
 		return customControlClass;
 	}
@@ -399,7 +399,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 				writer.write(getTaComment().getText());
 				writer.write("\n*/\n");
 			}
-			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getControlClass(), writer);
+			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getConfigClassSpecification(), writer);
 			writer.close();
 		} catch (IOException e) {
 			ExceptionHandler.error(e);

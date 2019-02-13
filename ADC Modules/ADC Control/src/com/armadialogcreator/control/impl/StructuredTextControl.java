@@ -3,12 +3,8 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyEventLookup;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.old.ControlPropertySpecification;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
@@ -28,44 +24,44 @@ public class StructuredTextControl extends ArmaControl {
 	public StructuredTextControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 								 @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.Progress, resolution, env);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
+		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.TEXT,
-											ControlPropertyLookup.SIZE
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.TEXT,
+											ConfigPropertyLookup.SIZE
 									}
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.COLOR_BACKGROUND,
-											ControlPropertyLookup.TOOLTIP,
-											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-											ControlPropertyLookup.BLINKING_PERIOD
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.COLOR_BACKGROUND,
+											ConfigPropertyLookup.TOOLTIP,
+											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+											ConfigPropertyLookup.BLINKING_PERIOD
 									},
 									ControlPropertyEventLookup.allWithControlScope(),
 									ControlPropertyEventLookup.allWithSliderScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
@@ -78,11 +74,11 @@ public class StructuredTextControl extends ArmaControl {
 							new ControlClassSpecification(
 									NestedClassName_Attributes, ControlPropertySpecification.EMPTY,
 									Arrays.asList(
-											new ControlPropertySpecification(ControlPropertyLookup.FONT),
-											new ControlPropertySpecification(ControlPropertyLookup.COLOR__HEX),
-											new ControlPropertySpecification(ControlPropertyLookup.ALIGN),
-											new ControlPropertySpecification(ControlPropertyLookup.SHADOW_COLOR),
-											new ControlPropertySpecification(ControlPropertyLookup.SIZE)
+											new ControlPropertySpecification(ConfigPropertyLookup.FONT),
+											new ControlPropertySpecification(ConfigPropertyLookup.COLOR__HEX),
+											new ControlPropertySpecification(ConfigPropertyLookup.ALIGN),
+											new ControlPropertySpecification(ConfigPropertyLookup.SHADOW_COLOR),
+											new ControlPropertySpecification(ConfigPropertyLookup.SIZE)
 									)
 							)
 					)

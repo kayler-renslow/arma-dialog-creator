@@ -8,7 +8,7 @@ import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVFont;
@@ -42,13 +42,13 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 	public EditRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		textRenderer = new BasicTextRenderer(control, this,
-				ControlPropertyLookup.TEXT, ControlPropertyLookup.COLOR_TEXT,
-				ControlPropertyLookup.STYLE, ControlPropertyLookup.SIZE_EX,
-				ControlPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.TEXT, ConfigPropertyLookup.COLOR_TEXT,
+				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
+				ConfigPropertyLookup.SHADOW, true, this
 		);
 		textRenderer.setAllowMultiLine(true);
 
-		ConfigProperty colorBackground = myControl.findProperty(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
 		{
 			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
@@ -59,7 +59,7 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
-		addValueListener(ControlPropertyLookup.COLOR_DISABLED, (observer, oldValue, newValue)
+		addValueListener(ConfigPropertyLookup.COLOR_DISABLED, (observer, oldValue, newValue)
 				-> {
 			if (newValue instanceof SVColor) {
 				colorDisabled = ((SVColor) newValue).toJavaFXColor();
@@ -67,19 +67,19 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 			}
 		});
 
-		myControl.findProperty(ControlPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
 
-		myControl.findProperty(ControlPropertyLookup.TEXT).setValue(SVString.newEmptyString());
+		myControl.findProperty(ConfigPropertyLookup.TEXT).setValue(SVString.newEmptyString());
 
-		myControl.findProperty(ControlPropertyLookup.FONT).setValue(SVFont.DEFAULT);
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
 	}

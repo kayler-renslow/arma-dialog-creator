@@ -1,8 +1,6 @@
 package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.old.DefaultValueProvider;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SerializableValue;
 import org.jetbrains.annotations.NotNull;
@@ -30,12 +28,12 @@ public class EmptySpecRegistry implements SpecificationRegistry {
 
 	@Override
 	@Nullable
-	public SerializableValue getDefaultValue(@NotNull ControlPropertyLookupConstant lookup) {
+	public SerializableValue getDefaultValue(@NotNull ConfigPropertyLookupConstant lookup) {
 		return null;
 	}
 
 	@Override
-	public void prefetchValues(@NotNull List<ControlPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
+	public void prefetchValues(@NotNull List<ConfigPropertyLookupConstant> tofetch, @Nullable DefaultValueProvider.Context context) {
 
 	}
 

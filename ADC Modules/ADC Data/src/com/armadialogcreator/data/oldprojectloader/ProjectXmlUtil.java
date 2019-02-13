@@ -53,7 +53,7 @@ public class ProjectXmlUtil {
 	//		}
 	//		List<ControlPropertySpecification> requiredProperties = new LinkedList<>();
 	//		List<ControlPropertySpecification> optionalProperties = new LinkedList<>();
-	//		List<ControlPropertyLookup> inheritProperties = new LinkedList<>();
+	//		List<ConfigPropertyLookup> inheritProperties = new LinkedList<>();
 	//		List<ControlClassSpecification> requiredClasses = ControlClassSpecification.EMPTY;
 	//		List<ControlClassSpecification> optionalClasses = ControlClassSpecification.EMPTY;
 	//
@@ -121,7 +121,7 @@ public class ProjectXmlUtil {
 	//		for (Element missingPropertyElement : missingPropertyElements) {
 	//			String idAttr = missingPropertyElement.getAttribute(lookupId);
 	//			String macroId = missingPropertyElement.getAttribute(macroKey);
-	//			ControlPropertyLookup lookup = getLookup(idAttr, missingPropertyElement, recorder);
+	//			ConfigPropertyLookup lookup = getLookup(idAttr, missingPropertyElement, recorder);
 	//			if (lookup == null) {
 	//				continue;
 	//			}
@@ -224,7 +224,7 @@ public class ProjectXmlUtil {
 	//		//overridden properties
 	//		if (specification.getInheritedProperties().size() > 0) {
 	//			Element inheritPropertiesEle = writer.appendElementToElement("inherit-properties", classSpecEle);
-	//			for (ControlPropertyLookupConstant propertyLookup : specification.getInheritedProperties()) {
+	//			for (ConfigPropertyLookupConstant propertyLookup : specification.getInheritedProperties()) {
 	//				writeInheritControlPropertyLookup(writer, propertyLookup, inheritPropertiesEle);
 	//			}
 	//		}
@@ -247,9 +247,9 @@ public class ProjectXmlUtil {
 	//	}
 	//
 	//	/**
-	//	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ControlPropertyLookupConstant)}.
+	//	 Writes a list of {@link ControlProperty} that are <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ConfigPropertyLookupConstant)}.
 	//	 Only {@link ControlProperty#getPropertyLookup()} is written.
-	//	 This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriter, ControlPropertyLookupConstant, Element)}
+	//	 This method simply invokes {@link #writeInheritControlPropertyLookup(XmlWriter, ConfigPropertyLookupConstant, Element)}
 	//	 for each {@link ControlProperty} in <code>properties</code>
 	//
 	//	 @param writer xml writer
@@ -264,25 +264,25 @@ public class ProjectXmlUtil {
 	//	}
 	//
 	//	/**
-	//	 Writes a {@link ControlPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ControlPropertyLookupConstant)}.
-	//	 Only {@link ControlPropertyLookupConstant#getPropertyType()} is written.
+	//	 Writes a {@link ConfigPropertyLookupConstant} that is <b>not</b> overridden via {@link ControlClassOld#overrideProperty(ConfigPropertyLookupConstant)}.
+	//	 Only {@link ConfigPropertyLookupConstant#getPropertyType()} is written.
 	//
 	//	 @param writer xml writer
 	//	 @param lookup lookup to write
 	//	 @param addToEle element to add XML to
 	//	 */
-	//	public static void writeInheritControlPropertyLookup(@NotNull XmlWriter writer, @NotNull ControlPropertyLookupConstant lookup, @NotNull Element addToEle) {
+	//	public static void writeInheritControlPropertyLookup(@NotNull XmlWriter writer, @NotNull ConfigPropertyLookupConstant lookup, @NotNull Element addToEle) {
 	//		Element inheritPropertyEle = writer.appendElementToElement("inherit-property", addToEle);
 	//		inheritPropertyEle.setAttribute("id", lookup.getPropertyId() + "");
 	//	}
 	//
 	//	@NotNull
-	//	public static List<ControlPropertyLookup> loadInheritedControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
+	//	public static List<ConfigPropertyLookup> loadInheritedControlProperties(@NotNull Element parent, @NotNull XmlErrorRecorder recorder) {
 	//		List<Element> inheritPropertyElements = XmlUtil.getChildElementsWithTagName(parent, "inherit-property");
-	//		List<ControlPropertyLookup> list = new LinkedList<>();
+	//		List<ConfigPropertyLookup> list = new LinkedList<>();
 	//		final String lookupId = "id";
 	//		for (Element inheritPropertyElement : inheritPropertyElements) {
-	//			ControlPropertyLookup lookup = getLookup(inheritPropertyElement.getAttribute(lookupId), inheritPropertyElement, recorder);
+	//			ConfigPropertyLookup lookup = getLookup(inheritPropertyElement.getAttribute(lookupId), inheritPropertyElement, recorder);
 	//			if (lookup != null) {
 	//				list.add(lookup);
 	//			}
@@ -314,7 +314,7 @@ public class ProjectXmlUtil {
 	//		writeControlProperty(writer, specification.getPropertyLookup(), specification.getMacroKey(), specification.getValue(), addToEle);
 	//	}
 	//
-	//	private static void writeControlProperty(@NotNull XmlWriter stm, @NotNull ControlPropertyLookupConstant lookup,
+	//	private static void writeControlProperty(@NotNull XmlWriter stm, @NotNull ConfigPropertyLookupConstant lookup,
 	//											 @Nullable String macroKey, @Nullable SerializableValue value, @NotNull Element addToEle) {
 	//		if (value == null) {
 	//			return;
@@ -356,7 +356,7 @@ public class ProjectXmlUtil {
 	//
 	//			}
 	//		}
-	//		ControlPropertyLookup lookup = getLookup(lookupIdAttr, controlPropertyElement.getParentNode(), recorder);
+	//		ConfigPropertyLookup lookup = getLookup(lookupIdAttr, controlPropertyElement.getParentNode(), recorder);
 	//		if (lookup == null) {
 	//			return null; //uncertain whether or not the control can be properly edited/rendered. So just skip control entirely.
 	//		}
@@ -470,11 +470,11 @@ public class ProjectXmlUtil {
 	//	}
 	//
 	//	@Nullable
-	//	public static ControlPropertyLookup getLookup(@NotNull String lookupIdStr, @NotNull Node parentNode, @NotNull XmlErrorRecorder recorder) {
-	//		ControlPropertyLookup lookup;
+	//	public static ConfigPropertyLookup getLookup(@NotNull String lookupIdStr, @NotNull Node parentNode, @NotNull XmlErrorRecorder recorder) {
+	//		ConfigPropertyLookup lookup;
 	//		try {
 	//			int id = Integer.parseInt(lookupIdStr);
-	//			lookup = ControlPropertyLookup.findById(id);
+	//			lookup = ConfigPropertyLookup.findById(id);
 	//			return lookup;
 	//		} catch (IllegalArgumentException e) {
 	//			recorder.addError(

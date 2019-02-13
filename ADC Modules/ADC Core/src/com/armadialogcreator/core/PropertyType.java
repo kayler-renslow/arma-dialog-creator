@@ -14,7 +14,7 @@ public enum PropertyType {
 	Int(0, SVExpression.CONVERTER, getString("PropertyType.int")),
 	/** Is a floating point value. The current implementation uses 64 bit floating point (java double) */
 	Float(1, SVExpression.CONVERTER, getString("PropertyType.float")),
-	/** Unique property type to {@link ControlPropertyLookup#STYLE} */
+	/** Unique property type to {@link ConfigPropertyLookup#STYLE} */
 	ControlStyle(2, SVControlStyleGroup.CONVERTER, getString("PropertyType.control_style")),
 	/** Denotes an image path inside a String */
 	Image(3, SVImage.CONVERTER, getString("PropertyType.image"), true),

@@ -1,8 +1,8 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.core.DisplayPropertyLookup;
 import com.armadialogcreator.core.old.DisplayProperty;
-import com.armadialogcreator.core.old.DisplayPropertyLookup;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DoubleIterable;
 import com.armadialogcreator.util.Key;

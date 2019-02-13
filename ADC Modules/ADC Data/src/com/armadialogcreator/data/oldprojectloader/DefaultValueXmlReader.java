@@ -1,6 +1,6 @@
 package com.armadialogcreator.data.oldprojectloader;
 
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.XmlParseException;
 import com.armadialogcreator.util.XmlReader;
@@ -18,7 +18,7 @@ public class DefaultValueXmlReader extends XmlReader {
 		super(r);
 	}
 
-	public SerializableValue fetchValue(@NotNull ControlPropertyLookupConstant constantToFetch) {
+	public SerializableValue fetchValue(@NotNull ConfigPropertyLookupConstant constantToFetch) {
 		for (Element e : XmlUtil.iterateChildElements(getDocumentElement())) {
 			if (e.getNodeName().equals("property")) {
 				String popertyNameAttr = e.getAttribute("name");

@@ -12,9 +12,7 @@ import com.armadialogcreator.control.impl.utility.TextShadow;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlProperty;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVHexColor;
@@ -59,7 +57,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 	public StructuredTextRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 
-		ConfigProperty colorBackground = myControl.findPropertyNullable(ControlPropertyLookup.COLOR_BACKGROUND);
+		ConfigProperty colorBackground = myControl.findPropertyNullable(ConfigPropertyLookup.COLOR_BACKGROUND);
 		{
 			if (colorBackground != null) {
 				addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
@@ -74,7 +72,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			}
 		}
 
-		addValueListener(ControlPropertyLookup.TEXT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.TEXT, (observer, oldValue, newValue) -> {
 			this.text = TextHelper.getText(newValue);
 			/*
 			todo when the renderer is fully implemented, uncomment this
@@ -93,17 +91,17 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			requestRender();
 		});
 
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ControlPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				size = ((SVNumericValue) newValue).toDouble();
 				updateSectionsFont();
@@ -113,7 +111,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 
 		{
 			ConfigClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
-			addValueListener(attributes, ControlPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
 					c = ((SVColor) newValue).toJavaFXColor();
@@ -121,12 +119,12 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				defaultSectionData.textColor = c;
 				requestRender();
 			});
-			addValueListener(attributes, ControlPropertyLookup.ALIGN, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.ALIGN, (observer, oldValue, newValue) -> {
 				String alignment = newValue.toString();
 				defaultSectionData.alignment = getAlignment(alignment);
 				requestRender();
 			});
-			addValueListener(attributes, ControlPropertyLookup.SHADOW_COLOR, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.SHADOW_COLOR, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
 					c = ((SVColor) newValue).toJavaFXColor();
@@ -134,7 +132,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				defaultSectionData.shadowColor = c;
 				requestRender();
 			});
-			addValueListener(attributes, ControlPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					attributesSize = ((SVNumericValue) newValue).toDouble();
 				}

@@ -2,7 +2,7 @@ package com.armadialogcreator.data.changeRegistrars;
 
 //import com.armadialogcreator.arma.control.ArmaControl;
 //import com.armadialogcreator.arma.control.ArmaDisplay;
-//import com.armadialogcreator.core.ControlPropertyLookup;
+//import com.armadialogcreator.core.ConfigPropertyLookup;
 //import com.armadialogcreator.core.old.*;
 //import com.armadialogcreator.core.sv.SerializableValue;
 //import com.armadialogcreator.data.olddata.*;
@@ -357,9 +357,9 @@ public class ControlClassChangeRegistrar /*implements ChangeRegistrar*/ {
 //				} else {
 //					throw new Exception();
 //				}
-//				ControlPropertyLookupConstant lookup = update.getControlProperty().getPropertyLookup();
+	//				ConfigPropertyLookupConstant lookup = update.getControlProperty().getPropertyLookup();
 //				changeType = ControlClassChangeType.PropertyValue;
-//				if (lookup == ControlPropertyLookup.X || lookup == ControlPropertyLookup.Y || lookup == ControlPropertyLookup.W || lookup == ControlPropertyLookup.H) {
+	//				if (lookup == ConfigPropertyLookup.X || lookup == ConfigPropertyLookup.Y || lookup == ConfigPropertyLookup.W || lookup == ConfigPropertyLookup.H) {
 //					//inserted extra null characters to help guarantee no conflicts in property name
 //					stringForCheckingIfSimilar = classUpdate.getOwnerControlClass().getClassName() + "\0POS_UPDATE\0";
 //					shortName = bundle.getString("ControlClassChange.Property.Value.control_moved_short_name");

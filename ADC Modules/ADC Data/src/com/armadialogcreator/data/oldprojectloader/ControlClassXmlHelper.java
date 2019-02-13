@@ -2,7 +2,7 @@ package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.old.ControlClassSpecification;
 import com.armadialogcreator.core.old.CustomControlClass;
@@ -187,9 +187,9 @@ class ControlClassXmlHelper {
 	public static class ControlExtendJob implements AfterLoadJob {
 		private final String extendThisControlClassName;
 		private final ArmaControl setMyExtend;
-		private final List<ControlPropertyLookup> inheritProperties;
+		private final List<ConfigPropertyLookup> inheritProperties;
 
-		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ControlPropertyLookup> inheritProperties) {
+		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ConfigPropertyLookup> inheritProperties) {
 			this.extendThisControlClassName = extendThisControlClassName;
 			this.setMyExtend = setMyExtend;
 			this.inheritProperties = inheritProperties;
@@ -210,7 +210,7 @@ class ControlClassXmlHelper {
 			//			}
 			//
 			//			setMyExtend.extendControlClass(cc);
-			//			for (ControlPropertyLookup inheritProperty : inheritProperties) {
+			//			for (ConfigPropertyLookup inheritProperty : inheritProperties) {
 			//				setMyExtend.inheritProperty(inheritProperty);
 			//			}
 		}

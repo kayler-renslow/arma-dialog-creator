@@ -70,6 +70,7 @@ public class SoundValueEditor implements ValueEditor<SVSound> {
 	}
 
 	@Override
+	@Nullable
 	public SVSound getValue() {
 		return valueObserver.getValue();
 	}

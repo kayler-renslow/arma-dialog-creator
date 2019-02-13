@@ -3,11 +3,7 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyEventLookup;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
@@ -25,51 +21,51 @@ public class StaticControl extends ArmaControl {
 
 	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.Static, resolution, env);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
-		findProperty(ControlPropertyLookup.IDC).setValue(idc);
+		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
+		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
-							new ControlPropertyLookup[]{
-									ControlPropertyLookup.COLOR_BACKGROUND,
-									ControlPropertyLookup.COLOR_TEXT,
-									ControlPropertyLookup.TEXT,
-									ControlPropertyLookup.FONT,
-									ControlPropertyLookup.SIZE_EX
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
+							new ConfigPropertyLookup[]{
+									ConfigPropertyLookup.COLOR_BACKGROUND,
+									ConfigPropertyLookup.COLOR_TEXT,
+									ConfigPropertyLookup.TEXT,
+									ConfigPropertyLookup.FONT,
+									ConfigPropertyLookup.SIZE_EX
 							},
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.MOVING,
-											ControlPropertyLookup.SHADOW,
-											ControlPropertyLookup.TOOLTIP,
-											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-											ControlPropertyLookup.FIXED_WIDTH,
-											ControlPropertyLookup.LINE_SPACING,
-											ControlPropertyLookup.BLINKING_PERIOD,
-											ControlPropertyLookup.TILE_W,
-											ControlPropertyLookup.TILE_H
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.MOVING,
+											ConfigPropertyLookup.SHADOW,
+											ConfigPropertyLookup.TOOLTIP,
+											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ConfigPropertyLookup.FIXED_WIDTH,
+											ConfigPropertyLookup.LINE_SPACING,
+											ConfigPropertyLookup.BLINKING_PERIOD,
+											ConfigPropertyLookup.TILE_W,
+											ConfigPropertyLookup.TILE_H
 									},
 									//events
 									ControlPropertyEventLookup.allWithControlScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}

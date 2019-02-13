@@ -5,9 +5,9 @@ import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -69,9 +69,9 @@ public class BasicTextRenderer {
 	private Case textCase = Case.Default;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
-							 @Nullable ControlPropertyLookupConstant text,
-							 @NotNull ControlPropertyLookupConstant colorText, @Nullable ControlPropertyLookupConstant style,
-							 @Nullable ControlPropertyLookupConstant sizeEx, @Nullable ControlPropertyLookup shadow,
+							 @Nullable ConfigPropertyLookupConstant text,
+							 @NotNull ConfigPropertyLookupConstant colorText, @Nullable ConfigPropertyLookupConstant style,
+							 @Nullable ConfigPropertyLookupConstant sizeEx, @Nullable ConfigPropertyLookup shadow,
 							 boolean autoInitializeTextColor, @NotNull BasicTextRenderer.UpdateCallback callback) {
 		this.control = control;
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
@@ -79,9 +79,9 @@ public class BasicTextRenderer {
 		init(text, colorText, style, sizeEx, shadow, autoInitializeTextColor);
 	}
 
-	private void init(@Nullable ControlPropertyLookupConstant text, @NotNull ControlPropertyLookupConstant colorText,
-					  @Nullable ControlPropertyLookupConstant style, @Nullable ControlPropertyLookupConstant sizeEx,
-					  @Nullable ControlPropertyLookup shadow, boolean autoInitializeTextColor) {
+	private void init(@Nullable ConfigPropertyLookupConstant text, @NotNull ConfigPropertyLookupConstant colorText,
+					  @Nullable ConfigPropertyLookupConstant style, @Nullable ConfigPropertyLookupConstant sizeEx,
+					  @Nullable ConfigPropertyLookup shadow, boolean autoInitializeTextColor) {
 
 		setFont(this.font); //pre-set font so that we can initialize text right away. Also, set font metrics
 

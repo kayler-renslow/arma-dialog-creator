@@ -7,7 +7,7 @@ import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
@@ -45,7 +45,7 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		super(control, resolution, env);
 		this.border = new Border(2, Color.BLACK);
 		{
-			ConfigProperty colorFrame = myControl.findProperty(ControlPropertyLookup.COLOR_FRAME);
+			ConfigProperty colorFrame = myControl.findProperty(ConfigPropertyLookup.COLOR_FRAME);
 			addValueListener(colorFrame.getName(), (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
 					getBackgroundColorObserver().updateValue((SVColor) newValue);
@@ -54,9 +54,9 @@ public class ProgressRenderer extends ArmaControlRenderer {
 			colorFrame.setValue(new SVColorArray(getBackgroundColor()));
 		}
 
-		blinkControlHandler = new BlinkControlHandler(this, ControlPropertyLookup.BLINKING_PERIOD);
+		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
-		addValueListener(ControlPropertyLookup.COLOR_BAR, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_BAR, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
 				colorBar = ((SVColor) newValue).toJavaFXColor();
 				updateTintedTexture();
@@ -64,14 +64,14 @@ public class ProgressRenderer extends ArmaControlRenderer {
 			}
 		});
 
-		addValueListener(ControlPropertyLookup.TEXTURE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.TEXTURE, (observer, oldValue, newValue) -> {
 			textureHelper.updateAsync(newValue, mode -> {
 				updateTintedTexture();
 				return null;
 			});
 		});
 
-		addValueListener(ControlPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
 			newValue = MiscHelpers.getGroup(this.env, newValue, control);
 			if (newValue != null) {
 				SVControlStyleGroup g = (SVControlStyleGroup) newValue;
@@ -82,10 +82,10 @@ public class ProgressRenderer extends ArmaControlRenderer {
 
 		tooltipRenderer = new TooltipRenderer(
 				this.myControl, this,
-				ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-				ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-				ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-				ControlPropertyLookup.TOOLTIP
+				ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+				ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+				ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+				ConfigPropertyLookup.TOOLTIP
 		);
 
 		updateTintedTexture();

@@ -1,8 +1,8 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.old.ControlClassRequirementSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,43 +14,43 @@ public interface ArmaControlSpecRequirement extends ControlClassRequirementSpeci
 	};
 
 	/** Returns a new array of the properties that are required for all controls */
-	ControlPropertyLookupConstant[] defaultRequiredProperties = {
-			ControlPropertyLookup.TYPE,
-			ControlPropertyLookup.IDC,
-			ControlPropertyLookup.STYLE,
-			ControlPropertyLookup.X,
-			ControlPropertyLookup.Y,
-			ControlPropertyLookup.W,
-			ControlPropertyLookup.H};
+	ConfigPropertyLookupConstant[] defaultRequiredProperties = {
+			ConfigPropertyLookup.TYPE,
+			ConfigPropertyLookup.IDC,
+			ConfigPropertyLookup.STYLE,
+			ConfigPropertyLookup.X,
+			ConfigPropertyLookup.Y,
+			ConfigPropertyLookup.W,
+			ConfigPropertyLookup.H};
 
 
 	/** Returns a new array of properties that are optional for all controls */
-	ControlPropertyLookupConstant[] defaultOptionalProperties = {ControlPropertyLookup.ACCESS};
+	ConfigPropertyLookupConstant[] defaultOptionalProperties = {ConfigPropertyLookup.ACCESS};
 
-	ReadOnlyList<ControlPropertyLookupConstant> defaultRequiredPropertiesReadOnly = new ReadOnlyList<>(defaultRequiredProperties);
-	ReadOnlyList<ControlPropertyLookupConstant> defaultOptionalPropertiesReadOnly = new ReadOnlyList<>(defaultOptionalProperties);
+	ReadOnlyList<ConfigPropertyLookupConstant> defaultRequiredPropertiesReadOnly = new ReadOnlyList<>(defaultRequiredProperties);
+	ReadOnlyList<ConfigPropertyLookupConstant> defaultOptionalPropertiesReadOnly = new ReadOnlyList<>(defaultOptionalProperties);
 
 	@NotNull
 	@Override
-	default ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+	default ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 		return defaultRequiredPropertiesReadOnly;
 	}
 
 	@NotNull
 	@Override
-	default ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+	default ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 		return defaultOptionalPropertiesReadOnly;
 	}
 
-	static ControlPropertyLookup[] mergeArrays(@NotNull ControlPropertyLookup[]... arrays) {
+	static ConfigPropertyLookup[] mergeArrays(@NotNull ConfigPropertyLookup[]... arrays) {
 		int totalLengths = 0;
-		for (ControlPropertyLookup[] array : arrays) {
+		for (ConfigPropertyLookup[] array : arrays) {
 			totalLengths += array.length;
 		}
-		ControlPropertyLookup[] neww = new ControlPropertyLookup[totalLengths];
+		ConfigPropertyLookup[] neww = new ConfigPropertyLookup[totalLengths];
 		int i = 0;
-		for (ControlPropertyLookup[] array : arrays) {
-			for (ControlPropertyLookup lookup : array) {
+		for (ConfigPropertyLookup[] array : arrays) {
+			for (ConfigPropertyLookup lookup : array) {
 				neww[i++] = lookup;
 			}
 		}

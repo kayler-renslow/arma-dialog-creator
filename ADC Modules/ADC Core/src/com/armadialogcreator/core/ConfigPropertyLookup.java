@@ -1,7 +1,6 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
-import com.armadialogcreator.core.old.ControlPropertyOptionOld;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,7 +16,7 @@ import java.util.List;
 
  @author Kayler
  @since 05/22/2016. */
-public enum ControlPropertyLookup implements ControlPropertyLookupConstant, ConfigPropertyKey {
+public enum ConfigPropertyLookup implements ConfigPropertyLookupConstant, ConfigPropertyKey {
 	IDC(0, 0, "idc", PropertyType.Int),
 	X(1, 1, "x", PropertyType.Float),
 	Y(2, 2, "y", PropertyType.Float),
@@ -26,10 +25,10 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	TYPE(5, -1, "type", PropertyType.Int),
 	STYLE(6, 5, "style", PropertyType.ControlStyle),
 	ACCESS(7, "access", PropertyType.Int,
-			new ControlPropertyOptionOld("Read and Write", "0", "Default case where properties can still be added or overridden."),
-			new ControlPropertyOptionOld("Read and Create", "1", "Only allows creating new properties."),
-			new ControlPropertyOptionOld("Read Only", "2", "Does not allow to do anything in deriving classes."),
-			new ControlPropertyOptionOld("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")
+			new ConfigPropertyValueOption("Read and Write", "0", "Default case where properties can still be added or overridden."),
+			new ConfigPropertyValueOption("Read and Create", "1", "Only allows creating new properties."),
+			new ConfigPropertyValueOption("Read Only", "2", "Does not allow to do anything in deriving classes."),
+			new ConfigPropertyValueOption("Read Only Verified", "3", "Does not allow to do anything either in deriving classes, and a CRC check will be performed.")
 	),
 
 	/*Common*/
@@ -40,23 +39,23 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	COLOR_BACKGROUND(12, "colorBackground", PropertyType.Color),
 	TEXT(13, 6, "text", PropertyType.String),
 	SHADOW(14, "shadow", PropertyType.Int,  //does absolutely nothing inside the Attributes class for structured text
-			new ControlPropertyOptionOld("None (0)", "0", "No shadow."),
-			new ControlPropertyOptionOld("Drop Shadow (1)", "1", "Drop shadow with soft edges."),
-			new ControlPropertyOptionOld("Stroke (2)", "2", "Stroke")
+			new ConfigPropertyValueOption("None (0)", "0", "No shadow."),
+			new ConfigPropertyValueOption("Drop Shadow (1)", "1", "Drop shadow with soft edges."),
+			new ConfigPropertyValueOption("Stroke (2)", "2", "Stroke")
 	),
 	TOOLTIP(15, "tooltip", PropertyType.String),
 	TOOLTIP_COLOR_SHADE(16, "tooltipColorShade", PropertyType.Color),
 	TOOLTIP_COLOR_TEXT(17, "tooltipColorText", PropertyType.Color),
 	TOOLTIP_COLOR_BOX(18, "tooltipColorBox", PropertyType.Color),
 	ALIGN(19, "align", PropertyType.String,
-			new ControlPropertyOptionOld("Left", "left", "Left align."),
-			new ControlPropertyOptionOld("Center", "center", "Center align."),
-			new ControlPropertyOptionOld("Right", "right", "Right align.")
+			new ConfigPropertyValueOption("Left", "left", "Left align."),
+			new ConfigPropertyValueOption("Center", "center", "Center align."),
+			new ConfigPropertyValueOption("Right", "right", "Right align.")
 	),
 	VALIGN(20, "valign", PropertyType.String,
-			new ControlPropertyOptionOld("Top", "top", "Top align."),
-			new ControlPropertyOptionOld("Middle", "middle", "Middle align."),
-			new ControlPropertyOptionOld("Bottom", "bottom", "Bottom align.")
+			new ConfigPropertyValueOption("Top", "top", "Top align."),
+			new ConfigPropertyValueOption("Middle", "middle", "Middle align."),
+			new ConfigPropertyValueOption("Bottom", "bottom", "Bottom align.")
 	),
 	COLOR__HEX(21, "color", PropertyType.HexColorString),
 	SHADOW_COLOR(22, "shadowColor", PropertyType.HexColorString),
@@ -119,8 +118,8 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	SHORTCUTS(78, "shortcuts", PropertyType.Array),
 	COLOR_SELECTION(79, "colorSelection", PropertyType.Color),
 	AUTO_COMPLETE(80, "autocomplete", PropertyType.String,
-			new ControlPropertyOptionOld("None", "\"\"", "No autocomplete."),
-			new ControlPropertyOptionOld("Scripting", "\"scripting\"", "SQF autocomplete.")
+			new ConfigPropertyValueOption("None", "\"\"", "No autocomplete."),
+			new ConfigPropertyValueOption("Scripting", "\"scripting\"", "SQF autocomplete.")
 	),
 	HTML_CONTROL(81, "htmlControl", PropertyType.Boolean),
 	COLOR_ACTIVE(82, "colorActive", PropertyType.Color),
@@ -200,15 +199,15 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	EVENT_ON_VIDEO_STOPPED(1050, "onVideoStopped", PropertyType.SQF);
 
 
-	public static final ReadOnlyList<ControlPropertyLookup> EMPTY = new ReadOnlyList<>(new ArrayList<>());
+	public static final ReadOnlyList<ConfigPropertyLookup> EMPTY = new ReadOnlyList<>(new ArrayList<>());
 
-	private final @Nullable ControlPropertyOptionOld[] options;
+	private final @Nullable ReadOnlyArray<ConfigPropertyValueOption> options;
 	private final String propertyName;
 	private final PropertyType propertyType;
 	private final int propertyId;
 	private final int priority;
 
-	ControlPropertyLookup(int propertyId, int priority, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable ControlPropertyOptionOld... options) {
+	ConfigPropertyLookup(int propertyId, int priority, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull ConfigPropertyValueOption... options) {
 		if (PropertiesLookupData.usedIds.contains(propertyId)) {
 			int canUse;
 			for (int i = 0; true; i++) {
@@ -226,14 +225,13 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 		this.propertyId = propertyId;
 		this.propertyName = propertyName;
 		this.propertyType = propertyType;
-		this.options = options != null && options.length == 0 ? null : options;
+		this.options = options.length == 0 ? ReadOnlyArray.EMPTY : new ReadOnlyArray<>(options);
 		this.priority = priority;
 	}
 
-	ControlPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @Nullable ControlPropertyOptionOld... options) {
+	ConfigPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull ConfigPropertyValueOption... options) {
 		this(propertyId, Integer.MAX_VALUE, propertyName, propertyType, options);
 	}
-
 
 	@Override
 	public String toString() {
@@ -242,7 +240,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 
 	@Nullable
 	@Override
-	public ControlPropertyOptionOld[] getOptions() {
+	public ReadOnlyArray<ConfigPropertyValueOption> getOptions() {
 		return options;
 	}
 
@@ -269,16 +267,16 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	}
 
 	/**
-	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyType()}
+	 Get all {@link ConfigPropertyLookup} instances where {@link ConfigPropertyLookup#getPropertyType()}
 	 is equal to find
 
 	 @param find type to find
 	 @return list of matched
 	 */
 	@NotNull
-	public static List<ControlPropertyLookup> getAllOfByType(@NotNull PropertyType find) {
-		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
-		for (ControlPropertyLookup lookup : values()) {
+	public static List<ConfigPropertyLookup> getAllOfByType(@NotNull PropertyType find) {
+		ArrayList<ConfigPropertyLookup> props = new ArrayList<>(values().length);
+		for (ConfigPropertyLookup lookup : values()) {
 			if (lookup.propertyType == find) {
 				props.add(lookup);
 			}
@@ -287,7 +285,7 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	}
 
 	/**
-	 Get all {@link ControlPropertyLookup} instances where {@link ControlPropertyLookup#getPropertyName()}
+	 Get all {@link ConfigPropertyLookup} instances where {@link ConfigPropertyLookup#getPropertyName()}
 	 is equal to find
 
 	 @param find name to find
@@ -295,9 +293,9 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 	 @return list of matched
 	 */
 	@NotNull
-	public static List<ControlPropertyLookup> getAllOfByName(@NotNull String find, boolean caseSensitive) {
-		ArrayList<ControlPropertyLookup> props = new ArrayList<>(values().length);
-		for (ControlPropertyLookup lookup : values()) {
+	public static List<ConfigPropertyLookup> getAllOfByName(@NotNull String find, boolean caseSensitive) {
+		ArrayList<ConfigPropertyLookup> props = new ArrayList<>(values().length);
+		for (ConfigPropertyLookup lookup : values()) {
 			String propertyName = lookup.getPropertyName();
 			if (caseSensitive ? propertyName.equals(find) : propertyName.equalsIgnoreCase(find)) {
 				props.add(lookup);
@@ -308,8 +306,8 @@ public enum ControlPropertyLookup implements ControlPropertyLookupConstant, Conf
 
 	/** @throws IllegalArgumentException when id couldn't be matched */
 	@NotNull
-	public static ControlPropertyLookup findById(int id) {
-		for (ControlPropertyLookup lookup : values()) {
+	public static ConfigPropertyLookup findById(int id) {
+		for (ConfigPropertyLookup lookup : values()) {
 			if (lookup.propertyId == id) {
 				return lookup;
 			}

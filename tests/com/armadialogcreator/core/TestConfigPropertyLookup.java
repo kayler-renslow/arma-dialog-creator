@@ -5,32 +5,32 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- A {@link ControlPropertyLookupConstant} implementation used for testing. Do not use outside testing methods/classes.
+ A {@link ConfigPropertyLookupConstant} implementation used for testing. Do not use outside testing methods/classes.
 
  @author Kayler
  @since 05/30/2017 */
-public enum TestControlPropertyLookup implements ControlPropertyLookupConstant {
+public enum TestConfigPropertyLookup implements ConfigPropertyLookupConstant {
 
 	/**
 	 NEVER USE THIS in a {@link ControlClassOld} or {@link ControlClassSpecification}, <b>including testing related ones</b>.
-	 If you do use this, you are defeating the purpose of this instance, which is for guaranteeing no {@link ControlPropertyLookupConstant} is found via a
-	 {@link ControlClassOld#findProperty(ControlPropertyLookupConstant)} related method.
+	 If you do use this, you are defeating the purpose of this instance, which is for guaranteeing no {@link ConfigPropertyLookupConstant} is found via a
+	 {@link ControlClassOld#findProperty(ConfigPropertyLookupConstant)} related method.
 	 */
 	FAKE("**FAKE PROPERTY**", null),
 	/***/
-	IDC("idc", ControlPropertyLookup.IDC);
+	IDC("idc", ConfigPropertyLookup.IDC);
 
 	private final String name;
-	private final ControlPropertyLookup resemble;
+	private final ConfigPropertyLookup resemble;
 
-	TestControlPropertyLookup(@NotNull String name, @Nullable ControlPropertyLookup resemble) {
+	TestConfigPropertyLookup(@NotNull String name, @Nullable ConfigPropertyLookup resemble) {
 		this.name = name;
 		this.resemble = resemble;
 	}
 
 	@Nullable
 	@Override
-	public ControlPropertyOptionOld[] getOptions() {
+	public ConfigPropertyValueOption[] getOptions() {
 		return resemble != null ? resemble.getOptions() : null;
 	}
 

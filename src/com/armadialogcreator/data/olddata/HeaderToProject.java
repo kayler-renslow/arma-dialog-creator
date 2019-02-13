@@ -1,31 +1,6 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.ExceptionHandler;
-import com.armadialogcreator.application.ProjectDescriptor;
-import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.arma.header.*;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.core.old.*;
-import com.armadialogcreator.core.stringtable.StringTable;
-import com.armadialogcreator.core.stringtable.StringTableKey;
-import com.armadialogcreator.core.sv.SVRaw;
-import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.core.sv.SerializableValueConstructionException;
-import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.KeyValue;
-import com.armadialogcreator.util.SGAS;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import javax.xml.transform.TransformerException;
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.util.*;
+import com.armadialogcreator.arma.header.HeaderClass;
 
 /**
  Used for converting an Arma 3 config file (header file) into a project that is usable by Arma Dialog Creator.
@@ -323,7 +298,7 @@ public class HeaderToProject {
 //
 //
 //		//load all properties and nested classes
-//		List<ControlPropertyLookupConstant> inheritProperties = new LinkedList<>();
+	//		List<ConfigPropertyLookupConstant> inheritProperties = new LinkedList<>();
 //		loadAllProperties(project, headerClass, armaControl, inheritProperties);
 //
 //		loadAllNestedClasses(project, headerClass, armaControl);
@@ -336,7 +311,7 @@ public class HeaderToProject {
 //		// the previous values of the control property will be saved
 //		armaControl.extendControlClass(extendClass);
 //
-//		for (ControlPropertyLookupConstant inherit : inheritProperties) {
+	//		for (ConfigPropertyLookupConstant inherit : inheritProperties) {
 //			armaControl.inheritProperty(inherit);
 //		}
 //
@@ -389,7 +364,7 @@ public class HeaderToProject {
 //	 {@link HeaderAssignment}
 //	 */
 //	private void loadAllProperties(@NotNull Project project, @NotNull HeaderClass headerClass,
-//								   @NotNull ControlClassOld controlClass, @Nullable List<ControlPropertyLookupConstant> inheritProperties) {
+	//								   @NotNull ControlClassOld controlClass, @Nullable List<ConfigPropertyLookupConstant> inheritProperties) {
 //		for (ControlProperty property : controlClass.getAllChildProperties()) {
 //			HeaderAssignment assignment = headerClass.getAssignments().getByVarName(property.getName(), false);
 //			if (assignment == null) {
@@ -418,15 +393,15 @@ public class HeaderToProject {
 //		List<ControlPropertySpecification> optional = new ArrayList<>(headerClass.getAssignments().size());
 //		for (HeaderAssignment assignment : headerClass.getAssignments()) {
 //			//todo handle custom properties because the user may use the dialog class for more than just dialogs!
-//			List<ControlPropertyLookup> matchedByName = ControlPropertyLookup.getAllOfByName(assignment.getVariableName(), false);
+	//			List<ConfigPropertyLookup> matchedByName = ConfigPropertyLookup.getAllOfByName(assignment.getVariableName(), false);
 //			if (matchedByName.isEmpty()) {
 //				//todo
 //				continue;
 //			}
 //			SerializableValue value = null;
-//			ControlPropertyLookup usedLookup = null;
+	//			ConfigPropertyLookup usedLookup = null;
 //			String macroName = null;
-//			for (ControlPropertyLookup lookup : matchedByName) {
+	//			for (ConfigPropertyLookup lookup : matchedByName) {
 //				Macro m = checkAndGetStringTableMacro(assignment.getValue().getContent(), project);
 //				macroName = m == null ? null : m.getKey();
 //

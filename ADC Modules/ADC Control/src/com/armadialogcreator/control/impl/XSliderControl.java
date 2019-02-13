@@ -3,11 +3,7 @@ package com.armadialogcreator.control.impl;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.ControlPropertyEventLookup;
-import com.armadialogcreator.core.ControlPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.old.ControlPropertyLookupConstant;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
@@ -23,47 +19,47 @@ public class XSliderControl extends ArmaControl {
 	public XSliderControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						  @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.XSlider, resolution, env);
-		findProperty(ControlPropertyLookup.STYLE).setValue(ControlStyle.SL_HORZ.getStyleGroup());
+		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.SL_HORZ.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getRequiredProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultRequiredProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.COLOR,
-											ControlPropertyLookup.COLOR_ACTIVE,
-											ControlPropertyLookup.ARROW_EMPTY,
-											ControlPropertyLookup.ARROW_FULL,
-											ControlPropertyLookup.BORDER,
-											ControlPropertyLookup.THUMB,
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.COLOR,
+											ConfigPropertyLookup.COLOR_ACTIVE,
+											ConfigPropertyLookup.ARROW_EMPTY,
+											ConfigPropertyLookup.ARROW_FULL,
+											ConfigPropertyLookup.BORDER,
+											ConfigPropertyLookup.THUMB,
 									}
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}
 
 		@NotNull
 		@Override
-		public ReadOnlyList<ControlPropertyLookupConstant> getOptionalProperties() {
+		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
-					ArrayUtil.mergeAndSort(ControlPropertyLookupConstant.class, defaultOptionalProperties,
+					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
 							ArmaControlSpecRequirement.mergeArrays(
-									new ControlPropertyLookup[]{
-											ControlPropertyLookup.TOOLTIP,
-											ControlPropertyLookup.TOOLTIP_COLOR_SHADE,
-											ControlPropertyLookup.TOOLTIP_COLOR_TEXT,
-											ControlPropertyLookup.TOOLTIP_COLOR_BOX,
-											ControlPropertyLookup.BLINKING_PERIOD
+									new ConfigPropertyLookup[]{
+											ConfigPropertyLookup.TOOLTIP,
+											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,
+											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
+											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
+											ConfigPropertyLookup.BLINKING_PERIOD
 									},
 									ControlPropertyEventLookup.allWithControlScope(),
 									ControlPropertyEventLookup.allWithSliderScope()
 							),
-							ControlPropertyLookupConstant.PRIORITY_SORT
+							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)
 			);
 		}

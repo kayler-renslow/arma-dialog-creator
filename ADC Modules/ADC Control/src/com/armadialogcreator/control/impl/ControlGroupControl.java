@@ -2,7 +2,7 @@ package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.control.ArmaControlGroup;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.ControlPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ public class ControlGroupControl extends ArmaControlGroup {
 	public ControlGroupControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env,
 							   @NotNull SpecificationRegistry registry) {
 		super(name, ArmaControlLookup.ControlsGroup, resolution, env);
-		findProperty(ControlPropertyLookup.IDC).setValue(idc);
+		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
 	}
 
 }

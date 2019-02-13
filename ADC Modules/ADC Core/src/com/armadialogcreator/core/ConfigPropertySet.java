@@ -27,17 +27,33 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 		return immutable;
 	}
 
-	public final void addProperty(@NotNull ConfigProperty property) {
+	public final boolean putPropertyIfAbsent(@NotNull ConfigProperty p) {
+		if (immutable) {
+			noMutateException();
+			return false;
+		}
+		ConfigProperty property = map.putIfAbsent(p.getName(), p);
+		return property == p;
+	}
+
+	@Nullable
+	public final ConfigProperty putProperty(@NotNull ConfigProperty property) {
+		if (immutable) {
+			noMutateException();
+			return null;
+		}
+		return map.put(property.getName(), property);
+	}
+
+	public final void replaceProperty(@NotNull ConfigProperty newProperty) {
 		if (immutable) {
 			noMutateException();
 			return;
 		}
-		ConfigProperty existing = map.get(property.getName());
-		if (existing.isPersistent()) {
-			existing.mime(property);
-			return;
+		ConfigProperty old = map.replace(newProperty.getName(), newProperty);
+		if (old != null) {
+			old.invalidate();
 		}
-		map.put(property.getName(), property);
 	}
 
 	public final boolean removeProperty(@NotNull ConfigProperty property) {
@@ -49,18 +65,19 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 		if (immutable) {
 			noMutateException();
 		}
-
-		ConfigProperty property = map.get(name);
-		if (property.isPersistent()) {
-			property.clearMime();
-			return null;
+		ConfigProperty removed = map.remove(name);
+		if (removed != null) {
+			removed.invalidate();
 		}
-		return map.remove(name);
+		return removed;
 	}
 
 	public final void clearProperties() {
 		if (immutable) {
 			noMutateException();
+		}
+		for (Map.Entry<String, ConfigProperty> entry : map.entrySet()) {
+			entry.getValue().invalidate();
 		}
 		map.clear();
 	}
@@ -117,12 +134,9 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	 */
 	@Nullable
 	public final ConfigProperty findPropertyNullable(@NotNull String name) {
-		ConfigProperty property = map.get(name);
-		if (!property.isMiming() && property.isPersistent()) {
-			return null;
-		}
-		return property;
+		return map.get(name);
 	}
+
 
 	@NotNull
 	@Override
