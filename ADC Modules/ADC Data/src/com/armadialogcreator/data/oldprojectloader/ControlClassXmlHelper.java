@@ -1,23 +1,19 @@
 package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.application.Project;
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.CustomControlClass;
+import com.armadialogcreator.core.ConfigClass;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- Helps with loading {@link ControlClassOld} and {@link CustomControlClass} instances in proper order
+ Helps with loading {@link ConfigClass}instances in proper order
 
  @author Kayler
  @since 11/06/2017 */
 class ControlClassXmlHelper {
-	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+	//	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
 	private final Set<String> existingClasses = new HashSet<>();
 	private final Project project;
 	private final XmlErrorRecorder recorder;
@@ -27,7 +23,7 @@ class ControlClassXmlHelper {
 		this.project = project;
 		this.recorder = recorder;
 	}
-
+/*
 	public void addJob(@NotNull AfterLoadJob job) {
 		jobs.add(job);
 	}
@@ -38,7 +34,7 @@ class ControlClassXmlHelper {
 
 	 @throws IllegalStateException
 	 */
-	public void runJobs() {
+/*	public void runJobs() {
 		if (runJobs) {
 			throw new IllegalStateException("Already invoked runJobs()");
 		}
@@ -111,7 +107,7 @@ class ControlClassXmlHelper {
 
 	 @see ControlClassOld#extendControlClass(ControlClassOld)
 	 */
-	public void registerExistingControlClass(@NotNull ControlClassOld controlClass) {
+/*	public void registerExistingControlClass(@NotNull ControlClassOld controlClass) {
 		existingClasses.add(controlClass.getClassName());
 	}
 
@@ -215,4 +211,5 @@ class ControlClassXmlHelper {
 			//			}
 		}
 	}
+	*/
 }

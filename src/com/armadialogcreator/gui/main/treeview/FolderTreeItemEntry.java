@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.FolderUINode;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import javafx.scene.control.TreeItem;
@@ -12,17 +11,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FolderTreeItemEntry extends UINodeTreeItemData {
 
-	public FolderTreeItemEntry(@NotNull String folderText, @NotNull UINode parentUINode) {
+	public FolderTreeItemEntry(@NotNull String folderText) {
 		super(folderText, CellType.FOLDER, EditorComponentTreeView.createFolderIcon(),
-				new FolderUINode(parentUINode.getRootNode(), folderText)
+				new FolderUINode(folderText)
 		);
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public void duplicate(@NotNull TreeView<? extends TreeItemEntry> treeView) {
+	public void duplicate(@NotNull TreeView<? extends UINodeTreeItemData> treeView) {
 		treeView.getRoot().getChildren().add(new TreeItem(
-				new FolderTreeItemEntry(this.getText() + "copy", getNode().getParentNode())
+				new FolderTreeItemEntry(this.getText() + "copy")
 		));
 	}
 }

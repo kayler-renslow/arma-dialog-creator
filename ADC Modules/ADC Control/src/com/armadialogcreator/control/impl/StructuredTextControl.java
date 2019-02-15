@@ -4,15 +4,11 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertySpecification;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 /**
  @author Kayler
@@ -21,8 +17,7 @@ public class StructuredTextControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 	public static String NestedClassName_Attributes = "Attributes";
 
-	public StructuredTextControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
-								 @NotNull SpecificationRegistry registry) {
+	public StructuredTextControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, ArmaControlLookup.Progress, resolution, env);
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
@@ -66,31 +61,32 @@ public class StructuredTextControl extends ArmaControl {
 			);
 		}
 
-		@Override
-		@NotNull
-		public ReadOnlyList<ControlClassSpecification> getOptionalNestedClasses() {
-			return new ReadOnlyList<>(
-					Arrays.asList(
-							new ControlClassSpecification(
-									NestedClassName_Attributes, ControlPropertySpecification.EMPTY,
-									Arrays.asList(
-											new ControlPropertySpecification(ConfigPropertyLookup.FONT),
-											new ControlPropertySpecification(ConfigPropertyLookup.COLOR__HEX),
-											new ControlPropertySpecification(ConfigPropertyLookup.ALIGN),
-											new ControlPropertySpecification(ConfigPropertyLookup.SHADOW_COLOR),
-											new ControlPropertySpecification(ConfigPropertyLookup.SIZE)
+		/*
+				@Override
+				@NotNull
+				public ReadOnlyList<ControlClassSpecification> getOptionalNestedClasses() {
+					return new ReadOnlyList<>(
+							Arrays.asList(
+									new ControlClassSpecification(
+											NestedClassName_Attributes, ControlPropertySpecification.EMPTY,
+											Arrays.asList(
+													new ControlPropertySpecification(ConfigPropertyLookup.FONT),
+													new ControlPropertySpecification(ConfigPropertyLookup.COLOR__HEX),
+													new ControlPropertySpecification(ConfigPropertyLookup.ALIGN),
+													new ControlPropertySpecification(ConfigPropertyLookup.SHADOW_COLOR),
+													new ControlPropertySpecification(ConfigPropertyLookup.SIZE)
+											)
 									)
 							)
-					)
-			);
-		}
-
+					);
+				}
+		*/
 		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return new ControlStyle[]{
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return new ReadOnlyArray<>(new ControlStyle[]{
 					ControlStyle.NONE
-			};
+			});
 		}
 	}
 }

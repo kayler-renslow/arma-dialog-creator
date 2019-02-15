@@ -12,7 +12,9 @@ public interface ConfigClassUpdate {
 		ExtendClass,
 		AddProperty,
 		RemoveProperty,
-		InheritProperty
+		InheritProperty,
+		AddNestedClass,
+		RemoveNestedClass
 	}
 
 	@NotNull Type getType();
@@ -131,6 +133,46 @@ public interface ConfigClassUpdate {
 		@NotNull
 		public Type getType() {
 			return Type.InheritProperty;
+		}
+	}
+
+	class AddNestedClassUpdate implements ConfigClassUpdate {
+
+		private final ConfigClass addedNestedClass;
+
+		public AddNestedClassUpdate(@NotNull ConfigClass addedNestedClass) {
+			this.addedNestedClass = addedNestedClass;
+		}
+
+		@NotNull
+		public ConfigClass getAddedNestedClass() {
+			return addedNestedClass;
+		}
+
+		@Override
+		@NotNull
+		public Type getType() {
+			return Type.AddNestedClass;
+		}
+	}
+
+	class RemoveNestedClassUpdate implements ConfigClassUpdate {
+
+		private final ConfigClass removedNestedClass;
+
+		public RemoveNestedClassUpdate(@NotNull ConfigClass removedNestedClass) {
+			this.removedNestedClass = removedNestedClass;
+		}
+
+		@NotNull
+		public ConfigClass getRemovedNestedClass() {
+			return removedNestedClass;
+		}
+
+		@Override
+		@NotNull
+		public Type getType() {
+			return Type.RemoveNestedClass;
 		}
 	}
 }

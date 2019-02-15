@@ -137,6 +137,23 @@ public class MacroRegistry implements Registry {
 		);
 	}
 
+	public void removeMacro(@NotNull Macro macro) {
+		boolean remove = projectMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+			return;
+		}
+		remove = workspaceMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+			return;
+		}
+		remove = applicationMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+		}
+	}
+
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;

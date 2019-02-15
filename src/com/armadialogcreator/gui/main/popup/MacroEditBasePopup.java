@@ -5,7 +5,7 @@ import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SVExpression;
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.data.MacroRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
@@ -186,11 +186,11 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 
 	/** Return a new Macro instance with the current settings. */
 	@Nullable
-	protected Macro<? extends SerializableValue> getNewMacro() {
+	protected Macro getNewMacro() {
 		if (!checkFields()) {
 			return null;
 		}
-		Macro<? extends SerializableValue> m = Macro.newMacro(inMacroKey.getValue(), editor.getValue());
+		Macro m = Macro.newMacro(inMacroKey.getValue(), editor.getValue());
 		m.setComment(tfMacroDescription.getText());
 		return m;
 	}
@@ -210,7 +210,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 			if (d.wasCancelled()) {
 				return;
 			}
-			Project.getCurrentProject().getMacroRegistry().removeMacro(initialMacro);
+			MacroRegistry.instance.removeMacro(initialMacro);
 			close();
 		});
 		footer.getRightContainer().getChildren().add(0, btnDelete);
@@ -224,7 +224,7 @@ public abstract class MacroEditBasePopup extends StageDialog<VBox> {
 				return sup;
 			}
 			if (initialMacro != null && !initialMacro.getKey().equals(data)) {
-				if (Project.getCurrentProject().findMacroByKey(data) != null) {
+				if (MacroRegistry.instance.findMacroByName(data) != null) {
 					return bundle.getString("Macros.key_already_exists");
 				}
 			}

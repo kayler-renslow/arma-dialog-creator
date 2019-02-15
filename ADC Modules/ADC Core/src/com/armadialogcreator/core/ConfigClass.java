@@ -10,7 +10,7 @@ import java.util.*;
 /**
  @author K
  @since 01/03/2019 */
-public class ConfigClass {
+public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvider {
 
 	private final NotNullValueObserver<String> classNameObserver;
 	private final ValueObserver<ConfigClass> extendClassObserver = new ValueObserver<>();
@@ -89,6 +89,7 @@ public class ConfigClass {
 					if (mine == null) {
 						nestedClassesInheritedOwnedByParent.add(added);
 						nestedClasses.put(added.getClassName(), added);
+						classUpdateGroup.update(new ConfigClassUpdate.AddNestedClassUpdate(added));
 					}
 					break;
 				}
@@ -104,20 +105,26 @@ public class ConfigClass {
 					}
 					ConfigClass mine = nestedClasses.remove(removed.getClassName());
 					nestedClassesInheritedOwnedByParent.remove(mine);
+					classUpdateGroup.update(new ConfigClassUpdate.RemoveNestedClassUpdate(mine));
 					break;
 				}
 				case Clear: {
 					nestedClasses.entrySet().removeIf(entry -> nestedClassesInheritedOwnedByParent.contains(entry.getValue()));
+					for (ConfigClass c : nestedClassesInheritedOwnedByParent) {
+						classUpdateGroup.update(new ConfigClassUpdate.RemoveNestedClassUpdate(c));
+					}
 					nestedClassesInheritedOwnedByParent.clear();
 					break;
 				}
 				case Replace: {
 					MapObserverChangeReplace<String, ConfigClass> replace = change.getReplace();
-					boolean removed = nestedClassesInheritedOwnedByParent.remove(replace.getOldValue());
+					boolean removed = replace.getOldValue() != null && nestedClassesInheritedOwnedByParent.remove(replace.getOldValue());
 					if (removed) {
+						classUpdateGroup.update(new ConfigClassUpdate.RemoveNestedClassUpdate(replace.getOldValue()));
 						nestedClassesInheritedOwnedByParent.add(replace.getNewValue());
 					}
 					nestedClasses.replace(replace.getKey(), replace.getNewValue());
+					classUpdateGroup.update(new ConfigClassUpdate.AddNestedClassUpdate(replace.getNewValue()));
 					break;
 				}
 				default: {
@@ -218,6 +225,7 @@ public class ConfigClass {
 			ConfigClass newVal = nestedClasses.putIfAbsent(c.getClassName(), c);
 			if (newVal == c) { //was absent
 				nestedClassesInheritedOwnedByParent.add(c);
+				classUpdateGroup.update(new ConfigClassUpdate.AddNestedClassUpdate(c));
 			}
 		}
 
@@ -349,9 +357,37 @@ public class ConfigClass {
 		inheritProperty(propertyName);
 	}
 
+	@Override
+	@NotNull
+	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigProperty property) {
+		return ConfigPropertyCategory.Basic;
+	}
+
 	@NotNull
 	public ReadOnlyIterable<ConfigProperty> iterateProperties() {
 		return new ReadOnlyIterable<>(properties.iterable());
+	}
+
+	@Override
+	public boolean propertyIsInherited(@NotNull String propertyName) {
+		for (ConfigProperty p : propertiesInheritedOwnedByParent) {
+			if (p.nameEquals(propertyName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public @Nullable String getExtendClassName() {
+		ConfigClass extendClass = getExtendClass();
+		return extendClass == null ? null : extendClass.getClassName();
+	}
+
+	@Override
+	@Nullable
+	public ReadOnlyIterable<ConfigPropertyLookup> iterateLookupProperties() {
+		return null;
 	}
 
 	@NotNull
@@ -373,6 +409,7 @@ public class ConfigClass {
 		return getClassName().hashCode();
 	}
 
+	@Override
 	@NotNull
 	public UpdateListenerGroup<ConfigClassUpdate> getClassUpdateGroup() {
 		return classUpdateGroup;

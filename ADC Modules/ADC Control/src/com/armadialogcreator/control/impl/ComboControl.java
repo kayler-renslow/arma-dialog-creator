@@ -4,16 +4,12 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertySpecification;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.core.sv.SVDouble;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 /**
  @author Kayler
@@ -24,7 +20,7 @@ public class ComboControl extends ArmaControl {
 
 	public static final String NestedClassName_ComboScrollBar = "ComboScrollBar";
 
-	public ComboControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+	public ComboControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, ArmaControlLookup.Combo, resolution, env);
 
 		//force these value so that if the default value provider doesn't provide a value, there's still one present
@@ -82,30 +78,31 @@ public class ComboControl extends ArmaControl {
 			);
 		}
 
-		@Override
+		/*
+				@Override
+				@NotNull
+				public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
+					return new ReadOnlyList<>(
+							Arrays.asList(
+									new ControlClassSpecification(
+											NestedClassName_ComboScrollBar, Arrays.asList(
+											new ControlPropertySpecification(ConfigPropertyLookup.COLOR),
+											new ControlPropertySpecification(ConfigPropertyLookup.THUMB),
+											new ControlPropertySpecification(ConfigPropertyLookup.ARROW_FULL),
+											new ControlPropertySpecification(ConfigPropertyLookup.ARROW_EMPTY),
+											new ControlPropertySpecification(ConfigPropertyLookup.BORDER)
+									), ControlPropertySpecification.EMPTY)
+							)
+					);
+				}
+		*/
 		@NotNull
-		public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
-			return new ReadOnlyList<>(
-					Arrays.asList(
-							new ControlClassSpecification(
-									NestedClassName_ComboScrollBar, Arrays.asList(
-									new ControlPropertySpecification(ConfigPropertyLookup.COLOR),
-									new ControlPropertySpecification(ConfigPropertyLookup.THUMB),
-									new ControlPropertySpecification(ConfigPropertyLookup.ARROW_FULL),
-									new ControlPropertySpecification(ConfigPropertyLookup.ARROW_EMPTY),
-									new ControlPropertySpecification(ConfigPropertyLookup.BORDER)
-							), ControlPropertySpecification.EMPTY)
-					)
-			);
-		}
-
-		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return new ControlStyle[]{
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return new ReadOnlyArray<>(new ControlStyle[]{
 					ControlStyle.NONE,
 					ControlStyle.LB_TEXTURES
-			};
+			});
 		}
 	}
 

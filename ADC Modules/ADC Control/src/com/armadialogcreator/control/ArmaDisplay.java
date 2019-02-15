@@ -1,15 +1,10 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.core.DisplayPropertyLookup;
-import com.armadialogcreator.core.old.DisplayProperty;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DoubleIterable;
 import com.armadialogcreator.util.Key;
 import com.armadialogcreator.util.UpdateListenerGroup;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,18 +15,18 @@ import org.jetbrains.annotations.Nullable;
  @since 06/14/2016. */
 public class ArmaDisplay implements UINode {
 	private static final Key<Boolean> KEY_NODE_IS_IN_BACKGROUND = new Key<>("ArmaDisplay.nodeInBackground", false);
-	private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(-1);
+	//private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(-1);
 
 	private final SimpleBaseUINode controlNodes = new ControlsNode(this, false);
 	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this, true);
 	private final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 
-	private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
+	//private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
 	private final UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup = new UpdateListenerGroup<>();
 
 	public ArmaDisplay() {
-		displayProperties.add(iddProperty);
-
+		//displayProperties.add(iddProperty);
+/*
 		displayProperties.addListener(new SetChangeListener<DisplayProperty>() {
 			@Override
 			public void onChanged(Change<? extends DisplayProperty> change) {
@@ -40,34 +35,35 @@ public class ArmaDisplay implements UINode {
 				}
 			}
 		});
-
+*/
 		controlNodes.updateGroup.chain(updateGroup);
 		bgControlNodes.updateGroup.chain(updateGroup);
 	}
 
-	@NotNull
-	public DisplayProperty getIddProperty() {
-		return iddProperty;
-	}
-
-	@Nullable
-	public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup) {
-		for (DisplayProperty displayProperty : displayProperties) {
-			if (propertyLookup == displayProperty.getPropertyLookup()) {
-				return displayProperty;
-			}
+	/*
+		@NotNull
+		public DisplayProperty getIddProperty() {
+			return iddProperty;
 		}
-		return null;
-	}
 
-	/** @return true if the display/dialog is allowed to move. If it isn't, return false. */
-	public boolean movingEnabled() {
+		@Nullable
+		public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup) {
+			for (DisplayProperty displayProperty : displayProperties) {
+				if (propertyLookup == displayProperty.getPropertyLookup()) {
+					return displayProperty;
+				}
+			}
+			return null;
+		}
+
+		/** @return true if the display/dialog is allowed to move. If it isn't, return false. */
+/*	public boolean movingEnabled() {
 		DisplayProperty property = getProperty(DisplayPropertyLookup.MOVING_ENABLE);
 		return property != null && property.getBooleanValue();
 	}
 
 	/** @return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
-	public boolean simulationEnabled() {
+/*	public boolean simulationEnabled() {
 		DisplayProperty property = getProperty(DisplayPropertyLookup.ENABLE_SIMULATION);
 		return property != null && property.getBooleanValue();
 	}
@@ -76,7 +72,7 @@ public class ArmaDisplay implements UINode {
 	public ObservableSet<DisplayProperty> getDisplayProperties() {
 		return displayProperties;
 	}
-
+*/
 	@NotNull
 	public UINode getControlNodes() {
 		return controlNodes;

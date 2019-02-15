@@ -4,9 +4,9 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +19,7 @@ public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, ArmaControlLookup.Static, resolution, env);
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
 		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
@@ -72,8 +72,8 @@ public class StaticControl extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return new ControlStyle[]{
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return new ReadOnlyArray<>(new ControlStyle[]{
 					ControlStyle.LEFT,
 					ControlStyle.RIGHT,
 					ControlStyle.CENTER,
@@ -92,7 +92,7 @@ public class StaticControl extends ArmaControl {
 					ControlStyle.TILE_PICTURE,
 					ControlStyle.UPPERCASE,
 					ControlStyle.LOWERCASE
-			};
+			});
 		}
 	}
 

@@ -8,7 +8,6 @@ import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNumericValue;
-import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.*;

@@ -1,7 +1,7 @@
 package com.armadialogcreator.core.sv;
 
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.expression.ExpressionEvaluationException;
 import com.armadialogcreator.expression.ExpressionInterpreter;
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  SVExpression value that is used for {@link ExpressionInterpreter} and is
- storable in {@link ControlProperty}. Only {@link Value.NumVal} is allowed, thus {@link #getValue()} will only return {@link Value.NumVal}.
+ storable in {@link ConfigProperty}. Only {@link Value.NumVal} is allowed, thus {@link #getValue()} will only return {@link Value.NumVal}.
 
  @author Kayler
  @since 07/15/2016. */

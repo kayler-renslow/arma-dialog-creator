@@ -40,7 +40,7 @@ public class ConfigPropertyEditor extends HBox {
 	private enum EditMode {
 		MACRO, DEFAULT
 	}
-	
+
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private static final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 	//	private static final ConfigPropertyDocumentationProvider lookupDocProvider = new ConfigPropertyDocumentationProvider();
@@ -59,6 +59,7 @@ public class ConfigPropertyEditor extends HBox {
 	private boolean hideIfInherited;
 	private Node stackPaneTint;
 	private Consumer<Object> propertyInheritUpdate;
+	private EditMode currentEditMode;
 
 	public ConfigPropertyEditor(@NotNull ConfigClass configClass, @NotNull ConfigProperty property) {
 		super(5);
@@ -146,20 +147,22 @@ public class ConfigPropertyEditor extends HBox {
 			hideIfInherited(ConfigPropertyEditor.this.hideIfInherited);
 		};
 
-		configPropertyUpdateListener = new UpdateGroupListener<>(configProperty) {
+		configPropertyUpdateListener = new UpdateGroupListener<>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<ConfigPropertyUpdate> group, @NotNull ConfigPropertyUpdate data) {
-				if (data instanceof ConfigPropertyInheritUpdate) {
-					propertyInheritUpdate.apply(null);
-					resetPropertyValueEditor();
-				} else if (data instanceof ConfigPropertyMacroUpdate) {
-					ConfigPropertyMacroUpdate macroUpdate = (ConfigPropertyMacroUpdate) data;
-					updateEditMode(macroUpdate.getNewMacro() != null ? EditMode.MACRO : EditMode.DEFAULT);
-				} else if (data instanceof PreemptiveConfigPropertyInheritUpdate) {
-					// this is to prevent github issue https://github.com/kayler-renslow/arma-dialog-creator/issues/17
-					// which is about the control property updating it's value to a type that the propertyValueEditor
-					// isn't expecting and creating a class cast exception
-					propertyValueEditor.clearListeners();
+				switch (data.getType()) {
+					case Macro: {
+						updateEditMode(EditMode.MACRO);
+						break;
+					}
+					case Value: {
+						ConfigPropertyUpdate.ValueUpdate update = (ConfigPropertyUpdate.ValueUpdate) data;
+						if (propertyValueEditor.getAcceptedPropertyType() != update.getNewValue().getPropertyType()) {
+							resetPropertyValueEditor();
+						}
+						updateEditMode(EditMode.DEFAULT);
+						break;
+					}
 				}
 			}
 		};
@@ -167,31 +170,31 @@ public class ConfigPropertyEditor extends HBox {
 
 		miDisplayType.setOnAction(event -> {
 			SerializableValue sv = configProperty.getValue();
-			String valueType = sv == null ? "`NULL`" : sv.getPropertyType().getDisplayName();
 			MenuButtonPopup popup = new MenuButtonPopup(
-					String.format(bundle.getString("type_f"), valueType)
+					String.format(bundle.getString("type_f"), sv.getPropertyType().getDisplayName())
 			);
 			popup.showPopup();
 		});
-		miResetToInitial.setOnAction(new EventHandler<ActionEvent>() {
+		miResetToInitial.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
-				configProperty.setValue(configProperty.getDefaultValue());
+				throw new UnsupportedOperationException();
+				//				configProperty.setValue(configProperty.getDefaultValue());
 			}
 		});
-		miDefaultEditor.setOnAction(new EventHandler<ActionEvent>() {
+		miDefaultEditor.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				updateEditMode(EditMode.DEFAULT);
 			}
 		});
-		miMacro.setOnAction(new EventHandler<ActionEvent>() {
+		miMacro.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				updateEditMode(EditMode.MACRO);
 			}
 		});
-		miConvert.setOnAction(new EventHandler<ActionEvent>() {
+		miConvert.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				PropertyType type;
@@ -221,7 +224,7 @@ public class ConfigPropertyEditor extends HBox {
 				resetPropertyValueEditor();
 			}
 		});
-		inheritanceMenuItem.setOnAction(new EventHandler<ActionEvent>() {
+		inheritanceMenuItem.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				//if the inherited property type doesn't match the current editor type, there will be an exception
@@ -240,15 +243,9 @@ public class ConfigPropertyEditor extends HBox {
 				propertyInheritUpdate.accept(null);
 			}
 		});
-		miClearValue.setOnAction(new EventHandler<ActionEvent>() {
+		miClearValue.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
-				if (configProperty.getBoundMacro() != null) {
-					if (!askClearMacro()) {
-						return;
-					}
-				}
-
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
 						bundle.getString("ClearValuePopup.popup_title"),
@@ -263,14 +260,14 @@ public class ConfigPropertyEditor extends HBox {
 				if (dialog.wasCancelled()) {
 					return;
 				}
-				configProperty.setValue((SerializableValue) null);
+				configClass.removeProperty(configProperty.getName());
 			}
 		});
 		miRaw.setSelected(configProperty.getValue() instanceof SVRaw);
 		miRaw.setOnAction(event -> {
 			propertyValueEditor.clearListeners();
 			if (miRaw.isSelected()) {
-				String val = configProperty.getValue() == null ? "" : configProperty.getValue().toString();
+				String val = configProperty.getValue().toString();
 				configProperty.setValue(new SVRaw(val, configProperty.getPropertyType()));
 			} else {
 				if (configProperty.getValue() instanceof SVRaw) {
@@ -300,7 +297,7 @@ public class ConfigPropertyEditor extends HBox {
 			}
 			resetPropertyValueEditor();
 		});
-		if (configProperty.getValueOptions() != null) {
+		if (configProperty.getValueOptions().notEmpty()) {
 			menuButtonOptions.getItems().remove(miRaw);
 		}
 
@@ -353,6 +350,9 @@ public class ConfigPropertyEditor extends HBox {
 	 */
 	@SuppressWarnings("unchecked")
 	private void updateEditMode(@NotNull EditMode mode) {
+		if (mode == currentEditMode) {
+			return;
+		}
 		if (mode == EditMode.MACRO) {
 			MacroGetterButton<? extends SerializableValue> macroGetterButton =
 					new MacroGetterButton(configProperty.getPropertyType(), configProperty.getBoundMacro());
@@ -369,26 +369,23 @@ public class ConfigPropertyEditor extends HBox {
 			});
 		} else {
 			if (configProperty.getBoundMacro() != null) {
-				if (!askClearMacro()) {
+				SimpleResponseDialog dialog = new SimpleResponseDialog(
+						ArmaDialogCreator.getPrimaryStage(),
+						bundle.getString("RemoveMacroDialog.dialog_title"),
+						bundle.getString("RemoveMacroDialog.body"),
+						true, true, false
+				);
+				dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
+				dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
+				dialog.show();
+				if (dialog.wasCancelled()) {
 					return;
 				}
 				configProperty.clearMacro();
 			}
 			stackPanePropertyInput.getChildren().set(0, propertyValueEditor.getRootNode());
 		}
-	}
-
-	private boolean askClearMacro() {
-		SimpleResponseDialog dialog = new SimpleResponseDialog(
-				ArmaDialogCreator.getPrimaryStage(),
-				bundle.getString("RemoveMacroDialog.dialog_title"),
-				bundle.getString("RemoveMacroDialog.body"),
-				true, true, false
-		);
-		dialog.getFooter().getBtnCancel().setText(bundle.getString("Confirmation.no"));
-		dialog.getFooter().getBtnOk().setText(bundle.getString("Confirmation.yes"));
-		dialog.show();
-		return !dialog.wasCancelled();
+		currentEditMode = mode;
 	}
 
 	public void unlink() {
@@ -502,9 +499,12 @@ public class ConfigPropertyEditor extends HBox {
 
 	public void hideIfInherited(boolean hide) {
 		this.hideIfInherited = hide;
-		boolean visible = !(hide && propertyIsInherited);
-		setVisible(visible);
-		setManaged(visible);
+		hide(propertyIsInherited);
+	}
+
+	public void hide(boolean hidden) {
+		setVisible(!hidden);
+		setManaged(!hidden);
 	}
 
 	private Tooltip getTooltip() {

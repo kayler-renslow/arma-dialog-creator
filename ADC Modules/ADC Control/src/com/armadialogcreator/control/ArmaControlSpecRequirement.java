@@ -2,14 +2,13 @@ package com.armadialogcreator.control;
 
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
-import com.armadialogcreator.core.old.ControlClassRequirementSpecification;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/07/2016.
  */
-public interface ArmaControlSpecRequirement extends ControlClassRequirementSpecification {
+public interface ArmaControlSpecRequirement {
 	ArmaControlSpecRequirement TRIVIAL = new ArmaControlSpecRequirement() {
 	};
 
@@ -31,13 +30,11 @@ public interface ArmaControlSpecRequirement extends ControlClassRequirementSpeci
 	ReadOnlyList<ConfigPropertyLookupConstant> defaultOptionalPropertiesReadOnly = new ReadOnlyList<>(defaultOptionalProperties);
 
 	@NotNull
-	@Override
 	default ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 		return defaultRequiredPropertiesReadOnly;
 	}
 
 	@NotNull
-	@Override
 	default ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 		return defaultOptionalPropertiesReadOnly;
 	}

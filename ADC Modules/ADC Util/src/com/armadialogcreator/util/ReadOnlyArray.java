@@ -23,6 +23,14 @@ public class ReadOnlyArray<T> implements Iterable<T> {
 		return arr[i];
 	}
 
+	public boolean isEmpty() {
+		return arr.length == 0;
+	}
+
+	public boolean notEmpty() {
+		return arr.length > 0;
+	}
+
 	@NotNull
 	@Override
 	public Iterator<T> iterator() {

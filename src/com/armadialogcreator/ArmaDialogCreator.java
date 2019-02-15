@@ -63,14 +63,13 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		//load application singleton classes
 		try {
 			String[] classes = {
-					"com.armadialogcreator.ApplicationStateChangeLogger",
-					"com.armadialogcreator.ConfigClassRegistry",
-					"com.armadialogcreator.ControlClassRegistry",
-					"com.armadialogcreator.EditorManager",
-					"com.armadialogcreator.ExpressionEnvManager",
-					"com.armadialogcreator.FileDependencyRegistry",
-					"com.armadialogcreator.MacroRegistry",
-					"com.armadialogcreator.StringTableManager",
+					"com.armadialogcreator.data.ApplicationStateChangeLogger",
+					"com.armadialogcreator.data.ConfigClassRegistry",
+					"com.armadialogcreator.data.EditorManager",
+					"com.armadialogcreator.data.ExpressionEnvManager",
+					"com.armadialogcreator.data.FileDependencyRegistry",
+					"com.armadialogcreator.data.MacroRegistry",
+					"com.armadialogcreator.data.StringTableManager",
 			};
 
 			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();

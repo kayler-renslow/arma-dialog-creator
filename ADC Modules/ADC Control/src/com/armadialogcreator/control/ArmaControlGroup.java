@@ -12,8 +12,10 @@ import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.LinkedList;
 
@@ -89,12 +91,14 @@ public class ArmaControlGroup extends ArmaControl {
 	}
 
 	@Override
-	public void removeChild(int index) {
+	@Nullable
+	public UINode removeChild(int index) {
 		UINode removed = children.remove(index);
 		if (removed != null) {
 			removed.setParentNode(null);
 			updateGroup.update(new UINodeChange.RemoveChild(removed));
 		}
+		return removed;
 	}
 
 	@Override
@@ -139,8 +143,8 @@ public class ArmaControlGroup extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return ControlStyle.NONE.getStyleGroup().getStyleArray();
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return ControlStyle.NONE.getStyleGroup().getReadOnlyStyleArray();
 		}
 	}
 }

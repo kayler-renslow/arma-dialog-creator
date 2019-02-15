@@ -89,7 +89,8 @@ public enum ControlStyle {
 
 	}
 
-	/** A SVControlStyleGroup instance with only this instance's ControlStyle inside */
+	/** @return a SVControlStyleGroup instance with only this instance's ControlStyle inside */
+	@NotNull
 	public SVControlStyleGroup getStyleGroup() {
 		return new SVControlStyleGroup(new ControlStyle[]{this});
 	}

@@ -7,7 +7,6 @@ import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.RequirementsConfigClass;
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
@@ -36,7 +35,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 
 	private ConfigProperty idcProperty, accessProperty;
 	protected ArmaDisplay display = null; //todo
-	protected UINode rootNode = null;
 	private final ArmaControlLookup armaControlLookup;
 	private final DataContext userData = new DataContext();
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
@@ -47,7 +45,8 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	 @param name control class name (e.g. RscText or OMGClass). Keep in mind that it should follow normal Identifier rules (letter letterOrDigit*)
 	 @param lookup lookup to use
 	 @param resolution resolution to use
-	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances stored inside this control's {@link ControlProperty}'s.
+	 @param env the environment used to calculate the control's position and other {@link SVExpression} instances
+	 stored inside this control's {@link ConfigProperty}'s.
 	 */
 	protected ArmaControl(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 						  @NotNull Env env) {
@@ -167,7 +166,8 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	}
 
 	@Override
-	public void removeChild(int index) {
+	@Nullable
+	public UINode removeChild(int index) {
 		throw new UnsupportedOperationException();
 	}
 
@@ -208,11 +208,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	@Override
 	public void setParentNode(@Nullable UINode newParent) {
 		this.parentNode = newParent;
-	}
-
-	@Override
-	public void setRootNode(@Nullable UINode newRoot) {
-		this.rootNode = newRoot;
 	}
 
 	@Override

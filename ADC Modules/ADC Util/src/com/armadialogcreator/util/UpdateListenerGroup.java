@@ -1,7 +1,6 @@
 package com.armadialogcreator.util;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,6 +13,12 @@ public class UpdateListenerGroup<T> {
 	private final LinkedList<UpdateListenerGroup<T>> chain = new LinkedList<>();
 	private final LinkedList<UpdateGroupListener<T>> newListeners = new LinkedList<>();
 	private boolean iterating = false; //prevent CoModificationException
+
+	public void clearListeners() {
+		updateListeners.clear();
+		newListeners.clear();
+		chain.clear();
+	}
 
 	/** Use this for when the T doesn't matter */
 	public static final class NoData {

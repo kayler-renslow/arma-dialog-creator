@@ -5,7 +5,6 @@ import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.old.ControlClassOld;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
@@ -497,7 +496,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Adds a value listener to the given {@link ControlClassOld} with the provided property name.
+	 Adds a value listener to the given {@link ConfigClass} with the provided property name.
 	 Afterwards, it invokes the listener with the current value.
 	 */
 	public void addValueListener(@NotNull ConfigClass owner, @NotNull String propertyName, @NotNull NotNullValueListener<SerializableValue> l) {
@@ -507,7 +506,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Adds a value listener to the given {@link ControlClassOld} with the provided key.
+	 Adds a value listener to the given {@link ConfigClass} with the provided key.
 	 Invokes {@link #addValueListener(ConfigClass, String, NotNullValueListener)} using {@link ConfigPropertyKey#getPropertyName()}
 	 */
 	public void addValueListener(@NotNull ConfigClass owner, @NotNull ConfigPropertyKey key, @NotNull NotNullValueListener<SerializableValue> l) {

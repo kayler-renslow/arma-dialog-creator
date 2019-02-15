@@ -81,8 +81,8 @@ public class ConfigPropertyValueEditors {
 			RadioButton radioButton, toSelect = null;
 			ReadOnlyArray<ConfigPropertyValueOption> options = configProperty.getValueOptions();
 			this.configPropertyListener = createConfigPropertyValueListener(this);
-			if (options == null) {
-				throw new IllegalStateException("options shouldn't be null");
+			if (options.length == 0) {
+				throw new IllegalStateException("options shouldn't be empty");
 			}
 			for (int i = 0; i < options.length; i++) {
 				ConfigPropertyValueOption option = options.item(i);
@@ -203,7 +203,7 @@ public class ConfigPropertyValueEditors {
 			if (allowedStyleProvider != null) {
 				ArrayList<ControlStyle> moveAfterSeparator = new ArrayList<>();
 				menuButton.getItems().clear();
-				ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
+				ReadOnlyArray<ControlStyle> allowedStyles = allowedStyleProvider.getAllowedStyles();
 				for (ControlStyle style : ControlStyle.values()) {
 					boolean match = false;
 					for (ControlStyle allowed : allowedStyles) {

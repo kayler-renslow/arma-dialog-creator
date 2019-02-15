@@ -4,6 +4,7 @@ import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
 import com.armadialogcreator.util.ReadOnlyArray;
+import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,6 +21,7 @@ public class ConfigProperty {
 			valueObserver.updateValue(newValue);
 		}
 	};
+	private final UpdateListenerGroup<ConfigPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
 
 	public ConfigProperty(@NotNull String name, @NotNull SerializableValue initialValue) {
 		this.name = name;
@@ -152,5 +154,11 @@ public class ConfigProperty {
 	void invalidate() {
 		clearMacro();
 		valueObserver.invalidate();
+		updateGroup.clearListeners();
+	}
+
+	@NotNull
+	public UpdateListenerGroup<ConfigPropertyUpdate> getPropertyUpdateGroup() {
+		return updateGroup;
 	}
 }

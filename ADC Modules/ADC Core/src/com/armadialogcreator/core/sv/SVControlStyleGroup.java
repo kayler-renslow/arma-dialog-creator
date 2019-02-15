@@ -4,6 +4,7 @@ import com.armadialogcreator.core.AllowedStyleProvider;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.ReadOnlyArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,7 +49,7 @@ public class SVControlStyleGroup extends SerializableValue {
 	 **/
 	@NotNull
 	public static SVControlStyleGroup fixMisidentified(@NotNull SVControlStyleGroup toFix, @NotNull AllowedStyleProvider allowedStyleProvider) {
-		ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
+		ReadOnlyArray<ControlStyle> allowedStyles = allowedStyleProvider.getAllowedStyles();
 		List<ControlStyle> fixedStyles = new ArrayList<>(allowedStyles.length);
 		boolean replace = false;
 		ControlStyle[] controlStyles = toFix.getStyleArray();
@@ -152,6 +153,11 @@ public class SVControlStyleGroup extends SerializableValue {
 	@NotNull
 	public ControlStyle[] getStyleArray() {
 		return styles;
+	}
+
+	@NotNull
+	public ReadOnlyArray<ControlStyle> getReadOnlyStyleArray() {
+		return new ReadOnlyArray<>(styles);
 	}
 
 	@NotNull

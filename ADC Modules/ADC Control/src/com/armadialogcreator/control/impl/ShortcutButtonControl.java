@@ -4,15 +4,11 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertySpecification;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.Arrays;
 
 /**
  @author Kayler
@@ -24,43 +20,42 @@ public class ShortcutButtonControl extends ArmaControl {
 	public static final String NestedClassName_ShortcutPos = "ShortcutPos";
 	public static final String NestedClassName_TextPos = "TextPos";
 
-	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
+	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, ArmaControlLookup.ShortcutButton, resolution, env);
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
-
-		@Override
-		@NotNull
-		public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
-			return new ReadOnlyList<>(
-					Arrays.asList(
-							new ControlClassSpecification(
-									NestedClassName_HitZone, Arrays.asList(
-									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-									new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
-									new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
-									new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
-							), ControlPropertySpecification.EMPTY),
-							new ControlClassSpecification(
-									NestedClassName_ShortcutPos, Arrays.asList(
-									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-									new ControlPropertySpecification(ConfigPropertyLookup.LEFT),
-									new ControlPropertySpecification(ConfigPropertyLookup.W),
-									new ControlPropertySpecification(ConfigPropertyLookup.H)
-							), ControlPropertySpecification.EMPTY),
-							new ControlClassSpecification(
-									NestedClassName_TextPos, Arrays.asList(
-									new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-									new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
-									new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
-									new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
-							), ControlPropertySpecification.EMPTY)
-					)
-			);
-		}
-
+		/*
+				@NotNull
+				public ReadOnlyMap<String, ReadOnlySet<ImmutableConfigProperty>> getRequiredNestedClasses() {
+					return new ReadOnlyList<>(
+							Arrays.asList(
+									new ControlClassSpecification(
+											NestedClassName_HitZone, Arrays.asList(
+											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+											new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
+											new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
+											new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
+									), ControlPropertySpecification.EMPTY),
+									new ControlClassSpecification(
+											NestedClassName_ShortcutPos, Arrays.asList(
+											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+											new ControlPropertySpecification(ConfigPropertyLookup.LEFT),
+											new ControlPropertySpecification(ConfigPropertyLookup.W),
+											new ControlPropertySpecification(ConfigPropertyLookup.H)
+									), ControlPropertySpecification.EMPTY),
+									new ControlClassSpecification(
+											NestedClassName_TextPos, Arrays.asList(
+											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
+											new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
+											new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
+											new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
+									), ControlPropertySpecification.EMPTY)
+							)
+					);
+				}
+		*/
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
@@ -124,12 +119,12 @@ public class ShortcutButtonControl extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return new ControlStyle[]{
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return new ReadOnlyArray<>(new ControlStyle[]{
 					ControlStyle.NONE,
 					ControlStyle.UPPERCASE,
 					ControlStyle.LOWERCASE
-			};
+			});
 		}
 	}
 }

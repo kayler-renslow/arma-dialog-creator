@@ -1,14 +1,14 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.CustomControlClass;
+import com.armadialogcreator.application.DataLevel;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
-import com.armadialogcreator.gui.main.fxControls.ControlClassMenuButton;
-import com.armadialogcreator.gui.main.fxControls.ControlClassMenuItem;
+import com.armadialogcreator.gui.main.fxControls.ConfigClassGroupMenu;
+import com.armadialogcreator.gui.main.fxControls.ConfigClassMenuButton;
 import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Label;
@@ -19,33 +19,32 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 /**
- Dialog window that allows for editing a ({@link ControlClassOld}). This dialog is specialized towards editing
- nested {@link ControlClassOld} instances. This editor will not allow editing of the {@link ControlClassOld#getClassName()}.
+ Dialog window that allows for editing a ({@link ConfigClass}) directly.
  It has a {@link ControlPropertiesEditorPane} embedded into it.
 
  @author Kayler
  @since 06/30/2017 */
-public class EditNestedControlClassDialog extends StageDialog<VBox> {
+public class EditConfigClassDialog extends StageDialog<VBox> {
 
-	private final ControlClassMenuButton extendClassMenuButton;
+	private final ConfigClassMenuButton extendClassMenuButton;
 
 	private ControlPropertiesEditorPane editorPane;
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
 	/**
-	 @param controlClass the {@link ControlClassOld} to edit/mutate
+	 @param configClass the {@link ConfigClass} to edit
 	 */
-	public EditNestedControlClassDialog(@NotNull ControlClassOld controlClass) {
+	public EditConfigClassDialog(@NotNull ConfigClass configClass) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
 		setTitle(bundle.getString("Popups.EditNestedControlClass.popup_title"));
 
-		editorPane = new ControlPropertiesEditorPane(controlClass);
+		editorPane = new ControlPropertiesEditorPane(configClass);
 
 		editorPane.setMinWidth(720);
 		editorPane.setMinHeight(480);
@@ -59,7 +58,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 
 			//control class name
 			{
-				Label lblControlClassName = new Label(controlClass.getClassName());
+				Label lblControlClassName = new Label(configClass.getClassName());
 				lblControlClassName.setFont(fontHeader);
 				hboxHeader.getChildren().add(lblControlClassName);
 
@@ -70,7 +69,7 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 				Label lblColon = new Label(":");
 				lblColon.setFont(fontHeader);
 				hboxHeader.getChildren().add(lblColon);
-				extendClassMenuButton = new ControlClassMenuButton(
+				extendClassMenuButton = new ConfigClassMenuButton(
 						true,
 						bundle.getString("Popups.NewCustomControl.no_parent_class"),
 						null
@@ -78,28 +77,45 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 
 				hboxHeader.getChildren().add(extendClassMenuButton);
 
-				extendClassMenuButton.addItems(getCustomControlClassesItems());
+				{
+					ConfigClassRegistry registry = ConfigClassRegistry.instance;
+					Map<DataLevel, List<ConfigClass>> map = registry.copyAllClassesToMap();
+
+					ConfigClassGroupMenu menuAll = new ConfigClassGroupMenu("All");
+					for (DataLevel level : map.keySet()) {
+						ConfigClassGroupMenu menu = new ConfigClassGroupMenu(level.name());
+						List<ConfigClass> classes = map.get(level);
+						menu.addAllValues(classes, null);
+						extendClassMenuButton.addGroup(menu);
+						menuAll.addAllValues(classes, null);
+					}
+					extendClassMenuButton.addGroup(menuAll);
+
+				}
+
 				extendClassMenuButton.getSelectedValueObserver().addListener((observer, oldValue, newValue) -> {
 					if (newValue != null) {
-						if (controlClass.hasInheritanceLoop(newValue)) {
+						if (configClass.hasInheritanceLoop(newValue)) {
 							SimpleResponseDialog dialog = new SimpleResponseDialog(
 									myStage,
 									bundle.getString("Popups.NewCustomControl.inheritance_loop_title"),
 									String.format(
 											bundle.getString("Popups.NewCustomControl.inheritance_loop_body_f"),
-											controlClass.getClassName()
+											configClass.getClassName()
 									),
 									false, true, false
 							);
 							dialog.setStageSize(400, 120);
 							dialog.show();
-							extendClassMenuButton.chooseItem((ControlClassOld) null);
+							extendClassMenuButton.chooseItem((ConfigClass) null);
 							return;
 						}
+						configClass.extendConfigClass(newValue);
+					} else {
+						configClass.clearExtendConfigClass();
 					}
-					controlClass.extendControlClass(newValue);
 				});
-				extendClassMenuButton.chooseItem(controlClass.getExtendClass());
+				extendClassMenuButton.chooseItem(configClass.getExtendClass());
 
 			}
 
@@ -123,17 +139,6 @@ public class EditNestedControlClassDialog extends StageDialog<VBox> {
 
 		myStage.sizeToScene();
 	}
-
-	private List<CBMBMenuItem<ControlClassOld>> getCustomControlClassesItems() {
-		Project project = Project.getCurrentProject();
-		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
-		List<CBMBMenuItem<ControlClassOld>> items = new ArrayList<>(cccList.size());
-		for (CustomControlClass ccc : cccList) {
-			items.add(new ControlClassMenuItem(ccc.getControlClass()));
-		}
-		return items;
-	}
-
 
 	@Override
 	protected void closing() {

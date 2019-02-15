@@ -61,6 +61,8 @@ public interface Macro {
 		return new BasicMacro<>(key, value);
 	}
 
+	void invalidate();
+
 	class BasicMacro<T extends SerializableValue> implements Macro {
 
 		private final NotNullValueObserver<String> keyObserver;
@@ -93,6 +95,12 @@ public interface Macro {
 		@Override
 		public void setComment(@Nullable String comment) {
 			this.comment = comment;
+		}
+
+		@Override
+		public void invalidate() {
+			valueObserver.invalidate();
+			keyObserver.invalidate();
 		}
 
 		@Override

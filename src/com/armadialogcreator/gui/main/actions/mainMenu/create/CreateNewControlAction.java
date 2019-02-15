@@ -15,7 +15,7 @@ import javafx.event.EventHandler;
 public class CreateNewControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		NewControlDialog dialog = new NewControlDialog(null, null);
+		NewControlDialog dialog = new NewControlDialog(null, false);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return;

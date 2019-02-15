@@ -33,9 +33,9 @@ public class NewControlDialog extends StageDialog<GridPane> {
 	 Constructs a dialog prompting the user to give control class name, {@link ControlType}, and if the control is a background control or not
 
 	 @param fixedType if null, the user can't specify the control type. If not null, the type will be fixed and the user won't be able to edit it
-	 @param fixedIsBackgroundControl if null, the user can't specify the control type. If not null, the user can specify if the control is a background one or not
+	 @param isBackgroundControl if true, the checkbox for background control will be set to true, if false, won't be checked
 	 */
-	public NewControlDialog(@Nullable ControlType fixedType, @Nullable Boolean fixedIsBackgroundControl) {
+	public NewControlDialog(@Nullable ControlType fixedType, boolean isBackgroundControl) {
 		super(ArmaDialogCreator.getPrimaryStage(), new GridPane(), Lang.ApplicationBundle().getString("Popups.NewControl.popup_title"), true, true, true);
 
 		menuButtonControlType = new ComboBoxMenuButton<>(false, "", null);
@@ -70,10 +70,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 			menuButtonControlType.chooseItem(fixedType);
 			menuButtonControlType.setDisable(true);
 		}
-		if (fixedIsBackgroundControl != null) {
-			checkBoxBackgroundControl.setSelected(fixedIsBackgroundControl);
-			checkBoxBackgroundControl.setDisable(true);
-		}
+		checkBoxBackgroundControl.setSelected(isBackgroundControl);
 
 		inClassName.setToButton(false);
 	}

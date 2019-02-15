@@ -1,6 +1,5 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,8 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public class FolderUINode  extends StructureUINode {
 	private final NotNullValueObserver<String> folderNameObserver;
 
-	public FolderUINode(@NotNull UINode rootNode, @NotNull String folderName) {
-		super(rootNode);
+	public FolderUINode(@NotNull String folderName) {
 		folderNameObserver = new NotNullValueObserver<>(folderName);
 	}
 

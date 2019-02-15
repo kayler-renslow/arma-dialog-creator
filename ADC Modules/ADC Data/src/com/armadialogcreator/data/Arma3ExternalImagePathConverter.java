@@ -1,13 +1,11 @@
-package com.armadialogcreator.data.olddata;
+package com.armadialogcreator.data;
 
-import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  @author Kayler
@@ -16,12 +14,11 @@ public class Arma3ExternalImagePathConverter {
 	private static final Arma3ExternalImagePathConverter instance = new Arma3ExternalImagePathConverter();
 
 	@NotNull
-	public synchronized static Arma3ExternalImagePathConverter getInstance() {
+	public static Arma3ExternalImagePathConverter getInstance() {
 		return instance;
 	}
 
 	private final HashMap<String, String> extToInternalMap = new HashMap<>();
-	private final ConcurrentHashMap<String, Image> cache = new ConcurrentHashMap<>();
 
 	private Arma3ExternalImagePathConverter() {
 		final String prefix = "/com/armadialogcreator/arma/icons/";
@@ -68,17 +65,11 @@ public class Arma3ExternalImagePathConverter {
 	 All images that are returned are cached to prevent multiple instances of the same image being created.
 
 	 @param path the Arma 3 pbo path to get an image for
-	 @return the matched {@link Image}, or null if the path didn't map do a stored image
+	 @return the path that is mapped to a stored image, or null if no path was matched
 	 */
 	@Nullable
-	public Image getImage(@NotNull String path) {
-		String internalPath = extToInternalMap.get(extPathCaseConvert(path));
-		if (internalPath == null) {
-			return null;
-		}
-		return cache.computeIfAbsent(internalPath, s -> {
-			return new Image(getClass().getResourceAsStream(s));
-		});
+	public String getImagePath(@NotNull String path) {
+		return extToInternalMap.get(extPathCaseConvert(path));
 	}
 
 	private String extPathCaseConvert(String p) {

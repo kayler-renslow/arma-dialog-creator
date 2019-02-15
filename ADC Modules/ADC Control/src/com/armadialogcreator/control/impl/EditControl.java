@@ -4,9 +4,9 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
@@ -16,8 +16,7 @@ import org.jetbrains.annotations.NotNull;
 public class EditControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-	public EditControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
-					   @NotNull SpecificationRegistry registry) {
+	public EditControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env) {
 		super(name, ArmaControlLookup.Edit, resolution, env);
 	}
 
@@ -72,11 +71,11 @@ public class EditControl extends ArmaControl {
 
 		@NotNull
 		@Override
-		public ControlStyle[] getAllowedStyles() {
-			return new ControlStyle[]{
+		public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+			return new ReadOnlyArray<>(new ControlStyle[]{
 					ControlStyle.NONE,
 					ControlStyle.MULTI
-			};
+			});
 		}
 	}
 }

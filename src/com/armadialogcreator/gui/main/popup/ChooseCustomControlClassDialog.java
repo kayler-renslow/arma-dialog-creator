@@ -1,7 +1,6 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.core.old.CustomControlClass;
-import com.armadialogcreator.data.olddata.CustomControlClassRegistry;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Pos;

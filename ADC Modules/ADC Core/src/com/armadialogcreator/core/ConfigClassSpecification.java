@@ -1,6 +1,7 @@
 package com.armadialogcreator.core;
 
 import com.armadialogcreator.util.ReadOnlyIterable;
+import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,9 +13,12 @@ public interface ConfigClassSpecification {
 
 	@NotNull ReadOnlyIterable<ConfigProperty> iterateProperties();
 
-	boolean propertyIsInherited(@NotNull ConfigProperty property);
+	boolean propertyIsInherited(@NotNull String propertyName);
 
 	@Nullable String getExtendClassName();
 
 	@Nullable ReadOnlyIterable<ConfigPropertyLookup> iterateLookupProperties();
+
+	@NotNull
+	UpdateListenerGroup<ConfigClassUpdate> getClassUpdateGroup();
 }

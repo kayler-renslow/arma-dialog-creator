@@ -2,8 +2,7 @@ package com.armadialogcreator.arma.header;
 
 import com.armadialogcreator.arma.header.DefineMacroContent.DefineValue;
 import com.armadialogcreator.arma.header.DefineMacroContent.ParameterDefineValue;
-import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.arma.util.ArmaUIScale;
+import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.data.olddata.HeaderConversionException;
 import com.armadialogcreator.expression.*;
 import com.armadialogcreator.lang.Lang;
@@ -951,7 +950,7 @@ class Preprocessor {
 		private final ArmaResolution resolution;
 
 		public UnaryCommandValueProviderImpl() {
-			this.resolution = new ArmaResolution(ScreenDimension.D960, ArmaUIScale.DEFAULT);
+			this.resolution = new ArmaResolution(ScreenDimension.D960);
 		}
 
 		@Override

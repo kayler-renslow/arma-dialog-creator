@@ -2,6 +2,7 @@ package com.armadialogcreator.data.olddata;
 
 import com.armadialogcreator.core.sv.SVImage;
 import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.data.Arma3ExternalImagePathConverter;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -43,7 +44,7 @@ public class ImageHelper {
 				}
 
 				if (f != null && f.getPath().startsWith("\\")) {
-					Image internalImage = Arma3ExternalImagePathConverter.getInstance().getImage(f.getPath());
+					Image internalImage = Arma3ExternalImagePathConverter.getInstance().getImagePath(f.getPath());
 					if (internalImage != null) {
 						imageGetFunc.apply(internalImage);
 						return;

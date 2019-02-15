@@ -2,7 +2,6 @@ package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.armadialogcreator.util.ValueListener;

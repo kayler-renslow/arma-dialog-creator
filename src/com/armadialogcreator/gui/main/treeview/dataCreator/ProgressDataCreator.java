@@ -1,10 +1,9 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.util.ArmaResolution;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.ProgressControl;
 import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.core.old.SpecificationRegistry;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,7 +19,7 @@ public class ProgressDataCreator extends GenericDataCreator {
 
 	@Override
 	@NotNull
-	public ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry) {
-		return new ProgressControl(className, resolution, env, registry);
+	public ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env) {
+		return new ProgressControl(className, resolution, env);
 	}
 }

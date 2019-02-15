@@ -19,8 +19,8 @@ import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
-import com.armadialogcreator.gui.main.fxControls.ControlClassMenuButton;
-import com.armadialogcreator.gui.main.fxControls.ControlClassMenuItem;
+import com.armadialogcreator.gui.main.fxControls.ConfigClassMenuButton;
+import com.armadialogcreator.gui.main.fxControls.ConfigClassMenuItem;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -59,7 +59,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	private final InputField<IdentifierChecker, String> inClassName = new InputField<>(new IdentifierChecker());
 	private final Label lblBaseControl;
 	private final TextArea taComment = new TextArea();
-	private final ControlClassMenuButton extendClassMenuButton;
+	private final ConfigClassMenuButton extendClassMenuButton;
 	private final ComboBox<CustomControlClass.Scope> comboBoxScope = new ComboBox<>();
 
 	private ControlPropertiesEditorPane editorPane;
@@ -105,7 +105,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					@Override
 					public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
 						newValue = newValue != null ? newValue : "";
-						editorPane.getConfigClassSpecification().setClassName(newValue);
+						editorPane.getConfigClass().setClassName(newValue);
 						updatePreview();
 					}
 				});
@@ -114,7 +114,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 			//extend/parent class
 			{
 				hboxTopHeader.getChildren().add(new Label(":"));
-				extendClassMenuButton = new ControlClassMenuButton(
+				extendClassMenuButton = new ConfigClassMenuButton(
 						true,
 						bundle.getString("Popups.NewCustomControl.no_parent_class"),
 						null
@@ -127,7 +127,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 					if (getEditorPane() == null) {
 						return;
 					}
-					ControlClassOld editClass = getEditorPane().getConfigClassSpecification();
+					ControlClassOld editClass = getEditorPane().getConfigClass();
 					if (newValue != null) {
 						if (editClass.hasInheritanceLoop(newValue)) {
 							SimpleResponseDialog dialog = new SimpleResponseDialog(
@@ -293,7 +293,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 		List<CustomControlClass> cccList = project.getAllCustomControlClasses();
 		List<CBMBMenuItem<ControlClassOld>> items = new ArrayList<>(cccList.size());
 		for (CustomControlClass ccc : cccList) {
-			items.add(new ControlClassMenuItem(ccc.getControlClass()));
+			items.add(new ConfigClassMenuItem(ccc.getControlClass()));
 		}
 		return items;
 	}
@@ -352,7 +352,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	}
 
 	private void removeListeners() {
-		editorPane.getConfigClassSpecification().getPropertyUpdateGroup().removeListener(controlClassListener);
+		editorPane.getConfigClass().getPropertyUpdateGroup().removeListener(controlClassListener);
 		editorPane.unlink();
 	}
 
@@ -377,7 +377,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 	/** @return a {@link CustomControlClass} instance that was created */
 	@NotNull
 	public CustomControlClass getCustomControlClass() {
-		CustomControlClass customControlClass = new CustomControlClass(editorPane.getConfigClassSpecification(), comboBoxScope.getValue());
+		CustomControlClass customControlClass = new CustomControlClass(editorPane.getConfigClass(), comboBoxScope.getValue());
 		customControlClass.setComment(taComment.getText());
 		return customControlClass;
 	}
@@ -399,7 +399,7 @@ public class NewCustomControlClassDialog extends StageDialog<VBox> {
 				writer.write(getTaComment().getText());
 				writer.write("\n*/\n");
 			}
-			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getConfigClassSpecification(), writer);
+			ProjectExporter.exportControlClass(project.getExportConfiguration(), editorPane.getConfigClass(), writer);
 			writer.close();
 		} catch (IOException e) {
 			ExceptionHandler.error(e);
