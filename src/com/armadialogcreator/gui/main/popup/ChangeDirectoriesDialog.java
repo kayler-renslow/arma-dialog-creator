@@ -4,7 +4,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.util.ArmaTools;
 import com.armadialogcreator.data.ApplicationSettings;
-import com.armadialogcreator.data.ApplicationSettingsManager;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
@@ -49,7 +49,7 @@ public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 	private void initialize() {
 		tfA3ToolsDir.setEditable(false);
 
-		File a3ToolsDir = ApplicationSettingsManager.instance.getSettings().ArmaToolsSetting.get();
+		File a3ToolsDir = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting.get();
 		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
@@ -112,7 +112,7 @@ public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 	protected void ok() {
 		String a3tools = getArma3ToolsDirectoryPath();
 		File f = a3tools == null ? null : new File(a3tools);
-		ApplicationSettings.FileSetting armaToolsSetting = ApplicationSettingsManager.instance.getSettings().ArmaToolsSetting;
+		ApplicationSettings.FileSetting armaToolsSetting = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting;
 		armaToolsSetting.set(f);
 		close();
 	}

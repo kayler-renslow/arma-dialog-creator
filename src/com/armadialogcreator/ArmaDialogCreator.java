@@ -70,7 +70,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 					"com.armadialogcreator.data.FileDependencyRegistry",
 					"com.armadialogcreator.data.MacroRegistry",
 					"com.armadialogcreator.data.StringTableManager",
-					"com.armadialogcreator.data.ApplicationSettingsManager",
+					"com.armadialogcreator.data.SettingsManager",
 			};
 
 			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();

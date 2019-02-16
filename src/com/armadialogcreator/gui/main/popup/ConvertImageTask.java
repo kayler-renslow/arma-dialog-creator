@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
-import com.armadialogcreator.data.ApplicationSettingsManager;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.data.olddata.ImagesTool;
 import com.armadialogcreator.gui.StageDialog;
@@ -209,7 +209,7 @@ public class ConvertImageTask {
 
 		@Override
 		protected void closing() {
-			File f = ApplicationSettingsManager.instance.getSettings().ArmaToolsSetting.get();
+			File f = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting.get();
 			if (f == null) {
 				q.add(closeTask);
 			} else {

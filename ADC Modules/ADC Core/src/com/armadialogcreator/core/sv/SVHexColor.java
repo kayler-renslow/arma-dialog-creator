@@ -73,21 +73,21 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	}
 
 	/**
-	 Gets color array. Ignores alpha
+	 Gets rgbColor array. Ignores alpha
 
 	 @param arr stores values in given array (array must be length 3) (r,g,b).
 	 This array is modified directly and is returned. Each value at each index will be randed 0-1
-	 @param color the color as an integer
+	 @param rgbColor the rgb color as an integer
 	 @return the array
 	 @throws IllegalArgumentException when the array length < 3
 	 */
-	public static double[] getColorArray(double[] arr, int color) {
+	public static double[] getColorArray(double[] arr, int rgbColor) {
 		if (arr.length < 3) {
-			throw new IllegalArgumentException("arr.length != 4");
+			throw new IllegalArgumentException("arr.length < 3");
 		}
-		int r = (color) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = (color >> 16) & 0xFF;
+		int r = (rgbColor >> 16) & 0xFF;
+		int g = (rgbColor >> 8) & 0xFF;
+		int b = (rgbColor) & 0xFF;
 		final double f = 255.0;
 		arr[0] = r / f;
 		arr[1] = g / f;
