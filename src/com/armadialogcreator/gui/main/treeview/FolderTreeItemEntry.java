@@ -11,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
  */
 public class FolderTreeItemEntry extends UINodeTreeItemData {
 
-	public FolderTreeItemEntry(@NotNull String folderText) {
-		super(folderText, CellType.FOLDER, EditorComponentTreeView.createFolderIcon(),
-				new FolderUINode(folderText)
+	public FolderTreeItemEntry(@NotNull FolderUINode node) {
+		super(node.getFolderName(), CellType.FOLDER, EditorComponentTreeView.createFolderIcon(),
+				node
 		);
 	}
 
@@ -21,7 +21,7 @@ public class FolderTreeItemEntry extends UINodeTreeItemData {
 	@SuppressWarnings("unchecked")
 	public void duplicate(@NotNull TreeView<? extends UINodeTreeItemData> treeView) {
 		treeView.getRoot().getChildren().add(new TreeItem(
-				new FolderTreeItemEntry(this.getText() + "copy")
+				new FolderTreeItemEntry((FolderUINode) getNode().deepCopy())
 		));
 	}
 }

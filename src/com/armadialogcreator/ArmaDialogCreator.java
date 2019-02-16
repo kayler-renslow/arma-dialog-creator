@@ -70,6 +70,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 					"com.armadialogcreator.data.FileDependencyRegistry",
 					"com.armadialogcreator.data.MacroRegistry",
 					"com.armadialogcreator.data.StringTableManager",
+					"com.armadialogcreator.data.ApplicationSettingsManager",
 			};
 
 			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();
@@ -99,12 +100,12 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
-		ApplicationManager.getInstance().addStateSubscriber(this);
+		ApplicationManager.instance.addStateSubscriber(this);
 	}
 
 	@Override
 	public void init() throws Exception {
-		ApplicationManager.getInstance().initializeApplication();
+		ApplicationManager.instance.initializeApplication();
 
 		Thread t = new Thread(() -> {
 			int progress = 0;
@@ -329,9 +330,9 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			AskSaveProjectDialog dialog = new AskSaveProjectDialog();
 			dialog.show();
 			if (dialog.saveProgress()) {
-				ApplicationManager.getInstance().saveProject();
+				ApplicationManager.instance.saveProject();
 			}
-			ApplicationManager.getInstance().closeApplication();
+			ApplicationManager.instance.closeApplication();
 		}
 	}
 }

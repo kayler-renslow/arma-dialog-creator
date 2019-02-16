@@ -136,6 +136,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	private final MapObserver<String, ConfigClass> nestedClasses = new MapObserver<>(new HashMap<>());
 	private final Set<ConfigClass> nestedClassesInheritedOwnedByParent = new HashSet<>();
 	private final UpdateListenerGroup<ConfigClassUpdate> classUpdateGroup = new UpdateListenerGroup<>();
+	private final DataContext userData = new DataContext();
+	private @Nullable String userComment;
 
 	public ConfigClass(@NotNull String className) {
 		classNameObserver = new NotNullValueObserver<>(className);
@@ -148,6 +150,11 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	public void setClassName(@NotNull String name) {
 		classNameObserver.updateValue(name);
+	}
+
+	@NotNull
+	public NotNullValueObserver<String> getClassNameObserver() {
+		return classNameObserver;
 	}
 
 	public boolean isExtending() {
@@ -413,5 +420,19 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	@NotNull
 	public UpdateListenerGroup<ConfigClassUpdate> getClassUpdateGroup() {
 		return classUpdateGroup;
+	}
+
+	@Nullable
+	public String getUserComment() {
+		return userComment;
+	}
+
+	public void setUserComment(@Nullable String userComment) {
+		this.userComment = userComment;
+	}
+
+	@NotNull
+	public DataContext getUserData() {
+		return userData;
 	}
 }

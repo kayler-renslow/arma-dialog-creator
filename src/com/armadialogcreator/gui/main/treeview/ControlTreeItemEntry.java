@@ -2,6 +2,7 @@ package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.armadialogcreator.util.ValueListener;
@@ -24,7 +25,7 @@ public class ControlTreeItemEntry extends UINodeTreeItemData {
 		myArmaControl.getClassNameObserver().addListener((observer, oldValue, newValue) -> {
 			setText(newValue);
 		});
-		myArmaControl.getRenderer().getEnabledObserver().addListener(new ValueListener<Boolean>() {
+		myArmaControl.getRenderer().getEnabledObserver().addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				setEnabledFromListener(newValue);
@@ -110,7 +111,6 @@ public class ControlTreeItemEntry extends UINodeTreeItemData {
 			i++;
 		}
 		ArmaControl dup = myArmaControl.duplicate(newName);
-		dup.setRootNode(myArmaControl.getRootNode());
 		dup.setParentNode(myArmaControl.getParentNode());
 		myArmaControl.getParentNode().addChild(dup);
 	}

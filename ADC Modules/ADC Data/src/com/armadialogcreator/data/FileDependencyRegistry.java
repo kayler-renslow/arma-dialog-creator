@@ -20,7 +20,7 @@ public class FileDependencyRegistry implements Registry {
 	public static final FileDependencyRegistry instance = new FileDependencyRegistry();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	@NotNull

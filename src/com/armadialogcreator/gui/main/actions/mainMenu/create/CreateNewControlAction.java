@@ -3,6 +3,7 @@ package com.armadialogcreator.gui.main.actions.mainMenu.create;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
@@ -30,5 +31,6 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		} else {
 			EditorManager.instance.getEditingDisplay().getControlNodes().addChild(control);
 		}
+		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
 	}
 }

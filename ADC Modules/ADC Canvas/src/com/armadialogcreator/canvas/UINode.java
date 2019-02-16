@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.util.EmptyIterable;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -9,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
  @author K
  @since 02/06/2019 */
 public interface UINode {
+
 	/** @return an iterable that iterates all children in an order that doesn't need to matter */
 	@NotNull Iterable<? extends UINode> iterateChildNodes();
 
@@ -88,11 +90,11 @@ public interface UINode {
 	 If this node is the top level node, <code>this</code> will be returned
 	 */
 	default @Nullable UINode getRootNode() {
-		if(getParentNode() == this) {
+		if (getParentNode() == this) {
 			return this;
 		}
 		UINode node = getParentNode();
-		while(node != null && node != this) {
+		while (node != null && node != this) {
 			node = getParentNode();
 		}
 		return node;
@@ -104,6 +106,14 @@ public interface UINode {
 	/** Sets the parent node */
 	void setParentNode(@Nullable UINode newParent);
 
+	/**
+	 Creates a deep copy of this node, but preserves the {@link #getParentNode()}.
+	 This method should not deep copy any child nodes and should not append any child nodes to this copied node.
+
+	 @return the copy
+	 */
+	@NotNull
+	UINode deepCopy();
 
 	@Nullable
 	default UINode getFirstNonStructureAncestorNode() {
@@ -117,4 +127,104 @@ public interface UINode {
 	@NotNull DataContext getUserData();
 
 	@NotNull UpdateListenerGroup<UINodeChange> getUpdateGroup();
+
+	UINode EMPTY = new UINode() {
+		@Override
+		@NotNull
+		public Iterable<? extends UINode> iterateChildNodes() {
+			return new EmptyIterable<>();
+		}
+
+		@Override
+		@NotNull
+		public UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup() {
+			return new UpdateListenerGroup<>();
+		}
+
+		@Override
+		public int getChildCount() {
+			return 0;
+		}
+
+		@Override
+		public int indexOf(@NotNull UINode child) {
+			return -1;
+		}
+
+		@Override
+		public boolean containsChildNode(@NotNull UINode node) {
+			return false;
+		}
+
+		@Override
+		public void addChild(@NotNull UINode node) {
+
+		}
+
+		@Override
+		public void addChild(@NotNull UINode node, int index) {
+
+		}
+
+		@Override
+		public boolean removeChild(@NotNull UINode node) {
+			return false;
+		}
+
+		@Override
+		public @Nullable UINode removeChild(int index) {
+			return null;
+		}
+
+		@Override
+		public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
+
+		}
+
+		@Override
+		public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
+
+		}
+
+		@Override
+		@NotNull
+		public DeepUINodeIterable deepIterateChildren() {
+			return new DeepUINodeIterable(new EmptyIterable<>());
+		}
+
+		@Override
+		@Nullable
+		public CanvasComponent getComponent() {
+			return null;
+		}
+
+		@Override
+		@Nullable
+		public UINode getParentNode() {
+			return null;
+		}
+
+		@Override
+		public void setParentNode(@Nullable UINode newParent) {
+
+		}
+
+		@Override
+		@NotNull
+		public UINode deepCopy() {
+			return this;
+		}
+
+		@Override
+		@NotNull
+		public DataContext getUserData() {
+			return new DataContext();
+		}
+
+		@Override
+		@NotNull
+		public UpdateListenerGroup<UINodeChange> getUpdateGroup() {
+			return new UpdateListenerGroup<>();
+		}
+	};
 }

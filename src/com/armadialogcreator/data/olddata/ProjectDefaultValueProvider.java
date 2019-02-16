@@ -6,14 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 
 /**
  @author Kayler
  @since 11/22/2016 */
-public class ProjectDefaultValueProvider implements DefaultValueProvider {
+public class ProjectDefaultValueProvider {
 	private static final String PREFIX = "/com/armadialogcreator/defaultValues/";
 	private static final String DEFAULT = PREFIX + "_FallbackDefaultPropertyValues.xml";
 
@@ -25,12 +23,10 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 //	}
 
 	@Nullable
-	@Override
 	public SerializableValue getDefaultValue(@NotNull ConfigPropertyLookupConstant lookup) {
 		return valuesMap.get(lookup.getPropertyName());
 	}
-
-	@Override
+/*
 	public void prefetchValues(@NotNull List<ConfigPropertyLookupConstant> tofetch, @Nullable Context context) {
 //		try {
 //			String path;
@@ -54,7 +50,7 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 //
 //		}
 	}
-
+/*
 	private String buildPath(@NotNull Context context) {
 		StringBuilder b = new StringBuilder();
 
@@ -87,4 +83,5 @@ public class ProjectDefaultValueProvider implements DefaultValueProvider {
 	public void cleanup() {
 		valuesMap.clear();
 	}
+	*/
 }

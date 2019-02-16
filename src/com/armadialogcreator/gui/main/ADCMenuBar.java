@@ -2,8 +2,8 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ProgramArgument;
-import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
+import com.armadialogcreator.control.ArmaUIScale;
 import com.armadialogcreator.core.stringtable.KnownLanguage;
 import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.data.olddata.ApplicationProperty;

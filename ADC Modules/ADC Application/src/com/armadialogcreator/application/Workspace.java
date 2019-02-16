@@ -64,7 +64,7 @@ public class Workspace implements ADCDataListManager<WorkspaceData> {
 	 */
 	@NotNull
 	public static Workspace getWorkspace() {
-		return ApplicationManager.getInstance().getCurrentWorkspace();
+		return ApplicationManager.instance.getCurrentWorkspace();
 	}
 
 	/**

@@ -42,7 +42,7 @@ public class EditConfigClassDialog extends StageDialog<VBox> {
 	 */
 	public EditConfigClassDialog(@NotNull ConfigClass configClass) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
-		setTitle(bundle.getString("Popups.EditNestedControlClass.popup_title"));
+		setTitle(bundle.getString("Popups.EditConfigClass.popup_title"));
 
 		editorPane = new ControlPropertiesEditorPane(configClass);
 

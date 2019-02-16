@@ -1,7 +1,6 @@
 
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
-import com.armadialogcreator.gui.main.popup.ChooseCustomControlClassDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -11,9 +10,9 @@ import javafx.event.EventHandler;
 public class EditCustomControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ChooseCustomControlClassDialog dialog = new ChooseCustomControlClassDialog();
+		/*ChooseCustomControlClassDialog dialog = new ChooseCustomControlClassDialog();
 		dialog.show();
-		/*
+
 		CustomControlClass controlClass = dialog.getChosenItem();
 		if (dialog.wasCancelled() || controlClass == null) {
 			return;

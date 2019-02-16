@@ -20,7 +20,7 @@ public class ApplicationStateChangeLogger implements ApplicationStateSubscriber 
 	public static final ApplicationStateChangeLogger instance = new ApplicationStateChangeLogger();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	private static final int LOG_SIZE_CAP = 30;

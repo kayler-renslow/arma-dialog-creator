@@ -1,11 +1,8 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.ControlTypeGroup;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
-import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeViewMenuItemBuilder;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.ContextMenu;
@@ -26,15 +23,16 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		MenuItem newFolder = new MenuItem(bundle.getString("ContextMenu.ComponentTreeView.new_folder"), EditorComponentTreeView.createFolderIcon());
 		getItems().add(newFolder);
-		TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<ArmaControl, TreeItemEntry>() {
+		/*
+		TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<ArmaControl, UINodeTreeItemData>() {
 			@NotNull
 			@Override
-			public TreeItemEntry createNew(@NotNull EditableTreeView treeView) {
+			public UINodeTreeItemData createNew(@NotNull EditableTreeView treeView) {
 				return new FolderTreeItemEntry(newFolder.getText());
 			}
 
 		}, newFolder);
-
+*/
 		Menu groupMenu;
 		MenuItem menuItemType;
 		for (ControlTypeGroup group : ControlTypeGroup.values()) {

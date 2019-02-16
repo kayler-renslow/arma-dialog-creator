@@ -9,7 +9,10 @@ import org.jetbrains.annotations.NotNull;
  @since 08/12/2016 */
 public class ListObserverChange<E> {
 	public enum ChangeType {
-		Add, Set, Remove, Clear, Move
+		Add, Set, Remove,
+		/** This change will be created prior to the list being cleared. */
+		Clear,
+		Move
 	}
 
 	private final ListObserver<E> modifiedList;

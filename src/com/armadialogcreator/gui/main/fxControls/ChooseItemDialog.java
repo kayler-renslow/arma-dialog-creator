@@ -36,7 +36,7 @@ public class ChooseItemDialog<V> extends StageDialog<VBox> {
 	private String searchText;
 	private final Label lblHeaderTitle;
 
-	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull List<V> allItems, @Nullable String dialogTitle,
+	public ChooseItemDialog(@NotNull ItemCategory<V>[] categories, @NotNull Iterable<V> allItems, @Nullable String dialogTitle,
 							@Nullable String headerTitle) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), dialogTitle, true, true, false);
 		myRootElement.setMinWidth(720d);
@@ -144,7 +144,7 @@ public class ChooseItemDialog<V> extends StageDialog<VBox> {
 		private final LinkedList<V> removed = new LinkedList<>();
 		private final Comparator<V> comparator = new ListViewComparator<>();
 
-		public ItemCategoryTab(@NotNull ItemCategory<V> category, @NotNull List<V> allItemsFromMasterCategory) {
+		public ItemCategoryTab(@NotNull ItemCategory<V> category, @NotNull Iterable<V> allItemsFromMasterCategory) {
 			super(category.categoryDisplayName());
 			this.category = category;
 			List<V> allItemsInCategory = new LinkedList<>();

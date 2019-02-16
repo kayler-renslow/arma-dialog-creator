@@ -187,7 +187,7 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 			UINode node = iterator.next();
 			final boolean goneDeeper = currentDepth < iterator.getDepth();
 			final boolean goneUp = currentDepth > iterator.getDepth();
-			TreeItem item = createTreeItem(node, parentUINode);
+			TreeItem item = createTreeItem(node);
 			node.getUserData().put(TREE_ITEM_KEY, item);
 			parent.getChildren().add(item);
 			if (goneDeeper) {
@@ -205,7 +205,7 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 
 	@SuppressWarnings("unchecked")
 	private void addMissingNode(@NotNull UINode parentNode, @NotNull UINode missingNode, @NotNull TreeItem parentTreeItem, int index) {
-		TreeItem item = createTreeItem(missingNode, parentNode);
+		TreeItem item = createTreeItem(missingNode);
 		missingNode.getUserData().put(TREE_ITEM_KEY, item);
 		if (index == -1) {
 			parentTreeItem.getChildren().add(item);
@@ -216,10 +216,10 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 	}
 
 	@NotNull
-	private TreeItem createTreeItem(@NotNull UINode node, @NotNull UINode parentUINode) {
+	private TreeItem createTreeItem(@NotNull UINode node) {
 		if (node instanceof FolderUINode) {
 			FolderUINode folder = ((FolderUINode) node);
-			return new TreeItem<>(new FolderTreeItemEntry(folder.getFolderNameObserver().getValue(), parentUINode));
+			return new TreeItem<>(new FolderTreeItemEntry(folder));
 		} else if (node instanceof ArmaControlGroup) {
 			ArmaControlGroup group = (ArmaControlGroup) node;
 			return new TreeItem<>(new ControlGroupTreeItemEntry(group));

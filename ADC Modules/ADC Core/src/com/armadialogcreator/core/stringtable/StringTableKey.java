@@ -111,17 +111,14 @@ public interface StringTableKey extends Macro {
 		if (getLanguageTokenMap().isEmpty()) {
 			return null;
 		}
-		if (getDefaultLanguage() == null) {
-			return null;
-		}
 		return getLanguageTokenMap().get(getDefaultLanguage());
 	}
 
-	default void setDefaultLanguage(@Nullable Language language) {
+	default void setDefaultLanguage(@NotNull Language language) {
 		getDefaultLanguageObserver().updateValue(language);
 	}
 
-	@Nullable
+	@NotNull
 	default Language getDefaultLanguage() {
 		return getDefaultLanguageObserver().getValue();
 	}

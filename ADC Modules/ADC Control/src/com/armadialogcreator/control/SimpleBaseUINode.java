@@ -128,7 +128,6 @@ public abstract class SimpleBaseUINode implements UINode {
 		return parentNode;
 	}
 
-
 	public void setParentNode(@Nullable UINode parentNode) {
 		this.parentNode = parentNode;
 	}

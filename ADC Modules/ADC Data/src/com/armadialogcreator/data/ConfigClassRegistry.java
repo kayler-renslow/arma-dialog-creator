@@ -2,9 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.util.ApplicationSingleton;
-import com.armadialogcreator.util.ListObserver;
-import com.armadialogcreator.util.QuadIterable;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,8 +18,10 @@ import java.util.Map;
 public class ConfigClassRegistry implements Registry {
 	public static final ConfigClassRegistry instance = new ConfigClassRegistry();
 
+	private static final Key<DataLevel> KEY_CONFIG_CLASS_DATA_LEVEL = new Key<>("ConfigClassRegistry.dataLevel", null);
+
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -141,14 +141,18 @@ public class ConfigClassRegistry implements Registry {
 				systemClasses.getClasses().size();
 	}
 
+	@Nullable
+	public DataLevel getDataLevel(@NotNull ConfigClass configClass) {
+		return KEY_CONFIG_CLASS_DATA_LEVEL.get(configClass.getUserData());
+	}
 
 	@NotNull
 	public Map<DataLevel, List<ConfigClass>> copyAllClassesToMap() {
 		Map<DataLevel, List<ConfigClass>> map = new HashMap<>();
 		map.put(DataLevel.Project, projectClasses.getClasses());
-		map.put(DataLevel.Workspace, projectClasses.getClasses());
-		map.put(DataLevel.Application, projectClasses.getClasses());
-		map.put(DataLevel.System, projectClasses.getClasses());
+		map.put(DataLevel.Workspace, workspaceClasses.getClasses());
+		map.put(DataLevel.Application, applicationClasses.getClasses());
+		map.put(DataLevel.System, systemClasses.getClasses());
 
 		return map;
 	}
@@ -162,6 +166,54 @@ public class ConfigClassRegistry implements Registry {
 		protected Base(@NotNull ConfigClassRegistry registry, @NotNull DataLevel myLevel) {
 			this.registry = registry;
 			this.myLevel = myLevel;
+
+			classes.addListener((list, change) -> {
+				switch (change.getChangeType()) {
+					case Add: {
+						ListObserverChangeAdd<ConfigClass> added = change.getAdded();
+						DataContext userData = added.getAdded().getUserData();
+						KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, myLevel);
+						break;
+					}
+					case Clear: {
+						for (ConfigClass c : list) {
+							DataContext userData = c.getUserData();
+							KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, null);
+						}
+						break;
+					}
+					case Move: {
+						ListObserverChangeMove<ConfigClass> moved = change.getMoved();
+						DataContext userData = moved.getMoved().getUserData();
+						if (moved.isSourceListChange()) {
+							// clear the value in the case it was moved out of the config class registry
+							KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, null);
+						} else {
+							// this list received an update even though it isn't source change, so this list
+							// was the destination list
+							KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, myLevel);
+						}
+						break;
+					}
+					case Set: {
+						ListObserverChangeSet<ConfigClass> set = change.getSet();
+						DataContext userData = set.getNew().getUserData();
+						KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, myLevel);
+						userData = set.getOld().getUserData();
+						KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, null);
+						break;
+					}
+					case Remove: {
+						ListObserverChangeRemove<ConfigClass> removed = change.getRemoved();
+						DataContext userData = removed.getRemoved().getUserData();
+						KEY_CONFIG_CLASS_DATA_LEVEL.put(userData, null);
+						break;
+					}
+					default: {
+						throw new IllegalStateException();
+					}
+				}
+			});
 		}
 
 		@Nullable
@@ -200,6 +252,10 @@ public class ConfigClassRegistry implements Registry {
 		@NotNull
 		public String getDataID() {
 			return "config-classes";
+		}
+
+		public void addClass(@NotNull ConfigClass configClass) {
+			classes.add(configClass);
 		}
 
 		abstract DataLevel getLevel();

@@ -1,11 +1,13 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.canvas.UICanvasConfiguration;
+import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
@@ -19,12 +21,13 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
 /**
- Holds the step configuration contorls and the tree view for editor components.
+ Holds the step configuration controls and the tree view for editor components.
 
  @author Kayler
  @since 05/15/2016. */
@@ -32,8 +35,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewMain;
-	private final EditorComponentTreeView<? extends TreeItemEntry> treeViewBg;
+	private final EditorComponentTreeView<? extends UINodeTreeItemData> treeViewMain;
+	private final EditorComponentTreeView<? extends UINodeTreeItemData> treeViewBg;
 	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
 	private final CheckBox checkBoxViewportSnapping = new CheckBox(bundle.getString("CanvasControls.viewport_snapping"));
@@ -44,11 +47,12 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
-		treeViewMain = new EditorComponentTreeView<>(false);
-		treeViewBg = new EditorComponentTreeView<>(true);
+		treeViewMain = new EditorComponentTreeView<>(UINode.EMPTY);
+		treeViewBg = new EditorComponentTreeView<>(UINode.EMPTY);
 		initializeUI();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void initializeUI() {
 		initializeStepChoiceboxes();
 		FlowPane flowPaneStep = new FlowPane(5, 5,
@@ -57,7 +61,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				checkBoxViewportSnapping
 		);
 
-		checkBoxViewportSnapping.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		checkBoxViewportSnapping.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				canvasView.repaintCanvas();
@@ -66,28 +70,34 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 		CheckBox cbShowBackgroundControls = new CheckBox(bundle.getString("CanvasControls.show"));
 		cbShowBackgroundControls.setSelected(true);
-		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for (ArmaControl control : canvasView.getEditingDisplay().getBackgroundControls()) {
-					control.getRenderer().setGhost(!selected);
+				for (UINode node : canvasView.getEditingDisplay().getBackgroundControlNodes().deepIterateChildren()) {
+					if (node instanceof ArmaControl) {
+						ArmaControl control = (ArmaControl) node;
+						control.getRenderer().setGhost(!selected);
+					}
 				}
 			}
 		});
 		CheckBox cbShowControls = new CheckBox(bundle.getString("CanvasControls.show"));
 		cbShowControls.setSelected(true);
-		cbShowControls.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		cbShowControls.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for (ArmaControl control : canvasView.getEditingDisplay().getControls()) {
-					control.getRenderer().setGhost(!selected);
+				for (UINode node : canvasView.getEditingDisplay().getControlNodes().deepIterateChildren()) {
+					if (node instanceof ArmaControl) {
+						ArmaControl control = (ArmaControl) node;
+						control.getRenderer().setGhost(!selected);
+					}
 				}
 			}
 		});
 
 		final double vertSpacing = 5;
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveUpHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -109,7 +119,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveDownHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -131,7 +141,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveDownIntoHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownIntoHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -152,7 +162,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveUpIntoHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpIntoHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -173,7 +183,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveDownOutHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownOutHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -194,7 +204,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends TreeItemEntry>, Void> funcMoveUpOutHandler = treeView -> {
+		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpOutHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -389,7 +399,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		}
 		choiceBoxStep.getSelectionModel().select(1);
 		choiceBoxAltStep.getSelectionModel().selectLast();
-		ChangeListener<? super Percentage> selectUpdate = new ChangeListener<Percentage>() {
+		ChangeListener<? super Percentage> selectUpdate = new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Percentage> observable, Percentage oldValue, Percentage newValue) {
 				canvasView.repaintCanvas();
@@ -442,12 +452,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 	}
 
 	/** Get the tree view used for storing controls that is meant for non-background controls */
-	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewMain() {
+	@NotNull
+	public EditorComponentTreeView<? extends UINodeTreeItemData> getTreeViewMain() {
 		return treeViewMain;
 	}
 
 	/** Get the tree view used for storing controls that is meant <b>for</b> background controls */
-	public EditorComponentTreeView<? extends TreeItemEntry> getTreeViewBackground() {
+	@NotNull
+	public EditorComponentTreeView<? extends UINodeTreeItemData> getTreeViewBackground() {
 		return treeViewBg;
 	}
 

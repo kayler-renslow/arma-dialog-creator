@@ -83,10 +83,10 @@ public class MapObserver<K, V> implements Map<K, V>, Observer<MapObserverListene
 	/** Remove all from list. */
 	@Override
 	public void clear() {
-		map.clear();
 		MapObserverChange<K, V> change = new MapObserverChange<>(this);
 		change.setCleared();
 		notifyListeners(change);
+		map.clear(); //clear after notify
 	}
 
 	@NotNull
@@ -151,7 +151,7 @@ public class MapObserver<K, V> implements Map<K, V>, Observer<MapObserverListene
 
 		change = new MapObserverChange<>(newMap);
 		change.setMoved(new MapObserverChangeMove<>(key, remove, this, newMap, false));
-		notifyListeners(change);
+		newMap.notifyListeners(change); //notify destination map second
 		return true;
 	}
 

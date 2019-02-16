@@ -3,7 +3,7 @@ package com.armadialogcreator.gui.main.controlPropertiesEditor;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.stringtable.StringTableKey;
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.data.StringTableManager;
 import com.armadialogcreator.gui.main.popup.ChooseMacroDialog;
 import com.armadialogcreator.gui.main.popup.EditMacroPopup;
 import com.armadialogcreator.gui.main.stringtable.StringTableKeyEditorDialog;
@@ -29,9 +29,9 @@ import java.util.ResourceBundle;
 
  @author Kayler
  @since 07/09/2016. */
-public class MacroGetterButton<V extends SerializableValue> extends HBox {
+public class MacroGetterButton extends HBox {
 	private static final int MAX_RECENT_MACROS = 10;
-	private static HashMap<PropertyType, LinkedList<Macro<?>>> recentMacrosMap = new HashMap<>();
+	private static HashMap<PropertyType, LinkedList<Macro>> recentMacrosMap = new HashMap<>();
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final Hyperlink hyplinkChosenMacro = new Hyperlink();
@@ -43,9 +43,9 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	private final MenuItem miClearMacro = new MenuItem(bundle.getString("Macros.clear_macro"));
 	private final SeparatorMenuItem miSeparator = new SeparatorMenuItem();
 
-	private ValueObserver<Macro<V>> macroValueObserver;
+	private ValueObserver<Macro> macroValueObserver;
 
-	public MacroGetterButton(@Nullable PropertyType filter, @Nullable Macro<V> currentMacro) {
+	public MacroGetterButton(@Nullable PropertyType filter, @Nullable Macro currentMacro) {
 		super(5);
 		hyplinkChosenMacro.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -55,7 +55,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 				}
 				if (macroValueObserver.getValue() instanceof StringTableKey) {
 					StringTableKey key = (StringTableKey) macroValueObserver.getValue();
-					StringTableKeyEditorDialog dialog = new StringTableKeyEditorDialog(Project.getCurrentProject().getStringTable(), key);
+					StringTableKeyEditorDialog dialog = new StringTableKeyEditorDialog(StringTableManager.instance.getStringTable(), key);
 					dialog.show();
 
 				} else {
@@ -77,14 +77,14 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 		menuButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
-				ChooseMacroDialog<V> popup = new ChooseMacroDialog<>(filter);
+				ChooseMacroDialog popup = new ChooseMacroDialog(filter);
 				popup.showAndWait();
-				Macro<V> chosenMacro = popup.getChosenItem();
+				Macro chosenMacro = popup.getChosenItem();
 				if (chosenMacro == null) {
 					return;
 				}
 				setToMacro(chosenMacro);
-				LinkedList<Macro<?>> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
+				LinkedList<Macro> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
 				if (recentMacros.size() + 1 >= MAX_RECENT_MACROS) {
 					recentMacros.removeLast();
 				}
@@ -99,11 +99,11 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 				setToMacro(null);
 			}
 		});
-		LinkedList<Macro<?>> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
+		LinkedList<Macro> recentMacros = recentMacrosMap.computeIfAbsent(filter, k -> new LinkedList<>());
 		updateRecentMacrosList(menuButton, recentMacros);
 	}
 
-	private void updateRecentMacrosList(SplitMenuButton menuButton, LinkedList<Macro<?>> recentMacros) {
+	private void updateRecentMacrosList(SplitMenuButton menuButton, LinkedList<Macro> recentMacros) {
 		menuButton.getItems().clear();
 		menuButton.getItems().addAll(miChooseMacro, miClearMacro, miSeparator);
 
@@ -128,7 +128,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 
 	}
 
-	private void setToMacro(@Nullable Macro<V> macro) {
+	private void setToMacro(@Nullable Macro macro) {
 		stackPaneChosenMacroText.getChildren().clear();
 		if (macro == null) {
 			stackPaneChosenMacroText.getChildren().add(lblNoChosenMacro);
@@ -140,7 +140,7 @@ public class MacroGetterButton<V extends SerializableValue> extends HBox {
 	}
 
 	@NotNull
-	public ValueObserver<Macro<V>> getChosenMacroValueObserver() {
+	public ValueObserver<Macro> getChosenMacroValueObserver() {
 		return macroValueObserver;
 	}
 

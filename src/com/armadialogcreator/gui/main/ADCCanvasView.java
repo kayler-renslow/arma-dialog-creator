@@ -4,10 +4,10 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.EditorManager;
-import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import com.armadialogcreator.gui.notification.NotificationPane;
 import com.armadialogcreator.gui.notification.Notifications;
 import javafx.collections.ListChangeListener;
@@ -101,7 +101,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 		syncTreeView(canvasControls.getTreeViewBackground());
 	}
 
-	private void syncTreeView(EditorComponentTreeView<? extends TreeItemEntry> treeView) {
+	private void syncTreeView(EditorComponentTreeView<? extends UINodeTreeItemData> treeView) {
 		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<UINode>() {
 			@Override
 			public void onChanged(Change<? extends UINode> c) {
@@ -119,16 +119,16 @@ class ADCCanvasView extends HBox implements CanvasView {
 				selectFromCanvas = false;
 			}
 		});
-		treeView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<? extends TreeItemEntry>>() {
+		treeView.getSelectionModel().getSelectedItems().addListener(new ListChangeListener<TreeItem<? extends UINodeTreeItemData>>() {
 			@Override
-			public void onChanged(Change<? extends TreeItem<? extends TreeItemEntry>> c) {
+			public void onChanged(Change<? extends TreeItem<? extends UINodeTreeItemData>> c) {
 				if (selectFromCanvas) {
 					return;
 				}
 				selectFromTreeView = true;
 				Selection selection = uiCanvasEditor.getSelection();
 				selection.clearSelected();
-				for (TreeItem<? extends TreeItemEntry> treeItem : c.getList()) {
+				for (TreeItem<? extends UINodeTreeItemData> treeItem : c.getList()) {
 					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
 						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
 						if (treeItemEntry.isEnabled()) {
@@ -186,36 +186,15 @@ class ADCCanvasView extends HBox implements CanvasView {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
 	}
 
-	@Override
-	public void setTreeStructure(boolean background, @Nullable TreeStructure<ArmaControl> treeStructure) {
-		if (background) {
-			canvasControls.getTreeViewBackground().loadStructure(treeStructure);
-		} else {
-			canvasControls.getTreeViewMain().loadStructure(treeStructure);
-		}
-	}
-
 	@NotNull
 	@Override
-	public GUITreeStructure<ArmaControl> getMainControlsTreeStructure() {
-		return canvasControls.getTreeViewMain().exportStructure();
-	}
-
-	@NotNull
-	@Override
-	public GUITreeStructure<ArmaControl> getBackgroundControlsTreeStructure() {
-		return canvasControls.getTreeViewBackground().exportStructure();
-	}
-
-	@NotNull
-	@Override
-	public EditableTreeView<ArmaControl, ? extends TreeItemEntry> getMainControlTreeView() {
+	public EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getMainControlTreeView() {
 		return canvasControls.getTreeViewMain();
 	}
 
 	@NotNull
 	@Override
-	public EditableTreeView<ArmaControl, ? extends TreeItemEntry> getBackgroundControlTreeView() {
+	public EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
 	}
 

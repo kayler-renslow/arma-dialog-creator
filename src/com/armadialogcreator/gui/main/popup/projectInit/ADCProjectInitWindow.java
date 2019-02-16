@@ -6,6 +6,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.LocaleDescriptor;
 import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.ProjectPreview;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
@@ -329,7 +330,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						}
 						ProjectPreview preview = null;
 						try {
-							preview = ApplicationManager.getInstance().getPreviewForProjectFile(chosen);
+							preview = ApplicationManager.instance.getPreviewForProjectFile(chosen);
 						} catch (XmlParseException e) {
 							new CouldNotLoadProjectDialog(e, chosen.getAbsolutePath()).show();
 							return;
@@ -376,7 +377,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 				lvKnownProjects.getItems().clear();
 				parsedKnownProjects.clear();
 
-				List<ProjectPreview> previews = ApplicationManager.getInstance().getProjectsForWorkspace(projectInitWindow.getWorkspace());
+				List<ProjectPreview> previews = ApplicationManager.instance.getProjectsForWorkspace(projectInitWindow.getWorkspace());
 				parsedKnownProjects.addAll(previews);
 
 				for (ProjectPreview preview : parsedKnownProjects) {
@@ -425,9 +426,10 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					if (d.wasCancelled()) {
 						return;
 					}
-					projectInit = d.getProjectInit();
-					projectInitWindow.forceOkProperty.set(true);
-					projectInitWindow.ok();
+					throw new UnsupportedOperationException();
+					//projectInit = d.getProjectInit();
+					//projectInitWindow.forceOkProperty.set(true);
+					//projectInitWindow.ok();
 
 				});
 				ScrollPane scrollPaneDesc = new ScrollPane(lblLocateDesc);

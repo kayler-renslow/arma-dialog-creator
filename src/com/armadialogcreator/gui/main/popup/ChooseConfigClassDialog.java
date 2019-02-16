@@ -1,6 +1,8 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.core.old.CustomControlClass;
+import com.armadialogcreator.application.DataLevel;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.geometry.Pos;
@@ -16,18 +18,19 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ResourceBundle;
 
 /**
- This dialog asks the user to select a {@link CustomControlClass} that exists in the {@link CustomControlClassRegistry}.
+ This dialog asks the user to select a {@link ConfigClass} that exists in the {@link ConfigClassRegistry}.
 
  @author Kayler
  @since 11/13/2016 */
-public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomControlClass> {
+public class ChooseConfigClassDialog extends ChooseItemDialog<ConfigClass> {
 
-	public ChooseCustomControlClassDialog() {
+	public ChooseConfigClassDialog() {
 		super(new Category[]{
-						new AllCategory(), new ScopeCategory(CustomControlClass.Scope.Project),
-						new ScopeCategory(CustomControlClass.Scope.Workspace)
-				},
-				Project.getCurrentProject().getAllCustomControlClasses(), null, null
+						new AllCategory(), new ScopeCategory(DataLevel.Project),
+						new ScopeCategory(DataLevel.Workspace),
+						new ScopeCategory(DataLevel.Application),
+						new ScopeCategory(DataLevel.System)
+				}, ConfigClassRegistry.instance.iterateAllConfigClasses(), null, null
 		);
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		setTitle(bundle.getString("Popups.ChooseCustomControl.dialog_title"));
@@ -36,7 +39,7 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 
 	}
 
-	private static abstract class Category implements ItemCategory<CustomControlClass> {
+	private static abstract class Category implements ItemCategory<ConfigClass> {
 		protected ResourceBundle bundle = Lang.ApplicationBundle();
 
 		@NotNull
@@ -66,7 +69,7 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 		}
 
 		@Override
-		public boolean itemInCategory(@NotNull CustomControlClass item) {
+		public boolean itemInCategory(@NotNull ConfigClass item) {
 			return true;
 		}
 
@@ -77,7 +80,7 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 		}
 
 		@Override
-		public void newItemSelected(CustomControlClass item) {
+		public void newItemSelected(ConfigClass item) {
 			categoryNode.setToControlClass(item);
 		}
 	}
@@ -105,13 +108,13 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 			getChildren().add(vbox);
 		}
 
-		public void setToControlClass(CustomControlClass controlClass) {
+		public void setToControlClass(@NotNull ConfigClass configClass) {
 			stackPaneComment.getChildren().clear();
-			if (controlClass.getComment() == null) {
+			if (configClass.getUserComment() == null) {
 				stackPaneComment.getChildren().add(lblNoComment);
 			} else {
 				stackPaneComment.getChildren().add(taComment);
-				taComment.setText(controlClass.getComment());
+				taComment.setText(configClass.getUserComment());
 			}
 		}
 	}
@@ -119,9 +122,9 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 	private static class ScopeCategory extends Category {
 
 		private final CategoryNode categoryNode;
-		private final CustomControlClass.Scope scope;
+		private final DataLevel scope;
 
-		public ScopeCategory(@NotNull CustomControlClass.Scope scope) {
+		public ScopeCategory(@NotNull DataLevel scope) {
 			this.scope = scope;
 			this.categoryNode = new CategoryNode();
 		}
@@ -129,21 +132,12 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 		@NotNull
 		@Override
 		public String categoryDisplayName() {
-			switch (scope) {
-				case Project: {
-					return bundle.getString("Popups.ChooseCustomControl.Category.Scope.Project.display_title");
-				}
-				case Workspace:
-					return bundle.getString("Popups.ChooseCustomControl.Category.Scope.Workspace.display_title");
-
-				default:
-					throw new IllegalStateException("unknown scope:" + scope);
-			}
+			return scope.name();
 		}
 
 		@Override
-		public boolean itemInCategory(@NotNull CustomControlClass item) {
-			return item.getScope() == scope;
+		public boolean itemInCategory(@NotNull ConfigClass item) {
+			return ConfigClassRegistry.instance.getDataLevel(item) == scope;
 		}
 
 		@Nullable
@@ -153,7 +147,7 @@ public class ChooseCustomControlClassDialog extends ChooseItemDialog<CustomContr
 		}
 
 		@Override
-		public void newItemSelected(CustomControlClass item) {
+		public void newItemSelected(ConfigClass item) {
 			categoryNode.setToControlClass(item);
 		}
 	}

@@ -17,7 +17,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 	public static final EditorManager instance = new EditorManager();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	private ArmaDisplay editingDisplay = new ArmaDisplay();

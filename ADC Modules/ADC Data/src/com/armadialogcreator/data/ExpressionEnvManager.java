@@ -20,7 +20,7 @@ public class ExpressionEnvManager implements ApplicationStateSubscriber {
 	public static final ExpressionEnvManager instance = new ExpressionEnvManager();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	private final MyEnv env = new MyEnv();

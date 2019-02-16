@@ -1,9 +1,8 @@
 package com.armadialogcreator.gui.main;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.olddata.ImagesTool;
-import com.armadialogcreator.data.tree.TreeStructure;
 import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberDialog;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberNotificationCreator;
@@ -20,7 +19,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  The main window of Arma Dialog Creator
@@ -75,7 +73,7 @@ public class ADCWindow implements ADCMainWindow {
 		stage.setHeight(ScreenDimension.D1024.height + 100);
 	}
 
-	public void initialize(@Nullable TreeStructure<ArmaControl> backgroundTreeStructure, @Nullable TreeStructure<ArmaControl> mainTreeStructure) {
+	public void initialize() {
 		preInit = false;
 		rootElement = new VBox();
 		Scene scene = stage.getScene();
@@ -88,9 +86,6 @@ public class ADCWindow implements ADCMainWindow {
 				mainMenuBar = new ADCMenuBar();
 
 				rootElement.getChildren().addAll(mainMenuBar, canvasView);
-
-				canvasView.setTreeStructure(true, backgroundTreeStructure);
-				canvasView.setTreeStructure(false, mainTreeStructure);
 
 				//force canvas to render at proper size
 				autoResizeCanvasView();
@@ -122,7 +117,8 @@ public class ADCWindow implements ADCMainWindow {
 				closest = dimension;
 			}
 		}
-		DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()).setScreenDimension(closest);
+		ArmaResolution resolution = EditorManager.instance.getResolution();
+		resolution.setScreenDimension(closest);
 	}
 
 	@Override

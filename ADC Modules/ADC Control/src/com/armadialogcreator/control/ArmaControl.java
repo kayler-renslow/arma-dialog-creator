@@ -10,7 +10,6 @@ import com.armadialogcreator.core.RequirementsConfigClass;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.EmptyIterable;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
@@ -36,7 +35,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	private ConfigProperty idcProperty, accessProperty;
 	protected ArmaDisplay display = null; //todo
 	private final ArmaControlLookup armaControlLookup;
-	private final DataContext userData = new DataContext();
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 
 	/**
@@ -104,6 +102,14 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 				renderer.getResolution(),
 				renderer.env
 		);
+	}
+
+	@Override
+	@NotNull
+	public UINode deepCopy() {
+		ArmaControl duplicate = duplicate(this.getClassName());
+		duplicate.setParentNode(this.parentNode);
+		return duplicate;
 	}
 
 	@NotNull
@@ -208,12 +214,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	@Override
 	public void setParentNode(@Nullable UINode newParent) {
 		this.parentNode = newParent;
-	}
-
-	@Override
-	@NotNull
-	public DataContext getUserData() {
-		return userData;
 	}
 
 	@Override

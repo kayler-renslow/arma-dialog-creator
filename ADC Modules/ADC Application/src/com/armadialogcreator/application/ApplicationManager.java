@@ -19,12 +19,7 @@ public class ApplicationManager {
 	private static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
 	private static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
 
-	private static final ApplicationManager instance = new ApplicationManager();
-
-	@NotNull
-	public static ApplicationManager getInstance() {
-		return instance;
-	}
+	public static final ApplicationManager instance = new ApplicationManager();
 
 	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
 	private final UpdateListenerGroup<ApplicationState> stateUpdateGroup = new UpdateListenerGroup<>();
