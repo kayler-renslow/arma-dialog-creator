@@ -46,6 +46,11 @@ public interface Configurable {
 			this.configName = configName;
 		}
 
+		public Simple(@NotNull String configName, @NotNull String body) {
+			this.configName = configName;
+			this.body = body;
+		}
+
 		public void setBody(@NotNull String body) {
 			this.body = body;
 		}

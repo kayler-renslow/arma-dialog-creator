@@ -170,7 +170,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 					gc.setFill(c);
 					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-					tfAsArray.setText(SVColorArray.toString(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
+					tfAsArray.setText(SVColorArray.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
 				}
 			};
 			r.getValueObserver().addListener(valListener);

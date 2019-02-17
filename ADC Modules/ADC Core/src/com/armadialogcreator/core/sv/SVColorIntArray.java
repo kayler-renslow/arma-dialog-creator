@@ -7,34 +7,22 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Defines a color as an array.
+ Defines a color as an array with integer values ranging 0-255.
 
  @author Kayler
- @since 05/22/2016. */
-public class SVColorArray extends SerializableValue implements SVColor {
-
-	private static final double EPSILON = 0.0001;
-
-	/** @return the rounded result that has decimal places count equal to what {@link SVColor#format} would output */
-	public static double round(double d) {
-		return Math.round(d * 10000) / 10000.0;
-	}
-
-	/** @return if the doubles are equal to one another */
-	public static boolean equalTo(double d1, double d2) {
-		return d1 == d2 || Math.abs(d1 - d2) < EPSILON;
-	}
+ @since 02/16/2019. */
+public class SVColorIntArray extends SerializableValue implements SVColor {
 
 
-	public static final StringArrayConverter<SVColorArray> CONVERTER = new StringArrayConverter<SVColorArray>() {
+	public static final StringArrayConverter<SVColorIntArray> CONVERTER = new StringArrayConverter<SVColorIntArray>() {
 		@Override
-		public SVColorArray convert(@NotNull Env env, @NotNull String[] values) throws Exception {
-			return new SVColorArray(values);
+		public SVColorIntArray convert(@NotNull Env env, @NotNull String[] values) throws Exception {
+			return new SVColorIntArray(values);
 		}
 	};
 
-	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. */
-	private double r, g, b, a;
+	/** Colors where each value is ranged from 0 - 255 inclusively. */
+	private int r, g, b, a;
 
 
 	/**
@@ -46,7 +34,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @param a alpha (range 0-1.0)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
 	 */
-	public SVColorArray(double r, double g, double b, double a) {
+	public SVColorIntArray(double r, double g, double b, double a) {
 		setRedF(r);
 		setGreenF(g);
 		setBlueF(b);
@@ -62,7 +50,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @param a alpha (range 0-255)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
 	 */
-	public SVColorArray(int r, int g, int b, int a) {
+	public SVColorIntArray(int r, int g, int b, int a) {
 		setRedI(r);
 		setGreenI(g);
 		setBlueI(b);
@@ -75,65 +63,69 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @param rgba the color array that must have length=4
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when rgba.length != 4
 	 */
-	public SVColorArray(double[] rgba) {
+	public SVColorIntArray(double[] rgba) {
 		this(0, 0, 0, 0);
 		setColorF(rgba);
 	}
 
 	/** Set the color from a JavaFX Color instance */
-	public SVColorArray(@NotNull Color newValue) {
+	public SVColorIntArray(@NotNull Color newValue) {
 		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
 	}
 
 	/**
 	 Create a new color from String array that is formatted like so:
-	 {r,g,b,a} where r,g,b,a are between 0.0 and 1.0 inclusively
+	 {r,g,b,a} where r,g,b,a are between 0 and 255 inclusively
 
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public SVColorArray(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
-		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
+	public SVColorIntArray(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
+		this(Integer.parseInt(newValue[0]), Integer.parseInt(newValue[1]), Integer.parseInt(newValue[2]), Integer.parseInt(newValue[3]));
 	}
 
 	@Override
 	public int getRedI() {
-		return ColorUtil.toInt(r);
+		return r;
 	}
 
 	@Override
 	public void setRedI(int r) {
-		this.r = ColorUtil.toDouble(r);
+		ColorUtil.boundCheckI(r);
+		this.r = r;
 	}
 
 	@Override
 	public int getGreenI() {
-		return ColorUtil.toInt(g);
+		return g;
 	}
 
 	@Override
 	public void setGreenI(int g) {
-		this.g = ColorUtil.toDouble(g);
+		ColorUtil.boundCheckI(g);
+		this.g = g;
 	}
 
 	@Override
 	public int getBlueI() {
-		return ColorUtil.toInt(b);
+		return b;
 	}
 
 	@Override
 	public void setBlueI(int b) {
-		this.b = ColorUtil.toDouble(b);
+		ColorUtil.boundCheckI(b);
+		this.b = b;
 	}
 
 	@Override
 	public int getAlphaI() {
-		return ColorUtil.toInt(a);
+		return a;
 	}
 
 	@Override
 	public void setAlphaI(int a) {
-		this.a = ColorUtil.toDouble(a);
+		ColorUtil.boundCheckI(a);
+		this.a = a;
 	}
 
 	@Override
@@ -143,8 +135,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	@Override
 	public void setRedF(double r) {
-		ColorUtil.boundCheckF(r);
-		this.r = r;
+		this.r = ColorUtil.toInt(r);
 	}
 
 	@Override
@@ -154,8 +145,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	@Override
 	public void setGreenF(double g) {
-		ColorUtil.boundCheckF(g);
-		this.g = g;
+		this.g = ColorUtil.toInt(g);
 	}
 
 	@Override
@@ -165,8 +155,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	@Override
 	public void setBlueF(double b) {
-		ColorUtil.boundCheckF(b);
-		this.b = b;
+		this.b = ColorUtil.toInt(b);
 	}
 
 	@Override
@@ -176,8 +165,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	@Override
 	public void setAlphaF(double a) {
-		ColorUtil.boundCheckF(a);
-		this.a = a;
+		this.a = ColorUtil.toInt(a);
 	}
 
 	/** @return the colors as a string array formatted like so: {red, green, blue, alpha} */
@@ -185,17 +173,17 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	@NotNull
 	public String[] getAsStringArray() {
 		String[] valuesAsArray = new String[4];
-		valuesAsArray[0] = format.format(r);
-		valuesAsArray[1] = format.format(g);
-		valuesAsArray[2] = format.format(b);
-		valuesAsArray[3] = format.format(a);
+		valuesAsArray[0] = r + "";
+		valuesAsArray[1] = g + "";
+		valuesAsArray[2] = b + "";
+		valuesAsArray[3] = a + "";
 		return valuesAsArray;
 	}
 
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVColorArray(this.r, this.g, this.b, this.a);
+		return new SVColorIntArray(this.r, this.g, this.b, this.a);
 	}
 
 	@NotNull
@@ -206,11 +194,11 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	/**
 	 @return the color array into a String.
-	 @see SVColor#toStringF(double, double, double, double)
+	 @see SVColor#toStringI(int, int, int, int)
 	 */
 	@NotNull
 	public String toString() {
-		return SVColor.toStringF(r, g, b, a);
+		return SVColor.toStringI(r, g, b, a);
 	}
 
 	@Override

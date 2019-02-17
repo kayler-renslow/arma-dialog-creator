@@ -34,7 +34,9 @@ public class SerializableValueConfigurable implements Configurable {
 	@Override
 	@NotNull
 	public Iterable<KeyValueString> getConfigurableAttributes() {
-		return new ArrayList<>();
+		List<KeyValueString> list = new ArrayList<>(1);
+		list.add(new KeyValueString("type", sv.getPropertyType().getId() + ""));
+		return list;
 	}
 
 	@Override

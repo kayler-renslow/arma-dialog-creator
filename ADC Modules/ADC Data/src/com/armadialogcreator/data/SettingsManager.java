@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
+import com.armadialogcreator.application.Project;
 import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,5 +28,10 @@ public class SettingsManager implements ApplicationStateSubscriber {
 	@NotNull
 	public ProjectSettings getProjectSettings() {
 		return projectSettings;
+	}
+
+	@Override
+	public void projectReady(@NotNull Project project) {
+
 	}
 }

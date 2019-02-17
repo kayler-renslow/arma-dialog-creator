@@ -1,5 +1,8 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.application.Configurable;
+import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.util.ColorUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +17,6 @@ public class Settings {
 
 	protected final Map<String, Setting> settings = new HashMap<>();
 
-
 	@NotNull
 	public Map<String, Setting> getSettings() {
 		return settings;
@@ -28,156 +30,99 @@ public class Settings {
 
 		public FileSetting() {
 		}
-
-		@NotNull
-		@Override
-		public File convertFromString(@NotNull String s) {
-			return new File(s);
-		}
-
-		@Override
-		public @NotNull String convertToString() {
-			return v.getAbsolutePath();
-		}
 	}
 
-	public static class StringSetting extends Setting<String> {
+	public static class StringSetting extends Setting<SVString> {
 
 		public StringSetting(@Nullable String initial) {
-			super(initial);
+			super(new SVString(initial));
 		}
 
 		public StringSetting() {
 		}
-
-		@NotNull
-		@Override
-		public String convertFromString(@NotNull String s) {
-			return s;
-		}
-
-		@Override
-		@NotNull
-		public String convertToString() {
-			return v;
-		}
 	}
 
-	public static class BooleanSetting extends Setting<Boolean> {
+	public static class BooleanSetting extends Setting<SVBoolean> {
 
 		public BooleanSetting(boolean initial) {
-			super(initial);
+			super(SVBoolean.get(initial));
+		}
+
+		public BooleanSetting() {
 		}
 
 		public boolean isTrue() {
-			Boolean b = super.get();
-			return b == null ? false : b;
-		}
-
-		@Override
-		public void set(@Nullable Boolean aBoolean) {
-			super.set(aBoolean);
-		}
-
-		@NotNull
-		@Override
-		public Boolean convertFromString(@NotNull String s) {
-			return Boolean.getBoolean(s);
-		}
-
-		@Override
-		@NotNull
-		public String convertToString() {
-			return v.toString();
+			SVBoolean b = super.get();
+			return b != null && b.isTrue();
 		}
 	}
 
-	public static class IntegerSetting extends Setting<Integer> {
+	public static class IntegerSetting extends Setting<SVInteger> {
 
-		public IntegerSetting(@Nullable Integer initial) {
+		public IntegerSetting(@Nullable SVInteger initial) {
 			super(initial);
 		}
 
 		public IntegerSetting() {
 		}
 
-		@NotNull
-		@Override
-		public Integer convertFromString(@NotNull String s) {
-			return Integer.parseInt(s);
-		}
-
-		@Override
-		@NotNull
-		public String convertToString() {
-			return v.toString();
-		}
 	}
 
-	public static class ColorSetting extends IntegerSetting {
+	public static class ColorSetting extends Setting<SVColor> {
 		public ColorSetting(int r, int g, int b, int a) {
-			set(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+			set(r, g, b, a);
 		}
 
 		public ColorSetting(int argb) {
-			super(argb);
+			this(ColorUtil.ri(argb), ColorUtil.gi(argb), ColorUtil.bi(argb), ColorUtil.ai(argb));
+		}
+
+		public ColorSetting() {
 		}
 
 		public int argb() {
-			return get();
-		}
-
-		@NotNull
-		@Override
-		public Integer get() {
-			Integer integer = super.get();
-			return integer == null ? 0 : integer;
+			SVColor color = get();
+			if (color == null) {
+				return 0;
+			}
+			return color.toARGB();
 		}
 
 		@Override
-		public void set(@Nullable Integer integer) {
-			super.set(integer == null ? 0 : integer);
+		public void set(@Nullable SVColor color) {
+			super.set(color == null ? new SVColorInt(0) : color);
+		}
+
+		/** Sets the integer value based upon ints ranged 0-255 */
+		public void set(int r, int g, int b, int a) {
+			set(new SVColorIntArray(r, g, b, a));
 		}
 
 		/** Sets the integer value based upon floats ranged 0-1.0 */
 		public void set(double r, double g, double b, double a) {
-			final double f = 255.0;
-			int R = (int) (r * f);
-			int G = (int) (g * f);
-			int B = (int) (b * f);
-			int A = (int) (a * f);
-			int color = (A & 0xff) << 24 | (R & 0xff) << 16 | (G & 0xff) << 8 | (B & 0xff);
-			set(color);
+			set(new SVColorArray(r, g, b, a));
 		}
 
 		public double r() {
-			int r = (argb() >> 16) & 0xFF;
-			final double f = 255.0;
-
-			return r / f;
+			return ColorUtil.rf(argb());
 		}
 
 		public double g() {
-			int g = (argb() >> 8) & 0xFF;
-			final double f = 255.0;
-			return g / f;
+			return ColorUtil.gf(argb());
 		}
 
 		public double b() {
-			int b = (argb()) & 0xFF;
-			final double f = 255.0;
-			return b / f;
+			return ColorUtil.bf(argb());
 		}
 
 		public double a() {
-			int a = (argb() >> 24) & 0xFF;
-			final double f = 255.0;
-			return a / f;
+			return ColorUtil.af(argb());
 		}
 	}
 
-	public abstract static class Setting<V> {
+	public static abstract class Setting<V> {
 		protected V v;
+		protected V defaultValue;
 
 		public Setting(@Nullable V initial) {
 			this.v = initial;
@@ -195,10 +140,23 @@ public class Settings {
 			this.v = v;
 		}
 
-		@NotNull
-		public abstract V convertFromString(@NotNull String s);
+		@Nullable
+		public V getDefaultValue() {
+			return defaultValue;
+		}
+
+		public void setDefaultValue(@Nullable V defaultValue) {
+			this.defaultValue = defaultValue;
+		}
 
 		@NotNull
-		public abstract String convertToString();
+		public final V loadFromConfigurable(@NotNull Configurable c) {
+			return null;
+		}
+
+		@NotNull
+		public final Configurable copyToConfigurable() {
+			return null;
+		}
 	}
 }

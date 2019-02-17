@@ -15,10 +15,10 @@ public class SVColorArrayTest {
 	public void getColors() throws Exception {
 		SVColorArray array = new SVColorArray(0.5, 0.5, 0.5, 0.5);
 		assertEquals(true,
-				ArmaPrecision.isEqualTo(array.getRed(), 0.5) &&
-						ArmaPrecision.isEqualTo(array.getGreen(), 0.5) &&
-						ArmaPrecision.isEqualTo(array.getBlue(), 0.5) &&
-						ArmaPrecision.isEqualTo(array.getAlpha(), 0.5)
+				ArmaPrecision.isEqualTo(array.getRedF(), 0.5) &&
+						ArmaPrecision.isEqualTo(array.getGreenF(), 0.5) &&
+						ArmaPrecision.isEqualTo(array.getBlueF(), 0.5) &&
+						ArmaPrecision.isEqualTo(array.getAlphaF(), 0.5)
 		);
 	}
 
