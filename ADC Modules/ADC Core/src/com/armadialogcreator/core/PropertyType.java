@@ -39,7 +39,12 @@ public enum PropertyType {
 	/** SQF code String */
 	SQF(13, SVString.CONVERTER, getString("PropertyType.sqf"), true),
 	/** Raw value */
-	Raw(14, SVRaw.CONVERTER, getString("PropertyType.raw"));
+	Raw(14, SVRaw.CONVERTER, getString("PropertyType.raw")),
+	/** Uses a int[] instead of double[] where each index is ranged 0-255 instead of 0-1.0 */
+	ColorIntArray(15, SVColorIntArray.CONVERTER, getString("PropertyType.color_int_array"), 4, PropertyTypeHelper.EMPTY),
+	/** Contains a single integer value that is in the ARGB format */
+	ColorARGB(16, SVColorInt.CONVERTER, getString("PropertyType.color_argb"), 1, PropertyTypeHelper.EMPTY),
+	;
 
 	private final int propertyValuesSize;
 	private final String displayName;

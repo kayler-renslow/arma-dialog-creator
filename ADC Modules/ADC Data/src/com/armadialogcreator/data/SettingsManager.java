@@ -1,8 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationManager;
-import com.armadialogcreator.application.ApplicationStateSubscriber;
-import com.armadialogcreator.application.Project;
+import com.armadialogcreator.application.*;
 import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,5 +31,23 @@ public class SettingsManager implements ApplicationStateSubscriber {
 	@Override
 	public void projectReady(@NotNull Project project) {
 
+	}
+
+	private static abstract class Base implements ADCData {
+		private final Settings settings;
+
+		public Base(@NotNull Settings settings) {
+			this.settings = settings;
+		}
+
+		@Override
+		public void loadFromConfigurable(@NotNull Configurable config) {
+			//todo
+		}
+
+		@Override
+		public void exportToConfigurable(@NotNull Configurable configurable) {
+			//todo
+		}
 	}
 }

@@ -7,7 +7,7 @@ import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Defines a color as an array with integer values ranging 0-255.
+ Defines a color as an array with a single integer value in format ARGB.
 
  @author Kayler
  @since 02/16/2019. */
@@ -80,14 +80,13 @@ public class SVColorInt extends SerializableValue implements SVColor {
 	}
 
 	/**
-	 Create a new color from String array that is formatted like so:
-	 {r,g,b,a} where r,g,b,a are between 0 and 255 inclusively
+	 Create a new color from String array which contains one number (ARGB)
 
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
 	public SVColorInt(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
-		this(Integer.parseInt(newValue[0]), Integer.parseInt(newValue[1]), Integer.parseInt(newValue[2]), Integer.parseInt(newValue[3]));
+		this(Integer.parseInt(newValue[0]));
 	}
 
 	@Override
