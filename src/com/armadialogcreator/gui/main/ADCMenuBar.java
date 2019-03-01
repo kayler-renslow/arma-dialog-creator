@@ -2,10 +2,11 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ProgramArgument;
-import com.armadialogcreator.arma.util.ArmaUIScale;
 import com.armadialogcreator.canvas.UIScale;
+import com.armadialogcreator.control.ArmaUIScale;
 import com.armadialogcreator.core.stringtable.KnownLanguage;
 import com.armadialogcreator.core.stringtable.Language;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
@@ -211,10 +212,10 @@ class ADCMenuBar extends MenuBar {
 			this.getMenus().add(new Menu("Debug", null, addOnAction(new MenuItem("Debug Menu"), new TestAction())));
 		}
 
-		view_showGrid.getParentMenu().showingProperty().addListener(new ChangeListener<Boolean>() {
+		view_showGrid.getParentMenu().showingProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				view_showGrid.setSelected(ArmaDialogCreator.getCanvasView().getConfiguration().showGrid());
+				view_showGrid.setSelected(SettingsManager.instance.getProjectSettings().ShowCanvasGridSetting.isTrue());
 			}
 		});
 

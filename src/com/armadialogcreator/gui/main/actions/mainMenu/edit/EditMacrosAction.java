@@ -2,7 +2,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.gui.main.popup.ChooseMacroDialog;
 import com.armadialogcreator.gui.main.popup.EditMacroPopup;
 import javafx.event.ActionEvent;
@@ -14,9 +13,9 @@ import javafx.event.EventHandler;
 public class EditMacrosAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ChooseMacroDialog<SerializableValue> chooseMacroPopup = new ChooseMacroDialog<>(null);
+		ChooseMacroDialog chooseMacroPopup = new ChooseMacroDialog(null);
 		chooseMacroPopup.showAndWait();
-		Macro<SerializableValue> chosenMacro = chooseMacroPopup.getChosenItem();
+		Macro chosenMacro = chooseMacroPopup.getChosenItem();
 		if (chosenMacro == null) {
 			return;
 		}

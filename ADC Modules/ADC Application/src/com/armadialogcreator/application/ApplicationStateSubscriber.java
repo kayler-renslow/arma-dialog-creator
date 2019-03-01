@@ -9,9 +9,9 @@ public interface ApplicationStateSubscriber {
 
 	/**
 	 Default implementation does nothing.
-	 @see ApplicationState#ApplicationInitializing
+	 @see ApplicationState#ADCInitializing
 	 */
-	default void applicationInitializing() {
+	default void adcInitializing() {
 
 	}
 

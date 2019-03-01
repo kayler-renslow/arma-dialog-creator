@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
-import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.notification.BoxNotification;
 import com.armadialogcreator.gui.notification.Notification;
 import com.armadialogcreator.gui.notification.Notifications;
@@ -22,8 +22,8 @@ public class FileSaveAction implements EventHandler<ActionEvent> {
 		Notification resultNotification;
 
 		try {
-			ApplicationDataManager.getInstance().saveProject();
-			File saveFile = Project.getCurrentProject().getProjectSaveDirectory();
+			ApplicationManager.instance.saveProject();
+			File saveFile = ApplicationManager.instance.getCurrentProject().getProjectSaveDirectory();
 			resultNotification = new BoxNotification(
 					bundle.getString("Notifications.ProjectSave.Success.notification_title"),
 					String.format(bundle.getString("Notifications.ProjectSave.Success.notification_body_f"), saveFile.getAbsolutePath())

@@ -1,9 +1,8 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArmaPrecision;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,9 +11,9 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 05/22/2016. */
 public class SVSound extends SerializableValue {
-	public static final ValueConverter<SVSound> CONVERTER = new ValueConverter<SVSound>() {
+	public static final StringArrayConverter<SVSound> CONVERTER = new StringArrayConverter<SVSound>() {
 		@Override
-		public SVSound convert(DataContext context, @NotNull String... values) {
+		public SVSound convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVSound(values);
 		}
 	};

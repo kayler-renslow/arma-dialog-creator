@@ -4,21 +4,27 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.core.stringtable.StringTable;
+import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  @author K
  @since 01/07/2019 */
+@ApplicationSingleton
 public class StringTableManager implements ApplicationStateSubscriber {
-	private static final StringTableManager instance = new StringTableManager();
+	public static final StringTableManager instance = new StringTableManager();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
-	@NotNull
-	public static StringTableManager getInstance() {
-		return instance;
+	private StringTable stringTable;
+
+	@Nullable
+	public StringTable getStringTable() {
+		return stringTable;
 	}
 
 	@Override

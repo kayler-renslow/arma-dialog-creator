@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.main.popup.ChangeDirectoriesDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +11,6 @@ public class SettingsChangeSaveDirAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		new ChangeDirectoriesDialog(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).show();
+		new ChangeDirectoriesDialog().show();
 	}
 }

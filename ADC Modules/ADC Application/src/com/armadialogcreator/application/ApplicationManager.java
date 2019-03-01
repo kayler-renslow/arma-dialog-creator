@@ -1,6 +1,7 @@
 package com.armadialogcreator.application;
 
 import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -14,16 +15,11 @@ import java.util.List;
  @author K
  @since 01/03/2019 */
 public class ApplicationManager {
-	private static final String PROJECT_SAVE_FILE_NAME = "project.adc";
-	private static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
-	private static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
+	public static final String PROJECT_SAVE_FILE_NAME = "project.adc";
+	public static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
+	public static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
 
-	private static final ApplicationManager instance = new ApplicationManager();
-
-	@NotNull
-	public static ApplicationManager getInstance() {
-		return instance;
-	}
+	public static final ApplicationManager instance = new ApplicationManager();
 
 	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
 	private final UpdateListenerGroup<ApplicationState> stateUpdateGroup = new UpdateListenerGroup<>();
@@ -31,16 +27,16 @@ public class ApplicationManager {
 
 	private volatile Project project;
 	private volatile Workspace workspace;
-	
-	public void initializeApplication() {
+
+	public void initializeADC() {
 		if (applicationInitialized) {
 			return;
 		}
 
 		for (ApplicationStateSubscriber sub : subs) {
-			sub.applicationInitializing();
+			sub.adcInitializing();
 		}
-		stateUpdateGroup.update(ApplicationState.ApplicationInitializing);
+		stateUpdateGroup.update(ApplicationState.ADCInitializing);
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.systemDataInitializing();
@@ -93,7 +89,20 @@ public class ApplicationManager {
 		}
 		return project;
 	}
-	
+
+	@NotNull
+	public List<ProjectPreview> getProjectsForWorkspace(@NotNull Workspace workspace) {
+		List<ProjectPreview> previews = new ArrayList<>();
+		//todo
+		return previews;
+	}
+
+	@NotNull
+	public ProjectPreview getPreviewForProjectFile(@NotNull File f) throws XmlParseException {
+		//todo
+		return null;
+	}
+
 	public void loadWorkspace(@NotNull File workspaceDirectory) {
 		if (workspace != null) {
 			workspace.getDataList().invalidate();
@@ -104,6 +113,7 @@ public class ApplicationManager {
 		}
 
 		Workspace newWorkspace = new Workspace(workspaceDirectory);
+		newWorkspace.initialize();
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.workspaceInitializing(newWorkspace);
@@ -194,7 +204,7 @@ public class ApplicationManager {
 			for (ApplicationStateSubscriber sub : subs) {
 				sub.workspaceClosed(workspace);
 			}
-			stateUpdateGroup.update(ApplicationState.ProjectClosed);
+			stateUpdateGroup.update(ApplicationState.WorkspaceClosed);
 		}
 
 		if (project != null) {

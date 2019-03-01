@@ -2,19 +2,12 @@ package com.armadialogcreator.gui.main.popup.projectInit;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
-import javafx.geometry.Insets;
-import javafx.geometry.Orientation;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Separator;
 import javafx.scene.layout.VBox;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -24,10 +17,12 @@ import java.util.ResourceBundle;
  @since 11/23/2016 */
 public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 
-	public ProjectImproperResultDialog(@NotNull List<ParseError> errors) {
+	public ProjectImproperResultDialog() {
 		super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), null, false, true, false);
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		setTitle(bundle.getString("ProjectResultErrorPopup.popup_title"));
+
+		/*
 
 		myRootElement.setFitToWidth(true);
 		myRootElement.setFitToHeight(true);
@@ -69,7 +64,7 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 			root.getChildren().add(vbErrorMsg);
 		}
 		myStage.setWidth(480d);
-		myStage.setHeight(480d);
+		myStage.setHeight(480d);*/
 	}
 
 	private Node getLabel(String text) {

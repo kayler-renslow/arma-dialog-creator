@@ -1,11 +1,9 @@
 package com.armadialogcreator.gui.main;
 
-import com.armadialogcreator.arma.control.ArmaControl;
 import com.armadialogcreator.canvas.UICanvasConfiguration;
-import com.armadialogcreator.data.tree.TreeStructure;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.armadialogcreator.gui.fxcontrol.treeView.GUITreeStructure;
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
@@ -42,18 +40,12 @@ public interface CanvasView {
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
 
-	void setTreeStructure(boolean backgroundTree, @Nullable TreeStructure<ArmaControl> treeStructure);
+	@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getMainControlTreeView();
 
-	@NotNull GUITreeStructure<ArmaControl> getMainControlsTreeStructure();
-
-	@NotNull GUITreeStructure<ArmaControl> getBackgroundControlsTreeStructure();
-
-	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getMainControlTreeView();
-
-	@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> getBackgroundControlTreeView();
+	@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getBackgroundControlTreeView();
 
 	/** @return true if treeView == {@link #getBackgroundControlTreeView()}, false otherwise */
-	default boolean isBackgroundTreeView(@NotNull EditableTreeView<ArmaControl, ? extends TreeItemEntry> treeView) {
+	default boolean isBackgroundTreeView(@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> treeView) {
 		return treeView == getBackgroundControlTreeView();
 	}
 }

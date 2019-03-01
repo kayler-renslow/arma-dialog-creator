@@ -1,7 +1,8 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.Project;
 import com.armadialogcreator.gui.main.popup.EditProjectSettingsDialog;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
@@ -29,7 +30,7 @@ public class EditProjectSettingsAction implements EventHandler<ActionEvent> {
 		project.setProjectDescription(dialog.getProjectDescription());
 		if (dialog.moveProjectDirectory()) {
 			try {
-				project.setProjectDirectoryName(project.getProjectName());
+				ApplicationManager.instance.setProjectDirectoryName(project, dialog.getProjectName());
 			} catch (IOException ignore) {
 				ResourceBundle bundle = Lang.ApplicationBundle();
 				new SimpleErrorDialog<>(

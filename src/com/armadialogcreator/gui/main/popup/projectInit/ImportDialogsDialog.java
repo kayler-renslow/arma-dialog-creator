@@ -1,31 +1,10 @@
 package com.armadialogcreator.gui.main.popup.projectInit;
 
-import com.armadialogcreator.data.olddata.HeaderConversionException;
-import com.armadialogcreator.data.olddata.HeaderToProject;
-import com.armadialogcreator.data.oldprojectloader.ProjectInit;
 import com.armadialogcreator.gui.WizardStageDialog;
-import com.armadialogcreator.gui.WizardStep;
-import com.armadialogcreator.gui.fxcontrol.CheckboxSelectionPane;
-import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.KeyValue;
-import com.armadialogcreator.util.XmlParseException;
-import javafx.application.Platform;
-import javafx.collections.ListChangeListener;
-import javafx.concurrent.Task;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.ArrayBlockingQueue;
 
@@ -35,29 +14,30 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class ImportDialogsDialog extends WizardStageDialog {
 
 	/*
-	* Order of operations for dialog:
-	* 1.
-	* 2. todo write this stuff in
-	* 3.
-	* 4.
-	*
-	* */
+	 * Order of operations for dialog:
+	 * 1.
+	 * 2. todo write this stuff in
+	 * 3.
+	 * 4.
+	 *
+	 * */
 
 	private final ResourceBundle bundle = Lang.getBundle("ProjectInitWindowBundle");
 	/** Queue for sending messages from JavaFX to converter */
 	private final ArrayBlockingQueue<Object> messageQToTask = new ArrayBlockingQueue<>(1);
 
-	private final SelectDialogsToImportStep importStep;
-	private final ParsingStep parsingStep;
-	private final ConvertingDialogsStep convertingStep;
-	private final SelectDialogToLoadStep selectDialogToLoadStep;
-	private final FinalizingStep finalizingStep;
-
+	/*
+		private final SelectDialogsToImportStep importStep;
+		private final ParsingStep parsingStep;
+		private final ConvertingDialogsStep convertingStep;
+		private final SelectDialogToLoadStep selectDialogToLoadStep;
+		private final FinalizingStep finalizingStep;
+	*/
 	public ImportDialogsDialog(@NotNull ADCProjectInitWindow initWindow, @NotNull File initialWorkspaceDir, @NotNull File descExt) {
 		super(initWindow.getStage(), null, true);
 
 		setTitle(bundle.getString("ImportDialogs.window_title"));
-
+/*
 		parsingStep = new ParsingStep();
 		importStep = new SelectDialogsToImportStep();
 		convertingStep = new ConvertingDialogsStep();
@@ -88,6 +68,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 		convertThread.start();
 
 		setStageSize(initWindow.getStageWidth(), initWindow.getStageHeight());
+
 	}
 
 	@Override
@@ -120,7 +101,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 	public ProjectInit getProjectInit() {
 		return finalizingStep.getProjectInit();
 	}
-
+/*
 	private class ConvertTask extends Task<Boolean> implements HeaderToProject.ConversionCallback {
 
 		private File workspaceDir;
@@ -147,9 +128,9 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			//wait for the JavaFX thread to tell what project file to load
 			File projectFile = (File) messageQToTask.take();
 
-			ProjectXmlReader.ProjectPreviewParseResult parseResult;
+			ProjectPreview parseResult;
 			try {
-				parseResult = ProjectXmlReader.previewParseProjectXmlFile(projectFile);
+				parseResult = ApplicationManager.getInstance().getPreviewForProjectFile(projectFile);
 			} catch (XmlParseException e) {
 				Platform.runLater(new Runnable() {
 					@Override
@@ -456,5 +437,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 							: bundle.getString("ImportDialogs.ErrorDialog.pre_message")
 			);
 		}
+	}
+	*/
 	}
 }

@@ -1,12 +1,11 @@
 package com.armadialogcreator.gui.preview;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaDisplay;
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.canvas.UICanvas;
-import com.armadialogcreator.gui.main.CanvasView;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import javafx.scene.input.MouseButton;
 import org.jetbrains.annotations.NotNull;
 
@@ -19,7 +18,6 @@ import java.util.Iterator;
  @since 06/14/2016 */
 public class UICanvasPreview extends UICanvas<ArmaControl> {
 
-	private final CanvasView canvasView = ArmaDialogCreator.getCanvasView();
 	private final ControlFocusHandler focusHandler;
 	private ArmaControl mouseOverControl;
 	private ArmaControl mousePressControl;
@@ -39,8 +37,8 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 
 	@Override
 	protected void paint() {
-		this.backgroundColor = canvasView.getCanvasBackgroundColor();
-		this.backgroundImage = canvasView.getCanvasBackgroundImage();
+		//this.backgroundColor = canvasView.getCanvasBackgroundColor();
+		//this.backgroundImage = canvasView.getCanvasBackgroundImage();
 		super.paint();
 	}
 
@@ -74,21 +72,20 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 			//behindControl is in front of current mouseOverControl.
 			setMouseOver(mouseOverControl, 0, 0, false);
 		}
-		Iterator<ArmaControl> controlIter = display.iteratorForAllControls(true);
+		Iterator<UINode> controlIter = rootNode.deepIterateChildren().iterator();
 		mouseOverControl = null;
 		while (controlIter.hasNext()) {
-			ArmaControl control = controlIter.next();
+			UINode node = controlIter.next();
+			if (!(node instanceof ArmaControl)) {
+				continue;
+			}
+			ArmaControl control = (ArmaControl) node;
 			if (control.getRenderer().containsPoint(mousex, mousey) && control.getRenderer().isEnabled()) {
 				mouseOverControl = control;
 				setMouseOver(mouseOverControl, mousex, mousey, true);
 				break;
 			}
 		}
-	}
-
-	@Override
-	public void updateResolution(@NotNull Resolution newResolution) {
-		super.updateResolution(newResolution);
 	}
 
 	private void setMouseOver(@NotNull ArmaControl armaControl, int mousex, int mousey, boolean mouseOver) {

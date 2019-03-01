@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -17,6 +16,6 @@ public class ViewAbsRegionShowAction implements EventHandler<ActionEvent> {
 		} else {
 			showing = 1;
 		}
-		ArmaDialogCreator.getCanvasView().updateAbsRegion(-1, showing);
+		//ArmaDialogCreator.getCanvasView().updateAbsRegion(-1, showing);
 	}
 }

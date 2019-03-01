@@ -1,24 +1,19 @@
 package com.armadialogcreator.data.oldprojectloader;
 
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.ControlClassSpecification;
-import com.armadialogcreator.core.old.ControlPropertyLookup;
-import com.armadialogcreator.core.old.CustomControlClass;
-import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.application.Project;
+import com.armadialogcreator.core.ConfigClass;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- Helps with loading {@link ControlClassOld} and {@link CustomControlClass} instances in proper order
+ Helps with loading {@link ConfigClass}instances in proper order
 
  @author Kayler
  @since 11/06/2017 */
 class ControlClassXmlHelper {
-	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
+	//	private final LinkedList<AfterLoadJob> jobs = new LinkedList<>();
 	private final Set<String> existingClasses = new HashSet<>();
 	private final Project project;
 	private final XmlErrorRecorder recorder;
@@ -28,7 +23,7 @@ class ControlClassXmlHelper {
 		this.project = project;
 		this.recorder = recorder;
 	}
-
+/*
 	public void addJob(@NotNull AfterLoadJob job) {
 		jobs.add(job);
 	}
@@ -39,7 +34,7 @@ class ControlClassXmlHelper {
 
 	 @throws IllegalStateException
 	 */
-	public void runJobs() {
+/*	public void runJobs() {
 		if (runJobs) {
 			throw new IllegalStateException("Already invoked runJobs()");
 		}
@@ -112,7 +107,7 @@ class ControlClassXmlHelper {
 
 	 @see ControlClassOld#extendControlClass(ControlClassOld)
 	 */
-	public void registerExistingControlClass(@NotNull ControlClassOld controlClass) {
+/*	public void registerExistingControlClass(@NotNull ControlClassOld controlClass) {
 		existingClasses.add(controlClass.getClassName());
 	}
 
@@ -132,11 +127,11 @@ class ControlClassXmlHelper {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
-			CustomControlClass customControlClass = new CustomControlClass(
-					spec, project,
-					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
-			);
-			project.addCustomControlClass(customControlClass);
+			//			CustomControlClass customControlClass = new CustomControlClass(
+			//					spec, project,
+			//					loadInProjectRegistry ? CustomControlClass.Scope.Project : CustomControlClass.Scope.Workspace
+			//			);
+			//			project.addCustomControlClass(customControlClass);
 		}
 	}
 
@@ -169,7 +164,7 @@ class ControlClassXmlHelper {
 		private void loadClass(@NotNull Project project, ControlClassSpecification nested) {
 			try {
 				ControlClassOld nestedClass = addToMe.findNestedClass(nested.getClassName());
-				nestedClass.setTo(nested.constructNewControlClass(project));
+				//				nestedClass.setTo(nested.constructNewControlClass(project));
 			} catch (IllegalArgumentException ignore) {
 
 			}
@@ -188,9 +183,9 @@ class ControlClassXmlHelper {
 	public static class ControlExtendJob implements AfterLoadJob {
 		private final String extendThisControlClassName;
 		private final ArmaControl setMyExtend;
-		private final List<ControlPropertyLookup> inheritProperties;
+		private final List<ConfigPropertyLookup> inheritProperties;
 
-		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ControlPropertyLookup> inheritProperties) {
+		public ControlExtendJob(@NotNull String extendThisControlClassName, @NotNull ArmaControl setMyExtend, @NotNull List<ConfigPropertyLookup> inheritProperties) {
 			this.extendThisControlClassName = extendThisControlClassName;
 			this.setMyExtend = setMyExtend;
 			this.inheritProperties = inheritProperties;
@@ -199,21 +194,22 @@ class ControlClassXmlHelper {
 
 		@Override
 		public void doWork(@NotNull Project project, @NotNull XmlErrorRecorder recorder) {
-			ControlClassOld cc = project.findControlClassByName(extendThisControlClassName);
-
-			if (cc == null) {
-				final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
-				recorder.addError(new ParseError(
-						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
-						bundle.getString("ProjectLoad.no_extend_class_recover")
-				));
-				return;
-			}
-
-			setMyExtend.extendControlClass(cc);
-			for (ControlPropertyLookup inheritProperty : inheritProperties) {
-				setMyExtend.inheritProperty(inheritProperty);
-			}
+			//			ControlClassOld cc = project.findControlClassByName(extendThisControlClassName);
+			//
+			//			if (cc == null) {
+			//				final ResourceBundle bundle = Lang.getBundle("ProjectXmlParseBundle");
+			//				recorder.addError(new ParseError(
+			//						String.format(bundle.getString("ProjectLoad.couldnt_match_extend_class_f"), extendThisControlClassName, setMyExtend.getClassName()),
+			//						bundle.getString("ProjectLoad.no_extend_class_recover")
+			//				));
+			//				return;
+			//			}
+			//
+			//			setMyExtend.extendControlClass(cc);
+			//			for (ConfigPropertyLookup inheritProperty : inheritProperties) {
+			//				setMyExtend.inheritProperty(inheritProperty);
+			//			}
 		}
 	}
+	*/
 }

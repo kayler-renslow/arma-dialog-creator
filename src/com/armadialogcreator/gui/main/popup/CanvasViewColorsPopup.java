@@ -29,14 +29,14 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 	private final ColorPicker cpEditorBg = new ColorPicker(CanvasViewColors.EDITOR_BG);
 	private final ColorPicker cpAbsRegion = new ColorPicker(CanvasViewColors.ABS_REGION);
 
-	private ChangeListener<Color> colorChangeListener = new ChangeListener<Color>() {
+	private ChangeListener<Color> colorChangeListener = new ChangeListener<>() {
 		@Override
 		public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
 			CanvasViewColors.ABS_REGION = cpAbsRegion.getValue();
 			CanvasViewColors.EDITOR_BG = cpEditorBg.getValue();
 			CanvasViewColors.GRID = cpGrid.getValue();
 			CanvasViewColors.SELECTION = cpSelection.getValue();
-			ArmaDialogCreator.getCanvasView().updateCanvas();
+			//ArmaDialogCreator.getCanvasView().updateCanvas();
 		}
 	};
 

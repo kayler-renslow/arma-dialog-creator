@@ -1,7 +1,6 @@
 package com.armadialogcreator.util;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Created by Kayler on 07/05/2016.
@@ -13,7 +12,7 @@ public interface UpdateGroupListener<T> {
 	 @param group group where the update occurred
 	 @param data data that may have been passed
 	 */
-	void update(@NotNull UpdateListenerGroup<T> group, @Nullable T data);
+	void update(@NotNull UpdateListenerGroup<T> group, @NotNull T data);
 
 	/**
 	 Have the {@link UpdateListenerGroup} automatically check if this listener has expired.

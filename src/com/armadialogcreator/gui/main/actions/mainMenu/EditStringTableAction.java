@@ -5,8 +5,7 @@ import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.core.stringtable.StringTable;
-import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.data.oldprojectloader.DefaultStringTableXmlParser;
+import com.armadialogcreator.data.DefaultStringTableXmlParser;
 import com.armadialogcreator.data.xml.StringTableXmlWriter;
 import com.armadialogcreator.gui.main.stringtable.StringTableEditorPopup;
 import com.armadialogcreator.lang.Lang;
@@ -24,7 +23,7 @@ import java.io.IOException;
 public class EditStringTableAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		StringTable table = Project.getCurrentProject().getStringTable();
+		StringTable table = null;
 		if (table == null) {
 			FileChooser chooser = new FileChooser();
 			chooser.setTitle(Lang.getBundle("MainMenuBarBundle").getString("Action.edit_string_table-locate"));
@@ -37,7 +36,8 @@ public class EditStringTableAction implements EventHandler<ActionEvent> {
 			try {
 				DefaultStringTableXmlParser parser = new DefaultStringTableXmlParser(file);
 				table = parser.createStringTableInstance();
-				Project.getCurrentProject().setStringTable(table);
+				throw new RuntimeException();
+//				Project.getCurrentProject().setStringTable(table);
 			} catch (XmlParseException | IOException e) {
 				ExceptionHandler.error(e);
 				return;

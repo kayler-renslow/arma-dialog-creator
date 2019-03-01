@@ -16,4 +16,8 @@ public class SerializableValueConstructionException extends RuntimeException {
 	public SerializableValueConstructionException(@NonNls String message) {
 		super(message);
 	}
+
+	public SerializableValueConstructionException(Exception e) {
+		super(e);
+	}
 }

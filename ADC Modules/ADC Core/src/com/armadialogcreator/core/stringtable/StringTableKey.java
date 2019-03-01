@@ -2,7 +2,7 @@ package com.armadialogcreator.core.stringtable;
 
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.util.MapObserver;
-import com.armadialogcreator.util.ValueObserver;
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -69,7 +69,7 @@ public interface StringTableKey extends Macro {
 	}
 
 	@NotNull
-	ValueObserver<String> getIdObserver();
+	NotNullValueObserver<String> getIdObserver();
 
 	@NotNull
 	default String getTag() {
@@ -111,23 +111,20 @@ public interface StringTableKey extends Macro {
 		if (getLanguageTokenMap().isEmpty()) {
 			return null;
 		}
-		if (getDefaultLanguage() == null) {
-			return null;
-		}
 		return getLanguageTokenMap().get(getDefaultLanguage());
 	}
 
-	default void setDefaultLanguage(@Nullable Language language) {
+	default void setDefaultLanguage(@NotNull Language language) {
 		getDefaultLanguageObserver().updateValue(language);
 	}
 
-	@Nullable
+	@NotNull
 	default Language getDefaultLanguage() {
 		return getDefaultLanguageObserver().getValue();
 	}
 
 	@NotNull
-	ValueObserver<Language> getDefaultLanguageObserver();
+	NotNullValueObserver<Language> getDefaultLanguageObserver();
 
 	default boolean equalsKey(StringTableKey key) {
 		if (key == null) {

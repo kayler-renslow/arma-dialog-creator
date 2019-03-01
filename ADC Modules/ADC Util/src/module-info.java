@@ -4,7 +4,7 @@
 module ADC.Util {
 	requires javafx.base; //do not put ADC.JavaFX because it will be circular dependency
 	requires annotations;
-	requires java.xml;
+	requires transitive java.xml;
 
 	exports com.armadialogcreator.util;
 }

@@ -33,7 +33,7 @@ public class Project implements ADCDataListManager<ProjectData> {
 	/** @return {@link ApplicationManager#getCurrentProject()} */
 	@NotNull
 	public static Project getCurrentProject() {
-		return ApplicationManager.getInstance().getCurrentProject();
+		return ApplicationManager.instance.getCurrentProject();
 	}
 
 	/**

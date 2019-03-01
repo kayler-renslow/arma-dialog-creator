@@ -1,30 +1,26 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
+import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ListObserver;
-import com.armadialogcreator.util.ListsIterator;
+import com.armadialogcreator.util.TripleIterable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  A FileDependencyRegistry is a location for storing file dependencies that ADC uses (image files, scripts, etc).
 
  @author Kayler
  @since 07/19/2016. */
+@ApplicationSingleton
 public class FileDependencyRegistry implements Registry {
-	private static final FileDependencyRegistry instance = new FileDependencyRegistry();
+	public static final FileDependencyRegistry instance = new FileDependencyRegistry();
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static FileDependencyRegistry getInstance() {
-		return instance;
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -63,7 +59,7 @@ public class FileDependencyRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationInitializing() {
+	public void adcInitializing() {
 		ApplicationDataManager.getInstance().getDataList().add(applicationDependencies);
 	}
 
@@ -107,13 +103,13 @@ public class FileDependencyRegistry implements Registry {
 	public void workspaceClosed(@NotNull Workspace workspace) {
 		workspaceDependencies.getDependencyList().invalidate();
 	}
+
 	@NotNull
 	public Iterable<FileDependency> iterateAllDependencies() {
-		List<List<FileDependency>> lists = new ArrayList<>(3);
-		lists.add(getProjectDependencies().getDependencyList());
-		lists.add(getWorkspaceDependencies().getDependencyList());
-		lists.add(getApplicationDependencies().getDependencyList());
-		return new ListsIterator<>(lists);
+		return new TripleIterable<>(getProjectDependencies().getDependencyList(),
+				getWorkspaceDependencies().getDependencyList(),
+				getApplicationDependencies().getDependencyList()
+		);
 	}
 
 	private abstract static class Base<D extends ADCData> implements ADCData {

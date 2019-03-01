@@ -11,13 +11,13 @@ import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.KeyValue;
+import com.armadialogcreator.util.ListObserverListener;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -37,6 +37,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  @author Kayler
@@ -52,7 +53,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 
 	private StringTable table;
 
-	private final LinkedList<ListChangeListener<StringTableKey>> listenersToRemoveFromTable = new LinkedList<>();
+	private final LinkedList<ListObserverListener<StringTableKey>> listenersToRemoveFromTable = new LinkedList<>();
 	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
 
 	public StringTableEditorPopup(@NotNull StringTable table, @NotNull StringTableWriter writer, @NotNull StringTableParser parser) {
@@ -200,7 +201,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 	}
 
 	private void clearListeners() {
-		for (ListChangeListener<StringTableKey> listener : listenersToRemoveFromTable) {
+		for (ListObserverListener<StringTableKey> listener : listenersToRemoveFromTable) {
 			table.getKeys().removeListener(listener);
 		}
 		listenersToRemoveFromTable.clear();
@@ -269,21 +270,23 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			Label lblSize = new Label(String.format(bundle.getString("StringTableEditorPopup.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 			root.getChildren().add(lblSize);
 
-			ListChangeListener<StringTableKey> keysListener = new ListChangeListener<StringTableKey>() {
-				@Override
-				public void onChanged(Change<? extends StringTableKey> c) {
-					lblSize.setText(String.format(bundle.getString("StringTableEditorPopup.Tab.Config.number_of_keys_f"), table.getKeys().size()));
-				}
+			Consumer<Object> keyListener = o -> {
+				lblSize.setText(String.format(bundle.getString("StringTableEditorPopup.Tab.Config.number_of_keys_f"), table.getKeys().size()));
 			};
-			popup.listenersToRemoveFromTable.add(keysListener);
-			table.getKeys().addListener(keysListener);
+
+			popup.listenersToRemoveFromTable.add((list, c) -> {
+				keyListener.accept(null);
+			});
+			table.getKeys().addListener((list, change) -> {
+				keyListener.accept(null);
+			});
 		}
 
 
 	}
 
 	private class EditTab extends Tab {
-		private final Comparator<StringTableKeyDescriptor> comparator = new Comparator<StringTableKeyDescriptor>() {
+		private final Comparator<StringTableKeyDescriptor> comparator = new Comparator<>() {
 			@Override
 			public int compare(StringTableKeyDescriptor o1, StringTableKeyDescriptor o2) {
 				return o1.getKey().getId().compareToIgnoreCase(o2.getKey().getId());
@@ -302,7 +305,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		public EditTab(@NotNull StringTable table, @NotNull ValueObserver<Language> previewLanguageObserver, @NotNull StringTableEditorPopup editorPopup) {
 			super(bundle.getString("StringTableEditorPopup.Tab.Edit.tab_title"));
 
-			listViewItemList = FXCollections.observableList(new ArrayList<>(), new Callback<StringTableKeyDescriptor, javafx.beans.Observable[]>() {
+			listViewItemList = FXCollections.observableList(new ArrayList<>(), new Callback<>() {
 				public javafx.beans.Observable[] call(StringTableKeyDescriptor param) {
 					return new javafx.beans.Observable[]{
 							param.getKey().getLanguageTokenMap(),
@@ -315,7 +318,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			this.previewLanguageObserver = previewLanguageObserver;
 			this.editorPopup = editorPopup;
 
-			previewLanguageObserver.addListener(new ValueListener<Language>() {
+			previewLanguageObserver.addListener(new ValueListener<>() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language newValue) {
 					for (StringTableKeyDescriptor descriptor : allItems) {
@@ -333,7 +336,7 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 			}
 
 			lvMatch.setItems(listViewItemList);
-			lvMatch.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<StringTableKeyDescriptor>() {
+			lvMatch.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
 				@Override
 				public void changed(ObservableValue<? extends StringTableKeyDescriptor> observable, StringTableKeyDescriptor oldValue, StringTableKeyDescriptor selected) {
 					if (selected != null) {
@@ -407,14 +410,12 @@ public class StringTableEditorPopup extends StagePopup<VBox> {
 		public GraphsTab(@NotNull StringTableEditorPopup popup, @NotNull StringTable table) {
 			this.table = table;
 
-			ListChangeListener<StringTableKey> keyListener = new ListChangeListener<StringTableKey>() {
-				@Override
-				public void onChanged(Change<? extends StringTableKey> c) {
-					updateGraph();
-				}
-			};
-			popup.listenersToRemoveFromTable.add(keyListener);
-			table.getKeys().addListener(keyListener);
+			popup.listenersToRemoveFromTable.add((list, change) -> {
+				updateGraph();
+			});
+			table.getKeys().addListener((list, change) -> {
+				updateGraph();
+			});
 
 			setText(bundle.getString("StringTableEditorPopup.Tab.Graph.tab_title"));
 

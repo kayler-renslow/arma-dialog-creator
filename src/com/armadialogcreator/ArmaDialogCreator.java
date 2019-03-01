@@ -7,6 +7,7 @@ import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ADCExecutors;
+import com.armadialogcreator.util.ApplicationSingleton;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.application.Preloader;
@@ -58,6 +59,36 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		Locale.setDefault(Locale.Category.FORMAT, Locale.US);
 
 		ExceptionHandler.init();
+
+		//load application singleton classes
+		try {
+			String[] classes = {
+					"com.armadialogcreator.data.ApplicationStateChangeLogger",
+					"com.armadialogcreator.data.ConfigClassRegistry",
+					"com.armadialogcreator.data.EditorManager",
+					"com.armadialogcreator.data.ExpressionEnvManager",
+					"com.armadialogcreator.data.FileDependencyRegistry",
+					"com.armadialogcreator.data.MacroRegistry",
+					"com.armadialogcreator.data.StringTableManager",
+					"com.armadialogcreator.data.SettingsManager",
+			};
+
+			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();
+			Class<ApplicationSingleton> applicationSingletonAnnotation = (Class<ApplicationSingleton>) loader.loadClass("com.armadialogcreator.util.ApplicationSingleton");
+
+			for (String clazz : classes) {
+				try {
+					Class<?> aClass = loader.loadClass(clazz);
+					ApplicationSingleton annotation = aClass.getAnnotation(applicationSingletonAnnotation);
+					aClass.getField(annotation.field()).get(aClass); //this is how we invoke static block / initialize the class
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+
 		launch(args);
 	}
 
@@ -69,12 +100,12 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			throw new IllegalStateException("Should not create a new ArmaDialogCreator instance when one already exists");
 		}
 		INSTANCE = this;
-		ApplicationManager.getInstance().addStateSubscriber(this);
+		ApplicationManager.instance.addStateSubscriber(this);
 	}
 
 	@Override
 	public void init() throws Exception {
-		ApplicationManager.getInstance().initializeApplication();
+		ApplicationManager.instance.initializeADC();
 
 		Thread t = new Thread(() -> {
 			int progress = 0;
@@ -145,102 +176,6 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		throw new RuntimeException(e);
 	}
 
-	//	public static void loadNewProject() {
-	//		loadNewProject(true);
-	//	}
-	//
-	//	private static void loadNewProject(boolean askToSave) {
-	//		if (askToSave) {
-	//			if (!ApplicationDataManager.getInstance().askSaveAll()) {
-	//				return;
-	//			}
-	//		}
-	//
-	//		ADCWindow adcWindow = getADCWindow();
-	//		adcWindow.getStage().close();
-	//
-	//
-	//		ApplicationDataManager.getInstance().beginInitializing();
-	//		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
-	//
-	//		adcWindow.preInit();
-	//		adcWindow.getStage().show();
-	//
-	//		Task<Boolean> task = new Task<Boolean>() {
-	//			@Override
-	//			protected Boolean call() throws Exception {
-	//				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
-	//
-	//				ProjectXmlReader.ProjectParseResult result = null;
-	//				boolean newProject = false;
-	//				final List<ParseError> parseErrors = new ArrayList<>();
-	//
-	//				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
-	//					try {
-	//						result = ProjectXmlReader.parseProjectXmlFile(config.getProjectDescriptor(), applicationData);
-	//						parseErrors.addAll(result.getErrors());
-	//					} catch (Exception e) {
-	//						newProject = true;
-	//						INSTANCE.showLater.add(new Runnable() {
-	//							@Override
-	//							public void run() {
-	//								new CouldNotLoadProjectDialog(e).show();
-	//							}
-	//						});
-	//					}
-	//				} else {
-	//					newProject = true;
-	//				}
-	//				if (newProject) {
-	//					Project project = new Project(applicationData, config.getProjectDescriptor());
-	//					try {
-	//						if (project.getWorkspaceCustomControlClassesFile().exists()) {
-	//							WorkspaceCustomControlClassXmlReader loader = new WorkspaceCustomControlClassXmlReader(applicationData, null, project);
-	//							loader.readDocument();
-	//							parseErrors.addAll(loader.getErrors());
-	//						}
-	//					} catch (Exception e) {
-	//						INSTANCE.showLater.add(() -> {
-	//							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
-	//						});
-	//					}
-	//				}
-	//
-	//				ApplicationDataManager.getInstance().initializeDone();
-	//
-	//				final ProjectXmlReader.ProjectParseResult finalResult = result;
-	//				Platform.runLater(new Runnable() {
-	//					@Override
-	//					public void run() {
-	//						adcWindow.initialize(finalResult != null ? finalResult.getTreeStructureBg() : null,
-	//								finalResult != null ? finalResult.getTreeStructureMain() : null
-	//						);
-	//						adcWindow.show();
-	//
-	//						if (parseErrors.size() > 0) {
-	//							new ProjectImproperResultDialog(parseErrors).showAndWait();
-	//						}
-	//
-	//						for (Runnable run : INSTANCE.showLater) {
-	//							run.run();
-	//						}
-	//						INSTANCE.showLater.clear();
-	//					}
-	//				});
-	//
-	//				return true;
-	//			}
-	//		};
-	//		task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-	//			ExceptionHandler.fatal(newValue);
-	//		});
-	//
-	//		initializingThread = new Thread(task);
-	//		initializingThread.setName("ADC - Project Initializing Thread");
-	//		initializingThread.setDaemon(false);
-	//		initializingThread.start();
-	//	}
-
 	@NotNull
 	public static Stage getPrimaryStage() {
 		return INSTANCE.primaryStage;
@@ -299,9 +234,9 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			AskSaveProjectDialog dialog = new AskSaveProjectDialog();
 			dialog.show();
 			if (dialog.saveProgress()) {
-				ApplicationManager.getInstance().saveProject();
+				ApplicationManager.instance.saveProject();
 			}
-			ApplicationManager.getInstance().closeApplication();
+			ApplicationManager.instance.closeApplication();
 		}
 	}
 }

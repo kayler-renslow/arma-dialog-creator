@@ -36,7 +36,7 @@ public class ImagesTool {
 	 <p>
 	 The provided image file path can be an absolute path (e.g. starts with drive letter) or a relative path.
 	 If the path is relative, the image file will be retrieved relative to the current
-	 {@link Workspace#getWorkspaceDirectory()}. The current {@link Project} will be {@link Project#getCurrentProject()}.
+	 {@link Workspace#getWorkspaceDirectory()}.
 	 <p>
 	 This method will also automatically insert any converted paa images into
 	 {@link FileDependencyRegistry#getWorkspaceDependencies()}.
@@ -73,7 +73,7 @@ public class ImagesTool {
 		}
 
 		if (imageFilePath.endsWith(".paa")) {
-			FileDependencyRegistry.WorkspaceDependencies dependencies = FileDependencyRegistry.getInstance().getWorkspaceDependencies();
+			FileDependencyRegistry.WorkspaceDependencies dependencies = FileDependencyRegistry.instance.getWorkspaceDependencies();
 
 			FileDependency dependency = dependencies.getDependencyInstanceByFile(imageFile);
 			File convertDest = workspace.getFileInCacheDirectory(System.currentTimeMillis() + ".png");

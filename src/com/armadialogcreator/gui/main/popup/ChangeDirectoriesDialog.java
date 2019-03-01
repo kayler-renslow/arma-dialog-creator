@@ -3,6 +3,8 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.arma.util.ArmaTools;
+import com.armadialogcreator.data.ApplicationSettings;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
@@ -22,7 +24,7 @@ import java.io.File;
 import java.util.ResourceBundle;
 
 /**
- Used for setting Arma 3 Tools directory {@link ApplicationDataManager#getArma3ToolsDirectory()}. All changes will be set once popup is closed.
+ Used for setting Arma 3 Tools directory. All changes will be set once popup is closed.
 
  @author Kayler
  @since 05/26/2016. */
@@ -36,17 +38,18 @@ public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 	/**
 	 Creates the "change directories" popup
 	 */
-	public ChangeDirectoriesDialog(@Nullable File a3ToolsDir) {
+	public ChangeDirectoriesDialog() {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, true, true, true);
 		setTitle(bundle.getString("Popups.SelectSaveLocation.popup_title"));
-		initialize(a3ToolsDir);
+		initialize();
 		myStage.setMinWidth(600d);
 		myStage.initStyle(StageStyle.UTILITY);
 	}
 
-	private void initialize(@Nullable File a3ToolsDir) {
+	private void initialize() {
 		tfA3ToolsDir.setEditable(false);
 
+		File a3ToolsDir = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting.get();
 		if (a3ToolsDir != null) {
 			tfA3ToolsDir.setText(a3ToolsDir.getPath());
 		}
@@ -54,7 +57,7 @@ public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 		final Label lblA3ToolsDir = new Label(bundle.getString("Popups.SelectSaveLocation.lbl_a3_tools_dir"));
 		final Button btnChangeA3Tools = new Button(bundle.getString("Popups.SelectSaveLocation.btn_change"));
 		final Button btnClearA3ToolsDir = new Button(bundle.getString("Popups.SelectSaveLocation.btn_clear"));
-		
+
 		btnChangeA3Tools.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -108,13 +111,9 @@ public class ChangeDirectoriesDialog extends StageDialog<VBox> {
 	@Override
 	protected void ok() {
 		String a3tools = getArma3ToolsDirectoryPath();
-		if (a3tools != null) {
-			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(new File(a3tools));
-		} else {
-			ArmaDialogCreator.getApplicationDataManager().setArma3ToolsLocation(null);
-		}
-		ArmaDialogCreator.getApplicationDataManager().saveApplicationProperties();
-
+		File f = a3tools == null ? null : new File(a3tools);
+		ApplicationSettings.FileSetting armaToolsSetting = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting;
+		armaToolsSetting.set(f);
 		close();
 	}
 

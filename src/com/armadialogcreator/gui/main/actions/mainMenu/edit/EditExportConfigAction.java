@@ -1,8 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.edit;
 
-import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.gui.main.popup.export.EditExportConfigurationDialog;
-import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -16,7 +13,7 @@ public class EditExportConfigAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		EditExportConfigurationDialog dialog =
+		/*EditExportConfigurationDialog dialog =
 				new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration()) {
 					@Override
 					public void show() {
@@ -29,6 +26,6 @@ public class EditExportConfigAction implements EventHandler<ActionEvent> {
 			return;
 		}
 		Project.getCurrentProject().setExportConfiguration(dialog.getConfiguration());
-
+*/
 	}
 }

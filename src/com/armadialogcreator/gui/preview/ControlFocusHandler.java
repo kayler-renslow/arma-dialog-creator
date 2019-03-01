@@ -1,8 +1,8 @@
 package com.armadialogcreator.gui.preview;
 
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.util.Reference;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.util.SGAS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,15 +47,19 @@ public class ControlFocusHandler {
 	 If no control can have focus, no control will get focus.
 	 */
 	public void autoFocusToControl() {
-		Reference<ArmaControl> focusToMe = new Reference<>();
-		Reference<ArmaControl> lastControl = new Reference<>();
-		armaDisplay.getControls().deepIterator().forEach(armaControl -> {
-			setControlFocused(armaControl, false);
-			if (armaControl.getRenderer().requestingFocus()) {
-				focusToMe.setValue(armaControl);
+		SGAS<ArmaControl> focusToMe = new SGAS<>();
+		SGAS<ArmaControl> lastControl = new SGAS<>();
+		armaDisplay.getControlNodes().deepIterateChildren().forEach(node -> {
+			if (!(node instanceof ArmaControl)) {
+				return;
 			}
-			if (armaControl.getRenderer().canHaveFocus()) {
-				lastControl.setValue(armaControl);
+			ArmaControl control = (ArmaControl) node;
+			setControlFocused(control, false);
+			if (control.getRenderer().requestingFocus()) {
+				focusToMe.setValue(control);
+			}
+			if (control.getRenderer().canHaveFocus()) {
+				lastControl.setValue(control);
 			}
 		});
 		if (focusToMe.getValue() == null) {

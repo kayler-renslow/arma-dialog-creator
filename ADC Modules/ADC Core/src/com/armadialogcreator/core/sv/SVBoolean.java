@@ -1,8 +1,7 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,10 +9,10 @@ import org.jetbrains.annotations.Nullable;
 public final class SVBoolean extends SerializableValue {
 	private static final String S_TRUE = "true";
 	private static final String S_FALSE = "false";
-	
-	public static final ValueConverter<SVBoolean> CONVERTER = new ValueConverter<SVBoolean>() {
+
+	public static final StringArrayConverter<SVBoolean> CONVERTER = new StringArrayConverter<SVBoolean>() {
 		@Override
-		public SVBoolean convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVBoolean convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return valueOf(values[0]);
 		}
 	};

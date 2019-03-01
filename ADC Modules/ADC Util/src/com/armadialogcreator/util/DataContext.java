@@ -10,7 +10,7 @@ import java.util.HashMap;
  */
 public class DataContext {
 	private final HashMap<String, Object> map = new HashMap<>();
-	
+
 	/**
 	 Get the value associated with the given key. If the value is null and {@link Key#getDefaultValue()} != null, will place {@link Key#getDefaultValue()} in the context and return it.
 	 If the value is not null or {@link Key#getDefaultValue()} is null, will return whatever is stored inside the context.
@@ -23,26 +23,36 @@ public class DataContext {
 		}
 		return o;
 	}
-	
+
 	/**
 	 Get the value with the given {@link Key} instance name ({@link Key#getName()}).
-	 
+
 	 @param keyName key name
 	 @return value, or null if not set.
 	 */
 	public Object getValue(@NotNull String keyName) {
 		return map.get(keyName);
 	}
-	
+
 	/** Place the new value inside the context. Will return whatever was inside previously */
 	@Nullable
 	public Object put(@NotNull Key<?> key, @Nullable Object value) {
 		return map.put(key.getName(), value);
 	}
-	
+
+	/**
+	 Removes a key.
+
+	 @return true if a key was removed, false if no key was removed
+	 */
+	public boolean remove(@NotNull Key<?> key) {
+		return map.remove(key.getName()) != null;
+	}
+
+
 	/**
 	 Check if all the given {@link Key}'s are set (not null).
-	 
+
 	 @param keys {@link Key}'s to check
 	 @return true if all keys are not null, or false if at least 1 is null
 	 */
@@ -53,5 +63,10 @@ public class DataContext {
 			}
 		}
 		return true;
+	}
+
+	@NotNull
+	public Object getValue(Key<?> key, Object defaultValue) {
+		return map.getOrDefault(key, defaultValue);
 	}
 }

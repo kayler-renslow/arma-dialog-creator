@@ -9,7 +9,10 @@ import org.jetbrains.annotations.NotNull;
  @since 1/7/2019 */
 public class MapObserverChange<K, V> {
 	public enum ChangeType {
-		Put, Replace, Remove, Clear, Move
+		Put, Replace, Remove,
+		/** This change will be created prior to the map being cleared. */
+		Clear,
+		Move
 	}
 
 	private final MapObserver<K, V> modifiedMap;

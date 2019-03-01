@@ -1,11 +1,10 @@
 package com.armadialogcreator.data.xml;
 
 import com.armadialogcreator.core.stringtable.*;
-import com.armadialogcreator.data.StringTableKeyImpl;
-import com.armadialogcreator.data.oldprojectloader.DefaultStringTableXmlParser;
+import com.armadialogcreator.data.DefaultStringTableXmlParser;
+import com.armadialogcreator.data.SimpleStringTableKey;
+import com.armadialogcreator.util.MapObserver;
 import com.armadialogcreator.util.XmlParseException;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -152,7 +151,7 @@ public class DefaultStringTableXmlParserTest {
 		org.junit.Assert.assertEquals(errMsg, hasError, expectError);
 	}
 
-	private static class TestStringTableKey extends StringTableKeyImpl {
+	private static class TestStringTableKey extends SimpleStringTableKey {
 		public TestStringTableKey(String id, String packageName, String containerName, Language[] langs, String[] vals) {
 			super(id, new StringTableKeyPath(packageName), getMap(langs, vals));
 			if (containerName != null) {
@@ -160,8 +159,8 @@ public class DefaultStringTableXmlParserTest {
 			}
 		}
 
-		private static ObservableMap<Language, String> getMap(Language[] langs, String[] vals) {
-			ObservableMap<Language, String> map = FXCollections.observableMap(new HashMap<>());
+		private static MapObserver<Language, String> getMap(Language[] langs, String[] vals) {
+			MapObserver<Language, String> map = new MapObserver<>(new HashMap<>());
 			int i = 0;
 			for (Language language : langs) {
 				map.put(language, vals[i++]);
@@ -169,7 +168,7 @@ public class DefaultStringTableXmlParserTest {
 			return map;
 		}
 
-		public void setTokens(ObservableMap<Language, String> map) {
+		public void setTokens(MapObserver<Language, String> map) {
 			this.values = map;
 		}
 

@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.treeview;
 
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.core.old.ControlType;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.treeview.dataCreator.*;
 
@@ -56,14 +56,14 @@ public enum ControlTreeItemDataCreatorLookup {
 	MAP_MAIN(ControlType.MapMain, StaticDataCreator.INSTANCE);
 
 	public final ControlType controlType;
-	public final TreeItemDataCreator<ArmaControl, TreeItemEntry> creator;
+	public final TreeItemDataCreator<ArmaControl, UINodeTreeItemData> creator;
 	public final boolean allowsSubControls;
 
-	ControlTreeItemDataCreatorLookup(ControlType controlType, TreeItemDataCreator<ArmaControl, TreeItemEntry> creator) {
+	ControlTreeItemDataCreatorLookup(ControlType controlType, TreeItemDataCreator<ArmaControl, UINodeTreeItemData> creator) {
 		this(controlType, creator, false);
 	}
 
-	ControlTreeItemDataCreatorLookup(ControlType controlType, TreeItemDataCreator<ArmaControl, TreeItemEntry> creator, boolean allowsSubControls) {
+	ControlTreeItemDataCreatorLookup(ControlType controlType, TreeItemDataCreator<ArmaControl, UINodeTreeItemData> creator, boolean allowsSubControls) {
 		this.controlType = controlType;
 		this.creator = creator;
 		this.allowsSubControls = allowsSubControls;

@@ -12,16 +12,27 @@ public class ListObserverChangeMove<E> {
 	private final int oldIndex;
 	private final ListObserver<E> newList;
 	private final int newParentIndex;
-	private final boolean isEntryUpdate;
+	private final boolean isSourceListChange;
 
 	public ListObserverChangeMove(@NotNull E moved, @NotNull ListObserver<E> oldList, int oldIndex, @NotNull
-			ListObserver<E> newList, int newParentIndex, boolean isEntryUpdate) {
+			ListObserver<E> newList, int newParentIndex, boolean isSourceListChange) {
 		this.moved = moved;
 		this.oldList = oldList;
 		this.oldIndex = oldIndex;
 		this.newList = newList;
 		this.newParentIndex = newParentIndex;
-		this.isEntryUpdate = isEntryUpdate;
+		this.isSourceListChange = isSourceListChange;
+	}
+
+	/**
+	 Return true if this change was created for the source list. Since 2 move changes are created
+	 (one for source list and one for target list), this is helped to identify which change this instance was meant for.
+	 The source list will always receive the first update.
+
+	 @see ListObserver#move(int, ListObserver, int)
+	 */
+	public boolean isSourceListChange() {
+		return isSourceListChange;
 	}
 
 	/** The element that was moved from one list to another */
@@ -48,18 +59,6 @@ public class ListObserverChangeMove<E> {
 	@NotNull
 	public ListObserver<E> getDestinationList() {
 		return newList;
-	}
-
-	/**
-	 Return true if this update comes from the moved element being moved into it's new
-	 list via {@link ListObserver#move(int, ListObserver, int)},
-	 or false if this update captures the moved
-	 element leaving the old list.
-
-	 @see ListObserver#move(int, ListObserver, int)
-	 */
-	public boolean isEntryUpdate() {
-		return isEntryUpdate;
 	}
 
 }

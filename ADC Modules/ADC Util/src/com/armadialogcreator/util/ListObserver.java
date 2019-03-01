@@ -25,10 +25,10 @@ public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E
 	/** Remove all from list. */
 	@Override
 	public void clear() {
-		list.clear();
 		ListObserverChange<E> change = new ListObserverChange<>(this);
 		change.setCleared();
 		notifyListeners(change);
+		list.clear(); //clear after notify
 	}
 
 	@Override
@@ -193,10 +193,10 @@ public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E
 
 		ListObserverChange<E> change = new ListObserverChange<>(this);
 		change.setMoved(new ListObserverChangeMove<>(toMove, this, indexOfElementToMove, newList, newListIndex, true));
-		notifyListeners(change);
+		notifyListeners(change); //notify this list first
 		change = new ListObserverChange<>(newList);
 		change.setMoved(new ListObserverChangeMove<>(toMove, this, indexOfElementToMove, newList, newListIndex, false));
-		newList.notifyListeners(change);
+		newList.notifyListeners(change); //notify destination list second
 	}
 
 	/**

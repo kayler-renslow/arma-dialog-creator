@@ -1,7 +1,7 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.old.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,11 +62,17 @@ public interface Macro {
 		return new BasicMacro<>(key, value);
 	}
 
+	void invalidate();
+
+	@NotNull
+	DataContext getUserData();
+
 	class BasicMacro<T extends SerializableValue> implements Macro {
 
 		private final NotNullValueObserver<String> keyObserver;
 		private final NotNullValueObserver<SerializableValue> valueObserver;
 		private String comment;
+		private final DataContext userData = new DataContext();
 
 		/**
 		 A macro is referenced by a key and the result is text that is appended into the ending .h file.
@@ -94,6 +100,18 @@ public interface Macro {
 		@Override
 		public void setComment(@Nullable String comment) {
 			this.comment = comment;
+		}
+
+		@Override
+		public void invalidate() {
+			valueObserver.invalidate();
+			keyObserver.invalidate();
+		}
+
+		@Override
+		@NotNull
+		public DataContext getUserData() {
+			return userData;
 		}
 
 		@Override

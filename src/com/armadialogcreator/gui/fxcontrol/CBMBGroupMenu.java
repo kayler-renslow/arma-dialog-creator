@@ -6,10 +6,12 @@ import javafx.collections.ObservableList;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  @author Kayler
@@ -88,5 +90,11 @@ public class CBMBGroupMenu<V> extends Menu {
 	@NotNull
 	public ObservableList<CBMBMenuItem<V>> getCBMBMenuItems() {
 		return cbmbMenuItems;
+	}
+
+	public void addAllValues(@NotNull Iterable<V> items, @Nullable Function<V, ImageContainer> imageProvider) {
+		for (V v : items) {
+			cbmbMenuItems.add(new CBMBMenuItem<>(v, imageProvider == null ? null : imageProvider.apply(v)));
+		}
 	}
 }

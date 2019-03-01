@@ -9,23 +9,23 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Selection {
 
-	@NotNull ObservableList<CanvasControl> getSelected();
+	@NotNull ObservableList<UINode> getSelected();
 
 	/**
 	 Gets the first item in the selection
 	 */
-	@Nullable CanvasControl getFirst();
+	@Nullable UINode getFirst();
 
 	/**
 	 Adds or removes the given Control from the selection. If the Control is selected, it will no longer be selected. If it isn't selected, it will be selected
 	 */
-	void toggleFromSelection(CanvasControl control);
+	void toggleFromSelection(@NotNull UINode control);
 
-	void addToSelection(CanvasControl control);
+	void addToSelection(@NotNull UINode control);
 
-	boolean isSelected(@Nullable CanvasControl control);
+	boolean isSelected(@Nullable UINode control);
 
-	boolean removeFromSelection(CanvasControl control);
+	boolean removeFromSelection(@NotNull UINode control);
 
 	void clearSelected();
 

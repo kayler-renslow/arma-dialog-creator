@@ -2,28 +2,26 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.util.ListObserver;
-import com.armadialogcreator.util.ListsArrayIterator;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  @author K
  @since 01/04/2019 */
+@ApplicationSingleton
 public class MacroRegistry implements Registry {
 
-	private static final MacroRegistry instance = new MacroRegistry();
+	public static final MacroRegistry instance = new MacroRegistry();
+	private static final Key<DataLevel> KEY_MACRO_DATA_LEVEL = new Key<>("MacroRegistry.dataLevel", null);
 
 	static {
-		ApplicationManager.getInstance().addStateSubscriber(instance);
-	}
-
-	@NotNull
-	public static MacroRegistry getInstance() {
-		return instance;
+		ApplicationManager.instance.addStateSubscriber(instance);
 	}
 
 	@NotNull
@@ -54,7 +52,7 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationInitializing() {
+	public void adcInitializing() {
 		systemMacros.loadSystemMacros();
 		ApplicationDataManager.getInstance().getDataList().add(applicationMacros);
 	}
@@ -133,21 +131,97 @@ public class MacroRegistry implements Registry {
 
 	@NotNull
 	public Iterable<Macro> iterateAllMacros() {
-		List<Macro>[] lists = new List[4];
-		lists[0] = getProjectMacros().getMacros();
-		lists[1] = getWorkspaceMacros().getMacros();
-		lists[2] = getApplicationMacros().getMacros();
-		lists[3] = getSystemMacros().getMacros();
-		return new ListsArrayIterator<>(lists);
+		return new QuadIterable<>(
+				getProjectMacros().getMacros(),
+				getWorkspaceMacros().getMacros(),
+				getApplicationMacros().getMacros(),
+				getSystemMacros().getMacros()
+		);
+	}
+
+	public void removeMacro(@NotNull Macro macro) {
+		boolean remove = projectMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+			return;
+		}
+		remove = workspaceMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+			return;
+		}
+		remove = applicationMacros.getMacros().remove(macro);
+		if (remove) {
+			macro.invalidate();
+		}
+	}
+
+	@Nullable
+	public DataLevel getDataLevel(@NotNull Macro m) {
+		return KEY_MACRO_DATA_LEVEL.get(m.getUserData());
+	}
+
+	@NotNull
+	public Map<DataLevel, List<Macro>> copyAllMacrosToMap() {
+		Map<DataLevel, List<Macro>> map = new HashMap<>();
+		map.put(DataLevel.Project, projectMacros.getMacros());
+		map.put(DataLevel.Workspace, workspaceMacros.getMacros());
+		map.put(DataLevel.Application, applicationMacros.getMacros());
+		map.put(DataLevel.System, systemMacros.getMacros());
+		return map;
 	}
 
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;
-		private final ListObserver<Macro> macros = new ListObserver<>(new LinkedList<>());
+		private final ListObserver<Macro> macros = new ListObserver<>(new ArrayList<>());
 
 		protected Base(@NotNull DataLevel myLevel) {
 			this.myLevel = myLevel;
+			macros.addListener((list, change) -> {
+				switch (change.getChangeType()) {
+					case Add: {
+						ListObserverChangeAdd<Macro> added = change.getAdded();
+						DataContext userData = added.getAdded().getUserData();
+						KEY_MACRO_DATA_LEVEL.put(userData, myLevel);
+						break;
+					}
+					case Clear: {
+						for (Macro m : list) {
+							DataContext userData = m.getUserData();
+							KEY_MACRO_DATA_LEVEL.put(userData, myLevel);
+						}
+						break;
+					}
+					case Remove: {
+						ListObserverChangeRemove<Macro> removed = change.getRemoved();
+						DataContext userData = removed.getRemoved().getUserData();
+						KEY_MACRO_DATA_LEVEL.put(userData, null);
+						break;
+					}
+					case Set: {
+						ListObserverChangeSet<Macro> set = change.getSet();
+						DataContext userData = set.getOld().getUserData();
+						KEY_MACRO_DATA_LEVEL.put(userData, null);
+						userData = set.getNew().getUserData();
+						KEY_MACRO_DATA_LEVEL.put(userData, myLevel);
+						break;
+					}
+					case Move: {
+						ListObserverChangeMove<Macro> moved = change.getMoved();
+						DataContext userData = moved.getMoved().getUserData();
+						if (moved.isSourceListChange()) {
+							KEY_MACRO_DATA_LEVEL.put(userData, null);
+						} else {
+							KEY_MACRO_DATA_LEVEL.put(userData, myLevel);
+						}
+						break;
+					}
+					default: {
+						throw new IllegalStateException();
+					}
+				}
+			});
 		}
 
 		@Nullable
@@ -193,6 +267,10 @@ public class MacroRegistry implements Registry {
 		@NotNull
 		public String getDataID() {
 			return "config-classes";
+		}
+
+		public void addMacro(@NotNull Macro macro) {
+			macros.add(macro);
 		}
 	}
 

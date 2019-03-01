@@ -1,8 +1,7 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -12,9 +11,9 @@ import java.util.Arrays;
  */
 public final class SVArray extends SerializableValue {
 
-	public static final ValueConverter<SVArray> CONVERTER = new ValueConverter<SVArray>() {
+	public static final StringArrayConverter<SVArray> CONVERTER = new StringArrayConverter<SVArray>() {
 		@Override
-		public SVArray convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVArray convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVArray(values);
 		}
 	};

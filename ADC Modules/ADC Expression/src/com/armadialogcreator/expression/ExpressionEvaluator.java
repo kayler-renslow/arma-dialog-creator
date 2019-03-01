@@ -722,7 +722,7 @@ class ExpressionEvaluator implements AST.Visitor<Value> {
 
 	@Override
 	public Value visit(@NotNull AST.UnaryCommand expr, @NotNull Env env) {
-		UnaryCommandValueProvider provider = env.getUnaryCommandValueProvider();
+		NularCommandValueProvider provider = env.getUnaryCommandValueProvider();
 		if (provider == null) {
 			return getValueForIdentifier(expr, env, expr.getCommand());
 		}

@@ -2,12 +2,7 @@ package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
-import com.armadialogcreator.data.export.ProjectExporter;
-import com.armadialogcreator.data.olddata.Project;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.main.popup.export.EditExportConfigurationDialog;
-import com.armadialogcreator.gui.notification.BoxNotification;
-import com.armadialogcreator.gui.notification.Notifications;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,8 +13,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ResourceBundle;
 
 /**
@@ -31,9 +24,10 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration());
+		StageDialog dialog = null;
+		//EditExportConfigurationDialog dialog = new EditExportConfigurationDialog(Project.getCurrentProject().getExportConfiguration());
 		dialog.show();
-		if (dialog.getConfiguration() == null || dialog.wasCancelled()) {
+		/*if (dialog.getConfiguration() == null || dialog.wasCancelled()) {
 			return;
 		}
 		try {
@@ -51,7 +45,7 @@ public class FileExportAction implements EventHandler<ActionEvent> {
 			ExportErrorAftermathDialog exportErrorAftermathDialog = new ExportErrorAftermathDialog(e);
 			exportErrorAftermathDialog.show();
 		}
-
+*/
 
 	}
 

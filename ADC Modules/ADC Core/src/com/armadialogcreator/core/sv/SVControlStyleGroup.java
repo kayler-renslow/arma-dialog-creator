@@ -1,10 +1,10 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.AllowedStyleProvider;
-import com.armadialogcreator.core.old.ControlStyle;
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.AllowedStyleProvider;
+import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.ReadOnlyArray;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,8 +28,8 @@ public class SVControlStyleGroup extends SerializableValue {
 	 @throws Exception when the text couldn't be converted
 	 */
 	@NotNull
-	public static SVControlStyleGroup getGroupFromString(@NotNull String text, @Nullable AllowedStyleProvider styleProvider) throws Exception {
-		SVControlStyleGroup converted = CONVERTER.convert(null, text);
+	public static SVControlStyleGroup getGroupFromString(@NotNull Env env, @NotNull String text, @Nullable AllowedStyleProvider styleProvider) throws Exception {
+		SVControlStyleGroup converted = CONVERTER.convert(env, new String[]{text});
 		if (styleProvider == null) {
 			return converted;
 		}
@@ -49,7 +49,7 @@ public class SVControlStyleGroup extends SerializableValue {
 	 **/
 	@NotNull
 	public static SVControlStyleGroup fixMisidentified(@NotNull SVControlStyleGroup toFix, @NotNull AllowedStyleProvider allowedStyleProvider) {
-		ControlStyle[] allowedStyles = allowedStyleProvider.getAllowedStyles();
+		ReadOnlyArray<ControlStyle> allowedStyles = allowedStyleProvider.getAllowedStyles();
 		List<ControlStyle> fixedStyles = new ArrayList<>(allowedStyles.length);
 		boolean replace = false;
 		ControlStyle[] controlStyles = toFix.getStyleArray();
@@ -80,9 +80,9 @@ public class SVControlStyleGroup extends SerializableValue {
 		return toFix;
 	}
 
-	public static final ValueConverter<SVControlStyleGroup> CONVERTER = new ValueConverter<SVControlStyleGroup>() {
+	public static final StringArrayConverter<SVControlStyleGroup> CONVERTER = new StringArrayConverter<SVControlStyleGroup>() {
 		@Override
-		public SVControlStyleGroup convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVControlStyleGroup convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			String val = values[0];
 			boolean asId = false;
 			if (val.startsWith("ID:")) {
@@ -115,7 +115,7 @@ public class SVControlStyleGroup extends SerializableValue {
 				}
 			}
 			if (styles.isEmpty()) {
-				return null;
+				throw new SerializableValueConstructionException();
 			}
 			return new SVControlStyleGroup(styles);
 		}
@@ -153,6 +153,11 @@ public class SVControlStyleGroup extends SerializableValue {
 	@NotNull
 	public ControlStyle[] getStyleArray() {
 		return styles;
+	}
+
+	@NotNull
+	public ReadOnlyArray<ControlStyle> getReadOnlyStyleArray() {
+		return new ReadOnlyArray<>(styles);
 	}
 
 	@NotNull

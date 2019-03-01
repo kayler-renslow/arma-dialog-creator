@@ -1,7 +1,5 @@
 package com.armadialogcreator.gui.fxcontrol.treeView;
 
-import com.armadialogcreator.data.tree.TreeNode;
-import com.armadialogcreator.data.tree.TreeStructure;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TreeItem;
 import org.jetbrains.annotations.NotNull;
@@ -9,8 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 /** Creates a new EditableTreeView with a root node already in place. This class extends javafx.scene.control.TreeView of type TreeItemData */
 public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.control.TreeView<Td> {
-
-	private TreeDataToValueConverter<Td, Tv> converter;
 
 	public EditableTreeView(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		super(new TreeItem<>());
@@ -23,51 +19,13 @@ public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.
 		setCellSelectionUpdate(selectionUpdate);
 	}
 
-	public void setConverter(@NotNull TreeDataToValueConverter<Td, Tv> converter) {
-		this.converter = converter;
-	}
-
 	public void setCellSelectionUpdate(@Nullable TreeCellSelectionUpdate selectionUpdate) {
 		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
 
-	@NotNull
-	private TreeDataToValueConverter<Td, Tv> getConverter() {
-		if (converter == null) {
-			throw new IllegalStateException("must set converter before using it");
-		}
-		return converter;
-	}
-
 	/** Clears the TreeView and loads the given tree structure. If treeStructure is null, will just clear the tree */
-	public void loadStructure(@Nullable TreeStructure<Tv> treeStructure) {
+	public final void clear() {
 		setRoot(new TreeItem<>());
-		if (treeStructure == null) {
-			return;
-		}
-		TreeItem<Td> parent = getRoot();
-		TreeNode<Tv> parentNode = treeStructure.getRoot();
-		for (TreeNode<Tv> node : parentNode.getChildren()) {
-			loadStructure(parent, node);
-		}
-	}
-
-	private void loadStructure(TreeItem<Td> parent, TreeNode<Tv> parentNode) {
-		TreeItem<Td> newItem = new TreeItem<>(getConverter().convert(parentNode.getData(), parentNode.isFolder(), parentNode.getName()));
-		addChildToParent(parent, newItem);
-		for (TreeNode<Tv> childNode : parentNode.getChildren()) {
-			loadStructure(newItem, childNode);
-		}
-	}
-
-	/**
-	 Get a new representation of the {@link EditableTreeView} that can be modified without affecting it
-
-	 @return the new structure
-	 */
-	@NotNull
-	public GUITreeStructure<Tv> exportStructure() {
-		return GUITreeStructure.getStructure(this, getConverter());
 	}
 
 	/**

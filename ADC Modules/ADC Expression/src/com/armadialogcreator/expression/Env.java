@@ -2,6 +2,7 @@ package com.armadialogcreator.expression;
 
 import com.armadialogcreator.util.Key;
 import com.armadialogcreator.util.KeyValue;
+import com.armadialogcreator.util.SimpleMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/14/2016. */
-public interface Env extends Iterable<KeyValue<String, Value>> {
+public interface Env extends Iterable<KeyValue<String, Value>>, SimpleMap<String, Value> {
 	Key<Env> ENV = new Key<>("expression.env", null);
 
 	/** @return the value for the given identifier. If returns null, means identifier couldn't be resolved to a value. */
@@ -37,8 +38,10 @@ public interface Env extends Iterable<KeyValue<String, Value>> {
 	Value remove(@NotNull String identifier);
 
 	/** @return the instance, or null if unary commands should not be handled */
-	@Nullable UnaryCommandValueProvider getUnaryCommandValueProvider();
+	@Nullable NularCommandValueProvider getUnaryCommandValueProvider();
 
 	/** @return all current mapped identifiers (identifiers that have non null values) */
 	@NotNull String[] getMappedIdentifiers();
+
+
 }

@@ -1,7 +1,7 @@
 package com.armadialogcreator.arma.header;
 
 import com.armadialogcreator.util.IndentedStringBuilder;
-import com.armadialogcreator.util.Reference;
+import com.armadialogcreator.util.SGAS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -174,7 +174,7 @@ public class HeaderFile {
 
 			//the root class (which the HeaderFile uses for getting its classes and assignmetns)
 			//will still be available in the heirarchy, so this will work
-			Reference<HeaderClass> extendClassRef = new Reference<>();
+			SGAS<HeaderClass> extendClassRef = new SGAS<>();
 
 			hc.traverseUpwards((parent) -> {
 				if (parent.classNameEquals(classNameToFind, caseSensitive)) {

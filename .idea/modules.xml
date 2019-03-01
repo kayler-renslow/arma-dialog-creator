@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Application/ADC Application.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Application/ADC Application.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Canvas/ADC Canvas.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Canvas/ADC Canvas.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Control/ADC Control.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Control/ADC Control.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Core/ADC Core.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Core/ADC Core.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Data/ADC Data.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Data/ADC Data.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Expression/ADC Expression.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Expression/ADC Expression.iml" />

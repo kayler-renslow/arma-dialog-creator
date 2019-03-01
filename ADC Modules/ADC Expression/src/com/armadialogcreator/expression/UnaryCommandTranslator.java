@@ -9,7 +9,7 @@ import java.lang.reflect.Method;
  @since 06/28/2017 */
 class UnaryCommandTranslator {
 	@NotNull
-	public static Value executeUnaryCommand(@NotNull String command, @NotNull UnaryCommandValueProvider provider) {
+	public static Value executeUnaryCommand(@NotNull String command, @NotNull NularCommandValueProvider provider) {
 		String commandLowercase = command.toLowerCase();
 		Method[] methods = provider.getClass().getMethods();
 		for (Method method : methods) {

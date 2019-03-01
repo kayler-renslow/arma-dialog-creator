@@ -1,8 +1,8 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,9 +15,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class SVRaw extends SerializableValue {
 
-	public static final ValueConverter<SVRaw> CONVERTER = new ValueConverter<SVRaw>() {
+	public static final StringArrayConverter<SVRaw> CONVERTER = new StringArrayConverter<SVRaw>() {
 		@Override
-		public SVRaw convert(DataContext context, @NotNull String... values) throws Exception {
+		public SVRaw convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			//This converter is a placeholder to adhere to PropertyType specifications
 			//and shouldn't ever be used. Reason is because it doesn't allow for passing in a revert type (type to convert Raw back into)
 			throw new IllegalStateException();
@@ -86,11 +86,11 @@ public final class SVRaw extends SerializableValue {
 	 @throws Exception when the new value couldn't be created
 	 */
 	@Nullable
-	public SerializableValue newSubstituteTypeValue(@NotNull DataContext context) throws Exception {
+	public SerializableValue newSubstituteTypeValue(@NotNull Env env) throws Exception {
 		if (substituteType == null) {
 			return null;
 		}
-		return substituteType.getConverter().convert(context, getAsStringArray());
+		return substituteType.getConverter().convert(env, getAsStringArray());
 	}
 
 }

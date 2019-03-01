@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.popup.editor;
 
-import com.armadialogcreator.core.old.ControlProperty;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.Label;
@@ -19,7 +18,7 @@ import java.util.ResourceBundle;
 class MissingControlPropertiesConfigDialog extends StageDialog<VBox> {
 	/**
 	 */
-	public MissingControlPropertiesConfigDialog(@Nullable Stage primaryStage, @NotNull List<ControlProperty> missing) {
+	public MissingControlPropertiesConfigDialog(@Nullable Stage primaryStage, @NotNull List<String> missingProperties) {
 		super(primaryStage, new VBox(5), null, true, true, false);
 
 		ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
@@ -27,8 +26,8 @@ class MissingControlPropertiesConfigDialog extends StageDialog<VBox> {
 		setTitle(bundle.getString("MissingControlPropertiesConfig.popup_title"));
 
 		ListView<String> listView = new ListView<>();
-		for (ControlProperty controlProperty : missing) {
-			listView.getItems().add(controlProperty.getName());
+		for (String name : missingProperties) {
+			listView.getItems().add(name);
 		}
 		getFooter().getBtnOk().setText(bundle.getString("MissingControlPropertiesConfig.close_anyway"));
 		getFooter().getBtnOk().setPrefWidth(180);

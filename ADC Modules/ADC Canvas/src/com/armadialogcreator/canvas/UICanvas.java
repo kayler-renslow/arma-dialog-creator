@@ -26,7 +26,7 @@ import java.util.function.Function;
 /**
  @author Kayler
  @since 05/11/2016. */
-public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
+public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	/** javafx Canvas */
 	protected final Canvas canvas;
@@ -39,7 +39,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 
 	protected final Resolution resolution;
 
-	protected @NotNull CanvasDisplay<C> display;
+	protected UINode rootNode;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -65,12 +65,16 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		requestPaint();
 	};
 
-	public UICanvas(@NotNull Resolution resolution, @NotNull CanvasDisplay<C> display) {
+	public UICanvas(@NotNull Resolution resolution, @NotNull UINode rootNode) {
 		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
 			@Override
-			public void update(@NotNull UpdateListenerGroup<Resolution> group, Resolution newResolution) {
-				updateResolution(newResolution);
+			public void update(@NotNull UpdateListenerGroup<Resolution> group, @NotNull Resolution newResolution) {
+				if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
+					canvas.setWidth(newResolution.getScreenWidth());
+					canvas.setHeight(newResolution.getScreenHeight());
+				}
+				requestPaint();
 			}
 		});
 
@@ -92,21 +96,17 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		});
 
 		//do this last
-		this.display = display;
-		setDisplayListeners(true);
+		this.rootNode = rootNode;
+		setUINodeListeners(true);
 
 		timer = new CanvasAnimationTimer();
 		timer.start();
 
 	}
 
-	protected void updateResolution(@NotNull Resolution newResolution) {
-		if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
-			canvas.setWidth(newResolution.getScreenWidth());
-			canvas.setHeight(newResolution.getScreenHeight());
-		}
-		display.resolutionUpdate(newResolution);
-		requestPaint();
+	@NotNull
+	public UINode getRootNode() {
+		return rootNode;
 	}
 
 	public int getCanvasWidth() {
@@ -117,23 +117,19 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		return (int) this.canvas.getHeight();
 	}
 
-	public void setDisplay(@NotNull CanvasDisplay<C> display) {
-		setDisplayListeners(false);
-		this.display = display;
-		setDisplayListeners(true);
+	public void setRootNode(@NotNull UINode rootNode) {
+		setUINodeListeners(false);
+		this.rootNode = rootNode;
+		setUINodeListeners(true);
 		requestPaint();
 	}
 
 	@SuppressWarnings("unchecked")
-	private void setDisplayListeners(boolean add) {
+	private void setUINodeListeners(boolean add) {
 		if (add) {
-			this.display.getControls().getUpdateGroup().addListener(renderUpdateGroupListener);
-			this.display.getBackgroundControls().getUpdateGroup().addListener(renderUpdateGroupListener);
-			this.display.getReRenderUpdateGroup().addListener(renderUpdateGroupListener);
+			this.rootNode.renderUpdateGroup().addListener(renderUpdateGroupListener);
 		} else {
-			this.display.getControls().getUpdateGroup().removeListener(renderUpdateGroupListener);
-			this.display.getBackgroundControls().getUpdateGroup().removeListener(renderUpdateGroupListener);
-			this.display.getReRenderUpdateGroup().removeListener(renderUpdateGroupListener);
+			this.rootNode.renderUpdateGroup().removeListener(renderUpdateGroupListener);
 		}
 	}
 
@@ -156,7 +152,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	 Paint the canvas. Order of painting is:
 	 <ol>
 	 <li>background</li>
-	 <li>display/controls</li>
+	 <li>{@link #getRootNode()}</li>
 	 <li>components inserted via {@link #addComponent(CanvasComponent)}</li>
 	 </ol>
 	 */
@@ -164,7 +160,7 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		gc.setTextBaseline(VPos.TOP); //we actually need to run this with each call for some reason
 		gc.save();
 		paintBackground();
-		paintControls();
+		paintRootNode();
 		paintComponents();
 		for (Function<GraphicsContext, Void> f : canvasContext.getPaintLast()) {
 			f.apply(gc);
@@ -187,16 +183,17 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 	}
 
 	/**
-	 Paints all controls inside the display set {@link #display}.
+	 Paints all nodes in {@link #getRootNode()} and will iterate each child's child as well.
 	 Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
-	 The background controls are painted first, then controls are painted
 	 */
-	protected void paintControls() {
-		for (CanvasControl control : display.getBackgroundControls()) {
-			paintControl(control);
-		}
-		for (CanvasControl control : display.getControls()) {
-			paintControl(control);
+	protected void paintRootNode() {
+		paintNodes(rootNode);
+	}
+
+	private void paintNodes(@NotNull UINode node) {
+		for (UINode child : node.deepIterateChildren()) {
+			paintNode(rootNode);
+			paintNodes(child);
 		}
 	}
 
@@ -222,13 +219,14 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
-	protected void paintControl(CanvasControl control) {
-		gc.save();
-		paintComponent(control.getRenderer());
-		gc.restore();
+	protected void paintNode(@NotNull UINode node) {
+		if (node.getComponent() == null) {
+			return;
+		}
+		paintComponent(node.getComponent());
 	}
 
-	protected void paintComponent(CanvasComponent component) {
+	protected void paintComponent(@NotNull CanvasComponent component) {
 		if (component.isGhost()) {
 			return;
 		}
@@ -354,9 +352,9 @@ public abstract class UICanvas<C extends CanvasControl> extends AnchorPane {
 		return canvas;
 	}
 
-	/** Clear any listeners attached to {@link #display} */
+	/** Clear any listeners attached to {@link #rootNode} */
 	public void clearListeners() {
-		setDisplayListeners(false);
+		setUINodeListeners(false);
 	}
 
 	/**

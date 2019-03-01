@@ -1,8 +1,7 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -24,9 +23,9 @@ public class SVFont extends SerializableValue {
 	/** Default Arma 3 font */
 	public static SVFont DEFAULT = PuristaMedium;
 
-	public static final ValueConverter<SVFont> CONVERTER = new ValueConverter<SVFont>() {
+	public static final StringArrayConverter<SVFont> CONVERTER = new StringArrayConverter<SVFont>() {
 		@Override
-		public SVFont convert(DataContext context, @NotNull String... values) {
+		public SVFont convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return get(values[0]);
 		}
 	};

@@ -1,8 +1,8 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
@@ -13,15 +13,15 @@ import org.jetbrains.annotations.NotNull;
  @since 05/23/2016. */
 public class SVHexColor extends SerializableValue implements SVColor {
 
-	public static final ValueConverter<SVHexColor> CONVERTER = new ValueConverter<SVHexColor>() {
+	public static final StringArrayConverter<SVHexColor> CONVERTER = new StringArrayConverter<SVHexColor>() {
 		@Override
-		public SVHexColor convert(DataContext context, @NotNull String... values) {
+		public SVHexColor convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVHexColor(values[0]);
 		}
 	};
 
-	/** Colors where each value is ranged from 0.0 - 1.0 inclusively. Format=[r,g,b,a] */
-	private double r, g, b, a;
+	/** Colors where each value is ranged from 0 - 255 inclusively. Format=[r,g,b] */
+	private int r, g, b;
 	private String hex;
 
 	/**
@@ -32,13 +32,13 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	public SVHexColor(@NotNull String hex) {
 		double[] colorArray = new double[4];
 		getColorArray(colorArray, hex);
-		setColor(colorArray);
+		setColorF(colorArray);
 	}
 
 	public SVHexColor(@NotNull Color color) {
-		r = color.getRed();
-		g = color.getGreen();
-		b = color.getBlue();
+		setRedF(color.getRed());
+		setGreenF(color.getGreen());
+		setBlueF(color.getBlue());
 		updateHex();
 	}
 
@@ -74,25 +74,21 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	}
 
 	/**
-	 Gets color array. Ignores alpha
+	 Gets rgbColor array. Ignores alpha
 
 	 @param arr stores values in given array (array must be length 3) (r,g,b).
 	 This array is modified directly and is returned. Each value at each index will be randed 0-1
-	 @param color the color as an integer
+	 @param rgbColor the rgb color as an integer
 	 @return the array
 	 @throws IllegalArgumentException when the array length < 3
 	 */
-	public static double[] getColorArray(double[] arr, int color) {
+	public static double[] getColorArray(double[] arr, int rgbColor) {
 		if (arr.length < 3) {
-			throw new IllegalArgumentException("arr.length != 4");
+			throw new IllegalArgumentException("arr.length < 3");
 		}
-		int r = (color) & 0xFF;
-		int g = (color >> 8) & 0xFF;
-		int b = (color >> 16) & 0xFF;
-		final double f = 255.0;
-		arr[0] = r / f;
-		arr[1] = g / f;
-		arr[2] = b / f;
+		arr[0] = ColorUtil.af(rgbColor);
+		arr[1] = ColorUtil.gf(rgbColor);
+		arr[2] = ColorUtil.bf(rgbColor);
 		return arr;
 	}
 
@@ -109,96 +105,107 @@ public class SVHexColor extends SerializableValue implements SVColor {
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (o instanceof SVHexColor) {
-			SVHexColor other = (SVHexColor) o;
-			return getHexColor().equals(other.getHexColor());
+		if (o instanceof SVColor) {
+			return SVColor.isEqualTo(this, (SVColor) o);
 		}
 		return false;
 	}
 
-	private void boundCheck(double c) {
-		if (c < 0.0 || c > 1.0) {
-			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=1): " + c);
-		}
-	}
-
 	@Override
-	public double getRed() {
+	public int getRedI() {
 		return r;
 	}
 
 	@Override
-	public void setRed(double r) {
-		boundCheck(r);
+	public void setRedI(int r) {
+		ColorUtil.boundCheckI(r);
 		this.r = r;
 		updateHex();
 	}
 
 	@Override
-	public double getGreen() {
+	public int getGreenI() {
 		return g;
 	}
 
 	@Override
-	public void setGreen(double g) {
-		boundCheck(g);
+	public void setGreenI(int g) {
+		ColorUtil.boundCheckI(g);
 		this.g = g;
 		updateHex();
 	}
 
 	@Override
-	public double getBlue() {
+	public int getBlueI() {
 		return b;
 	}
 
 	@Override
-	public void setBlue(double b) {
-		boundCheck(b);
+	public void setBlueI(int b) {
+		ColorUtil.boundCheckI(b);
 		this.b = b;
 		updateHex();
 	}
 
-	/** @return always 1 */
 	@Override
-	public double getAlpha() {
-		return 1;
-	}
-
-	/** does nothing */
-	@Override
-	public void setAlpha(double a) {
+	public int getAlphaI() {
+		return 255;
 	}
 
 	@Override
-	public void setColor(double[] c) {
-		if (c.length != 4) {
-			throw new IllegalArgumentException("array length must be 4");
-		}
-		this.r = c[0];
-		this.g = c[1];
-		this.b = c[2];
+	public void setAlphaI(int a) {
+		//do nothing
+	}
+
+	@Override
+	public double getRedF() {
+		return r;
+	}
+
+	@Override
+	public void setRedF(double r) {
+		this.r = ColorUtil.toInt(r);
 		updateHex();
 	}
 
+	@Override
+	public double getGreenF() {
+		return g;
+	}
+
+	@Override
+	public void setGreenF(double g) {
+		this.g = ColorUtil.toInt(g);
+		updateHex();
+	}
+
+	@Override
+	public double getBlueF() {
+		return b;
+	}
+
+	@Override
+	public void setBlueF(double b) {
+		this.b = ColorUtil.toInt(b);
+		updateHex();
+	}
+
+	@Override
+	public double getAlphaF() {
+		return 1.0;
+	}
+
+	@Override
+	public void setAlphaF(double a) {
+		//do nothing
+	}
+
 	private void updateHex() {
-		final double f = 255.0;
-		int r = (int) (getRed() * f);
-		int g = (int) (getGreen() * f);
-		int b = (int) (getBlue() * f);
-		int argb = (r << 16) | (g << 8) | b;
+		int argb = ColorUtil.toRGB(r, g, b);
 		String h = Integer.toHexString(argb);
 		if (h.length() < 6) {
 			h = "000000".substring(0, 6 - h.length()) + h;
 		}
 		hex = "#" + h;
-	}
-
-	@Override
-	@NotNull
-	public Color toJavaFXColor() {
-		return Color.color(getRed(), getGreen(), getBlue());
 	}
 }

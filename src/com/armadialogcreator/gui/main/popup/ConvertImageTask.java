@@ -2,6 +2,7 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.data.olddata.ImagesTool;
 import com.armadialogcreator.gui.StageDialog;
@@ -191,10 +192,10 @@ public class ConvertImageTask {
 			myStage.setResizable(false);
 
 			Button btnLocate = new Button(bundle.getString("ValueEditors.ImageValueEditor.set_a3_tools_btn"));
-			btnLocate.setOnAction(new EventHandler<ActionEvent>() {
+			btnLocate.setOnAction(new EventHandler<>() {
 				@Override
 				public void handle(ActionEvent event) {
-					new ChangeDirectoriesDialog(ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory()).showAndWait();
+					new ChangeDirectoriesDialog().showAndWait();
 					close();
 				}
 			});
@@ -208,7 +209,7 @@ public class ConvertImageTask {
 
 		@Override
 		protected void closing() {
-			File f = ArmaDialogCreator.getApplicationDataManager().getArma3ToolsDirectory();
+			File f = SettingsManager.instance.getApplicationSettings().ArmaToolsSetting.get();
 			if (f == null) {
 				q.add(closeTask);
 			} else {

@@ -3,6 +3,7 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
 import com.armadialogcreator.ProgramArgument;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.expression.*;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.fxcontrol.SyntaxTextArea;
@@ -159,9 +160,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 			protected Boolean call() throws Exception {
 
 				SimpleEnv env = new SimpleEnv(
-						new ApplicationData.UnaryCommandValueProviderImpl(
-								ApplicationData.getManagerInstance()
-						)
+						ExpressionEnvManager.instance.getCommandProvider()
 				);
 
 				String returnValueString;

@@ -1,15 +1,10 @@
 package com.armadialogcreator.core.sv;
 
-import com.armadialogcreator.core.old.PropertyType;
-import com.armadialogcreator.util.ArmaPrecision;
-import com.armadialogcreator.util.DataContext;
-import com.armadialogcreator.util.ValueConverter;
+import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
-
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 /**
  Defines a color as an array.
@@ -20,7 +15,7 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	private static final double EPSILON = 0.0001;
 
-	/** @return the rounded result that has decimal places count equal to what {@link #format} would output */
+	/** @return the rounded result that has decimal places count equal to what {@link SVColor#format} would output */
 	public static double round(double d) {
 		return Math.round(d * 10000) / 10000.0;
 	}
@@ -30,17 +25,10 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		return d1 == d2 || Math.abs(d1 - d2) < EPSILON;
 	}
 
-	public static final DecimalFormat format = new DecimalFormat("#.####");
 
-	static {
-		//This is to ensure that numbers use periods instead of commas for decimals and use commas for thousands place.
-		//Also, this is being initialized here because DECIMAL_FORMAT is static and may initialize before some testing methods
-		format.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(Locale.US));
-	}
-
-	public static final ValueConverter<SVColorArray> CONVERTER = new ValueConverter<SVColorArray>() {
+	public static final StringArrayConverter<SVColorArray> CONVERTER = new StringArrayConverter<SVColorArray>() {
 		@Override
-		public SVColorArray convert(DataContext context, @NotNull String... values) {
+		public SVColorArray convert(@NotNull Env env, @NotNull String[] values) throws Exception {
 			return new SVColorArray(values);
 		}
 	};
@@ -59,10 +47,10 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
 	 */
 	public SVColorArray(double r, double g, double b, double a) {
-		setRed(r);
-		setGreen(g);
-		setBlue(b);
-		setAlpha(a);
+		setRedF(r);
+		setGreenF(g);
+		setBlueF(b);
+		setAlphaF(a);
 	}
 
 	/**
@@ -75,18 +63,21 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
 	 */
 	public SVColorArray(int r, int g, int b, int a) {
-		this(r / 255.0, g / 255.0, b / 255.0, a / 255.0);
+		setRedI(r);
+		setGreenI(g);
+		setBlueI(b);
+		setAlphaI(a);
 	}
 
 	/**
 	 Creates a color from a double array of length 4
 
-	 @param c the color array that must have length=4
-	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when c.length != 4
+	 @param rgba the color array that must have length=4
+	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when rgba.length != 4
 	 */
-	public SVColorArray(double[] c) {
+	public SVColorArray(double[] rgba) {
 		this(0, 0, 0, 0);
-		setColor(c);
+		setColorF(rgba);
 	}
 
 	/** Set the color from a JavaFX Color instance */
@@ -105,65 +96,88 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		this(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
 	}
 
-	private void boundCheck(double c) {
-		if (c < 0.0 || c > 1.0) {
-			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=1): " + c);
-		}
+	@Override
+	public int getRedI() {
+		return ColorUtil.toInt(r);
 	}
 
 	@Override
-	public double getRed() {
+	public void setRedI(int r) {
+		this.r = ColorUtil.toDouble(r);
+	}
+
+	@Override
+	public int getGreenI() {
+		return ColorUtil.toInt(g);
+	}
+
+	@Override
+	public void setGreenI(int g) {
+		this.g = ColorUtil.toDouble(g);
+	}
+
+	@Override
+	public int getBlueI() {
+		return ColorUtil.toInt(b);
+	}
+
+	@Override
+	public void setBlueI(int b) {
+		this.b = ColorUtil.toDouble(b);
+	}
+
+	@Override
+	public int getAlphaI() {
+		return ColorUtil.toInt(a);
+	}
+
+	@Override
+	public void setAlphaI(int a) {
+		this.a = ColorUtil.toDouble(a);
+	}
+
+	@Override
+	public double getRedF() {
 		return r;
 	}
 
 	@Override
-	public void setRed(double r) {
-		boundCheck(r);
+	public void setRedF(double r) {
+		ColorUtil.boundCheckF(r);
 		this.r = r;
 	}
 
 	@Override
-	public double getGreen() {
+	public double getGreenF() {
 		return g;
 	}
 
 	@Override
-	public void setGreen(double g) {
-		boundCheck(g);
+	public void setGreenF(double g) {
+		ColorUtil.boundCheckF(g);
 		this.g = g;
 	}
 
 	@Override
-	public double getBlue() {
+	public double getBlueF() {
 		return b;
 	}
 
 	@Override
-	public void setBlue(double b) {
-		boundCheck(b);
+	public void setBlueF(double b) {
+		ColorUtil.boundCheckF(b);
 		this.b = b;
 	}
 
 	@Override
-	public double getAlpha() {
+	public double getAlphaF() {
 		return a;
 	}
 
 	@Override
-	public void setAlpha(double a) {
-		boundCheck(a);
+	public void setAlphaF(double a) {
+		ColorUtil.boundCheckF(a);
 		this.a = a;
-	}
-
-	@Override
-	public void setColor(double[] c) {
-		if (c.length != 4) {
-			throw new IllegalArgumentException("array length must be 4");
-		}
-		setRed(c[0]);
-		setGreen(c[1]);
-		setBlue(c[2]);
-		setAlpha(c[3]);
 	}
 
 	/** @return the colors as a string array formatted like so: {red, green, blue, alpha} */
@@ -192,42 +206,17 @@ public class SVColorArray extends SerializableValue implements SVColor {
 
 	/**
 	 @return the color array into a String.
-	 Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0,0.1,0.2,0.3}"
+	 @see SVColor#toStringF(double, double, double, double)
 	 */
 	@NotNull
 	public String toString() {
-		return toString(r, g, b, a);
-	}
-
-	/**
-	 @return the given colors into a String.
-	 Example: 0 red, 0.1 green, 0.2 blue, 0.3 alpha becomes "{0.0, 0.1, 0.2, 0.3}"
-	 */
-	@NotNull
-	public static String toString(double red, double green, double blue, double alpha) {
-		return "{" + format.format(red) + ", "
-				+ format.format(green) + ", "
-				+ format.format(blue) + ", "
-				+ format.format(alpha) + "}";
-	}
-
-	/** Convert this color into a JavaFX color */
-	@NotNull
-	public Color toJavaFXColor() {
-		return Color.color(getRed(), getGreen(), getBlue(), getAlpha());
+		return SVColor.toStringF(r, g, b, a);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (o == this) {
-			return true;
-		}
-		if (o instanceof SVColorArray) {
-			SVColorArray other = (SVColorArray) o;
-			return ArmaPrecision.isEqualTo(this.r, other.r)
-					&& ArmaPrecision.isEqualTo(this.g, other.g)
-					&& ArmaPrecision.isEqualTo(this.b, other.b)
-					&& ArmaPrecision.isEqualTo(this.a, other.a);
+		if (o instanceof SVColor) {
+			return SVColor.isEqualTo(this, (SVColor) o);
 		}
 		return false;
 	}

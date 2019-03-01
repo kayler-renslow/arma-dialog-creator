@@ -1,24 +1,23 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.core.old.ControlType;
-import com.armadialogcreator.core.old.SpecificationRegistry;
-import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.data.EditorManager;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
  @since 7/27/2017 */
-public abstract class GenericDataCreator implements TreeItemDataCreator<ArmaControl, TreeItemEntry> {
+public abstract class GenericDataCreator implements TreeItemDataCreator<ArmaControl, UINodeTreeItemData> {
 	private final ControlType type;
 
 	public GenericDataCreator(@NotNull ControlType type) {
@@ -27,21 +26,17 @@ public abstract class GenericDataCreator implements TreeItemDataCreator<ArmaCont
 
 	@Nullable
 	@Override
-	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(type, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));
+	public UINodeTreeItemData createNew(@NotNull EditableTreeView<ArmaControl, UINodeTreeItemData> treeView) {
+		NewControlDialog dialog = new NewControlDialog(type, true);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;
 		}
 
-		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
-		return new ControlTreeItemEntry(create(dialog.getClassName(), resolution, getEnv(), Project.getCurrentProject()));
-	}
-
-	private Env getEnv() {
-		return ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment();
+		ArmaResolution resolution = EditorManager.instance.getResolution();
+		return new ControlTreeItemEntry(create(dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv()));
 	}
 
 	@NotNull
-	protected abstract ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env, @NotNull SpecificationRegistry registry);
+	protected abstract ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env);
 }

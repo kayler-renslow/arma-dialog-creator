@@ -1,42 +1,37 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.impl.ComboControl;
-import com.armadialogcreator.arma.util.ArmaResolution;
-import com.armadialogcreator.core.old.ControlType;
-import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.impl.ComboControl;
+import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.data.EditorManager;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemDataCreator;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
-import com.armadialogcreator.gui.main.treeview.TreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
  @author Kayler
  @since July 23, 2017 */
-public class ComboDataCreator implements TreeItemDataCreator<ArmaControl, TreeItemEntry> {
+public class ComboDataCreator implements TreeItemDataCreator<ArmaControl, UINodeTreeItemData> {
 	public static final ComboDataCreator INSTANCE = new ComboDataCreator();
 
 	@Nullable
 	@Override
-	public TreeItemEntry createNew(@NotNull EditableTreeView<ArmaControl, TreeItemEntry> treeView) {
-		NewControlDialog dialog = new NewControlDialog(ControlType.Combo, ArmaDialogCreator.getCanvasView().isBackgroundTreeView(treeView));
+	public UINodeTreeItemData createNew(@NotNull EditableTreeView<ArmaControl, UINodeTreeItemData> treeView) {
+		NewControlDialog dialog = new NewControlDialog(ControlType.Combo, true);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return null;
 		}
 
-		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData());
+		ArmaResolution resolution = EditorManager.instance.getResolution();
 		ArmaControl control =
-				new ComboControl(dialog.getClassName(), resolution, getEnv(), Project.getCurrentProject());
+				new ComboControl(dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv());
 		return new ControlTreeItemEntry(control);
-	}
-
-	private Env getEnv() {
-		return ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment();
 	}
 }

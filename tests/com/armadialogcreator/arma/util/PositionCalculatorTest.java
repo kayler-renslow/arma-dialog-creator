@@ -1,15 +1,18 @@
 package com.armadialogcreator.arma.util;
 
-import com.armadialogcreator.canvas.ScreenDimension;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.PositionCalculator;
+import com.armadialogcreator.util.ScreenDimension;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+
 
 /**
  @author Kayler
  @since 08/17/2017 */
 public class PositionCalculatorTest {
-	private final ArmaResolution resolution = new ArmaResolution(ScreenDimension.D960, ArmaUIScale.SMALL);
+	private final ArmaResolution resolution = new ArmaResolution(ScreenDimension.D960);
 
 	@Test
 	public void getSafeZoneExpressionX() throws Exception {

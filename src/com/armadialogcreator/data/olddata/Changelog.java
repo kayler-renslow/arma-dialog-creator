@@ -1,6 +1,5 @@
 package com.armadialogcreator.data.olddata;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
@@ -15,10 +14,10 @@ import java.util.LinkedList;
  @since 08/02/2016. */
 public class Changelog {
 
-	/** Get the instance stored in an {@link ApplicationData} instance, which is stored in {@link ArmaDialogCreator#getApplicationData()}. */
+
 	@NotNull
 	public static Changelog getInstance() {
-		return ArmaDialogCreator.getApplicationData().getChangelog();
+		return null;
 	}
 
 	private final LinkedList<ChangeDescriptor> undo = new LinkedList<>();

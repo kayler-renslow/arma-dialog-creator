@@ -9,6 +9,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.io.FileInputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -42,22 +43,46 @@ public class XmlWriterTest {
 			Document document = getNormalizedDocument(outputFile);
 			assertEquals("company", document.getDocumentElement().getTagName());
 
-			List<Element> staffList = XmlUtil.getChildElementsWithTagName(document.getDocumentElement(), "staff");
+			List<Element> staffList = new ArrayList<>();
+			for (Element element : XmlUtil.iterateChildElements(document.getDocumentElement())) {
+				if (!element.getTagName().equals("staff")) {
+					continue;
+				}
+				staffList.add(element);
+			}
 			assertEquals(1, staffList.size());
 
 			Element staff = staffList.get(0);
 
 			assertEquals("1", staff.getAttribute("id"));
 
-			List<Element> firstnameList = XmlUtil.getChildElementsWithTagName(staff, "firstname");
+			List<Element> firstnameList = new ArrayList<>();
+			for (Element element : XmlUtil.iterateChildElements(staff)) {
+				if (!element.getTagName().equals("firstname")) {
+					continue;
+				}
+				firstnameList.add(element);
+			}
 			assertEquals(1, firstnameList.size());
 			assertEquals("Leroy", XmlUtil.getImmediateTextContent(firstnameList.get(0)));
 
-			List<Element> lastnameList = XmlUtil.getChildElementsWithTagName(staff, "lastname");
+			List<Element> lastnameList = new ArrayList<>();
+			for (Element element : XmlUtil.iterateChildElements(staff)) {
+				if (!element.getTagName().equals("lastname")) {
+					continue;
+				}
+				lastnameList.add(element);
+			}
 			assertEquals(1, lastnameList.size());
 			assertEquals("Jenkins", XmlUtil.getImmediateTextContent(lastnameList.get(0)));
 
-			List<Element> specialcharactersList = XmlUtil.getChildElementsWithTagName(staff, "specialcharacters");
+			List<Element> specialcharactersList = new ArrayList<>();
+			for (Element element : XmlUtil.iterateChildElements(staff)) {
+				if (!element.getTagName().equals("specialcharacters")) {
+					continue;
+				}
+				specialcharactersList.add(element);
+			}
 			assertEquals(1, lastnameList.size());
 			assertEquals("!@#$%^&*()_+<>,.-=~`/\\", XmlUtil.getImmediateTextContent(specialcharactersList.get(0)));
 

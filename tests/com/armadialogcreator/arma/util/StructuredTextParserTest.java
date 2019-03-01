@@ -1,5 +1,7 @@
 package com.armadialogcreator.arma.util;
 
+import com.armadialogcreator.control.StructuredTextParser;
+import com.armadialogcreator.control.TextSection;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

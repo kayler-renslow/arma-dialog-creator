@@ -18,7 +18,7 @@ public class BooleanValueEditor implements ValueEditor<SVBoolean> {
 	private final ValueObserver<SVBoolean> svBooleanValueObserver = new ValueObserver<>(null);
 
 	public BooleanValueEditor() {
-		choiceBox.getValueObserver().addListener(new ValueListener<Boolean>() {
+		choiceBox.getValueObserver().addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				svBooleanValueObserver.updateValue(SVBoolean.get(newValue));

@@ -1,14 +1,13 @@
 package com.armadialogcreator.gui.main.popup;
 
+import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.old.MacroType;
-import com.armadialogcreator.core.old.PropertyType;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.stringtable.StringTableKey;
-import com.armadialogcreator.core.sv.SVString;
-import com.armadialogcreator.core.sv.SerializableValue;
-import com.armadialogcreator.data.olddata.Project;
+import com.armadialogcreator.data.MacroRegistry;
+import com.armadialogcreator.data.StringTableManager;
 import com.armadialogcreator.gui.main.fxControls.ChooseItemDialog;
 import com.armadialogcreator.gui.main.stringtable.StringTableLanguageTokenEditor;
 import com.armadialogcreator.lang.Lang;
@@ -32,42 +31,36 @@ import java.util.ResourceBundle;
 
  @author Kayler
  @since 08/09/2016. */
-public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDialog<Macro<V>> {
+public class ChooseMacroDialog extends ChooseItemDialog<Macro> {
 
 	private static MacroItemCategory[] getCategories() {
-		MacroItemCategory[] categories = new MacroItemCategory[MacroType.values().length + 1];
+		MacroItemCategory[] categories = new MacroItemCategory[6];
 		categories[0] = new AllMacrosCategory();
-		int i = 1;
-		for (MacroType type : MacroType.values()) {
-			if (type != MacroType.STRING_TABLE) {
-				categories[i++] = new ImplicitMacroTypeCategory(type);
-			} else {
-				categories[i++] = new StringTableKeyMacroCategory();
-			}
-		}
+		categories[1] = new DataLevelCategory(DataLevel.Project);
+		categories[2] = new DataLevelCategory(DataLevel.Workspace);
+		categories[3] = new DataLevelCategory(DataLevel.Application);
+		categories[4] = new DataLevelCategory(DataLevel.System);
+		categories[5] = new StringTableKeyMacroCategory();
+
 		return categories;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <V extends SerializableValue> List<Macro<V>> getMacrosOfType(@Nullable PropertyType filter) {
-		List<Macro<V>> macros = new ArrayList<>();
-		for (Macro macro : Project.getCurrentProject().getMacroRegistry().getMacros()) {
+	private static List<Macro> getMacrosOfType(@Nullable PropertyType filter) {
+		List<Macro> macros = new ArrayList<>();
+		for (Macro macro : MacroRegistry.instance.iterateAllMacros()) {
 			if (filter == null || macro.getValue().getPropertyType() == filter) {
 				macros.add(macro);
 			}
 		}
 		if (filter == PropertyType.String) {
-			StringTable table = Project.getCurrentProject().getStringTable();
+			StringTable table = StringTableManager.instance.getStringTable();
 			if (table != null) {
-				for (Macro macro : table.getKeys()) {
-					macros.add(macro);
-				}
+				macros.addAll(table.getKeys());
 			}
 		}
 		return macros;
 	}
 
-	@SuppressWarnings("unchecked")
 	public ChooseMacroDialog(@Nullable PropertyType filter) {
 		super(getCategories(), getMacrosOfType(filter),
 				Lang.ApplicationBundle().getString("Popups.ChooseMacro.popup_title"),
@@ -81,27 +74,27 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		showAndWait();
 	}
 
-	private static class ImplicitMacroTypeCategory<V extends SerializableValue> extends BasicMacroItemCategory<V> {
+	private static class DataLevelCategory extends BasicMacroItemCategory {
 
-		private final MacroType type;
+		private final DataLevel level;
 
-		public ImplicitMacroTypeCategory(@NotNull MacroType type) {
-			this.type = type;
+		public DataLevelCategory(@NotNull DataLevel level) {
+			this.level = level;
 		}
 
 		@NotNull
 		@Override
 		public String categoryDisplayName() {
-			return type.getDisplayText();
+			return level.name();
 		}
 
 		@Override
 		public boolean itemInCategory(@NotNull Macro item) {
-			return item.getMacroType() == type;
+			return MacroRegistry.instance.getDataLevel(item) == level;
 		}
 	}
 
-	private static class AllMacrosCategory<V extends SerializableValue> extends BasicMacroItemCategory<V> {
+	private static class AllMacrosCategory extends BasicMacroItemCategory {
 
 		@NotNull
 		@Override
@@ -115,7 +108,7 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		}
 	}
 
-	private static abstract class BasicMacroItemCategory<V extends SerializableValue> extends MacroItemCategory<V> {
+	private static abstract class BasicMacroItemCategory extends MacroItemCategory {
 
 		private final Node categoryNode;
 		private final TextArea taComment = new TextArea();
@@ -149,7 +142,7 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		}
 
 		@Override
-		public void newItemSelected(Macro<V> selected) {
+		public void newItemSelected(Macro selected) {
 			if (selected != null) {
 				taComment.setText(selected.getComment());
 				taValue.setText(selected.getValue().toString());
@@ -160,7 +153,7 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		}
 	}
 
-	private static class StringTableKeyMacroCategory extends MacroItemCategory<SVString> {
+	private static class StringTableKeyMacroCategory extends MacroItemCategory {
 
 		private final VBox vboxLanguages = new VBox(10);
 		private final ScrollPane categoryNode = new ScrollPane(vboxLanguages);
@@ -175,12 +168,12 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		@NotNull
 		@Override
 		public String categoryDisplayName() {
-			return MacroType.STRING_TABLE.getDisplayText();
+			return "~~------StringTable";
 		}
 
 		@Override
-		public boolean itemInCategory(@NotNull Macro<SVString> item) {
-			return item.getMacroType() == MacroType.STRING_TABLE;
+		public boolean itemInCategory(@NotNull Macro item) {
+			return item instanceof StringTableKey;
 		}
 
 		@Nullable
@@ -190,7 +183,7 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		}
 
 		@Override
-		public void newItemSelected(@Nullable Macro<SVString> item) {
+		public void newItemSelected(@Nullable Macro item) {
 			vboxLanguages.getChildren().clear();
 			if (item == null) {
 				return;
@@ -225,7 +218,7 @@ public class ChooseMacroDialog<V extends SerializableValue> extends ChooseItemDi
 		}
 	}
 
-	private static abstract class MacroItemCategory<V extends SerializableValue> implements ItemCategory<Macro<V>> {
+	private static abstract class MacroItemCategory implements ItemCategory<Macro> {
 
 		@NotNull
 		@Override

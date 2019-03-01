@@ -1,11 +1,11 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.impl.ArmaControlLookup;
-import com.armadialogcreator.core.old.ControlType;
-import com.armadialogcreator.data.olddata.Project;
-import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.impl.ArmaControlLookup;
+import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.data.ConfigClassRegistry;
+import com.armadialogcreator.data.EditorManager;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -16,7 +16,7 @@ import javafx.event.EventHandler;
 public class CreateNewControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		NewControlDialog dialog = new NewControlDialog(null, null);
+		NewControlDialog dialog = new NewControlDialog(null, false);
 		dialog.show();
 		if (dialog.wasCancelled()) {
 			return;
@@ -25,13 +25,12 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		ControlType controlType = dialog.getControlType();
 		boolean backgroundControl = dialog.isBackgroundControl();
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
-		ArmaControl control = ArmaControl.createControl(className, lookup, DataKeys.ARMA_RESOLUTION.get(ArmaDialogCreator.getApplicationData()),
-				Env.ENV.get(ArmaDialogCreator.getApplicationData()), Project.getCurrentProject()
-		);
+		ArmaControl control = ArmaControl.createControl(className, lookup, EditorManager.instance.getResolution(), ExpressionEnvManager.instance.getEnv());
 		if (backgroundControl) {
-			Project.getCurrentProject().getEditingDisplay().getBackgroundControls().add(control);
+			EditorManager.instance.getEditingDisplay().getBackgroundControlNodes().addChild(control);
 		} else {
-			Project.getCurrentProject().getEditingDisplay().getControls().add(control);
+			EditorManager.instance.getEditingDisplay().getControlNodes().addChild(control);
 		}
+		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
 	}
 }
