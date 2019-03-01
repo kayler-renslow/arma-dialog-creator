@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,7 +14,7 @@ public class EditMacroPopup extends MacroEditBasePopup {
 	private final Macro editing;
 
 	public EditMacroPopup(@NotNull Macro toEdit) {
-		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
+		super(ExpressionEnvManager.instance.getEnv());
 		this.editing = toEdit;
 		setToMacro(editing);
 		addDeleteButton();

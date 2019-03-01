@@ -1,5 +1,7 @@
 package com.armadialogcreator.arma.util;
 
+import com.armadialogcreator.control.Texture;
+import com.armadialogcreator.control.TextureParser;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

@@ -3,15 +3,12 @@ package com.armadialogcreator.gui.main.popup.editor;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.StagePopupUndecorated;
-import com.armadialogcreator.gui.fxcontrol.*;
+import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
+import com.armadialogcreator.gui.fxcontrol.SearchTextField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
@@ -65,13 +62,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
-	private final ValueListener<String> classNameListener = new ValueListener<String>() {
+	private final NotNullValueListener<String> classNameListener = new NotNullValueListener<String>() {
 		@Override
-		public void valueUpdated(@NotNull ValueObserver<String> observer, String oldValue, String newValue) {
-			newValue = newValue == null ? "" : newValue;
-			String newClassName = newValue;
+		public void valueUpdated(@NotNull NotNullValueObserver<String> observer, @NotNull String oldValue, @NotNull String newValue) {
 			lblClassName.setText(newValue);
-			lblClassName.setTooltip(new Tooltip(newClassName));
+			lblClassName.setTooltip(new Tooltip(newValue));
 		}
 	};
 	private final ValueListener<ConfigClass> controlClassExtendListener = new ValueListener<ConfigClass>() {
@@ -146,10 +141,11 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 	private void addFooter(ArmaControl control) {
 		checkBoxIsBackgroundControl = new CheckBox(bundle.getString("ControlPropertiesConfig.is_background_control"));
-		checkBoxIsBackgroundControl.setSelected(control.isBackgroundControl());
+		checkBoxIsBackgroundControl.setSelected(control.getDisplay().controlIsBackgroundControl(control));
 		checkBoxIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
+				/*
 				CanvasDisplay<ArmaControl> display = control.getDisplay();
 				if (control.getHolder() instanceof ArmaControlGroup) {
 					MoveOutOfControlGroupDialog dialog = new MoveOutOfControlGroupDialog(control);
@@ -171,6 +167,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				} else {
 					throw new IllegalStateException("unknown holder type:" + control.getHolder().getClass().getName());
 				}
+				*/
 			}
 		});
 
@@ -253,6 +250,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		menuButtonExtendControls = new ComboBoxMenuButton<>(
 				true, bundle.getString("ControlPropertiesConfig.no_extend_class"), null
 		);
+		/*
 		List<CustomControlClass> customControls = Project.getCurrentProject().getAllCustomControlClasses();
 		for (CustomControlClass customControlClass : customControls) {
 			ImageContainer imageContainer = null;
@@ -267,14 +265,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 
 			}
 			menuButtonExtendControls.addItem(new CBMBMenuItem<>(customControlClass.getControlClass(), imageContainer));
-		}
+		}*/
 		if (control.getExtendClass() != null) {
 			menuButtonExtendControls.chooseItem(control.getExtendClass());
 		}
 		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ConfigClass>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<ConfigClass> observer, ConfigClass oldValue, ConfigClass selected) {
-				control.extendControlClass(selected);
+				control.extendConfigClass(selected);
 			}
 		});
 
@@ -349,16 +347,16 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (add) {
 			control.getRenderer().getBackgroundColorObserver().addListener(backgroundColorListener);
 			control.getClassNameObserver().addListener(classNameListener);
-			control.getExtendClassReadOnlyObserver().addListener(controlClassExtendListener);
-			control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
+			//control.getExtendClassReadOnlyObserver().addListener(controlClassExtendListener);
+			//control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
 			editorPane.link();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);
-			control.getExtendClassReadOnlyObserver().removeListener(controlClassExtendListener);
-			if (control.getDisplay() != null) { //might have been removed from display
-				control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
-			}
+			//control.getExtendClassReadOnlyObserver().removeListener(controlClassExtendListener);
+			//if (control.getDisplay() != null) { //might have been removed from display
+			//	control.getDisplay().getBackgroundControls().getUpdateGroup().removeListener(backgroundControlListener);
+			//}
 
 			editorPane.unlink();
 		}

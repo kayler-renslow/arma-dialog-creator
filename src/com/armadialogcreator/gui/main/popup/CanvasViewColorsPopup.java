@@ -36,7 +36,7 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 			CanvasViewColors.EDITOR_BG = cpEditorBg.getValue();
 			CanvasViewColors.GRID = cpGrid.getValue();
 			CanvasViewColors.SELECTION = cpSelection.getValue();
-			ArmaDialogCreator.getCanvasView().updateCanvas();
+			//ArmaDialogCreator.getCanvasView().updateCanvas();
 		}
 	};
 

@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
@@ -170,7 +171,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 					gc.setFill(c);
 					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-					tfAsArray.setText(SVColorArray.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
+					tfAsArray.setText(SVColor.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
 				}
 			};
 			r.getValueObserver().addListener(valListener);

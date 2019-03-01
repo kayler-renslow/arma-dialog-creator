@@ -1,7 +1,5 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.old.ControlClassOld;
-import com.armadialogcreator.core.old.CustomControlClass;
 import com.armadialogcreator.img.ADCImagePaths;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.image.Image;
@@ -156,7 +154,7 @@ public enum ControlType {
 		return icon;
 	}
 
-	/** The icon used to designate that the {@link ControlClassOld} using this type is from {@link CustomControlClass} */
+	/** A variant of {@link #getIcon()} */
 	@NotNull
 	public Image getCustomIcon() {
 		return customIcon;

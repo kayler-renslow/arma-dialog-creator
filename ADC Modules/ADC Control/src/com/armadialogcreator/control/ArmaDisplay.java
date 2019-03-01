@@ -196,6 +196,11 @@ public class ArmaDisplay implements UINode {
 	}
 
 	@Override
+	public @NotNull UINode deepCopy() {
+		return new ArmaDisplay();
+	}
+
+	@Override
 	@NotNull
 	public DataContext getUserData() {
 		return controlNodes.getUserData();
@@ -275,6 +280,12 @@ public class ArmaDisplay implements UINode {
 			} else {
 				getUserData().remove(KEY_NODE_IS_IN_BACKGROUND);
 			}
+		}
+
+		@Override
+		@NotNull
+		public UINode deepCopy() {
+			return new ControlsNode(display, background);
 		}
 	}
 

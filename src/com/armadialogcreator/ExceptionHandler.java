@@ -1,11 +1,9 @@
 package com.armadialogcreator;
 
-import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import javafx.application.Platform;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.stage.Modality;
 import javafx.stage.WindowEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -86,8 +84,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 		}
 
 		t.printStackTrace(System.out);
-		if (ArmaDialogCreator.getApplicationDataManager() == null || !ArmaDialogCreator.getPrimaryStage().isShowing()) {
-			//can be null if this method is called when ApplicationDataManager had an error before constructor finished
+		if (!ArmaDialogCreator.getPrimaryStage().isShowing()) {
 			JOptionPane.showMessageDialog(null, getExceptionString(t), "FATAL ERROR", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -106,7 +103,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 				) {
 					@Override
 					protected void onCloseRequest(WindowEvent event) {
-						boolean good = ArmaDialogCreator.getApplicationDataManager().rescueSave();
+						/*boolean good = ArmaDialogCreator.getApplicationDataManager().rescueSave();
 						new StagePopup<TextArea>(
 								ArmaDialogCreator.getPrimaryStage(),
 								new TextArea(
@@ -125,7 +122,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 								myStage.initModality(Modality.APPLICATION_MODAL);
 								super.show();
 							}
-						};
+						};*/
 
 					}
 				};

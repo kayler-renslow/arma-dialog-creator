@@ -33,6 +33,15 @@ public class EditorManager implements ApplicationStateSubscriber {
 		return resolution;
 	}
 
+	public int getBackgroundARGB() {
+		return 0;
+	}
+
+	public int getBackgroundImage() {
+		return 0;
+	}
+
+
 	@Override
 	public void projectInitializing(@NotNull Project project) {
 		editingDisplay = new ArmaDisplay();

@@ -2,10 +2,7 @@ package com.armadialogcreator.gui.main.stringtable;
 
 import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.core.stringtable.StringTableKey;
-import com.armadialogcreator.util.ReadOnlyValueObserver;
-import com.armadialogcreator.util.ValueListener;
-import com.armadialogcreator.util.ValueObserver;
-import javafx.collections.MapChangeListener;
+import com.armadialogcreator.util.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -15,8 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -35,7 +31,7 @@ class LanguageSelectionPane extends FlowPane {
 	};
 
 	private final ValueObserver<Language> chosenLanguageObserver = new ValueObserver<>(null);
-	private final List<Hyperlink> links = new LinkedList<>();
+	private final Map<Language, Hyperlink> links = new HashMap<>();
 	private final Language defaultLanguage;
 
 	public LanguageSelectionPane(@Nullable Language defaultPreviewLanguage) {
@@ -45,7 +41,7 @@ class LanguageSelectionPane extends FlowPane {
 		chosenLanguageObserver.addListener(new ValueListener<Language>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Language> observer, @Nullable Language oldValue, @Nullable Language newValue) {
-				for (Hyperlink hyperlink : links) {
+				for (Hyperlink hyperlink : links.values()) {
 					if (hyperlink.getUserData().equals(newValue)) {
 						hyperlink.setStyle(LanguageSelectionPane.SELECTED_LINK_STYLE);
 					} else {
@@ -68,21 +64,43 @@ class LanguageSelectionPane extends FlowPane {
 			return;
 		}
 
-		key.getLanguageTokenMap().addListener(new MapChangeListener<Language, String>() {
-			@Override
-			public void onChanged(Change<? extends Language, ? extends String> change) {
-				if (change.wasAdded()) {
-					addLanguage(change.getKey());
+		key.getLanguageTokenMap().addListener((map, change) -> {
+			switch (change.getChangeType()) {
+				case Clear: {
+					map.forEach((key1, value) -> removeLanguage(key1));
+					break;
+				}
+				case Put: {
+					MapObserverChangePut<Language, String> put = change.getPut();
+					addLanguage(put.getKey());
 					if (links.size() == 1) {
 						chosenLanguageObserver.updateValue(null);
-						chosenLanguageObserver.updateValue(change.getKey());
+						chosenLanguageObserver.updateValue(put.getKey());
 					}
-				} else if (change.wasRemoved()) {
-					removeLanguage(change.getKey());
-				} else {
-					throw new IllegalStateException("unexpected change type:" + change);
+					break;
+				}
+				case Move: {
+					MapObserverChangeMove<Language, String> moved = change.getMoved();
+					if (moved.isSourceMapChange()) {
+						removeLanguage(moved.getKey());
+					} else {
+						addLanguage(moved.getKey());
+					}
+					break;
+				}
+				case Remove: {
+					MapObserverChangeRemove<Language, String> removed = change.getRemoved();
+					removeLanguage(removed.getKey());
+					break;
+				}
+				case Replace: {
+					MapObserverChangeReplace<Language, String> replace = change.getReplace();
+					Hyperlink hyperlink = links.get(replace.getKey());
+					hyperlink.setText(replace.getNewValue());
+					break;
 				}
 			}
+
 		});
 		for (Map.Entry<Language, String> token : key.getLanguageTokenMap().entrySet()) {
 			addLanguage(token.getKey());
@@ -92,13 +110,10 @@ class LanguageSelectionPane extends FlowPane {
 	}
 
 	private void addLanguage(@NotNull Language language) {
-		if (containsLanguage(language)) {
+		if (links.containsKey(language)) {
 			return;
 		}
 		Hyperlink hyperlinkLanguage = new Hyperlink(language.getName());
-		links.add(hyperlinkLanguage);
-		links.sort(hyperlinkComparator);
-		hyperlinkLanguage.setUserData(language);
 		hyperlinkLanguage.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -107,32 +122,15 @@ class LanguageSelectionPane extends FlowPane {
 			}
 		});
 
-		getChildren().clear();
-		getChildren().addAll(links);
-
+		getChildren().add(hyperlinkLanguage);
 	}
 
 	private void removeLanguage(@NotNull Language language) {
-		Hyperlink remove = null;
-		for (Hyperlink hyperlink : links) {
-			if (hyperlink.getUserData() == language) {
-				remove = hyperlink;
-				break;
-			}
+		Hyperlink removedHyperlink = links.get(language);
+		if (removedHyperlink != null) {
+			links.remove(language);
+			getChildren().remove(removedHyperlink);
 		}
-		if (remove != null) {
-			links.remove(remove);
-			getChildren().remove(remove);
-		}
-	}
-
-	private boolean containsLanguage(@NotNull Language language) {
-		for (Hyperlink hyperlink : links) {
-			if (hyperlink.getUserData().equals(language)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	@NotNull

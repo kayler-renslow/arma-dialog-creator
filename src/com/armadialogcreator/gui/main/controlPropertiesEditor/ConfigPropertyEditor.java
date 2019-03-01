@@ -354,7 +354,7 @@ public class ConfigPropertyEditor extends HBox {
 			return;
 		}
 		if (mode == EditMode.MACRO) {
-			MacroGetterButton<? extends SerializableValue> macroGetterButton =
+			MacroGetterButton macroGetterButton =
 					new MacroGetterButton(configProperty.getPropertyType(), configProperty.getBoundMacro());
 
 			macroGetterButton.getChosenMacroValueObserver().updateValue(configProperty.getBoundMacro());

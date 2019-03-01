@@ -2,9 +2,11 @@ package com.armadialogcreator.gui.preview;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
-import com.armadialogcreator.arma.control.ArmaControl;
-import com.armadialogcreator.arma.control.ArmaDisplay;
-import com.armadialogcreator.arma.util.ArmaResolution;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.gui.StagePopup;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
@@ -34,9 +36,9 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		setTitle(bundle.getString("popup_title"));
 
 
-		ApplicationData data = ApplicationData.getManagerInstance();
-		ArmaResolution resolution = DataKeys.ARMA_RESOLUTION.get(data);
-		armaDisplay = data.getCurrentProject().getEditingDisplay();
+		//ApplicationData data = ApplicationData.getManagerInstance();
+		ArmaResolution resolution = EditorManager.instance.getResolution();
+		armaDisplay = EditorManager.instance.getEditingDisplay();
 
 		focusHandler = new ControlFocusHandler(armaDisplay);
 
@@ -68,7 +70,11 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 					toggleGroupFocusedControl.selectedToggleProperty().removeListener((ChangeListener) toggleGroupListener);
 
 					menuControls.getItems().clear();
-					for (ArmaControl armaControl : armaDisplay.getControls().deepIterator()) {
+					for (UINode node : armaDisplay.getControlNodes().deepIterateChildren()) {
+						if (!(node instanceof ArmaControl)) {
+							continue;
+						}
+						ArmaControl armaControl = (ArmaControl) node;
 						RadioMenuItem mi = new RadioMenuItem(
 								armaControl.getClassName(),
 								new ImageView(armaControl.getControlType().getIcon())
@@ -106,11 +112,11 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 		focusHandler.autoFocusToControl();
 		myRootElement.getChildren().add(menuBar);
 
-		previewCanvas = new UICanvasPreview(resolution, armaDisplay, focusHandler);
+		previewCanvas = null;//new UICanvasPreview(resolution, armaDisplay, focusHandler);
 		myRootElement.getChildren().add(previewCanvas);
 
 		previewCanvas.setRootNode(armaDisplay);
-		previewCanvas.updateResolution(resolution);
+		//previewCanvas.updateResolution(resolution);
 	}
 
 	@Override

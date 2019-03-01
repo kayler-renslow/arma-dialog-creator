@@ -44,9 +44,9 @@ public class ImageHelper {
 				}
 
 				if (f != null && f.getPath().startsWith("\\")) {
-					Image internalImage = Arma3ExternalImagePathConverter.getInstance().getImagePath(f.getPath());
+					String internalImage = Arma3ExternalImagePathConverter.getInstance().getImagePath(f.getPath());
 					if (internalImage != null) {
-						imageGetFunc.apply(internalImage);
+						imageGetFunc.apply(new Image(internalImage));
 						return;
 					}
 				}

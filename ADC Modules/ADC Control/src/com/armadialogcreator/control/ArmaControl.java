@@ -221,4 +221,8 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	public UpdateListenerGroup<UINodeChange> getUpdateGroup() {
 		return updateGroup;
 	}
+
+	public boolean isBackgroundControl() {
+		return display.controlIsBackgroundControl(this);
+	}
 }

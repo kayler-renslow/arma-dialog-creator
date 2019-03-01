@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 06/28/2017 */
-public interface UnaryCommandValueProvider {
+public interface NularCommandValueProvider {
 
 	@NotNull Value safeZoneX();
 
@@ -43,21 +43,21 @@ public interface UnaryCommandValueProvider {
 	 @return a value for {@link #getResolution()}
 	 */
 	@NotNull
-	default Value _getResolution(
-			@NotNull Value.NumVal width,
-			@NotNull Value.NumVal height,
-			@NotNull Value.NumVal viewportWidth,
-			@NotNull Value.NumVal viewportHeight,
-			@NotNull Value.NumVal aspectRatio,
-			@NotNull Value.NumVal uiScale
+	static Value helper_getResolution(
+			double width,
+			double height,
+			double viewportWidth,
+			double viewportHeight,
+			double aspectRatio,
+			double uiScale
 	) {
 		return new Value.Array(
-				width,
-				height,
-				viewportWidth,
-				viewportHeight,
-				aspectRatio,
-				uiScale
+				new Value.NumVal(width),
+				new Value.NumVal(height),
+				new Value.NumVal(viewportWidth),
+				new Value.NumVal(viewportHeight),
+				new Value.NumVal(aspectRatio),
+				new Value.NumVal(uiScale)
 		);
 	}
 }

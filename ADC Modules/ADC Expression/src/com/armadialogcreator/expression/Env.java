@@ -38,7 +38,7 @@ public interface Env extends Iterable<KeyValue<String, Value>>, SimpleMap<String
 	Value remove(@NotNull String identifier);
 
 	/** @return the instance, or null if unary commands should not be handled */
-	@Nullable UnaryCommandValueProvider getUnaryCommandValueProvider();
+	@Nullable NularCommandValueProvider getUnaryCommandValueProvider();
 
 	/** @return all current mapped identifiers (identifiers that have non null values) */
 	@NotNull String[] getMappedIdentifiers();

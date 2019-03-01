@@ -32,7 +32,7 @@ public class TextSection {
 	private final String text;
 	private final Map<String, String> attributes;
 
-	TextSection(@NotNull TagName tagName, @NotNull String text, @NotNull Map<String, String> attributes) {
+	public TextSection(@NotNull TagName tagName, @NotNull String text, @NotNull Map<String, String> attributes) {
 		this.tagName = tagName;
 		this.text = text;
 		this.attributes = attributes;

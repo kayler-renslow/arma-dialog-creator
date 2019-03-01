@@ -1,14 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.img.ADCImagePaths;
-import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.RadioMenuItem;
-import javafx.stage.FileChooser;
-
-import java.io.File;
 
 /**
  Created by Kayler on 05/20/2016.
@@ -29,10 +22,10 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		chooseBackground(this.background, event);
+		//chooseBackground(this.background, event);
 		lastBackground = this.background;
 	}
-
+/*
 	private void chooseBackground(int background, ActionEvent event) {
 		if (background == IMAGE_1) {
 			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_1);
@@ -56,5 +49,5 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 				target.getToggleGroup().selectToggle(target.getToggleGroup().getToggles().get(lastBackground));
 			}
 		}
-	}
+	}*/
 }

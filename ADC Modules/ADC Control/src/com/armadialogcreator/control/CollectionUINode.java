@@ -1,5 +1,6 @@
 package com.armadialogcreator.control;
 
+import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 
@@ -9,8 +10,8 @@ import org.jetbrains.annotations.NotNull;
 public class CollectionUINode extends StructureUINode {
 	private final NotNullValueObserver<String> collectionNameObserver;
 
-	public CollectionUINode(@NotNull String folderName) {
-		collectionNameObserver = new NotNullValueObserver<>(folderName);
+	public CollectionUINode(@NotNull String collectionName) {
+		collectionNameObserver = new NotNullValueObserver<>(collectionName);
 	}
 
 	@NotNull
@@ -18,4 +19,8 @@ public class CollectionUINode extends StructureUINode {
 		return collectionNameObserver;
 	}
 
+	@Override
+	public @NotNull UINode deepCopy() {
+		return new CollectionUINode(collectionNameObserver.getValue());
+	}
 }

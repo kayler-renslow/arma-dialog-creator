@@ -2,7 +2,9 @@ package com.armadialogcreator.gui.main.actions.mainMenu.help;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.updater.github.ReleaseInfo;
 import com.armadialogcreator.updater.tasks.AdcVersionCheckTask;
@@ -29,18 +31,21 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 		if (d.wasCancelled() || d.getReleaseInfo() == null || !d.isUpdateAvailable()) {
 			return;
 		}
-
-		ArmaDialogCreator.closeApplication(closing -> {
-			if (closing) {
-				try {
-					//get the update
-					Runtime.getRuntime().exec("java -jar adc_updater.jar", null);
-				} catch (IOException e) {
-					ExceptionHandler.error(e);
-				}
-			}
-			return null;
-		});
+		AskSaveProjectDialog dialog = new AskSaveProjectDialog();
+		dialog.showAndWait();
+		if (dialog.wasCancelled()) {
+			return;
+		}
+		if (dialog.saveProgress()) {
+			ApplicationManager.instance.saveProject();
+		}
+		ApplicationManager.instance.closeApplication();
+		try {
+			//get the update
+			Runtime.getRuntime().exec("java -jar adc_updater.jar", null);
+		} catch (IOException e) {
+			ExceptionHandler.error(e);
+		}
 	}
 
 	private static class CheckForUpdateDialog extends StageDialog<VBox> {

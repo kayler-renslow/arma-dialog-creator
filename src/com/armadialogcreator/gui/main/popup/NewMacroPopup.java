@@ -1,7 +1,8 @@
 package com.armadialogcreator.gui.main.popup;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.data.ExpressionEnvManager;
+import com.armadialogcreator.data.MacroRegistry;
 import com.armadialogcreator.lang.Lang;
 
 
@@ -13,7 +14,7 @@ import com.armadialogcreator.lang.Lang;
 public class NewMacroPopup extends MacroEditBasePopup {
 
 	public NewMacroPopup() {
-		super(ArmaDialogCreator.getApplicationData().getGlobalExpressionEnvironment());
+		super(ExpressionEnvManager.instance.getEnv());
 		myStage.setTitle(Lang.ApplicationBundle().getString("Popups.MacroNew.popup_title"));
 	}
 
@@ -22,7 +23,7 @@ public class NewMacroPopup extends MacroEditBasePopup {
 		if (checkFields()) {
 			Macro macro = getNewMacro();
 			if (macro != null) {
-				ArmaDialogCreator.getApplicationData().getCurrentProject().getMacroRegistry().addMacro(macro);
+				MacroRegistry.instance.getProjectMacros().addMacro(macro);
 			}
 			close();
 		}

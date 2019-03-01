@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
-import com.armadialogcreator.ArmaDialogCreator;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -10,6 +9,6 @@ import javafx.event.EventHandler;
 public class ViewFullScreenAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ArmaDialogCreator.getMainWindow().setToFullScreen(true);
+		//ArmaDialogCreator.getMainWindow().setToFullScreen(true);
 	}
 }

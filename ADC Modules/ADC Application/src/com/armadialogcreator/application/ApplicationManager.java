@@ -15,9 +15,9 @@ import java.util.List;
  @author K
  @since 01/03/2019 */
 public class ApplicationManager {
-	private static final String PROJECT_SAVE_FILE_NAME = "project.adc";
-	private static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
-	private static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
+	public static final String PROJECT_SAVE_FILE_NAME = "project.adc";
+	public static final String WORKSPACE_SAVE_FILE_NAME = "workspace.adc";
+	public static final String APPLICATION_DATA_SAVE_FILE_NAME = "applicationData.adc";
 
 	public static final ApplicationManager instance = new ApplicationManager();
 
@@ -27,16 +27,16 @@ public class ApplicationManager {
 
 	private volatile Project project;
 	private volatile Workspace workspace;
-	
-	public void initializeApplication() {
+
+	public void initializeADC() {
 		if (applicationInitialized) {
 			return;
 		}
 
 		for (ApplicationStateSubscriber sub : subs) {
-			sub.applicationInitializing();
+			sub.adcInitializing();
 		}
-		stateUpdateGroup.update(ApplicationState.ApplicationInitializing);
+		stateUpdateGroup.update(ApplicationState.ADCInitializing);
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.systemDataInitializing();

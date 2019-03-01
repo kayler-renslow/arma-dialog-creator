@@ -3,9 +3,11 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
+import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.expression.NularCommandValueProvider;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.expression.Value;
 import com.armadialogcreator.util.ApplicationSingleton;
@@ -24,10 +26,21 @@ public class ExpressionEnvManager implements ApplicationStateSubscriber {
 	}
 
 	private final MyEnv env = new MyEnv();
+	private CommandProvider commandProvider;
 
 	@Override
 	public void projectClosed(@NotNull Project project) {
 		env.clearEnv();
+	}
+
+	@Override
+	public void projectDataLoaded(@NotNull Project project) {
+		commandProvider = new CommandProvider(EditorManager.instance.getResolution());
+	}
+
+	@NotNull
+	public NularCommandValueProvider getCommandProvider() {
+		return commandProvider;
 	}
 
 	@NotNull
@@ -57,6 +70,52 @@ public class ExpressionEnvManager implements ApplicationStateSubscriber {
 			}
 
 			return null;
+		}
+	}
+
+	public static class CommandProvider implements NularCommandValueProvider {
+
+		private ArmaResolution resolution;
+
+		public CommandProvider(@NotNull ArmaResolution resolution) {
+			this.resolution = resolution;
+		}
+
+		@Override
+		@NotNull
+		public Value safeZoneX() {
+			return new Value.NumVal(resolution.getSafeZoneX());
+		}
+
+		@Override
+		@NotNull
+		public Value safeZoneY() {
+			return new Value.NumVal(resolution.getSafeZoneY());
+		}
+
+		@Override
+		@NotNull
+		public Value safeZoneW() {
+			return new Value.NumVal(resolution.getSafeZoneW());
+		}
+
+		@Override
+		@NotNull
+		public Value safeZoneH() {
+			return new Value.NumVal(resolution.getSafeZoneH());
+		}
+
+		@Override
+		@NotNull
+		public Value getResolution() {
+			return NularCommandValueProvider.helper_getResolution(
+					resolution.getScreenWidth(),
+					resolution.getScreenHeight(),
+					resolution.getViewportWidth(),
+					resolution.getViewportHeight(),
+					resolution.getAspectRatio(),
+					resolution.getUIScaleValue()
+			);
 		}
 	}
 

@@ -49,13 +49,17 @@ public class ControlFocusHandler {
 	public void autoFocusToControl() {
 		SGAS<ArmaControl> focusToMe = new SGAS<>();
 		SGAS<ArmaControl> lastControl = new SGAS<>();
-		armaDisplay.getControls().deepIterator().forEach(armaControl -> {
-			setControlFocused(armaControl, false);
-			if (armaControl.getRenderer().requestingFocus()) {
-				focusToMe.setValue(armaControl);
+		armaDisplay.getControlNodes().deepIterateChildren().forEach(node -> {
+			if (!(node instanceof ArmaControl)) {
+				return;
 			}
-			if (armaControl.getRenderer().canHaveFocus()) {
-				lastControl.setValue(armaControl);
+			ArmaControl control = (ArmaControl) node;
+			setControlFocused(control, false);
+			if (control.getRenderer().requestingFocus()) {
+				focusToMe.setValue(control);
+			}
+			if (control.getRenderer().canHaveFocus()) {
+				lastControl.setValue(control);
 			}
 		});
 		if (focusToMe.getValue() == null) {

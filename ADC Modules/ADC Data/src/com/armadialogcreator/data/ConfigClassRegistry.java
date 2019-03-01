@@ -52,7 +52,7 @@ public class ConfigClassRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationInitializing() {
+	public void adcInitializing() {
 		systemClasses.loadSystemConfigClasses();
 		ApplicationDataManager.getInstance().getDataList().add(applicationClasses);
 	}

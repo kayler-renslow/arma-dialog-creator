@@ -1,8 +1,6 @@
 
 package com.armadialogcreator.gui.main.actions;
 
-import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.canvas.UICanvasConfiguration;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -13,7 +11,7 @@ public class ToggleViewportSnappingAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		UICanvasConfiguration conf = ArmaDialogCreator.getCanvasView().getConfiguration();
-		conf.setViewportSnapEnabled(!conf.viewportSnapEnabled());
+		//UICanvasConfiguration conf = ArmaDialogCreator.getCanvasView().getConfiguration();
+		//conf.setViewportSnapEnabled(!conf.viewportSnapEnabled());
 	}
 }

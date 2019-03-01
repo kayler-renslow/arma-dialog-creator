@@ -1,12 +1,11 @@
 package com.armadialogcreator.util;
 
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -18,9 +17,10 @@ import java.util.function.BiConsumer;
 
  @author Kayler
  @since 1/7/2019. */
-public class MapObserver<K, V> implements Map<K, V>, Observer<MapObserverListener<K, V>> {
+public class MapObserver<K, V> implements Map<K, V>, Observer<MapObserverListener<K, V>>, Observable {
 	private final Map<K, V> map;
 	private final LinkedList<MapObserverListener<K, V>> listeners = new LinkedList<>();
+	private final List<InvalidationListener> invalidationListeners = new LinkedList<>();
 
 	public MapObserver(@NotNull Map<K, V> map) {
 		this.map = map;
@@ -191,5 +191,15 @@ public class MapObserver<K, V> implements Map<K, V>, Observer<MapObserverListene
 		for (MapObserverListener<K, V> l : listeners) {
 			l.onChanged(this, change);
 		}
+	}
+
+	@Override
+	public void addListener(InvalidationListener listener) {
+		invalidationListeners.add(listener);
+	}
+
+	@Override
+	public void removeListener(InvalidationListener listener) {
+		invalidationListeners.remove(listener);
 	}
 }

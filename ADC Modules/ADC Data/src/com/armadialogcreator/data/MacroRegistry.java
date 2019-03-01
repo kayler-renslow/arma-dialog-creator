@@ -52,7 +52,7 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void applicationInitializing() {
+	public void adcInitializing() {
 		systemMacros.loadSystemMacros();
 		ApplicationDataManager.getInstance().getDataList().add(applicationMacros);
 	}
@@ -267,6 +267,10 @@ public class MacroRegistry implements Registry {
 		@NotNull
 		public String getDataID() {
 			return "config-classes";
+		}
+
+		public void addMacro(@NotNull Macro macro) {
+			macros.add(macro);
 		}
 	}
 

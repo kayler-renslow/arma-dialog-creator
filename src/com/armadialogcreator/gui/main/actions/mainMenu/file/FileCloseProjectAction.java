@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
-import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -10,6 +11,13 @@ import javafx.event.EventHandler;
 public class FileCloseProjectAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		ArmaDialogCreator.loadNewProject();
+		AskSaveProjectDialog dialog = new AskSaveProjectDialog();
+		if (dialog.wasCancelled()) {
+			return;
+		}
+		if (dialog.saveProgress()) {
+			ApplicationManager.instance.saveProject();
+		}
+		//todo
 	}
 }

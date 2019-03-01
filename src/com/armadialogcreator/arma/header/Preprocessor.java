@@ -3,8 +3,12 @@ package com.armadialogcreator.arma.header;
 import com.armadialogcreator.arma.header.DefineMacroContent.DefineValue;
 import com.armadialogcreator.arma.header.DefineMacroContent.ParameterDefineValue;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.data.olddata.HeaderConversionException;
-import com.armadialogcreator.expression.*;
+import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.expression.ExpressionInterpreter;
+import com.armadialogcreator.expression.SimpleEnv;
+import com.armadialogcreator.expression.Value;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ScreenDimension;
 import com.armadialogcreator.util.UTF8FileReader;
@@ -810,7 +814,7 @@ class Preprocessor {
 		private HashMap<Entry<String, DefineValue>, Value> cachedValues = new HashMap<>();
 
 		public PreprocessorEnv() {
-			super(new UnaryCommandValueProviderImpl());
+			super(new ExpressionEnvManager.CommandProvider(new ArmaResolution(ScreenDimension.D1920)));
 		}
 
 		/**
@@ -946,50 +950,4 @@ class Preprocessor {
 
 	}
 
-	private static class UnaryCommandValueProviderImpl implements UnaryCommandValueProvider {
-		private final ArmaResolution resolution;
-
-		public UnaryCommandValueProviderImpl() {
-			this.resolution = new ArmaResolution(ScreenDimension.D960);
-		}
-
-		@Override
-		public @NotNull Value safeZoneX() {
-			return new Value.NumVal(resolution.getSafeZoneX());
-		}
-
-		@Override
-		public @NotNull Value safeZoneY() {
-			return new Value.NumVal(resolution.getSafeZoneY());
-		}
-
-		@Override
-		public @NotNull Value safeZoneW() {
-			return new Value.NumVal(resolution.getSafeZoneW());
-		}
-
-		@Override
-		public @NotNull Value safeZoneH() {
-			return new Value.NumVal(resolution.getSafeZoneH());
-		}
-
-		@Override
-		public @NotNull Value getResolution() {
-			Value.NumVal width = new Value.NumVal(resolution.getScreenWidth());
-			Value.NumVal height = new Value.NumVal(resolution.getScreenHeight());
-			Value.NumVal viewportWidth = new Value.NumVal(resolution.getViewportWidth());
-			Value.NumVal viewportHeight = new Value.NumVal(resolution.getViewportHeight());
-			Value.NumVal aspectRatio = new Value.NumVal(resolution.getAspectRatio());
-			Value.NumVal uiScale = new Value.NumVal(resolution.getUIScale().getValue());
-
-			return _getResolution(
-					width,
-					height,
-					viewportWidth,
-					viewportHeight,
-					aspectRatio,
-					uiScale
-			);
-		}
-	}
 }

@@ -105,7 +105,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 
 	@Override
 	public void init() throws Exception {
-		ApplicationManager.instance.initializeApplication();
+		ApplicationManager.instance.initializeADC();
 
 		Thread t = new Thread(() -> {
 			int progress = 0;
@@ -175,102 +175,6 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		}
 		throw new RuntimeException(e);
 	}
-
-	//	public static void loadNewProject() {
-	//		loadNewProject(true);
-	//	}
-	//
-	//	private static void loadNewProject(boolean askToSave) {
-	//		if (askToSave) {
-	//			if (!ApplicationDataManager.getInstance().askSaveAll()) {
-	//				return;
-	//			}
-	//		}
-	//
-	//		ADCWindow adcWindow = getADCWindow();
-	//		adcWindow.getStage().close();
-	//
-	//
-	//		ApplicationDataManager.getInstance().beginInitializing();
-	//		ApplicationLoader.ApplicationLoadConfig config = ApplicationLoader.getInstance().getNewLoadConfig();
-	//
-	//		adcWindow.preInit();
-	//		adcWindow.getStage().show();
-	//
-	//		Task<Boolean> task = new Task<Boolean>() {
-	//			@Override
-	//			protected Boolean call() throws Exception {
-	//				ApplicationData applicationData = getApplicationDataManager().initializeApplicationData();
-	//
-	//				ProjectXmlReader.ProjectParseResult result = null;
-	//				boolean newProject = false;
-	//				final List<ParseError> parseErrors = new ArrayList<>();
-	//
-	//				if (config.getLoadType() == ApplicationLoader.LoadType.LOAD) {
-	//					try {
-	//						result = ProjectXmlReader.parseProjectXmlFile(config.getProjectDescriptor(), applicationData);
-	//						parseErrors.addAll(result.getErrors());
-	//					} catch (Exception e) {
-	//						newProject = true;
-	//						INSTANCE.showLater.add(new Runnable() {
-	//							@Override
-	//							public void run() {
-	//								new CouldNotLoadProjectDialog(e).show();
-	//							}
-	//						});
-	//					}
-	//				} else {
-	//					newProject = true;
-	//				}
-	//				if (newProject) {
-	//					Project project = new Project(applicationData, config.getProjectDescriptor());
-	//					try {
-	//						if (project.getWorkspaceCustomControlClassesFile().exists()) {
-	//							WorkspaceCustomControlClassXmlReader loader = new WorkspaceCustomControlClassXmlReader(applicationData, null, project);
-	//							loader.readDocument();
-	//							parseErrors.addAll(loader.getErrors());
-	//						}
-	//					} catch (Exception e) {
-	//						INSTANCE.showLater.add(() -> {
-	//							new CouldNotLoadWorkspaceCustomControlClassesDialog(e);
-	//						});
-	//					}
-	//				}
-	//
-	//				ApplicationDataManager.getInstance().initializeDone();
-	//
-	//				final ProjectXmlReader.ProjectParseResult finalResult = result;
-	//				Platform.runLater(new Runnable() {
-	//					@Override
-	//					public void run() {
-	//						adcWindow.initialize(finalResult != null ? finalResult.getTreeStructureBg() : null,
-	//								finalResult != null ? finalResult.getTreeStructureMain() : null
-	//						);
-	//						adcWindow.show();
-	//
-	//						if (parseErrors.size() > 0) {
-	//							new ProjectImproperResultDialog(parseErrors).showAndWait();
-	//						}
-	//
-	//						for (Runnable run : INSTANCE.showLater) {
-	//							run.run();
-	//						}
-	//						INSTANCE.showLater.clear();
-	//					}
-	//				});
-	//
-	//				return true;
-	//			}
-	//		};
-	//		task.exceptionProperty().addListener((observable, oldValue, newValue) -> {
-	//			ExceptionHandler.fatal(newValue);
-	//		});
-	//
-	//		initializingThread = new Thread(task);
-	//		initializingThread.setName("ADC - Project Initializing Thread");
-	//		initializingThread.setDaemon(false);
-	//		initializingThread.start();
-	//	}
 
 	@NotNull
 	public static Stage getPrimaryStage() {

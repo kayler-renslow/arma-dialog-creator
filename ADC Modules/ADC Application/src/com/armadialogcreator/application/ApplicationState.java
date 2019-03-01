@@ -5,11 +5,11 @@ package com.armadialogcreator.application;
  @since 01/06/2019 */
 public enum ApplicationState {
 	/**
-	 Called one time when ADC is launched.
+	 Called one time when ADC is launched. This is the first state entered.
 	 */
-	ApplicationInitializing,
+	ADCInitializing,
 	/**
-	 Called one time after {@link #ApplicationInitializing}.
+	 Called one time after {@link #ADCInitializing}.
 	 This state should be used to initialize any {@link SystemData} instances
 	 */
 	SystemDataInitializing,
@@ -24,7 +24,7 @@ public enum ApplicationState {
 	 */
 	ApplicationDataInitializing,
 	/**
-	 Called one time after {@link #ApplicationInitializing} {@link ApplicationDataManager#getDataList()} is fully loaded and ready.
+	 Called one time after {@link #ADCInitializing} {@link ApplicationDataManager#getDataList()} is fully loaded and ready.
 	 */
 	ApplicationDataLoaded,
 	/** Called one time when ADC is about to close */

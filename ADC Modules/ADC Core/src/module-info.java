@@ -14,5 +14,4 @@ module ADC.Core {
 	exports com.armadialogcreator.core;
 	exports com.armadialogcreator.core.sv;
 	exports com.armadialogcreator.core.stringtable;
-	exports com.armadialogcreator.core.old;
 }

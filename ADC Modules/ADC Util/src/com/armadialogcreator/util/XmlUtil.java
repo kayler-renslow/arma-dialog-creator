@@ -3,7 +3,9 @@ package com.armadialogcreator.util;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.*;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  Created by Kayler on 07/30/2016.
@@ -78,5 +80,22 @@ public class XmlUtil {
 				};
 			}
 		};
+	}
+
+	@NotNull
+	public static List<Element> getChildElementsWithTagName(@NotNull Element element, @NotNull String tagName) {
+		List<Element> childs = new ArrayList<>();
+		if (tagName.equals("*")) {
+			for (Element e : iterateChildElements(element)) {
+				childs.add(e);
+			}
+		} else {
+			for (Element child : iterateChildElements(element)) {
+				if (child.getTagName().equals(tagName)) {
+					childs.add(child);
+				}
+			}
+		}
+		return childs;
 	}
 }

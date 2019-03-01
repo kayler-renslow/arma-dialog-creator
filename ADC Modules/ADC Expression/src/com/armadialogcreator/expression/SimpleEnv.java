@@ -17,13 +17,13 @@ import java.util.Map;
 public class SimpleEnv implements Env {
 	/** Map for identifiers to values */
 	protected final HashMap<String, Value> map = new HashMap<>();
-	private UnaryCommandValueProvider unaryCommandProvider;
+	private NularCommandValueProvider unaryCommandProvider;
 
 	public SimpleEnv() {
 
 	}
 
-	public SimpleEnv(@Nullable UnaryCommandValueProvider unaryCommandProvider) {
+	public SimpleEnv(@Nullable NularCommandValueProvider unaryCommandProvider) {
 		this.unaryCommandProvider = unaryCommandProvider;
 	}
 
@@ -37,13 +37,13 @@ public class SimpleEnv implements Env {
 		return map.remove(identifier.toLowerCase());
 	}
 
-	public void setUnaryCommandProvider(@Nullable UnaryCommandValueProvider unaryCommandProvider) {
+	public void setUnaryCommandProvider(@Nullable NularCommandValueProvider unaryCommandProvider) {
 		this.unaryCommandProvider = unaryCommandProvider;
 	}
 
 	@Override
 	@Nullable
-	public UnaryCommandValueProvider getUnaryCommandValueProvider() {
+	public NularCommandValueProvider getUnaryCommandValueProvider() {
 		return unaryCommandProvider;
 	}
 

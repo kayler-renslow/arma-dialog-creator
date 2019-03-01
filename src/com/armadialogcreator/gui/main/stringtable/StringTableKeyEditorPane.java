@@ -11,6 +11,8 @@ import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.NotNullValueListener;
+import com.armadialogcreator.util.NotNullValueObserver;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.beans.value.ChangeListener;
@@ -205,9 +207,9 @@ class StringTableKeyEditorPane extends StackPane {
 			}
 
 			lblKeyId.setText(key.getId());
-			key.getIdObserver().addListener(new ValueListener<String>() {
+			key.getIdObserver().addListener(new NotNullValueListener<>() {
 				@Override
-				public void valueUpdated(@NotNull ValueObserver<String> observer, @Nullable String oldValue, @Nullable String newValue) {
+				public void valueUpdated(@NotNull NotNullValueObserver<String> observer, @NotNull String oldValue, @NotNull String newValue) {
 					lblKeyId.setText(newValue);
 				}
 			});

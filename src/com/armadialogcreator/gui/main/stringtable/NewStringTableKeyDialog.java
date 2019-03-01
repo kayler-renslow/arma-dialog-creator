@@ -4,17 +4,18 @@ import com.armadialogcreator.core.stringtable.KnownLanguage;
 import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.stringtable.StringTableKey;
-import com.armadialogcreator.data.StringTableKeyImpl;
+import com.armadialogcreator.data.SimpleStringTableKey;
 import com.armadialogcreator.gui.fxcontrol.CheckMenuButton;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.MapObserver;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.geometry.Pos;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 /**
@@ -22,7 +23,7 @@ import java.util.ResourceBundle;
  @since 12/26/2016 */
 class NewStringTableKeyDialog extends NameTextFieldDialog {
 
-	private final StringTableKey key = new StringTableKeyImpl("str_tag_name", FXCollections.observableHashMap());
+	private final StringTableKey key = new SimpleStringTableKey("str_tag_name", new MapObserver<>(new HashMap<>()));
 	private final StringTable table;
 
 	private final ResourceBundle bundle = Lang.getBundle("StringTableBundle");
