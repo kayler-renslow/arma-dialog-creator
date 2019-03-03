@@ -7,7 +7,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="openjfx11" level="project" />
     <orderEntry type="module" module-name="ADC Util" />
+    <orderEntry type="library" exported="" name="openjfx-javafx-11.0.2" level="application" />
   </component>
 </module>

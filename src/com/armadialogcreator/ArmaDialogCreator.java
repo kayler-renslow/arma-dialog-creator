@@ -220,7 +220,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 	 @see ApplicationManager#closeApplication()
 	 */
 	@Override
-	public void applicationExit() {
+	public void ADCExit() {
 		Platform.exit();
 	}
 

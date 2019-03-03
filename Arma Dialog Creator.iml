@@ -24,5 +24,6 @@
     <orderEntry type="module" module-name="ADC Images" />
     <orderEntry type="module" module-name="ADC Data" />
     <orderEntry type="module" module-name="ADC Control" />
+    <orderEntry type="library" name="openjfx-javafx-11.0.2" level="application" />
   </component>
 </module>

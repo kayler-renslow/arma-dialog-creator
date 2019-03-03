@@ -215,7 +215,7 @@ public class ApplicationManager {
 		}
 
 		for (ApplicationStateSubscriber sub : subs) {
-			sub.applicationExit();
+			sub.ADCExit();
 		}
 		stateUpdateGroup.update(ApplicationState.ApplicationExit);
 	}

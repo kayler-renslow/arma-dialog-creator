@@ -9,7 +9,6 @@
       <element id="module-output" name="ADC Installer" />
       <element id="module-output" name="ADC Standalone Progress Window" />
       <element id="module-output" name="ADC JavaFX" />
-      <element id="library" level="project" name="openjfx11" />
       <element id="module-output" name="ADC Util" />
       <element id="module-output" name="ADC Lang" />
     </root>

@@ -45,7 +45,7 @@ public interface ApplicationStateSubscriber {
 	 Default implementation does nothing.
 	 @see ApplicationState#ApplicationExit
 	 */
-	default void applicationExit() {
+	default void ADCExit() {
 
 	}
 

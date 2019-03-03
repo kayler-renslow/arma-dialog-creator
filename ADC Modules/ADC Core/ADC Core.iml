@@ -10,7 +10,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ADC Lang" />
     <orderEntry type="module" module-name="ADC Util" />
-    <orderEntry type="library" scope="PROVIDED" name="openjfx11" level="project" />
     <orderEntry type="library" scope="TEST" name="junit:junit:4.12" level="project" />
     <orderEntry type="module" module-name="ADC Expression" />
     <orderEntry type="module" module-name="ADC Images" />

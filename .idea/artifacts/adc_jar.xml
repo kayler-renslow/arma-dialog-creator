@@ -12,7 +12,6 @@
       <element id="library" level="project" name="com.googlecode.json-simple:json-simple:1.1.1" />
       <element id="module-output" name="ADC Standalone Progress Window" />
       <element id="module-output" name="ADC JavaFX" />
-      <element id="library" level="project" name="openjfx11" />
       <element id="module-output" name="ADC Util" />
       <element id="library" level="project" name="org.jetbrains:annotations:16.0.2" />
       <element id="module-output" name="ADC Lang" />
