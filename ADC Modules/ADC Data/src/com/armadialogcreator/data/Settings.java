@@ -2,7 +2,9 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.util.ColorUtil;
+import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,14 +24,30 @@ public class Settings {
 		return map;
 	}
 
-
 	protected final void setFromConfigurable(@NotNull Configurable c) {
-		return;
+		for (Configurable nested : c.getNestedConfigurables()) {
+			for (KeyValueString attr : nested.getConfigurableAttributes()) {
+				if (!attr.getKey().equals("name")) {
+					continue;
+				}
+				Setting setting = map.get(attr.getValue());
+				if (setting == null) {
+					continue;
+				}
+				setting.setFromConfigurable(nested);
+			}
+		}
 	}
 
 	@NotNull
 	protected final Configurable copyToConfigurable() {
-		return null;
+		Configurable c = new Configurable.Simple("settings");
+		map.forEach((key, value) -> {
+			Configurable nested = new Configurable.Simple("s");
+			nested.addAttribute("name", key);
+			nested.addNestedConfigurable(value.exportToConfigurable());
+		});
+		return c;
 	}
 
 	public static class FileSetting extends Setting<File> {
@@ -40,9 +58,25 @@ public class Settings {
 
 		public FileSetting() {
 		}
+
+		@Override
+		public Configurable exportToConfigurable() {
+			if (v == null) {
+				if (defaultValue == null) {
+					throw new IllegalStateException();
+				}
+				return new Configurable.Simple("file", defaultValue.getAbsolutePath());
+			}
+			return new Configurable.Simple("file", v.getAbsolutePath());
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+
+		}
 	}
 
-	public static class StringSetting extends Setting<SVString> {
+	public static class StringSetting extends SVSetting<SVString> {
 
 		public StringSetting(@Nullable String initial) {
 			super(new SVString(initial));
@@ -52,7 +86,7 @@ public class Settings {
 		}
 	}
 
-	public static class BooleanSetting extends Setting<SVBoolean> {
+	public static class BooleanSetting extends SVSetting<SVBoolean> {
 
 		public BooleanSetting(boolean initial) {
 			super(SVBoolean.get(initial));
@@ -67,7 +101,7 @@ public class Settings {
 		}
 	}
 
-	public static class IntegerSetting extends Setting<SVInteger> {
+	public static class IntegerSetting extends SVSetting<SVInteger> {
 
 		public IntegerSetting(@Nullable SVInteger initial) {
 			super(initial);
@@ -103,6 +137,16 @@ public class Settings {
 			super.set(color == null ? new SVColorInt(0) : color);
 		}
 
+		@Override
+		public Configurable exportToConfigurable() {
+			return new Configurable.Simple("argb", argb() + "");
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+			set(new SVColorInt(Integer.parseInt(c.getConfigurableBody())));
+		}
+
 		/** Sets the integer value based upon ints ranged 0-255 */
 		public void set(int r, int g, int b, int a) {
 			set(new SVColorIntArray(r, g, b, a));
@@ -127,6 +171,32 @@ public class Settings {
 
 		public double a() {
 			return ColorUtil.af(argb());
+		}
+	}
+
+	public static abstract class SVSetting<V extends SerializableValue> extends Setting<V> {
+
+		public SVSetting(@Nullable V initial) {
+			super(initial);
+		}
+
+		public SVSetting() {
+		}
+
+		@Override
+		public Configurable exportToConfigurable() {
+			if (v == null) {
+				if (defaultValue == null) {
+					throw new IllegalStateException();
+				}
+				return new SerializableValueConfigurable(defaultValue);
+			}
+			return new SerializableValueConfigurable(v);
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+			this.v = (V) SerializableValueConfigurable.createFromConfigurable(c, new SimpleEnv());
 		}
 	}
 
@@ -159,5 +229,8 @@ public class Settings {
 			this.defaultValue = defaultValue;
 		}
 
+		public abstract Configurable exportToConfigurable();
+
+		public abstract void setFromConfigurable(@NotNull Configurable c);
 	}
 }

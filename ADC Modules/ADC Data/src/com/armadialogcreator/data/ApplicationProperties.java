@@ -26,7 +26,7 @@ public class ApplicationProperties implements ApplicationStateSubscriber {
 		ApplicationDataManager.getInstance().getDataList().add(settings);
 
 		Map<String, Settings.Setting> map = settings.map;
-		map.put("last_workspace_folder", lastWorkspace);
+		map.put("last_workspace", lastWorkspace);
 	}
 
 	private static class PropertySettings extends Settings implements ApplicationData {
