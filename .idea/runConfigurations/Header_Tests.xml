@@ -1,27 +1,18 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Header Tests" type="JUnit" factoryName="JUnit">
-    <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
     <module name="Arma Dialog Creator" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PACKAGE_NAME" />
     <option name="MAIN_CLASS_NAME" value="" />
     <option name="METHOD_NAME" value="" />
     <option name="TEST_OBJECT" value="pattern" />
-    <option name="VM_PARAMETERS" value="-ea" />
     <option name="PARAMETERS" value="" />
-    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
-    <option name="ENV_VARIABLES" />
-    <option name="PASS_PARENT_ENVS" value="true" />
-    <option name="TEST_SEARCH_SCOPE">
-      <value defaultName="singleModule" />
-    </option>
-    <envs />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <patterns>
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.largeTest.HeaderParserLargeTest" />
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.HeaderParserSmallMacroTests" />
-      <pattern testClass="com.kaylerrenslow.armaDialogCreator.arma.header.preprocessorTest.PreprocessorTest" />
+      <pattern testClass="com.armadialogcreator.arma.header.largeTest.HeaderParserLargeTest" />
+      <pattern testClass="com.armadialogcreator.arma.header.HeaderParserSmallMacroTests" />
+      <pattern testClass="com.armadialogcreator.arma.header.preprocessorTest.PreprocessorTest" />
     </patterns>
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>

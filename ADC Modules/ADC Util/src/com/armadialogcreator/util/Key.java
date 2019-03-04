@@ -39,7 +39,7 @@ public class Key<V> {
 	/** Will execute {@link DataContext#getValue(Key)}} with this key as the parameter. */
 	@Nullable
 	public V get(@NotNull DataContext context) {
-		return (V) context.getValue(this);
+		return (V) context.getValue(this, defaultValue);
 	}
 
 	@Override

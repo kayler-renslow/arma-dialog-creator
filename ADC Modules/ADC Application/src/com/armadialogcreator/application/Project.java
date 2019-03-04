@@ -22,6 +22,7 @@ public class Project implements ADCDataListManager<ProjectData> {
 		this.projectName = descriptor.getProjectName();
 		this.workspace = descriptor.getWorkspace();
 		this.projectSaveFile = descriptor.getProjectSaveFile();
+		this.projectDescription = descriptor.getProjectDescription();
 	}
 
 	@Override

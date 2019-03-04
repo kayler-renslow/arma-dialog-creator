@@ -15,11 +15,21 @@ import java.util.Map;
  @since 02/15/2019 */
 public class Settings {
 
-	protected final Map<String, Setting> settings = new HashMap<>();
+	protected final Map<String, Setting> map = new HashMap<>();
 
 	@NotNull
-	public Map<String, Setting> getSettings() {
-		return settings;
+	public Map<String, Setting> getMap() {
+		return map;
+	}
+
+
+	protected final void setFromConfigurable(@NotNull Configurable c) {
+		return;
+	}
+
+	@NotNull
+	protected final Configurable copyToConfigurable() {
+		return null;
 	}
 
 	public static class FileSetting extends Setting<File> {
@@ -149,14 +159,5 @@ public class Settings {
 			this.defaultValue = defaultValue;
 		}
 
-		@NotNull
-		public final V loadFromConfigurable(@NotNull Configurable c) {
-			return null;
-		}
-
-		@NotNull
-		public final Configurable copyToConfigurable() {
-			return null;
-		}
 	}
 }

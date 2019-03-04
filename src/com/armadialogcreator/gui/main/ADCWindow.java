@@ -58,7 +58,8 @@ public class ADCWindow implements ADCMainWindow {
 		ImagesTool.subscribeToConversion(new ConvertingImageSubscriberNotificationCreator());
 	}
 
-	public void preInit() {
+	@Override
+	public void initialize() {
 		preInit = true;
 		rootElement = new VBox();
 		rootElement.setPadding(new Insets(10));
@@ -71,9 +72,7 @@ public class ADCWindow implements ADCMainWindow {
 
 		stage.setWidth(ScreenDimension.D1024.width + CanvasControls.PREFERRED_WIDTH);
 		stage.setHeight(ScreenDimension.D1024.height + 100);
-	}
 
-	public void initialize() {
 		preInit = false;
 		rootElement = new VBox();
 		Scene scene = stage.getScene();
@@ -105,6 +104,7 @@ public class ADCWindow implements ADCMainWindow {
 
 	}
 
+	@Override
 	public void show() {
 		this.stage.show();
 		autoResizeCanvasView();
@@ -146,6 +146,11 @@ public class ADCWindow implements ADCMainWindow {
 	@Override
 	public boolean isShowing() {
 		return stage.isShowing();
+	}
+
+	@Override
+	public void hide() {
+		stage.hide();
 	}
 
 	@NotNull

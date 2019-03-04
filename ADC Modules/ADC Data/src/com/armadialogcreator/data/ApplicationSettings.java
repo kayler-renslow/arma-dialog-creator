@@ -8,7 +8,7 @@ public class ApplicationSettings extends Settings {
 	public final FileSetting ArmaToolsSetting = new FileSetting();
 
 	public ApplicationSettings() {
-		settings.put("ArmaTools", ArmaToolsSetting);
+		map.put("ArmaTools", ArmaToolsSetting);
 	}
 
 }

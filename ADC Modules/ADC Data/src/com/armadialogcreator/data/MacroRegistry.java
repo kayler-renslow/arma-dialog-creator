@@ -52,7 +52,7 @@ public class MacroRegistry implements Registry {
 	}
 
 	@Override
-	public void adcInitializing() {
+	public void applicationDataInitializing() {
 		systemMacros.loadSystemMacros();
 		ApplicationDataManager.getInstance().getDataList().add(applicationMacros);
 	}

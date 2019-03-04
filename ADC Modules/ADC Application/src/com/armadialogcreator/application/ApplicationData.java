@@ -1,10 +1,10 @@
 package com.armadialogcreator.application;
 
 /**
- When the application initializes, place your new implemented instance of {@link ApplicationData}
+ While {@link ApplicationState#ApplicationDataInitializing} is active, place your new implemented instance of {@link ApplicationData}
  in {@link ApplicationDataManager#getDataList()}.
  <p>
- When the application is done initializing, the method {@link #loadFromConfigurable(Configurable)} will be invoked.
+ When the application data is done initializing, the method {@link #loadFromConfigurable(Configurable)} will be invoked.
  This is where you can populate your data with values.
  <p>
  When the application closes, all instances in the list will automatically be saved in the Application level

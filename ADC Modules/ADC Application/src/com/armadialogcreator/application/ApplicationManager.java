@@ -34,6 +34,7 @@ public class ApplicationManager {
 		}
 
 		for (ApplicationStateSubscriber sub : subs) {
+			System.out.println("ApplicationManager.initializeADC - Sub:" + sub.getClass().getName());
 			sub.adcInitializing();
 		}
 		stateUpdateGroup.update(ApplicationState.ADCInitializing);
@@ -49,6 +50,11 @@ public class ApplicationManager {
 		stateUpdateGroup.update(ApplicationState.SystemDataLoaded);
 
 		//todo load configurables
+
+		for (ApplicationStateSubscriber sub : subs) {
+			sub.applicationDataInitializing();
+		}
+		stateUpdateGroup.update(ApplicationState.ApplicationDataInitializing);
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.applicationDataLoaded();
@@ -103,8 +109,11 @@ public class ApplicationManager {
 		return null;
 	}
 
-	public void loadWorkspace(@NotNull File workspaceDirectory) {
+	public void loadWorkspace(@NotNull Workspace newWorkspace) {
 		if (workspace != null) {
+			if (workspace.sameAs(newWorkspace)) {
+				return;
+			}
 			workspace.getDataList().invalidate();
 			for (ApplicationStateSubscriber sub : subs) {
 				sub.workspaceClosed(workspace);
@@ -112,7 +121,6 @@ public class ApplicationManager {
 			stateUpdateGroup.update(ApplicationState.WorkspaceClosed);
 		}
 
-		Workspace newWorkspace = new Workspace(workspaceDirectory);
 		newWorkspace.initialize();
 
 		for (ApplicationStateSubscriber sub : subs) {
@@ -262,4 +270,10 @@ public class ApplicationManager {
 		}
 		return new File(System.getProperty("user.dir") + append);
 	}
+
+	@NotNull
+	public File getProjectSaveFile(@NotNull Workspace workspace) {
+		return workspace.getFileForName(PROJECT_SAVE_FILE_NAME);
+	}
+
 }

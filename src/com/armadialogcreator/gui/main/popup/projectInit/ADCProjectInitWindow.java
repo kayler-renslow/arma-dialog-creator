@@ -9,7 +9,7 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.ProjectPreview;
 import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.data.olddata.ApplicationProperty;
+import com.armadialogcreator.data.ApplicationProperties;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
@@ -102,10 +102,8 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		public WorkspaceSelectionStep(@NotNull ADCProjectInitWindow adcProjectInitWindow) {
 			super(new VBox(20));
 			this.adcProjectInitWindow = adcProjectInitWindow;
-			workspaceDirectory = ApplicationProperty.LAST_WORKSPACE.getValue();
-			if (workspaceDirectory == null) {
-				workspaceDirectory = Workspace.DEFAULT_WORKSPACE_DIRECTORY;
-			}
+			File previous = ApplicationProperties.instance.lastWorkspace.get();
+			workspaceDirectory = previous == null ? Workspace.DEFAULT_WORKSPACE_DIRECTORY : previous;
 
 			content.setAlignment(Pos.CENTER);
 			content.setMaxWidth(STAGE_WIDTH / 4 * 3);
@@ -182,7 +180,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		}
 
-
+		@NotNull
 		public ProjectInit getProjectInit() {
 			Tab selected = tabPane.getSelectionModel().getSelectedItem();
 			for (ProjectInitWizardStep.ProjectInitTab initTab : initTabs) {
@@ -190,11 +188,11 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 					return initTab.getResult();
 				}
 			}
-			throw new IllegalStateException("Should provide implementation for selected tab");
+			throw new IllegalStateException();
 		}
 
 		private void initTabPane() {
-			tabNew = new NewProjectTab();
+			tabNew = new NewProjectTab(projectInitWindow);
 			initTabs.add(tabNew);
 			openTab = new OpenTab(projectInitWindow);
 			initTabs.add(openTab);
@@ -270,7 +268,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 			private final TextField tfProjectName = new TextField();
 			private final TextArea tfProjectDescription = new TextArea();
 
-			public NewProjectTab() {
+			public NewProjectTab(@NotNull ADCProjectInitWindow initWindow) {
 				tfProjectName.setPrefWidth(200d);
 				tfProjectName.setPromptText("untitled");
 				tfProjectDescription.setPrefRowCount(6);
@@ -290,7 +288,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 			@Override
 			public ProjectInit getResult() {
-				return new ProjectInit.NewProject(tfProjectName.getText(), tfProjectDescription.getText());
+				return new ProjectInit.NewProject(projectInitWindow.getWorkspace(), tfProjectName.getText(), tfProjectDescription.getText());
 			}
 
 			@Override

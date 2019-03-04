@@ -2,6 +2,7 @@ package com.armadialogcreator;
 
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
+import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
@@ -71,6 +72,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 					"com.armadialogcreator.data.MacroRegistry",
 					"com.armadialogcreator.data.StringTableManager",
 					"com.armadialogcreator.data.SettingsManager",
+					"com.armadialogcreator.data.ApplicationProperties",
 			};
 
 			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();
@@ -101,6 +103,11 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 		}
 		INSTANCE = this;
 		ApplicationManager.instance.addStateSubscriber(this);
+	}
+
+	@NotNull
+	public static ArmaDialogCreator getInstance() {
+		return INSTANCE;
 	}
 
 	@Override
@@ -156,6 +163,12 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
+		ApplicationProjectSwitcher.instance.firstProjectSelection();
+	}
+
+	@NotNull
+	ADCMainWindow getMainWindow() {
+		return mainWindow;
 	}
 
 	@NotNull
@@ -198,7 +211,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 	//		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
 	//		getApplicationDataManager().saveApplicationProperties();
 	//	}
-	//
+
 	@NotNull
 	public static Parameters getLaunchParameters() {
 		return INSTANCE.getParameters();

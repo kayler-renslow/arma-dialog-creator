@@ -15,6 +15,12 @@ import java.util.ArrayList;
 public class Workspace implements ADCDataListManager<WorkspaceData> {
 	public static final File DEFAULT_WORKSPACE_DIRECTORY = new File(System.getProperty("user.home") + File.separator + "Arma Dialog Creator");
 
+	static {
+		if (!DEFAULT_WORKSPACE_DIRECTORY.exists()) {
+			DEFAULT_WORKSPACE_DIRECTORY.mkdirs();
+		}
+	}
+
 	private final File workspaceDirectory;
 	private final File adcDirectory;
 	private final ListObserver<WorkspaceData> dataList = new ListObserver<>(new ArrayList<>());
@@ -101,5 +107,15 @@ public class Workspace implements ADCDataListManager<WorkspaceData> {
 	@NotNull
 	public File getFileInCacheDirectory(@NotNull String fileName) {
 		return getFileInAdcDirectory("cache" + File.separator + fileName);
+	}
+
+	/**
+	 This is different from {@link #equals(Object)} as this checks the underlying {@link #getWorkspaceDirectory()}
+	 rather than the content of this object
+
+	 @return true if this workspace has the same {@link #getWorkspaceDirectory()} as the other
+	 */
+	public boolean sameAs(@NotNull Workspace other) {
+		return workspaceDirectory.getAbsoluteFile().equals(other.workspaceDirectory.getAbsoluteFile());
 	}
 }

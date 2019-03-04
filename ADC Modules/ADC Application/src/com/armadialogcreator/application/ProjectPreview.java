@@ -56,8 +56,8 @@ public class ProjectPreview {
 	}
 
 	@NotNull
-	ProjectDescriptor toDescriptor() {
-		return new ProjectDescriptor(projectName, saveFile, workspace);
+	public ProjectDescriptor toDescriptor() {
+		return new ProjectDescriptor(projectName, projectDescription, saveFile, workspace);
 	}
 
 	@NotNull

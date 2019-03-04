@@ -59,7 +59,7 @@ public class FileDependencyRegistry implements Registry {
 	}
 
 	@Override
-	public void adcInitializing() {
+	public void applicationDataInitializing() {
 		ApplicationDataManager.getInstance().getDataList().add(applicationDependencies);
 	}
 

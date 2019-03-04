@@ -1,6 +1,9 @@
 package com.armadialogcreator.gui.main.popup.projectInit;
 
+import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.ProjectDescriptor;
 import com.armadialogcreator.application.ProjectPreview;
+import com.armadialogcreator.application.Workspace;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,6 +13,17 @@ import java.util.Calendar;
  @author K
  @since 02/09/2019 */
 public interface ProjectInit {
+	enum Type {
+		Open, New, Import, OpenLegacyProject
+	}
+
+	@NotNull
+	Type getType();
+
+	@NotNull Workspace getWorkspace();
+
+	@NotNull ProjectDescriptor getDescriptor();
+
 	class OpenProject implements ProjectInit {
 		private final ProjectPreview project;
 
@@ -21,31 +35,40 @@ public interface ProjectInit {
 		public ProjectPreview getProject() {
 			return project;
 		}
+
+		@Override
+		@NotNull
+		public Type getType() {
+			return Type.Open;
+		}
+
+		@Override
+		@NotNull
+		public Workspace getWorkspace() {
+			return project.getWorkspace();
+		}
+
+		@Override
+		@NotNull
+		public ProjectDescriptor getDescriptor() {
+			return project.toDescriptor();
+		}
 	}
 
 	class NewProject implements ProjectInit {
-		private final String projectName;
-		private final String description;
+		private final Workspace workspace;
+		private final ProjectDescriptor descriptor;
 
-		public NewProject(@Nullable String projectName, @NotNull String description) {
+		public NewProject(@NotNull Workspace workspace, @Nullable String projectName, @NotNull String description) {
+			this.workspace = workspace;
 			projectName = projectName == null ? "" : projectName.trim();
 			if (projectName.length() == 0) {
-				this.projectName = getTemplateProjectName();
-			} else {
-				this.projectName = projectName;
+				projectName = getTemplateProjectName();
 			}
-			this.description = description;
+
+			descriptor = new ProjectDescriptor(projectName, description, ApplicationManager.instance.getProjectSaveFile(workspace), workspace);
 		}
 
-		@NotNull
-		public String getProjectName() {
-			return projectName;
-		}
-
-		@NotNull
-		public String getDescription() {
-			return description;
-		}
 
 		private String getTemplateProjectName() {
 			int year = Calendar.getInstance().get(Calendar.YEAR);
@@ -56,6 +79,24 @@ public interface ProjectInit {
 			int am_pm = Calendar.getInstance().get(Calendar.AM_PM);
 			String date = String.format("%d-%d-%d %d-%d%s", year, month, day, hour, minute, am_pm == Calendar.AM ? "am" : "pm");
 			return "untitled " + date;
+		}
+
+		@Override
+		@NotNull
+		public Type getType() {
+			return Type.New;
+		}
+
+		@Override
+		@NotNull
+		public Workspace getWorkspace() {
+			return workspace;
+		}
+
+		@Override
+		@NotNull
+		public ProjectDescriptor getDescriptor() {
+			return descriptor;
 		}
 	}
 }

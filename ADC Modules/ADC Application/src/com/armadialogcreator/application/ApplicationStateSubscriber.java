@@ -17,6 +17,14 @@ public interface ApplicationStateSubscriber {
 
 	/**
 	 Default implementation does nothing.
+	 @see ApplicationState#ApplicationDataInitializing
+	 */
+	default void applicationDataInitializing() {
+
+	}
+
+	/**
+	 Default implementation does nothing.
 
 	 @see ApplicationState#SystemDataInitializing
 	 */

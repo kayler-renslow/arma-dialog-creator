@@ -11,10 +11,10 @@ public class ProjectSettings extends Settings {
 	public final ColorSetting EditorSelectionColorSetting = new ColorSetting(0, 147, 255, 255);
 
 	public ProjectSettings() {
-		settings.put("ShowCanvasGrid", ShowCanvasGridSetting);
-		settings.put("AbsRegionColor", AbsRegionColorSetting);
-		settings.put("EditorBackgroundColor", EditorBackgroundSetting);
-		settings.put("EditorSelectionColor", EditorSelectionColorSetting);
+		map.put("ShowCanvasGrid", ShowCanvasGridSetting);
+		map.put("AbsRegionColor", AbsRegionColorSetting);
+		map.put("EditorBackgroundColor", EditorBackgroundSetting);
+		map.put("EditorSelectionColor", EditorSelectionColorSetting);
 	}
 
 }

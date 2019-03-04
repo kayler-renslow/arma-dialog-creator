@@ -32,13 +32,14 @@ public class FileChooserPane extends HBox {
 		DIRECTORY, FILE
 	}
 
-	private File defaultLocation;
+	private File initialFile;
 
 	public FileChooserPane(Window chooserPopupWindowOwner, ChooserType chooserType, String fileChooserPopupTitle, File defaultChooserPopupLocation, FileChooser.ExtensionFilter... filters) {
 		super(5);
-		this.defaultLocation = defaultChooserPopupLocation;
+		this.initialFile = defaultChooserPopupLocation;
 		HBox.setHgrow(tfFile, Priority.ALWAYS);
 		this.getChildren().addAll(btnLocate, tfFile);
+		chosenFileObserver.updateValue(initialFile);
 		chosenFileObserver.addListener(new ValueListener<File>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<File> observer, File oldValue, File newValue) {
@@ -52,8 +53,8 @@ public class FileChooserPane extends HBox {
 					case DIRECTORY: {
 						DirectoryChooser chooser = new DirectoryChooser();
 						chooser.setTitle(fileChooserPopupTitle);
-						if (defaultLocation != null && defaultLocation.exists()) {
-							chooser.setInitialDirectory(defaultLocation);
+						if (initialFile != null && initialFile.exists()) {
+							chooser.setInitialDirectory(initialFile);
 						}
 						File f = chooser.showDialog(chooserPopupWindowOwner);
 						if (f == null) {
@@ -66,8 +67,8 @@ public class FileChooserPane extends HBox {
 						FileChooser chooser = new FileChooser();
 						chooser.setTitle(fileChooserPopupTitle);
 						chooser.getExtensionFilters().addAll(filters);
-						if (defaultLocation != null && defaultLocation.exists()) {
-							chooser.setInitialDirectory(defaultLocation);
+						if (initialFile != null && initialFile.exists()) {
+							chooser.setInitialDirectory(initialFile);
 						}
 						File f = chooser.showOpenDialog(chooserPopupWindowOwner);
 						if (f == null) {
@@ -92,10 +93,6 @@ public class FileChooserPane extends HBox {
 		} else {
 			tfFile.setText(f.getPath());
 		}
-	}
-
-	public void setDefaultLocation(@Nullable File defaultLocation) {
-		this.defaultLocation = defaultLocation;
 	}
 
 	@NotNull

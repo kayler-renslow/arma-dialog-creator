@@ -15,4 +15,10 @@ public interface ADCMainWindow {
 	void setToFullScreen(boolean fullScreen);
 
 	boolean isShowing();
+
+	void hide();
+
+	void initialize();
+
+	void show();
 }

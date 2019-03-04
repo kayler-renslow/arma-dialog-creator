@@ -1,6 +1,7 @@
 package com.armadialogcreator.application;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 
@@ -11,9 +12,12 @@ public class ProjectDescriptor {
 	private final String projectName;
 	private final File projectSaveFile;
 	private final Workspace workspace;
+	private final String description;
 
-	public ProjectDescriptor(@NotNull String projectName, @NotNull File projectSaveFile, @NotNull Workspace workspace) {
+	public ProjectDescriptor(@NotNull String projectName, @Nullable String description,
+							 @NotNull File projectSaveFile, @NotNull Workspace workspace) {
 		this.projectName = projectName;
+		this.description = description;
 		this.projectSaveFile = projectSaveFile;
 		this.workspace = workspace;
 	}
@@ -51,4 +55,8 @@ public class ProjectDescriptor {
 		return projectSaveFile.equals(that.projectSaveFile);
 	}
 
+	@Nullable
+	public String getProjectDescription() {
+		return description;
+	}
 }
