@@ -45,6 +45,9 @@ public class Settings {
 		map.forEach((key, value) -> {
 			Configurable nested = new Configurable.Simple("s");
 			nested.addAttribute("name", key);
+			if (value.v == null && value.defaultValue == null) {
+				return;
+			}
 			nested.addNestedConfigurable(value.exportToConfigurable());
 		});
 		return c;
