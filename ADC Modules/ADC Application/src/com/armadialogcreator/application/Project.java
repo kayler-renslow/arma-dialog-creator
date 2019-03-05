@@ -38,10 +38,10 @@ public class Project implements ADCDataListManager<ProjectData> {
 	}
 
 	/**
-	 Get the .xml file for the project. This file is not guaranteed to exist.
+	 Get the save file for the project. This file is not guaranteed to exist.
 	 It is guaranteed to exist when the project is saved.
 
-	 @return the .xml file
+	 @return the save file
 	 */
 	@NotNull
 	public File getProjectSaveFile() {

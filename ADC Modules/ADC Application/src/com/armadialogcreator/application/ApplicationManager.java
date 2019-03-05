@@ -1,5 +1,8 @@
 package com.armadialogcreator.application;
 
+import com.armadialogcreator.application.xml.ApplicationDataXmlReader;
+import com.armadialogcreator.application.xml.ProjectDataXmlReader;
+import com.armadialogcreator.application.xml.WorkspaceDataXmlReader;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
@@ -49,12 +52,21 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.SystemDataLoaded);
 
-		//todo load configurables
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.applicationDataInitializing();
 		}
 		stateUpdateGroup.update(ApplicationState.ApplicationDataInitializing);
+
+		File applicationDataSave = getFileInApplicationDataDirectory(APPLICATION_DATA_SAVE_FILE_NAME);
+		if (applicationDataSave.exists()) {
+			ApplicationDataXmlReader reader = new ApplicationDataXmlReader(applicationDataSave);
+			try {
+				reader.read();
+			} catch (XmlParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.applicationDataLoaded();
@@ -128,7 +140,15 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.WorkspaceInitializing);
 
-		//todo load configurables
+		File workspaceSave = newWorkspace.getFileInAdcDirectory(WORKSPACE_SAVE_FILE_NAME);
+		if (workspaceSave.exists()) {
+			WorkspaceDataXmlReader reader = new WorkspaceDataXmlReader(newWorkspace, workspaceSave);
+			try {
+				reader.read();
+			} catch (XmlParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.workspaceDataLoaded(newWorkspace);
@@ -141,7 +161,7 @@ public class ApplicationManager {
 			sub.workspaceReady(newWorkspace);
 		}
 		stateUpdateGroup.update(ApplicationState.WorkspaceReady);
-		
+
 	}
 
 	public void loadProject(@NotNull ProjectDescriptor descriptor) {
@@ -160,7 +180,15 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.ProjectInitializing);
 
-		//todo load configurables
+		File projectSave = newProject.getFileForName(PROJECT_SAVE_FILE_NAME);
+		if (projectSave.exists()) {
+			ProjectDataXmlReader reader = new ProjectDataXmlReader(newProject, projectSave);
+			try {
+				reader.read();
+			} catch (XmlParseException e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 		for (ApplicationStateSubscriber sub : subs) {
 			sub.projectDataLoaded(newProject);
@@ -274,6 +302,11 @@ public class ApplicationManager {
 	@NotNull
 	public File getProjectSaveFile(@NotNull Workspace workspace) {
 		return workspace.getFileForName(PROJECT_SAVE_FILE_NAME);
+	}
+
+	@NotNull
+	public static File getFileInApplicationDataDirectory(@NotNull String file) {
+		return ApplicationManager.getFileInApplicationDirectory("applicationData" + File.separator + file);
 	}
 
 }

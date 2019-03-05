@@ -11,6 +11,7 @@ import org.w3c.dom.Element;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Stack;
 
 /**
  @author K
@@ -31,12 +32,24 @@ public class ConfigurableXmlReader<D extends ADCData> {
 		} catch (FileNotFoundException e) {
 			throw new XmlParseException(XmlParseException.Reason.FileNotFound, e);
 		}
+		Stack<File> includedFiles = new Stack<>();
 		for (Element element : XmlUtil.iterateChildElements(reader.getDocumentElement())) {
+			if (element.getTagName().equals("include")) {
+				String path = element.getAttribute("f");
+				File includedFile = new File(path);
+				if (includedFile.exists()) {
+					includedFiles.push(includedFile);
+				}
+			}
 			for (D d : manager.getDataList()) {
 				if (d.getDataID().equals(element.getTagName())) {
 					d.loadFromConfigurable(new XMLNodeConfigurable(element));
 				}
 			}
+		}
+		while (!includedFiles.empty()) {
+			ConfigurableXmlReader<D> r = new ConfigurableXmlReader<>(includedFiles.pop(), manager);
+			r.read();
 		}
 	}
 }

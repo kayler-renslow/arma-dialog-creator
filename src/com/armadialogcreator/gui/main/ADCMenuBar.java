@@ -7,7 +7,6 @@ import com.armadialogcreator.control.ArmaUIScale;
 import com.armadialogcreator.core.stringtable.KnownLanguage;
 import com.armadialogcreator.core.stringtable.Language;
 import com.armadialogcreator.data.SettingsManager;
-import com.armadialogcreator.data.olddata.ApplicationProperty;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;
@@ -71,11 +70,8 @@ class ADCMenuBar extends MenuBar {
 	final CheckMenuItem view_showGrid = addOnAction(new CheckMenuItem(bundle.getString("view_show_grid")), new ViewShowGridAction());
 
 	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(bundle.getString("view_dark_theme")), new
-			ViewDarkThemeAction(ApplicationProperty.DARK_THEME.getValue()));
+			ViewDarkThemeAction(/*ApplicationProperty.DARK_THEME.getValue())*/false));
 
-	{
-		view_darkTheme.setSelected(ApplicationProperty.DARK_THEME.getValue());
-	}
 
 	final MenuItem view_colors = addOnAction(new MenuItem(bundle.getString("view_change_colors")), new ViewColorsAction());
 	final MenuItem view_fullScreen = addOnAction(new MenuItem(bundle.getString("view_full_screen")), new ViewFullScreenAction());

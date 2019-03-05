@@ -17,7 +17,7 @@ public class Changelog {
 
 	@NotNull
 	public static Changelog getInstance() {
-		return null;
+		return new Changelog(10);
 	}
 
 	private final LinkedList<ChangeDescriptor> undo = new LinkedList<>();

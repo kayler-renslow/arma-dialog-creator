@@ -3,7 +3,6 @@ package com.armadialogcreator.application;
 import com.armadialogcreator.util.ListObserver;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -26,10 +25,4 @@ public class ApplicationDataManager implements ADCDataListManager<ApplicationDat
 		return instance;
 	}
 
-	@NotNull
-	public static File getFileInApplicationDataDirectory(@NotNull String file) {
-		return ApplicationManager.getFileInApplicationDirectory("applicationData" + File.separator + file);
-	}
-
-	
 }
