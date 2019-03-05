@@ -131,4 +131,53 @@ public class ApplicationStateChangeLogger implements ApplicationStateSubscriber 
 		@Nls
 		@Nullable String getRecoveredMessage();
 	}
+
+	public static class SimpleErrorLogEntry implements ErrorLogEntry {
+		private final Throwable t;
+		private final String title;
+		private final String body;
+		private final boolean recovered;
+		private String recoverMsg;
+
+		public SimpleErrorLogEntry(@Nullable Throwable t, @NotNull String title, @NotNull String body,
+								   boolean recovered, @Nullable String recoverMsg) {
+			this.t = t;
+			this.title = title;
+			this.body = body;
+			this.recovered = recovered;
+			this.recoverMsg = recoverMsg;
+		}
+
+		@Nls
+		@Override
+		@NotNull
+		public String getTitle() {
+			return title;
+		}
+
+		@Nls
+		@Override
+		@NotNull
+		public String getBody() {
+			return body;
+		}
+
+		@Override
+		@Nullable
+		public Throwable getThrowable() {
+			return t;
+		}
+
+		@Override
+		public boolean didRecover() {
+			return recovered;
+		}
+
+		@Nls
+		@Override
+		@Nullable
+		public String getRecoveredMessage() {
+			return recoverMsg;
+		}
+	}
 }

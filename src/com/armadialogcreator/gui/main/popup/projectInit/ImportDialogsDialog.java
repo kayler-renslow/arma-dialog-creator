@@ -416,7 +416,7 @@ public class ImportDialogsDialog extends WizardStageDialog {
 			completeStep(true);
 			lblBody.setText(bundle.getString("ImportDialogs.Step.Final.failed"));
 
-			new CouldNotLoadProjectDialog(e, additionalInfo).show();
+			new CouldNotLoadFileDialog(e, additionalInfo).show();
 		}
 	}
 

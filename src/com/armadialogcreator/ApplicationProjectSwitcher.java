@@ -1,8 +1,10 @@
 package com.armadialogcreator;
 
+import com.armadialogcreator.application.ADCDataLoadException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.ADCProjectInitWindow;
+import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadFileDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.ProjectInit;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,8 +74,18 @@ public class ApplicationProjectSwitcher {
 		switch (projectInit.getType()) {
 			case New: // fall
 			case Open: {
-				applicationManager.loadWorkspace(projectInit.getWorkspace());
-				applicationManager.loadProject(projectInit.getDescriptor());
+				try {
+					applicationManager.loadWorkspace(projectInit.getWorkspace());
+				} catch (ADCDataLoadException e) {
+					new CouldNotLoadFileDialog(e, ApplicationManager.getWorkspaceDataSaveFile(projectInit.getWorkspace()))
+							.show();
+				}
+				try {
+					applicationManager.loadProject(projectInit.getDescriptor());
+				} catch (ADCDataLoadException e) {
+					new CouldNotLoadFileDialog(e, projectInit.getDescriptor().getProjectSaveFile())
+							.show();
+				}
 				initWindow.hide();
 				if (!loadedAtLeastOneProject) {
 					loadedAtLeastOneProject = true;

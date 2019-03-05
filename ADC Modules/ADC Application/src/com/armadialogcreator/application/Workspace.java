@@ -118,4 +118,5 @@ public class Workspace implements ADCDataListManager<WorkspaceData> {
 	public boolean sameAs(@NotNull Workspace other) {
 		return workspaceDirectory.getAbsoluteFile().equals(other.workspaceDirectory.getAbsoluteFile());
 	}
+
 }

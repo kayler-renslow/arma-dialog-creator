@@ -330,7 +330,7 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 						try {
 							preview = ApplicationManager.instance.getPreviewForProjectFile(chosen);
 						} catch (XmlParseException e) {
-							new CouldNotLoadProjectDialog(e, chosen.getAbsolutePath()).show();
+							new CouldNotLoadFileDialog(e, chosen.getAbsolutePath()).show();
 							return;
 						}
 						if (!lvKnownProjects.getItems().contains(preview)) {

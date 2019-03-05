@@ -31,7 +31,7 @@ public class ApplicationManager {
 	private volatile Project project;
 	private volatile Workspace workspace;
 
-	public void initializeADC() {
+	public void initializeADC() throws ADCDataLoadException {
 		if (applicationInitialized) {
 			return;
 		}
@@ -64,7 +64,7 @@ public class ApplicationManager {
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
-				throw new RuntimeException(e);
+				throw new ADCDataLoadException(e);
 			}
 		}
 
@@ -121,7 +121,7 @@ public class ApplicationManager {
 		return null;
 	}
 
-	public void loadWorkspace(@NotNull Workspace newWorkspace) {
+	public void loadWorkspace(@NotNull Workspace newWorkspace) throws ADCDataLoadException {
 		if (workspace != null) {
 			if (workspace.sameAs(newWorkspace)) {
 				return;
@@ -140,13 +140,13 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.WorkspaceInitializing);
 
-		File workspaceSave = newWorkspace.getFileInAdcDirectory(WORKSPACE_SAVE_FILE_NAME);
+		File workspaceSave = getWorkspaceDataSaveFile(newWorkspace);
 		if (workspaceSave.exists()) {
 			WorkspaceDataXmlReader reader = new WorkspaceDataXmlReader(newWorkspace, workspaceSave);
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
-				throw new RuntimeException(e);
+				throw new ADCDataLoadException(e);
 			}
 		}
 
@@ -164,7 +164,7 @@ public class ApplicationManager {
 
 	}
 
-	public void loadProject(@NotNull ProjectDescriptor descriptor) {
+	public void loadProject(@NotNull ProjectDescriptor descriptor) throws ADCDataLoadException {
 		if (project != null) {
 			project.getDataList().invalidate();
 			for (ApplicationStateSubscriber sub : subs) {
@@ -180,13 +180,13 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.ProjectInitializing);
 
-		File projectSave = newProject.getFileForName(PROJECT_SAVE_FILE_NAME);
+		File projectSave = getProjectSaveFile(newProject);
 		if (projectSave.exists()) {
 			ProjectDataXmlReader reader = new ProjectDataXmlReader(newProject, projectSave);
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
-				throw new RuntimeException(e);
+				throw new ADCDataLoadException(e);
 			}
 		}
 
@@ -300,8 +300,13 @@ public class ApplicationManager {
 	}
 
 	@NotNull
-	public File getProjectSaveFile(@NotNull Workspace workspace) {
-		return workspace.getFileForName(PROJECT_SAVE_FILE_NAME);
+	public static File getProjectSaveFile(@NotNull Project project) {
+		return project.getFileForName(PROJECT_SAVE_FILE_NAME);
+	}
+
+	@NotNull
+	public static File getWorkspaceDataSaveFile(@NotNull Workspace workspace) {
+		return workspace.getFileInAdcDirectory(ApplicationManager.WORKSPACE_SAVE_FILE_NAME);
 	}
 
 	@NotNull
