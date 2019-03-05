@@ -66,7 +66,7 @@ public interface ProjectInit {
 				projectName = getTemplateProjectName();
 			}
 
-			descriptor = new ProjectDescriptor(projectName, description, ApplicationManager.instance.getProjectSaveFile(workspace), workspace);
+			descriptor = new ProjectDescriptor(projectName, description, ApplicationManager.getProjectSaveFile(workspace, projectName), workspace);
 		}
 
 

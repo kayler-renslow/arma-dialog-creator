@@ -1,9 +1,8 @@
 package com.armadialogcreator.core;
 
-import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
-import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  @author K
  @since 01/03/2019 */
-public class ConfigProperty {
+public class ConfigProperty extends ConfigPropertyBase {
 	private final String name;
 	private Macro boundMacro;
 	private final NotNullValueObserver<SerializableValue> valueObserver;
@@ -28,16 +27,22 @@ public class ConfigProperty {
 		this.valueObserver = new NotNullValueObserver<>(initialValue);
 	}
 
+	@Override
 	@NotNull
 	public NotNullValueObserver<SerializableValue> getValueObserver() {
 		return valueObserver;
 	}
 
+	@Override
 	public void bindToMacro(@NotNull Macro m) {
+		if (boundMacro != null) {
+			m.getValueObserver().removeListener(macroValueListener);
+		}
 		boundMacro = m;
 		m.getValueObserver().addListener(macroValueListener);
 	}
 
+	@Override
 	public boolean clearMacro() {
 		if (boundMacro == null) {
 			return false;
@@ -47,20 +52,24 @@ public class ConfigProperty {
 		return true;
 	}
 
+	@Override
 	public boolean isBoundToMacro() {
 		return boundMacro != null;
 	}
 
+	@Override
 	@NotNull
 	public SerializableValue getValue() {
 		return valueObserver.getValue();
 	}
 
+	@Override
 	@Nullable
 	public Macro getBoundMacro() {
 		return boundMacro;
 	}
 
+	@Override
 	@NotNull
 	public String getName() {
 		return name;
@@ -76,61 +85,19 @@ public class ConfigProperty {
 		return property;
 	}
 
+	@Override
 	public void setValue(@NotNull SerializableValue value) {
 		valueObserver.updateValue(value);
 	}
 
-	public void setValue(int i) {
-		valueObserver.updateValue(new SVInteger(i));
-	}
-
-	public void setValue(boolean b) {
-		valueObserver.updateValue(SVBoolean.get(b));
-	}
-
-	public void setValue(double d) {
-		valueObserver.updateValue(new SVDouble(d));
-	}
-
-	public void setValue(@NotNull String s) {
-		valueObserver.updateValue(new SVString(s));
-	}
-
-	public double getFloatValue() {
-		SerializableValue v = getValue();
-		if (v instanceof SVNumericValue) {
-			return ((SVNumericValue) v).toDouble();
-		}
-		throw new IllegalStateException();
-	}
-
-	public int getIntValue() {
-		SerializableValue v = getValue();
-		if (v instanceof SVNumericValue) {
-			return ((SVNumericValue) v).toInt();
-		}
-		throw new IllegalStateException();
-	}
-
-	public boolean getBooleanValue() {
-		SerializableValue v = getValue();
-		if (v instanceof SVBoolean) {
-			return v == SVBoolean.TRUE;
-		}
-		throw new IllegalStateException();
-	}
-
+	@Override
 	public void addValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
 		valueObserver.addListener(l);
 	}
 
+	@Override
 	public void removeValueListener(@NotNull NotNullValueListener<SerializableValue> l) {
 		valueObserver.removeListener(l);
-	}
-
-	@NotNull
-	public ReadOnlyArray<ConfigPropertyValueOption> getValueOptions() {
-		return ReadOnlyArray.EMPTY;
 	}
 
 	@Override
@@ -138,25 +105,17 @@ public class ConfigProperty {
 		return name.hashCode();
 	}
 
-	@NotNull
-	public PropertyType getPropertyType() {
-		return valueObserver.getValue().getPropertyType();
-	}
-
+	@Override
 	public boolean nameEquals(@NotNull ConfigPropertyKey key) {
 		return this.name.equals(key.getPropertyName());
 	}
 
+	@Override
 	public boolean nameEquals(@NotNull String name) {
 		return this.name.equals(name);
 	}
 
-	void invalidate() {
-		clearMacro();
-		valueObserver.invalidate();
-		updateGroup.clearListeners();
-	}
-
+	@Override
 	@NotNull
 	public UpdateListenerGroup<ConfigPropertyUpdate> getPropertyUpdateGroup() {
 		return updateGroup;

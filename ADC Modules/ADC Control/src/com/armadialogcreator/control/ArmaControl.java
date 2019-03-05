@@ -32,7 +32,7 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 
 	protected UINode parentNode;
 
-	private ConfigProperty idcProperty, accessProperty;
+	private final ConfigProperty idcProperty;
 	protected ArmaDisplay display = null; //todo
 	private final ArmaControlLookup armaControlLookup;
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
@@ -61,9 +61,7 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 		}
 		idcProperty = findProperty(ConfigPropertyLookup.IDC);
 		idcProperty.setValue(-1);
-		accessProperty = findProperty(ConfigPropertyLookup.ACCESS);
 	}
-
 
 	private void defineType(@NotNull ControlType type) {
 		findProperty(ConfigPropertyLookup.TYPE).getValueObserver().updateValue(new SVInteger(type.getTypeId()));
@@ -77,11 +75,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	@NotNull
 	public ArmaDisplay getDisplay() {
 		return display;
-	}
-
-	/** Set and define the access property */
-	public final void defineAccess(int access) {
-		this.accessProperty.setValue(access);
 	}
 
 	@NotNull

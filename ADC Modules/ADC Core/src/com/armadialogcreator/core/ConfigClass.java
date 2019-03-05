@@ -16,6 +16,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	private final ValueObserver<ConfigClass> extendClassObserver = new ValueObserver<>();
 	private final ConfigPropertySet properties = new ConfigPropertySet();
 	private final Set<ConfigProperty> propertiesInheritedOwnedByParent = new HashSet<>();
+	private final Map<String, ConfigPropertyProxy> propertyProxies = new HashMap<>();
 	private final MapObserverListener<String, ConfigProperty> extendPropertiesSetListener = new MapObserverListener<>() {
 		@Override
 		public void onChanged(@NotNull MapObserver<String, ConfigProperty> list, @NotNull MapObserverChange<String, ConfigProperty> change) {
@@ -281,6 +282,10 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			propertiesInheritedOwnedByParent.add(parentProperty);
 			properties.replaceProperty(parentProperty);
 			classUpdateGroup.update(new ConfigClassUpdate.InheritPropertyUpdate(propertyName));
+			ConfigPropertyProxy proxy = getPropertyProxy(propertyName);
+			if (proxy != null) {
+				proxy.setConfigProperty(parentProperty);
+			}
 		}
 		return true;
 	}
@@ -301,12 +306,20 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 				ConfigProperty property = new ConfigProperty(propertyName, initialValue);
 				properties.replaceProperty(property);
 				classUpdateGroup.update(new ConfigClassUpdate.AddPropertyUpdate(property));
+				ConfigPropertyProxy proxy = getPropertyProxy(propertyName);
+				if (proxy != null) {
+					proxy.setConfigProperty(property);
+				}
 			}
 			return;
 		}
 		ConfigProperty property = new ConfigProperty(propertyName, initialValue);
 		properties.putProperty(property);
 		classUpdateGroup.update(new ConfigClassUpdate.AddPropertyUpdate(property));
+		ConfigPropertyProxy proxy = getPropertyProxy(propertyName);
+		if (proxy != null) {
+			proxy.setConfigProperty(property);
+		}
 	}
 
 	@NotNull
@@ -347,7 +360,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	public void addProperty(@NotNull String propertyName, @NotNull SerializableValue value) {
 		if (properties.findPropertyNullable(propertyName) != null) {
-			throw new IllegalArgumentException();
+			throw new MissingConfigPropertyKeyException(propertyName);
 		}
 		overrideProperty(propertyName, value);
 	}
@@ -359,9 +372,33 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			if (removed != null) {
 				classUpdateGroup.update(new ConfigClassUpdate.RemovePropertyUpdate(removed));
 			}
+			ConfigPropertyProxy proxy = getPropertyProxy(propertyName);
+			if (proxy != null) {
+				proxy.setConfigProperty(null);
+			}
 			return;
 		}
 		inheritProperty(propertyName);
+	}
+
+	@Nullable
+	public ConfigPropertyProxy getPropertyProxy(@NotNull String propertyName) {
+		return propertyProxies.get(propertyName);
+	}
+
+	@NotNull
+	public ConfigPropertyProxy createPropertyProxy(@NotNull ConfigPropertyKey key, @NotNull SerializableValue valueWhenPropertyAbsent) {
+		return createPropertyProxy(key.getPropertyName(), valueWhenPropertyAbsent);
+	}
+
+	@NotNull
+	public ConfigPropertyProxy createPropertyProxy(@NotNull String propertyName, @NotNull SerializableValue valueWhenPropertyAbsent) {
+		ConfigPropertyProxy proxy = propertyProxies.computeIfAbsent(propertyName, s -> {
+			return new ConfigPropertyProxy(s, valueWhenPropertyAbsent);
+		});
+		ConfigProperty property = properties.findPropertyNullable(propertyName);
+		proxy.setConfigProperty(property);
+		return proxy;
 	}
 
 	@Override

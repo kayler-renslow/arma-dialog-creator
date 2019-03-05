@@ -58,7 +58,7 @@ public class ApplicationManager {
 		}
 		stateUpdateGroup.update(ApplicationState.ApplicationDataInitializing);
 
-		File applicationDataSave = getFileInApplicationDataDirectory(APPLICATION_DATA_SAVE_FILE_NAME);
+		File applicationDataSave = getApplicationDataSaveFile();
 		if (applicationDataSave.exists()) {
 			ApplicationDataXmlReader reader = new ApplicationDataXmlReader(applicationDataSave);
 			try {
@@ -288,15 +288,21 @@ public class ApplicationManager {
 	@NotNull
 	public static File getFileInApplicationDirectory(@NotNull String file) {
 		final String append = File.separator + "Arma Dialog Creator" + File.separator + file;
+		final String dotADC = File.separator + ".adc";
 		String OS = System.getProperty("os.name").toUpperCase();
 		if (OS.contains("WIN")) {
 			return new File(System.getenv("APPDATA") + append);
 		} else if (OS.contains("MAC")) {
 			return new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + append);
 		} else if (OS.contains("NUX")) {
-			return new File(System.getProperty("user.home") + append);
+			return new File(System.getProperty("user.home") + dotADC + append);
 		}
-		return new File(System.getProperty("user.dir") + append);
+		return new File(System.getProperty("user.dir") + dotADC + append);
+	}
+
+	@NotNull
+	public static File getProjectSaveFile(@NotNull Workspace workspace, @NotNull String projectName) {
+		return workspace.getFileForName(projectName + File.separator + PROJECT_SAVE_FILE_NAME);
 	}
 
 	@NotNull
@@ -312,6 +318,11 @@ public class ApplicationManager {
 	@NotNull
 	public static File getFileInApplicationDataDirectory(@NotNull String file) {
 		return ApplicationManager.getFileInApplicationDirectory("applicationData" + File.separator + file);
+	}
+
+	@NotNull
+	public static File getApplicationDataSaveFile() {
+		return getFileInApplicationDataDirectory(APPLICATION_DATA_SAVE_FILE_NAME);
 	}
 
 }
