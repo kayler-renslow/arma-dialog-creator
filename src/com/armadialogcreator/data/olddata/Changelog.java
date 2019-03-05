@@ -14,10 +14,11 @@ import java.util.LinkedList;
  @since 08/02/2016. */
 public class Changelog {
 
+	private static final Changelog instance = new Changelog(30);
 
 	@NotNull
 	public static Changelog getInstance() {
-		return new Changelog(10);
+		return instance;
 	}
 
 	private final LinkedList<ChangeDescriptor> undo = new LinkedList<>();

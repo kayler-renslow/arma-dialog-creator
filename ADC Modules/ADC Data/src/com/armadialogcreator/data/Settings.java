@@ -102,6 +102,11 @@ public class Settings {
 			SVBoolean b = super.get();
 			return b != null && b.isTrue();
 		}
+
+		/** Take the current vale and set it to the opposite (true becomes false, false becomes true) */
+		public void not() {
+			set(isTrue() ? SVBoolean.FALSE : SVBoolean.TRUE);
+		}
 	}
 
 	public static class IntegerSetting extends SVSetting<SVInteger> {

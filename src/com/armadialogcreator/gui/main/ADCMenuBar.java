@@ -69,8 +69,7 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem view_preview = addOnAction(new MenuItem(bundle.getString("view_preview"), null), new ViewPreviewAction());
 	final CheckMenuItem view_showGrid = addOnAction(new CheckMenuItem(bundle.getString("view_show_grid")), new ViewShowGridAction());
 
-	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(bundle.getString("view_dark_theme")), new
-			ViewDarkThemeAction(/*ApplicationProperty.DARK_THEME.getValue())*/false));
+	final CheckMenuItem view_darkTheme = addOnAction(new CheckMenuItem(bundle.getString("view_dark_theme")), new ViewDarkThemeAction());
 
 
 	final MenuItem view_colors = addOnAction(new MenuItem(bundle.getString("view_change_colors")), new ViewColorsAction());

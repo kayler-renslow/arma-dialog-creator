@@ -20,6 +20,7 @@ public class ApplicationProperties implements ApplicationStateSubscriber {
 	private final PropertySettings settings = new PropertySettings();
 
 	public final Settings.FileSetting lastWorkspace = new Settings.FileSetting(Workspace.DEFAULT_WORKSPACE_DIRECTORY);
+	public final Settings.BooleanSetting useDarkTheme = new Settings.BooleanSetting(false);
 
 	@Override
 	public void applicationDataInitializing() {
@@ -27,6 +28,7 @@ public class ApplicationProperties implements ApplicationStateSubscriber {
 
 		Map<String, Settings.Setting> map = settings.map;
 		map.put("last_workspace", lastWorkspace);
+		map.put("dark_theme", useDarkTheme);
 	}
 
 	private static class PropertySettings extends Settings implements ApplicationData {
