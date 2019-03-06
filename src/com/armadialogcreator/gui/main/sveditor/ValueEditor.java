@@ -82,7 +82,7 @@ public interface ValueEditor<V extends SerializableValue> {
 			case Raw:
 				return new InputFieldValueEditor.RawEditor();
 		}
-		throw new IllegalStateException("Should have made a match");
+		throw new IllegalStateException();
 	}
 
 }
