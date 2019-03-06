@@ -5,6 +5,7 @@ module ADC.Control {
 	requires annotations;
 	requires javafx.base;
 	requires java.xml;
+	requires javafx.graphics;
 
 	requires ADC.Core;
 	requires ADC.Canvas;

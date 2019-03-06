@@ -1,28 +1,32 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
-import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ColorUtil;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Defines a color as an array with integer values ranging 0-255.
+ Defines a color constant that is immutable
 
  @author Kayler
- @since 02/16/2019. */
-public class SVColorIntArray extends SerializableValue implements SVColor {
+ @since 3/5/2019. */
+public class SVColorConstant extends SerializableValue implements SVColor {
 
+	public static final SVColorConstant BLACK = new SVColorConstant(0, 0, 0, 255);
+	public static final SVColorConstant RED = new SVColorConstant(255, 0, 0, 255);
+	public static final SVColorConstant GREEN = new SVColorConstant(0, 255, 0, 255);
+	public static final SVColorConstant BLUE = new SVColorConstant(0, 0, 255, 255);
+	public static final SVColorConstant WHITE = new SVColorConstant(255, 255, 255, 255);
+	public static final SVColorConstant TRANSPARENT = new SVColorConstant(0, 0, 0, 0);
 
-	public static final StringArrayConverter<SVColorIntArray> CONVERTER = new StringArrayConverter<SVColorIntArray>() {
-		@Override
-		public SVColorIntArray convert(@NotNull Env env, @NotNull String[] values) throws Exception {
-			return new SVColorIntArray(values);
-		}
-	};
+	/** ARGB color */
+	private final int argb;
 
-	/** Colors where each value is ranged from 0 - 255 inclusively. */
-	private int r, g, b, a;
-
+	/**
+	 Creates a color
+	 */
+	public SVColorConstant(int argb) {
+		this.argb = argb;
+	}
 
 	/**
 	 Creates a color
@@ -33,11 +37,8 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 	 @param a alpha (range 0-1.0)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1
 	 */
-	public SVColorIntArray(double r, double g, double b, double a) {
-		setRedF(r);
-		setGreenF(g);
-		setBlueF(b);
-		setAlphaF(a);
+	public SVColorConstant(double r, double g, double b, double a) {
+		this.argb = ColorUtil.toARGB(r, g, b, a);
 	}
 
 	/**
@@ -49,11 +50,8 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 	 @param a alpha (range 0-255)
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 255
 	 */
-	public SVColorIntArray(int r, int g, int b, int a) {
-		setRedI(r);
-		setGreenI(g);
-		setBlueI(b);
-		setAlphaI(a);
+	public SVColorConstant(int r, int g, int b, int a) {
+		this.argb = ColorUtil.toARGB(r, g, b, a);
 	}
 
 	/**
@@ -62,122 +60,108 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 	 @param rgba the color array that must have length=4
 	 @throws IllegalArgumentException when r,g,b, or a are less than 0 or greater than 1. Also throws it when rgba.length != 4
 	 */
-	public SVColorIntArray(double[] rgba) {
-		this(0, 0, 0, 0);
-		setColorF(rgba);
+	public SVColorConstant(double[] rgba) {
+		this.argb = ColorUtil.toARGB(rgba[0], rgba[1], rgba[2], rgba[3]);
 	}
 
 	/**
-	 Create a new color from String array that is formatted like so:
-	 {r,g,b,a} where r,g,b,a are between 0 and 255 inclusively
+	 Create a new color from String array which contains one number (ARGB)
 
 	 @throws NumberFormatException     when the string array is not formatted correctly
 	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
 	 */
-	public SVColorIntArray(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
-		this(Integer.parseInt(newValue[0]), Integer.parseInt(newValue[1]), Integer.parseInt(newValue[2]), Integer.parseInt(newValue[3]));
+	public SVColorConstant(@NotNull String[] newValue) throws NumberFormatException, IndexOutOfBoundsException {
+		this(Integer.parseInt(newValue[0]));
 	}
 
 	@Override
 	public int getRedI() {
-		return r;
+		return ColorUtil.ri(argb);
 	}
 
 	@Override
 	public void setRedI(int r) {
-		ColorUtil.boundCheckI(r);
-		this.r = r;
 	}
 
 	@Override
 	public int getGreenI() {
-		return g;
+		return ColorUtil.gi(argb);
 	}
 
 	@Override
 	public void setGreenI(int g) {
-		ColorUtil.boundCheckI(g);
-		this.g = g;
 	}
 
 	@Override
 	public int getBlueI() {
-		return b;
+		return ColorUtil.bi(argb);
 	}
 
 	@Override
 	public void setBlueI(int b) {
-		ColorUtil.boundCheckI(b);
-		this.b = b;
 	}
 
 	@Override
 	public int getAlphaI() {
-		return a;
+		return ColorUtil.ai(argb);
 	}
 
 	@Override
 	public void setAlphaI(int a) {
-		ColorUtil.boundCheckI(a);
-		this.a = a;
 	}
 
 	@Override
 	public double getRedF() {
-		return r;
+		return ColorUtil.rf(argb);
 	}
 
 	@Override
 	public void setRedF(double r) {
-		this.r = ColorUtil.toInt(r);
 	}
 
 	@Override
 	public double getGreenF() {
-		return g;
+		return ColorUtil.gf(argb);
 	}
 
 	@Override
 	public void setGreenF(double g) {
-		this.g = ColorUtil.toInt(g);
 	}
 
 	@Override
 	public double getBlueF() {
-		return b;
+		return ColorUtil.bf(argb);
 	}
 
 	@Override
 	public void setBlueF(double b) {
-		this.b = ColorUtil.toInt(b);
 	}
 
 	@Override
 	public double getAlphaF() {
-		return a;
+		return ColorUtil.af(argb);
 	}
 
 	@Override
 	public void setAlphaF(double a) {
-		this.a = ColorUtil.toInt(a);
 	}
 
-	/** @return the colors as a string array formatted like so: {red, green, blue, alpha} */
+	@Override
+	public int toARGB() {
+		return argb;
+	}
+
+	/** @return the colors as a string array formatted like so: {ARGB} */
 	@Override
 	@NotNull
 	public String[] getAsStringArray() {
-		String[] valuesAsArray = new String[4];
-		valuesAsArray[0] = r + "";
-		valuesAsArray[1] = g + "";
-		valuesAsArray[2] = b + "";
-		valuesAsArray[3] = a + "";
-		return valuesAsArray;
+		return new String[]{argb + ""};
 	}
 
 	@NotNull
 	@Override
 	public SerializableValue deepCopy() {
-		return new SVColorIntArray(this.r, this.g, this.b, this.a);
+		return new SVColorConstant(this.argb);
 	}
 
 	@NotNull
@@ -187,12 +171,11 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 	}
 
 	/**
-	 @return the color array into a String.
-	 @see SVColor#toStringI(int, int, int, int)
+	 @return the color ARGB int
 	 */
 	@NotNull
 	public String toString() {
-		return SVColor.toStringI(r, g, b, a);
+		return argb + "";
 	}
 
 	@Override

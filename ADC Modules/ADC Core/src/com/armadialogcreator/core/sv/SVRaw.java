@@ -2,7 +2,6 @@ package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.util.DataContext;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,14 +9,14 @@ import org.jetbrains.annotations.Nullable;
  A Raw value is literally anything. A Raw value should be thought of as a "substitute" for
  a different value.
  <p>
- A Raw value can't be converted (via {@link SerializableValue#convert(DataContext, SerializableValue, PropertyType)})
+ A Raw value can't be converted (via {@link SerializableValue#convert(Env, SerializableValue, PropertyType)})
  into any {@link PropertyType}, except it's {@link #getSubstituteType()} (if specified).
  */
 public final class SVRaw extends SerializableValue {
 
-	public static final StringArrayConverter<SVRaw> CONVERTER = new StringArrayConverter<SVRaw>() {
+	public static final StringArrayConverter<SVRaw> CONVERTER = new StringArrayConverter<>() {
 		@Override
-		public SVRaw convert(@NotNull Env env, @NotNull String[] values) throws Exception {
+		public SVRaw convert(@NotNull Env env, @NotNull String[] values) {
 			//This converter is a placeholder to adhere to PropertyType specifications
 			//and shouldn't ever be used. Reason is because it doesn't allow for passing in a revert type (type to convert Raw back into)
 			throw new IllegalStateException();
@@ -28,7 +27,7 @@ public final class SVRaw extends SerializableValue {
 
 	/** If s==null, "" (empty string) will be used */
 	public SVRaw(@Nullable String s, @Nullable PropertyType substituteType) {
-		this.s = s;
+		this.s = s == null ? "" : s;
 		this.substituteType = substituteType;
 	}
 

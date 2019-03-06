@@ -3,6 +3,7 @@ package com.armadialogcreator.control.impl.utility;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
+import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
@@ -21,17 +22,14 @@ public class BlinkControlHandler {
 	private long blinkDurationPast = 0;
 
 	public BlinkControlHandler(@NotNull ArmaControlRenderer renderer, @NotNull ConfigPropertyLookupConstant constant) {
-		renderer.addValueListener(constant, (observer, oldValue, newValue) -> {
-			if (newValue == null || !(newValue instanceof SVNumericValue)) {
+		renderer.addValueListener(constant, new SVInteger(-1), (observer, oldValue, newValue) -> {
+			double v = ((SVNumericValue) newValue).toDouble();
+			blinkDuration = v * 1000; //*1000 because its in millis
+			if (blinkDuration <= 0) {
 				blinkDurationSet = false;
-			} else {
-				blinkDuration = ((SVNumericValue) newValue).toDouble() * 1000; //*1000 because its in millis
-				if (blinkDuration <= 0) {
-					blinkDurationSet = false;
-					return;
-				}
-				blinkDurationSet = true;
+				return;
 			}
+			blinkDurationSet = true;
 		});
 	}
 

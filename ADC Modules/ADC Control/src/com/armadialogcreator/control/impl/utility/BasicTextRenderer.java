@@ -4,9 +4,9 @@ import com.armadialogcreator.canvas.FontMetrics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.ConfigPropertyLookupConstant;
+import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -69,24 +69,24 @@ public class BasicTextRenderer {
 	private Case textCase = Case.Default;
 
 	public BasicTextRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
-							 @Nullable ConfigPropertyLookupConstant text,
-							 @NotNull ConfigPropertyLookupConstant colorText, @Nullable ConfigPropertyLookupConstant style,
-							 @Nullable ConfigPropertyLookupConstant sizeEx, @Nullable ConfigPropertyLookup shadow,
-							 boolean autoInitializeTextColor, @NotNull BasicTextRenderer.UpdateCallback callback) {
+							 @Nullable ConfigPropertyKey text,
+							 @NotNull ConfigPropertyKey colorText, @Nullable ConfigPropertyKey style,
+							 @Nullable ConfigPropertyKey sizeEx, @Nullable ConfigPropertyKey shadow,
+							 @NotNull BasicTextRenderer.UpdateCallback callback) {
 		this.control = control;
 		this.renderer = renderer; //we can't do control.getRenderer() because it may not be initialized yet
 		this.callback = callback;
-		init(text, colorText, style, sizeEx, shadow, autoInitializeTextColor);
+		init(text, colorText, style, sizeEx, shadow);
 	}
 
-	private void init(@Nullable ConfigPropertyLookupConstant text, @NotNull ConfigPropertyLookupConstant colorText,
-					  @Nullable ConfigPropertyLookupConstant style, @Nullable ConfigPropertyLookupConstant sizeEx,
-					  @Nullable ConfigPropertyLookup shadow, boolean autoInitializeTextColor) {
+	private void init(@Nullable ConfigPropertyKey text, @NotNull ConfigPropertyKey colorText,
+					  @Nullable ConfigPropertyKey style, @Nullable ConfigPropertyKey sizeEx,
+					  @Nullable ConfigPropertyKey shadow) {
 
 		setFont(this.font); //pre-set font so that we can initialize text right away. Also, set font metrics
 
 		if (text != null) {
-			renderer.addValueListener(text, (observer, oldValue, newValue) -> {
+			renderer.addValueListener(text, SVString.newEmptyString(), (observer, oldValue, newValue) -> {
 
 				setText(TextHelper.getText(newValue));
 				callback.textUpdate(newValue);
@@ -94,13 +94,9 @@ public class BasicTextRenderer {
 					}
 			);
 		}
-		ConfigProperty textColorProp = control.findProperty(colorText);
-		if (autoInitializeTextColor) {
-			textColorProp.setValue(new SVColorArray(renderer.getBackgroundColor().invert()));
-		}
-		renderer.addValueListener(colorText, (observer, oldValue, newValue) -> {
+		renderer.addValueListener(colorText, SVNull.instance, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						setTextColor(((SVColor) newValue).toJavaFXColor());
+						setTextColor(ColorUtil.toColor((SVColor) newValue));
 						callback.textColorUpdate(newValue);
 						renderer.requestRender();
 					}
@@ -108,14 +104,14 @@ public class BasicTextRenderer {
 		);
 
 		if (shadow != null) {
-			renderer.addValueListener(shadow, (observer, oldValue, newValue) -> {
+			renderer.addValueListener(shadow, SVNull.instance, (observer, oldValue, newValue) -> {
 				textShadow = TextShadow.getTextShadow(newValue);
-				callback.textShadowUpdate(newValue);
+				callback.textShadowUpdate(newValue == SVNull.instance ? null : newValue);
 				renderer.requestRender();
 			});
 		}
 		if (style != null) {
-			renderer.addValueListener(style,
+			renderer.addValueListener(style, SVNull.instance,
 					(observer, oldValue, newValue) -> {
 						newValue = MiscHelpers.getGroup(this.renderer.getEnv(), newValue, control);
 						if (newValue != null) {
@@ -159,13 +155,13 @@ public class BasicTextRenderer {
 		}
 		if (sizeEx != null) {
 			sizeExProperty = control.findProperty(sizeEx);
-			renderer.addValueListener(sizeEx, (observer, oldValue, newValue) -> {
+			renderer.addValueListener(sizeEx, SVNull.instance, (observer, oldValue, newValue) -> {
 						if (newValue instanceof SVExpression) {
 							SVExpression ex = (SVExpression) newValue;
 							updateFontSize(ex);
+							callback.fontUpdate(newValue);
 							renderer.requestRender();
 						}
-				callback.fontUpdate(newValue);
 					}
 			);
 		}

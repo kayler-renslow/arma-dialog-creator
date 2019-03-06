@@ -5,13 +5,12 @@ import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
-import com.armadialogcreator.core.sv.SVFont;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
@@ -55,23 +54,18 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		textRenderer = new BasicTextRenderer(control, this,
 				null, ConfigPropertyLookup.COLOR_TEXT,
 				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
-				ConfigPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.SHADOW, this
 		);
 		textRenderer.setText("Placeholder");
 
-		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
-		{
-			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
-			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
-		}
 
-		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
-		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		textRenderer.setTextColor(getTextColor());
 
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
@@ -83,30 +77,30 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ConfigPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_EMPTY, SVNull.instance, (observer, oldValue, newValue) -> {
 			arrowEmpty_combo.updateAsync(newValue);
 		});
-		addValueListener(ConfigPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_FULL, SVNull.instance, (observer, oldValue, newValue) -> {
 			arrowFull_combo.updateAsync(newValue);
 		});
 
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelect = ((SVColor) newValue).toJavaFXColor();
+				colorSelect = ColorUtil.toColor((SVColor) newValue);
 				requestRender();
 			}
 		});
 
-		addValueListener(ConfigPropertyLookup.WHOLE_HEIGHT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.WHOLE_HEIGHT, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				wholeHeight = ((SVNumericValue) newValue).toDouble();
 				updateMenuPixelHeight();
 				requestRender();
 			}
 		});
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
+				colorSelectBackground = ColorUtil.toColor((SVColor) newValue);
 				requestRender();
 			}
 		});

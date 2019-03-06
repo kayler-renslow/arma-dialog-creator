@@ -1,11 +1,7 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.core.AllowedStyleProvider;
-import com.armadialogcreator.core.sv.SVControlStyleGroup;
-import com.armadialogcreator.core.sv.SVExpression;
-import com.armadialogcreator.core.sv.SVString;
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -43,6 +39,9 @@ public class MiscHelpers {
 		}
 		if (value instanceof SVExpression) {
 			value = new SVString(((SVExpression) value).getExpression()); //use the expression text instead of the returned number
+		}
+		if (value == SVNull.instance) {
+			return null;
 		}
 		if (value != null) {
 			//attempt to create one

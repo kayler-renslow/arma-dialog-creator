@@ -5,13 +5,12 @@ import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
-import com.armadialogcreator.core.sv.SVFont;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
@@ -54,23 +53,17 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 		textRenderer = new BasicTextRenderer(control, this,
 				null, ConfigPropertyLookup.COLOR_TEXT,
 				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
-				ConfigPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.SHADOW, this
 		);
 		textRenderer.setText("Placeholder");
 
-		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
-		{
-			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
-			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
-		}
-
-		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
-		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
+		textRenderer.setTextColor(getTextColor());
 
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
@@ -82,46 +75,45 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelect = ((SVColor) newValue).toJavaFXColor();
+				colorSelect = ColorUtil.toColor((SVColor) newValue);
 			}
 			requestRender();
 		});
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT2, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelect2 = ((SVColor) newValue).toJavaFXColor();
-			} else if (newValue == null) {
+				colorSelect2 = ColorUtil.toColor((SVColor) newValue);
+			} else if (newValue == SVNull.instance) {
 				colorSelect2 = null;
 			}
 		});
 
 
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
-			} else if (newValue == null) {
+				colorSelectBackground = ColorUtil.toColor((SVColor) newValue);
+			} else if (newValue == SVNull.instance) {
 				colorSelectBackground = null;
 			}
 			requestRender();
 		});
-		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground2 = ((SVColor) newValue).toJavaFXColor();
-			} else if (newValue == null) {
+				colorSelectBackground2 = ColorUtil.toColor((SVColor) newValue);
+			} else if (newValue == SVNull.instance) {
 				colorSelectBackground2 = null;
 			}
 		});
 
-
-		addValueListener(ConfigPropertyLookup.PERIOD, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.PERIOD, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				period = ((SVNumericValue) newValue).toDouble();
 				periodAlternator.setAlternateMillis((long) (period * 1000));
 			}
 		});
 
-		addValueListener(ConfigPropertyLookup.ROW_HEIGHT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ROW_HEIGHT, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				rowHeight = ((SVNumericValue) newValue).toDouble();
 			}

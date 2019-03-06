@@ -1,9 +1,11 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
+import com.armadialogcreator.core.sv.SVNull;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -43,7 +45,7 @@ public class ScrollbarRenderer {
 
 		tintedArrowBottom.rotate(180);
 
-		renderer.addValueListener(controlClass, thumb, (observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, thumb, SVNull.instance, (observer, oldValue, newValue) -> {
 			this.thumb.updateAsync(newValue, mode -> {
 				if (this.thumb.getImage() != null) {
 					tintedThumb.updateImage(this.thumb.getImage(), true);
@@ -53,10 +55,10 @@ public class ScrollbarRenderer {
 				return null;
 			});
 		});
-		renderer.addValueListener(controlClass, arrowFull, (observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, arrowFull, SVNull.instance, (observer, oldValue, newValue) -> {
 			this.arrowFull.updateAsync(newValue);
 		});
-		renderer.addValueListener(controlClass, arrowEmpty, (observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, arrowEmpty, SVNull.instance, (observer, oldValue, newValue) -> {
 			this.arrowEmpty.updateAsync(newValue, mode -> {
 				if (this.arrowEmpty.getImage() != null) {
 					Image img = this.arrowEmpty.getImage();
@@ -66,7 +68,7 @@ public class ScrollbarRenderer {
 				return null;
 			});
 		});
-		renderer.addValueListener(controlClass, border, (observer, oldValue, newValue) -> {
+		renderer.addValueListener(controlClass, border, SVNull.instance, (observer, oldValue, newValue) -> {
 			this.border.updateAsync(newValue, mode -> {
 				if (this.border.getImage() != null) {
 					tintedBorder.updateImage(this.border.getImage(), true);
@@ -78,9 +80,9 @@ public class ScrollbarRenderer {
 		});
 
 		if (scrollbarColor != null) {
-			renderer.addValueListener(controlClass, scrollbarColor, (observer, oldValue, newValue) -> {
+			renderer.addValueListener(controlClass, scrollbarColor, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
-					this.scrollbarColor = ((SVColor) newValue).toJavaFXColor();
+					this.scrollbarColor = ColorUtil.toColor((SVColor) newValue);
 					tintedThumb.updateTint(this.scrollbarColor, true);
 					tintedBorder.updateTint(this.scrollbarColor, true);
 					tintedArrowTop.updateTint(this.scrollbarColor, true);

@@ -7,7 +7,6 @@ import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.Texture;
 import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
@@ -51,7 +50,6 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	private int tileW = 0, tileH = 0;
 
 	private final TintedImageHelperRenderer tintedImage = new TintedImageHelperRenderer();
-	;
 
 	public StaticRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
@@ -59,25 +57,21 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		textRenderer = new BasicTextRenderer(control, this,
 				ConfigPropertyLookup.TEXT, ConfigPropertyLookup.COLOR_TEXT,
 				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
-				ConfigPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.SHADOW, this
 		);
 
 		textRenderer.setAllowMultiLine(true);
 
-		{
-			ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
-			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
-			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
-		}
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
-		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		textRenderer.setTextColor(getTextColor());
 
-		myControl.findProperty(ConfigPropertyLookup.TILE_H).getValueObserver().addListener((observer, oldValue,
-																							newValue) -> {
+		addValueListener(ConfigPropertyLookup.TILE_H, SVNull.instance, (observer, oldValue,
+																		newValue) -> {
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileH = (int) expr.getNumVal();
@@ -85,8 +79,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 				requestRender();
 			}
 		});
-		myControl.findProperty(ConfigPropertyLookup.TILE_W).getValueObserver().addListener((observer, oldValue,
-																							newValue) -> {
+		addValueListener(ConfigPropertyLookup.TILE_W, SVNull.instance, (observer, oldValue,
+																		newValue) -> {
 			if (newValue instanceof SVExpression) {
 				SVExpression expr = (SVExpression) newValue;
 				tileW = (int) expr.getNumVal();
@@ -95,10 +89,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			}
 		});
 
-		myControl.findProperty(ConfigPropertyLookup.TEXT).setValue(SVString.newEmptyString());
+		textRenderer.setText("");
 
-
-		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(

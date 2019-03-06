@@ -4,15 +4,13 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
-import com.armadialogcreator.core.sv.SVFont;
-import com.armadialogcreator.core.sv.SVString;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -44,34 +42,27 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 		textRenderer = new BasicTextRenderer(control, this,
 				ConfigPropertyLookup.TEXT, ConfigPropertyLookup.COLOR_TEXT,
 				ConfigPropertyLookup.STYLE, ConfigPropertyLookup.SIZE_EX,
-				ConfigPropertyLookup.SHADOW, true, this
+				ConfigPropertyLookup.SHADOW, this
 		);
 		textRenderer.setAllowMultiLine(true);
 
-		ConfigProperty colorBackground = myControl.findProperty(ConfigPropertyLookup.COLOR_BACKGROUND);
-		{
-			addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
-			colorBackground.setValue(new SVColorArray(getBackgroundColor()));
-		}
-
-		addValueListener(ConfigPropertyLookup.COLOR_DISABLED, (observer, oldValue, newValue)
+		addValueListener(ConfigPropertyLookup.COLOR_DISABLED, SVNull.instance, (observer, oldValue, newValue)
 				-> {
 			if (newValue instanceof SVColor) {
-				colorDisabled = ((SVColor) newValue).toJavaFXColor();
+				colorDisabled = ColorUtil.toColor((SVColor) newValue);
 				requestRender();
 			}
 		});
 
-		myControl.findProperty(ConfigPropertyLookup.COLOR_TEXT).setValue(new SVColorArray(getTextColor()));
+		textRenderer.setTextColor(getTextColor());
+		textRenderer.setText("");
 
-		myControl.findProperty(ConfigPropertyLookup.TEXT).setValue(SVString.newEmptyString());
-
-		myControl.findProperty(ConfigPropertyLookup.FONT).setValue(SVFont.DEFAULT);
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
 		tooltipRenderer = new TooltipRenderer(

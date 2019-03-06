@@ -4,11 +4,11 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
@@ -53,27 +53,23 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 		tintedRightArrow.flipHorizontally();
 
-		{
-			ConfigProperty bgColor = myControl.findProperty(ConfigPropertyLookup.COLOR);
-			addValueListener(bgColor.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
-			bgColor.setValue(new SVColorArray(getBackgroundColor()));
-		}
+		addValueListener(ConfigPropertyLookup.COLOR, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
-		addValueListener(ConfigPropertyLookup.COLOR_ACTIVE, (observer, oldValue, newValue) ->
+		addValueListener(ConfigPropertyLookup.COLOR_ACTIVE, SVNull.instance, (observer, oldValue, newValue) ->
 		{
 			if (newValue instanceof SVColor) {
-				colorActive = ((SVColor) newValue).toJavaFXColor();
+				colorActive = ColorUtil.toColor((SVColor) newValue);
 				requestRender();
 			}
 		});
 
-		addValueListener(ConfigPropertyLookup.ARROW_EMPTY, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_EMPTY, SVNull.instance, (observer, oldValue, newValue) -> {
 			arrowEmpty.updateAsync(newValue, mode -> {
 				tintedLeftArrow.updateImage(arrowEmpty.getImage());
 				tintedRightArrow.updateImage(arrowEmpty.getImage());
@@ -81,18 +77,18 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			});
 		});
 
-		addValueListener(ConfigPropertyLookup.ARROW_FULL, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.ARROW_FULL, SVNull.instance, (observer, oldValue, newValue) -> {
 			arrowFull.updateAsync(newValue);
 		});
 
-		addValueListener(ConfigPropertyLookup.BORDER, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.BORDER, SVNull.instance, (observer, oldValue, newValue) -> {
 			border.updateAsync(newValue, mode -> {
 				tintedBorder.updateImage(border.getImage());
 				return null;
 			});
 		});
 
-		addValueListener(ConfigPropertyLookup.THUMB, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.THUMB, SVNull.instance, (observer, oldValue, newValue) -> {
 			thumb.updateAsync(newValue, mode -> {
 				tintedThumb.updateImage(thumb.getImage());
 				return null;

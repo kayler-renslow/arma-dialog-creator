@@ -3,8 +3,10 @@ package com.armadialogcreator.control.impl.utility;
 import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.core.ConfigPropertyLookupConstant;
+import com.armadialogcreator.control.ColorUtil;
+import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.sv.SVColor;
+import com.armadialogcreator.core.sv.SVNull;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -22,29 +24,29 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 	private final BasicTextRenderer textRenderer;
 
 	public TooltipRenderer(@NotNull ArmaControl control, @NotNull ArmaControlRenderer renderer,
-						   @NotNull ConfigPropertyLookupConstant tooltipBackgroundColor,
-						   @NotNull ConfigPropertyLookupConstant tooltipTextColor,
-						   @NotNull ConfigPropertyLookupConstant tooltipBorderColor,
-						   @NotNull ConfigPropertyLookupConstant tooltipText
+						   @NotNull ConfigPropertyKey tooltipBackgroundColor,
+						   @NotNull ConfigPropertyKey tooltipTextColor,
+						   @NotNull ConfigPropertyKey tooltipBorderColor,
+						   @NotNull ConfigPropertyKey tooltipText
 	) {
 		this.control = control;
 		textRenderer = new BasicTextRenderer(
 				control, renderer, tooltipText, tooltipTextColor, null, null, null,
-				false, this
+				this
 		);
 		textRenderer.setFont(TOOLTIP_FONT);
-		control.findProperty(tooltipBackgroundColor).getValueObserver().addListener((observer, oldValue, newValue) ->
+		renderer.addValueListener(tooltipBackgroundColor, SVNull.instance, (observer, oldValue, newValue) ->
 		{
 			if (newValue instanceof SVColor) {
-				backgroundColor = ((SVColor) newValue).toJavaFXColor();
+				backgroundColor = ColorUtil.toColor(((SVColor) newValue));
 			} else {
 				backgroundColor = null;
 			}
 			requestRender();
 		});
-		control.findProperty(tooltipBorderColor).getValueObserver().addListener((observer, oldValue, newValue) -> {
+		renderer.addValueListener(tooltipBorderColor, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				borderColor = ((SVColor) newValue).toJavaFXColor();
+				borderColor = ColorUtil.toColor(((SVColor) newValue));
 			} else {
 				borderColor = null;
 			}

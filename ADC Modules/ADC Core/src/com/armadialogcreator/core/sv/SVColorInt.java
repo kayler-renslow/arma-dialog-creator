@@ -3,7 +3,6 @@ package com.armadialogcreator.core.sv;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ColorUtil;
-import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -72,11 +71,6 @@ public class SVColorInt extends SerializableValue implements SVColor {
 	public SVColorInt(double[] rgba) {
 		this(0, 0, 0, 0);
 		setColorF(rgba);
-	}
-
-	/** Set the color from a JavaFX Color instance */
-	public SVColorInt(@NotNull Color newValue) {
-		this(newValue.getRed(), newValue.getGreen(), newValue.getBlue(), newValue.getOpacity());
 	}
 
 	/**

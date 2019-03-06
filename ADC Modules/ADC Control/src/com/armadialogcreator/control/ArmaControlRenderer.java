@@ -1,11 +1,11 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyKey;
-import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.sv.SVColor;
+import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVNumericValue;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
 import javafx.scene.canvas.GraphicsContext;
@@ -71,12 +71,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		globalBackgroundColorObserver = new ValueObserver<>(new SVColorArray(backgroundColor));
-		globalBackgroundColorObserver.addListener(new ValueListener<SVColor>() {
+		globalBackgroundColorObserver = new ValueObserver<>(ColorUtil.toColorArray(backgroundColor));
+		globalBackgroundColorObserver.addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				if (newValue != null) {
-					setBackgroundColor(newValue.toJavaFXColor());
+					setBackgroundColor(ColorUtil.toColor(newValue));
 				} else {
 					setBackgroundColor(Color.TRANSPARENT);
 				}
@@ -89,7 +89,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		wProperty = control.findProperty(ConfigPropertyLookup.W);
 		hProperty = control.findProperty(ConfigPropertyLookup.H);
 
-		final NotNullValueListener<SerializableValue> positionValueListener = new NotNullValueListener<SerializableValue>() {
+		final NotNullValueListener<SerializableValue> positionValueListener = new NotNullValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull NotNullValueObserver<SerializableValue> observer, @NotNull SerializableValue oldValue, @NotNull SerializableValue newValue) {
 				if (disablePositionPropertyListener) {
@@ -127,33 +127,17 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		wProperty.getValueObserver().addListener(positionValueListener);
 		hProperty.getValueObserver().addListener(positionValueListener);
 
-		enabledObserver.addListener(new ValueListener<Boolean>() {
+		enabledObserver.addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<Boolean> observer, Boolean oldValue, Boolean newValue) {
 				requestRender();
 			}
 		});
 
-		if (xProperty.getValue() == null) {
-			defineX(new SVExpression("0", env));
-		} else {
-			setXSilent((SVExpression) xProperty.getValue());
-		}
-		if (yProperty.getValue() == null) {
-			defineY(new SVExpression("0", env));
-		} else {
-			setYSilent((SVExpression) yProperty.getValue());
-		}
-		if (wProperty.getValue() == null) {
-			defineW(new SVExpression("1", env));
-		} else {
-			setWSilent((SVExpression) wProperty.getValue());
-		}
-		if (hProperty.getValue() == null) {
-			defineH(new SVExpression("1", env));
-		} else {
-			setHSilent((SVExpression) hProperty.getValue());
-		}
+		setXSilent((SVExpression) xProperty.getValue());
+		setYSilent((SVExpression) yProperty.getValue());
+		setWSilent((SVExpression) wProperty.getValue());
+		setHSilent((SVExpression) hProperty.getValue());
 
 		initializing = false;
 	}
@@ -483,34 +467,38 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 Adds a value listener to {@link #myControl} with the provided {@link ConfigPropertyKey}.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull ConfigPropertyKey key, @NotNull NotNullValueListener<SerializableValue> listener) {
-		addValueListener(myControl, key.getPropertyName(), listener);
+	public void addValueListener(@NotNull ConfigPropertyKey key, @NotNull SerializableValue valueWhenAbsent,
+								 @NotNull NotNullValueListener<SerializableValue> listener) {
+		addValueListener(myControl, key.getPropertyName(), valueWhenAbsent, listener);
 	}
 
 	/**
 	 Adds a value listener to {@link #myControl} with the provided property name.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull String propertyName, @NotNull NotNullValueListener<SerializableValue> listener) {
-		addValueListener(myControl, propertyName, listener);
+	public void addValueListener(@NotNull String propertyName, @NotNull SerializableValue valueWhenAbsent,
+								 @NotNull NotNullValueListener<SerializableValue> listener) {
+		addValueListener(myControl, propertyName, valueWhenAbsent, listener);
 	}
 
 	/**
 	 Adds a value listener to the given {@link ConfigClass} with the provided property name.
 	 Afterwards, it invokes the listener with the current value.
 	 */
-	public void addValueListener(@NotNull ConfigClass owner, @NotNull String propertyName, @NotNull NotNullValueListener<SerializableValue> l) {
-		ConfigProperty property = owner.findProperty(propertyName);
+	public void addValueListener(@NotNull ConfigClass owner, @NotNull String propertyName,
+								 @NotNull SerializableValue valueWhenAbsent, @NotNull NotNullValueListener<SerializableValue> l) {
+		ConfigPropertyProxy property = owner.createPropertyProxy(propertyName, valueWhenAbsent);
 		property.addValueListener(l);
 		l.valueUpdated(property.getValueObserver(), property.getValue(), property.getValue());
 	}
 
 	/**
 	 Adds a value listener to the given {@link ConfigClass} with the provided key.
-	 Invokes {@link #addValueListener(ConfigClass, String, NotNullValueListener)} using {@link ConfigPropertyKey#getPropertyName()}
+	 Invokes {@link #addValueListener(ConfigClass, String, SerializableValue, NotNullValueListener)} using {@link ConfigPropertyKey#getPropertyName()}
 	 */
-	public void addValueListener(@NotNull ConfigClass owner, @NotNull ConfigPropertyKey key, @NotNull NotNullValueListener<SerializableValue> l) {
-		addValueListener(owner, key.getPropertyName(), l);
+	public void addValueListener(@NotNull ConfigClass owner, @NotNull ConfigPropertyKey key,
+								 @NotNull SerializableValue valueWhenAbsent, @NotNull NotNullValueListener<SerializableValue> l) {
+		addValueListener(owner, key.getPropertyName(), valueWhenAbsent, l);
 	}
 
 	/**

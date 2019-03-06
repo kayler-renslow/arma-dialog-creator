@@ -31,7 +31,7 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 	public ConfigPropertyProxy(@NotNull String propertyName, @NotNull SerializableValue valueWhenPropertyAbsent) {
 		this.propertyName = propertyName;
-		observer = new NotNullValueObserver<>(valueWhenPropertyAbsent);
+		this.observer = new NotNullValueObserver<>(valueWhenPropertyAbsent);
 		this.valueWhenPropertyAbsent = valueWhenPropertyAbsent;
 	}
 

@@ -2,21 +2,14 @@ package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.FontMetrics;
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.TextSection;
+import com.armadialogcreator.control.*;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TextHelper;
 import com.armadialogcreator.control.impl.utility.TextShadow;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
-import com.armadialogcreator.core.sv.SVHexColor;
-import com.armadialogcreator.core.sv.SVNumericValue;
+import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -57,22 +50,17 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 	public StructuredTextRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 
-		ConfigProperty colorBackground = myControl.findPropertyNullable(ConfigPropertyLookup.COLOR_BACKGROUND);
-		{
-			if (colorBackground != null) {
-				addValueListener(colorBackground.getName(), (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND,
+				// In arma 3, background color is optional and defaults to transparent, which is why we
+				// are using transparent rather than SVNull
+				SVColorConstant.TRANSPARENT,
+				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
 						getBackgroundColorObserver().updateValue((SVColor) newValue);
 					}
 				});
 
-			} else {
-				//in Arma 3, colorBackground is an optional property
-				getBackgroundColorObserver().updateValue(new SVColorArray(Color.TRANSPARENT));
-			}
-		}
-
-		addValueListener(ConfigPropertyLookup.TEXT, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.TEXT, SVNull.instance, (observer, oldValue, newValue) -> {
 			this.text = TextHelper.getText(newValue);
 			/*
 			todo when the renderer is fully implemented, uncomment this
@@ -101,7 +89,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 				ConfigPropertyLookup.TOOLTIP
 		);
 
-		addValueListener(ConfigPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.SIZE, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVNumericValue) {
 				size = ((SVNumericValue) newValue).toDouble();
 				updateSectionsFont();
@@ -111,28 +99,28 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 
 		{
 			ConfigClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
-			addValueListener(attributes, ConfigPropertyLookup.COLOR__HEX, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.COLOR__HEX, SVNull.instance, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
-					c = ((SVColor) newValue).toJavaFXColor();
+					c = ColorUtil.toColor((SVColor) newValue);
 				}
 				defaultSectionData.textColor = c;
 				requestRender();
 			});
-			addValueListener(attributes, ConfigPropertyLookup.ALIGN, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.ALIGN, SVNull.instance, (observer, oldValue, newValue) -> {
 				String alignment = newValue.toString();
 				defaultSectionData.alignment = getAlignment(alignment);
 				requestRender();
 			});
-			addValueListener(attributes, ConfigPropertyLookup.SHADOW_COLOR, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.SHADOW_COLOR, SVNull.instance, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
-					c = ((SVColor) newValue).toJavaFXColor();
+					c = ColorUtil.toColor((SVColor) newValue);
 				}
 				defaultSectionData.shadowColor = c;
 				requestRender();
 			});
-			addValueListener(attributes, ConfigPropertyLookup.SIZE, (observer, oldValue, newValue) -> {
+			addValueListener(attributes, ConfigPropertyLookup.SIZE, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
 					attributesSize = ((SVNumericValue) newValue).toDouble();
 				}
@@ -206,7 +194,8 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private static TextAlignment getAlignment(String alignment) {
+	@NotNull
+	private static TextAlignment getAlignment(@NotNull String alignment) {
 		switch (alignment.toLowerCase()) {
 			case "center": {
 				return TextAlignment.CENTER;

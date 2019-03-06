@@ -58,7 +58,7 @@ public class DefaultControlTreeItemGraphic extends HBox {
 				if (newValue == null) {
 					fillBox(Color.TRANSPARENT);
 				} else {
-					fillBox(newValue.toJavaFXColor());
+					fillBox(Color.color(newValue.getRedF(), newValue.getGreenF(), newValue.getBlueF(), newValue.getAlphaF()));
 				}
 			}
 		});

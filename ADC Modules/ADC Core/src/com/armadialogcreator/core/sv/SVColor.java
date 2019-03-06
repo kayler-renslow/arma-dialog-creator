@@ -2,7 +2,6 @@ package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.util.ArmaPrecision;
 import com.armadialogcreator.util.ColorUtil;
-import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -166,29 +165,11 @@ public interface SVColor {
 		}
 	}
 
-	/** Convert this color into a JavaFX color */
-	@NotNull
-	default Color toJavaFXColor() {
-		return Color.color(getRedF(), getGreenF(), getBlueF());
-	}
 
 	/** @return this color as a ARGB int value */
 	default int toARGB() {
 		return ColorUtil.toARGB(getRedF(), getGreenF(), getBlueF(), getAlphaF());
 	}
-
-	/**
-	 Create a new JavaFX Color from String array that is formatted like so:
-	 {r,g,b,a} where r,g,b,a are between 0.0 and 1.0 inclusively
-
-	 @throws NumberFormatException     when the string array is not formatted correctly
-	 @throws IndexOutOfBoundsException when string array is not of proper size (must be length 4)
-	 */
-	@NotNull
-	static Color toJavaFXColorF(@NotNull String[] newValue) throws NumberFormatException {
-		return Color.color(Double.parseDouble(newValue[0]), Double.parseDouble(newValue[1]), Double.parseDouble(newValue[2]), Double.parseDouble(newValue[3]));
-	}
-
 
 	/**
 	 Gets color array (formatted: [r,g,b,a])

@@ -3,6 +3,7 @@ package com.armadialogcreator.control.impl.utility;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.Texture;
 import com.armadialogcreator.control.TextureParser;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SerializableValue;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
@@ -66,7 +67,7 @@ public class ImageOrTextureHelper {
 	 @param completionCallback function to use when this method's internal functionality is complete, or null if don't care
 	 */
 	public void updateAsync(@Nullable SerializableValue value, @Nullable Function<Mode, Void> completionCallback) {
-		this.value = value;
+		this.value = value == SVNull.instance ? null : value;
 		if (value != null) {
 			String textValue = value.toString();
 			if (textValue.length() > 0 && textValue.charAt(0) == '#') {

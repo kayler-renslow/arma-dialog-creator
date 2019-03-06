@@ -5,13 +5,13 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -44,34 +44,30 @@ public class ProgressRenderer extends ArmaControlRenderer {
 	public ProgressRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);
 		this.border = new Border(2, Color.BLACK);
-		{
-			ConfigProperty colorFrame = myControl.findProperty(ConfigPropertyLookup.COLOR_FRAME);
-			addValueListener(colorFrame.getName(), (observer, oldValue, newValue) -> {
-				if (newValue instanceof SVColor) {
-					getBackgroundColorObserver().updateValue((SVColor) newValue);
-				}
-			});
-			colorFrame.setValue(new SVColorArray(getBackgroundColor()));
-		}
+		addValueListener(ConfigPropertyLookup.COLOR_FRAME, SVNull.instance, (observer, oldValue, newValue) -> {
+			if (newValue instanceof SVColor) {
+				getBackgroundColorObserver().updateValue((SVColor) newValue);
+			}
+		});
 
 		blinkControlHandler = new BlinkControlHandler(this, ConfigPropertyLookup.BLINKING_PERIOD);
 
-		addValueListener(ConfigPropertyLookup.COLOR_BAR, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.COLOR_BAR, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorBar = ((SVColor) newValue).toJavaFXColor();
+				colorBar = ColorUtil.toColor((SVColor) newValue);
 				updateTintedTexture();
 				requestRender();
 			}
 		});
 
-		addValueListener(ConfigPropertyLookup.TEXTURE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.TEXTURE, SVNull.instance, (observer, oldValue, newValue) -> {
 			textureHelper.updateAsync(newValue, mode -> {
 				updateTintedTexture();
 				return null;
 			});
 		});
 
-		addValueListener(ConfigPropertyLookup.STYLE, (observer, oldValue, newValue) -> {
+		addValueListener(ConfigPropertyLookup.STYLE, SVNull.instance, (observer, oldValue, newValue) -> {
 			newValue = MiscHelpers.getGroup(this.env, newValue, control);
 			if (newValue != null) {
 				SVControlStyleGroup g = (SVControlStyleGroup) newValue;
