@@ -198,8 +198,8 @@ public class SVHexColor extends SerializableValue implements SVColor {
 	}
 
 	private void updateHex() {
-		int argb = ColorUtil.toRGB(r, g, b);
-		String h = Integer.toHexString(argb);
+		int rgb = ColorUtil.toRGB(r, g, b);
+		String h = Integer.toHexString(rgb);
 		if (h.length() < 6) {
 			h = "000000".substring(0, 6 - h.length()) + h;
 		}

@@ -131,4 +131,14 @@ public class ColorUtil {
 	public static Color toColor(int r, int g, int b) {
 		return Color.color(r / 255.0, g / 255.0, b / 255.0);
 	}
+
+	@NotNull
+	public static String toHex(@NotNull Color color) {
+		int rgb = ColorUtil.toRGB(color.getRed(), color.getGreen(), color.getBlue());
+		String h = Integer.toHexString(rgb);
+		if (h.length() < 6) {
+			h = "000000".substring(0, 6 - h.length()) + h;
+		}
+		return "#" + h;
+	}
 }

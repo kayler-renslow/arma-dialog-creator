@@ -5,14 +5,17 @@ import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.data.ProjectSettings;
 import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.gui.main.fxControls.ColorButton;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.AColorConstant;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -55,12 +58,11 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
-		myRootElement.setAlignment(Pos.TOP_LEFT);
 		myRootElement.getChildren().addAll(
-				colorOption(bundle.getString("Popups.Colors.selection"), cpSelection),
-				colorOption(bundle.getString("Popups.Colors.abs_region"), cpAbsRegion),
-				colorOption(bundle.getString("Popups.Colors.grid"), cpGrid),
-				colorOption(bundle.getString("Popups.Colors.background"), cpEditorBg)
+				colorOption(bundle.getString("Popups.Colors.selection"), cpSelection, UICanvasEditorColors.DEFAULT_SELECTION),
+				colorOption(bundle.getString("Popups.Colors.abs_region"), cpAbsRegion, UICanvasEditorColors.DEFAULT_ABS_REGION),
+				colorOption(bundle.getString("Popups.Colors.grid"), cpGrid, UICanvasEditorColors.DEFAULT_GRID),
+				colorOption(bundle.getString("Popups.Colors.background"), cpEditorBg, UICanvasEditorColors.DEFAULT_EDITOR_BG)
 		);
 		this.colors = ArmaDialogCreator.getMainWindow().getCanvasEditor().getColors();
 		setupColorPickers();
@@ -78,9 +80,18 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 		cpGrid.valueProperty().addListener(colorChangeListener);
 	}
 
-	private static HBox colorOption(String label, ColorPicker cp) {
+	private static HBox colorOption(String label, ColorPicker cp, Color defaultColor) {
 		HBox hb = new HBox(10);
-		hb.getChildren().addAll(cp, new Label(label));
+		ColorButton colorButton = new ColorButton(defaultColor);
+		colorButton.addPressedListener((group, data) -> {
+			cp.setValue(colorButton.getColor());
+		});
+		hb.getChildren().addAll(cp,
+				colorButton,
+				new Separator(Orientation.VERTICAL),
+				new Label(label)
+		);
+		hb.setAlignment(Pos.CENTER_LEFT);
 		return hb;
 	}
 
