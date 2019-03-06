@@ -29,11 +29,7 @@ public class UICanvasEditor extends UICanvas {
 	private static final int COMPONENT_EDGE_LEEWAY = 5;
 	private static final long DOUBLE_CLICK_WAIT_TIME_MILLIS = 300;
 
-	/** Color of the mouse selection box */
-	private Color selectionColor = CanvasViewColors.SELECTION;
-
-	/** Color of the grid */
-	private Color gridColor = CanvasViewColors.GRID;
+	private final UICanvasEditorColors colors = new UICanvasEditorColors();
 
 
 	private CanvasSelection selection = new CanvasSelection();
@@ -91,7 +87,7 @@ public class UICanvasEditor extends UICanvas {
 			}
 		});
 
-		absRegionComponent = new ArmaAbsoluteBoxComponent(resolution);
+		absRegionComponent = new ArmaAbsoluteBoxComponent(colors.absRegion, resolution);
 		selection.selected.addListener(new ListChangeListener<UINode>() {
 			@Override
 			public void onChanged(Change<? extends UINode> c) {
@@ -155,10 +151,8 @@ public class UICanvasEditor extends UICanvas {
 
 	/** Updates the UI colors like selection color, grid color, and bg color */
 	public void updateColors() {
-		this.gridColor = CanvasViewColors.GRID;
-		this.selectionColor = CanvasViewColors.SELECTION;
-		this.absRegionComponent.setBackgroundColor(CanvasViewColors.ABS_REGION);
-		this.setCanvasBackgroundColor(CanvasViewColors.EDITOR_BG);
+		this.absRegionComponent.setBackgroundColor(colors.absRegion);
+		this.setCanvasBackgroundColor(colors.editorBg);
 
 		initializeSelectionEffect();
 	}
@@ -198,7 +192,7 @@ public class UICanvasEditor extends UICanvas {
 		super.paint();
 		if (selection.isSelecting()) {
 			gc.save();
-			gc.setStroke(selectionColor);
+			gc.setStroke(colors.selection);
 			gc.setLineWidth(2);
 			selection.strokeRectangle(gc);
 			gc.restore();
@@ -250,7 +244,7 @@ public class UICanvasEditor extends UICanvas {
 		boolean selected = selection.isSelected(node);
 		if (selected) {
 			gc.save();
-			Color selectedBorderColor = selectionColor;
+			Color selectedBorderColor = colors.selection;
 			int centerx = node.getComponent().getCenterX();
 			int centery = node.getComponent().getCenterY();
 			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
@@ -274,7 +268,7 @@ public class UICanvasEditor extends UICanvas {
 			int topY = node.getComponent().getTopY();
 			int height = node.getComponent().getHeight();
 			gc.setEffect(selectionEffect);
-			gc.setFill(selectionColor);
+			gc.setFill(colors.selection);
 			gc.fillRect(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
 			gc.restore();
 		}
@@ -329,7 +323,7 @@ public class UICanvasEditor extends UICanvas {
 		if (light) {
 			gc.setGlobalAlpha(0.2);
 		}
-		gc.setStroke(gridColor);
+		gc.setStroke(colors.grid);
 		if (getConfig().viewportSnapEnabled()) {
 			offsetx = (int) (resolution.getViewportX() % spacingX);
 			offsety = (int) (resolution.getViewportY() % spacingY);
@@ -967,6 +961,10 @@ public class UICanvasEditor extends UICanvas {
 		}
 	}
 
+	@NotNull
+	public UICanvasEditorColors getColors() {
+		return colors;
+	}
 
 	/**
 	 @author Kayler

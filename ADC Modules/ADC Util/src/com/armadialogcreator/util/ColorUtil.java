@@ -126,4 +126,9 @@ public class ColorUtil {
 			throw new IllegalArgumentException("Color value is out of range (must be >=0 and <=255): " + color);
 		}
 	}
+
+	@NotNull
+	public static Color toColor(int r, int g, int b) {
+		return Color.color(r / 255.0, g / 255.0, b / 255.0);
+	}
 }

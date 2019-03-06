@@ -24,7 +24,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +36,7 @@ import java.util.List;
 
  @author Kayler
  @since 05/15/2016. */
-class ADCCanvasView extends HBox implements CanvasView {
+class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 	private final UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls;
 	private final NotificationPane notificationPane;
@@ -170,18 +169,6 @@ class ADCCanvasView extends HBox implements CanvasView {
 	}
 
 	@Override
-	@Nullable
-	public ImagePattern getCanvasBackgroundImage() {
-		return uiCanvasEditor.getBackgroundImage();
-	}
-
-	@Override
-	@NotNull
-	public Color getCanvasBackgroundColor() {
-		return uiCanvasEditor.getBackgroundColor();
-	}
-
-	@Override
 	public void updateAbsRegion(int alwaysFront, int showing) {
 		uiCanvasEditor.updateAbsRegion(alwaysFront, showing);
 	}
@@ -196,6 +183,12 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
+	}
+
+	@Override
+	@NotNull
+	public UICanvasEditorColors getColors() {
+		return uiCanvasEditor.getColors();
 	}
 
 	@NotNull

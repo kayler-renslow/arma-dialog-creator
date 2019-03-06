@@ -16,6 +16,6 @@ public class ViewAbsRegionShowAction implements EventHandler<ActionEvent> {
 		} else {
 			showing = 1;
 		}
-		//ArmaDialogCreator.getCanvasView().updateAbsRegion(-1, showing);
+		//ArmaDialogCreator.getCanvasEditor().updateAbsRegion(-1, showing);
 	}
 }

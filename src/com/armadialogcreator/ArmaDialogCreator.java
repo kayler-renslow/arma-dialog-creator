@@ -167,8 +167,8 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 	}
 
 	@NotNull
-	ADCMainWindow getMainWindow() {
-		return mainWindow;
+	public static ADCMainWindow getMainWindow() {
+		return INSTANCE.mainWindow;
 	}
 
 	@NotNull
@@ -193,24 +193,6 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 	public static Stage getPrimaryStage() {
 		return INSTANCE.primaryStage;
 	}
-
-	//	public static void setToDarkTheme(boolean set) {
-	//		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
-	//		if (set) {
-	//			CanvasViewColors.EDITOR_BG = CanvasViewColors.DARK_THEME_EDITOR_BG;
-	//			CanvasViewColors.GRID = CanvasViewColors.DARK_THEME_GRID;
-	//			INSTANCE.primaryStage.getScene().getStylesheets().add(darkTheme);
-	//		} else {
-	//			CanvasViewColors.EDITOR_BG = CanvasViewColors.DEFAULT_EDITOR_BG;
-	//			CanvasViewColors.GRID = CanvasViewColors.DEFAULT_GRID;
-	//			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
-	//		}
-	//		if (getADCWindow().isShowing()) {
-	//			getCanvasView().updateCanvas();
-	//		}
-	//		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
-	//		getApplicationDataManager().saveApplicationProperties();
-	//	}
 
 	@NotNull
 	public static Parameters getLaunchParameters() {

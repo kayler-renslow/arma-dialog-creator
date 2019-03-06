@@ -2,6 +2,7 @@ package com.armadialogcreator;
 
 import com.armadialogcreator.application.ADCDataLoadException;
 import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import com.armadialogcreator.gui.main.popup.projectInit.ADCProjectInitWindow;
 import com.armadialogcreator.gui.main.popup.projectInit.CouldNotLoadFileDialog;
@@ -42,7 +43,7 @@ public class ApplicationProjectSwitcher {
 
 	public void loadNewProject(boolean askSave) {
 		ApplicationManager applicationManager = ApplicationManager.instance;
-		ArmaDialogCreator adc = ArmaDialogCreator.getInstance();
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
 		switch (currentState) {
 			case ProjectActive: {
 				if (askSave) {
@@ -55,7 +56,7 @@ public class ApplicationProjectSwitcher {
 						applicationManager.saveProject();
 					}
 				}
-				adc.getMainWindow().hide();
+				mainWindow.hide();
 				break;
 			}
 			case ProjectSelection: {
@@ -89,9 +90,9 @@ public class ApplicationProjectSwitcher {
 				initWindow.hide();
 				if (!loadedAtLeastOneProject) {
 					loadedAtLeastOneProject = true;
-					adc.getMainWindow().initialize();
+					mainWindow.initialize();
 				}
-				adc.getMainWindow().show();
+				mainWindow.show();
 				currentState = State.ProjectActive;
 				break;
 			}

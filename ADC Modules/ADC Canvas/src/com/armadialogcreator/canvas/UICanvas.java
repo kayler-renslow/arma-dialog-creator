@@ -45,7 +45,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	protected ImagePattern backgroundImage = null;
 
 	/** Background color of the canvas */
-	protected Color backgroundColor = CanvasViewColors.EDITOR_BG;
+	protected Color backgroundColor = Color.WHITE;
 
 	/** Mouse button that is currently down */
 	protected final Point lastMousePosition = new Point(-1, -1);//last x and y positions of the mouse relative to the canvas

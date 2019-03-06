@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,10 +11,10 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	private Resolution resolution;
 	private boolean alwaysFront = true;
 
-	ArmaAbsoluteBoxComponent(Resolution r) {
+	ArmaAbsoluteBoxComponent(@NotNull Color color, @NotNull Resolution r) {
 		super(r.getViewportX(), r.getViewportY(), r.getViewportWidth(), r.getViewportHeight());
 		this.resolution = r;
-		super.setBackgroundColor(CanvasViewColors.ABS_REGION);
+		super.setBackgroundColor(color);
 	}
 
 	@Override

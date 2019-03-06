@@ -1,9 +1,12 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
-import com.armadialogcreator.canvas.CanvasViewColors;
+import com.armadialogcreator.canvas.UICanvasEditorColors;
+import com.armadialogcreator.data.ProjectSettings;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.AColorConstant;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -24,19 +27,20 @@ import java.util.ResourceBundle;
  @since 05/20/2016. */
 public class CanvasViewColorsPopup extends StageDialog<VBox> {
 
-	private final ColorPicker cpSelection = new ColorPicker(CanvasViewColors.SELECTION);
-	private final ColorPicker cpGrid = new ColorPicker(CanvasViewColors.GRID);
-	private final ColorPicker cpEditorBg = new ColorPicker(CanvasViewColors.EDITOR_BG);
-	private final ColorPicker cpAbsRegion = new ColorPicker(CanvasViewColors.ABS_REGION);
+	private final ColorPicker cpSelection = new ColorPicker();
+	private final ColorPicker cpGrid = new ColorPicker();
+	private final ColorPicker cpEditorBg = new ColorPicker();
+	private final ColorPicker cpAbsRegion = new ColorPicker();
+	private final UICanvasEditorColors colors;
 
 	private ChangeListener<Color> colorChangeListener = new ChangeListener<>() {
 		@Override
 		public void changed(ObservableValue<? extends Color> observable, Color oldValue, Color newValue) {
-			CanvasViewColors.ABS_REGION = cpAbsRegion.getValue();
-			CanvasViewColors.EDITOR_BG = cpEditorBg.getValue();
-			CanvasViewColors.GRID = cpGrid.getValue();
-			CanvasViewColors.SELECTION = cpSelection.getValue();
-			//ArmaDialogCreator.getCanvasView().updateCanvas();
+			colors.absRegion = cpAbsRegion.getValue();
+			colors.editorBg = cpEditorBg.getValue();
+			colors.grid = cpGrid.getValue();
+			colors.selection = cpSelection.getValue();
+			ArmaDialogCreator.getMainWindow().getCanvasEditor().updateCanvas();
 		}
 	};
 
@@ -48,7 +52,7 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 		setTitle(bundle.getString("Popups.Colors.popup_title"));
 
 		myStage.initStyle(StageStyle.UTILITY);
-		setupColorPickers();
+
 		myStage.setMinWidth(400);
 		myRootElement.setPadding(new Insets(5, 5, 5, 5));
 		myRootElement.setAlignment(Pos.TOP_LEFT);
@@ -58,9 +62,16 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 				colorOption(bundle.getString("Popups.Colors.grid"), cpGrid),
 				colorOption(bundle.getString("Popups.Colors.background"), cpEditorBg)
 		);
+		this.colors = ArmaDialogCreator.getMainWindow().getCanvasEditor().getColors();
+		setupColorPickers();
 	}
 
 	private void setupColorPickers() {
+		cpSelection.setValue(colors.selection);
+		cpAbsRegion.setValue(colors.absRegion);
+		cpEditorBg.setValue(colors.editorBg);
+		cpGrid.setValue(colors.grid);
+
 		cpSelection.valueProperty().addListener(colorChangeListener);
 		cpAbsRegion.valueProperty().addListener(colorChangeListener);
 		cpEditorBg.valueProperty().addListener(colorChangeListener);
@@ -73,4 +84,21 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 		return hb;
 	}
 
+	@Override
+	protected void ok() {
+		ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
+		projectSettings.EditorBackgroundSetting.set(
+				new AColorConstant(cpEditorBg.getValue())
+		);
+		projectSettings.EditorGridColorSetting.set(
+				new AColorConstant(cpGrid.getValue())
+		);
+		projectSettings.AbsRegionColorSetting.set(
+				new AColorConstant(cpAbsRegion.getValue())
+		);
+		projectSettings.EditorSelectionColorSetting.set(
+				new AColorConstant(cpAbsRegion.getValue())
+		);
+		super.ok();
+	}
 }

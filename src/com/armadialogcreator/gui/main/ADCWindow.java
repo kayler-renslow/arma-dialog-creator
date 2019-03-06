@@ -123,7 +123,7 @@ public class ADCWindow implements ADCMainWindow {
 
 	@Override
 	@NotNull
-	public CanvasView getCanvasView() {
+	public ADCMainCanvasEditor getCanvasEditor() {
 		if (!isShowing()) {
 			throw new IllegalStateException("can't access canvas view when main window is not showing");
 		}

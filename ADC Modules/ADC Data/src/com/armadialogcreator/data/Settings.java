@@ -3,6 +3,7 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.SimpleEnv;
+import com.armadialogcreator.util.AColor;
 import com.armadialogcreator.util.ColorUtil;
 import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
@@ -120,7 +121,7 @@ public class Settings {
 
 	}
 
-	public static class ColorSetting extends Setting<SVColor> {
+	public static class ColorSetting extends Setting<AColor> {
 		public ColorSetting(int r, int g, int b, int a) {
 			set(r, g, b, a);
 		}
@@ -133,7 +134,7 @@ public class Settings {
 		}
 
 		public int argb() {
-			SVColor color = get();
+			AColor color = get();
 			if (color == null) {
 				return 0;
 			}
@@ -141,7 +142,7 @@ public class Settings {
 		}
 
 		@Override
-		public void set(@Nullable SVColor color) {
+		public void set(@Nullable AColor color) {
 			super.set(color == null ? new SVColorInt(0) : color);
 		}
 
