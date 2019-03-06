@@ -12,9 +12,6 @@ import javax.xml.transform.*;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 
 /**
  A class that aids in creating XML DOM and writing to a file.
@@ -51,15 +48,6 @@ public class XmlWriter {
 	 */
 	public XmlWriter(@NotNull File writeXmlFile, @NotNull String rootTagName, @NotNull String encoding) {
 		this.writeXmlFile = writeXmlFile;
-		if (writeXmlFile.exists()) {
-			//create backup
-			try {
-				Files.copy(writeXmlFile.toPath(), new File(writeXmlFile.getPath() + ".backup").toPath(), StandardCopyOption.REPLACE_EXISTING);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
 		DocumentBuilder builder;
 		try {
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -71,8 +59,6 @@ public class XmlWriter {
 		this.encoding = encoding;
 		rootElement = document.createElement(rootTagName);
 		document.appendChild(rootElement);
-
-
 	}
 
 	/**

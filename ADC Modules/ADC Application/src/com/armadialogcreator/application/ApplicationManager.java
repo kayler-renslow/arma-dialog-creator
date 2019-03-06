@@ -206,16 +206,26 @@ public class ApplicationManager {
 
 	}
 
-	public void saveProject() {
+	public void saveProject() throws ADCDataWriteException {
+		saveApplicationData();
 		try {
-			new XmlConfigurableWriter_2019_1_0<>(ApplicationDataManager.getInstance(), getApplicationDataSaveFile()).write();
+			new XmlConfigurableWriter_2019_1_0<>(workspace, getWorkspaceDataSaveFile(workspace)).write();
 		} catch (IOException | TransformerException e) {
-			e.printStackTrace();
+			throw new ADCDataWriteException(e);
+		}
+		try {
+			new XmlConfigurableWriter_2019_1_0<>(project, getProjectSaveFile(project)).write();
+		} catch (IOException | TransformerException e) {
+			throw new ADCDataWriteException(e);
 		}
 	}
 
-	public void saveApplicationData() {
-
+	public void saveApplicationData() throws ADCDataWriteException {
+		try {
+			new XmlConfigurableWriter_2019_1_0<>(ApplicationDataManager.getInstance(), getApplicationDataSaveFile()).write();
+		} catch (IOException | TransformerException e) {
+			throw new ADCDataWriteException(e);
+		}
 	}
 
 	/**

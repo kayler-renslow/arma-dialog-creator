@@ -26,7 +26,7 @@ public class XmlConfigurableWriter_2019_1_0<D extends ADCData> extends XmlConfig
 		int i = 0;
 		for (D d : manager.getDataList()) {
 			Element include = writer.appendElementToRoot("include");
-			String file = d.getDataID() + ".adc";
+			String file = "includes" + File.separator + d.getDataID() + ".adc";
 			include.setAttribute("f", file);
 			includes[i++] = file;
 		}
@@ -35,6 +35,9 @@ public class XmlConfigurableWriter_2019_1_0<D extends ADCData> extends XmlConfig
 		for (D d : manager.getDataList()) {
 			File includeFile = new File(rootSaveFile.getParentFile().getAbsolutePath() + File.separator + includes[i++]);
 			if (!includeFile.exists()) {
+				if (!includeFile.getParentFile().exists()) {
+					includeFile.getParentFile().mkdirs();
+				}
 				includeFile.createNewFile();
 			}
 			XmlWriter includeWriter = new XmlWriter(includeFile, ROOT_TAG_NAME);

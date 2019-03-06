@@ -1,5 +1,6 @@
 package com.armadialogcreator;
 
+import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.data.ApplicationProperties;
@@ -23,7 +24,12 @@ public class ADCGuiManager {
 
 	public void applyDarkThemeIfOn() {
 		Settings.BooleanSetting useDarkTheme = ApplicationProperties.instance.useDarkTheme;
-		ApplicationManager.instance.saveApplicationData();
+		try {
+			ApplicationManager.instance.saveApplicationData();
+		} catch (ADCDataWriteException e) {
+			//todo report this to error log
+			throw new RuntimeException(e);
+		}
 
 		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
 		Stage stage = ArmaDialogCreator.getPrimaryStage();

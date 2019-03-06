@@ -1,5 +1,6 @@
 package com.armadialogcreator;
 
+import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.gui.main.ADCMainWindow;
@@ -230,7 +231,11 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			AskSaveProjectDialog dialog = new AskSaveProjectDialog();
 			dialog.show();
 			if (dialog.saveProgress()) {
-				ApplicationManager.instance.saveProject();
+				try {
+					ApplicationManager.instance.saveProject();
+				} catch (ADCDataWriteException e) {
+					throw new RuntimeException(e);
+				}
 			}
 			ApplicationManager.instance.closeApplication();
 		}

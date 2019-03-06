@@ -2,6 +2,7 @@ package com.armadialogcreator.gui.main.actions.mainMenu.help;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
@@ -37,7 +38,11 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 			return;
 		}
 		if (dialog.saveProgress()) {
-			ApplicationManager.instance.saveProject();
+			try {
+				ApplicationManager.instance.saveProject();
+			} catch (ADCDataWriteException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		ApplicationManager.instance.closeApplication();
 		try {

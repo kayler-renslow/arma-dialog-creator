@@ -20,7 +20,7 @@ public class ProjectImproperResultDialog extends StageDialog<ScrollPane> {
 	public ProjectImproperResultDialog() {
 		super(ArmaDialogCreator.getPrimaryStage(), new ScrollPane(new VBox(15)), null, false, true, false);
 		ResourceBundle bundle = Lang.ApplicationBundle();
-		setTitle(bundle.getString("ProjectResultErrorPopup.popup_title"));
+		//setTitle(bundle.getString("ProjectResultErrorPopup.popup_title"));
 
 		/*
 

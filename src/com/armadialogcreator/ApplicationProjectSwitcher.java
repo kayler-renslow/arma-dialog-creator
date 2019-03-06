@@ -1,6 +1,7 @@
 package com.armadialogcreator;
 
 import com.armadialogcreator.application.ADCDataLoadException;
+import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
@@ -53,7 +54,11 @@ public class ApplicationProjectSwitcher {
 						return;
 					}
 					if (dialog.saveProgress()) {
-						applicationManager.saveProject();
+						try {
+							applicationManager.saveProject();
+						} catch (ADCDataWriteException e) {
+							throw new RuntimeException(e);
+						}
 					}
 				}
 				mainWindow.hide();

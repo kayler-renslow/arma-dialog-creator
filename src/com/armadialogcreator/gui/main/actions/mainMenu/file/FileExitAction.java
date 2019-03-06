@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.file;
 
+import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.gui.main.AskSaveProjectDialog;
 import javafx.event.ActionEvent;
@@ -17,7 +18,11 @@ public class FileExitAction implements EventHandler<ActionEvent> {
 			return;
 		}
 		if (dialog.saveProgress()) {
-			ApplicationManager.instance.saveProject();
+			try {
+				ApplicationManager.instance.saveProject();
+			} catch (ADCDataWriteException e) {
+				throw new RuntimeException(e);
+			}
 		}
 		ApplicationManager.instance.closeApplication();
 	}
