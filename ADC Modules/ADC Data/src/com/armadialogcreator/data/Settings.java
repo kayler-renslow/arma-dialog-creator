@@ -26,6 +26,8 @@ public class Settings {
 	}
 
 	protected final void setFromConfigurable(@NotNull Configurable c) {
+		System.out.println(Configurable.toFormattedString(c, 1));
+		System.out.println("Settings.setFromConfigurable ");
 		for (Configurable nested : c.getNestedConfigurables()) {
 			for (KeyValueString attr : nested.getConfigurableAttributes()) {
 				if (!attr.getKey().equals("name")) {
@@ -35,7 +37,7 @@ public class Settings {
 				if (setting == null) {
 					continue;
 				}
-				setting.setFromConfigurable(nested);
+				setting.setFromConfigurable(nested.getNestedConfigurables().iterator().next());
 			}
 		}
 	}
@@ -44,12 +46,13 @@ public class Settings {
 	protected final Configurable copyToConfigurable() {
 		Configurable c = new Configurable.Simple("settings");
 		map.forEach((key, value) -> {
-			Configurable nested = new Configurable.Simple("s");
-			nested.addAttribute("name", key);
-			if (value.v == null && value.defaultValue == null) {
+			Configurable setting = new Configurable.Simple("s");
+			setting.addAttribute("name", key);
+			if (value.get() == null && value.getDefaultValue() == null) {
 				return;
 			}
-			nested.addNestedConfigurable(value.exportToConfigurable());
+			setting.addNestedConfigurable(value.exportToConfigurable());
+			c.addNestedConfigurable(setting);
 		});
 		return c;
 	}
@@ -63,6 +66,7 @@ public class Settings {
 		public FileSetting() {
 		}
 
+		@NotNull
 		@Override
 		public Configurable exportToConfigurable() {
 			if (v == null) {
@@ -146,6 +150,7 @@ public class Settings {
 			super.set(color == null ? new SVColorInt(0) : color);
 		}
 
+		@NotNull
 		@Override
 		public Configurable exportToConfigurable() {
 			return new Configurable.Simple("argb", argb() + "");
@@ -192,6 +197,7 @@ public class Settings {
 		public SVSetting() {
 		}
 
+		@NotNull
 		@Override
 		public Configurable exportToConfigurable() {
 			if (v == null) {
@@ -238,6 +244,7 @@ public class Settings {
 			this.defaultValue = defaultValue;
 		}
 
+		@NotNull
 		public abstract Configurable exportToConfigurable();
 
 		public abstract void setFromConfigurable(@NotNull Configurable c);

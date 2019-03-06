@@ -11,4 +11,6 @@ import org.jetbrains.annotations.NotNull;
  @since 01/07/2019 */
 public interface ADCDataListManager<D extends ADCData> {
 	@NotNull ListObserver<D> getDataList();
+
+	@NotNull DataLevel getDataLevel();
 }

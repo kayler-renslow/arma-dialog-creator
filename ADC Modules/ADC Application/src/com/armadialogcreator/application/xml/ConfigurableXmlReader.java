@@ -36,7 +36,7 @@ public class ConfigurableXmlReader<D extends ADCData> {
 		for (Element element : XmlUtil.iterateChildElements(reader.getDocumentElement())) {
 			if (element.getTagName().equals("include")) {
 				String path = element.getAttribute("f");
-				File includedFile = new File(path);
+				File includedFile = new File(f.getParentFile().getAbsolutePath() + File.separator + path);
 				if (includedFile.exists()) {
 					includedFiles.push(includedFile);
 				}

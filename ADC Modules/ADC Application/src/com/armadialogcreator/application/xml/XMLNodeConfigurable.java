@@ -5,7 +5,9 @@ import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Attr;
+import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Text;
 
 import java.util.Iterator;
 
@@ -72,12 +74,32 @@ public class XMLNodeConfigurable implements Configurable {
 
 	@Override
 	public void addNestedConfigurable(@NotNull Configurable c) {
-		throw new UnsupportedOperationException();
+		Document d = element.getOwnerDocument();
+		Element nestedElement = d.createElement(c.getConfigurableName());
+		this.element.appendChild(nestedElement);
+
+		for (KeyValueString kv : c.getConfigurableAttributes()) {
+			nestedElement.setAttribute(kv.getKey(), kv.getValue());
+		}
+
+		String body = c.getConfigurableBody();
+		if (body.length() > 0) {
+			Text text = d.createTextNode(body);
+			nestedElement.appendChild(text);
+		}
+
+		Iterator<Configurable> iter = c.getNestedConfigurables().iterator();
+		if (iter.hasNext()) {
+			XMLNodeConfigurable nestedElementAsConfigurable = new XMLNodeConfigurable(nestedElement);
+			while (iter.hasNext()) {
+				nestedElementAsConfigurable.addNestedConfigurable(iter.next());
+			}
+		}
 	}
 
 	@Override
 	public void addAttribute(@NotNull String key, @NotNull String value) {
-		throw new UnsupportedOperationException();
+		element.setAttribute(key, value);
 	}
 
 	@Override

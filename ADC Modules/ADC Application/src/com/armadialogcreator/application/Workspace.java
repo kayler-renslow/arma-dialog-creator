@@ -57,6 +57,12 @@ public class Workspace implements ADCDataListManager<WorkspaceData> {
 		return dataList;
 	}
 
+	@Override
+	@NotNull
+	public DataLevel getDataLevel() {
+		return DataLevel.Workspace;
+	}
+
 	/** @return the File that is the workspace's directory that contains a bunch of {@link Project}'s */
 	@NotNull
 	public File getWorkspaceDirectory() {

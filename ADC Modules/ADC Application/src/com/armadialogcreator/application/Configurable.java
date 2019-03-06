@@ -1,10 +1,12 @@
 package com.armadialogcreator.application;
 
+import com.armadialogcreator.util.IndentedStringBuilder;
 import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -129,4 +131,43 @@ public interface Configurable {
 			return "";
 		}
 	};
+
+	@NotNull
+	static String toFormattedString(@NotNull Configurable c, int tabCount) {
+		IndentedStringBuilder sb = new IndentedStringBuilder(tabCount, true);
+		toFormattedString(c, sb);
+		return sb.toString();
+	}
+
+	private static void toFormattedString(@NotNull Configurable c, @NotNull IndentedStringBuilder sb) {
+		sb.append('<');
+		sb.append(c.getConfigurableName());
+		for (KeyValueString kv : c.getConfigurableAttributes()) {
+			sb.append(' ');
+			sb.append(kv.getKey());
+			sb.append('=');
+			sb.append('"');
+			sb.append(kv.getValue());
+			sb.append('"');
+		}
+		sb.append('>');
+		String body = c.getConfigurableBody().trim();
+		if (body.length() > 0) {
+			sb.append(c.getConfigurableBody());
+		}
+		Iterator<Configurable> iterator = c.getNestedConfigurables().iterator();
+		if (iterator.hasNext()) {
+			sb.incrementTabCount();
+			sb.appendNewLine();
+			while (iterator.hasNext()) {
+				toFormattedString(iterator.next(), sb);
+			}
+			sb.decrementTabCount();
+			sb.appendNewLine();
+		}
+		sb.append('<');
+		sb.append('/');
+		sb.append(c.getConfigurableName());
+		sb.append('>');
+	}
 }

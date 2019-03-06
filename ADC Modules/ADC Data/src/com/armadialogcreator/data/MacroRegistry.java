@@ -266,7 +266,7 @@ public class MacroRegistry implements Registry {
 		@Override
 		@NotNull
 		public String getDataID() {
-			return "config-classes";
+			return "macros";
 		}
 
 		public void addMacro(@NotNull Macro macro) {

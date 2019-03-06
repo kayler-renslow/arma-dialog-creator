@@ -166,5 +166,7 @@ public class IndentedStringBuilder {
 		return b.toString();
 	}
 
-
+	public void appendNewLine() {
+		append('\n');
+	}
 }

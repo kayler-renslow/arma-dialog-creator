@@ -3,10 +3,12 @@ package com.armadialogcreator.application;
 import com.armadialogcreator.application.xml.ApplicationDataXmlReader;
 import com.armadialogcreator.application.xml.ProjectDataXmlReader;
 import com.armadialogcreator.application.xml.WorkspaceDataXmlReader;
+import com.armadialogcreator.application.xml.XmlConfigurableWriter_2019_1_0;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 
+import javax.xml.transform.TransformerException;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -205,6 +207,14 @@ public class ApplicationManager {
 	}
 
 	public void saveProject() {
+		try {
+			new XmlConfigurableWriter_2019_1_0<>(ApplicationDataManager.getInstance(), getApplicationDataSaveFile()).write();
+		} catch (IOException | TransformerException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void saveApplicationData() {
 
 	}
 
@@ -324,5 +334,4 @@ public class ApplicationManager {
 	public static File getApplicationDataSaveFile() {
 		return getFileInApplicationDataDirectory(APPLICATION_DATA_SAVE_FILE_NAME);
 	}
-
 }

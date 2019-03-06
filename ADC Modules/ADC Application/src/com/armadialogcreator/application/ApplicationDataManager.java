@@ -20,6 +20,12 @@ public class ApplicationDataManager implements ADCDataListManager<ApplicationDat
 		return dataList;
 	}
 
+	@Override
+	@NotNull
+	public DataLevel getDataLevel() {
+		return DataLevel.Application;
+	}
+
 	@NotNull
 	public static ApplicationDataManager getInstance() {
 		return instance;

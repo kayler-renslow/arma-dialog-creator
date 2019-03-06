@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.view;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.data.ApplicationProperties;
 import com.armadialogcreator.data.ProjectSettings;
@@ -32,6 +33,7 @@ public class ViewDarkThemeAction implements MenuItemEventHandler<CheckMenuItem> 
 		CheckMenuItem source = (CheckMenuItem) event.getSource();
 		useDarkTheme.not();
 		source.setSelected(useDarkTheme.isTrue());
+		ApplicationManager.instance.saveApplicationData();
 
 		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
 		Stage stage = ArmaDialogCreator.getPrimaryStage();
@@ -61,23 +63,6 @@ public class ViewDarkThemeAction implements MenuItemEventHandler<CheckMenuItem> 
 		canvasEditor.updateCanvas();
 	}
 
-	//	public static void setToDarkTheme(boolean set) {
-	//		final String darkTheme = ADCStyleSheets.getStylesheet("dark.css");
-	//		if (set) {
-	//			UICanvasEditorColors.editorBg = UICanvasEditorColors.DARK_THEME_EDITOR_BG;
-	//			UICanvasEditorColors.grid = UICanvasEditorColors.DARK_THEME_GRID;
-	//			INSTANCE.primaryStage.getScene().getStylesheets().add(darkTheme);
-	//		} else {
-	//			UICanvasEditorColors.editorBg = UICanvasEditorColors.DEFAULT_EDITOR_BG;
-	//			UICanvasEditorColors.grid = UICanvasEditorColors.DEFAULT_GRID;
-	//			INSTANCE.primaryStage.getScene().getStylesheets().remove(darkTheme);
-	//		}
-	//		if (getADCWindow().isShowing()) {
-	//			getCanvasEditor().updateCanvas();
-	//		}
-	//		getApplicationDataManager().getApplicationProperties().put(ApplicationProperty.DARK_THEME, set);
-	//		getApplicationDataManager().saveApplicationProperties();
-	//	}
 	@Override
 	public void setMenuItem(@NotNull CheckMenuItem menuItem) {
 		menuItem.setSelected(useDarkTheme.isTrue());

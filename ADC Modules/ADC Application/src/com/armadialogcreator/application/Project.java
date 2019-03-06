@@ -31,6 +31,12 @@ public class Project implements ADCDataListManager<ProjectData> {
 		return dataList;
 	}
 
+	@Override
+	@NotNull
+	public DataLevel getDataLevel() {
+		return DataLevel.Project;
+	}
+
 	/** @return {@link ApplicationManager#getCurrentProject()} */
 	@NotNull
 	public static Project getCurrentProject() {
