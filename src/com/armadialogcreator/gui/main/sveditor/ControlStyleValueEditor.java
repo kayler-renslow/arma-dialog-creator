@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main.sveditor;
 
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;

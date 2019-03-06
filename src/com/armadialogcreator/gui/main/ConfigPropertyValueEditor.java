@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.Macro;

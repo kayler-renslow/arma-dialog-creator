@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main.sveditor;
 
 import com.armadialogcreator.core.sv.SVString;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ArmaStringChecker;

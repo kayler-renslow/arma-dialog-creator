@@ -6,7 +6,7 @@ import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.armadialogcreator.gui.main.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.fxControls.ConfigClassGroupMenu;
 import com.armadialogcreator.gui.main.fxControls.ConfigClassMenuButton;
 import com.armadialogcreator.lang.Lang;

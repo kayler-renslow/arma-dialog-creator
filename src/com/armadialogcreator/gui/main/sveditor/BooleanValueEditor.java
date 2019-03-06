@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main.sveditor;
 
 import com.armadialogcreator.core.sv.SVBoolean;
 import com.armadialogcreator.gui.fxcontrol.BooleanChoiceBox;

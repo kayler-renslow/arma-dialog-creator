@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.core.*;
@@ -8,6 +8,8 @@ import com.armadialogcreator.core.sv.SerializableValueConversionException;
 import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
+import com.armadialogcreator.gui.main.sveditor.ConvertValueDialog;
+import com.armadialogcreator.gui.main.sveditor.MacroGetterButton;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -31,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
-import static com.armadialogcreator.gui.main.controlPropertiesEditor.ConfigPropertyValueEditors.*;
+import static com.armadialogcreator.gui.main.ConfigPropertyValueEditors.*;
 
 /**
  @author Kayler

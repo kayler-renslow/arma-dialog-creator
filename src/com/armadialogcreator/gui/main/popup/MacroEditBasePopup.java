@@ -12,7 +12,7 @@ import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.MacroIdentifierChecker;
 import com.armadialogcreator.gui.main.BrowserUtil;
-import com.armadialogcreator.gui.main.controlPropertiesEditor.ValueEditor;
+import com.armadialogcreator.gui.main.sveditor.ValueEditor;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

@@ -1,17 +1,17 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main.sveditor;
 
-import com.armadialogcreator.core.sv.SVDouble;
-import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
+import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
+import com.armadialogcreator.gui.fxcontrol.inputfield.IntegerChecker;
 import org.jetbrains.annotations.NotNull;
 
 /**
- Checker for Doubles that returns a SerializableValue
+ Checker for Integers that returns a SerializableValue
 
  @author Kayler
  @since 05/31/2016. */
-public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
-	private static final DoubleChecker checker = new DoubleChecker();
+public class SVIntegerChecker implements InputFieldDataChecker<SVInteger> {
+	private static final IntegerChecker checker = new IntegerChecker();
 
 	@Override
 	public String errorMsgOnData(@NotNull String data) {
@@ -19,12 +19,12 @@ public class SVDoubleChecker implements InputFieldDataChecker<SVDouble> {
 	}
 
 	@Override
-	public SVDouble parse(@NotNull String data) {
-		Double d = checker.parse(data);
-		if (d == null) {
+	public SVInteger parse(@NotNull String data) {
+		Integer i = checker.parse(data);
+		if (i == null) {
 			throw new IllegalStateException("returned value shouldn't be null");
 		}
-		return new SVDouble(d);
+		return new SVInteger(i);
 	}
 
 	@Override

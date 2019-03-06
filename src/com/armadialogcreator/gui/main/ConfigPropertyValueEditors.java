@@ -1,4 +1,4 @@
-package com.armadialogcreator.gui.main.controlPropertiesEditor;
+package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.*;
@@ -6,6 +6,7 @@ import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.fxcontrol.inputfield.ExpressionChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputFieldDataChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.RawChecker;
+import com.armadialogcreator.gui.main.sveditor.*;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.*;
 import javafx.beans.value.ChangeListener;

@@ -50,6 +50,8 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 				//:addValueListener
 				property.addValueListener(valueListener);
+			} else {
+				observer.updateValue(property.getValue());
 			}
 		} else if (this.configProperty != null) {
 			configProperty.removeValueListener(valueListener);

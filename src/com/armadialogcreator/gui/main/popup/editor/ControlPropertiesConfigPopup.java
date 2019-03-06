@@ -10,7 +10,7 @@ import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
-import com.armadialogcreator.gui.main.controlPropertiesEditor.ControlPropertiesEditorPane;
+import com.armadialogcreator.gui.main.ControlPropertiesEditorPane;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
