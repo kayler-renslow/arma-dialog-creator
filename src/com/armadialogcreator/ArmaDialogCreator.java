@@ -163,6 +163,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 
 		//load main window
 		mainWindow = new ADCWindow(primaryStage);
+		ADCGuiManager.instance.guiReady();
 		ApplicationProjectSwitcher.instance.firstProjectSelection();
 	}
 

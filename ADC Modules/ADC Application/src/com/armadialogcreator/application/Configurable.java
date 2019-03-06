@@ -4,6 +4,7 @@ import com.armadialogcreator.util.IndentedStringBuilder;
 import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -33,6 +34,16 @@ public interface Configurable {
 	@NonNls
 	@NotNull
 	String getConfigurableBody();
+
+	@Nullable
+	default Configurable getConfigurable(@NotNull String name) {
+		for (Configurable c : getNestedConfigurables()) {
+			if (c.getConfigurableName().equals(name)) {
+				return c;
+			}
+		}
+		return null;
+	}
 
 	class Simple implements Configurable {
 		@NotNull

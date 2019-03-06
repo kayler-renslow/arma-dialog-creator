@@ -41,7 +41,6 @@ public class ApplicationProperties implements ApplicationStateSubscriber {
 
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
-			System.out.println("PropertySettings.loadFromConfigurable ");
 			this.setFromConfigurable(config);
 		}
 

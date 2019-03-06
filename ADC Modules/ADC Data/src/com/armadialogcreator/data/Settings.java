@@ -26,9 +26,12 @@ public class Settings {
 	}
 
 	protected final void setFromConfigurable(@NotNull Configurable c) {
-		System.out.println(Configurable.toFormattedString(c, 1));
-		System.out.println("Settings.setFromConfigurable ");
-		for (Configurable nested : c.getNestedConfigurables()) {
+		Configurable settingsConf = c.getConfigurable("settings");
+		if (settingsConf == null) {
+			//todo
+			return;
+		}
+		for (Configurable nested : settingsConf.getNestedConfigurables()) {
 			for (KeyValueString attr : nested.getConfigurableAttributes()) {
 				if (!attr.getKey().equals("name")) {
 					continue;
@@ -80,7 +83,7 @@ public class Settings {
 
 		@Override
 		public void setFromConfigurable(@NotNull Configurable c) {
-
+			this.v = new File(c.getConfigurableBody());
 		}
 	}
 

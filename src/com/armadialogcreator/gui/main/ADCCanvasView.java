@@ -4,6 +4,8 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.EditorManager;
+import com.armadialogcreator.data.ProjectSettings;
+import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
@@ -164,6 +166,11 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 
 	@Override
 	public void updateCanvas() {
+		UICanvasEditorColors colors = uiCanvasEditor.getColors();
+		ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
+		colors.editorBg = projectSettings.EditorBackgroundSetting.get().toJavaFXColor();
+		colors.grid = projectSettings.EditorGridColorSetting.get().toJavaFXColor();
+
 		uiCanvasEditor.updateColors();
 		uiCanvasEditor.requestPaint();
 	}

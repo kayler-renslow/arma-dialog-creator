@@ -40,6 +40,9 @@ public class XMLNodeConfigurable implements Configurable {
 
 					@Override
 					public Configurable next() {
+						if (!iterator.hasNext()) {
+							throw new IllegalStateException();
+						}
 						return new XMLNodeConfigurable(iterator.next());
 					}
 				};

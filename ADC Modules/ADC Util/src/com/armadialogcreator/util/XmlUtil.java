@@ -62,19 +62,22 @@ public class XmlUtil {
 				return new Iterator<>() {
 					NodeList list = element.getChildNodes();
 					int i = 0;
-					int lastCheckI = -1;
+					boolean checked = false;
 
 					@Override
 					public boolean hasNext() {
-						while (lastCheckI != i && i < list.getLength() && list.item(i).getNodeType() != Node.ELEMENT_NODE) {
-							i++;
+						if (!checked) {
+							checked = true;
+							while (i < list.getLength() && list.item(i).getNodeType() != Node.ELEMENT_NODE) {
+								i++;
+							}
 						}
-						lastCheckI = i;
 						return i < list.getLength();
 					}
 
 					@Override
 					public Element next() {
+						checked = false;
 						return (Element) list.item(i++);
 					}
 				};

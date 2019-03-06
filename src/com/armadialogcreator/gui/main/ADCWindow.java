@@ -88,6 +88,7 @@ public class ADCWindow implements ADCMainWindow {
 
 				//force canvas to render at proper size
 				autoResizeCanvasView();
+				canvasView.updateCanvas();
 			}
 		});
 
@@ -124,8 +125,9 @@ public class ADCWindow implements ADCMainWindow {
 	@Override
 	@NotNull
 	public ADCMainCanvasEditor getCanvasEditor() {
-		if (!isShowing()) {
-			throw new IllegalStateException("can't access canvas view when main window is not showing");
+		if (canvasView == null) {
+			//attempting to access canvasView before initialized
+			throw new IllegalStateException();
 		}
 		return canvasView;
 	}
