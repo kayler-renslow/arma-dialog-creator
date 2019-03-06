@@ -4,7 +4,6 @@ import com.armadialogcreator.canvas.FontMetrics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.ControlStyle;
@@ -96,7 +95,7 @@ public class BasicTextRenderer {
 		}
 		renderer.addValueListener(colorText, SVNull.instance, (observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						setTextColor(ColorUtil.toColor((SVColor) newValue));
+						setTextColor(((SVColor) newValue).toJavaFXColor());
 						callback.textColorUpdate(newValue);
 						renderer.requestRender();
 					}
@@ -154,7 +153,6 @@ public class BasicTextRenderer {
 			);
 		}
 		if (sizeEx != null) {
-			sizeExProperty = control.findProperty(sizeEx);
 			renderer.addValueListener(sizeEx, SVNull.instance, (observer, oldValue, newValue) -> {
 						if (newValue instanceof SVExpression) {
 							SVExpression ex = (SVExpression) newValue;

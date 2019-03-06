@@ -46,7 +46,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 				if (group != controlType.getGroup()) {
 					continue;
 				}
-				groupMenu.getCBMBMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.getIcon())));
+				groupMenu.getCBMBMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.getIconPath())));
 			}
 			if (groupMenu.getItems().size() > 0) {
 				menuButtonControlType.addGroup(groupMenu);

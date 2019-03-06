@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.ShortcutButtonControl;
 import com.armadialogcreator.core.ControlType;
@@ -31,9 +32,12 @@ public class ShortcutButtonDataCreator implements TreeItemDataCreator<ArmaContro
 		if (dialog.wasCancelled()) {
 			return null;
 		}
-		ArmaResolution resolution = EditorManager.instance.getResolution();
+		EditorManager editorManager = EditorManager.instance;
+		ArmaResolution resolution = editorManager.getResolution();
+		ArmaDisplay display = editorManager.getEditingDisplay();
 		ArmaControl control = new ShortcutButtonControl(
-				dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv()
+				dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv(),
+				display
 		);
 		return new ControlTreeItemEntry(control);
 	}

@@ -45,7 +45,7 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 				if (!controlType.betaSupported()) {
 					continue;
 				}
-				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.getIcon()));
+				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.getIconPath()));
 				if (controlType.isDeprecated()) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}

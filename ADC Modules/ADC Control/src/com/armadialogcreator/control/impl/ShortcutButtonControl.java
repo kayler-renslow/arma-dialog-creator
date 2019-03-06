@@ -2,6 +2,7 @@ package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.expression.Env;
@@ -20,8 +21,9 @@ public class ShortcutButtonControl extends ArmaControl {
 	public static final String NestedClassName_ShortcutPos = "ShortcutPos";
 	public static final String NestedClassName_TextPos = "TextPos";
 
-	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, ArmaControlLookup.ShortcutButton, resolution, env);
+	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
+								 @NotNull ArmaDisplay display) {
+		super(name, ArmaControlLookup.ShortcutButton, resolution, env, display);
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 

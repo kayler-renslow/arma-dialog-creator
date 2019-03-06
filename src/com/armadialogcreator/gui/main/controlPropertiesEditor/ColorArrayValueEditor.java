@@ -1,16 +1,13 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.canvas.Region;
-import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.ReadOnlyValueObserver;
-import com.armadialogcreator.util.ValueListener;
-import com.armadialogcreator.util.ValueObserver;
+import com.armadialogcreator.util.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -53,7 +50,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 						valueObserver.updateValue(null);
 						colorPicker.setValue(null);
 					} else {
-						valueObserver.updateValue(new SVColorArray(editor.getColor()));
+						valueObserver.updateValue(new SVColorArray(ColorUtil.toARGB(editor.getColor())));
 						colorPicker.setValue(editor.getColor());
 					}
 				}
@@ -70,7 +67,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 				if (newValue == null) {
 					color = null;
 				} else {
-					color = new SVColorArray(newValue);
+					color = new SVColorArray(ColorUtil.toARGB(newValue));
 
 				}
 				valueObserver.updateValue(color);
@@ -93,7 +90,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 		if (val == null) {
 			colorPicker.setValue(null);
 		} else {
-			colorPicker.setValue(val.toJavaFXColor());
+			colorPicker.setValue(Color.color(val.getRedF(), val.getGreenF(), val.getBlueF(), val.getAlphaF()));
 		}
 	}
 
@@ -171,7 +168,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 					gc.setFill(c);
 					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-					tfAsArray.setText(SVColor.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
+					tfAsArray.setText(AColor.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
 				}
 			};
 			r.getValueObserver().addListener(valListener);

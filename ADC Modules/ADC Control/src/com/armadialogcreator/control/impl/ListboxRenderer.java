@@ -5,7 +5,6 @@ import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyLookup;
@@ -77,13 +76,13 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelect = ColorUtil.toColor((SVColor) newValue);
+				colorSelect = ((SVColor) newValue).toJavaFXColor();
 			}
 			requestRender();
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelect2 = ColorUtil.toColor((SVColor) newValue);
+				colorSelect2 = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == SVNull.instance) {
 				colorSelect2 = null;
 			}
@@ -92,7 +91,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ColorUtil.toColor((SVColor) newValue);
+				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == SVNull.instance) {
 				colorSelectBackground = null;
 			}
@@ -100,7 +99,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground2 = ColorUtil.toColor((SVColor) newValue);
+				colorSelectBackground2 = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == SVNull.instance) {
 				colorSelectBackground2 = null;
 			}

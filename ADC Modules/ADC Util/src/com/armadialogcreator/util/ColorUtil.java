@@ -1,5 +1,8 @@
 package com.armadialogcreator.util;
 
+import javafx.scene.paint.Color;
+import org.jetbrains.annotations.NotNull;
+
 /**
  @author K
  @since 02/16/2019 */
@@ -55,6 +58,20 @@ public class ColorUtil {
 	public static double toDouble(int color) {
 		boundCheckF(color);
 		return color / 255.0;
+	}
+
+	public static int toARGB(@NotNull Color color) {
+		return toARGB(color.getRed(), color.getGreen(), color.getBlue(), color.getOpacity());
+	}
+
+	@NotNull
+	public static Color toColor(int argb) {
+		return Color.color(rf(argb), gf(argb), bf(argb), af(argb));
+	}
+
+	@NotNull
+	public static Color toColor(@NotNull AColor color) {
+		return Color.color(color.getRedF(), color.getGreenF(), color.getBlueF(), color.getAlphaF());
 	}
 
 	public static int ri(int argb) {

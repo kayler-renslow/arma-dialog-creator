@@ -12,12 +12,15 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  Graphic for tree items that represent a control
@@ -30,6 +33,8 @@ public class DefaultControlTreeItemGraphic extends HBox {
 	private final RadioButton rbSelected = new RadioButton();
 	private final Canvas box = new Canvas(16, 16);
 	private ControlTreeItemEntry entry;
+
+	private static final Map<String, Image> iconPool = new HashMap<>();
 
 	public DefaultControlTreeItemGraphic() {
 		super(5);
@@ -63,7 +68,13 @@ public class DefaultControlTreeItemGraphic extends HBox {
 			}
 		});
 
-		final BorderedImageView imageView = new BorderedImageView(entry.getMyArmaControl().getControlType().getIcon());
+		final BorderedImageView imageView = new BorderedImageView(
+				iconPool.computeIfAbsent(
+						entry.getMyArmaControl().getControlType().getIconPath(), s -> {
+							return new Image(s);
+						}
+				)
+		);
 		Tooltip.install(imageView, new Tooltip(entry.getMyArmaControl().getControlType().getDisplayName()));
 
 		fillBox(entry.getPrimaryColor());

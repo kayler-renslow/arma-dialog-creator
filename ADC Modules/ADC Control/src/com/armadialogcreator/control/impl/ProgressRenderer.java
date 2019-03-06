@@ -5,7 +5,6 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
@@ -54,7 +53,7 @@ public class ProgressRenderer extends ArmaControlRenderer {
 
 		addValueListener(ConfigPropertyLookup.COLOR_BAR, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorBar = ColorUtil.toColor((SVColor) newValue);
+				colorBar = ((SVColor) newValue).toJavaFXColor();
 				updateTintedTexture();
 				requestRender();
 			}

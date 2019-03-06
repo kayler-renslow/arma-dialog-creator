@@ -1,7 +1,6 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
@@ -82,7 +81,7 @@ public class ScrollbarRenderer {
 		if (scrollbarColor != null) {
 			renderer.addValueListener(controlClass, scrollbarColor, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVColor) {
-					this.scrollbarColor = ColorUtil.toColor((SVColor) newValue);
+					this.scrollbarColor = ((SVColor) newValue).toJavaFXColor();
 					tintedThumb.updateTint(this.scrollbarColor, true);
 					tintedBorder.updateTint(this.scrollbarColor, true);
 					tintedArrowTop.updateTint(this.scrollbarColor, true);

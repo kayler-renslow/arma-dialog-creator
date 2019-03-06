@@ -2,7 +2,6 @@ package com.armadialogcreator.core;
 
 import com.armadialogcreator.img.ADCImagePaths;
 import com.armadialogcreator.lang.Lang;
-import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -68,8 +67,8 @@ public enum ControlType {
 
 	private final int typeId;
 	private final String displayName;
-	private final Image icon;
-	private final Image customIcon;
+	private final String icon;
+	private final String customIcon;
 
 	private final boolean deprecated;
 	private final ControlTypeGroup group;
@@ -150,13 +149,13 @@ public enum ControlType {
 
 	/** Default icon */
 	@NotNull
-	public Image getIcon() {
+	public String getIconPath() {
 		return icon;
 	}
 
-	/** A variant of {@link #getIcon()} */
+	/** A variant of {@link #getIconPath()} */
 	@NotNull
-	public Image getCustomIcon() {
+	public String getCustomIconPath() {
 		return customIcon;
 	}
 
@@ -170,9 +169,9 @@ public enum ControlType {
 		return group;
 	}
 
-
-	private static Image getImage(String image, boolean custom) {
-		return new Image(ADCImagePaths.getControlIcon((custom ? "custom." : "") + image));
+	@NotNull
+	private static String getImage(String image, boolean custom) {
+		return ADCImagePaths.getControlIcon((custom ? "custom." : "") + image);
 	}
 
 

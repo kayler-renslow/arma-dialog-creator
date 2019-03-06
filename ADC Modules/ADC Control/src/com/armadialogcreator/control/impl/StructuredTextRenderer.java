@@ -2,7 +2,10 @@ package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.FontMetrics;
-import com.armadialogcreator.control.*;
+import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.TextSection;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TextHelper;
 import com.armadialogcreator.control.impl.utility.TextShadow;
@@ -102,7 +105,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			addValueListener(attributes, ConfigPropertyLookup.COLOR__HEX, SVNull.instance, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
-					c = ColorUtil.toColor((SVColor) newValue);
+					c = ((SVColor) newValue).toJavaFXColor();
 				}
 				defaultSectionData.textColor = c;
 				requestRender();
@@ -115,7 +118,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			addValueListener(attributes, ConfigPropertyLookup.SHADOW_COLOR, SVNull.instance, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {
-					c = ColorUtil.toColor((SVColor) newValue);
+					c = ((SVColor) newValue).toJavaFXColor();
 				}
 				defaultSectionData.shadowColor = c;
 				requestRender();

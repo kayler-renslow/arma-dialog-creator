@@ -4,7 +4,6 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyKey;
@@ -102,34 +101,34 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 
 		addValueListener(ConfigPropertyLookup.COLOR2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				color2 = ColorUtil.toColor((SVColor) newValue);
+				color2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_FOCUSED, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorFocused = ColorUtil.toColor((SVColor) newValue);
+				colorFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_DISABLED, SVNull.instance, (observer,
 																				oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorDisabled = ColorUtil.toColor((SVColor) newValue);
+				colorDisabled = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND_FOCUSED, SVNull.instance, (observer,
 																						  oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorBackgroundFocused = ColorUtil.toColor((SVColor) newValue);
+				colorBackgroundFocused = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND2, SVNull.instance, (observer,
 																				   oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorBackground2 = ColorUtil.toColor((SVColor) newValue);
+				colorBackground2 = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});

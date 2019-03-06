@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.EditControl;
 import com.armadialogcreator.core.ControlType;
@@ -29,9 +30,11 @@ public class EditDataCreator implements TreeItemDataCreator<ArmaControl, UINodeT
 			return null;
 		}
 
-		ArmaResolution resolution = EditorManager.instance.getResolution();
+		EditorManager editorManager = EditorManager.instance;
+		ArmaResolution resolution = editorManager.getResolution();
+		ArmaDisplay display = editorManager.getEditingDisplay();
 		ArmaControl control =
-				new EditControl(dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv());
+				new EditControl(dialog.getClassName(), resolution, ExpressionEnvManager.instance.getEnv(), display);
 		return new ControlTreeItemEntry(control);
 	}
 }

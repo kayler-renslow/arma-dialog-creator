@@ -5,7 +5,6 @@ import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.AlternatorHelper;
 import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
@@ -73,7 +72,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		addValueListener(ConfigPropertyLookup.COLOR_SHADOW, SVNull.instance, (observer,
 																			  oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorShadow = ColorUtil.toColor(((SVColor) newValue));
+				colorShadow = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});
@@ -112,7 +111,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND_ACTIVE, SVNull.instance,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						colorBackgroundActive = ColorUtil.toColor(((SVColor) newValue));
+						colorBackgroundActive = ((SVColor) newValue).toJavaFXColor();
 						requestRender();
 					}
 				}
@@ -120,7 +119,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		addValueListener(ConfigPropertyLookup.COLOR_BACKGROUND_DISABLED, SVNull.instance,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						colorBackgroundDisabled = ColorUtil.toColor(((SVColor) newValue));
+						colorBackgroundDisabled = ((SVColor) newValue).toJavaFXColor();
 						requestRender();
 					}
 				}
@@ -128,7 +127,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		addValueListener(ConfigPropertyLookup.COLOR_FOCUSED, SVNull.instance,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						colorFocused = ColorUtil.toColor(((SVColor) newValue));
+						colorFocused = ((SVColor) newValue).toJavaFXColor();
 						requestRender();
 					}
 				}
@@ -141,7 +140,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 						return;
 					}
 					if (newValue instanceof SVColor) {
-						colorFocused2 = ColorUtil.toColor(((SVColor) newValue));
+						colorFocused2 = ((SVColor) newValue).toJavaFXColor();
 						requestRender();
 					}
 				}
@@ -165,7 +164,7 @@ public class ButtonRenderer extends ArmaControlRenderer implements BasicTextRend
 		addValueListener(ConfigPropertyLookup.COLOR_BORDER, SVNull.instance,
 				(observer, oldValue, newValue) -> {
 					if (newValue instanceof SVColor) {
-						colorBorder = ColorUtil.toColor(((SVColor) newValue));
+						colorBorder = ((SVColor) newValue).toJavaFXColor();
 						requestRender();
 					}
 				}

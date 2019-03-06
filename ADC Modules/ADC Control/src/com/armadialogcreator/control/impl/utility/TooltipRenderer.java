@@ -3,7 +3,6 @@ package com.armadialogcreator.control.impl.utility;
 import com.armadialogcreator.canvas.Region;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
@@ -38,19 +37,19 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 		renderer.addValueListener(tooltipBackgroundColor, SVNull.instance, (observer, oldValue, newValue) ->
 		{
 			if (newValue instanceof SVColor) {
-				backgroundColor = ColorUtil.toColor(((SVColor) newValue));
+				backgroundColor = ((SVColor) newValue).toJavaFXColor();
 			} else {
 				backgroundColor = null;
 			}
-			requestRender();
+			requestRender(renderer);
 		});
 		renderer.addValueListener(tooltipBorderColor, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				borderColor = ColorUtil.toColor(((SVColor) newValue));
+				borderColor = ((SVColor) newValue).toJavaFXColor();
 			} else {
 				borderColor = null;
 			}
-			requestRender();
+			requestRender(renderer);
 		});
 	}
 
@@ -78,7 +77,7 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 		gc.restore();
 	}
 
-	private void requestRender() {
-		control.getRenderer().requestRender();
+	private void requestRender(@NotNull ArmaControlRenderer renderer) {
+		renderer.requestRender();
 	}
 }

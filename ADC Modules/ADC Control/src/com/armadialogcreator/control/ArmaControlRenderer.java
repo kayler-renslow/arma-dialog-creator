@@ -1,7 +1,10 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.*;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigPropertyKey;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyProxy;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVNumericValue;
@@ -30,7 +33,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	private final UpdateListenerGroup<Resolution> resolutionUpdateGroup = new UpdateListenerGroup<>();
 	private final ValueObserver<Boolean> enabledObserver = new ValueObserver<>(isEnabled());
-	protected final ConfigProperty xProperty, yProperty, wProperty, hProperty;
+	protected final ConfigPropertyProxy xProperty, yProperty, wProperty, hProperty;
 	protected final Env env;
 	private boolean disablePositionPropertyListener = false;
 	private boolean disableRecalc = false;
@@ -76,7 +79,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 				if (newValue != null) {
-					setBackgroundColor(ColorUtil.toColor(newValue));
+					setBackgroundColor(newValue.toJavaFXColor());
 				} else {
 					setBackgroundColor(Color.TRANSPARENT);
 				}
@@ -84,10 +87,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 			}
 		});
 
-		xProperty = control.findProperty(ConfigPropertyLookup.X);
-		yProperty = control.findProperty(ConfigPropertyLookup.Y);
-		wProperty = control.findProperty(ConfigPropertyLookup.W);
-		hProperty = control.findProperty(ConfigPropertyLookup.H);
+		xProperty = control.createPropertyProxy(ConfigPropertyLookup.X, new SVExpression("0", env));
+		yProperty = control.createPropertyProxy(ConfigPropertyLookup.Y, new SVExpression("0", env));
+		wProperty = control.createPropertyProxy(ConfigPropertyLookup.W, new SVExpression("1", env));
+		hProperty = control.createPropertyProxy(ConfigPropertyLookup.H, new SVExpression("1", env));
 
 		final NotNullValueListener<SerializableValue> positionValueListener = new NotNullValueListener<>() {
 			@Override

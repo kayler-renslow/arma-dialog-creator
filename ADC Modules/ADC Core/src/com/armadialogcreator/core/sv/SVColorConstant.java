@@ -1,6 +1,7 @@
 package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.util.AColor;
 import com.armadialogcreator.util.ColorUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -181,7 +182,7 @@ public class SVColorConstant extends SerializableValue implements SVColor {
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof SVColor) {
-			return SVColor.isEqualTo(this, (SVColor) o);
+			return AColor.isEqualTo(this, (SVColor) o);
 		}
 		return false;
 	}

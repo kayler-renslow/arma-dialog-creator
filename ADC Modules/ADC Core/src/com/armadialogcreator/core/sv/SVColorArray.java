@@ -2,6 +2,7 @@ package com.armadialogcreator.core.sv;
 
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.AColor;
 import com.armadialogcreator.util.ColorUtil;
 import org.jetbrains.annotations.NotNull;
 
@@ -50,6 +51,10 @@ public class SVColorArray extends SerializableValue implements SVColor {
 		setGreenF(g);
 		setBlueF(b);
 		setAlphaF(a);
+	}
+
+	public SVColorArray(int argb) {
+		setColorARGB(argb);
 	}
 
 	/**
@@ -204,13 +209,13 @@ public class SVColorArray extends SerializableValue implements SVColor {
 	 */
 	@NotNull
 	public String toString() {
-		return SVColor.toStringF(r, g, b, a);
+		return AColor.toStringF(r, g, b, a);
 	}
 
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof SVColor) {
-			return SVColor.isEqualTo(this, (SVColor) o);
+			return AColor.isEqualTo(this, (SVColor) o);
 		}
 		return false;
 	}

@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.data.ConfigClassRegistry;
@@ -25,11 +26,14 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		ControlType controlType = dialog.getControlType();
 		boolean backgroundControl = dialog.isBackgroundControl();
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
-		ArmaControl control = ArmaControl.createControl(className, lookup, EditorManager.instance.getResolution(), ExpressionEnvManager.instance.getEnv());
+		EditorManager editorManager = EditorManager.instance;
+		ArmaDisplay display = editorManager.getEditingDisplay();
+		ArmaControl control = ArmaControl.createControl(className, lookup, editorManager.getResolution(),
+				ExpressionEnvManager.instance.getEnv(), display);
 		if (backgroundControl) {
-			EditorManager.instance.getEditingDisplay().getBackgroundControlNodes().addChild(control);
+			editorManager.getEditingDisplay().getBackgroundControlNodes().addChild(control);
 		} else {
-			EditorManager.instance.getEditingDisplay().getControlNodes().addChild(control);
+			editorManager.getEditingDisplay().getControlNodes().addChild(control);
 		}
 		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
 	}

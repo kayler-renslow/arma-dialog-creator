@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.ProgressControl;
 import com.armadialogcreator.core.ControlType;
@@ -19,7 +20,8 @@ public class ProgressDataCreator extends GenericDataCreator {
 
 	@Override
 	@NotNull
-	public ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		return new ProgressControl(className, resolution, env);
+	public ArmaControl create(@NotNull String className, @NotNull ArmaResolution resolution, @NotNull Env env,
+							  @NotNull ArmaDisplay display) {
+		return new ProgressControl(className, resolution, env, display);
 	}
 }

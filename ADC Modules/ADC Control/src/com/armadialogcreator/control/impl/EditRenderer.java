@@ -4,7 +4,6 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.BasicTextRenderer;
 import com.armadialogcreator.control.impl.utility.BlinkControlHandler;
 import com.armadialogcreator.control.impl.utility.TooltipRenderer;
@@ -55,7 +54,7 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 		addValueListener(ConfigPropertyLookup.COLOR_DISABLED, SVNull.instance, (observer, oldValue, newValue)
 				-> {
 			if (newValue instanceof SVColor) {
-				colorDisabled = ColorUtil.toColor((SVColor) newValue);
+				colorDisabled = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});

@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.treeview.dataCreator;
 
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.control.impl.ControlGroupControl;
 import com.armadialogcreator.core.ControlType;
@@ -31,9 +32,11 @@ public class ControlGroupDataCreator implements TreeItemDataCreator<ArmaControl,
 			return null;
 		}
 
-		ArmaResolution resolution = EditorManager.instance.getResolution();
+		EditorManager editorManager = EditorManager.instance;
+		ArmaResolution resolution = editorManager.getResolution();
+		ArmaDisplay display = editorManager.getEditingDisplay();
 		Env env = ExpressionEnvManager.instance.getEnv();
 
-		return new ControlGroupTreeItemEntry(new ControlGroupControl(dialog.getClassName(), -1, resolution, env));
+		return new ControlGroupTreeItemEntry(new ControlGroupControl(dialog.getClassName(), -1, resolution, env, display));
 	}
 }

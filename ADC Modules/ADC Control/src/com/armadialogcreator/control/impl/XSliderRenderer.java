@@ -4,7 +4,6 @@ import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.control.ColorUtil;
 import com.armadialogcreator.control.impl.utility.*;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
@@ -64,7 +63,7 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		addValueListener(ConfigPropertyLookup.COLOR_ACTIVE, SVNull.instance, (observer, oldValue, newValue) ->
 		{
 			if (newValue instanceof SVColor) {
-				colorActive = ColorUtil.toColor((SVColor) newValue);
+				colorActive = ((SVColor) newValue).toJavaFXColor();
 				requestRender();
 			}
 		});

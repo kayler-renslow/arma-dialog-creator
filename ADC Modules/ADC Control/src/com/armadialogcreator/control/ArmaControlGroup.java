@@ -30,8 +30,9 @@ public class ArmaControlGroup extends ArmaControl {
 	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
 	public ArmaControlGroup(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
-							@NotNull Env env) {
-		super(name, lookup, resolution, env);
+							@NotNull Env env,
+							@NotNull ArmaDisplay display) {
+		super(name, lookup, resolution, env, display);
 	}
 
 	@Override

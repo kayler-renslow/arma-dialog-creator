@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.controlPropertiesEditor;
 
 import com.armadialogcreator.core.sv.SVHexColor;
+import com.armadialogcreator.util.ColorUtil;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.event.ActionEvent;
@@ -36,7 +37,7 @@ public class HexColorValueEditor implements ValueEditor<SVHexColor> {
 					aColor = null;
 					tfHexColor.setText("");
 				} else {
-					aColor = new SVHexColor(newValue);
+					aColor = new SVHexColor(ColorUtil.toARGB(newValue));
 					tfHexColor.setText(aColor.getHexColor());
 				}
 				valueObserver.updateValue(aColor);
@@ -60,7 +61,7 @@ public class HexColorValueEditor implements ValueEditor<SVHexColor> {
 			colorPicker.setValue(null);
 			tfHexColor.setText("");
 		} else {
-			colorPicker.setValue(val.toJavaFXColor());
+			colorPicker.setValue(ColorUtil.toColor(val));
 			tfHexColor.setText(val.getHexColor());
 		}
 	}

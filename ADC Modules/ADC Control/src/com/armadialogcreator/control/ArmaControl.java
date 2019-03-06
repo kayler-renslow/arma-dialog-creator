@@ -4,11 +4,9 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.RequirementsConfigClass;
 import com.armadialogcreator.core.sv.SVExpression;
-import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.EmptyIterable;
 import com.armadialogcreator.util.UpdateListenerGroup;
@@ -31,9 +29,7 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	protected ArmaControlRenderer renderer;
 
 	protected UINode parentNode;
-
-	private final ConfigProperty idcProperty;
-	protected ArmaDisplay display = null; //todo
+	protected final ArmaDisplay display;
 	private final ArmaControlLookup armaControlLookup;
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 
@@ -47,11 +43,12 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	 stored inside this control's {@link ConfigProperty}'s.
 	 */
 	protected ArmaControl(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
-						  @NotNull Env env) {
+						  @NotNull Env env,
+						  @NotNull ArmaDisplay display) {
 		super(name);
 		this.armaControlLookup = lookup;
+		this.display = display;
 
-		defineType(lookup.controlType);
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
 		try {
 			this.renderer = rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);
@@ -59,13 +56,6 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererClass.getName() + " couldn't be instantiated.");
 		}
-		idcProperty = findProperty(ConfigPropertyLookup.IDC);
-		idcProperty.setValue(-1);
-	}
-
-	private void defineType(@NotNull ControlType type) {
-		findProperty(ConfigPropertyLookup.TYPE).getValueObserver().updateValue(new SVInteger(type.getTypeId()));
-		this.controlType = type;
 	}
 
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
@@ -93,7 +83,8 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 				controlName,
 				ArmaControlLookup.findByControlType(this.controlType),
 				renderer.getResolution(),
-				renderer.env
+				renderer.env,
+				display
 		);
 	}
 
@@ -107,19 +98,21 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 
 	@NotNull
 	public static ArmaControl createControl(@NotNull ControlType type, @NotNull String name,
-											@NotNull ArmaResolution resolution, @NotNull Env env) {
+											@NotNull ArmaResolution resolution, @NotNull Env env,
+											@NotNull ArmaDisplay display) {
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(type);
-		return createControl(name, lookup, resolution, env);
+		return createControl(name, lookup, resolution, env, display);
 	}
 
 	@NotNull
 	public static ArmaControl createControl(@NotNull String name, @NotNull ArmaControlLookup lookup,
 											@NotNull ArmaResolution resolution,
-											@NotNull Env env) {
+											@NotNull Env env,
+											@NotNull ArmaDisplay display) {
 		if (lookup.controlType == ControlType.ControlsGroup) {
-			return new ArmaControlGroup(name, lookup, resolution, env);
+			return new ArmaControlGroup(name, lookup, resolution, env, display);
 		}
-		return new ArmaControl(name, lookup, resolution, env);
+		return new ArmaControl(name, lookup, resolution, env, display);
 	}
 
 	@Override

@@ -258,7 +258,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 				ConfigProperty type = customControlClass.getControlClass().findProperty(ConfigPropertyLookup.TYPE);
 				if (type.getValue() instanceof SVNumericValue) {
 					ControlType controlType = ControlType.findById(type.getIntValue());
-					imageContainer = new BorderedImageView(controlType.getCustomIcon());
+					imageContainer = new BorderedImageView(controlType.getCustomIconPath());
 				}
 
 			} catch (IllegalArgumentException ignore) {

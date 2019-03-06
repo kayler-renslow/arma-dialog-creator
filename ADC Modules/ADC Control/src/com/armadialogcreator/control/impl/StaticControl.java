@@ -2,6 +2,7 @@ package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
+import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.expression.Env;
@@ -19,8 +20,9 @@ public class StaticControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env) {
-		super(name, ArmaControlLookup.Static, resolution, env);
+	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env,
+						 @NotNull ArmaDisplay display) {
+		super(name, ArmaControlLookup.Static, resolution, env, display);
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
 		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
 	}

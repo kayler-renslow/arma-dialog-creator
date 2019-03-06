@@ -77,7 +77,7 @@ public class PreviewPopupWindow extends StagePopup<VBox> {
 						ArmaControl armaControl = (ArmaControl) node;
 						RadioMenuItem mi = new RadioMenuItem(
 								armaControl.getClassName(),
-								new ImageView(armaControl.getControlType().getIcon())
+								new ImageView(armaControl.getControlType().getIconPath())
 						);
 						mi.setUserData(armaControl);
 						mi.setToggleGroup(toggleGroupFocusedControl);

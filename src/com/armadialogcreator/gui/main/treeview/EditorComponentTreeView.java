@@ -52,12 +52,14 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 						while (parent == null && ancestorNode != ancestorNode.getRootNode()) {
 							ancestorNode = ancestorNode.getParentNode();
 							if (ancestorNode == null) {
-								throw new IllegalStateException();
+								break;
 							}
 							parent = TREE_ITEM_KEY.get(ancestorNode.getUserData());
 						}
 						if (parent == null) {
-							addAllChildNodes(ancestorNode, getRoot());
+							if (ancestorNode != null) {
+								addAllChildNodes(ancestorNode, getRoot());
+							}
 							break;
 						}
 					}
