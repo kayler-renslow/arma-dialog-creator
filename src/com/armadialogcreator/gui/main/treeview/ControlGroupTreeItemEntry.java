@@ -1,7 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.control.ArmaControlGroup;
-import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -14,7 +13,7 @@ public class ControlGroupTreeItemEntry extends ControlTreeItemEntry {
 	private final ArmaControlGroup controlGroup;
 
 	public ControlGroupTreeItemEntry(@NotNull ArmaControlGroup group) {
-		super(CellType.COMPOSITE, new DefaultControlTreeItemGraphic(), group);
+		super(new DefaultControlTreeItemGraphic(), group);
 		this.controlGroup = group;
 	}
 

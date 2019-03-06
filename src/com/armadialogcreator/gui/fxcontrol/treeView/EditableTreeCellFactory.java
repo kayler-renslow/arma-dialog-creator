@@ -320,7 +320,7 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 					}
 				}
 			});
-			node.getTextObservable().addListener((observable, oldValue, newValue) -> {
+			node.getTextObserver().addListener((observable, oldValue, newValue) -> {
 				setText(newValue);
 			});
 		}
@@ -355,21 +355,12 @@ class EditableTreeCellFactory<Tv, Td extends TreeItemData> extends TreeCell<Td> 
 		super.updateSelected(selected);
 		if (getTreeItem() == null) {
 			if (treeCellSelectionUpdate != null) {
-				treeCellSelectionUpdate.selectionUpdate(null, null);
+				treeCellSelectionUpdate.selectionUpdate();
 			}
 			return;
 		}
 		if (treeCellSelectionUpdate != null) {
-			CellType parentType = (getTreeItem().getParent() != null ? getTreeItem().getParent().getValue().getCellType() : null);
-			if (getTreeItem().isLeaf()) {
-				treeCellSelectionUpdate.selectionUpdate(CellType.LEAF, parentType);
-			} else if (getTreeItem().getValue().isFolder()) {
-				treeCellSelectionUpdate.selectionUpdate(CellType.FOLDER, parentType);
-			} else if (getTreeItem().getValue().isComposite()) {
-				treeCellSelectionUpdate.selectionUpdate(CellType.COMPOSITE, parentType);
-			} else {
-				treeCellSelectionUpdate.selectionUpdate(null, parentType);
-			}
+			treeCellSelectionUpdate.selectionUpdate();
 		}
 	}
 

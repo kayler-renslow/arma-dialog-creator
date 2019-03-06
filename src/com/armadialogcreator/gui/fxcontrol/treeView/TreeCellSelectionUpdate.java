@@ -5,5 +5,5 @@ package com.armadialogcreator.gui.fxcontrol.treeView;
  */
 public interface TreeCellSelectionUpdate {
 
-	void selectionUpdate(CellType selectedType, CellType parentCellType);
+	void selectionUpdate();
 }

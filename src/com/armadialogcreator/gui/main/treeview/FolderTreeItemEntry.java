@@ -1,7 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.control.FolderUINode;
-import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class FolderTreeItemEntry extends UINodeTreeItemData {
 
 	public FolderTreeItemEntry(@NotNull FolderUINode node) {
-		super(node.getFolderName(), CellType.FOLDER, EditorComponentTreeView.createFolderIcon(),
+		super(node.getFolderName(), EditorComponentTreeView.createFolderIcon(),
 				node
 		);
 	}

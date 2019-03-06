@@ -49,11 +49,7 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 				if (controlType.isDeprecated()) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}
-				if (creator.allowsSubControls) {
-					TreeViewMenuItemBuilder.setNewCompositeItemAction(treeView, creator.creator, menuItemType);
-				} else {
-					TreeViewMenuItemBuilder.setNewItemAction(treeView, creator.creator, menuItemType);
-				}
+				TreeViewMenuItemBuilder.setNewItemAction(treeView, creator.creator, menuItemType);
 
 				groupMenu.getItems().add(menuItemType);
 			}

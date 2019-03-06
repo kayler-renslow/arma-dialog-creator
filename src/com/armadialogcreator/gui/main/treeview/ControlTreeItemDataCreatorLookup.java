@@ -57,7 +57,6 @@ public enum ControlTreeItemDataCreatorLookup {
 
 	public final ControlType controlType;
 	public final TreeItemDataCreator<ArmaControl, UINodeTreeItemData> creator;
-	public final boolean allowsSubControls;
 
 	ControlTreeItemDataCreatorLookup(@NotNull ControlType controlType) {
 		this(controlType, new GenericControlTreeItemCreator(controlType), false);
@@ -70,6 +69,5 @@ public enum ControlTreeItemDataCreatorLookup {
 	ControlTreeItemDataCreatorLookup(@NotNull ControlType controlType, @NotNull TreeItemDataCreator<ArmaControl, UINodeTreeItemData> creator, boolean allowsSubControls) {
 		this.controlType = controlType;
 		this.creator = creator;
-		this.allowsSubControls = allowsSubControls;
 	}
 }

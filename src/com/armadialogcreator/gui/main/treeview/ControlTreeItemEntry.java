@@ -3,8 +3,6 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.data.ConfigClassRegistry;
-import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
-import com.armadialogcreator.gui.fxcontrol.treeView.TreeNodeUpdateListener;
 import com.armadialogcreator.util.ValueListener;
 import com.armadialogcreator.util.ValueObserver;
 import javafx.scene.Node;
@@ -19,8 +17,8 @@ import org.jetbrains.annotations.Nullable;
 public class ControlTreeItemEntry extends UINodeTreeItemData {
 	private final ArmaControl myArmaControl;
 
-	protected ControlTreeItemEntry(@NotNull CellType cellType, @Nullable Node graphic, @NotNull ArmaControl control) {
-		super(control.getClassName(), cellType, graphic, control);
+	protected ControlTreeItemEntry(@Nullable Node graphic, @NotNull ArmaControl control) {
+		super(control.getClassName(), graphic, control);
 		this.myArmaControl = control;
 		myArmaControl.getClassNameObserver().addListener((observer, oldValue, newValue) -> {
 			setText(newValue);
@@ -38,17 +36,9 @@ public class ControlTreeItemEntry extends UINodeTreeItemData {
 	}
 
 	public ControlTreeItemEntry(@NotNull ArmaControl control) {
-		this(CellType.LEAF, new DefaultControlTreeItemGraphic(), control);
-		setUpdateListener(new TreeNodeUpdateListener() {
-			@Override
-			public void delete() {
-
-			}
-
-			@Override
-			public void renamed(String newName) {
-				getMyArmaControl().setClassName(newName);
-			}
+		this(new DefaultControlTreeItemGraphic(), control);
+		getTextObserver().addListener((observer, oldValue, newValue) -> {
+			getMyArmaControl().setClassName(newValue);
 		});
 	}
 
@@ -61,11 +51,14 @@ public class ControlTreeItemEntry extends UINodeTreeItemData {
 		if (myArmaControl.getRenderer().isGhost()) { //only adjusted the visibility, so don't disable the graphic
 			return;
 		}
-		if (getGraphic() instanceof DefaultControlTreeItemGraphic) {
+		Node graphic = getGraphic();
+		if (graphic instanceof DefaultControlTreeItemGraphic) {
 			DefaultControlTreeItemGraphic graphic1 = (DefaultControlTreeItemGraphic) getGraphic();
 			graphic1.setGraphicIsEnabled(enabled);
 		} else {
-			getGraphic().setDisable(!enabled);
+			if (graphic != null) {
+				graphic.setDisable(!enabled);
+			}
 		}
 	}
 

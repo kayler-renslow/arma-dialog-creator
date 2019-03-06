@@ -1,7 +1,6 @@
 package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.canvas.UINode;
-import com.armadialogcreator.gui.fxcontrol.treeView.CellType;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeItemData;
 import javafx.scene.Node;
 import javafx.scene.control.TreeView;
@@ -14,8 +13,8 @@ import org.jetbrains.annotations.Nullable;
 public abstract class UINodeTreeItemData extends TreeItemData {
 	private final UINode node;
 
-	public UINodeTreeItemData(@NotNull String text, @NotNull CellType cellType, @Nullable Node graphic, @NotNull UINode node) {
-		super(text, cellType, graphic);
+	public UINodeTreeItemData(@NotNull String text, @Nullable Node graphic, @NotNull UINode node) {
+		super(text, graphic);
 		this.node = node;
 	}
 
