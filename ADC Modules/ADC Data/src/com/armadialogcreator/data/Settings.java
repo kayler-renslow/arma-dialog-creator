@@ -1,7 +1,10 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.Configurable;
-import com.armadialogcreator.core.sv.*;
+import com.armadialogcreator.core.sv.SVColorArray;
+import com.armadialogcreator.core.sv.SVColorInt;
+import com.armadialogcreator.core.sv.SVColorIntArray;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.util.AColor;
 import com.armadialogcreator.util.ColorUtil;
@@ -11,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -28,7 +32,6 @@ public class Settings {
 	protected final void setFromConfigurable(@NotNull Configurable c) {
 		Configurable settingsConf = c.getConfigurable("settings");
 		if (settingsConf == null) {
-			//todo
 			return;
 		}
 		for (Configurable nested : settingsConf.getNestedConfigurables()) {
@@ -40,7 +43,10 @@ public class Settings {
 				if (setting == null) {
 					continue;
 				}
-				setting.setFromConfigurable(nested.getNestedConfigurables().iterator().next());
+				Iterator<Configurable> iterator = nested.getNestedConfigurables().iterator();
+				if (iterator.hasNext()) {
+					setting.setFromConfigurable(iterator.next());
+				}
 			}
 		}
 	}
@@ -87,43 +93,97 @@ public class Settings {
 		}
 	}
 
-	public static class StringSetting extends SVSetting<SVString> {
+	public static class StringSetting extends Setting<String> {
 
 		public StringSetting(@Nullable String initial) {
-			super(new SVString(initial));
+			super(initial);
 		}
 
 		public StringSetting() {
 		}
+
+		@Override
+		public @NotNull Configurable exportToConfigurable() {
+			if (v == null) {
+				if (defaultValue == null) {
+					throw new IllegalStateException();
+				}
+				return new Configurable.Simple("s", defaultValue);
+			}
+			return new Configurable.Simple("s", v);
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+			this.v = c.getConfigurableBody();
+		}
 	}
 
-	public static class BooleanSetting extends SVSetting<SVBoolean> {
+	public static class BooleanSetting extends Setting<Boolean> {
 
 		public BooleanSetting(boolean initial) {
-			super(SVBoolean.get(initial));
+			super(initial);
 		}
 
 		public BooleanSetting() {
 		}
 
+		@Override
+		@NotNull
+		public Configurable exportToConfigurable() {
+			if (v == null) {
+				if (defaultValue == null) {
+					throw new IllegalStateException();
+				}
+				return new Configurable.Simple("b", defaultValue + "");
+			}
+			return new Configurable.Simple("b", v + "");
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+			this.v = c.getConfigurableBody().equals("true");
+		}
+
 		public boolean isTrue() {
-			SVBoolean b = super.get();
-			return b != null && b.isTrue();
+			return v != null && v;
 		}
 
 		/** Take the current vale and set it to the opposite (true becomes false, false becomes true) */
 		public void not() {
-			set(isTrue() ? SVBoolean.FALSE : SVBoolean.TRUE);
+			//assume null is false
+			if (v == null) {
+				set(true);
+			} else {
+				set(!v);
+			}
 		}
 	}
 
-	public static class IntegerSetting extends SVSetting<SVInteger> {
+	public static class IntegerSetting extends Setting<Integer> {
 
-		public IntegerSetting(@Nullable SVInteger initial) {
+		public IntegerSetting(@Nullable Integer initial) {
 			super(initial);
 		}
 
 		public IntegerSetting() {
+		}
+
+		@Override
+		@NotNull
+		public Configurable exportToConfigurable() {
+			if (v == null) {
+				if (defaultValue == null) {
+					throw new IllegalStateException();
+				}
+				return new Configurable.Simple("i", defaultValue + "");
+			}
+			return new Configurable.Simple("i", v + "");
+		}
+
+		@Override
+		public void setFromConfigurable(@NotNull Configurable c) {
+			this.v = Integer.parseInt(c.getConfigurableBody());
 		}
 
 	}
@@ -191,7 +251,7 @@ public class Settings {
 		}
 	}
 
-	public static abstract class SVSetting<V extends SerializableValue> extends Setting<V> {
+	public static class SVSetting<V extends SerializableValue> extends Setting<V> {
 
 		public SVSetting(@Nullable V initial) {
 			super(initial);

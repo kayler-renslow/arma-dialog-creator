@@ -12,6 +12,7 @@ public class FileExitAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 		AskSaveProjectDialog dialog = new AskSaveProjectDialog();
+		dialog.show();
 		if (dialog.wasCancelled()) {
 			return;
 		}
