@@ -1,6 +1,7 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.canvas.FontMetrics;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
@@ -43,7 +44,7 @@ public class BasicTextRenderer {
 	private final ArmaControlRenderer renderer;
 	private final UpdateCallback callback;
 
-	private Color textColor = Color.BLACK;
+	private final ARGBColor textColor = new ARGBColor(Color.BLACK);
 	private ConfigProperty sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;
@@ -208,9 +209,10 @@ public class BasicTextRenderer {
 	 Will paint the text where there renderer wants to. This will also create a clip for the text.
 	 The text will be clipped if it exceeds the width of the control.
 
-	 @param gc context to use
+	 @param g graphics to use
 	 */
-	public void paint(GraphicsContext gc) {
+	public void paint(@NotNull Graphics g) {
+		GraphicsContext gc = g.getGC();
 		gc.save();
 		gc.beginPath();
 		//don't let the text render past the control's bounds
@@ -218,7 +220,7 @@ public class BasicTextRenderer {
 		gc.closePath();
 		gc.clip();
 
-		paint(gc, getTextX(), getTextY());
+		paint(g, getTextX(), getTextY());
 
 		gc.restore();
 	}
@@ -226,11 +228,12 @@ public class BasicTextRenderer {
 	/**
 	 Paint the text where designated. The text will not be clipped anywhere
 
-	 @param gc context to use
+	 @param g graphics to use
 	 @param textX x position of text
 	 @param textY y position of text
 	 */
-	public void paint(GraphicsContext gc, int textX, int textY) {
+	public void paint(@NotNull Graphics g, int textX, int textY) {
+		GraphicsContext gc = g.getGC();
 		if (multiline && allowMultiLine) {
 			int controlWidth = renderer.getWidth();
 
@@ -280,7 +283,7 @@ public class BasicTextRenderer {
 			textY = renderer.getTopY();
 			for (String line : cachedBrokenLines) {
 				TextHelper.paintText(
-						gc, textX, textY + lineNum * textLineHeight, font, line, textColor, textShadow, Color.BLACK
+						gc, textX, textY + lineNum * textLineHeight, font, line, textColor.getColor(), textShadow, Color.BLACK
 				);
 				lineNum++;
 			}
@@ -288,7 +291,7 @@ public class BasicTextRenderer {
 			//paint all of the text as a single line
 
 			TextHelper.paintText(
-					gc, textX, textY, font, getText(), textColor, textShadow, Color.BLACK
+					gc, textX, textY, font, getText(), textColor.getColor(), textShadow, Color.BLACK
 			);
 		}
 	}
@@ -325,12 +328,16 @@ public class BasicTextRenderer {
 	}
 
 	public void setTextColor(@NotNull Color color) {
-		this.textColor = color;
+		this.textColor.setColor(color);
 	}
 
 	@NotNull
 	public Color getTextColor() {
-		return textColor;
+		return textColor.getColor();
+	}
+
+	public int getTextColorARGB() {
+		return textColor.getArgb();
 	}
 
 	public void resolutionUpdate() {

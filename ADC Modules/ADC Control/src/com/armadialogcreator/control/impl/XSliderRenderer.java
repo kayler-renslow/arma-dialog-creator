@@ -1,6 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -9,12 +9,11 @@ import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link XSliderControl}
@@ -38,9 +37,8 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 	private double progress = 0.7;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 	private int arrowLeftX, arrowRightX, arrowWidth, thumbX, borderWidth;
 	private boolean leftArrowPress = false;
@@ -105,35 +103,35 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		updateTintedImages();
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
+	public void paint(@NotNull Graphics g) {
 		double progress = 0.7;
-		boolean preview = paintPreview(canvasContext);
+		boolean preview = paintPreview();
 		if (preview) {
 			progress = this.progress;
 			if (isEnabled()) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 			}
 
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 		}
 
 		setTintHelpersToPreviewMode(preview);
 
 		//paints the left arrow
-		Color colorTint = (preview && focused && isEnabled()) ? colorActive : backgroundColor;
+		Color colorTint = (preview && focused && isEnabled()) ? colorActive : getBackgroundColor();
 
-		paintArrow(gc, colorTint, arrowLeftX, (preview && leftArrowPress) ? arrowFull : arrowEmpty, tintedLeftArrow);
+		paintArrow(g, colorTint, arrowLeftX, (preview && leftArrowPress) ? arrowFull : arrowEmpty, tintedLeftArrow);
 
 		//paints the background behind the thumb
-		paintThumbOrBorder(gc, colorTint, thumbX, borderWidth, border, tintedBorder);
+		paintThumbOrBorder(g, colorTint, thumbX, borderWidth, border, tintedBorder);
 
 		//paints the thumb
-		paintThumbOrBorder(gc, colorTint, thumbX, (int) (borderWidth * progress), thumb, tintedThumb);
+		paintThumbOrBorder(g, colorTint, thumbX, (int) (borderWidth * progress), thumb, tintedThumb);
 
 		//paints the right arrow
-		paintArrow(gc, colorTint, arrowRightX, (preview && rightArrowPress) ? arrowFull : arrowEmpty, tintedRightArrow);
+		paintArrow(g, colorTint, arrowRightX, (preview && rightArrowPress) ? arrowFull : arrowEmpty, tintedRightArrow);
 
 
 		setTintHelpersToPreviewMode(false);
@@ -148,10 +146,11 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		//we don't need to set border's preview mode because using preview is no different than no preview
 	}
 
-	private void paintThumbOrBorder(GraphicsContext gc, Color tint, int thumbX, int thumbWidth, ImageOrTextureHelper helper, TintedImageHelperRenderer tinted) {
+	private void paintThumbOrBorder(@NotNull Graphics g, @NotNull Color tint, int thumbX, int thumbWidth,
+									@NotNull ImageOrTextureHelper helper, @NotNull TintedImageHelperRenderer tinted) {
 		switch (helper.getMode()) {
 			case Texture: {
-				TexturePainter.paint(gc, helper.getTexture(),
+				TexturePainter.paint(g, helper.getTexture(),
 						tint, thumbX, y1, thumbX + thumbWidth, y2
 				);
 				break;
@@ -159,19 +158,19 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			case Image: {
 				tinted.updateTint(tint);
 				tinted.updatePosition(thumbX, y1, thumbWidth, getHeight(), true);
-				tinted.paintTintedImage(gc);
+				tinted.paintTintedImage(g);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, thumbX, y1, thumbWidth, getHeight());
+				paintImageError(g, thumbX, y1, thumbWidth, getHeight());
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, thumbX, y1, thumbWidth, getHeight());
+				paintTextureError(g, thumbX, y1, thumbWidth, getHeight());
 				break;
 			}
 			case LoadingImage: {
-				ArmaControlRenderer.paintImageLoading(gc, tint, thumbX, y1, thumbX + thumbWidth, y2);
+				ArmaControlRenderer.paintImageLoading(g, tint, thumbX, y1, thumbX + thumbWidth, y2);
 				break;
 			}
 			default:
@@ -179,12 +178,13 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		}
 	}
 
-	private void paintArrow(GraphicsContext gc, Color arrowColor, int arrowX, ImageOrTextureHelper helper, TintedImageHelperRenderer tintedArrow) {
+	private void paintArrow(@NotNull Graphics g, @NotNull Color arrowColor, int arrowX,
+							@NotNull ImageOrTextureHelper helper, @NotNull TintedImageHelperRenderer tintedArrow) {
 		final int arrowSize = getArrowSize();
 		switch (helper.getMode()) {
 			case Texture: {
 				tintedArrow.updateImage(null); //help garbage collection
-				TexturePainter.paint(gc, helper.getTexture(),
+				TexturePainter.paint(g, helper.getTexture(),
 						arrowColor, arrowX, y1, arrowX + arrowSize, y2
 				);
 				break;
@@ -192,19 +192,19 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			case Image: {
 				tintedArrow.updateImage(helper.getImage());
 				tintedArrow.updateTint(arrowColor);
-				tintedArrow.paintTintedImage(gc);
+				tintedArrow.paintTintedImage(g);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, arrowX, y1, arrowSize, getHeight());
+				paintImageError(g, arrowX, y1, arrowSize, getHeight());
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, arrowX, y1, arrowSize, getHeight());
+				paintTextureError(g, arrowX, y1, arrowSize, getHeight());
 				break;
 			}
 			case LoadingImage: {
-				ArmaControlRenderer.paintImageLoading(gc, backgroundColor, arrowX, y1, arrowX + arrowSize, y2);
+				ArmaControlRenderer.paintImageLoading(g, getBackgroundColor(), arrowX, y1, arrowX + arrowSize, y2);
 				break;
 			}
 			default:

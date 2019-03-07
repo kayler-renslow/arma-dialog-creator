@@ -1,10 +1,12 @@
 package com.armadialogcreator.canvas;
 
 
-import javafx.scene.canvas.GraphicsContext;
+import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Random;
 
 /**
  Default implementation of CanvasComponent
@@ -13,18 +15,12 @@ import org.jetbrains.annotations.Nullable;
  @since 05/12/2016. */
 public class SimpleCanvasComponent implements CanvasComponent {
 
-	@NotNull
-	public static Color randomColor() {
-		int argb = new Object().hashCode();
-		int r = (argb) & 0xFF;
-		int g = (argb >> 8) & 0xFF;
-		int b = (argb >> 16) & 0xFF;
-		final double d = 255.0;
-		return Color.color(r / d, g / d, b / d, 1);
-	}
+	private static final Random rand = new Random();
 
 	protected int x1, y1, x2, y2;
-	protected Color backgroundColor = randomColor();
+	protected int backgroundColorARGB = ColorUtil.darken(ColorUtil.opaqueARGB(rand.nextInt()));
+	private Color backgroundColorAsColorObj = ColorUtil.toColor(backgroundColorARGB);
+	private boolean updateBackgroundColorObj = false;
 
 	protected Border border;
 	private boolean isEnabled = true;
@@ -67,31 +63,52 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		setEnabled(!ghost);
 	}
 
-	/** Invokes {@link #paintBorder(GraphicsContext)} and then paints the square with {@link #backgroundColor} and */
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		paintBorder(gc);
-		gc.setStroke(backgroundColor);
-		fillRectangle(gc);
+	/** Invokes {@link #paintBorder(Graphics)} and then paints the square with {@link #backgroundColorARGB} */
+	@Override
+	public void paint(@NotNull Graphics graphics) {
+		paintBorder(graphics);
+		graphics.setFill(backgroundColorARGB);
+		System.out.println("SimpleCanvasComponent.paint ");
+		graphics.fillRectangle(x1, y1, getWidth(), getHeight());
 	}
 
 	/** Will paint the {@link #border} if it isn't null. If the border is null, nothing will happen. */
-	protected void paintBorder(@NotNull GraphicsContext gc) {
+	protected void paintBorder(@NotNull Graphics graphics) {
 		if (border != null) {
-			gc.save();
-			gc.setStroke(border.getColor());
-			gc.setLineWidth(border.getThickness());
-			strokeRectangle(gc);
-			gc.restore();
+			graphics.save();
+			graphics.setStroke(ColorUtil.toARGB(border.getColor()));
+			graphics.setLineWidth(border.getThickness());
+			graphics.strokeRectangle(this);
+			graphics.restore();
 		}
 	}
 
-	public void setBackgroundColor(@NotNull Color paint) {
-		this.backgroundColor = paint;
+	@Override
+	public void setBackgroundColor(@NotNull Color color) {
+		this.backgroundColorARGB = ColorUtil.toARGB(color);
+		this.backgroundColorAsColorObj = color;
+		updateBackgroundColorObj = false;
 	}
 
+	@Override
+	public void setBackgroundColor(int argb) {
+		this.backgroundColorARGB = argb;
+		updateBackgroundColorObj = true;
+	}
+
+	@Override
 	@NotNull
 	public Color getBackgroundColor() {
-		return backgroundColor;
+		if (updateBackgroundColorObj) {
+			backgroundColorAsColorObj = ColorUtil.toColor(backgroundColorARGB);
+			updateBackgroundColorObj = false;
+		}
+		return backgroundColorAsColorObj;
+	}
+
+	@Override
+	public int getBackgroundColorARGB() {
+		return backgroundColorARGB;
 	}
 
 	@Nullable

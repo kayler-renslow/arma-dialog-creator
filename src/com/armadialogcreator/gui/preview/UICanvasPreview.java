@@ -1,6 +1,5 @@
 package com.armadialogcreator.gui.preview;
 
-import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.canvas.UICanvas;
 import com.armadialogcreator.canvas.UINode;
@@ -26,12 +25,6 @@ public class UICanvasPreview extends UICanvas<ArmaControl> {
 						   @NotNull ControlFocusHandler focusHandler) {
 		super(resolution, display);
 		this.focusHandler = focusHandler;
-		this.canvasContext = new CanvasContext() {
-			@Override
-			public boolean paintPartial() {
-				return false;
-			}
-		};
 		this.alwaysPaint = true;
 	}
 

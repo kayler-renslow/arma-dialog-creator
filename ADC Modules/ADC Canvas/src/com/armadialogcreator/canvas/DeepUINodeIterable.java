@@ -59,7 +59,9 @@ public class DeepUINodeIterable implements Iterable<UINode> {
 
 		@Override
 		public UINode next() {
-			check();
+			if (!hasNext()) {
+				throw new IllegalStateException();
+			}
 			UINode next = iterStack.peek().next();
 			if (next.getChildCount() > 0) {
 				iterStack.push(next.deepIterateChildren().iterator());

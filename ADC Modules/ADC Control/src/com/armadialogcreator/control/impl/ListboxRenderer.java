@@ -1,7 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
-import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -12,12 +11,13 @@ import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link ComboControl}
@@ -35,15 +35,14 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 	private Color colorSelect = Color.RED;
 	private Color colorSelect2 = null;
 	private Color colorDisabled = Color.BLACK;
-	private Color colorSelectBackground = null;
-	private Color colorSelectBackground2 = null;
+	private int colorSelectBackground = -1;
+	private int colorSelectBackground2 = -1;
 	private final ScrollbarRenderer scrollbarRenderer;
 	private final AlternatorHelper periodAlternator = new AlternatorHelper(0);
 	private int selectedRow = 0;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 
@@ -91,17 +90,17 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
+				colorSelectBackground = ((SVColor) newValue).toARGB();
 			} else if (newValue == SVNull.instance) {
-				colorSelectBackground = null;
+				colorSelectBackground = -1;
 			}
 			requestRender();
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground2 = ((SVColor) newValue).toJavaFXColor();
+				colorSelectBackground2 = ((SVColor) newValue).toARGB();
 			} else if (newValue == SVNull.instance) {
-				colorSelectBackground2 = null;
+				colorSelectBackground2 = -1;
 			}
 		});
 
@@ -130,23 +129,23 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 		}
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 
 		if (!isEnabled()) {
 			Color oldTextColor = textRenderer.getTextColor();
-			super.paint(gc, canvasContext);
+			super.paint(g);
 			textRenderer.setTextColor(colorDisabled);
-			textRenderer.paint(gc);
+			textRenderer.paint(g);
 			textRenderer.setTextColor(oldTextColor);
 		} else {
 			if (preview) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 				if (this.mouseOver) {
-					canvasContext.paintLast(tooltipRenderFunc);
+					g.paintLast(tooltipRenderFunc);
 				}
 			}
-			super.paint(gc, canvasContext);
+			super.paint(g);
 			int controlHeight = getHeight();
 			int allTextHeight = 0;
 			final int textPadding = (int) (getWidth() * 0.025);
@@ -155,24 +154,27 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 			double ratio = periodAlternator.updateAndGetRatio();
 			final int rowHeight = getRowPixelHeight();
 
-			scrollbarRenderer.paint(gc, preview, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
+			scrollbarRenderer.paint(g, preview, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
 
+			//for clipping text
+			GraphicsContext gc = g.getGC();
 			gc.beginPath();
 			gc.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());
 			gc.closePath();
 			gc.clip();
+
 			int row = 0;
 			int selectedRow = preview ? this.selectedRow : 0;
 			while (allTextHeight <= controlHeight && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
 				int textY2 = y1 + allTextHeight;
 				if (row == selectedRow) {
-					if (colorSelectBackground != null) {
-						Color bgColor = colorSelectBackground;
-						if (focused && colorSelectBackground2 != null) {
-							bgColor = colorSelectBackground.interpolate(colorSelectBackground2, ratio);
+					if (colorSelectBackground != -1) {
+						int bgColor = colorSelectBackground;
+						if (focused && colorSelectBackground2 != -1) {
+							bgColor = ColorUtil.interpolate(colorSelectBackground, colorSelectBackground2, ratio);
 						}
-						gc.setStroke(bgColor);
-						Region.fillRectangle(gc, x1, y1 + allTextHeight, x2, textY2 + rowHeight);
+						g.setStroke(bgColor);
+						g.fillRectangle(x1, y1 + allTextHeight, x2, textY2 + rowHeight);
 					}
 					Color tColor = colorSelect;
 					if (focused && colorSelect2 != null) {
@@ -180,11 +182,11 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 					}
 					Color oldTextColor = textRenderer.getTextColor();
 					textRenderer.setTextColor(tColor);
-					textRenderer.paint(gc, leftTextX, textY2);
+					textRenderer.paint(g, leftTextX, textY2);
 					textRenderer.setTextColor(oldTextColor);
 
 				} else {
-					textRenderer.paint(gc, leftTextX, textY2);
+					textRenderer.paint(g, leftTextX, textY2);
 				}
 				allTextHeight += rowHeight;
 				row++;

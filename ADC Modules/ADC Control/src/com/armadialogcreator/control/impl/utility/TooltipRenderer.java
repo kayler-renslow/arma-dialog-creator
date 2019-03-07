@@ -1,12 +1,12 @@
 package com.armadialogcreator.control.impl.utility;
 
-import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
-import javafx.scene.canvas.GraphicsContext;
+import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
@@ -53,11 +53,11 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 		});
 	}
 
-	public void paint(GraphicsContext gc, int tooltipX, int tooltipY) {
+	public void paint(@NotNull Graphics g, int tooltipX, int tooltipY) {
 		if (backgroundColor == null || borderColor == null || textRenderer.getText().length() == 0) {
 			return;
 		}
-		gc.save();
+		g.save();
 
 		int textWidth = textRenderer.getTextWidth();
 		int textHeight = textRenderer.getTextLineHeight();
@@ -67,14 +67,14 @@ public class TooltipRenderer implements BasicTextRenderer.UpdateCallback {
 		int tooltipHeight = textHeight + padding + padding;
 		int tooltipY2 = tooltipY + tooltipHeight;
 
-		gc.setStroke(backgroundColor);
-		Region.fillRectangle(gc, tooltipX, tooltipY, tooltipX2, tooltipY2);
-		gc.setStroke(borderColor);
-		Region.strokeRectangle(gc, tooltipX, tooltipY, tooltipX2, tooltipY2);
+		g.setStroke(ColorUtil.toARGB(backgroundColor));
+		g.fillRectangle(tooltipX, tooltipY, tooltipX2, tooltipY2);
+		g.setStroke(ColorUtil.toARGB(borderColor));
+		g.strokeRectangle(tooltipX, tooltipY, tooltipX2, tooltipY2);
 
-		textRenderer.paint(gc, tooltipX + padding, tooltipY + padding);
+		textRenderer.paint(g, tooltipX + padding, tooltipY + padding);
 
-		gc.restore();
+		g.restore();
 	}
 
 	private void requestRender(@NotNull ArmaControlRenderer renderer) {

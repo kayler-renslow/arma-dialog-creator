@@ -194,7 +194,7 @@ public class UICanvasEditor extends UICanvas {
 			gc.save();
 			gc.setStroke(colors.selection);
 			gc.setLineWidth(2);
-			selection.strokeRectangle(gc);
+			graphics.strokeRectangle(selection);
 			gc.restore();
 		}
 		if (absRegionComponent.alwaysRenderAtFront()) {
@@ -209,6 +209,7 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintRootNode();
 		gc.save();
+		graphics.save();
 		Iterator<UINode> iter = selection.getSelected().iterator();
 		while (iter.hasNext()) {
 			UINode node = iter.next();
@@ -219,10 +220,11 @@ public class UICanvasEditor extends UICanvas {
 				iter.remove();
 				continue;
 			}
-			gc.setStroke(node.getComponent().getBackgroundColor());
-			node.getComponent().strokeRectangle(gc);
+			graphics.setStroke(node.getComponent().getBackgroundColorARGB());
+			graphics.strokeRectangle(node.getComponent());
 		}
 		gc.restore();
+		graphics.restore();
 	}
 
 	@Override
@@ -281,7 +283,7 @@ public class UICanvasEditor extends UICanvas {
 
 	protected void paintAbsRegionComponent() {
 		if (!absRegionComponent.isGhost() && !isSelectingArea()) {
-			absRegionComponent.paint(gc, canvasContext);
+			absRegionComponent.paint(graphics);
 		}
 	}
 

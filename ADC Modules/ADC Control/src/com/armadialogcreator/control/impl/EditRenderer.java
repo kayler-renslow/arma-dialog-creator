@@ -1,6 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -11,11 +11,10 @@ import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link EditControl}
@@ -30,9 +29,8 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 	private TooltipRenderer tooltipRenderer;
 	private Color colorDisabled = Color.BLACK;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 
@@ -74,26 +72,26 @@ public class EditRenderer extends ArmaControlRenderer implements BasicTextRender
 
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 
 		if (!isEnabled()) {
 			Color oldTextColor = textRenderer.getTextColor();
-			super.paint(gc, canvasContext);
+			super.paint(g);
 			textRenderer.setTextColor(colorDisabled);
-			textRenderer.paint(gc);
+			textRenderer.paint(g);
 			textRenderer.setTextColor(oldTextColor);
 		} else {
 			if (preview) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 			}
-			super.paint(gc, canvasContext);
-			textRenderer.paint(gc);
+			super.paint(g);
+			textRenderer.paint(g);
 		}
 
 		if (preview) {
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 		}
 	}

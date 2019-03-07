@@ -1,5 +1,6 @@
 package com.armadialogcreator.control.impl.utility;
 
+import com.armadialogcreator.canvas.Graphics;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
@@ -200,7 +201,8 @@ public class TintedImageHelperRenderer {
 	}
 
 	/** This method applies to {@link #setToPreviewMode(boolean)} */
-	public void paintTintedImage(@NotNull GraphicsContext gc) {
+	public void paintTintedImage(@NotNull Graphics g) {
+		GraphicsContext gc = g.getGC();
 		gc.save();
 		if (rotated) {
 			gc.translate(x + w / 2, y + h / 2); //move to center

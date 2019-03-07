@@ -1,7 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
-import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -12,12 +11,13 @@ import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
+import com.armadialogcreator.util.AColorConstant;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link ComboControl}
@@ -33,16 +33,15 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 	private final ImageOrTextureHelper arrowEmpty_combo = new ImageOrTextureHelper(this);
 
 	private final ImageOrTextureHelper arrowFull_combo = new ImageOrTextureHelper(this);
-	private Color colorSelect = Color.RED;
+	private Color colorSelect = Color.BLACK;
 	private Color colorDisabled = Color.BLACK;
-	private Color colorSelectBackground = Color.BLACK;
+	private int colorSelectBackground = AColorConstant.BLACK.argb;
 	private double wholeHeight;
 	private final ScrollbarRenderer scrollbarRenderer;
 
 	private int menuHeightInPixels = 0;
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 	/** True if the drop down menu of the combobox is visible, false otherwise */
 	private boolean menuDown = false;
@@ -99,7 +98,7 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
+				colorSelectBackground = ((SVColor) newValue).toARGB();
 				requestRender();
 			}
 		});
@@ -115,21 +114,21 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		}
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 
 		if (!isEnabled()) {
 			Color oldTextColor = textRenderer.getTextColor();
-			super.paint(gc, canvasContext);
+			super.paint(g);
 			textRenderer.setTextColor(colorDisabled);
-			textRenderer.paint(gc);
+			textRenderer.paint(g);
 			textRenderer.setTextColor(oldTextColor);
 			//in Arma 3, when combo is disabled, the arrow isn't visible
 		} else {
 			if (preview) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 				if (this.mouseOver) {
-					canvasContext.paintLast(tooltipRenderFunc);
+					g.paintLast(tooltipRenderFunc);
 				}
 			}
 			Color textColor = textRenderer.getTextColor();
@@ -137,17 +136,17 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 				Color backgroundColor = getBackgroundColor();
 				textRenderer.setTextColor(colorSelect);
 				setBackgroundColor(colorSelectBackground);
-				super.paint(gc, canvasContext);
-				textRenderer.paint(gc);
+				super.paint(g);
+				textRenderer.paint(g);
 				textRenderer.setTextColor(textColor);
 				setBackgroundColor(backgroundColor);
 			} else {
-				super.paint(gc, canvasContext);
-				textRenderer.paint(gc);
+				super.paint(g);
+				textRenderer.paint(g);
 			}
 
 			if (preview && menuDown) {
-				paintArrow(gc, arrowFull_combo);
+				paintArrow(g, arrowFull_combo);
 				{ //draw drop down menu
 					final int textPadding = (int) Math.round(getWidth() * BasicTextRenderer.TEXT_PADDING);
 					int textAndScrollbarWidth = textRenderer.getTextWidth() + textPadding + ScrollbarRenderer.SCROLLBAR_WIDTH;
@@ -155,12 +154,13 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 					int menuY1 = y2;
 					int menuX2 = textAndScrollbarWidth > getWidth() ? x1 + textAndScrollbarWidth : x2;
 					int menuY2 = y2 + menuHeightInPixels;
-					gc.setStroke(backgroundColor);
-					Region.fillRectangle(gc, menuX1, menuY1, menuX2, menuY2);
+					g.setStroke(backgroundColorARGB);
+					g.fillRectangle(menuX1, menuY1, menuX2, menuY2);
 
-					scrollbarRenderer.paint(gc, true, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
+					scrollbarRenderer.paint(g, true, menuX2 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY1, menuHeightInPixels);
 
 					//this is to guarantee that the text purposefully placed out of bounds on the control are clipped
+					GraphicsContext gc = g.getGC();
 					gc.rect(menuX1, menuY1, menuX2 - menuX1 - ScrollbarRenderer.SCROLLBAR_WIDTH, menuY2 - menuY1);
 					gc.closePath();
 					gc.clip();
@@ -174,31 +174,31 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 						int rowY2 = rowY1 + textHeight;
 						if (mouseOverY >= rowY1 && mouseOverY < rowY2) {
 							//mouse is over this row
-							gc.setStroke(colorSelectBackground);
-							Region.fillRectangle(gc, x1, rowY1, menuX2, rowY2);
-							gc.setStroke(backgroundColor);
+							g.setStroke(colorSelectBackground);
+							g.fillRectangle(x1, rowY1, menuX2, rowY2);
+							g.setStroke(backgroundColorARGB);
 							textRenderer.setTextColor(colorSelect);
-							textRenderer.paint(gc, leftTextX, menuY1 + allTextHeight);
+							textRenderer.paint(g, leftTextX, menuY1 + allTextHeight);
 							textRenderer.setTextColor(textColor);
 						} else {
-							textRenderer.paint(gc, leftTextX, menuY1 + allTextHeight);
+							textRenderer.paint(g, leftTextX, menuY1 + allTextHeight);
 						}
 						allTextHeight += textHeight;
 					}
 				}
 
 			} else {
-				paintArrow(gc, arrowEmpty_combo);
+				paintArrow(g, arrowEmpty_combo);
 			}
 		}
 	}
 
-	private void paintArrow(GraphicsContext gc, ImageOrTextureHelper helper) {
+	private void paintArrow(@NotNull Graphics g, ImageOrTextureHelper helper) {
 		final int arrowWidth = getHeight();
 		final int arrowHeight = arrowWidth;
 		final int arrowX = x2 - arrowWidth;
 		final int arrowY = y1;
-
+		GraphicsContext gc = g.getGC();
 		switch (helper.getMode()) {
 			case Image: {
 				gc.drawImage(helper.getImage(), arrowX, arrowY, arrowWidth, arrowHeight);
@@ -208,19 +208,19 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 				break;
 			}
 			case Texture: {
-				TexturePainter.paint(gc, helper.getTexture(), arrowX, arrowY, arrowX + arrowWidth, arrowY + arrowHeight);
+				TexturePainter.paint(g, helper.getTexture(), arrowX, arrowY, arrowX + arrowWidth, arrowY + arrowHeight);
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, arrowX, arrowY, arrowWidth, arrowHeight);
+				paintTextureError(g, arrowX, arrowY, arrowWidth, arrowHeight);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, arrowX, arrowY, arrowWidth, arrowHeight);
+				paintImageError(g, arrowX, arrowY, arrowWidth, arrowHeight);
 				break;
 			}
 			default:
-				throw new IllegalStateException("unknown mode:" + arrowFull_combo.getMode());
+				throw new IllegalStateException();
 		}
 	}
 

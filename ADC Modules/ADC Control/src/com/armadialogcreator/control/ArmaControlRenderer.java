@@ -5,10 +5,7 @@ import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyProxy;
-import com.armadialogcreator.core.sv.SVColor;
-import com.armadialogcreator.core.sv.SVExpression;
-import com.armadialogcreator.core.sv.SVNumericValue;
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
 import javafx.scene.canvas.GraphicsContext;
@@ -74,7 +71,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		globalBackgroundColorObserver = new ValueObserver<>(ColorUtil.toColorArray(backgroundColor));
+		globalBackgroundColorObserver = new ValueObserver<>(new SVColorArray(backgroundColorARGB));
 		globalBackgroundColorObserver.addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
@@ -170,13 +167,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 Return true if {@link CanvasComponent#paint(GraphicsContext, CanvasContext)} should paint in preview form,
-	 false if should paint in editor form.
+	 Return true if should paint in preview form, false if should paint in editor form.
 
-	 @param cc context from {@link CanvasComponent#paint(GraphicsContext, CanvasContext)}
+	 @param
 	 */
-	public boolean paintPreview(@NotNull CanvasContext cc) {
-		return !cc.paintPartial();
+	public boolean paintPreview() {
+		return false;
 	}
 
 	/** Set x and define the x control property. This will also update the renderer's position. */
@@ -506,7 +502,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 
 	/**
 	 Used by Arma Preview to let this renderer know that the user's mouse is over the control in the preview.
-	 When this control is requested to be rendered in preview mode ({@link #paintPreview(CanvasContext)} returns true),
+	 When this control is requested to be rendered in preview mode ({@link #paintPreview()} returns true),
 	 this renderer will determine what to do with this information.
 
 	 @param mousex mouse x position on the canvas (irrelevant if mouseOver is false)
@@ -520,10 +516,10 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	}
 
 	/**
-	 @see Region#paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color, int)
+	 @see Graphics#paintCheckerboard(int, int, int, int, Color, Color, int)
 	 */
-	public static void paintCheckerboard(@NotNull GraphicsContext gc, int x, int y, int w, int h, @NotNull Color color1, @NotNull Color color2) {
-		Region.paintCheckerboard(gc, x, y, w, h, color1, color2, 10);
+	public static void paintCheckerboard(@NotNull Graphics g, int x, int y, int w, int h, @NotNull Color color1, @NotNull Color color2) {
+		g.paintCheckerboard(x, y, w, h, color1, color2, 10);
 	}
 
 	/**
@@ -571,52 +567,53 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	/**
 	 Use this when a texture couldn't be determined for background color
 
-	 @param gc context
+	 @param g graphics
 	 */
-	public void paintTextureError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
-		paintError(gc, Color.DEEPPINK, x, y, w, h);
+	public void paintTextureError(@NotNull Graphics g, int x, int y, int w, int h) {
+		paintError(g, Color.DEEPPINK, x, y, w, h);
 	}
 
 	/**
 	 Use this when an image couldn't be determined for background
 
-	 @param gc context
+	 @param g graphics
 	 */
-	public void paintImageError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
-		paintError(gc, Color.RED, x, y, w, h);
+	public void paintImageError(@NotNull Graphics g, int x, int y, int w, int h) {
+		paintError(g, Color.RED, x, y, w, h);
 	}
 
-	public static void paintImageLoading(@NotNull GraphicsContext gc, @NotNull Paint bgColor, int x1, int y1, int x2, int y2) {
+	public static void paintImageLoading(@NotNull Graphics graphics, @NotNull Paint bgColor, int x1, int y1, int x2, int y2) {
+		GraphicsContext gc = graphics.getGC();
 		gc.setStroke(bgColor);
-		Region.fillRectangle(gc, x1, y1, x2, y2);
+		graphics.gc_fillRectangleCrisp(x1, y1, x2, y2);
 		gc.setStroke(Color.MAGENTA);
-		gc.strokeLine(x1, y1, x2, y2);
-		gc.strokeLine(x2, y1, x1, y2);
+		graphics.gc_strokeLineCrisp(x1, y1, x2, y2);
+		graphics.gc_strokeLineCrisp(x2, y1, x1, y2);
 	}
 
 	/**
 	 Use this when a background color array couldn't be determined
 
-	 @param gc context
+	 @param g graphics
 	 */
-	public void paintBackgroundColorError(@NotNull GraphicsContext gc, int x, int y, int w, int h) {
-		paintError(gc, Color.BLACK, x, y, w, h);
+	public void paintBackgroundColorError(@NotNull Graphics g, int x, int y, int w, int h) {
+		paintError(g, Color.BLACK, x, y, w, h);
 	}
 
 	/**
-	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
+	 Invokes {@link #paintCheckerboard(Graphics, int, int, int, int, Color, Color)}
 	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
 	 */
-	public void paintError(@NotNull GraphicsContext gc, @NotNull Color color, int x, int y, int w, int h) {
-		paintCheckerboard(gc, x, y, w, h, color, getBackgroundColor());
+	public void paintError(@NotNull Graphics g, @NotNull Color color, int x, int y, int w, int h) {
+		paintCheckerboard(g, x, y, w, h, color, getBackgroundColor());
 	}
 
 	/**
-	 Invokes {@link #paintCheckerboard(GraphicsContext, int, int, int, int, Color, Color)}
+	 Invokes {@link #paintCheckerboard(Graphics, int, int, int, int, Color, Color)}
 	 with the provided color and {@link #getBackgroundColor()} as the checkerboard colors
 	 */
-	public void paintError(@NotNull GraphicsContext gc, @NotNull Color color) {
-		paintError(gc, color, getX1(), getY1(), getWidth(), getHeight());
+	public void paintError(@NotNull Graphics g, @NotNull Color color) {
+		paintError(g, color, getX1(), getY1(), getWidth(), getHeight());
 	}
 
 }

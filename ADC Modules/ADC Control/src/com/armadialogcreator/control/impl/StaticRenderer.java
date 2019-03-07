@@ -1,7 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
-import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -11,14 +10,13 @@ import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link StaticControl}
@@ -38,9 +36,8 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	private BasicTextRenderer textRenderer;
 	private TooltipRenderer tooltipRenderer;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 	private final ImageOrTextureHelper pictureOrTextureHelper;
@@ -119,27 +116,27 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		requestRender();
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 		if (preview) {
-			blinkControlHandler.paint(gc);
+			blinkControlHandler.paint(g);
 		}
 
 		switch (renderType) {
 			case Text: {
-				super.paint(gc, canvasContext);
-				textRenderer.paint(gc);
+				super.paint(g);
+				textRenderer.paint(g);
 				break;
 			}
 			case Line: {
 				//draw line from top left of control to bottom right of control
 				//the text color is the color of the line
-				gc.setStroke(getTextColor());
-				gc.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
+				g.setStroke(getTextColorARGB());
+				g.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
 				break;
 			}
 			case Frame: {
-				gc.setStroke(getTextColor());
+				g.setStroke(getTextColorARGB());
 
 				int controlWidth = getWidth();
 
@@ -152,7 +149,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 					textWidth = textRenderer.getTextWidth();
 					if (textWidth < controlWidth - (2 * padding)) {
 						//text will paint within the bounds of the frame
-						textRenderer.paint(gc, xLeftOfText, y1 - textRenderer.getTextLineHeight() / 2);
+						textRenderer.paint(g, xLeftOfText, y1 - textRenderer.getTextLineHeight() / 2);
 					} else {
 						//don't paint any text if the text is longer than the frame's width
 						textWidth = 0;
@@ -166,15 +163,15 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 				if (textWidth > 0) {
 					//in Arma 3, the top line is crisp, while the other lines are blurred and 2 pixels in width
 					// and the top line is crisp only when there is text
-					Region.strokeLine(gc, x1, y1, xLeftOfText, y1);
-					Region.strokeLine(gc, xLeftOfText + textWidth, y1, x2, y1);
+					g.strokeLine(x1, y1, xLeftOfText, y1);
+					g.strokeLine(xLeftOfText + textWidth, y1, x2, y1);
 				} else {
-					gc.strokeLine(x1, y1, x2, y1);
+					g.strokeLine(x1, y1, x2, y1);
 				}
 				//+0.5 to make the line start crisp
-				gc.strokeLine(x2, y1 + 0.5, x2, y2); //right line
-				gc.strokeLine(x1, y2, x2, y2); //bottom line
-				gc.strokeLine(x1, y1 + 0.5, x1, y2); //left line
+				g.strokeLine(x2, y1, x2, y2); //right line
+				g.strokeLine(x1, y2, x2, y2); //bottom line
+				g.strokeLine(x1, y1, x1, y2); //left line
 
 				break;
 			}
@@ -185,7 +182,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 						if (imageToPaint == null) {
 							throw new IllegalStateException("imageToPaint is null");
 						}
-						tintedImage.paintTintedImage(gc);
+						tintedImage.paintTintedImage(g);
 						break;
 					}
 					case Texture: {
@@ -193,19 +190,19 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 						if (texture == null) {
 							throw new IllegalStateException("texture is null");
 						}
-						TexturePainter.paint(gc, texture, getTextColor(), x1, y1, x2, y2);
+						TexturePainter.paint(g, texture, getTextColor(), x1, y1, x2, y2);
 						break;
 					}
 					case ImageError: {
-						paintImageError(gc, x1, y1, getWidth(), getHeight());
+						paintImageError(g, x1, y1, getWidth(), getHeight());
 						break;
 					}
 					case TextureError: {
-						paintTextureError(gc, x1, y1, getWidth(), getHeight());
+						paintTextureError(g, x1, y1, getWidth(), getHeight());
 						break;
 					}
 					case LoadingImage: {
-						paintImageLoading(gc, backgroundColor, x1, y1, x2, y2);
+						paintImageLoading(g, getBackgroundColor(), x1, y1, x2, y2);
 						break;
 					}
 				}
@@ -213,7 +210,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 				break;
 			}
 			case Error: {
-				paintBackgroundColorError(gc, x1, y1, getWidth(), getHeight());
+				paintBackgroundColorError(g, x1, y1, getWidth(), getHeight());
 				break;
 			}
 			default: {
@@ -223,7 +220,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 
 		if (preview) {
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 		}
 	}
@@ -306,6 +303,10 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	@NotNull
 	public Color getTextColor() {
 		return textRenderer.getTextColor();
+	}
+
+	public int getTextColorARGB() {
+		return textRenderer.getTextColorARGB();
 	}
 
 	/**

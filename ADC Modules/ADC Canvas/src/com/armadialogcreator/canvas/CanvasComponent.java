@@ -1,6 +1,5 @@
 package com.armadialogcreator.canvas;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,11 +12,15 @@ import java.util.Comparator;
  Created on 06/18/2016. */
 public interface CanvasComponent extends Region {
 
-	void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext);
+	void paint(@NotNull Graphics graphics);
 
 	void setBackgroundColor(@NotNull Color paint);
 
+	void setBackgroundColor(int argb);
+
 	@NotNull Color getBackgroundColor();
+
+	int getBackgroundColorARGB();
 
 	@Nullable Border getBorder();
 

@@ -7,6 +7,10 @@ import org.jetbrains.annotations.NotNull;
  @author K
  @since 02/16/2019 */
 public class ColorUtil {
+	public static int multiplyAlphaARGB(int argb, double value) {
+		return toARGB(ri(argb), gi(argb), bi(argb), (int) (ai(argb) * value));
+	}
+
 	/** @return the integer rgb value based upon int values ranged 0-255 */
 	public static int toRGB(int r, int g, int b) {
 		boundCheckI(r);
@@ -56,7 +60,7 @@ public class ColorUtil {
 	}
 
 	public static double toDouble(int color) {
-		boundCheckF(color);
+		boundCheckI(color);
 		return color / 255.0;
 	}
 
@@ -140,5 +144,42 @@ public class ColorUtil {
 			h = "000000".substring(0, 6 - h.length()) + h;
 		}
 		return "#" + h;
+	}
+
+	public static int interpolate(int startARGB, int endARGB, double ratio) {
+		if (ratio <= 0) {
+			return startARGB;
+		}
+		if (ratio >= 1) {
+			return endARGB;
+		}
+
+		int r1 = ri(startARGB);
+		int b1 = bi(startARGB);
+		int g1 = gi(startARGB);
+		int a1 = ai(startARGB);
+
+		int r2 = ri(endARGB);
+		int b2 = bi(endARGB);
+		int g2 = gi(endARGB);
+		int a2 = ai(endARGB);
+
+		return toARGB(
+				r1 + (r2 - r1) * ratio,
+				g1 + (g2 - g1) * ratio,
+				b1 + (b2 - b1) * ratio,
+				a1 + (a2 - a1) * ratio
+		);
+	}
+
+	public static int opaqueARGB(int argb) {
+		return ColorUtil.toARGB(ri(argb), gi(argb), bi(argb), 255);
+	}
+
+	public static int darken(int argb) {
+		int r = (int) (ri(argb) / 4.0 * 3);
+		int g = (int) (gi(argb) / 4.0 * 3);
+		int b = (int) (bi(argb) / 4.0 * 3);
+		return ColorUtil.toARGB(r, g, b, ai(argb));
 	}
 }

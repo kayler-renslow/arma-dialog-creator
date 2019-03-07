@@ -15,7 +15,7 @@ public class AColorConstant implements AColor {
 	public static final AColorConstant TRANSPARENT = new AColorConstant(0, 0, 0, 0);
 
 	/** ARGB color */
-	private final int argb;
+	public final int argb;
 
 	/**
 	 Creates a color

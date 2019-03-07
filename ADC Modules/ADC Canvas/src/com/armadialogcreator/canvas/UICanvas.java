@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  @author Kayler
@@ -32,8 +32,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	protected final Canvas canvas;
 	/** GraphicsContext for the canvas */
 	protected final GraphicsContext gc;
-	/** {@link CanvasContext} for the canvas */
-	protected CanvasContext canvasContext = new CanvasContext();
+
+	protected final Graphics graphics;
+
 	/** The timer that handles repainting */
 	protected final CanvasAnimationTimer timer;
 
@@ -80,6 +81,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.gc = this.canvas.getGraphicsContext2D();
+		this.graphics = new Graphics(gc);
 
 		this.getChildren().add(this.canvas);
 		UICanvas.CanvasMouseEvent mouseEvent = new UICanvas.CanvasMouseEvent(this);
@@ -162,10 +164,10 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		paintBackground();
 		paintRootNode();
 		paintComponents();
-		for (Function<GraphicsContext, Void> f : canvasContext.getPaintLast()) {
-			f.apply(gc);
+		for (Consumer<Graphics> f : graphics.getPaintLast()) {
+			f.accept(graphics);
 		}
-		canvasContext.getPaintLast().clear();
+		graphics.getPaintLast().clear();
 		gc.restore();
 	}
 
@@ -192,8 +194,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	private void paintNodes(@NotNull UINode node) {
 		for (UINode child : node.deepIterateChildren()) {
-			paintNode(rootNode);
-			paintNodes(child);
+			paintNode(child);
 		}
 	}
 
@@ -230,9 +231,11 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		if (component.isGhost()) {
 			return;
 		}
+		graphics.save();
 		gc.save();
-		component.paint(gc, canvasContext);
+		component.paint(graphics);
 		gc.restore();
+		graphics.restore();
 	}
 
 	/** Sets canvas background image and automatically repaints */

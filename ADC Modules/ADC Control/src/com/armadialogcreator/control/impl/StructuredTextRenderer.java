@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
 import com.armadialogcreator.canvas.FontMetrics;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link StructuredTextControl}
@@ -44,9 +44,8 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 
 	private String text = null;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 
@@ -143,16 +142,17 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		defaultSectionData.updateFont(this.size, attributesSize, resolution);
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 
 		if (preview) {
-			blinkControlHandler.paint(gc);
+			blinkControlHandler.paint(g);
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 		}
-		super.paint(gc, canvasContext);
+		super.paint(g);
+		GraphicsContext gc = g.getGC();
 		gc.beginPath();
 		gc.rect(x1, y1, getWidth(), getHeight());
 		gc.closePath();

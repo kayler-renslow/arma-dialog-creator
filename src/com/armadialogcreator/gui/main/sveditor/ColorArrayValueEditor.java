@@ -1,6 +1,6 @@
 package com.armadialogcreator.gui.main.sveditor;
 
-import com.armadialogcreator.canvas.Region;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.core.sv.SVColorArray;
 import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.fxcontrol.inputfield.DoubleChecker;
@@ -15,7 +15,6 @@ import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -148,8 +147,7 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 
 			tfAsArray.setEditable(false);
 
-			GraphicsContext gc = canvas.getGraphicsContext2D();
-
+			Graphics graphics = new Graphics(canvas.getGraphicsContext2D());
 
 			ValueListener<Double> valListener = (observer, oldValue, newValue) -> {
 				Color c = getCurrentColor();
@@ -157,16 +155,16 @@ public class ColorArrayValueEditor implements ValueEditor<SVColorArray> {
 
 					if (c.getOpacity() < 1) {
 						//draw a grid to show theres transparency
-						gc.setGlobalAlpha(1);
-						gc.setFill(Color.WHITE);
-						Region.paintCheckerboard(
-								gc, 0, 0, (int) canvas.getWidth(), (int) canvas.getHeight(), Color.GRAY, Color.WHITE,
+						graphics.setGlobalAlpha(1);
+						graphics.setFill(AColorConstant.WHITE.argb);
+						graphics.paintCheckerboard(
+								0, 0, (int) canvas.getWidth(), (int) canvas.getHeight(), Color.GRAY, Color.WHITE,
 								5);
 					}
 
-					gc.setGlobalAlpha(c.getOpacity());
-					gc.setFill(c);
-					gc.fillRect(0, 0, canvas.getWidth(), canvas.getHeight());
+					graphics.setGlobalAlpha(c.getOpacity());
+					graphics.setFill(ColorUtil.toARGB(c));
+					graphics.fillRectangle(0, 0, (int) canvas.getWidth(), (int) canvas.getHeight());
 
 					tfAsArray.setText(AColor.toStringF(c.getRed(), c.getGreen(), c.getBlue(), c.getOpacity()));
 				}

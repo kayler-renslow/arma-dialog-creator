@@ -1,11 +1,11 @@
 package com.armadialogcreator.control.impl.utility;
 
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -94,20 +94,20 @@ public class ScrollbarRenderer {
 
 	}
 
-	public void paint(@NotNull GraphicsContext gc, boolean preview, int x, int y, int h) {
+	public void paint(@NotNull Graphics g, boolean preview, int x, int y, int h) {
 		setTintedImagesToPreviewMode(preview);
 
 		final int arrowPadding = 4;
 		//top arrow
-		paintHelper(gc, arrowEmpty, x, y, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowTop);
+		paintHelper(g, arrowEmpty, x, y, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowTop);
 
 		final int borderHeight = Math.max(1, h - (ARROW_HEIGHT + arrowPadding) * 2);
 		final int borderY = y + ARROW_HEIGHT + arrowPadding;
-		paintHelper(gc, border, x, borderY, SCROLLBAR_WIDTH, borderHeight, tintedBorder);
-		paintHelper(gc, thumb, x, borderY, SCROLLBAR_WIDTH, borderHeight / 2, tintedThumb);
+		paintHelper(g, border, x, borderY, SCROLLBAR_WIDTH, borderHeight, tintedBorder);
+		paintHelper(g, thumb, x, borderY, SCROLLBAR_WIDTH, borderHeight / 2, tintedThumb);
 
 		//bottom arrow
-		paintHelper(gc, arrowEmpty, x, y + h - ARROW_HEIGHT, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowBottom);
+		paintHelper(g, arrowEmpty, x, y + h - ARROW_HEIGHT, SCROLLBAR_WIDTH, ARROW_HEIGHT, tintedArrowBottom);
 
 		setTintedImagesToPreviewMode(false);
 	}
@@ -117,27 +117,27 @@ public class ScrollbarRenderer {
 		tintedArrowBottom.setToPreviewMode(preview);
 	}
 
-	private void paintHelper(GraphicsContext gc, ImageOrTextureHelper helper, int x, int y, int w, int h, TintedImageHelperRenderer tinted) {
+	private void paintHelper(@NotNull Graphics g, ImageOrTextureHelper helper, int x, int y, int w, int h, TintedImageHelperRenderer tinted) {
 		switch (helper.getMode()) {
 			case Image: {
 				tinted.updatePosition(x, y, w, h, true);
-				tinted.paintTintedImage(gc);
+				tinted.paintTintedImage(g);
 				break;
 			}
 			case LoadingImage: {
-				ArmaControlRenderer.paintImageLoading(gc, tinted.getTint(), x, y, x + w, y + h);
+				ArmaControlRenderer.paintImageLoading(g, tinted.getTint(), x, y, x + w, y + h);
 				break;
 			}
 			case Texture: {
-				TexturePainter.paint(gc, helper.getTexture(), scrollbarColor, x, y, x + w, y + h);
+				TexturePainter.paint(g, helper.getTexture(), scrollbarColor, x, y, x + w, y + h);
 				break;
 			}
 			case ImageError: {
-				renderer.paintImageError(gc, x, y, w, h);
+				renderer.paintImageError(g, x, y, w, h);
 				break;
 			}
 			case TextureError: {
-				renderer.paintTextureError(gc, x, y, w, h);
+				renderer.paintTextureError(g, x, y, w, h);
 				break;
 			}
 			default:

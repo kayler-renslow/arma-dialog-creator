@@ -1,6 +1,5 @@
 package com.armadialogcreator.canvas;
 
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
@@ -27,11 +26,16 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	}
 
 	@Override
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		gc.save();
-		gc.setStroke(backgroundColor);
-		Region.strokeRectangle(gc, resolution.getViewportX(), resolution.getViewportY(), resolution.getViewportX() + resolution.getViewportWidth(), resolution.getViewportY() + resolution.getViewportHeight());
-		gc.restore();
+	public void paint(@NotNull Graphics graphics) {
+		graphics.save();
+		graphics.setStroke(backgroundColorARGB);
+		graphics.strokeRectangle(
+				resolution.getViewportX(),
+				resolution.getViewportY(),
+				resolution.getViewportWidth(),
+				resolution.getViewportHeight()
+		);
+		graphics.restore();
 	}
 
 	@Override

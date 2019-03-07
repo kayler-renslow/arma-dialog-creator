@@ -1,6 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -20,7 +20,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  @author Kayler
@@ -29,9 +29,8 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 	private BasicTextRenderer textRenderer;
 	private BlinkControlHandler blinkControlHandler;
 	private TooltipRenderer tooltipRenderer;
-	private Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 	private final ImageOrTextureHelper animTextureNormal = new ImageOrTextureHelper(this);
@@ -253,8 +252,8 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 	}
 
 	@Override
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
@@ -265,11 +264,11 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 
 		if (preview) {
 			if (isEnabled()) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 			}
 
 			double ratio = focusedColorAlternator.updateAndGetRatio();
-			Color colorBackground = this.backgroundColor;
+			int colorBackground = this.backgroundColorARGB;
 			Color color = textRenderer.getTextColor();
 
 			if (!isEnabled()) {
@@ -310,51 +309,51 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 					if (image == null) {
 						throw new IllegalStateException();
 					}
-					gc.drawImage(image, x1, y1, controlWidth, controlHeight);
-
+					g.drawImage(image, x1, y1, controlWidth, controlHeight);
+					GraphicsContext gc = g.getGC();
 					gc.setGlobalBlendMode(BlendMode.MULTIPLY);
-					super.paint(gc, canvasContext);
+					super.paint(g);
 					gc.setGlobalBlendMode(BlendMode.SRC_OVER);
 					break;
 				}
 				case ImageError: {
-					paintImageError(gc, x1, y1, controlWidth, controlHeight);
+					paintImageError(g, x1, y1, controlWidth, controlHeight);
 					break;
 				}
 				case LoadingImage: {
-					super.paint(gc, canvasContext);
+					super.paint(g);
 					break;
 				}
 				case Texture: {
-					TexturePainter.paint(gc, bgTexture.getTexture(), backgroundColor, x1, y1, x2, y2);
+					TexturePainter.paint(g, bgTexture.getTexture(), getBackgroundColor(), x1, y1, x2, y2);
 					break;
 				}
 				case TextureError: {
-					paintTextureError(gc, x1, y1, controlWidth, controlHeight);
+					paintTextureError(g, x1, y1, controlWidth, controlHeight);
 					break;
 				}
 			}
 
-			paintShortcutThing(gc);
+			paintShortcutThing(g);
 
-			textRenderer.paint(gc, textPosX, textPosY);
+			textRenderer.paint(g, textPosX, textPosY);
 
 			//reset the colors again
 			setBackgroundColor(colorBackground);
 			textRenderer.setTextColor(color);
 
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 		} else {
-			super.paint(gc, canvasContext);
-			paintShortcutThing(gc);
-			textRenderer.paint(gc, textPosX, textPosY);
+			super.paint(g);
+			paintShortcutThing(g);
+			textRenderer.paint(g, textPosX, textPosY);
 		}
 
 	}
 
-	private void paintShortcutThing(GraphicsContext gc) {
+	private void paintShortcutThing(@NotNull Graphics g) {
 		final int controlWidth = getWidth();
 		final int controlHeight = getHeight();
 
@@ -368,22 +367,22 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		}
 		switch (textureNoShortcut.getMode()) {
 			case Image: {
-				gc.drawImage(textureNoShortcut.getImage(), x1, y1, x2 - x1, y2 - y1);
+				g.drawImage(textureNoShortcut.getImage(), x1, y1, x2 - x1, y2 - y1);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, x1, y1, 30, 30);
+				paintImageError(g, x1, y1, 30, 30);
 				break;
 			}
 			case LoadingImage: {
 				break;
 			}
 			case Texture: {
-				TexturePainter.paint(gc, textureNoShortcut.getTexture(), x1, y1, x2, y2);
+				TexturePainter.paint(g, textureNoShortcut.getTexture(), x1, y1, x2, y2);
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, x1, y1, x2 - x1, y2 - y1);
+				paintTextureError(g, x1, y1, x2 - x1, y2 - y1);
 				break;
 			}
 		}

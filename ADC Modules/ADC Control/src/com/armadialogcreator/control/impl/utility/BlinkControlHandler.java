@@ -1,11 +1,11 @@
 package com.armadialogcreator.control.impl.utility;
 
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.core.sv.SVNumericValue;
-import javafx.scene.canvas.GraphicsContext;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -34,9 +34,9 @@ public class BlinkControlHandler {
 	}
 
 	/**
-	 Will manipulate {@link GraphicsContext#getGlobalAlpha()} based on an internal clock.
+	 Will manipulate {@link Graphics#getGlobalAlpha()} based on an internal clock.
 	 */
-	public void paint(@NotNull GraphicsContext gc) {
+	public void paint(@NotNull Graphics g) {
 		long now = System.currentTimeMillis();
 		long timePast = now - lastPaint;
 		lastPaint = now;
@@ -58,6 +58,6 @@ public class BlinkControlHandler {
 				blinkDurationPast = 0;
 			}
 		}
-		gc.setGlobalAlpha(blinkDurationPast / blinkDuration);
+		g.setGlobalAlpha(blinkDurationPast / blinkDuration);
 	}
 }

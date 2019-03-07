@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
 import com.armadialogcreator.canvas.Border;
-import com.armadialogcreator.canvas.CanvasContext;
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
@@ -12,11 +12,10 @@ import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVControlStyleGroup;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.expression.Env;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  A renderer for {@link XSliderControl}
@@ -34,9 +33,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 	private double progress = 0.7;
 	private boolean horizProgress = false;
 
-	private final Function<GraphicsContext, Void> tooltipRenderFunc = gc -> {
-		tooltipRenderer.paint(gc, this.mouseOverX, this.mouseOverY);
-		return null;
+	private final Consumer<Graphics> tooltipRenderFunc = g -> {
+		tooltipRenderer.paint(g, this.mouseOverX, this.mouseOverY);
 	};
 
 
@@ -86,22 +84,22 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		updateTintedTexture();
 	}
 
-	public void paint(@NotNull GraphicsContext gc, CanvasContext canvasContext) {
-		boolean preview = paintPreview(canvasContext);
+	public void paint(@NotNull Graphics g) {
+		boolean preview = paintPreview();
 		if (preview) {
 			if (isEnabled()) {
-				blinkControlHandler.paint(gc);
+				blinkControlHandler.paint(g);
 			}
 
 			if (this.mouseOver) {
-				canvasContext.paintLast(tooltipRenderFunc);
+				g.paintLast(tooltipRenderFunc);
 			}
 			this.progress = progressAlternator.updateAndGetRatio();
 		}
 
 		tintedTexture.setToPreviewMode(preview);
 
-		paintBorder(gc);
+		paintBorder(g);
 
 		//progress filler
 		double progress = preview ? this.progress : 0.7;
@@ -111,23 +109,23 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		switch (textureHelper.getMode()) {
 			case Image: {
 				tintedTexture.updatePosition(x1, y1, x2 - x1, y2 - y1);
-				tintedTexture.paintTintedImage(gc);
+				tintedTexture.paintTintedImage(g);
 				break;
 			}
 			case ImageError: {
-				paintImageError(gc, x1, y1, getWidth(), getHeight());
+				paintImageError(g, x1, y1, getWidth(), getHeight());
 				break;
 			}
 			case LoadingImage: {
-				paintImageLoading(gc, backgroundColor, x1, y1, x2, y2);
+				paintImageLoading(g, getBackgroundColor(), x1, y1, x2, y2);
 				break;
 			}
 			case Texture: {
-				TexturePainter.paint(gc, textureHelper.getTexture(), colorBar, x1, y1, x2, y2);
+				TexturePainter.paint(g, textureHelper.getTexture(), colorBar, x1, y1, x2, y2);
 				break;
 			}
 			case TextureError: {
-				paintTextureError(gc, x1, y1, x2, y2);
+				paintTextureError(g, x1, y1, x2, y2);
 				break;
 			}
 			default:
@@ -146,8 +144,8 @@ public class ProgressRenderer extends ArmaControlRenderer {
 	}
 
 	@Override
-	public void setBackgroundColor(@NotNull Color paint) {
-		super.setBackgroundColor(paint);
-		this.border.setColor(paint);
+	public void setBackgroundColor(@NotNull Color color) {
+		super.setBackgroundColor(color);
+		this.border.setColor(color);
 	}
 }
