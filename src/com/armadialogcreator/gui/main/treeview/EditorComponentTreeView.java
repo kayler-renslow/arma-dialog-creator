@@ -42,18 +42,14 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 			UINode updatedNode = data.getNode();
 			switch (data.getType()) {
 				case AddChild: {
-					System.out.println("EditorComponentTreeView.update updatedNode.getClass().getName();=" + updatedNode.getClass().getName());
 					UINode parentNode = updatedNode.getParentNode();
-					System.out.println("EditorComponentTreeView.update parentNode.getClass().getName()=" + parentNode.getClass().getName());
 					if (parentNode == null) {
 						throw new IllegalStateException();
 					}
 					TreeItem parent = TREE_ITEM_KEY.get(parentNode.getUserData());
-					System.out.println("EditorComponentTreeView.update parent=" + parent);
 					if (parent == null) {
 						UINode ancestorNode = parentNode;
-						UINode rootNode = rootUINode;
-						while (parent == null && ancestorNode != rootNode) {
+						while (parent == null && ancestorNode != rootUINode) {
 							ancestorNode = ancestorNode.getParentNode();
 							if (ancestorNode == null) {
 								break;
@@ -177,7 +173,6 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 		rootUINode.getUserData().put(TREE_ITEM_KEY, null);
 		rootUINode.getUpdateGroup().removeListener(uiNodeChangeListener);
 
-		System.out.println("EditorComponentTreeView.setToUINode node.getClass().getName()=" + node.getClass().getName());
 		rootUINode = node;
 		rootUINode.getUserData().put(TREE_ITEM_KEY, getRoot());
 		rootUINode.getUpdateGroup().addListener(uiNodeChangeListener);

@@ -36,6 +36,7 @@ public class ExpressionEnvManager implements ApplicationStateSubscriber {
 	@Override
 	public void projectDataLoaded(@NotNull Project project) {
 		commandProvider = new CommandProvider(EditorManager.instance.getResolution());
+		env.setUnaryCommandProvider(commandProvider);
 	}
 
 	@NotNull

@@ -13,8 +13,9 @@ import org.jetbrains.annotations.Nullable;
  @since 05/12/2016. */
 public class SimpleCanvasComponent implements CanvasComponent {
 
-	private static Color randomColor(Object o) {
-		int argb = o.hashCode();
+	@NotNull
+	public static Color randomColor() {
+		int argb = new Object().hashCode();
 		int r = (argb) & 0xFF;
 		int g = (argb >> 8) & 0xFF;
 		int b = (argb >> 16) & 0xFF;
@@ -23,7 +24,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	}
 
 	protected int x1, y1, x2, y2;
-	protected Color backgroundColor = randomColor(this);
+	protected Color backgroundColor = randomColor();
 
 	protected Border border;
 	private boolean isEnabled = true;

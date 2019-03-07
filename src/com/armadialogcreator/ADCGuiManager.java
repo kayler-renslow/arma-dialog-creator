@@ -30,7 +30,6 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 	public void projectReady(@NotNull Project project) {
 		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
 		mainWindow.runWhenReady(() -> {
-			System.out.println("ADCGuiManager.projectReady ");
 			CanvasView canvasView = mainWindow.getCanvasView();
 			ArmaDisplay editingDisplay = EditorManager.instance.getEditingDisplay();
 
