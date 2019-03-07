@@ -20,6 +20,9 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  The main window of Arma Dialog Creator
 
@@ -32,16 +35,18 @@ public class ADCWindow implements ADCMainWindow {
 	private ADCMenuBar mainMenuBar;
 	private boolean fullscreen = false;
 	private boolean preInit = false;
+	private final List<Runnable> runWhenShowing = new ArrayList<>();
+	private volatile boolean initialized = false;
 
 	public ADCWindow(Stage stage) {
 		this.stage = stage;
-		stage.fullScreenProperty().addListener(new ChangeListener<Boolean>() {
+		stage.fullScreenProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 				setToFullScreen(newValue);
 			}
 		});
-		stage.widthProperty().addListener(new ChangeListener<Number>() {
+		stage.widthProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 				if (preInit) {
@@ -89,6 +94,14 @@ public class ADCWindow implements ADCMainWindow {
 				//force canvas to render at proper size
 				autoResizeCanvasView();
 				canvasView.updateCanvas();
+
+				initialized = true;
+
+				for (Runnable r : runWhenShowing) {
+					r.run();
+				}
+				runWhenShowing.clear();
+
 			}
 		});
 
@@ -109,6 +122,21 @@ public class ADCWindow implements ADCMainWindow {
 	public void show() {
 		this.stage.show();
 		autoResizeCanvasView();
+		if (initialized) {
+			for (Runnable r : runWhenShowing) {
+				r.run();
+			}
+			runWhenShowing.clear();
+		}
+	}
+
+	@Override
+	public void runWhenReady(@NotNull Runnable r) {
+		if (initialized) {
+			r.run();
+		} else {
+			runWhenShowing.add(r);
+		}
 	}
 
 	private void autoResizeCanvasView() {
@@ -124,7 +152,7 @@ public class ADCWindow implements ADCMainWindow {
 
 	@Override
 	@NotNull
-	public ADCMainCanvasEditor getCanvasEditor() {
+	public CanvasView getCanvasView() {
 		if (canvasView == null) {
 			//attempting to access canvasView before initialized
 			throw new IllegalStateException();

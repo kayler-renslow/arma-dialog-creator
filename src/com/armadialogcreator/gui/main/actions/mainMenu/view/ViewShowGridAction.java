@@ -10,7 +10,7 @@ public class ViewShowGridAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		//UICanvasConfiguration conf = ArmaDialogCreator.getCanvasEditor().getConfiguration();
+		//UICanvasConfiguration conf = ArmaDialogCreator.getCanvasView().getConfiguration();
 		//conf.setShowGrid(!conf.showGrid());
 	}
 }

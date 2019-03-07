@@ -28,28 +28,32 @@ import java.util.List;
  @since 06/08/2016. */
 public class EditorComponentTreeView<T extends UINodeTreeItemData> extends EditableTreeView<ArmaControl, T> {
 
-	private final Key<TreeItem<T>> TREE_ITEM_KEY = new Key<>("EditorComponentTreeView.TreeItemKey");
+	private static final Key<TreeItem> TREE_ITEM_KEY = new Key<>("EditorComponentTreeView.TreeItemKey");
 
 	private final ContextMenu controlCreationContextMenu = new EditorTreeViewContextMenu(this);
 	private UINode rootUINode;
 	private boolean disableListener = false;
-	private UpdateGroupListener<UINodeChange> uiNodeChangeListener = new UpdateGroupListener<UINodeChange>() {
+	private UpdateGroupListener<UINodeChange> uiNodeChangeListener = new UpdateGroupListener<>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<UINodeChange> group, @NotNull UINodeChange data) {
 			if (disableListener) {
 				return;
 			}
-			UINode node = data.getNode();
+			UINode updatedNode = data.getNode();
 			switch (data.getType()) {
 				case AddChild: {
-					UINode parentNode = node.getParentNode();
+					System.out.println("EditorComponentTreeView.update updatedNode.getClass().getName();=" + updatedNode.getClass().getName());
+					UINode parentNode = updatedNode.getParentNode();
+					System.out.println("EditorComponentTreeView.update parentNode.getClass().getName()=" + parentNode.getClass().getName());
 					if (parentNode == null) {
 						throw new IllegalStateException();
 					}
 					TreeItem parent = TREE_ITEM_KEY.get(parentNode.getUserData());
+					System.out.println("EditorComponentTreeView.update parent=" + parent);
 					if (parent == null) {
 						UINode ancestorNode = parentNode;
-						while (parent == null && ancestorNode != ancestorNode.getRootNode()) {
+						UINode rootNode = rootUINode;
+						while (parent == null && ancestorNode != rootNode) {
 							ancestorNode = ancestorNode.getParentNode();
 							if (ancestorNode == null) {
 								break;
@@ -64,7 +68,7 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 						}
 					}
 					UINodeChange.AddChild change = (UINodeChange.AddChild) data;
-					addMissingNode(parentNode, node, parent, change.getIndex());
+					addMissingNode(updatedNode, parent, change.getIndex());
 					break;
 				}
 				case MoveChild: {
@@ -89,19 +93,19 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 							addAllChildNodes(ancestorNode, getRoot());
 							break;
 						}
-						addMissingNode(newParentNode, node, newParent, change.getDestIndex());
+						addMissingNode(updatedNode, newParent, change.getDestIndex());
 					}
 
 					break;
 				}
 				case RemoveChild: {
-					TreeItem<T> treeItem = TREE_ITEM_KEY.get(node.getUserData());
+					TreeItem<T> treeItem = TREE_ITEM_KEY.get(updatedNode.getUserData());
 					if (treeItem == null) {
 						return;
 					}
 					treeItem.getParent().getChildren().remove(treeItem);
-					node.getUserData().put(TREE_ITEM_KEY, null);
-					for (UINode child : node.deepIterateChildren()) {
+					updatedNode.getUserData().put(TREE_ITEM_KEY, null);
+					for (UINode child : updatedNode.deepIterateChildren()) {
 						child.getUserData().put(TREE_ITEM_KEY, null);
 					}
 					break;
@@ -121,7 +125,7 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 
 		setContextMenu(controlCreationContextMenu);
 		EditorComponentTreeView treeView = this;
-		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<T>>() {
+		getSelectionModel().selectedItemProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<T>> observable, TreeItem<T> oldValue, TreeItem<T> selected) {
 				if (selected != null) {
@@ -169,12 +173,18 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 	}
 
 	public void setToUINode(@NotNull UINode node) {
+		//remove previous data stuff
+		rootUINode.getUserData().put(TREE_ITEM_KEY, null);
 		rootUINode.getUpdateGroup().removeListener(uiNodeChangeListener);
-		this.rootUINode = node;
+
+		System.out.println("EditorComponentTreeView.setToUINode node.getClass().getName()=" + node.getClass().getName());
+		rootUINode = node;
+		rootUINode.getUserData().put(TREE_ITEM_KEY, getRoot());
 		rootUINode.getUpdateGroup().addListener(uiNodeChangeListener);
+
 		clear();
+
 		enableNodeListener(false);
-		getRoot().getChildren().clear();
 		addAllChildNodes(node, getRoot());
 		enableNodeListener(true);
 	}
@@ -206,7 +216,7 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 	}
 
 	@SuppressWarnings("unchecked")
-	private void addMissingNode(@NotNull UINode parentNode, @NotNull UINode missingNode, @NotNull TreeItem parentTreeItem, int index) {
+	private void addMissingNode(@NotNull UINode missingNode, @NotNull TreeItem parentTreeItem, int index) {
 		TreeItem item = createTreeItem(missingNode);
 		missingNode.getUserData().put(TREE_ITEM_KEY, item);
 		if (index == -1) {
@@ -238,6 +248,8 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 		enableNodeListener(false);
 		parent.getValue().getNode().addChild(child.getValue().getNode(), index);
 		enableNodeListener(true);
+
+		child.getValue().getNode().getUserData().put(TREE_ITEM_KEY, child);
 	}
 
 	@Override
@@ -246,6 +258,8 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 		enableNodeListener(false);
 		rootUINode.addChild(child.getValue().getNode());
 		enableNodeListener(true);
+
+		child.getValue().getNode().getUserData().put(TREE_ITEM_KEY, child);
 	}
 
 	@Override
@@ -254,6 +268,8 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 		enableNodeListener(false);
 		rootUINode.addChild(child.getValue().getNode(), index);
 		enableNodeListener(true);
+
+		child.getValue().getNode().getUserData().put(TREE_ITEM_KEY, child);
 	}
 
 	@Override
@@ -273,7 +289,6 @@ public class EditorComponentTreeView<T extends UINodeTreeItemData> extends Edita
 		toRemove.getValue().getNode().getUserData().put(TREE_ITEM_KEY, null);
 		enableNodeListener(true);
 	}
-
 
 	static ImageView createFolderIcon() {
 		return new ImageView(ADCIcons.ICON_FOLDER);

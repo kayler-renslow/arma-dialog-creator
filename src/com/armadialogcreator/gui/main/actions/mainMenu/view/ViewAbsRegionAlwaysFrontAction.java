@@ -16,6 +16,6 @@ public class ViewAbsRegionAlwaysFrontAction implements EventHandler<ActionEvent>
 		} else {
 			alwaysFront = 1;
 		}
-		//ArmaDialogCreator.getCanvasEditor().updateAbsRegion(alwaysFront, -1);
+		//ArmaDialogCreator.getCanvasView().updateAbsRegion(alwaysFront, -1);
 	}
 }

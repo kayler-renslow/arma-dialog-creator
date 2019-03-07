@@ -43,7 +43,7 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 			colors.editorBg = cpEditorBg.getValue();
 			colors.grid = cpGrid.getValue();
 			colors.selection = cpSelection.getValue();
-			ArmaDialogCreator.getMainWindow().getCanvasEditor().updateCanvas();
+			ArmaDialogCreator.getMainWindow().getCanvasView().updateCanvas();
 		}
 	};
 
@@ -64,7 +64,7 @@ public class CanvasViewColorsPopup extends StageDialog<VBox> {
 				colorOption(bundle.getString("Popups.Colors.grid"), cpGrid, UICanvasEditorColors.DEFAULT_GRID),
 				colorOption(bundle.getString("Popups.Colors.background"), cpEditorBg, UICanvasEditorColors.DEFAULT_EDITOR_BG)
 		);
-		this.colors = ArmaDialogCreator.getMainWindow().getCanvasEditor().getColors();
+		this.colors = ArmaDialogCreator.getMainWindow().getCanvasView().getColors();
 		setupColorPickers();
 	}
 

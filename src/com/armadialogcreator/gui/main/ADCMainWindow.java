@@ -10,7 +10,7 @@ import org.jetbrains.annotations.NotNull;
 public interface ADCMainWindow {
 
 	@NotNull
-	ADCMainCanvasEditor getCanvasEditor();
+	CanvasView getCanvasView();
 
 	void setToFullScreen(boolean fullScreen);
 
@@ -21,4 +21,6 @@ public interface ADCMainWindow {
 	void initialize();
 
 	void show();
+
+	void runWhenReady(@NotNull Runnable r);
 }

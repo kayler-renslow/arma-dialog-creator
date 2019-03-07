@@ -23,7 +23,7 @@ public class EditableTreeView<Tv, Td extends TreeItemData> extends javafx.scene.
 		setCellFactory(new TreeFactoryGen<>(new EditableTreeCellFactory<>(this, selectionUpdate)));
 	}
 
-	/** Clears the TreeView and loads the given tree structure. If treeStructure is null, will just clear the tree */
+	/** Clears the TreeView */
 	public final void clear() {
 		setRoot(new TreeItem<>());
 	}

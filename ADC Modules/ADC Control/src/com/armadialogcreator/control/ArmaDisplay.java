@@ -223,6 +223,7 @@ public class ArmaDisplay implements UINode {
 		public ControlsNode(@NotNull ArmaDisplay display, boolean background) {
 			this.display = display;
 			this.background = background;
+			setParentNode(display);
 		}
 
 		@Override

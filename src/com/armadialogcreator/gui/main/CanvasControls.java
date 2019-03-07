@@ -3,6 +3,8 @@ package com.armadialogcreator.gui.main;
 import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
@@ -35,8 +37,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView<? extends UINodeTreeItemData> treeViewMain;
-	private final EditorComponentTreeView<? extends UINodeTreeItemData> treeViewBg;
+	private final EditorComponentTreeView<UINodeTreeItemData> treeViewMain;
+	private final EditorComponentTreeView<UINodeTreeItemData> treeViewBg;
 	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
 	private final CheckBox checkBoxViewportSnapping = new CheckBox(bundle.getString("CanvasControls.viewport_snapping"));
@@ -73,7 +75,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		cbShowBackgroundControls.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for (UINode node : canvasView.getEditingDisplay().getBackgroundControlNodes().deepIterateChildren()) {
+				ArmaDisplay display = EditorManager.instance.getEditingDisplay();
+				for (UINode node : display.getBackgroundControlNodes().deepIterateChildren()) {
 					if (node instanceof ArmaControl) {
 						ArmaControl control = (ArmaControl) node;
 						control.getRenderer().setGhost(!selected);
@@ -86,7 +89,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		cbShowControls.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean selected) {
-				for (UINode node : canvasView.getEditingDisplay().getControlNodes().deepIterateChildren()) {
+				ArmaDisplay display = EditorManager.instance.getEditingDisplay();
+				for (UINode node : display.getControlNodes().deepIterateChildren()) {
 					if (node instanceof ArmaControl) {
 						ArmaControl control = (ArmaControl) node;
 						control.getRenderer().setGhost(!selected);
@@ -453,13 +457,13 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	/** Get the tree view used for storing controls that is meant for non-background controls */
 	@NotNull
-	public EditorComponentTreeView<? extends UINodeTreeItemData> getTreeViewMain() {
+	public EditorComponentTreeView<UINodeTreeItemData> getTreeViewMain() {
 		return treeViewMain;
 	}
 
 	/** Get the tree view used for storing controls that is meant <b>for</b> background controls */
 	@NotNull
-	public EditorComponentTreeView<? extends UINodeTreeItemData> getTreeViewBackground() {
+	public EditorComponentTreeView<UINodeTreeItemData> getTreeViewBackground() {
 		return treeViewBg;
 	}
 

@@ -22,19 +22,24 @@ public class CreateNewControlAction implements EventHandler<ActionEvent> {
 		if (dialog.wasCancelled()) {
 			return;
 		}
+
+		EditorManager editorManager = EditorManager.instance;
+
 		String className = dialog.getClassName();
 		ControlType controlType = dialog.getControlType();
 		boolean backgroundControl = dialog.isBackgroundControl();
 		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
-		EditorManager editorManager = EditorManager.instance;
 		ArmaDisplay display = editorManager.getEditingDisplay();
+
 		ArmaControl control = ArmaControl.createControl(className, lookup, editorManager.getResolution(),
 				ExpressionEnvManager.instance.getEnv(), display);
+
 		if (backgroundControl) {
 			editorManager.getEditingDisplay().getBackgroundControlNodes().addChild(control);
 		} else {
 			editorManager.getEditingDisplay().getControlNodes().addChild(control);
 		}
+
 		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
 	}
 }

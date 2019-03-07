@@ -2,11 +2,9 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.ProjectSettings;
 import com.armadialogcreator.data.SettingsManager;
-import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
@@ -38,7 +36,7 @@ import java.util.List;
 
  @author Kayler
  @since 05/15/2016. */
-class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
+class ADCCanvasView extends HBox implements CanvasView {
 	private final UICanvasEditor uiCanvasEditor;
 	private final CanvasControls canvasControls;
 	private final NotificationPane notificationPane;
@@ -47,14 +45,12 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 	private boolean selectFromCanvas = false;
 	/** True when the editor's selection is being updated from the treeView, false when it isn't */
 	private boolean selectFromTreeView = false;
-	private ArmaDisplay display;
 
 	ADCCanvasView() {
 		EditorManager editorManager = EditorManager.instance;
-		this.display = editorManager.getEditingDisplay();
 		canvasControls = new CanvasControls(this);
-		this.uiCanvasEditor = new UICanvasEditor(editorManager.getResolution(), canvasControls, display);
-		initializeUICanvasEditor(display);
+		this.uiCanvasEditor = new UICanvasEditor(editorManager.getResolution(), canvasControls, UINode.EMPTY);
+		initializeUICanvasEditor();
 
 		//init notification pane
 		{
@@ -78,10 +74,7 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 		focusToCanvas(true);
 	}
 
-	private void initializeUICanvasEditor(@NotNull ArmaDisplay display) {
-		canvasControls.getTreeViewMain().setToUINode(display);
-		canvasControls.getTreeViewBackground().setToUINode(display);
-
+	private void initializeUICanvasEditor() {
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
@@ -182,13 +175,13 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 
 	@NotNull
 	@Override
-	public EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getMainControlTreeView() {
+	public EditorComponentTreeView<UINodeTreeItemData> getMainControlTreeView() {
 		return canvasControls.getTreeViewMain();
 	}
 
 	@NotNull
 	@Override
-	public EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getBackgroundControlTreeView() {
+	public EditorComponentTreeView<UINodeTreeItemData> getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
 	}
 
@@ -196,6 +189,11 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 	@NotNull
 	public UICanvasEditorColors getColors() {
 		return uiCanvasEditor.getColors();
+	}
+
+	@Override
+	public void setRootEditingUINode(@NotNull UINode node) {
+		uiCanvasEditor.setRootNode(node);
 	}
 
 	@NotNull
@@ -216,10 +214,6 @@ class ADCCanvasView extends HBox implements ADCMainCanvasEditor {
 			return;
 		}
 		getChildren().add(canvasControls);
-	}
-
-	public ArmaDisplay getEditingDisplay() {
-		return this.display;
 	}
 
 	public void repaintCanvas() {

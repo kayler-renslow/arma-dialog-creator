@@ -35,7 +35,7 @@ public class CreateNewFolderAction implements EventHandler<ActionEvent> {
 		String folderName = dialog.getInputText();
 		boolean background = dialog.isBackground();
 /*
-		ADCMainCanvasEditor canvasView = ArmaDialogCreator.getCanvasEditor();
+		CanvasView canvasView = ArmaDialogCreator.getCanvasView();
 
 		EditableTreeView treeView = background ? canvasView.getBackgroundControlTreeView() :
 				canvasView.getMainControlTreeView();

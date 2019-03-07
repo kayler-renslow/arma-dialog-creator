@@ -28,13 +28,13 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 /*
 	private void chooseBackground(int background, ActionEvent event) {
 		if (background == IMAGE_1) {
-			ArmaDialogCreator.getCanvasEditor().setCanvasBackgroundToImage(ADCImagePaths.BG_1);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_1);
 		} else if (background == IMAGE_2) {
-			ArmaDialogCreator.getCanvasEditor().setCanvasBackgroundToImage(ADCImagePaths.BG_2);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_2);
 		} else if (background == IMAGE_3) {
-			ArmaDialogCreator.getCanvasEditor().setCanvasBackgroundToImage(ADCImagePaths.BG_3);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(ADCImagePaths.BG_3);
 		} else if (background == NO_IMAGE) {
-			ArmaDialogCreator.getCanvasEditor().setCanvasBackgroundToImage(null);
+			ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(null);
 		} else if (background == IMAGE_CUSTOM) {
 			FileChooser c = new FileChooser();
 			FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Images", "*.png", "*.gif", "*.jpg", "*.mpo");
@@ -43,7 +43,7 @@ public class ViewBackgroundAction implements EventHandler<ActionEvent> {
 			c.setTitle(Lang.ApplicationBundle().getString("Misc.file_chooser_background_img_title"));
 			File chosen = c.showOpenDialog(ArmaDialogCreator.getPrimaryStage());
 			if (chosen != null) {
-				ArmaDialogCreator.getCanvasEditor().setCanvasBackgroundToImage(chosen.toURI().toString());
+				ArmaDialogCreator.getCanvasView().setCanvasBackgroundToImage(chosen.toURI().toString());
 			} else {
 				RadioMenuItem target = (RadioMenuItem) event.getTarget();
 				target.getToggleGroup().selectToggle(target.getToggleGroup().getToggles().get(lastBackground));

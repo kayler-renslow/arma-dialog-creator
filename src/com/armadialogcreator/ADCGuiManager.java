@@ -2,21 +2,44 @@ package com.armadialogcreator;
 
 import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
+import com.armadialogcreator.application.ApplicationStateSubscriber;
+import com.armadialogcreator.application.Project;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
-import com.armadialogcreator.data.ApplicationProperties;
-import com.armadialogcreator.data.ProjectSettings;
-import com.armadialogcreator.data.Settings;
-import com.armadialogcreator.data.SettingsManager;
+import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.data.*;
 import com.armadialogcreator.gui.main.ADCMainWindow;
+import com.armadialogcreator.gui.main.CanvasView;
 import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.util.AColorConstant;
+import com.armadialogcreator.util.ApplicationSingleton;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 
 /**
  @author K
  @since 3/6/19 */
-public class ADCGuiManager {
+@ApplicationSingleton
+public class ADCGuiManager implements ApplicationStateSubscriber {
 	public static final ADCGuiManager instance = new ADCGuiManager();
+
+	static {
+		ApplicationManager.instance.addStateSubscriber(instance);
+	}
+
+	@Override
+	public void projectReady(@NotNull Project project) {
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
+		mainWindow.runWhenReady(() -> {
+			System.out.println("ADCGuiManager.projectReady ");
+			CanvasView canvasView = mainWindow.getCanvasView();
+			ArmaDisplay editingDisplay = EditorManager.instance.getEditingDisplay();
+
+			canvasView.getBackgroundControlTreeView().setToUINode(editingDisplay.getBackgroundControlNodes());
+			canvasView.getMainControlTreeView().setToUINode(editingDisplay.getControlNodes());
+
+			canvasView.setRootEditingUINode(editingDisplay);
+		});
+	}
 
 	void guiReady() {
 		applyDarkThemeIfOn();
@@ -54,7 +77,7 @@ public class ADCGuiManager {
 
 		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
 		if (mainWindow.isShowing()) {
-			mainWindow.getCanvasEditor().updateCanvas();
+			mainWindow.getCanvasView().updateCanvas();
 		}
 	}
 }

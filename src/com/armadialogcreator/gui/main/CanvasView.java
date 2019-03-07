@@ -2,8 +2,8 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  Created by Kayler on 05/20/2016.
  */
-public interface ADCMainCanvasEditor {
+public interface CanvasView {
 
 	@NotNull UICanvasConfiguration getConfiguration();
 
@@ -33,15 +33,17 @@ public interface ADCMainCanvasEditor {
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
 
-	@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getMainControlTreeView();
+	@NotNull EditorComponentTreeView<UINodeTreeItemData> getMainControlTreeView();
 
-	@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> getBackgroundControlTreeView();
+	@NotNull EditorComponentTreeView<UINodeTreeItemData> getBackgroundControlTreeView();
 
 	/** @return true if treeView == {@link #getBackgroundControlTreeView()}, false otherwise */
-	default boolean isBackgroundTreeView(@NotNull EditableTreeView<ArmaControl, ? extends UINodeTreeItemData> treeView) {
+	default boolean isBackgroundTreeView(@NotNull EditorComponentTreeView<UINodeTreeItemData> treeView) {
 		return treeView == getBackgroundControlTreeView();
 	}
 
 	@NotNull
 	UICanvasEditorColors getColors();
+
+	void setRootEditingUINode(@NotNull UINode node);
 }

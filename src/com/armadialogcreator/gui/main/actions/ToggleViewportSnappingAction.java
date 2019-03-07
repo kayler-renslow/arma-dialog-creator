@@ -11,7 +11,7 @@ public class ToggleViewportSnappingAction implements EventHandler<ActionEvent> {
 
 	@Override
 	public void handle(ActionEvent event) {
-		//UICanvasConfiguration conf = ArmaDialogCreator.getCanvasEditor().getConfiguration();
+		//UICanvasConfiguration conf = ArmaDialogCreator.getCanvasView().getConfiguration();
 		//conf.setViewportSnapEnabled(!conf.viewportSnapEnabled());
 	}
 }
