@@ -64,7 +64,7 @@ public class Graphics {
 	}
 
 	public void fillRectangle(int x, int y, int w, int h) {
-		gc_fillRectangleCrisp(x, y, x + w, y + h);
+		gc_fillRectangleCrisp(x, y, w, h);
 	}
 
 	public void strokeRectangle(int x, int y, int w, int h) {
@@ -100,8 +100,12 @@ public class Graphics {
 		gc.strokeLine(x1a, y1a, x2a, y2a);
 	}
 
-	private void gc_fillRectangleCrisp(int x1, int y1, int x2, int y2) {
+	private void gc_fillRectangleCrisp(int x1, int y1, int w, int h) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
+		// for some reason, using this instead creates random vertical lines when using drop shadow behind
+		// gc.fillRect(x1 + antiAlias, y1 + antiAlias, w - antiAlias, h + antiAlias);
+		final int x2 = x1 + w;
+		final int y2 = y1 + h;
 		for (int y = y1; y < y2; y++) {
 			gc.strokeLine(x1 + antiAlias, y + antiAlias, x2 - antiAlias, y + antiAlias);
 		}

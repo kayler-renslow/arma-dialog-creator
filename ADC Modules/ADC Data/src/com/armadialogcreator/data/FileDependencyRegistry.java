@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  A FileDependencyRegistry is a location for storing file dependencies that ADC uses (image files, scripts, etc).
@@ -16,7 +19,7 @@ import java.util.ArrayList;
  @author Kayler
  @since 07/19/2016. */
 @ApplicationSingleton
-public class FileDependencyRegistry implements Registry {
+public class FileDependencyRegistry implements Registry<File, FileDependency> {
 	public static final FileDependencyRegistry instance = new FileDependencyRegistry();
 
 	static {
@@ -110,6 +113,39 @@ public class FileDependencyRegistry implements Registry {
 				getWorkspaceDependencies().getDependencyList(),
 				getApplicationDependencies().getDependencyList()
 		);
+	}
+
+	@Nullable
+	@Override
+	public FileDependency get(@NotNull File key) {
+		return getDependencyInstanceByFile(key);
+	}
+
+	@Nullable
+	@Override
+	public FileDependency get(@NotNull File key, @NotNull DataLevel dataLevel) {
+		switch (dataLevel) {
+			case Project: {
+				return projectDependencies.getDependencyInstanceByFile(key);
+			}
+			case Workspace: {
+				return workspaceDependencies.getDependencyInstanceByFile(key);
+			}
+			case Application: {
+				return applicationDependencies.getDependencyInstanceByFile(key);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	@NotNull
+	public Map<DataLevel, List<FileDependency>> copyAllToMap() {
+		Map<DataLevel, List<FileDependency>> map = new HashMap<>();
+		map.put(DataLevel.Application, applicationDependencies.getDependencyList());
+		map.put(DataLevel.Workspace, workspaceDependencies.getDependencyList());
+		map.put(DataLevel.Project, projectDependencies.getDependencyList());
+		return map;
 	}
 
 	private abstract static class Base<D extends ADCData> implements ADCData {

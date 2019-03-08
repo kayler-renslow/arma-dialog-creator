@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  Created by Kayler on 07/07/2016.
  */
 public interface ArmaControlSpecRequirement {
-	ArmaControlSpecRequirement TRIVIAL = new ArmaControlSpecRequirement() {
+	ArmaControlSpecRequirement BASE = new ArmaControlSpecRequirement() {
 	};
 
 	/** Returns a new array of the properties that are required for all controls */

@@ -232,10 +232,8 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 			return;
 		}
 		graphics.save();
-		gc.save();
 		component.paint(graphics);
 		gc.restore();
-		graphics.restore();
 	}
 
 	/** Sets canvas background image and automatically repaints */

@@ -43,7 +43,7 @@ public class BasicTextRenderer {
 	private final ArmaControlRenderer renderer;
 	private final UpdateCallback callback;
 
-	private final ARGBColor textColor = new ARGBColor(Color.BLACK);
+	private Color textColor = Color.BLACK;
 	private ConfigProperty sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;
@@ -280,7 +280,7 @@ public class BasicTextRenderer {
 			textY = renderer.getTopY();
 			for (String line : cachedBrokenLines) {
 				TextHelper.paintText(
-						g, textX, textY + lineNum * textLineHeight, font, line, textColor.getColor(), textShadow, Color.BLACK
+						g, textX, textY + lineNum * textLineHeight, font, line, textColor, textShadow, Color.BLACK
 				);
 				lineNum++;
 			}
@@ -288,7 +288,7 @@ public class BasicTextRenderer {
 			//paint all of the text as a single line
 
 			TextHelper.paintText(
-					g, textX, textY, font, getText(), textColor.getColor(), textShadow, Color.BLACK
+					g, textX, textY, font, getText(), textColor, textShadow, Color.BLACK
 			);
 		}
 	}
@@ -325,12 +325,12 @@ public class BasicTextRenderer {
 	}
 
 	public void setTextColor(@NotNull Color color) {
-		this.textColor.setColor(color);
+		this.textColor = color;
 	}
 
 	@NotNull
 	public Color getTextColor() {
-		return textColor.getColor();
+		return textColor;
 	}
 
 	public void resolutionUpdate() {

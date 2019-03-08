@@ -37,6 +37,11 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 			canvasView.getMainControlTreeView().setToUINode(editingDisplay.getControlNodes());
 
 			canvasView.setRootEditingUINode(editingDisplay);
+
+			UICanvasEditorColors colors = canvasView.getColors();
+			ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
+			colors.editorBg = projectSettings.EditorBackgroundSetting.get().toJavaFXColor();
+			colors.grid = projectSettings.EditorGridColorSetting.get().toJavaFXColor();
 		});
 	}
 

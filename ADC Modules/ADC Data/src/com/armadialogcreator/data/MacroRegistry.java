@@ -15,7 +15,7 @@ import java.util.Map;
  @author K
  @since 01/04/2019 */
 @ApplicationSingleton
-public class MacroRegistry implements Registry {
+public class MacroRegistry implements Registry<String, Macro> {
 
 	public static final MacroRegistry instance = new MacroRegistry();
 	private static final Key<DataLevel> KEY_MACRO_DATA_LEVEL = new Key<>("MacroRegistry.dataLevel", null);
@@ -161,8 +161,35 @@ public class MacroRegistry implements Registry {
 		return KEY_MACRO_DATA_LEVEL.get(m.getUserData());
 	}
 
+	@Nullable
+	@Override
+	public Macro get(@NotNull String key) {
+		return findMacroByName(key);
+	}
+
+	@Nullable
+	@Override
+	public Macro get(@NotNull String key, @NotNull DataLevel dataLevel) {
+		switch (dataLevel) {
+			case Application: {
+				return applicationMacros.findMacroByName(key);
+			}
+			case Workspace: {
+				return workspaceMacros.findMacroByName(key);
+			}
+			case Project: {
+				return projectMacros.findMacroByName(key);
+			}
+			case System: {
+				return systemMacros.findMacroByName(key);
+			}
+		}
+		return null;
+	}
+
+	@Override
 	@NotNull
-	public Map<DataLevel, List<Macro>> copyAllMacrosToMap() {
+	public Map<DataLevel, List<Macro>> copyAllToMap() {
 		Map<DataLevel, List<Macro>> map = new HashMap<>();
 		map.put(DataLevel.Project, projectMacros.getMacros());
 		map.put(DataLevel.Workspace, workspaceMacros.getMacros());
