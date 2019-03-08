@@ -11,7 +11,6 @@ import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -212,17 +211,16 @@ public class BasicTextRenderer {
 	 @param g graphics to use
 	 */
 	public void paint(@NotNull Graphics g) {
-		GraphicsContext gc = g.getGC();
-		gc.save();
-		gc.beginPath();
+		g.save();
+		g.beginPath();
 		//don't let the text render past the control's bounds
-		gc.rect(renderer.getLeftX(), renderer.getTopY(), renderer.getWidth(), renderer.getHeight());
-		gc.closePath();
-		gc.clip();
+		g.rect(renderer.getLeftX(), renderer.getTopY(), renderer.getWidth(), renderer.getHeight());
+		g.closePath();
+		g.clip();
 
 		paint(g, getTextX(), getTextY());
 
-		gc.restore();
+		g.restore();
 	}
 
 	/**
@@ -233,7 +231,6 @@ public class BasicTextRenderer {
 	 @param textY y position of text
 	 */
 	public void paint(@NotNull Graphics g, int textX, int textY) {
-		GraphicsContext gc = g.getGC();
 		if (multiline && allowMultiLine) {
 			int controlWidth = renderer.getWidth();
 
@@ -283,7 +280,7 @@ public class BasicTextRenderer {
 			textY = renderer.getTopY();
 			for (String line : cachedBrokenLines) {
 				TextHelper.paintText(
-						gc, textX, textY + lineNum * textLineHeight, font, line, textColor.getColor(), textShadow, Color.BLACK
+						g, textX, textY + lineNum * textLineHeight, font, line, textColor.getColor(), textShadow, Color.BLACK
 				);
 				lineNum++;
 			}
@@ -291,7 +288,7 @@ public class BasicTextRenderer {
 			//paint all of the text as a single line
 
 			TextHelper.paintText(
-					gc, textX, textY, font, getText(), textColor.getColor(), textShadow, Color.BLACK
+					g, textX, textY, font, getText(), textColor.getColor(), textShadow, Color.BLACK
 			);
 		}
 	}
@@ -334,10 +331,6 @@ public class BasicTextRenderer {
 	@NotNull
 	public Color getTextColor() {
 		return textColor.getColor();
-	}
-
-	public int getTextColorARGB() {
-		return textColor.getArgb();
 	}
 
 	public void resolutionUpdate() {

@@ -220,7 +220,7 @@ public class UICanvasEditor extends UICanvas {
 				iter.remove();
 				continue;
 			}
-			graphics.setStroke(node.getComponent().getBackgroundColorARGB());
+			graphics.setStroke(node.getComponent().getBackgroundColor());
 			graphics.strokeRectangle(node.getComponent());
 		}
 		gc.restore();

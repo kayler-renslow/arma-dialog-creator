@@ -11,8 +11,6 @@ import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.util.ColorUtil;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -35,8 +33,8 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 	private Color colorSelect = Color.RED;
 	private Color colorSelect2 = null;
 	private Color colorDisabled = Color.BLACK;
-	private int colorSelectBackground = -1;
-	private int colorSelectBackground2 = -1;
+	private Color colorSelectBackground = null;
+	private Color colorSelectBackground2 = null;
 	private final ScrollbarRenderer scrollbarRenderer;
 	private final AlternatorHelper periodAlternator = new AlternatorHelper(0);
 	private int selectedRow = 0;
@@ -90,17 +88,17 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground = ((SVColor) newValue).toARGB();
+				colorSelectBackground = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == SVNull.instance) {
-				colorSelectBackground = -1;
+				colorSelectBackground = null;
 			}
 			requestRender();
 		});
 		addValueListener(ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2, SVNull.instance, (observer, oldValue, newValue) -> {
 			if (newValue instanceof SVColor) {
-				colorSelectBackground2 = ((SVColor) newValue).toARGB();
+				colorSelectBackground2 = ((SVColor) newValue).toJavaFXColor();
 			} else if (newValue == SVNull.instance) {
-				colorSelectBackground2 = -1;
+				colorSelectBackground2 = null;
 			}
 		});
 
@@ -157,21 +155,20 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 			scrollbarRenderer.paint(g, preview, x2 - ScrollbarRenderer.SCROLLBAR_WIDTH, y1, controlHeight);
 
 			//for clipping text
-			GraphicsContext gc = g.getGC();
-			gc.beginPath();
-			gc.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());
-			gc.closePath();
-			gc.clip();
+			g.beginPath();
+			g.rect(x1, y1, getWidth() - ScrollbarRenderer.SCROLLBAR_WIDTH, getHeight());
+			g.closePath();
+			g.clip();
 
 			int row = 0;
 			int selectedRow = preview ? this.selectedRow : 0;
 			while (allTextHeight <= controlHeight && textHeight > 0) { //<= to make sure text goes out of bounds of menu to force scrollbar
 				int textY2 = y1 + allTextHeight;
 				if (row == selectedRow) {
-					if (colorSelectBackground != -1) {
-						int bgColor = colorSelectBackground;
-						if (focused && colorSelectBackground2 != -1) {
-							bgColor = ColorUtil.interpolate(colorSelectBackground, colorSelectBackground2, ratio);
+					if (colorSelectBackground != null) {
+						Color bgColor = colorSelectBackground;
+						if (focused && colorSelectBackground2 != null) {
+							bgColor = colorSelectBackground.interpolate(colorSelectBackground2, ratio);
 						}
 						g.setStroke(bgColor);
 						g.fillRectangle(x1, y1 + allTextHeight, x2, textY2 + rowHeight);

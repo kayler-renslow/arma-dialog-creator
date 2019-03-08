@@ -2,14 +2,16 @@ package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
-import javafx.scene.image.PixelWriter;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 import java.util.function.Consumer;
 
 /**
@@ -18,13 +20,9 @@ import java.util.function.Consumer;
 public class Graphics {
 	private final List<Consumer<Graphics>> paintLast = new ArrayList<>();
 	private final GraphicsContext gc;
-	private final Stack<Attributes> attributesStack = new Stack<>();
-	private final PixelWriter writer;
 
 	public Graphics(@NotNull GraphicsContext gc) {
 		this.gc = gc;
-		writer = gc.getPixelWriter();
-		attributesStack.push(new Attributes());
 	}
 
 	/**
@@ -42,26 +40,19 @@ public class Graphics {
 	}
 
 	public void save() {
-		attributesStack.push(attributesStack.peek().duplicate());
+		gc.save();
 	}
 
 	public void restore() {
-		if (attributesStack.size() == 1) {
-			throw new IllegalStateException();
-		}
-		attributesStack.pop();
+		gc.restore();
 	}
 
 	public void setFill(int argb) {
-		Attributes a = attributesStack.peek();
-		a.fillARGB = argb;
-		a.fillARGBWithGlobalAlpha = ColorUtil.multiplyAlphaARGB(argb, a.globalAlpha);
+		gc.setFill(ColorUtil.toColor(argb));
 	}
 
 	public void setStroke(int argb) {
-		Attributes a = attributesStack.peek();
-		a.strokeARGB = argb;
-		a.strokeARGBWithGlobalAlpha = ColorUtil.multiplyAlphaARGB(argb, a.globalAlpha);
+		gc.setStroke(ColorUtil.toColor(argb));
 	}
 
 	public void fillRectangle(@NotNull Region r) {
@@ -73,55 +64,20 @@ public class Graphics {
 	}
 
 	public void fillRectangle(int x, int y, int w, int h) {
-		Attributes a = attributesStack.peek();
-		final int offset = Math.max(0, a.lineWidth - 1);
-		final int x1 = x - offset;
-		final int y1 = y - offset;
-		final int x2 = x + w + offset;
-		final int y2 = y + h + offset;
-		final int color = a.fillARGBWithGlobalAlpha;
-		System.out.println("Graphics.fillRectangle area=" + (y2 - y1) * (x2 - x1));
-		for (int yy = y1; yy < y2; yy++) {
-			for (int xx = x1; xx < x2; xx++) {
-				writer.setArgb(xx, yy, color);
-			}
-		}
+		gc_fillRectangleCrisp(x, y, x + w, y + h);
 	}
 
 	public void strokeRectangle(int x, int y, int w, int h) {
 		final int x2 = x + w;
 		final int y2 = y + h;
-		Attributes a = attributesStack.peek();
-		final int color = a.strokeARGBWithGlobalAlpha;
-
-		for (int xx = x; xx <= x2; xx++) {
-			//top
-			writer.setArgb(xx, y, color);
-			//bottom
-			writer.setArgb(xx, y2, color);
-		}
-
-		for (int yy = y + 1; yy <= y2 - 1; yy++) {
-			//left
-			writer.setArgb(x, yy, color);
-			//right
-			writer.setArgb(x2, yy, color);
-		}
+		gc_strokeRectangleCrisp(x, y, x2, y2);
 	}
 
 	public void strokeLine(int x1, int y1, int x2, int y2) {
-		final int color = attributesStack.peek().strokeARGBWithGlobalAlpha;
-
-		double slope = (y2 - y1) * 1.0 / (x2 - x1);
-		int p = 0;
-		for (int x = x1; x < x2; x++) {
-			writer.setArgb(x, (int) (y1 + slope * (p++)), color);
-		}
-
+		gc_strokeLineCrisp(x1, y1, x2, y2);
 	}
 
-	/** Draw the crisp border of a rectangle without filling it using {@link #getGC()} */
-	public void gc_strokeRectangleCrisp(int x1, int y1, int x2, int y2) {
+	private void gc_strokeRectangleCrisp(int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		double x1a = x1 + antiAlias;
 		double y1a = y1 + antiAlias;
@@ -134,8 +90,7 @@ public class Graphics {
 		gc.strokeLine(x1a, y2a, x1a, y1a); //bottom left to top left
 	}
 
-	/** Draw a crisp line with {@link #getGC()} */
-	public void gc_strokeLineCrisp(int x1, int y1, int x2, int y2) {
+	private void gc_strokeLineCrisp(int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		double x1a = x1 + antiAlias;
 		double y1a = y1 + antiAlias;
@@ -145,8 +100,7 @@ public class Graphics {
 		gc.strokeLine(x1a, y1a, x2a, y2a);
 	}
 
-	/** Fills a crisp rectangle with {@link #getGC()} */
-	public void gc_fillRectangleCrisp(int x1, int y1, int x2, int y2) {
+	private void gc_fillRectangleCrisp(int x1, int y1, int x2, int y2) {
 		final double antiAlias = gc.getLineWidth() % 2 != 0 ? 0.5 : 0;
 		for (int y = y1; y < y2; y++) {
 			gc.strokeLine(x1 + antiAlias, y + antiAlias, x2 - antiAlias, y + antiAlias);
@@ -208,56 +162,92 @@ public class Graphics {
 	}
 
 	public void setGlobalAlpha(double globalAlpha) {
-		Attributes a = attributesStack.peek();
-		a.globalAlpha = globalAlpha;
-		a.strokeARGBWithGlobalAlpha = ColorUtil.multiplyAlphaARGB(a.strokeARGB, globalAlpha);
-		a.fillARGBWithGlobalAlpha = ColorUtil.multiplyAlphaARGB(a.fillARGB, globalAlpha);
+		gc.setGlobalAlpha(globalAlpha);
 	}
 
 	public double getGlobalAlpha() {
-		return attributesStack.peek().globalAlpha;
+		return gc.getGlobalAlpha();
 	}
 
-	@NotNull
-	public GraphicsContext getGC() {
-		return gc;
+	public void clip() {
+		gc.clip();
+	}
+
+	public void rect(int x, int y, int w, int h) {
+		gc.rect(x, y, w, h);
+	}
+
+	public void beginPath() {
+		gc.beginPath();
+	}
+
+	public void closePath() {
+		gc.closePath();
 	}
 
 	public void setLineWidth(int thickness) {
-		attributesStack.peek().lineWidth = thickness;
+		gc.setLineWidth(thickness);
 	}
 
-	public int getStroke() {
-		return attributesStack.peek().strokeARGB;
+	public int getStrokeARGB() {
+		return ColorUtil.toARGB((Color) gc.getStroke());
 	}
 
-	public int getFill() {
-		return attributesStack.peek().fillARGB;
+	public int getFillARGB() {
+		return ColorUtil.toARGB((Color) gc.getFill());
+	}
+
+	public void setStroke(@NotNull Paint p) {
+		gc.setStroke(p);
+	}
+
+	public void setFill(@NotNull Paint p) {
+		gc.setFill(p);
+	}
+
+	public void setEffect(@NotNull Effect e) {
+		gc.setEffect(e);
+	}
+
+	public void setFont(@NotNull Font f) {
+		gc.setFont(f);
+	}
+
+	public void fillText(@NotNull String text, double x, double y) {
+		gc.fillText(text, x, y);
+	}
+
+	public void strokeText(@NotNull String text, double x, double y) {
+		gc.strokeText(text, x, y);
+	}
+
+	public void translate(double x, double y) {
+		gc.translate(x, y);
+	}
+
+	public void scale(double x, double y) {
+		gc.scale(x, y);
+	}
+
+	public void rotate(double degrees) {
+		gc.rotate(degrees);
+	}
+
+	@NotNull
+	public Paint getStroke() {
+		return gc.getStroke();
+	}
+
+	@NotNull
+	public Paint getFill() {
+		return gc.getFill();
 	}
 
 	public void drawImage(@NotNull Image image, int x, int y, int w, int h) {
 		gc.drawImage(image, x, y, w, h);
 	}
 
-	private static class Attributes {
-		public double globalAlpha = 1.0;
-		public int fillARGB = ColorUtil.toARGB(0, 0, 0, 255);
-		public int strokeARGB = ColorUtil.toARGB(0, 0, 0, 255);
-		public int lineWidth = 1;
-		public int fillARGBWithGlobalAlpha = fillARGB;
-		public int strokeARGBWithGlobalAlpha = strokeARGB;
-
-		@NotNull
-		public Attributes duplicate() {
-			Attributes clone = new Attributes();
-			clone.globalAlpha = globalAlpha;
-			clone.strokeARGB = strokeARGB;
-			clone.fillARGB = fillARGB;
-			clone.lineWidth = lineWidth;
-			clone.fillARGBWithGlobalAlpha = fillARGBWithGlobalAlpha;
-			clone.strokeARGBWithGlobalAlpha = strokeARGBWithGlobalAlpha;
-
-			return clone;
-		}
+	public void setGlobalBlendMode(@NotNull BlendMode mode) {
+		gc.setGlobalBlendMode(mode);
 	}
 }

@@ -8,7 +8,6 @@ import com.armadialogcreator.core.ConfigPropertyProxy;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -71,7 +70,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		this.resolution = resolution;
 		this.env = env;
 		this.myControl = control;
-		globalBackgroundColorObserver = new ValueObserver<>(new SVColorArray(backgroundColorARGB));
+		globalBackgroundColorObserver = new ValueObserver<>(new SVColorArray(ColorUtil.toARGB(backgroundColor)));
 		globalBackgroundColorObserver.addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
@@ -582,13 +581,12 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		paintError(g, Color.RED, x, y, w, h);
 	}
 
-	public static void paintImageLoading(@NotNull Graphics graphics, @NotNull Paint bgColor, int x1, int y1, int x2, int y2) {
-		GraphicsContext gc = graphics.getGC();
-		gc.setStroke(bgColor);
-		graphics.gc_fillRectangleCrisp(x1, y1, x2, y2);
-		gc.setStroke(Color.MAGENTA);
-		graphics.gc_strokeLineCrisp(x1, y1, x2, y2);
-		graphics.gc_strokeLineCrisp(x2, y1, x1, y2);
+	public static void paintImageLoading(@NotNull Graphics g, @NotNull Paint bgColor, int x1, int y1, int x2, int y2) {
+		g.setStroke(bgColor);
+		g.fillRectangle(x1, y1, x2, y2);
+		g.setStroke(Color.MAGENTA);
+		g.strokeLine(x1, y1, x2, y2);
+		g.strokeLine(x2, y1, x1, y2);
 	}
 
 	/**

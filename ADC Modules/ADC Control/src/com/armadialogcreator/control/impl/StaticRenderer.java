@@ -131,12 +131,12 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			case Line: {
 				//draw line from top left of control to bottom right of control
 				//the text color is the color of the line
-				g.setStroke(getTextColorARGB());
+				g.setStroke(getTextColor());
 				g.strokeLine(getLeftX(), getTopY(), getRightX(), getBottomY());
 				break;
 			}
 			case Frame: {
-				g.setStroke(getTextColorARGB());
+				g.setStroke(getTextColor());
 
 				int controlWidth = getWidth();
 
@@ -303,10 +303,6 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	@NotNull
 	public Color getTextColor() {
 		return textRenderer.getTextColor();
-	}
-
-	public int getTextColorARGB() {
-		return textRenderer.getTextColorARGB();
 	}
 
 	/**

@@ -16,11 +16,7 @@ public interface CanvasComponent extends Region {
 
 	void setBackgroundColor(@NotNull Color paint);
 
-	void setBackgroundColor(int argb);
-
 	@NotNull Color getBackgroundColor();
-
-	int getBackgroundColorARGB();
 
 	@Nullable Border getBorder();
 

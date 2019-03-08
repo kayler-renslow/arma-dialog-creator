@@ -1,5 +1,6 @@
 package com.armadialogcreator.control.impl.utility;
 
+import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.sv.SerializableValue;
@@ -50,7 +51,7 @@ public class TextHelper {
 	 This method will invoke {@link GraphicsContext#save()} and {@link GraphicsContext#restore()}
 	 at the start and end of this method, respectively.
 
-	 @param gc context to use
+	 @param g context to use
 	 @param textX x position of text
 	 @param textY y position of text
 	 @param font font to use
@@ -59,38 +60,38 @@ public class TextHelper {
 	 @param textShadow shadow to use
 	 @param shadowColor color of shadow
 	 */
-	public static void paintText(@NotNull GraphicsContext gc, int textX, int textY, @NotNull Font font,
+	public static void paintText(@NotNull Graphics g, int textX, int textY, @NotNull Font font,
 								 @NotNull String text, @NotNull Color textColor,
 								 @NotNull TextShadow textShadow, @NotNull Color shadowColor) {
-		gc.save();
+		g.save();
 
-		gc.setFont(font);
-		gc.setFill(textColor);
+		g.setFont(font);
+		g.setFill(textColor);
 		switch (textShadow) {
 			case None: {
-				gc.fillText(text, textX, textY);
+				g.fillText(text, textX, textY);
 				break;
 			}
 			case DropShadow: {
 				final double offset = 2.0;
-				gc.setFill(shadowColor);
-				gc.fillText(text, textX + offset, textY + offset);
-				gc.setFill(textColor);
-				gc.fillText(text, textX, textY);
+				g.setFill(shadowColor);
+				g.fillText(text, textX + offset, textY + offset);
+				g.setFill(textColor);
+				g.fillText(text, textX, textY);
 				break;
 			}
 			case Stroke: {
-				gc.setLineWidth(2);
-				gc.setStroke(shadowColor);
-				gc.strokeText(text, textX, textY);
-				gc.fillText(text, textX, textY);
+				g.setLineWidth(2);
+				g.setStroke(shadowColor);
+				g.strokeText(text, textX, textY);
+				g.fillText(text, textX, textY);
 				break;
 			}
 			default: {
 				throw new IllegalStateException("unknown textShadow=" + textShadow);
 			}
 		}
-		gc.restore();
+		g.restore();
 	}
 
 	/**

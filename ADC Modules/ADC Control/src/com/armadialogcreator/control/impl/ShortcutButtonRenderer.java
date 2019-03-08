@@ -13,7 +13,6 @@ import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SVNumericValue;
 import com.armadialogcreator.expression.Env;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -268,7 +267,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			}
 
 			double ratio = focusedColorAlternator.updateAndGetRatio();
-			int colorBackground = this.backgroundColorARGB;
+			Color colorBackground = this.backgroundColor;
 			Color color = textRenderer.getTextColor();
 
 			if (!isEnabled()) {
@@ -310,10 +309,9 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 						throw new IllegalStateException();
 					}
 					g.drawImage(image, x1, y1, controlWidth, controlHeight);
-					GraphicsContext gc = g.getGC();
-					gc.setGlobalBlendMode(BlendMode.MULTIPLY);
+					g.setGlobalBlendMode(BlendMode.MULTIPLY);
 					super.paint(g);
-					gc.setGlobalBlendMode(BlendMode.SRC_OVER);
+					g.setGlobalBlendMode(BlendMode.SRC_OVER);
 					break;
 				}
 				case ImageError: {

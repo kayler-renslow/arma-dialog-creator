@@ -1,7 +1,6 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.canvas.Graphics;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.*;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
@@ -202,19 +201,18 @@ public class TintedImageHelperRenderer {
 
 	/** This method applies to {@link #setToPreviewMode(boolean)} */
 	public void paintTintedImage(@NotNull Graphics g) {
-		GraphicsContext gc = g.getGC();
-		gc.save();
+		g.save();
 		if (rotated) {
-			gc.translate(x + w / 2, y + h / 2); //move to center
-			gc.rotate(rotateDeg);
+			g.translate(x + w / 2, y + h / 2); //move to center
+			g.rotate(rotateDeg);
 		}
 		if (flipped) {
-			gc.scale(-1, 1);
+			g.scale(-1, 1);
 		}
-		gc.setFill(Color.TRANSPARENT);
-		gc.setEffect(previewMode ? effect2 : effect1);
-		gc.fillRect(0, 0, 1, 1); //this is just to trigger drawing the effect. Won't draw anything itself
-		gc.restore();
+		g.setFill(Color.TRANSPARENT);
+		g.setEffect(previewMode ? effect2 : effect1);
+		g.fillRectangle(0, 0, 1, 1); //this is just to trigger drawing the effect. Won't draw anything itself
+		g.restore();
 	}
 
 	/**

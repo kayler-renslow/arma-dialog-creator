@@ -18,9 +18,9 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	private static final Random rand = new Random();
 
 	protected int x1, y1, x2, y2;
-	protected int backgroundColorARGB = ColorUtil.darken(ColorUtil.opaqueARGB(rand.nextInt()));
-	private Color backgroundColorAsColorObj = ColorUtil.toColor(backgroundColorARGB);
-	private boolean updateBackgroundColorObj = false;
+	protected Color backgroundColor = ColorUtil.toColor(
+			ColorUtil.darken(ColorUtil.opaqueARGB(rand.nextInt()))
+	);
 
 	protected Border border;
 	private boolean isEnabled = true;
@@ -63,12 +63,11 @@ public class SimpleCanvasComponent implements CanvasComponent {
 		setEnabled(!ghost);
 	}
 
-	/** Invokes {@link #paintBorder(Graphics)} and then paints the square with {@link #backgroundColorARGB} */
+	/** Invokes {@link #paintBorder(Graphics)} and then paints the square with {@link #backgroundColor} */
 	@Override
 	public void paint(@NotNull Graphics graphics) {
 		paintBorder(graphics);
-		graphics.setFill(backgroundColorARGB);
-		System.out.println("SimpleCanvasComponent.paint ");
+		graphics.setFill(backgroundColor);
 		graphics.fillRectangle(x1, y1, getWidth(), getHeight());
 	}
 
@@ -85,30 +84,13 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	@Override
 	public void setBackgroundColor(@NotNull Color color) {
-		this.backgroundColorARGB = ColorUtil.toARGB(color);
-		this.backgroundColorAsColorObj = color;
-		updateBackgroundColorObj = false;
-	}
-
-	@Override
-	public void setBackgroundColor(int argb) {
-		this.backgroundColorARGB = argb;
-		updateBackgroundColorObj = true;
+		this.backgroundColor = color;
 	}
 
 	@Override
 	@NotNull
 	public Color getBackgroundColor() {
-		if (updateBackgroundColorObj) {
-			backgroundColorAsColorObj = ColorUtil.toColor(backgroundColorARGB);
-			updateBackgroundColorObj = false;
-		}
-		return backgroundColorAsColorObj;
-	}
-
-	@Override
-	public int getBackgroundColorARGB() {
-		return backgroundColorARGB;
+		return backgroundColor;
 	}
 
 	@Nullable

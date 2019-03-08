@@ -152,14 +152,13 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 			}
 		}
 		super.paint(g);
-		GraphicsContext gc = g.getGC();
-		gc.beginPath();
-		gc.rect(x1, y1, getWidth(), getHeight());
-		gc.closePath();
-		gc.clip(); //prevent text going out of bounds
-		gc.setFill(defaultSectionData.textColor == null ? Color.RED : defaultSectionData.textColor);
-		gc.setFont(defaultSectionData.font);
-		gc.fillText(this.text, x1 + (int) (getWidth() * .025), y1 + (int) (getHeight() * .025));
+		g.beginPath();
+		g.rect(x1, y1, getWidth(), getHeight());
+		g.closePath();
+		g.clip(); //prevent text going out of bounds
+		g.setFill(defaultSectionData.textColor == null ? Color.RED : defaultSectionData.textColor);
+		g.setFont(defaultSectionData.font);
+		g.fillText(this.text, x1 + (int) (getWidth() * .025), y1 + (int) (getHeight() * .025));
 	}
 
 	/** Note (July 29, 2017) this is the implementation for painting structured text. Notice it isn't done yet */

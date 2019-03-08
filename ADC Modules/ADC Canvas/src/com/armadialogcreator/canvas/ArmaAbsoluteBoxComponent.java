@@ -28,7 +28,7 @@ class ArmaAbsoluteBoxComponent extends SimpleCanvasComponent {
 	@Override
 	public void paint(@NotNull Graphics graphics) {
 		graphics.save();
-		graphics.setStroke(backgroundColorARGB);
+		graphics.setStroke(backgroundColor);
 		graphics.strokeRectangle(
 				resolution.getViewportX(),
 				resolution.getViewportY(),
