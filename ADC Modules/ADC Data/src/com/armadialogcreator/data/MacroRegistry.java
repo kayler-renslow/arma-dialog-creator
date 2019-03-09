@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -273,8 +274,20 @@ public class MacroRegistry implements Registry<String, Macro> {
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
 			for (Configurable nested : config.getNestedConfigurables()) {
-				if (nested.getConfigurableName().equals("macros")) {
-					//todo
+				if (nested.getConfigurableName().equals("macro")) {
+					String key = nested.getAttributeValue("key");
+					String comment = nested.getAttributeValue("comment");
+					Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
+					if (key == null) {
+						throw new IllegalStateException();
+					}
+					if (svConf == null) {
+						throw new IllegalStateException();
+					}
+					SerializableValue value = SerializableValueConfigurable.createFromConfigurable(svConf, ExpressionEnvManager.instance.getEnv());
+					Macro m = Macro.newMacro(key, value);
+					m.setComment(comment);
+					macros.add(m);
 				}
 			}
 		}
@@ -288,9 +301,8 @@ public class MacroRegistry implements Registry<String, Macro> {
 				if (macro.getComment() != null) {
 					mc.addAttribute("comment", macro.getComment());
 				}
-				mc.addAttribute("type", macro.getPropertyType().getId() + "");
 				mc.addNestedConfigurable(new SerializableValueConfigurable(macro.getValue()));
-				//todo
+				config.addNestedConfigurable(mc);
 			}
 		}
 

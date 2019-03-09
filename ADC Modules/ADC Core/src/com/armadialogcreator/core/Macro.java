@@ -51,7 +51,7 @@ public interface Macro {
 	/** Set the comment */
 	void setComment(@Nullable String comment);
 
-	/** Get the {@link PropertyType} of the macro */
+	/** Get the {@link PropertyType} of the macro (shortcut for type of {@link #getValue()}) */
 	@NotNull
 	default PropertyType getPropertyType() {
 		return getValue().getPropertyType();

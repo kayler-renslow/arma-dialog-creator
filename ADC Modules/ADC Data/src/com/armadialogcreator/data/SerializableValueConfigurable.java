@@ -38,11 +38,21 @@ public class SerializableValueConfigurable implements Configurable {
 	}
 
 	@Override
+	public int getNestedConfigurableCount() {
+		return sv.getPropertyType().getPropertyValuesSize();
+	}
+
+	@Override
 	@NotNull
 	public Iterable<KeyValueString> getConfigurableAttributes() {
 		List<KeyValueString> list = new ArrayList<>(1);
 		list.add(new KeyValueString(PROPERTY_TYPE_ATTR_NAME, sv.getPropertyType().getId() + ""));
 		return list;
+	}
+
+	@Override
+	public int getConfigurableAttributeCount() {
+		return 1;
 	}
 
 	@Override
@@ -72,12 +82,7 @@ public class SerializableValueConfigurable implements Configurable {
 		if (!svConfigurable.getConfigurableName().equals(CONFIGURABLE_NAME)) {
 			throw new IllegalArgumentException();
 		}
-		String propertyTypeIdText = null;
-		for (KeyValueString kv : svConfigurable.getConfigurableAttributes()) {
-			if (kv.getKey().equals(PROPERTY_TYPE_ATTR_NAME)) {
-				propertyTypeIdText = kv.getValue();
-			}
-		}
+		String propertyTypeIdText = svConfigurable.getAttributeValue(PROPERTY_TYPE_ATTR_NAME);
 		if (propertyTypeIdText == null) {
 			throw new SerializableValueConstructionException();
 		}
