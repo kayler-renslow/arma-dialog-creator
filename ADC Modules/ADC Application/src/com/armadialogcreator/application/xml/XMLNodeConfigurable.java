@@ -30,7 +30,7 @@ public class XMLNodeConfigurable implements Configurable {
 			@NotNull
 			@Override
 			public Iterator<Configurable> iterator() {
-				return new Iterator<Configurable>() {
+				return new Iterator<>() {
 					Iterator<Element> iterator = XmlUtil.iterateChildElements(XMLNodeConfigurable.this.element).iterator();
 
 					@Override
@@ -48,6 +48,11 @@ public class XMLNodeConfigurable implements Configurable {
 				};
 			}
 		};
+	}
+
+	@Override
+	public int getNestedConfigurableCount() {
+		return XmlUtil.getChildElementCount(element);
 	}
 
 	@Override
@@ -73,6 +78,11 @@ public class XMLNodeConfigurable implements Configurable {
 				};
 			}
 		};
+	}
+
+	@Override
+	public int getConfigurableAttributeCount() {
+		return element.getAttributes().getLength();
 	}
 
 	@Override

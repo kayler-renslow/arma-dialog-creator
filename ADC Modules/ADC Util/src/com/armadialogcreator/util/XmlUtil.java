@@ -53,6 +53,17 @@ public class XmlUtil {
 		};
 	}
 
+	public static int getChildElementCount(@NotNull Element element) {
+		NodeList list = element.getChildNodes();
+		int count = 0;
+		for (int i = 0; i < list.getLength(); i++) {
+			if (list.item(i).getNodeType() == Node.ELEMENT_NODE) {
+				count++;
+			}
+		}
+		return count;
+	}
+
 	@NotNull
 	public static Iterable<Element> iterateChildElements(@NotNull Element element) {
 		return new Iterable<>() {

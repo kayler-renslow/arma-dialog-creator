@@ -18,8 +18,12 @@ import java.util.List;
 public interface Configurable {
 	@NotNull Iterable<Configurable> getNestedConfigurables();
 
+	int getNestedConfigurableCount();
+
 	/** XML safe attributes (attribute_name='attribute_value') */
 	@NotNull Iterable<KeyValueString> getConfigurableAttributes();
+
+	int getConfigurableAttributeCount();
 
 	void addNestedConfigurable(@NotNull Configurable c);
 
@@ -40,6 +44,16 @@ public interface Configurable {
 		for (Configurable c : getNestedConfigurables()) {
 			if (c.getConfigurableName().equals(name)) {
 				return c;
+			}
+		}
+		return null;
+	}
+
+	@Nullable
+	default String getAttributeValue(@NotNull String key) {
+		for (KeyValueString kv : getConfigurableAttributes()) {
+			if (kv.getKey().equals(key)) {
+				return kv.getValue();
 			}
 		}
 		return null;
@@ -75,9 +89,19 @@ public interface Configurable {
 		}
 
 		@Override
+		public int getNestedConfigurableCount() {
+			return atts.size();
+		}
+
+		@Override
 		@NotNull
 		public Iterable<KeyValueString> getConfigurableAttributes() {
 			return atts;
+		}
+
+		@Override
+		public int getConfigurableAttributeCount() {
+			return nested.size();
 		}
 
 		@Override
@@ -113,11 +137,21 @@ public interface Configurable {
 		}
 
 		@Override
+		public int getNestedConfigurableCount() {
+			return 0;
+		}
+
+		@Override
 		@NotNull
 		public List<KeyValueString> getConfigurableAttributes() {
 			//always return new list so that it is mutable (Collections.emptyList() isn't mutable)
 			// and so the previous use case of EMPTY doesn't carry over to a different use case of EMPTY
 			return new ArrayList<>();
+		}
+
+		@Override
+		public int getConfigurableAttributeCount() {
+			return 0;
 		}
 
 		@Override
