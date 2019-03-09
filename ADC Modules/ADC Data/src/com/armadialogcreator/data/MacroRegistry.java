@@ -203,6 +203,14 @@ public class MacroRegistry implements Registry<String, Macro> {
 		return map;
 	}
 
+	@Override
+	public int getEntryCount() {
+		return systemMacros.getMacros().size()
+				+ applicationMacros.getMacros().size()
+				+ workspaceMacros.getMacros().size()
+				+ projectMacros.getMacros().size();
+	}
+
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;

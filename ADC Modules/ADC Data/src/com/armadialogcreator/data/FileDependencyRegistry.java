@@ -148,6 +148,13 @@ public class FileDependencyRegistry implements Registry<File, FileDependency> {
 		return map;
 	}
 
+	@Override
+	public int getEntryCount() {
+		return applicationDependencies.getDependencyList().size()
+				+ workspaceDependencies.getDependencyList().size()
+				+ projectDependencies.getDependencyList().size();
+	}
+
 	private abstract static class Base<D extends ADCData> implements ADCData {
 		private final ListObserver<FileDependency> dependencyList = new ListObserver<>(new ArrayList<>());
 

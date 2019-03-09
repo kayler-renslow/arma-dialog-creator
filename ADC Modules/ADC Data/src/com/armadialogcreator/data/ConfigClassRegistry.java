@@ -15,7 +15,7 @@ import java.util.Map;
  @author K
  @since 01/04/2019 */
 @ApplicationSingleton
-public class ConfigClassRegistry implements Registry {
+public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	public static final ConfigClassRegistry instance = new ConfigClassRegistry();
 
 	private static final Key<DataLevel> KEY_CONFIG_CLASS_DATA_LEVEL = new Key<>("ConfigClassRegistry.dataLevel", null);
@@ -134,7 +134,8 @@ public class ConfigClassRegistry implements Registry {
 		);
 	}
 
-	public int getConfigClassCount() {
+	@Override
+	public int getEntryCount() {
 		return projectClasses.getClasses().size() +
 				workspaceClasses.getClasses().size() +
 				applicationClasses.getClasses().size() +
@@ -154,6 +155,43 @@ public class ConfigClassRegistry implements Registry {
 		map.put(DataLevel.Application, applicationClasses.getClasses());
 		map.put(DataLevel.System, systemClasses.getClasses());
 
+		return map;
+	}
+
+	@Nullable
+	@Override
+	public ConfigClass get(@NotNull String key) {
+		return findConfigClassByName(key);
+	}
+
+	@Nullable
+	@Override
+	public ConfigClass get(@NotNull String key, @NotNull DataLevel dataLevel) {
+		switch (dataLevel) {
+			case System: {
+				return systemClasses.findConfigClassByName(key);
+			}
+			case Application: {
+				return applicationClasses.findConfigClassByName(key);
+			}
+			case Workspace: {
+				return workspaceClasses.findConfigClassByName(key);
+			}
+			case Project: {
+				return projectClasses.findConfigClassByName(key);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	@NotNull
+	public Map<DataLevel, List<ConfigClass>> copyAllToMap() {
+		Map<DataLevel, List<ConfigClass>> map = new HashMap<>();
+		map.put(DataLevel.System, systemClasses.getClasses());
+		map.put(DataLevel.Application, applicationClasses.getClasses());
+		map.put(DataLevel.Workspace, workspaceClasses.getClasses());
+		map.put(DataLevel.Project, projectClasses.getClasses());
 		return map;
 	}
 
@@ -259,12 +297,6 @@ public class ConfigClassRegistry implements Registry {
 		}
 
 		abstract DataLevel getLevel();
-	}
-
-	interface ConfigClassConfigurableHandler {
-		void loadFromConfigurable(@NotNull Configurable config, @NotNull List<ConfigClass> classes);
-
-		void exportToConfigurable(@NotNull Configurable config, @NotNull List<ConfigClass> classes, @NotNull DataLevel level);
 	}
 
 	public static class SystemClasses extends Base implements SystemData {

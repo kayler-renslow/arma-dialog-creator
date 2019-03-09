@@ -22,4 +22,7 @@ public interface Registry<K, V> extends ApplicationStateSubscriber {
 
 	/** @return a map that maps a list of values paired with their respective {@link DataLevel} */
 	@NotNull Map<DataLevel, List<V>> copyAllToMap();
+
+	/** @return the number of items across all {@link DataLevel}s */
+	int getEntryCount();
 }

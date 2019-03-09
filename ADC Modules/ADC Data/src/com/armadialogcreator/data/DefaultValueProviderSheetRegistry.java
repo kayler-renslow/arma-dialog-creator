@@ -55,6 +55,14 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 	}
 
 	@Override
+	public int getEntryCount() {
+		return systemSheets.getSheets().size() +
+				applicationSheets.getSheets().size() +
+				workspaceSheets.getSheets().size() +
+				projectSheets.getSheets().size();
+	}
+
+	@Override
 	public void applicationDataInitializing() {
 		ApplicationDataManager.getInstance().getDataList().add(applicationSheets);
 	}
