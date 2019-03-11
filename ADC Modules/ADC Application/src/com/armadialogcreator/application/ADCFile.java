@@ -3,12 +3,15 @@ package com.armadialogcreator.application;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 /**
  @author K
  @since 3/10/19 */
 public abstract class ADCFile {
+
 	/**
 	 @return a String for a path that identifies the type of the path for use in saving to .adc files
 	 @see ADCFile#toADCFile(String)
@@ -23,6 +26,15 @@ public abstract class ADCFile {
 	/** @return a File instance for this path such that {@link File#getAbsolutePath()} resolves to the correct file */
 	@NotNull
 	public abstract File toFile();
+
+	/** @return true if this file exists, false if it doesn't */
+	public abstract boolean exists();
+
+	/** Creates a new file */
+	public abstract void createNewFile() throws IOException;
+
+	/** Creates a new directory and creates all parent directories */
+	public abstract void mkDir();
 
 	private ADCFile() {
 	}
@@ -101,6 +113,21 @@ public abstract class ADCFile {
 		public File toFile() {
 			return ApplicationManager.getFileInApplicationDirectory(relativePath);
 		}
+
+		@Override
+		public boolean exists() {
+			return toFile().exists();
+		}
+
+		@Override
+		public void createNewFile() throws IOException {
+			toFile().createNewFile();
+		}
+
+		@Override
+		public void mkDir() {
+			toFile().mkdirs();
+		}
 	}
 
 	/**
@@ -134,6 +161,21 @@ public abstract class ADCFile {
 		@NotNull
 		public File toFile() {
 			return Workspace.getWorkspace().getFileForName(relativePath);
+		}
+
+		@Override
+		public boolean exists() {
+			return toFile().exists();
+		}
+
+		@Override
+		public void createNewFile() throws IOException {
+			toFile().createNewFile();
+		}
+
+		@Override
+		public void mkDir() {
+			toFile().mkdirs();
 		}
 
 		@Override
@@ -181,6 +223,21 @@ public abstract class ADCFile {
 		public File toFile() {
 			return Project.getCurrentProject().getFileForName(relativePath);
 		}
+
+		@Override
+		public boolean exists() {
+			return toFile().exists();
+		}
+
+		@Override
+		public void createNewFile() throws IOException {
+			toFile().createNewFile();
+		}
+
+		@Override
+		public void mkDir() {
+			toFile().mkdirs();
+		}
 	}
 
 	/**
@@ -206,6 +263,21 @@ public abstract class ADCFile {
 		@NotNull
 		public File toFile() {
 			return f;
+		}
+
+		@Override
+		public boolean exists() {
+			return f.exists();
+		}
+
+		@Override
+		public void createNewFile() throws IOException {
+			f.createNewFile();
+		}
+
+		@Override
+		public void mkDir() {
+			f.mkdirs();
 		}
 
 		@Override
@@ -255,6 +327,28 @@ public abstract class ADCFile {
 		@NotNull
 		public File toFile() {
 			return new File(path);
+		}
+
+		@Override
+		public boolean exists() {
+			InputStream is = getClass().getResourceAsStream(path);
+			boolean exists = is != null;
+			try {
+				is.close();
+			} catch (IOException ignore) {
+
+			}
+			return exists;
+		}
+
+		@Override
+		public void createNewFile() throws IOException {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void mkDir() {
+			throw new UnsupportedOperationException();
 		}
 	}
 }

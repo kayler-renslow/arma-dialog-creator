@@ -78,7 +78,6 @@ public class ApplicationManager {
 		applicationInitialized = true;
 	}
 
-
 	public void addStateSubscriber(@NotNull ApplicationStateSubscriber sub) {
 		subs.add(sub);
 	}
@@ -97,7 +96,8 @@ public class ApplicationManager {
 	@NotNull
 	public Workspace getCurrentWorkspace() {
 		if (workspace == null) {
-			throw new IllegalStateException("workspace never initialized");
+			// workspace never initialized
+			throw new IllegalStateException();
 		}
 		return workspace;
 	}
@@ -105,7 +105,8 @@ public class ApplicationManager {
 	@NotNull
 	public Project getCurrentProject() {
 		if (project == null) {
-			throw new IllegalStateException("project never initialized");
+			//project not initialized
+			throw new IllegalStateException();
 		}
 		return project;
 	}
