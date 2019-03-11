@@ -28,7 +28,7 @@ import java.util.List;
  @since 06/08/2016. */
 public class EditorComponentTreeView<T extends UINodeTreeItemData> extends EditableTreeView<ArmaControl, T> {
 
-	private static final Key<TreeItem> TREE_ITEM_KEY = new Key<>("EditorComponentTreeView.TreeItemKey");
+	private final Key<TreeItem> TREE_ITEM_KEY = new Key<>("EditorComponentTreeView.TreeItemKey");
 
 	private final ContextMenu controlCreationContextMenu = new EditorTreeViewContextMenu(this);
 	private UINode rootUINode;

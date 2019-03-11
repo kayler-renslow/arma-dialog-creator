@@ -27,12 +27,12 @@ public class ApplicationManager {
 	public static final ApplicationManager instance = new ApplicationManager();
 
 	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
+
 	private final UpdateListenerGroup<ApplicationState> stateUpdateGroup = new UpdateListenerGroup<>();
 	private boolean applicationInitialized = false;
-
 	private volatile Project project;
-	private volatile Workspace workspace;
 
+	private volatile Workspace workspace;
 	public void initializeADC() throws ADCDataLoadException {
 		if (applicationInitialized) {
 			return;
@@ -306,18 +306,28 @@ public class ApplicationManager {
 	}
 
 	@NotNull
-	public static File getFileInApplicationDirectory(@NotNull String file) {
-		final String append = File.separator + "Arma Dialog Creator" + File.separator + file;
+	public static File getApplicationDirectory() {
+		return new File(getApplicationDirectoryPath());
+	}
+
+	@NotNull
+	public static String getApplicationDirectoryPath() {
+		final String append = File.separator + "Arma Dialog Creator";
 		final String dotADC = File.separator + ".adc";
 		String OS = System.getProperty("os.name").toUpperCase();
 		if (OS.contains("WIN")) {
-			return new File(System.getenv("APPDATA") + append);
+			return System.getenv("APPDATA") + append;
 		} else if (OS.contains("MAC")) {
-			return new File(System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + append);
+			return System.getProperty("user.home") + File.separator + "Library" + File.separator + "Application Support" + append;
 		} else if (OS.contains("NUX")) {
-			return new File(System.getProperty("user.home") + dotADC + append);
+			return System.getProperty("user.home") + dotADC + append;
 		}
-		return new File(System.getProperty("user.dir") + dotADC + append);
+		return System.getProperty("user.dir") + dotADC + append;
+	}
+
+	@NotNull
+	public static File getFileInApplicationDirectory(@NotNull String file) {
+		return new File(getApplicationDirectoryPath() + File.separator + file);
 	}
 
 	@NotNull

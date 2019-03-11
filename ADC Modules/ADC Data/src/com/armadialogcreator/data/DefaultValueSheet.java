@@ -17,9 +17,21 @@ public class DefaultValueSheet {
 
 	private final String name;
 	private final Map<String, Property> properties = new HashMap<>();
+	@NotNull
+	private String displayName;
 
 	public DefaultValueSheet(@NotNull String name) {
 		this.name = name;
+		displayName = name;
+	}
+
+	@NotNull
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(@NotNull String displayName) {
+		this.displayName = displayName;
 	}
 
 	@NotNull
@@ -33,12 +45,17 @@ public class DefaultValueSheet {
 			Property p = Property.newFromConfigurable(nested);
 			properties.put(p.getPropertyName(), p);
 		}
+		String s = config.getAttributeValue("display-name");
+		if (s != null) {
+			this.displayName = s;
+		}
 	}
 
 	@NotNull
 	public Configurable exportToConfigurable() {
 		Configurable.Simple sheet = new Configurable.Simple("sheet");
 		sheet.addAttribute("name", name);
+		sheet.addAttribute("display-name", displayName);
 
 		for (Map.Entry<String, Property> entry : properties.entrySet()) {
 			sheet.addNestedConfigurable(entry.getValue().exportToConfigurable());
