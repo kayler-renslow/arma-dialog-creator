@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--@formatter:off -->
+<system-default-value-sheets version="1">
+	<prefix name="data" value="/com/armadialogcreator/data/defaultValues"/>
+	<sheets>
+		<sheet name="#Control.Button" display-name="ADC Button">$data$/Button.xml</sheet>
+		<sheet name="#Control.Combo" display-name="ADC Combo">$data$/Combo.xml</sheet>
+		<sheet name="#Control.Edit" display-name="ADC Edit">$data$/Edit.xml</sheet>
+		<sheet name="#Control.ListBox" display-name="ADC List Box">$data$/ListBox.xml</sheet>
+		<sheet name="#Control.Progress" display-name="ADC Progress">$data$/Progress.xml</sheet>
+		<sheet name="#Control.ShortcutButton" display-name="ADC Shortcut Button">$data$/ShortcutButton.xml</sheet>
+		<sheet name="#Control.Static" display-name="ADC Static">$data$/Static.xml</sheet>
+		<sheet name="#Control.StructuredText" display-name="ADC Structured Text">$data$/StructuredText.xml</sheet>
+		<sheet name="#Control.XSlider" display-name="ADC XSlider">$data$/XSlider.xml</sheet>
+	</sheets>
+</system-default-value-sheets>

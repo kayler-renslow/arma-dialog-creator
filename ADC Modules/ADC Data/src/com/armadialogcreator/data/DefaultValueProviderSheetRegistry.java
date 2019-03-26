@@ -3,6 +3,7 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,13 +35,49 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 	@Nullable
 	@Override
 	public DefaultValueSheet get(@NotNull String key) {
-		return null;
+		DefaultValueSheet sheet = get(key, DataLevel.Project);
+		if (sheet != null) {
+			return sheet;
+		}
+		sheet = get(key, DataLevel.Workspace);
+		if (sheet != null) {
+			return sheet;
+		}
+		sheet = get(key, DataLevel.Application);
+		if (sheet != null) {
+			return sheet;
+		}
+
+		return get(key, DataLevel.System);
 	}
 
 	@Nullable
 	@Override
 	public DefaultValueSheet get(@NotNull String key, @NotNull DataLevel dataLevel) {
+		switch (dataLevel) {
+			case System: {
+				return systemSheets.getSheet(key);
+			}
+			case Application: {
+				return applicationSheets.getSheet(key);
+			}
+			case Workspace: {
+				return workspaceSheets.getSheet(key);
+			}
+			case Project: {
+				return projectSheets.getSheet(key);
+			}
+		}
 		return null;
+	}
+
+	@NotNull
+	public String getSystemSheetName(@NotNull String name) {
+		return '#' + name;
+	}
+
+	public boolean isValidUserSheetName(@NotNull String name) {
+		return name.length() > 0 && name.charAt(0) != '#';
 	}
 
 	@Override
@@ -69,7 +106,12 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 
 	@Override
 	public void systemDataInitializing() {
-
+		try {
+			systemSheets.loadSheets();
+		} catch (XmlParseException e) {
+			throw new RuntimeException(e);
+		}
+		System.out.println(systemSheets.getSheet("#Control.Combo").getName());
 	}
 
 	@Override
@@ -180,11 +222,60 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 				}
 			}
 		}
+
+		@Nullable
+		public DefaultValueSheet getSheet(@NotNull String key) {
+			for (DefaultValueSheet sheet : sheets) {
+				if (sheet.getName().equals(key)) {
+					return sheet;
+				}
+			}
+			return null;
+		}
 	}
 
 	public static class SystemDefaultValueSheets extends Base {
 		public SystemDefaultValueSheets() {
 			super(DataLevel.System);
+		}
+
+		public void loadSheets() throws XmlParseException {
+			ADCFile file = ADCFile.toADCFile(ADCFile.FileType.Jar, "/com/armadialogcreator/data/defaultValues/SystemDefaultValues.xml");
+			System.out.println(file.getSpecialPath());
+			Configurable root;
+			try {
+				root = XmlConfigurableLoader.load(file);
+			} catch (XmlParseException e) {
+				throw new RuntimeException(e);
+			}
+			Configurable prefixConf = root.getConfigurable("prefix");
+			if (prefixConf == null) {
+				throw new IllegalStateException();
+			}
+			String prefixValue = prefixConf.getAttributeValue("value");
+			String prefixName = prefixConf.getAttributeValue("name");
+			if (prefixName == null || prefixValue == null) {
+				throw new IllegalStateException();
+			}
+
+			Configurable sheets = root.getConfigurable("sheets");
+			if (sheets == null) {
+				throw new IllegalStateException();
+			}
+			for (Configurable sheet : sheets.getNestedConfigurables()) {
+				String name = sheet.getAttributeValue("name");
+				if (name == null) {
+					throw new IllegalStateException();
+				}
+				DefaultValueSheet valueSheet = new DefaultValueSheet(name);
+				String displayName = sheet.getAttributeValue("display-name");
+				valueSheet.setDisplayName(displayName == null ? "" : displayName);
+
+				String systemSheetPath = sheet.getConfigurableBody().replace(prefixName, prefixValue);
+				ADCFile systemSheetFile = ADCFile.toADCFile(ADCFile.FileType.Jar, systemSheetPath);
+				Configurable sheetConf = XmlConfigurableLoader.load(systemSheetFile);
+				valueSheet.setFromConfigurable(sheetConf);
+			}
 		}
 	}
 

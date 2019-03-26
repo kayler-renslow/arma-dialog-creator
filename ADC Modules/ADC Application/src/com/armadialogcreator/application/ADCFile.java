@@ -1,16 +1,42 @@
 package com.armadialogcreator.application;
 
+import com.armadialogcreator.util.UTF8FileReader;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 /**
  @author K
  @since 3/10/19 */
 public abstract class ADCFile {
+
+	public enum FileType {
+		Application(ApplicationPathFile.PREFIX),
+		Workspace(WorkspacePathFile.PREFIX),
+		Project(ProjectPathFile.PREFIX),
+		Absolute(ApplicationPathFile.PREFIX),
+		Jar(JarFile.PREFIX);
+
+		private String prefix;
+
+		FileType(String prefix) {
+			this.prefix = prefix;
+		}
+
+		@NotNull
+		public static FileType matchByPrefix(@NotNull String prefix) {
+			for (FileType type : values()) {
+				if (type.prefix.equals(prefix)) {
+					return type;
+				}
+			}
+			throw new IllegalArgumentException();
+		}
+
+	}
+
 
 	/**
 	 @return a String for a path that identifies the type of the path for use in saving to .adc files
@@ -36,43 +62,61 @@ public abstract class ADCFile {
 	/** Creates a new directory and creates all parent directories */
 	public abstract void mkDir();
 
+	/** @return a reader for this file */
+	@NotNull
+	public abstract Reader newReader() throws IOException;
+
+	@NotNull
+	public abstract ADCFile getFileInOwnerDirectory(@NotNull String name);
+
 	private ADCFile() {
 	}
 
 	/** @see #getSpecialPath() */
 	@NotNull
-	public static ADCFile toADCFile(@NotNull String specialPath) {
-		if (specialPath.charAt(0) != '$') {
+	public static ADCFile toADCFile(@NotNull FileType type, @NotNull String path) {
+		switch (type) {
+			case Application: {
+				return new ApplicationPathFile(path);
+			}
+			case Workspace: {
+				return new WorkspacePathFile(path);
+			}
+			case Project: {
+				return new ProjectPathFile(path);
+			}
+			case Absolute: {
+				return new AbsFile(path);
+			}
+			case Jar: {
+				return new JarFile(path);
+			}
+		}
+		throw new IllegalArgumentException();
+	}
+
+	/** @see #getSpecialPath() */
+	@NotNull
+	public static ADCFile toADCFile(@NotNull String path) {
+		if (path.charAt(0) != '$') {
 			throw new IllegalArgumentException();
 		}
 		int prefixLen = 0;
-		for (int i = 1; i < specialPath.length(); i++) {
-			char c = specialPath.charAt(i);
+		for (int i = 1; i < path.length(); i++) {
+			char c = path.charAt(i);
 			if (c == '$') {
 				break;
 			}
 			prefixLen++;
 		}
-		String prefix = specialPath.substring(0, prefixLen);
-		final String relPath = specialPath.substring(prefixLen + 1);
-		switch (prefix) {
-			case ApplicationPathFile.PREFIX: {
-				return new ApplicationPathFile(relPath);
-			}
-			case WorkspacePathFile.PREFIX: {
-				return new WorkspacePathFile(relPath);
-			}
-			case ProjectPathFile.PREFIX: {
-				return new ProjectPathFile(relPath);
-			}
-			case AbsFile.PREFIX: {
-				return new AbsFile(relPath);
-			}
-			case JarFile.PREFIX: {
-				return new JarFile(relPath);
-			}
-		}
-		throw new IllegalArgumentException();
+		String prefix = path.substring(0, prefixLen);
+		final String relPath = path.substring(prefixLen + 1);
+		return toADCFile(FileType.matchByPrefix(prefix), relPath);
+	}
+
+	@NotNull
+	public static ADCFile toADCFile(@NotNull File file) {
+		return new ADCFile.AbsFile(file);
 	}
 
 	/**
@@ -128,6 +172,18 @@ public abstract class ADCFile {
 		public void mkDir() {
 			toFile().mkdirs();
 		}
+
+		@Override
+		@NotNull
+		public Reader newReader() throws IOException {
+			return new UTF8FileReader(toFile());
+		}
+
+		@Override
+		@NotNull
+		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
+			return new ApplicationPathFile(toFile().getParentFile().getAbsolutePath() + File.separator + name);
+		}
 	}
 
 	/**
@@ -180,8 +236,20 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
+		public Reader newReader() throws IOException {
+			return new UTF8FileReader(toFile());
+		}
+
+		@Override
+		@NotNull
 		public String getSpecialPath() {
 			return PREFIX + relativePath;
+		}
+
+		@Override
+		@NotNull
+		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
+			return new WorkspacePathFile(toFile().getParentFile().getAbsolutePath() + File.separator + name);
 		}
 	}
 
@@ -238,6 +306,18 @@ public abstract class ADCFile {
 		public void mkDir() {
 			toFile().mkdirs();
 		}
+
+		@Override
+		@NotNull
+		public Reader newReader() throws IOException {
+			return new UTF8FileReader(toFile());
+		}
+
+		@Override
+		@NotNull
+		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
+			return new ProjectPathFile(toFile().getParentFile().getAbsolutePath() + File.separator + name);
+		}
 	}
 
 	/**
@@ -282,6 +362,12 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
+		public Reader newReader() throws IOException {
+			return new UTF8FileReader(toFile());
+		}
+
+		@Override
+		@NotNull
 		public String getSpecialPath() {
 			return PREFIX + f.getPath();
 		}
@@ -290,6 +376,12 @@ public abstract class ADCFile {
 		@NotNull
 		public String getPath() {
 			return f.getPath();
+		}
+
+		@Override
+		@NotNull
+		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
+			return new AbsFile(toFile().getParentFile().getAbsolutePath() + File.separator + name);
 		}
 	}
 
@@ -331,14 +423,20 @@ public abstract class ADCFile {
 
 		@Override
 		public boolean exists() {
-			InputStream is = getClass().getResourceAsStream(path);
+			InputStream is = getStream();
 			boolean exists = is != null;
 			try {
-				is.close();
+				if (is != null) {
+					is.close();
+				}
 			} catch (IOException ignore) {
 
 			}
 			return exists;
+		}
+
+		private InputStream getStream() {
+			return getClass().getResourceAsStream(path);
 		}
 
 		@Override
@@ -349,6 +447,19 @@ public abstract class ADCFile {
 		@Override
 		public void mkDir() {
 			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		@NotNull
+		public Reader newReader() throws IOException {
+			return new InputStreamReader(getStream(), StandardCharsets.UTF_8);
+		}
+
+		@Override
+		@NotNull
+		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
+			String parentPath = path.substring(0, path.lastIndexOf('/'));
+			return new JarFile(parentPath + '/' + name);
 		}
 	}
 }

@@ -10,4 +10,9 @@ module ADC.Data {
 
 	requires annotations;
 	exports com.armadialogcreator.data;
+
+	opens com.armadialogcreator.data.defaultValues;
+	opens com.armadialogcreator.data.defaultValues.Combo;
+	opens com.armadialogcreator.data.defaultValues.ListBox;
+	opens com.armadialogcreator.data.defaultValues.ShortcutButton;
 }

@@ -62,7 +62,7 @@ public class ApplicationManager {
 
 		File applicationDataSave = getApplicationDataSaveFile();
 		if (applicationDataSave.exists()) {
-			ApplicationDataXmlReader reader = new ApplicationDataXmlReader(applicationDataSave);
+			ApplicationDataXmlReader reader = new ApplicationDataXmlReader(ADCFile.toADCFile(applicationDataSave));
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
@@ -145,7 +145,7 @@ public class ApplicationManager {
 
 		File workspaceSave = getWorkspaceDataSaveFile(newWorkspace);
 		if (workspaceSave.exists()) {
-			WorkspaceDataXmlReader reader = new WorkspaceDataXmlReader(newWorkspace, workspaceSave);
+			WorkspaceDataXmlReader reader = new WorkspaceDataXmlReader(newWorkspace, ADCFile.toADCFile(workspaceSave));
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
@@ -185,7 +185,7 @@ public class ApplicationManager {
 
 		File projectSave = getProjectSaveFile(newProject);
 		if (projectSave.exists()) {
-			ProjectDataXmlReader reader = new ProjectDataXmlReader(newProject, projectSave);
+			ProjectDataXmlReader reader = new ProjectDataXmlReader(newProject, ADCFile.toADCFile(projectSave));
 			try {
 				reader.read();
 			} catch (XmlParseException e) {
