@@ -95,6 +95,11 @@ public abstract class ADCFile {
 		throw new IllegalArgumentException();
 	}
 
+	@NotNull
+	public static ADCFile toADCJarFile(@NotNull String path, @NotNull String ownerModule) {
+		return new JarFile(path, ownerModule);
+	}
+
 	/** @see #getSpecialPath() */
 	@NotNull
 	public static ADCFile toADCFile(@NotNull String path) {
@@ -104,12 +109,12 @@ public abstract class ADCFile {
 		int prefixLen = 0;
 		for (int i = 1; i < path.length(); i++) {
 			char c = path.charAt(i);
+			prefixLen++;
 			if (c == '$') {
 				break;
 			}
-			prefixLen++;
 		}
-		String prefix = path.substring(0, prefixLen);
+		String prefix = path.substring(0, prefixLen + 1);
 		final String relPath = path.substring(prefixLen + 1);
 		return toADCFile(FileType.matchByPrefix(prefix), relPath);
 	}
@@ -395,8 +400,18 @@ public abstract class ADCFile {
 		public static final String PREFIX = "$JAR$";
 
 		private final String path;
+		private final String ownerModule;
 
 		public JarFile(@NotNull String path) {
+			if (path.charAt(0) != '$') {
+				throw new IllegalArgumentException();
+			}
+			this.ownerModule = path.substring(1, path.lastIndexOf('$'));
+			this.path = path.substring(path.lastIndexOf('$') + 1);
+		}
+
+		public JarFile(@NotNull String path, @NotNull String ownerModule) {
+			this.ownerModule = ownerModule;
 			if (path.charAt(0) != '/') {
 				throw new IllegalArgumentException();
 			}
@@ -406,7 +421,7 @@ public abstract class ADCFile {
 		@Override
 		@NotNull
 		public String getSpecialPath() {
-			return PREFIX + path;
+			return PREFIX + '$' + ownerModule + '$' + path;
 		}
 
 		@Override
@@ -436,7 +451,15 @@ public abstract class ADCFile {
 		}
 
 		private InputStream getStream() {
-			return getClass().getResourceAsStream(path);
+			InputStream[] is = {null};
+			ModuleLayer.boot().findModule(ownerModule).ifPresent(module -> {
+				try {
+					is[0] = module.getResourceAsStream(path);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+			return is[0];
 		}
 
 		@Override
@@ -459,7 +482,7 @@ public abstract class ADCFile {
 		@NotNull
 		public ADCFile getFileInOwnerDirectory(@NotNull String name) {
 			String parentPath = path.substring(0, path.lastIndexOf('/'));
-			return new JarFile(parentPath + '/' + name);
+			return new JarFile(parentPath + '/' + name, ownerModule);
 		}
 	}
 }

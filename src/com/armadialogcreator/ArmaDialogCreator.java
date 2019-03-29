@@ -45,6 +45,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 			getPrimaryStage().requestFocus();
 			return;
 		}
+
 		try {
 			Class c = Class.forName("javafx.application.Application");
 		} catch (ClassNotFoundException e) {

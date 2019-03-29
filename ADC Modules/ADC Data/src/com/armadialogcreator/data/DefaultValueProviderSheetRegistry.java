@@ -240,8 +240,7 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 		}
 
 		public void loadSheets() throws XmlParseException {
-			ADCFile file = ADCFile.toADCFile(ADCFile.FileType.Jar, "/com/armadialogcreator/data/defaultValues/SystemDefaultValues.xml");
-			System.out.println(file.getSpecialPath());
+			ADCFile file = ADCFile.toADCJarFile("/com/armadialogcreator/data/defaultValues/SystemDefaultValues.xml", getClass().getModule().getName());
 			Configurable root;
 			try {
 				root = XmlConfigurableLoader.load(file);
@@ -271,8 +270,10 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 				String displayName = sheet.getAttributeValue("display-name");
 				valueSheet.setDisplayName(displayName == null ? "" : displayName);
 
-				String systemSheetPath = sheet.getConfigurableBody().replace(prefixName, prefixValue);
-				ADCFile systemSheetFile = ADCFile.toADCFile(ADCFile.FileType.Jar, systemSheetPath);
+				String systemSheetPath = sheet.getConfigurableBody().replace('$' + prefixName + '$', prefixValue);
+				ADCFile systemSheetFile = ADCFile.toADCJarFile(systemSheetPath, getClass().getModule().getName());
+				System.out.println("SystemDefaultValueSheets.loadSheets systemSheetFile.getSpecialPath()=" + systemSheetFile.getSpecialPath());
+				System.out.println(systemSheetPath);
 				Configurable sheetConf = XmlConfigurableLoader.load(systemSheetFile);
 				valueSheet.setFromConfigurable(sheetConf);
 			}
