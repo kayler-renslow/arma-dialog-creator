@@ -17,7 +17,9 @@ import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
 import com.armadialogcreator.gui.fxcontrol.MenuUtil;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.gui.main.actions.mainMenu.help.CheckForUpdateAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.view.ViewDarkThemeAction;
+import com.armadialogcreator.gui.main.popup.AboutDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.NotNullValueObserver;
@@ -74,11 +76,24 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		myStage.setResizable(false);
 
 		{
+			ResourceBundle mainMenuBarBundle = Lang.getBundle("MainMenuBarBundle");
 			CheckMenuItem miDarkTheme = MenuUtil.addOnAction(
-					new CheckMenuItem(Lang.getBundle("MainMenuBarBundle").getString("view_dark_theme")),
+					new CheckMenuItem(mainMenuBarBundle.getString("view_dark_theme")),
 					new ViewDarkThemeAction()
 			);
-			DownArrowMenu damApplicationSettings = new DownArrowMenu(ADCIcons.ICON_GEAR, miDarkTheme);
+			MenuItem miAbout = MenuUtil.addOnAction(
+					new MenuItem(Lang.ApplicationBundle().getString("Popups.About.dialog_title")),
+					event -> {
+						new AboutDialog().show();
+					}
+			);
+			MenuItem miCheckForUpdate = MenuUtil.addOnAction(
+					new MenuItem(mainMenuBarBundle.getString("help_check_for_update")),
+					new CheckForUpdateAction()
+			);
+			DownArrowMenu damApplicationSettings = new DownArrowMenu(
+					ADCIcons.ICON_GEAR, miDarkTheme, miCheckForUpdate, miAbout
+			);
 			footer.getLeftContainer().getChildren().add(new Separator(Orientation.VERTICAL));
 			footer.getLeftContainer().getChildren().add(damApplicationSettings);
 		}

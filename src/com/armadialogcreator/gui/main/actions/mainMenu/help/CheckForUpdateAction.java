@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.help;
 
+import com.armadialogcreator.ApplicationProjectSwitcher;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.application.ADCDataWriteException;
@@ -32,16 +33,18 @@ public class CheckForUpdateAction implements EventHandler<ActionEvent> {
 		if (d.wasCancelled() || d.getReleaseInfo() == null || !d.isUpdateAvailable()) {
 			return;
 		}
-		AskSaveProjectDialog dialog = new AskSaveProjectDialog();
-		dialog.showAndWait();
-		if (dialog.wasCancelled()) {
-			return;
-		}
-		if (dialog.saveProgress()) {
-			try {
-				ApplicationManager.instance.saveProject();
-			} catch (ADCDataWriteException e) {
-				throw new RuntimeException(e);
+		if (!ApplicationProjectSwitcher.instance.isChoosingProject()) {
+			AskSaveProjectDialog dialog = new AskSaveProjectDialog();
+			dialog.showAndWait();
+			if (dialog.wasCancelled()) {
+				return;
+			}
+			if (dialog.saveProgress()) {
+				try {
+					ApplicationManager.instance.saveProject();
+				} catch (ADCDataWriteException e) {
+					throw new RuntimeException(e);
+				}
 			}
 		}
 		ApplicationManager.instance.closeApplication();

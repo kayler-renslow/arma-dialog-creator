@@ -113,4 +113,8 @@ public class ApplicationProjectSwitcher {
 		}
 
 	}
+
+	public boolean isChoosingProject() {
+		return currentState == State.ProjectSelection;
+	}
 }
