@@ -111,7 +111,6 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 		} catch (XmlParseException e) {
 			throw new RuntimeException(e);
 		}
-		System.out.println(systemSheets.getSheet("#Control.Combo").getName());
 	}
 
 	@Override
@@ -272,10 +271,10 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 
 				String systemSheetPath = sheet.getConfigurableBody().replace('$' + prefixName + '$', prefixValue);
 				ADCFile systemSheetFile = ADCFile.toADCJarFile(systemSheetPath, getClass().getModule().getName());
-				System.out.println("SystemDefaultValueSheets.loadSheets systemSheetFile.getSpecialPath()=" + systemSheetFile.getSpecialPath());
-				System.out.println(systemSheetPath);
 				Configurable sheetConf = XmlConfigurableLoader.load(systemSheetFile);
 				valueSheet.setFromConfigurable(sheetConf);
+
+				getSheets().add(valueSheet);
 			}
 		}
 	}

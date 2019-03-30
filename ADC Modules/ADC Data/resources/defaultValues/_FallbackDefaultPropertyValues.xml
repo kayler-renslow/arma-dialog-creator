@@ -2,30 +2,48 @@
 <!--@formatter:off -->
 <value-provider-sheet version="1">
 	<property name='idc'>
-		<v>-1</v>
+		<vs>
+			<v>-1</v>
+		</vs>
 	</property>
 	<property name='x'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='y'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='w'>
-		<v>1</v>
+		<vs>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='h'>
-		<v>1</v>
+		<vs>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='sizeEx'>
-		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+		<vs>
+			<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+		</vs>
 	</property>
 	<property name='font'>
-		<v>PuristaMedium</v>
+		<vs>
+			<v>PuristaMedium</v>
+		</vs>
 	</property>
 	<property name='text'>
-		<v></v>
+		<vs>
+			<v></v>
+		</vs>
 	</property>
 	<property name='style'> <!-- text align left-->
-		<v>ID:4</v>
+		<vs>
+			<v>ID:4</v>
+		</vs>
 	</property>
 </value-provider-sheet>

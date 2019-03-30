@@ -2,15 +2,23 @@
 <!--@formatter:off -->
 <value-provider-sheet version="1">
 	<property name='top'>
-		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) - (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)) / 2</v>
+		<vs>
+			<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) - (((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)) / 2</v>
+		</vs>
 	</property>
 	<property name='right'>
-		<v>0.005</v>
+		<vs>
+			<v>0.005</v>
+		</vs>
 	</property>
 	<property name='bottom'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='left'>
-		<v>0.25 * (((safezoneW / safezoneH) min 1.2) / 40)</v>
+		<vs>
+			<v>0.25 * (((safezoneW / safezoneH) min 1.2) / 40)</v>
+		</vs>
 	</property>
 </value-provider-sheet>

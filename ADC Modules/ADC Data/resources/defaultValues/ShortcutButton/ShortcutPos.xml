@@ -2,15 +2,23 @@
 <!--@formatter:off -->
 <value-provider-sheet version="1">
 	<property name='top'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='left'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='w'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='h'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 </value-provider-sheet>

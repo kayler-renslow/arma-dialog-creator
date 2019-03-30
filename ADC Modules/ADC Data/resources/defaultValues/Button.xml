@@ -2,101 +2,149 @@
 <!--@formatter:off -->
 <value-provider-sheet version="1">
 	<property name='idc'>
-		<v>-1</v>
+		<vs>
+			<v>-1</v>
+		</vs>
 	</property>
 	<property name='x'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='y'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='w'>
-		<v>1</v>
+		<vs>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='h'>
-		<v>1</v>
+		<vs>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='sizeEx'>
-		<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+		<vs>
+			<v>(((((safezoneW / safezoneH) min 1.2) / 1.2) / 25) * 1)</v>
+		</vs>
 	</property>
 	<property name='font'>
-		<v>PuristaMedium</v>
+		<vs>
+			<v>PuristaMedium</v>
+		</vs>
 	</property>
 	<property name='text'>
-		<v></v>
+		<vs>
+			<v></v>
+		</vs>
 	</property>
 	<property name='style'> <!-- text align center-->
-		<v>ID:0</v>
+		<vs>
+			<v>ID:0</v>
+		</vs>
 	</property>
 	<property name='colorDisabled'>
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>1</v>
+		<vs>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='colorBackgroundDisabled'>
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>1</v>
+		<vs>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='colorBackgroundActive'>
-		<v>1</v>
-		<v>0</v>
-		<v>0</v>
-		<v>1</v>
+		<vs>
+			<v>1</v>
+			<v>0</v>
+			<v>0</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='colorFocused'> <!-- The drop shadow of the entire button-->
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>0.2</v>
-		<v>1</v>
+		<vs>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>0.2</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='colorShadow'> <!-- The drop shadow of the entire button-->
-		<v>0</v>
-		<v>0</v>
-		<v>0</v>
-		<v>1</v>
+		<vs>
+			<v>0</v>
+			<v>0</v>
+			<v>0</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='borderSize'>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='colorBorder'> <!-- That "tab" thing sticking out of the button-->
-		<v>0</v>
-		<v>0</v>
-		<v>0</v>
-		<v>0</v>
+		<vs>
+			<v>0</v>
+			<v>0</v>
+			<v>0</v>
+			<v>0</v>
+		</vs>
 	</property>
 	<property name='offsetX'>
-		<v>0.01</v>
+		<vs>
+			<v>0.01</v>
+		</vs>
 	</property>
 	<property name='offsetY'>
-		<v>0.01</v>
+		<vs>
+			<v>0.01</v>
+		</vs>
 	</property>
 	<property name='offsetPressedX'>
-		<v>0.01</v>
+		<vs>
+			<v>0.01</v>
+		</vs>
 	</property>
 	<property name='offsetPressedY'>
-		<v>0.01</v>
+		<vs>
+			<v>0.01</v>
+		</vs>
 	</property>
 	<property name='soundClick'>
-		<v>\A3\ui_f\data\sound\RscButton\soundClick</v>
-		<v>0.09</v>
-		<v>1</v>
+		<vs>
+			<v>\A3\ui_f\data\sound\RscButton\soundClick</v>
+			<v>0.09</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='soundEnter'>
-		<v>\A3\ui_f\data\sound\RscButton\soundEnter</v>
-		<v>0.09</v>
-		<v>1</v>
+		<vs>
+			<v>\A3\ui_f\data\sound\RscButton\soundEnter</v>
+			<v>0.09</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='soundEscape'>
-		<v>\A3\ui_f\data\sound\RscButton\soundEscape</v>
-		<v>0.09</v>
-		<v>1</v>
+		<vs>
+			<v>\A3\ui_f\data\sound\RscButton\soundEscape</v>
+			<v>0.09</v>
+			<v>1</v>
+		</vs>
 	</property>
 	<property name='soundPush'>
-		<v>\A3\ui_f\data\sound\RscButton\soundPush</v>
-		<v>0.09</v>
-		<v>1</v>
+		<vs>
+			<v>\A3\ui_f\data\sound\RscButton\soundPush</v>
+			<v>0.09</v>
+			<v>1</v>
+		</vs>
 	</property>
 </value-provider-sheet>
