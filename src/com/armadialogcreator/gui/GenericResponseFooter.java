@@ -21,6 +21,7 @@ public class GenericResponseFooter extends BorderPane {
 	public static final double PREFFERED_BUTTON_CANCEL_WIDTH = 75d;
 
 	private final HBox rightContainer;
+	private final HBox leftContainer;
 
 	/** The buttons used for the footer */
 	protected final Button btnOk, btnCancel, btnHelp;
@@ -28,12 +29,14 @@ public class GenericResponseFooter extends BorderPane {
 	public GenericResponseFooter(boolean addCancel, boolean addOk, boolean addHelpButton, EventHandler<ActionEvent> helpEvent, EventHandler<ActionEvent> cancelEvent, EventHandler<ActionEvent> okEvent
 	) {
 		rightContainer = new HBox(5);
+		leftContainer = new HBox(5);
 		if (addHelpButton) {
 			btnHelp = new Button(Lang.ApplicationBundle().getString("Popups.btn_help"));
 			btnHelp.setTooltip(new Tooltip(Lang.ApplicationBundle().getString("Popups.btn_help_tooltip")));
 			btnHelp.setOnAction(helpEvent);
 			btnHelp.setPrefWidth(50d);
-			setLeft(btnHelp);
+			leftContainer.getChildren().add(btnHelp);
+			setLeft(leftContainer);
 		} else {
 			btnHelp = null;
 		}
@@ -58,6 +61,11 @@ public class GenericResponseFooter extends BorderPane {
 		rightContainer.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
 		setRight(rightContainer);
 		setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+	}
+
+	@NotNull
+	public HBox getLeftContainer() {
+		return leftContainer;
 	}
 
 	@NotNull

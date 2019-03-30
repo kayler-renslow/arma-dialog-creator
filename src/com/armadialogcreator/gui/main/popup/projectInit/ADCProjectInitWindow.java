@@ -12,9 +12,13 @@ import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.ApplicationProperties;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
+import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
+import com.armadialogcreator.gui.fxcontrol.MenuUtil;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.BrowserUtil;
+import com.armadialogcreator.gui.main.actions.mainMenu.view.ViewDarkThemeAction;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.NotNullValueObserver;
 import com.armadialogcreator.util.ValueListener;
@@ -68,6 +72,16 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 		myStage.setWidth(STAGE_WIDTH);
 		myStage.setHeight(STAGE_HEIGHT);
 		myStage.setResizable(false);
+
+		{
+			CheckMenuItem miDarkTheme = MenuUtil.addOnAction(
+					new CheckMenuItem(Lang.getBundle("MainMenuBarBundle").getString("view_dark_theme")),
+					new ViewDarkThemeAction()
+			);
+			DownArrowMenu damApplicationSettings = new DownArrowMenu(ADCIcons.ICON_GEAR, miDarkTheme);
+			footer.getLeftContainer().getChildren().add(new Separator(Orientation.VERTICAL));
+			footer.getLeftContainer().getChildren().add(damApplicationSettings);
+		}
 	}
 
 	@NotNull
