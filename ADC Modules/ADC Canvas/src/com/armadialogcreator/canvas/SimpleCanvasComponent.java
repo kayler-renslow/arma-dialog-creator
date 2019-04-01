@@ -19,7 +19,7 @@ public class SimpleCanvasComponent implements CanvasComponent {
 
 	protected int x1, y1, x2, y2;
 	protected Color backgroundColor = ColorUtil.toColor(
-			ColorUtil.darken(ColorUtil.opaqueARGB(rand.nextInt()))
+			ColorUtil.darken(ColorUtil.opaqueARGB(+rand.nextInt()))
 	);
 
 	protected Border border;
