@@ -6,6 +6,7 @@ import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.data.ConfigClassRegistry;
+import com.armadialogcreator.data.ControlDefaultValueProvider;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
@@ -47,6 +48,8 @@ public class NewControlAction {
 
 		ArmaControl control = ArmaControl.createControl(className, lookup, editorManager.getResolution(),
 				ExpressionEnvManager.instance.getEnv(), display);
+
+		ControlDefaultValueProvider.addDefaultValuesFromSystemSheet(control);
 
 		if (backgroundControl) {
 			editorManager.getEditingDisplay().getBackgroundControlNodes().addChild(control);

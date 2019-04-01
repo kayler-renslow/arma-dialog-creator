@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.util.ApplicationSingleton;
+import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.XmlParseException;
 import org.jetbrains.annotations.NotNull;
@@ -88,6 +89,17 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 		map.put(DataLevel.Application, applicationSheets.getSheets());
 		map.put(DataLevel.Workspace, workspaceSheets.getSheets());
 		map.put(DataLevel.Project, projectSheets.getSheets());
+		return map;
+	}
+
+	@Override
+	@NotNull
+	public Map<DataLevel, List<KeyValue<String, Configurable>>> copyAllToConfigurableMap() {
+		Map<DataLevel, List<KeyValue<String, Configurable>>> map = new HashMap<>();
+		map.put(DataLevel.System, systemSheets.toKeyValueList());
+		map.put(DataLevel.Application, applicationSheets.toKeyValueList());
+		map.put(DataLevel.Workspace, workspaceSheets.toKeyValueList());
+		map.put(DataLevel.Project, projectSheets.toKeyValueList());
 		return map;
 	}
 
@@ -230,6 +242,15 @@ public class DefaultValueProviderSheetRegistry implements Registry<String, Defau
 				}
 			}
 			return null;
+		}
+
+		@NotNull
+		public List<KeyValue<String, Configurable>> toKeyValueList() {
+			List<KeyValue<String, Configurable>> list = new ArrayList<>();
+			for (DefaultValueSheet sheet : sheets) {
+				list.add(new KeyValue<>(sheet.getName(), sheet.exportToConfigurable()));
+			}
+			return list;
 		}
 	}
 

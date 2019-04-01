@@ -15,6 +15,7 @@ import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
+import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowRegistries;
 import com.armadialogcreator.gui.main.actions.mainMenu.edit.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.file.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.help.CheckForUpdateAction;
@@ -201,6 +202,10 @@ class ADCMenuBar extends MenuBar {
 			help_checkForUpdate
 	);
 
+	/*dev menu*/
+	final MenuItem dev_registries = addOnAction(new MenuItem("Show Registries"), new ShowRegistries());
+	final Menu menuDev = new Menu("Dev", null, dev_registries);
+
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);
 		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
@@ -213,6 +218,10 @@ class ADCMenuBar extends MenuBar {
 				view_showGrid.setSelected(SettingsManager.instance.getProjectSettings().ShowCanvasGridSetting.isTrue());
 			}
 		});
+
+		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMenu)) {
+			getMenus().add(menuDev);
+		}
 
 	}
 

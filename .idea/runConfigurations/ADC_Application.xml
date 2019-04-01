@@ -2,7 +2,7 @@
   <configuration default="false" name="ADC Application" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="com.armadialogcreator.ArmaDialogCreator" />
     <module name="Arma Dialog Creator" />
-    <option name="PROGRAM_PARAMETERS" value="-logInitProgress -nosplash" />
+    <option name="PROGRAM_PARAMETERS" value="-logInitProgress -nosplash -devmenu" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

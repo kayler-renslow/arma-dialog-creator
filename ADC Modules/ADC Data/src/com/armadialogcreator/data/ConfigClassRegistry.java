@@ -6,10 +6,7 @@ import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  @author K
@@ -195,6 +192,17 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		return map;
 	}
 
+	@Override
+	@NotNull
+	public Map<DataLevel, List<KeyValue<String, Configurable>>> copyAllToConfigurableMap() {
+		Map<DataLevel, List<KeyValue<String, Configurable>>> map = new HashMap<>();
+		map.put(DataLevel.System, systemClasses.toKeyValueList());
+		map.put(DataLevel.Application, applicationClasses.toKeyValueList());
+		map.put(DataLevel.Workspace, workspaceClasses.toKeyValueList());
+		map.put(DataLevel.Project, projectClasses.toKeyValueList());
+		return map;
+	}
+
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;
@@ -297,6 +305,20 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		}
 
 		abstract DataLevel getLevel();
+
+		@NotNull
+		public List<KeyValue<String, Configurable>> toKeyValueList() {
+			List<KeyValue<String, Configurable>> list = new ArrayList<>();
+			for (ConfigClass cc : classes) {
+				list.add(new KeyValue<>(cc.getClassName(), toConfigurable(cc)));
+			}
+			return list;
+		}
+
+		@NotNull
+		public Configurable toConfigurable(@NotNull ConfigClass configClass) {
+			return Configurable.EMPTY;
+		}
 	}
 
 	public static class SystemClasses extends Base implements SystemData {

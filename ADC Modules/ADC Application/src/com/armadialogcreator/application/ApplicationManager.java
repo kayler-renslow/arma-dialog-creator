@@ -26,6 +26,14 @@ public class ApplicationManager {
 
 	public static final ApplicationManager instance = new ApplicationManager();
 
+	public static ADCDataListManager[] allApplicationDataListManagers() {
+		return new ADCDataListManager[]{
+				ApplicationDataManager.getInstance(),
+				instance.getCurrentWorkspace(),
+				instance.getCurrentProject(),
+		};
+	}
+
 	private final List<ApplicationStateSubscriber> subs = new ArrayList<>();
 
 	private final UpdateListenerGroup<ApplicationState> stateUpdateGroup = new UpdateListenerGroup<>();

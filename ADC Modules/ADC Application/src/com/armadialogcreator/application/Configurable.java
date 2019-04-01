@@ -206,9 +206,13 @@ public interface Configurable {
 			sb.appendNewLine();
 			while (iterator.hasNext()) {
 				toFormattedString(iterator.next(), sb);
+				if (iterator.hasNext()) {
+					sb.appendNewLine();
+				} else {
+					sb.decrementTabCount();
+					sb.appendNewLine();
+				}
 			}
-			sb.decrementTabCount();
-			sb.appendNewLine();
 		}
 		sb.append('<');
 		sb.append('/');

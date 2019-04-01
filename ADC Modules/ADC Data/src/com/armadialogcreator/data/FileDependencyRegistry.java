@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.util.ApplicationSingleton;
+import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.ListObserver;
 import com.armadialogcreator.util.TripleIterable;
 import org.jetbrains.annotations.NotNull;
@@ -149,6 +150,16 @@ public class FileDependencyRegistry implements Registry<File, FileDependency> {
 	}
 
 	@Override
+	@NotNull
+	public Map<DataLevel, List<KeyValue<String, Configurable>>> copyAllToConfigurableMap() {
+		Map<DataLevel, List<KeyValue<String, Configurable>>> map = new HashMap<>();
+		map.put(DataLevel.Application, applicationDependencies.toKeyValueList());
+		map.put(DataLevel.Workspace, workspaceDependencies.toKeyValueList());
+		map.put(DataLevel.Project, projectDependencies.toKeyValueList());
+		return map;
+	}
+
+	@Override
 	public int getEntryCount() {
 		return applicationDependencies.getDependencyList().size()
 				+ workspaceDependencies.getDependencyList().size()
@@ -189,6 +200,20 @@ public class FileDependencyRegistry implements Registry<File, FileDependency> {
 			for (FileDependency d : dependencyList) {
 
 			}
+		}
+
+		@NotNull
+		public List<KeyValue<String, Configurable>> toKeyValueList() {
+			List<KeyValue<String, Configurable>> list = new ArrayList<>();
+			for (FileDependency fd : dependencyList) {
+				list.add(new KeyValue<>(fd.getOriginalFile().getName(), toConfigurable(fd)));
+			}
+			return list;
+		}
+
+		@NotNull
+		public Configurable toConfigurable(@NotNull FileDependency fd) {
+			return Configurable.EMPTY;
 		}
 	}
 

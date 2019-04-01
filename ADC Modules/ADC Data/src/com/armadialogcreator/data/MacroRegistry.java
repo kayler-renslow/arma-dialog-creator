@@ -204,6 +204,17 @@ public class MacroRegistry implements Registry<String, Macro> {
 	}
 
 	@Override
+	@NotNull
+	public Map<DataLevel, List<KeyValue<String, Configurable>>> copyAllToConfigurableMap() {
+		Map<DataLevel, List<KeyValue<String, Configurable>>> map = new HashMap<>();
+		map.put(DataLevel.System, systemMacros.toKeyValueList());
+		map.put(DataLevel.Application, applicationMacros.toKeyValueList());
+		map.put(DataLevel.Workspace, workspaceMacros.toKeyValueList());
+		map.put(DataLevel.Project, projectMacros.toKeyValueList());
+		return map;
+	}
+
+	@Override
 	public int getEntryCount() {
 		return systemMacros.getMacros().size()
 				+ applicationMacros.getMacros().size()
@@ -304,14 +315,19 @@ public class MacroRegistry implements Registry<String, Macro> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", myLevel.name());
 			for (Macro macro : macros) {
-				Configurable.Simple mc = new Configurable.Simple("macro");
-				mc.addAttribute("key", macro.getKey());
-				if (macro.getComment() != null) {
-					mc.addAttribute("comment", macro.getComment());
-				}
-				mc.addNestedConfigurable(new SerializableValueConfigurable(macro.getValue()));
-				config.addNestedConfigurable(mc);
+				config.addNestedConfigurable(toConfigurable(macro));
 			}
+		}
+
+		@NotNull
+		public Configurable toConfigurable(@NotNull Macro macro) {
+			Configurable.Simple mc = new Configurable.Simple("macro");
+			mc.addAttribute("key", macro.getKey());
+			if (macro.getComment() != null) {
+				mc.addAttribute("comment", macro.getComment());
+			}
+			mc.addNestedConfigurable(new SerializableValueConfigurable(macro.getValue()));
+			return mc;
 		}
 
 		@Override
@@ -322,6 +338,15 @@ public class MacroRegistry implements Registry<String, Macro> {
 
 		public void addMacro(@NotNull Macro macro) {
 			macros.add(macro);
+		}
+
+		@NotNull
+		public List<KeyValue<String, Configurable>> toKeyValueList() {
+			List<KeyValue<String, Configurable>> list = new ArrayList<>();
+			for (Macro m : macros) {
+				list.add(new KeyValue<>(m.getKey(), toConfigurable(m)));
+			}
+			return list;
 		}
 	}
 

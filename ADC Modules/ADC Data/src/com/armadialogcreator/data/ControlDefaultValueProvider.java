@@ -14,10 +14,10 @@ import java.util.Map;
 public class ControlDefaultValueProvider {
 	public static void addDefaultValuesFromSystemSheet(@NotNull ArmaControl control) {
 		DefaultValueProviderSheetRegistry registry = DefaultValueProviderSheetRegistry.instance;
-		String name = registry.getSystemSheetName(control.getControlType().name());
+		String name = registry.getSystemSheetName("Control." + control.getControlType().name());
 		DefaultValueSheet sheet = registry.get(name, DataLevel.System);
 		if (sheet == null) {
-			throw new IllegalStateException();
+			throw new IllegalStateException(name);
 		}
 		addDefaultValues(control, sheet);
 	}
