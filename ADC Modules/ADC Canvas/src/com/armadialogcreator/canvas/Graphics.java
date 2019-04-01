@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.ColorUtil;
+import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Effect;
@@ -253,5 +254,22 @@ public class Graphics {
 
 	public void setGlobalBlendMode(@NotNull BlendMode mode) {
 		gc.setGlobalBlendMode(mode);
+	}
+
+	public void setTextBaseline(@NotNull VPos pos) {
+		gc.setTextBaseline(pos);
+	}
+
+	/** Fills a rectangle with no anti aliasing */
+	public void fillRectNoAA(int x, int y, double width, double height) {
+		gc.fillRect(x, y, width, height);
+	}
+
+	public void setLineDashes(double... dash) {
+		gc.setLineDashes(dash);
+	}
+
+	public void setLineDashOffset(int offset) {
+		gc.setLineDashOffset(offset);
 	}
 }

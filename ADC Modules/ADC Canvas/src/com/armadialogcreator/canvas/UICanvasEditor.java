@@ -194,7 +194,7 @@ public class UICanvasEditor extends UICanvas {
 			gc.save();
 			gc.setStroke(colors.selection);
 			gc.setLineWidth(2);
-			graphics.strokeRectangle(selection);
+			gc.strokeRectangle(selection);
 			gc.restore();
 		}
 		if (absRegionComponent.alwaysRenderAtFront()) {
@@ -209,7 +209,6 @@ public class UICanvasEditor extends UICanvas {
 		}
 		super.paintRootNode();
 		gc.save();
-		graphics.save();
 		Iterator<UINode> iter = selection.getSelected().iterator();
 		while (iter.hasNext()) {
 			UINode node = iter.next();
@@ -220,11 +219,10 @@ public class UICanvasEditor extends UICanvas {
 				iter.remove();
 				continue;
 			}
-			graphics.setStroke(node.getComponent().getBackgroundColor());
-			graphics.strokeRectangle(node.getComponent());
+			gc.setStroke(node.getComponent().getBackgroundColor());
+			gc.strokeRectangle(node.getComponent());
 		}
 		gc.restore();
-		graphics.restore();
 	}
 
 	@Override
@@ -271,7 +269,7 @@ public class UICanvasEditor extends UICanvas {
 			int height = node.getComponent().getHeight();
 			gc.setEffect(selectionEffect);
 			gc.setFill(colors.selection);
-			gc.fillRect(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
+			gc.fillRectNoAA(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
 			gc.restore();
 		}
 		super.paintNode(node);
@@ -283,7 +281,7 @@ public class UICanvasEditor extends UICanvas {
 
 	protected void paintAbsRegionComponent() {
 		if (!absRegionComponent.isGhost() && !isSelectingArea()) {
-			absRegionComponent.paint(graphics);
+			absRegionComponent.paint(gc);
 		}
 	}
 
@@ -319,7 +317,7 @@ public class UICanvasEditor extends UICanvas {
 		int offsety = 0;
 		int numX = (int) (w / spacingX);
 		int numY = (int) (h / spacingY);
-		double ys, xs;
+		int ys, xs;
 		double antiAlias = 0.5;
 		gc.save();
 		if (light) {
@@ -332,12 +330,12 @@ public class UICanvasEditor extends UICanvas {
 			gc.translate(offsetx, offsety);
 		}
 		for (int y = 0; y <= numY; y++) {
-			ys = Math.floor(y * spacingY);
-			gc.strokeLine(0 + antiAlias - offsetx, ys + antiAlias, w - antiAlias + offsetx, ys + antiAlias);
+			ys = (int) (y * spacingY);
+			gc.strokeLine(0 - offsetx, ys, w + offsetx, ys);
 		}
 		for (int x = 0; x <= numX; x++) {
-			xs = Math.floor(x * spacingX);
-			gc.strokeLine(xs + antiAlias, 0 + antiAlias - offsety, xs + antiAlias, h - antiAlias + offsety);
+			xs = (int) (x * spacingX);
+			gc.strokeLine(xs, 0 - offsety, xs, h + offsety);
 		}
 		gc.restore();
 	}

@@ -10,7 +10,6 @@ import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
@@ -30,10 +29,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	/** javafx Canvas */
 	protected final Canvas canvas;
-	/** GraphicsContext for the canvas */
-	protected final GraphicsContext gc;
 
-	protected final Graphics graphics;
+	/** Graphics for the canvas */
+	protected final Graphics gc;
 
 	/** The timer that handles repainting */
 	protected final CanvasAnimationTimer timer;
@@ -80,8 +78,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		});
 
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
-		this.gc = this.canvas.getGraphicsContext2D();
-		this.graphics = new Graphics(gc);
+		this.gc = new Graphics(canvas.getGraphicsContext2D());
 
 		this.getChildren().add(this.canvas);
 		UICanvas.CanvasMouseEvent mouseEvent = new UICanvas.CanvasMouseEvent(this);
@@ -164,10 +161,10 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		paintBackground();
 		paintRootNode();
 		paintComponents();
-		for (Consumer<Graphics> f : graphics.getPaintLast()) {
-			f.accept(graphics);
+		for (Consumer<Graphics> f : gc.getPaintLast()) {
+			f.accept(gc);
 		}
-		graphics.getPaintLast().clear();
+		gc.getPaintLast().clear();
 		gc.restore();
 	}
 
@@ -212,12 +209,12 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	protected void paintBackground() {
 		gc.setFill(backgroundColor);
-		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		gc.fillRectNoAA(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 		if (backgroundImage == null) {
 			return;
 		}
 		gc.setFill(backgroundImage);
-		gc.fillRect(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
+		gc.fillRectNoAA(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
 	protected void paintNode(@NotNull UINode node) {
@@ -231,8 +228,8 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		if (component.isGhost()) {
 			return;
 		}
-		graphics.save();
-		component.paint(graphics);
+		gc.save();
+		component.paint(gc);
 		gc.restore();
 	}
 
