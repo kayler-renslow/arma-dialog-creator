@@ -17,9 +17,6 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 	private SerializableValue valueWhenPropertyAbsent;
 	@Nullable
 	private ConfigProperty configProperty;
-	@Nullable
-	private Macro macro;
-
 	private final NotNullValueListener<SerializableValue> valueListener = new NotNullValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull NotNullValueObserver<SerializableValue> valueObserver, @NotNull SerializableValue oldValue, @NotNull SerializableValue newValue) {
@@ -37,29 +34,11 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 	void setConfigProperty(@Nullable ConfigProperty property) {
 		if (property != null) {
-			property.setValue(observer.getValue());
-			if (property.getBoundMacro() != macro) {
-				if (macro == null) {
-					property.clearMacro();
-				} else {
-					property.bindToMacro(macro);
-
-					//remove the redundant listener from macro as it gets added back at :addValueListener
-					macro.getValueObserver().removeListener(valueListener);
-				}
-
-				//:addValueListener
-				property.addValueListener(valueListener);
-			} else {
-				observer.updateValue(property.getValue());
-			}
+			observer.updateValue(property.getValue());
+			property.addValueListener(valueListener);
 		} else if (this.configProperty != null) {
 			configProperty.removeValueListener(valueListener);
-			if (macro != null) {
-				macro.getValueObserver().addListener(valueListener);
-			} else {
-				observer.updateValue(valueWhenPropertyAbsent);
-			}
+			observer.updateValue(valueWhenPropertyAbsent);
 		}
 		this.configProperty = property;
 	}
@@ -82,7 +61,6 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 	@Override
 	public void bindToMacro(@NotNull Macro m) {
-		this.macro = m;
 		if (configProperty != null) {
 			configProperty.bindToMacro(m);
 		} else {
@@ -92,10 +70,6 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 	@Override
 	public boolean clearMacro() {
-		if (macro == null) {
-			return false;
-		}
-		macro.getValueObserver().removeListener(valueListener);
 		if (configProperty != null) {
 			return configProperty.clearMacro();
 		}
@@ -104,13 +78,13 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 	@Override
 	public boolean isBoundToMacro() {
-		return macro != null;
+		return configProperty != null && configProperty.isBoundToMacro();
 	}
 
 	@Override
 	@Nullable
 	public Macro getBoundMacro() {
-		return macro;
+		return configProperty != null ? configProperty.getBoundMacro() : null;
 	}
 
 	@Override

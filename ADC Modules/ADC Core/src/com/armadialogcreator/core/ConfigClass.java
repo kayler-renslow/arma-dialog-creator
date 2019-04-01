@@ -294,10 +294,6 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		if (properties.isImmutable()) {
 			return;
 		}
-		ConfigClass extending = extendClassObserver.getValue();
-		if (extending == null) {
-			return;
-		}
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
 		if (myProperty != null) {
 			boolean removed = propertiesInheritedOwnedByParent.remove(myProperty);
@@ -311,6 +307,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 					proxy.setConfigProperty(property);
 				}
 			}
+			// update the value
+			myProperty.setValue(initialValue);
 			return;
 		}
 		ConfigProperty property = new ConfigProperty(propertyName, initialValue);
@@ -430,12 +428,21 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@Override
 	@Nullable
-	public ReadOnlyIterable<ConfigPropertyLookup> iterateLookupProperties() {
+	public ReadOnlyIterable<ConfigPropertyLookupConstant> iterateLookupProperties() {
 		return null;
 	}
 
 	@Nullable
-	public ConfigPropertyLookup getLookup(@NotNull String name) {
+	public ConfigPropertyLookupConstant getLookup(@NotNull String name) {
+		ReadOnlyIterable<ConfigPropertyLookupConstant> iterable = iterateLookupProperties();
+		if (iterable == null) {
+			return null;
+		}
+		for (ConfigPropertyLookupConstant key : iterable) {
+			if (key.getPropertyName().equalsIgnoreCase(name)) {
+				return key;
+			}
+		}
 		return null;
 	}
 

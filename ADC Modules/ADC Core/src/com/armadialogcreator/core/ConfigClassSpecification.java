@@ -17,7 +17,7 @@ public interface ConfigClassSpecification {
 
 	@Nullable String getExtendClassName();
 
-	@Nullable ReadOnlyIterable<ConfigPropertyLookup> iterateLookupProperties();
+	@Nullable ReadOnlyIterable<ConfigPropertyLookupConstant> iterateLookupProperties();
 
 	@NotNull
 	UpdateListenerGroup<ConfigClassUpdate> getClassUpdateGroup();

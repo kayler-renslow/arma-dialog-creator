@@ -2,7 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
@@ -25,7 +25,7 @@ public class ControlDefaultValueProvider {
 	public static void addDefaultValues(@NotNull ArmaControl control, @NotNull DefaultValueSheet sheet) {
 		Env env = ExpressionEnvManager.instance.getEnv();
 		for (Map.Entry<String, DefaultValueSheet.Property> entry : sheet.getProperties().entrySet()) {
-			ConfigPropertyLookup lookup = control.getLookup(entry.getKey());
+			ConfigPropertyLookupConstant lookup = control.getLookup(entry.getKey());
 			if (lookup == null) {
 				continue;
 			}

@@ -4,12 +4,12 @@ import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
 import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.RequirementsConfigClass;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.expression.Env;
-import com.armadialogcreator.util.EmptyIterable;
-import com.armadialogcreator.util.UpdateListenerGroup;
+import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -211,4 +211,23 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	public boolean isBackgroundControl() {
 		return display.controlIsBackgroundControl(this);
 	}
+
+	@Override
+	@NotNull
+	public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
+		return armaControlLookup.specProvider.getRequiredProperties();
+	}
+
+	@Override
+	@NotNull
+	public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
+		return armaControlLookup.specProvider.getOptionalProperties();
+	}
+
+	@Override
+	@Nullable
+	public ReadOnlyIterable<ConfigPropertyLookupConstant> iterateLookupProperties() {
+		return new ReadOnlyIterable<>(new DoubleIterable<>(getRequiredProperties(), getOptionalProperties()));
+	}
+
 }

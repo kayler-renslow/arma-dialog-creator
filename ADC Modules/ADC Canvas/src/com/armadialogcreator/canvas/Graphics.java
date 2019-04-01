@@ -107,9 +107,12 @@ public class Graphics {
 		// gc.fillRect(x1 + antiAlias, y1 + antiAlias, w - antiAlias, h + antiAlias);
 		final int x2 = x1 + w;
 		final int y2 = y1 + h;
+		Paint old = gc.getStroke();
+		gc.setStroke(gc.getFill());
 		for (int y = y1; y < y2; y++) {
 			gc.strokeLine(x1 + antiAlias, y + antiAlias, x2 - antiAlias, y + antiAlias);
 		}
+		gc.setStroke(old);
 	}
 
 	/**
