@@ -66,7 +66,11 @@ public class DataContext {
 	}
 
 	@Nullable
-	public Object getValue(Key<?> key, Object defaultValue) {
-		return map.getOrDefault(key, defaultValue);
+	public Object getValue(@NotNull Key<?> key, Object defaultValue) {
+		Object o = map.get(key.getName());
+		if (o == null) {
+			return defaultValue;
+		}
+		return o;
 	}
 }

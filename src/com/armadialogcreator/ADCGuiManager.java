@@ -5,13 +5,16 @@ import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.*;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.CanvasView;
+import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.util.AColorConstant;
 import com.armadialogcreator.util.ApplicationSingleton;
+import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
 
@@ -82,6 +85,22 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
 		if (mainWindow.isShowing()) {
 			mainWindow.getCanvasView().updateCanvas();
+		}
+	}
+
+	public boolean isBackgroundControlTreeView(@NotNull TreeView treeView) {
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
+		CanvasView canvasView = mainWindow.getCanvasView();
+		return canvasView.getBackgroundControlTreeView() == treeView;
+	}
+
+	public void addControlToTreeView(@NotNull ArmaControl control, boolean backgroundControl) {
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
+		CanvasView canvasView = mainWindow.getCanvasView();
+		if (backgroundControl) {
+			canvasView.getBackgroundControlTreeView().addChildDataToRoot(new ControlTreeItemEntry(control));
+		} else {
+			canvasView.getMainControlTreeView().addChildDataToRoot(new ControlTreeItemEntry(control));
 		}
 	}
 }

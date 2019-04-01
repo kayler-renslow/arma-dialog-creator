@@ -434,6 +434,11 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return null;
 	}
 
+	@Nullable
+	public ConfigPropertyLookup getLookup(@NotNull String name) {
+		return null;
+	}
+
 	@NotNull
 	public ConfigClass findNestedClass(@NotNull String className) {
 		ConfigClass c = findNestedClassNullable(className);

@@ -4,7 +4,6 @@ import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
-import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,14 +32,9 @@ public interface CanvasView {
 	 */
 	void updateAbsRegion(int alwaysFront, int showing);
 
-	@NotNull EditorComponentTreeView<UINodeTreeItemData> getMainControlTreeView();
+	@NotNull EditorComponentTreeView getMainControlTreeView();
 
-	@NotNull EditorComponentTreeView<UINodeTreeItemData> getBackgroundControlTreeView();
-
-	/** @return true if treeView == {@link #getBackgroundControlTreeView()}, false otherwise */
-	default boolean isBackgroundTreeView(@NotNull EditorComponentTreeView<UINodeTreeItemData> treeView) {
-		return treeView == getBackgroundControlTreeView();
-	}
+	@NotNull EditorComponentTreeView getBackgroundControlTreeView();
 
 	@NotNull
 	UICanvasEditorColors getColors();

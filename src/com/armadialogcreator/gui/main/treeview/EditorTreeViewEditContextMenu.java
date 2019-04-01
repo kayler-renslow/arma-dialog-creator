@@ -22,7 +22,7 @@ import java.util.ResourceBundle;
  @author Kayler
  @since 07/13/2016. */
 public class EditorTreeViewEditContextMenu extends ContextMenu {
-	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView,
+	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView treeView,
 										 @NotNull ControlTreeItemEntry entryClicked) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		CheckMenuItem checkMenuItemEnable = new CheckMenuItem(bundle.getString("ContextMenu.ControlEdit.enable"));
@@ -68,7 +68,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		addCommon(treeView, entryClicked, bundle);
 	}
 
-	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView,
+	public EditorTreeViewEditContextMenu(@NotNull EditorComponentTreeView treeView,
 										 @NotNull FolderTreeItemEntry entryClicked) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 
@@ -95,7 +95,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		addCommon(treeView, entryClicked, bundle);
 	}
 
-	private void addCommon(@NotNull EditorComponentTreeView<? extends UINodeTreeItemData> treeView, @NotNull UINodeTreeItemData entryClicked, ResourceBundle bundle) {
+	private void addCommon(@NotNull EditorComponentTreeView treeView, @NotNull UINodeTreeItemData entryClicked, ResourceBundle bundle) {
 		MenuItem miClearSelection = new MenuItem(bundle.getString("ContextMenu.ControlEdit.clear_selection"));
 		miClearSelection.setOnAction(new EventHandler<ActionEvent>() {
 			@Override

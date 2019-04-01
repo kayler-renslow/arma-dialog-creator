@@ -9,7 +9,6 @@ import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
-import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
@@ -37,8 +36,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 	private final ADCCanvasView canvasView;
-	private final EditorComponentTreeView<UINodeTreeItemData> treeViewMain;
-	private final EditorComponentTreeView<UINodeTreeItemData> treeViewBg;
+	private final EditorComponentTreeView treeViewMain;
+	private final EditorComponentTreeView treeViewBg;
 	private final ChoiceBox<Percentage> choiceBoxAltStep = new ChoiceBox<>();
 	private final ChoiceBox<Percentage> choiceBoxStep = new ChoiceBox<>();
 	private final CheckBox checkBoxViewportSnapping = new CheckBox(bundle.getString("CanvasControls.viewport_snapping"));
@@ -49,8 +48,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 	CanvasControls(ADCCanvasView canvasView) {
 		super(5);
 		this.canvasView = canvasView;
-		treeViewMain = new EditorComponentTreeView<>(UINode.EMPTY);
-		treeViewBg = new EditorComponentTreeView<>(UINode.EMPTY);
+		treeViewMain = new EditorComponentTreeView(UINode.EMPTY);
+		treeViewBg = new EditorComponentTreeView(UINode.EMPTY);
 		initializeUI();
 	}
 
@@ -101,7 +100,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 		final double vertSpacing = 5;
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveUpHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -123,7 +122,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveDownHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -145,7 +144,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownIntoHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveDownIntoHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -166,7 +165,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpIntoHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveUpIntoHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -187,7 +186,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveDownOutHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveDownOutHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -208,7 +207,7 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			return null;
 		};
 
-		Function<EditorComponentTreeView<? extends UINodeTreeItemData>, Void> funcMoveUpOutHandler = treeView -> {
+		Function<EditorComponentTreeView, Void> funcMoveUpOutHandler = treeView -> {
 			TreeItem item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
@@ -457,13 +456,13 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 	/** Get the tree view used for storing controls that is meant for non-background controls */
 	@NotNull
-	public EditorComponentTreeView<UINodeTreeItemData> getTreeViewMain() {
+	public EditorComponentTreeView getTreeViewMain() {
 		return treeViewMain;
 	}
 
 	/** Get the tree view used for storing controls that is meant <b>for</b> background controls */
 	@NotNull
-	public EditorComponentTreeView<UINodeTreeItemData> getTreeViewBackground() {
+	public EditorComponentTreeView getTreeViewBackground() {
 		return treeViewBg;
 	}
 

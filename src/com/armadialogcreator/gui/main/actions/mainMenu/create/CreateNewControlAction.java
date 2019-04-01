@@ -1,13 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaDisplay;
-import com.armadialogcreator.control.impl.ArmaControlLookup;
-import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.data.ConfigClassRegistry;
-import com.armadialogcreator.data.EditorManager;
-import com.armadialogcreator.data.ExpressionEnvManager;
-import com.armadialogcreator.gui.main.popup.newControl.NewControlDialog;
+import com.armadialogcreator.gui.main.actions.NewControlAction;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 
@@ -17,29 +10,7 @@ import javafx.event.EventHandler;
 public class CreateNewControlAction implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
-		NewControlDialog dialog = new NewControlDialog(null, false);
-		dialog.show();
-		if (dialog.wasCancelled()) {
-			return;
-		}
-
-		EditorManager editorManager = EditorManager.instance;
-
-		String className = dialog.getClassName();
-		ControlType controlType = dialog.getControlType();
-		boolean backgroundControl = dialog.isBackgroundControl();
-		ArmaControlLookup lookup = ArmaControlLookup.findByControlType(controlType);
-		ArmaDisplay display = editorManager.getEditingDisplay();
-
-		ArmaControl control = ArmaControl.createControl(className, lookup, editorManager.getResolution(),
-				ExpressionEnvManager.instance.getEnv(), display);
-
-		if (backgroundControl) {
-			editorManager.getEditingDisplay().getBackgroundControlNodes().addChild(control);
-		} else {
-			editorManager.getEditingDisplay().getControlNodes().addChild(control);
-		}
-
-		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
+		NewControlAction action = new NewControlAction(true);
+		action.doAction();
 	}
 }

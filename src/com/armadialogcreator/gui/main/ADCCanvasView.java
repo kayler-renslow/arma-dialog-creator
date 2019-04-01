@@ -93,8 +93,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 		syncTreeView(canvasControls.getTreeViewBackground());
 	}
 
-	private void syncTreeView(EditorComponentTreeView<? extends UINodeTreeItemData> treeView) {
-		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<UINode>() {
+	private void syncTreeView(EditorComponentTreeView treeView) {
+		uiCanvasEditor.getSelection().getSelected().addListener(new ListChangeListener<>() {
 			@Override
 			public void onChanged(Change<? extends UINode> c) {
 				if (selectFromTreeView) {
@@ -168,13 +168,13 @@ class ADCCanvasView extends HBox implements CanvasView {
 
 	@NotNull
 	@Override
-	public EditorComponentTreeView<UINodeTreeItemData> getMainControlTreeView() {
+	public EditorComponentTreeView getMainControlTreeView() {
 		return canvasControls.getTreeViewMain();
 	}
 
 	@NotNull
 	@Override
-	public EditorComponentTreeView<UINodeTreeItemData> getBackgroundControlTreeView() {
+	public EditorComponentTreeView getBackgroundControlTreeView() {
 		return canvasControls.getTreeViewBackground();
 	}
 
