@@ -8,14 +8,13 @@ import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.expression.SimpleEnv;
 import com.armadialogcreator.util.AColor;
 import com.armadialogcreator.util.ColorUtil;
+import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  @author K
@@ -55,15 +54,37 @@ public class Settings {
 	protected final Configurable copyToConfigurable() {
 		Configurable c = new Configurable.Simple("settings");
 		map.forEach((key, value) -> {
-			Configurable setting = new Configurable.Simple("s");
-			setting.addAttribute("name", key);
-			if (value.get() == null && value.getDefaultValue() == null) {
+			Configurable conf = toConfigurable(key, value);
+			if (conf == null) {
 				return;
 			}
-			setting.addNestedConfigurable(value.exportToConfigurable());
-			c.addNestedConfigurable(setting);
+			c.addNestedConfigurable(conf);
 		});
 		return c;
+	}
+
+	@Nullable
+	private Configurable toConfigurable(@NotNull String settingName, @NotNull Setting value) {
+		Configurable setting = new Configurable.Simple("s");
+		setting.addAttribute("name", settingName);
+		if (value.get() == null && value.getDefaultValue() == null) {
+			return null;
+		}
+		setting.addNestedConfigurable(value.exportToConfigurable());
+		return setting;
+	}
+
+	@NotNull
+	public List<KeyValue<String, Configurable>> toKeyValueList() {
+		List<KeyValue<String, Configurable>> list = new ArrayList<>();
+		map.forEach((s, setting) -> {
+			Configurable conf = toConfigurable(s, setting);
+			if (conf == null) {
+				conf = new Configurable.Simple(s + "=(NULL)");
+			}
+			list.add(new KeyValue<>(s, conf));
+		});
+		return list;
 	}
 
 	public static class FileSetting extends Setting<File> {

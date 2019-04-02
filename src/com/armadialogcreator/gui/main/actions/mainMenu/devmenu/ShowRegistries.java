@@ -144,6 +144,7 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 			choiceBox.getItems().add(new RegistryDescriptor(ConfigClassRegistry.instance));
 			choiceBox.getItems().add(new RegistryDescriptor(FileDependencyRegistry.instance));
 			choiceBox.getItems().add(new RegistryDescriptor(DefaultValueProviderSheetRegistry.instance));
+			choiceBox.getItems().add(new RegistryDescriptor(SettingsManager.instance));
 		}
 
 		@Nullable

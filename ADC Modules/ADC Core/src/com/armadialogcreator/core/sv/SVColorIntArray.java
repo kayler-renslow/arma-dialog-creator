@@ -125,7 +125,7 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 
 	@Override
 	public double getRedF() {
-		return r;
+		return r / 255.0;
 	}
 
 	@Override
@@ -135,7 +135,7 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 
 	@Override
 	public double getGreenF() {
-		return g;
+		return g / 255.0;
 	}
 
 	@Override
@@ -145,7 +145,7 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 
 	@Override
 	public double getBlueF() {
-		return b;
+		return b / 255.0;
 	}
 
 	@Override
@@ -155,7 +155,7 @@ public class SVColorIntArray extends SerializableValue implements SVColor {
 
 	@Override
 	public double getAlphaF() {
-		return a;
+		return a / 255.0;
 	}
 
 	@Override
