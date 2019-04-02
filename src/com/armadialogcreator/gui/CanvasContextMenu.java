@@ -1,24 +1,25 @@
-package com.armadialogcreator.canvas;
+package com.armadialogcreator.gui;
 
-import javafx.scene.control.ContextMenu;
-/*
+import com.armadialogcreator.ADCGuiManager;
+import com.armadialogcreator.canvas.UICanvasConfiguration;
+import com.armadialogcreator.canvas.UICanvasEditor;
 import com.armadialogcreator.gui.main.actions.ToggleViewportSnappingAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.view.ViewShowGridAction;
-import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.CheckMenuItem;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 
 import java.util.ResourceBundle;
-*/
+
 
 /**
  Used with {@link UICanvasEditor#setCanvasContextMenu(ContextMenu)}.
@@ -27,7 +28,7 @@ import java.util.ResourceBundle;
  @since 11/15/2016 */
 public class CanvasContextMenu extends ContextMenu {
 	public CanvasContextMenu() {
-	/*
+
 	ResourceBundle bundle = Lang.getBundle("MainMenuBarBundle");
 		Menu menuCreate = new Menu(
 				bundle.getString("create"), null,
@@ -44,20 +45,22 @@ public class CanvasContextMenu extends ContextMenu {
 		getItems().add(menuItemViewportSnap);
 		getItems().add(menuItemShowGrid);
 
-		showingProperty().addListener(new ChangeListener<Boolean>() {
+		showingProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				menuItemViewportSnap.setSelected(ArmaDialogCreator.getCanvasView().getConfiguration().viewportSnapEnabled());
+				UICanvasConfiguration conf = ADCGuiManager.instance.getCanvasConfiguration();
+				menuItemViewportSnap.setSelected(conf.viewportSnapEnabled());
 			}
 		});
-		showingProperty().addListener(new ChangeListener<Boolean>() {
+		showingProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-				menuItemShowGrid.setSelected(ArmaDialogCreator.getCanvasView().getConfiguration().showGrid());
+				UICanvasConfiguration conf = ADCGuiManager.instance.getCanvasConfiguration();
+				menuItemShowGrid.setSelected(conf.showGrid());
 			}
-		});*/
+		});
 	}
-/*
+
 	private static <E extends MenuItem> E addOnAction(E menuItem, EventHandler<ActionEvent> event) {
 		menuItem.setOnAction(event);
 		return menuItem;
@@ -68,5 +71,5 @@ public class CanvasContextMenu extends ContextMenu {
 		menuItem.setOnAction(event);
 		return menuItem;
 	}
-*/
+
 }

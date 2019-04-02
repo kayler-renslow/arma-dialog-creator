@@ -4,14 +4,12 @@ import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.effect.Effect;
-import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -77,15 +75,6 @@ public class UICanvasEditor extends UICanvas {
 		setConfig(configuration);
 
 		gc.setTextBaseline(VPos.CENTER);
-		this.setOnContextMenuRequested(new EventHandler<ContextMenuEvent>() {
-			@Override
-			public void handle(ContextMenuEvent event) {
-				if (contextMenu != null) {
-					Point2D p = getCanvas().localToScreen(contextMenuPosition.getX(), contextMenuPosition.getY());
-					contextMenu.show(getCanvas(), p.getX(), p.getY());
-				}
-			}
-		});
 
 		absRegionComponent = new ArmaAbsoluteBoxComponent(colors.absRegion, resolution);
 		selection.selected.addListener(new ListChangeListener<UINode>() {
@@ -453,8 +442,10 @@ public class UICanvasEditor extends UICanvas {
 			if (menuCreator != null && selection.getFirst() != null) {
 				contextMenuControl = selection.getFirst();
 				setContextMenu(menuCreator.initialize(contextMenuControl.getComponent()), mousex, mousey);
+				showContextMenu();
 			} else if (canvasContextMenu != null) {
 				setContextMenu(canvasContextMenu, mousex, mousey);
+				showContextMenu();
 			}
 		} else {
 			if (hasDoubleClickedCtrl) {
@@ -788,6 +779,13 @@ public class UICanvasEditor extends UICanvas {
 			} else if (cm == canvasContextMenu && mouseOverNode != null) {
 				cm.hide();
 			}
+		}
+	}
+
+	private void showContextMenu() {
+		if (contextMenu != null) {
+			Point2D p = getCanvas().localToScreen(contextMenuPosition.getX(), contextMenuPosition.getY());
+			contextMenu.show(getCanvas(), p.getX(), p.getY());
 		}
 	}
 

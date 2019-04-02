@@ -4,10 +4,12 @@ import com.armadialogcreator.application.ADCDataWriteException;
 import com.armadialogcreator.application.ApplicationManager;
 import com.armadialogcreator.application.ApplicationStateSubscriber;
 import com.armadialogcreator.application.Project;
+import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.*;
+import com.armadialogcreator.gui.CanvasContextMenu;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.CanvasView;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
@@ -45,6 +47,8 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 			ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
 			colors.editorBg = projectSettings.EditorBackgroundSetting.get().toJavaFXColor();
 			colors.grid = projectSettings.EditorGridColorSetting.get().toJavaFXColor();
+
+			canvasView.setCanvasContextMenu(new CanvasContextMenu());
 		});
 	}
 
@@ -102,5 +106,12 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 		} else {
 			canvasView.getMainControlTreeView().addChildDataToRoot(new ControlTreeItemEntry(control));
 		}
+	}
+
+	@NotNull
+	public UICanvasConfiguration getCanvasConfiguration() {
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
+		CanvasView canvasView = mainWindow.getCanvasView();
+		return canvasView.getConfiguration();
 	}
 }

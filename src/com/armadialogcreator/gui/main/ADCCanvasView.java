@@ -2,7 +2,10 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.data.EditorManager;
+import com.armadialogcreator.gui.CanvasContextMenu;
+import com.armadialogcreator.gui.DefaultComponentContextMenu;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
@@ -76,12 +79,15 @@ class ADCCanvasView extends HBox implements CanvasView {
 		uiCanvasEditor.setComponentMenuCreator(new ComponentContextMenuCreator() {
 			@Override
 			public @NotNull ContextMenu initialize(CanvasComponent component) {
-				return new DefaultComponentContextMenu(/*((ArmaControlRenderer) component).getMyControl()*/);
+				if (component instanceof ArmaControlRenderer) {
+					return new DefaultComponentContextMenu(((ArmaControlRenderer) component).getMyControl());
+				}
+				return new ContextMenu();
 			}
 		});
 		uiCanvasEditor.getDoubleClickUpdateGroup().addListener((group, clickedControl) -> {
-			if (clickedControl != null && clickedControl == uiCanvasEditor.getSelection().getFirst()) {
-				//DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) clickedControl);
+			if (clickedControl == uiCanvasEditor.getSelection().getFirst()) {
+				DefaultComponentContextMenu.showControlPropertiesPopup((ArmaControl) clickedControl);
 			}
 		});
 		uiCanvasEditor.setCanvasContextMenu(new CanvasContextMenu());
@@ -187,6 +193,16 @@ class ADCCanvasView extends HBox implements CanvasView {
 	@Override
 	public void setRootEditingUINode(@NotNull UINode node) {
 		uiCanvasEditor.setRootNode(node);
+	}
+
+	@Override
+	public void setCanvasContextMenu(@Nullable ContextMenu contextMenu) {
+		uiCanvasEditor.setCanvasContextMenu(contextMenu);
+	}
+
+	@Override
+	public void setComponentContextMenuCreator(@NotNull ComponentContextMenuCreator cmc) {
+		uiCanvasEditor.setComponentMenuCreator(cmc);
 	}
 
 	@NotNull

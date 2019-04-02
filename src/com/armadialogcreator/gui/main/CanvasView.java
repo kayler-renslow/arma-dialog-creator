@@ -1,9 +1,11 @@
 package com.armadialogcreator.gui.main;
 
+import com.armadialogcreator.canvas.ComponentContextMenuCreator;
 import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
+import javafx.scene.control.ContextMenu;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,4 +42,8 @@ public interface CanvasView {
 	UICanvasEditorColors getColors();
 
 	void setRootEditingUINode(@NotNull UINode node);
+
+	void setCanvasContextMenu(@Nullable ContextMenu contextMenu);
+
+	void setComponentContextMenuCreator(@NotNull ComponentContextMenuCreator cmc);
 }
