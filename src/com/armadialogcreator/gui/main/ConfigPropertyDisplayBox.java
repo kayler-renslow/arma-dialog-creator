@@ -35,7 +35,7 @@ public class ConfigPropertyDisplayBox extends HBox {
 		super(5);
 		this.configPropertyKey = property;
 
-		setAlignment(Pos.TOP_LEFT);
+		setAlignment(Pos.CENTER_LEFT);
 		setMaxWidth(Double.MAX_VALUE);
 
 		menuButtonOptions.setText(configPropertyKey.getPropertyName());
