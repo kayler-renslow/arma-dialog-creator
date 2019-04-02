@@ -3,10 +3,7 @@ package com.armadialogcreator.control;
 import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyLookupConstant;
-import com.armadialogcreator.core.ControlType;
-import com.armadialogcreator.core.RequirementsConfigClass;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
@@ -230,4 +227,22 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 		return new ReadOnlyIterable<>(new DoubleIterable<>(getRequiredProperties(), getOptionalProperties()));
 	}
 
+	@Override
+	public @NotNull ConfigPropertyCategory getPropertyCategory(@NotNull ConfigProperty property) {
+		ReadOnlyList<ConfigPropertyLookupConstant> plist = armaControlLookup.specProvider.getOptionalProperties();
+		for (ConfigPropertyLookupConstant c : plist) {
+			if (property.nameEquals(c)) {
+				return ConfigPropertyCategory.Optional;
+			}
+		}
+
+		plist = armaControlLookup.specProvider.getRequiredProperties();
+		for (ConfigPropertyLookupConstant c : plist) {
+			if (property.nameEquals(c)) {
+				return ConfigPropertyCategory.Required;
+			}
+		}
+
+		return super.getPropertyCategory(property);
+	}
 }

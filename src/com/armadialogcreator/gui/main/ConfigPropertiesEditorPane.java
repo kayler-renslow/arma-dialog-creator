@@ -23,14 +23,14 @@ import java.util.*;
 
  @author Kayler
  @since 07/08/2016. */
-public class ControlPropertiesEditorPane extends StackPane {
+public class ConfigPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
 	private final ConfigClass configClass;
 	private boolean listenersAreValid = true;
 
 	private final Map<String, ConfigPropertyEditor> propertyEditors = new HashMap<>();
 
-	private final ResourceBundle bundle = Lang.getBundle("ControlPropertyEditorBundle");
+	private final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 
 	/**
 	 Creates the accordion for editing all owned {@link ConfigClass#iterateProperties()} instances.
@@ -41,7 +41,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	 @param configClass control class that has the properties to edit
 	 */
-	public ControlPropertiesEditorPane(@NotNull ConfigClass configClass) {
+	public ConfigPropertiesEditorPane(@NotNull ConfigClass configClass) {
 		getChildren().add(accordion);
 		setMaxWidth(Double.MAX_VALUE);
 
@@ -56,7 +56,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 			switch (propertyCat) {
 				case Basic: //fall
 				case Optional: {
-
+					optional.addContentChild(getConfigPropertyEditorNode(p));
 					break;
 				}
 				case Event: {
@@ -66,6 +66,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 					break;
 				}
 				case Required: {
+					required.addContentChild(getConfigPropertyEditorNode(p));
 					break;
 				}
 			}
@@ -271,7 +272,7 @@ public class ControlPropertiesEditorPane extends StackPane {
 
 	/** @return the a Node that has a label and an {@link ConfigPropertyEditor} in a form-like layout (lbl:container) */
 	@NotNull
-	private Node getConfigPropertyEntry(@NotNull ConfigProperty property) {
+	private Node getConfigPropertyEditorNode(@NotNull ConfigProperty property) {
 		ConfigPropertyEditor editor = new ConfigPropertyEditor(configClass, property);
 		propertyEditors.put(property.getName(), editor);
 		editor.setUserData(property);

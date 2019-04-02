@@ -3,6 +3,7 @@ package com.armadialogcreator.gui.main.popup.editor;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.StageDialog;
@@ -10,7 +11,7 @@ import com.armadialogcreator.gui.StagePopupUndecorated;
 import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
 import com.armadialogcreator.gui.fxcontrol.SearchTextField;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
-import com.armadialogcreator.gui.main.ControlPropertiesEditorPane;
+import com.armadialogcreator.gui.main.ConfigPropertiesEditorPane;
 import com.armadialogcreator.gui.main.popup.NameInputFieldDialog;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
@@ -37,24 +38,24 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 /**
- Used for editing a control and it's control properties.
+ Used for editing a control and it's {@link ConfigProperty} instances.
 
  @author Kayler
  @since 05/31/2016. */
-public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
+public class ConfigPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private static final Key<Boolean> KEY_HIDE_INHERITED = new Key<>(
-			ControlPropertiesConfigPopup.class.getName() + ".hide_if_inherited",
+			ConfigPropertiesConfigPopup.class.getName() + ".hide_if_inherited",
 			false
 	);
 
 	private final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 
 	private ArmaControl control;
-	private ControlPropertiesEditorPane editorPane;
+	private ConfigPropertiesEditorPane editorPane;
 	private Label lblClassName;
 	private ComboBoxMenuButton<ConfigClass> menuButtonExtendControls;
 	private CheckBox checkBoxIsBackgroundControl;
-	private final ValueListener<SVColor> backgroundColorListener = new ValueListener<SVColor>() {
+	private final ValueListener<SVColor> backgroundColorListener = new ValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<SVColor> observer, SVColor oldValue, SVColor newValue) {
 			if (newValue != null) {
@@ -62,14 +63,14 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
-	private final NotNullValueListener<String> classNameListener = new NotNullValueListener<String>() {
+	private final NotNullValueListener<String> classNameListener = new NotNullValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull NotNullValueObserver<String> observer, @NotNull String oldValue, @NotNull String newValue) {
 			lblClassName.setText(newValue);
 			lblClassName.setTooltip(new Tooltip(newValue));
 		}
 	};
-	private final ValueListener<ConfigClass> controlClassExtendListener = new ValueListener<ConfigClass>() {
+	private final ValueListener<ConfigClass> controlClassExtendListener = new ValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull ValueObserver<ConfigClass> observer, ConfigClass oldValue, ConfigClass newValue) {
 			if (newValue == null) {
@@ -84,7 +85,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			}
 		}
 	};
-	private final UpdateGroupListener<ListObserverChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<ListObserverChange<ArmaControl>>() {
+	private final UpdateGroupListener<ListObserverChange<ArmaControl>> backgroundControlListener = new UpdateGroupListener<>() {
 		@Override
 		public void update(@NotNull UpdateListenerGroup<ListObserverChange<ArmaControl>> group, @NotNull ListObserverChange<ArmaControl> data) {
 			if (data.wasMoved()) {
@@ -104,7 +105,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	};
 
 
-	public ControlPropertiesConfigPopup(@NotNull ArmaControl control) {
+	public ConfigPropertiesConfigPopup(@NotNull ArmaControl control) {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null);
 		this.control = control;
 		initializePopup();
@@ -123,7 +124,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	}
 
 	private void initializeToControl() {
-		editorPane = new ControlPropertiesEditorPane(this.control);
+		editorPane = new ConfigPropertiesEditorPane(this.control);
 		editorPane.setMaxHeight(720d); //prevent the element from being godly large
 
 		Color bg = this.control.getRenderer().getBackgroundColor();
@@ -142,7 +143,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 	private void addFooter(ArmaControl control) {
 		checkBoxIsBackgroundControl = new CheckBox(bundle.getString("ControlPropertiesConfig.is_background_control"));
 		checkBoxIsBackgroundControl.setSelected(control.getDisplay().controlIsBackgroundControl(control));
-		checkBoxIsBackgroundControl.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		checkBoxIsBackgroundControl.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean isBackground) {
 				/*
@@ -172,7 +173,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 
 		final CheckBox checkBoxHideInherited = new CheckBox(bundle.getString("ControlPropertiesConfig.hide_inherited"));
-		checkBoxHideInherited.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		checkBoxHideInherited.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean hideInherited) {
 				editorPane.hideInheritedProperties(hideInherited);
@@ -226,7 +227,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		});
 
 		Button btnClose = new Button("x");
-		btnClose.setOnAction(new EventHandler<ActionEvent>() {
+		btnClose.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				WindowEvent windowEvent = new WindowEvent(myStage, WindowEvent.WINDOW_CLOSE_REQUEST);
@@ -269,7 +270,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		if (control.getExtendClass() != null) {
 			menuButtonExtendControls.chooseItem(control.getExtendClass());
 		}
-		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<ConfigClass>() {
+		menuButtonExtendControls.getSelectedValueObserver().addListener(new ValueListener<>() {
 			@Override
 			public void valueUpdated(@NotNull ValueObserver<ConfigClass> observer, ConfigClass oldValue, ConfigClass selected) {
 				control.extendConfigClass(selected);
@@ -280,7 +281,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			lblClassName = new Label();
 			lblClassName.setFont(Font.font(16));
 			//update the label through the listener instance
-			classNameListener.valueUpdated(control.getClassNameObserver(), null, control.getClassName());
+			classNameListener.valueUpdated(control.getClassNameObserver(), "", control.getClassName());
 		}
 		Label lblColon = new Label(":");
 		lblColon.setFont(lblClassName.getFont());
@@ -291,7 +292,7 @@ public class ControlPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 		hboxLeft.setAlignment(Pos.CENTER_LEFT);
 
 		final SearchTextField tfSearch = new SearchTextField();
-		tfSearch.textProperty().addListener(new ChangeListener<String>() {
+		tfSearch.textProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
 				newValue = newValue != null ? newValue : "";

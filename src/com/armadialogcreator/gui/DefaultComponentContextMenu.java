@@ -1,7 +1,7 @@
 package com.armadialogcreator.gui;
 
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.gui.main.popup.editor.ControlPropertiesConfigPopup;
+import com.armadialogcreator.gui.main.popup.editor.ConfigPropertiesConfigPopup;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -20,7 +20,7 @@ import java.util.LinkedList;
  */
 public class DefaultComponentContextMenu extends ContextMenu {
 
-	private static LinkedList<ControlPropertiesConfigPopup> createdPopups = new LinkedList<>();
+	private static LinkedList<ConfigPropertiesConfigPopup> createdPopups = new LinkedList<>();
 
 	public DefaultComponentContextMenu(@NotNull ArmaControl c) {
 		MenuItem configure = new MenuItem(Lang.ApplicationBundle().getString("ContextMenu.DefaultComponent.configure"));
@@ -43,13 +43,13 @@ public class DefaultComponentContextMenu extends ContextMenu {
 	}
 
 	public static void showControlPropertiesPopup(@NotNull ArmaControl c) {
-		for (ControlPropertiesConfigPopup popup : createdPopups) {
+		for (ConfigPropertiesConfigPopup popup : createdPopups) {
 			if (popup.getControl() == c && popup.isShowing()) {
 				popup.beepFocus();
 				return;
 			}
 		}
-		ControlPropertiesConfigPopup popup = new ControlPropertiesConfigPopup(c);
+		ConfigPropertiesConfigPopup popup = new ConfigPropertiesConfigPopup(c);
 		popup.getOnHiddenProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends EventHandler<WindowEvent>> observable, EventHandler<WindowEvent> oldValue, EventHandler<WindowEvent> newValue) {

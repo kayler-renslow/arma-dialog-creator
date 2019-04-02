@@ -25,7 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 /**
- All editors for {@link ControlPropertiesEditorPane}
+ All editors for {@link ConfigPropertiesEditorPane}
 
  @author Kayler
  @since 01/29/2017 */

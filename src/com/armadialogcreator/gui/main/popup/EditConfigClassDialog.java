@@ -6,7 +6,7 @@ import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.main.ControlPropertiesEditorPane;
+import com.armadialogcreator.gui.main.ConfigPropertiesEditorPane;
 import com.armadialogcreator.gui.main.fxControls.ConfigClassGroupMenu;
 import com.armadialogcreator.gui.main.fxControls.ConfigClassMenuButton;
 import com.armadialogcreator.lang.Lang;
@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 /**
  Dialog window that allows for editing a ({@link ConfigClass}) directly.
- It has a {@link ControlPropertiesEditorPane} embedded into it.
+ It has a {@link ConfigPropertiesEditorPane} embedded into it.
 
  @author Kayler
  @since 06/30/2017 */
@@ -33,7 +33,7 @@ public class EditConfigClassDialog extends StageDialog<VBox> {
 
 	private final ConfigClassMenuButton extendClassMenuButton;
 
-	private ControlPropertiesEditorPane editorPane;
+	private ConfigPropertiesEditorPane editorPane;
 
 	private final ResourceBundle bundle = Lang.ApplicationBundle();
 
@@ -44,7 +44,7 @@ public class EditConfigClassDialog extends StageDialog<VBox> {
 		super(ArmaDialogCreator.getPrimaryStage(), new VBox(5), null, false, true, false);
 		setTitle(bundle.getString("Popups.EditConfigClass.popup_title"));
 
-		editorPane = new ControlPropertiesEditorPane(configClass);
+		editorPane = new ConfigPropertiesEditorPane(configClass);
 
 		editorPane.setMinWidth(720);
 		editorPane.setMinHeight(480);
