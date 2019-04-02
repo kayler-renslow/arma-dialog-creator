@@ -353,4 +353,10 @@ public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E
 	public String toString() {
 		return list.toString();
 	}
+
+	/** Clears the list and then adds all items */
+	public void setAll(@NotNull List<E> list) {
+		clear();
+		addAll(list);
+	}
 }

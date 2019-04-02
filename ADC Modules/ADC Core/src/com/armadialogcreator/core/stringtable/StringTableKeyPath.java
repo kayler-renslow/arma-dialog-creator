@@ -1,22 +1,21 @@
 package com.armadialogcreator.core.stringtable;
 
+import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.ObservableHelper;
 import com.armadialogcreator.util.ReadOnlyValueObserver;
 import com.armadialogcreator.util.ValueObserver;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.Collections;
 
 /**
  @author Kayler
  @since 01/01/2017 */
-public class StringTableKeyPath implements Observable {
+public class StringTableKeyPath extends ObservableHelper {
 	private final ValueObserver<String> packageNameObserver = new ValueObserver<>(null);
-	private final ObservableList<String> containers = FXCollections.observableArrayList();
+	private final ListObserver<String> containers = new ListObserver<>(new ArrayList<>());
 
 	public StringTableKeyPath(@Nullable String packageName, @NotNull String... containers) {
 		this.packageNameObserver.updateValue(packageName);
@@ -48,7 +47,7 @@ public class StringTableKeyPath implements Observable {
 
 	/** Get the containers. Index 0=child of package. Index 1=child of index 0. Index 2 = child of index 1. If empty, then is a child of package. */
 	@NotNull
-	public ObservableList<String> getContainers() {
+	public ListObserver<String> getContainers() {
 		return containers;
 	}
 
@@ -57,17 +56,17 @@ public class StringTableKeyPath implements Observable {
 		return getContainers().size() == 0;
 	}
 
-	@Override
-	public void addListener(InvalidationListener listener) {
-		containers.addListener(listener);
-		packageNameObserver.addListener(listener);
-	}
-
-	@Override
-	public void removeListener(InvalidationListener listener) {
-		containers.removeListener(listener);
-		packageNameObserver.removeListener(listener);
-	}
+	//	@Override
+	//	public void addListener(InvalidationListener listener) {
+	//		containers.addListener(listener);
+	//		packageNameObserver.addListener(listener);
+	//	}
+	//
+	//	@Override
+	//	public void removeListener(InvalidationListener listener) {
+	//		containers.removeListener(listener);
+	//		packageNameObserver.removeListener(listener);
+	//	}
 
 	@Override
 	public boolean equals(Object o) {

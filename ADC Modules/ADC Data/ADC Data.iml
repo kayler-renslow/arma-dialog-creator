@@ -14,5 +14,6 @@
     <orderEntry type="module" module-name="ADC Core" />
     <orderEntry type="module" module-name="ADC Expression" />
     <orderEntry type="module" module-name="ADC Control" />
+    <orderEntry type="module" module-name="ADC Lang" />
   </component>
 </module>

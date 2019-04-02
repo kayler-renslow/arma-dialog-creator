@@ -32,7 +32,7 @@ import javafx.scene.image.ImageView;
 
 import java.util.ResourceBundle;
 
-import static com.armadialogcreator.gui.fxcontrol.MenuUtil.addOnAction;
+import static com.armadialogcreator.gui.FXUtil.addOnAction;
 
 /**
  Created by Kayler on 05/15/2016.

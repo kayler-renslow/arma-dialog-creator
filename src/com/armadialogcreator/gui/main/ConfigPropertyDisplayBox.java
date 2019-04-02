@@ -22,7 +22,7 @@ import org.jetbrains.annotations.NotNull;
 
  @author Kayler
  @since 4/2/2019 */
-public abstract class ConfigPropertyDisplayBox extends HBox {
+public class ConfigPropertyDisplayBox extends HBox {
 	/** The {@link ConfigPropertyKey} that was passed through constructor */
 	protected final ConfigPropertyKey configPropertyKey;
 

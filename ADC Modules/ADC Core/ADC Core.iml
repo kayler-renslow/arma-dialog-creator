@@ -13,5 +13,6 @@
     <orderEntry type="library" scope="TEST" name="junit:junit:4.12" level="project" />
     <orderEntry type="module" module-name="ADC Expression" />
     <orderEntry type="module" module-name="ADC Images" />
+    <orderEntry type="library" scope="PROVIDED" name="openjfx-javafx-11.0.2" level="application" />
   </component>
 </module>

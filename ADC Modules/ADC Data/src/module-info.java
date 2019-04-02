@@ -7,6 +7,7 @@ module ADC.Data {
 	requires ADC.Expression;
 	requires ADC.Util;
 	requires ADC.Control;
+	requires ADC.Lang;
 
 	requires annotations;
 	exports com.armadialogcreator.data;

@@ -8,7 +8,6 @@ module ADC.Core {
 	requires ADC.Images;
 
 	requires transitive javafx.base;
-	requires transitive javafx.graphics;
 	requires annotations;
 
 	exports com.armadialogcreator.core;

@@ -10,6 +10,7 @@ import com.armadialogcreator.application.Project;
 import com.armadialogcreator.application.ProjectPreview;
 import com.armadialogcreator.application.Workspace;
 import com.armadialogcreator.data.ApplicationProperties;
+import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
@@ -76,17 +77,17 @@ public class ADCProjectInitWindow extends WizardStageDialog {
 
 		{
 			ResourceBundle mainMenuBarBundle = Lang.getBundle("MainMenuBarBundle");
-			CheckMenuItem miDarkTheme = MenuUtil.addOnAction(
+			CheckMenuItem miDarkTheme = FXUtil.addOnAction(
 					new CheckMenuItem(mainMenuBarBundle.getString("view_dark_theme")),
 					new ViewDarkThemeAction()
 			);
-			MenuItem miAbout = MenuUtil.addOnAction(
+			MenuItem miAbout = FXUtil.addOnAction(
 					new MenuItem(Lang.ApplicationBundle().getString("Popups.About.dialog_title")),
 					event -> {
 						new AboutDialog().show();
 					}
 			);
-			MenuItem miCheckForUpdate = MenuUtil.addOnAction(
+			MenuItem miCheckForUpdate = FXUtil.addOnAction(
 					new MenuItem(mainMenuBarBundle.getString("help_check_for_update")),
 					new CheckForUpdateAction()
 			);
