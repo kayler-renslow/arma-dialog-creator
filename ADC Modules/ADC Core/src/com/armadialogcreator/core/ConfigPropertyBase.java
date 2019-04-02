@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  @author K
  @since 03/05/2019 */
-public abstract class ConfigPropertyBase {
+public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 
 	@NotNull
 	public abstract NotNullValueObserver<SerializableValue> getValueObserver();
@@ -30,6 +30,12 @@ public abstract class ConfigPropertyBase {
 
 	@NotNull
 	public abstract String getName();
+
+	@Override
+	@NotNull
+	public String getPropertyName() {
+		return getName();
+	}
 
 	public abstract void setValue(@NotNull SerializableValue value);
 

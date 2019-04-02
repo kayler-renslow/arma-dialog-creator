@@ -139,6 +139,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	private final UpdateListenerGroup<ConfigClassUpdate> classUpdateGroup = new UpdateListenerGroup<>();
 	private final DataContext userData = new DataContext();
 	private @Nullable String userComment;
+	/** {@link #getOwnerClass()} */
+	private ConfigClass ownerClass = null;
 
 	public ConfigClass(@NotNull String className) {
 		classNameObserver = new NotNullValueObserver<>(className);
@@ -473,6 +475,12 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	@NotNull
 	public UpdateListenerGroup<ConfigClassUpdate> getClassUpdateGroup() {
 		return classUpdateGroup;
+	}
+
+	@Override
+	@Nullable
+	public ConfigClassSpecification getOwnerClass() {
+		return ownerClass;
 	}
 
 	@Nullable

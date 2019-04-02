@@ -245,4 +245,10 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 
 		return super.getPropertyCategory(property);
 	}
+
+	@Override
+	@Nullable
+	public String getConfigPropertyDocumentationBundle() {
+		return controlType.name();
+	}
 }

@@ -32,7 +32,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 			noMutateException();
 			return false;
 		}
-		ConfigProperty property = map.putIfAbsent(p.getName(), p);
+		ConfigProperty property = map.putIfAbsent(p.getName().toLowerCase(), p);
 		return property == p;
 	}
 
@@ -42,7 +42,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 			noMutateException();
 			return null;
 		}
-		return map.put(property.getName(), property);
+		return map.put(property.getName().toLowerCase(), property);
 	}
 
 	public final void replaceProperty(@NotNull ConfigProperty newProperty) {
@@ -50,7 +50,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 			noMutateException();
 			return;
 		}
-		ConfigProperty old = map.replace(newProperty.getName(), newProperty);
+		ConfigProperty old = map.replace(newProperty.getName().toLowerCase(), newProperty);
 		if (old != null) {
 			old.invalidate();
 		}
@@ -65,7 +65,7 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 		if (immutable) {
 			noMutateException();
 		}
-		ConfigProperty removed = map.remove(name);
+		ConfigProperty removed = map.remove(name.toLowerCase());
 		if (removed != null) {
 			removed.invalidate();
 		}
@@ -134,9 +134,8 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	 */
 	@Nullable
 	public final ConfigProperty findPropertyNullable(@NotNull String name) {
-		return map.get(name);
+		return map.get(name.toLowerCase());
 	}
-
 
 	@NotNull
 	@Override
@@ -154,7 +153,9 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	}
 
 	public void addAllProperties(@NotNull ConfigPropertySet set) {
-		this.map.putAll(set.map);
+		set.map.forEach((s, configProperty) -> {
+			map.put(s.toLowerCase(), configProperty);
+		});
 	}
 
 	public final void addPropertiesSetListener(@NotNull MapObserverListener<String, ConfigProperty> listener) {

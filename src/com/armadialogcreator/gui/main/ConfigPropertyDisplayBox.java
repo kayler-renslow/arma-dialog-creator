@@ -27,7 +27,7 @@ public class ConfigPropertyDisplayBox extends HBox {
 	protected final ConfigPropertyKey configPropertyKey;
 
 	/** The root pane for where to put things after the "=" label node */
-	protected final StackPane contentPane = new StackPane();
+	protected final StackPane contentStackPane = new StackPane();
 	/** The {@link MenuButton} that comes before the "=" label node */
 	protected final MenuButton menuButtonOptions = new MenuButton();
 
@@ -41,7 +41,7 @@ public class ConfigPropertyDisplayBox extends HBox {
 		menuButtonOptions.setText(configPropertyKey.getPropertyName());
 		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
 
-		getChildren().addAll(menuButtonOptions, new Label("="), contentPane);
+		getChildren().addAll(menuButtonOptions, new Label("="), contentStackPane);
 	}
 
 	/**

@@ -5,7 +5,9 @@ import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.core.sv.SerializableValueConversionException;
+import com.armadialogcreator.data.ConfigPropertyDocumentationProvider;
 import com.armadialogcreator.data.ExpressionEnvManager;
+import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.sveditor.ConvertValueDialog;
@@ -18,15 +20,12 @@ import com.armadialogcreator.util.ValueObserver;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
-import javafx.geometry.Point2D;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
-import javafx.stage.Popup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,21 +37,18 @@ import static com.armadialogcreator.gui.main.ConfigPropertyValueEditors.*;
 /**
  @author Kayler
  @since 11/20/2016 */
-public class ConfigPropertyEditor extends HBox {
+public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 	private enum EditMode {
 		MACRO, DEFAULT
 	}
 
 	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private static final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
-	//	private static final ConfigPropertyDocumentationProvider lookupDocProvider = new ConfigPropertyDocumentationProvider();
 
 	private final ConfigClass configClass;
 	private final ConfigProperty configProperty;
 	private boolean propertyIsInherited;
 
-	private final StackPane stackPanePropertyInput = new StackPane();
-	private final MenuButton menuButtonOptions = new MenuButton();
 	private MenuItem inheritanceMenuItem;
 	private ConfigPropertyValueEditor propertyValueEditor;
 	private UpdateGroupListener<ConfigPropertyUpdate> configPropertyUpdateListener;
@@ -64,19 +60,19 @@ public class ConfigPropertyEditor extends HBox {
 	private EditMode currentEditMode;
 
 	public ConfigPropertyEditor(@NotNull ConfigClass configClass, @NotNull ConfigProperty property) {
-		super(5);
+		super(property);
 		this.configClass = configClass;
 		this.configProperty = property;
 
 		resetPropertyValueEditor();
 		init();
-
-		setAlignment(Pos.TOP_LEFT);
-		setMaxWidth(Double.MAX_VALUE);
 	}
 
 	private void init() {
-		placeTooltip(menuButtonOptions);
+		String doc = ConfigPropertyDocumentationProvider.getDocumentation(configClass, configProperty);
+		Tooltip tooltip = FXUtil.getMultilineTooltip(doc);
+		tooltip.setFont(TOOLTIP_FONT);
+		Tooltip.install(menuButtonOptions, tooltip);
 
 		final MenuItem miDisplayType = new MenuItem(bundle.getString("display_type"));
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
@@ -99,9 +95,6 @@ public class ConfigPropertyEditor extends HBox {
 				miRaw,
 				miClearValue
 		);
-		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
-
-		getChildren().addAll(menuButtonOptions, new Label("="), stackPanePropertyInput);
 
 		if (SerializableValue.getTypesCanConvertTo(configProperty.getPropertyType()).size() == 1) {
 			menuButtonOptions.getItems().remove(miConvert);
@@ -133,7 +126,7 @@ public class ConfigPropertyEditor extends HBox {
 
 		this.propertyInheritUpdate = (v) -> {
 			updateContainerInheritanceTint();
-			stackPanePropertyInput.setDisable(propertyIsInherited);
+			contentStackPane.setDisable(propertyIsInherited);
 			miDefaultEditor.setDisable(propertyIsInherited);
 			miResetToInitial.setDisable(propertyIsInherited);
 			miMacro.setDisable(propertyIsInherited);
@@ -320,14 +313,14 @@ public class ConfigPropertyEditor extends HBox {
 			if (stackPaneTint == null) {
 				stackPaneTint = new StackPane();
 				stackPaneTint.setStyle("-fx-background-color:rgba(0, 132, 180, 0.23)");
-				stackPanePropertyInput.getChildren().add(stackPaneTint);
+				contentStackPane.getChildren().add(stackPaneTint);
 			} else {
-				if (!stackPanePropertyInput.getChildren().contains(stackPaneTint)) {
-					stackPanePropertyInput.getChildren().add(stackPaneTint);
+				if (!contentStackPane.getChildren().contains(stackPaneTint)) {
+					contentStackPane.getChildren().add(stackPaneTint);
 				}
 			}
 		} else {
-			stackPanePropertyInput.getChildren().removeIf(node -> node == stackPaneTint);
+			contentStackPane.getChildren().removeIf(node -> node == stackPaneTint);
 			stackPaneTint = null;
 		}
 	}
@@ -345,7 +338,7 @@ public class ConfigPropertyEditor extends HBox {
 	}
 
 	/**
-	 Will update the {@link #stackPanePropertyInput}
+	 Will update the {@link #contentStackPane}
 	 to present the correct editor ({@link #propertyValueEditor} or a Macro editor).
 
 	 @param mode the mode to set to
@@ -361,7 +354,7 @@ public class ConfigPropertyEditor extends HBox {
 
 			macroGetterButton.getChosenMacroValueObserver().updateValue(configProperty.getBoundMacro());
 
-			stackPanePropertyInput.getChildren().set(0, macroGetterButton);
+			contentStackPane.getChildren().set(0, macroGetterButton);
 			macroGetterButton.getChosenMacroValueObserver().addListener(new ValueListener() {
 				@Override
 				public void valueUpdated(@NotNull ValueObserver observer, Object oldValue, Object newValue) {
@@ -385,7 +378,7 @@ public class ConfigPropertyEditor extends HBox {
 				}
 				configProperty.clearMacro();
 			}
-			stackPanePropertyInput.getChildren().set(0, propertyValueEditor.getRootNode());
+			contentStackPane.getChildren().set(0, propertyValueEditor.getRootNode());
 		}
 		currentEditMode = mode;
 	}
@@ -421,14 +414,14 @@ public class ConfigPropertyEditor extends HBox {
 			propertyValueEditor.clearListeners();
 		}
 		propertyValueEditor = constructNewPropertyValueEditor();
-		HBox.setHgrow(stackPanePropertyInput, propertyValueEditor.displayFullWidth() ?
+		HBox.setHgrow(contentStackPane, propertyValueEditor.displayFullWidth() ?
 				Priority.ALWAYS : Priority.NEVER
 		);
-		stackPanePropertyInput.getChildren().setAll(propertyValueEditor.getRootNode());
+		contentStackPane.getChildren().setAll(propertyValueEditor.getRootNode());
 		if (configProperty.getValue() instanceof SVRaw) {
 			if (configProperty.getValueOptions().length == 0) {
-				stackPanePropertyInput.setPadding(new Insets(1));
-				stackPanePropertyInput.setBorder(
+				contentStackPane.setPadding(new Insets(1));
+				contentStackPane.setBorder(
 						new Border(
 								new BorderStroke(
 										Color.DARKORANGE,
@@ -440,8 +433,8 @@ public class ConfigPropertyEditor extends HBox {
 				);
 			}
 		} else {
-			stackPanePropertyInput.setBorder(null);
-			stackPanePropertyInput.setPadding(Insets.EMPTY);
+			contentStackPane.setBorder(null);
+			contentStackPane.setPadding(Insets.EMPTY);
 		}
 
 		updateEditModeFromProperty();
@@ -504,39 +497,6 @@ public class ConfigPropertyEditor extends HBox {
 		hide(propertyIsInherited);
 	}
 
-	public void hide(boolean hidden) {
-		setVisible(!hidden);
-		setManaged(!hidden);
-	}
-
-	private Tooltip getTooltip() {
-		String tooltip = "";//lookupDocProvider.getDocumentation(this.configProperty);
-		StringBuilder sb = new StringBuilder(tooltip.length());
-		int len = 0;
-		for (int i = 0; i < tooltip.length(); i++) {
-			char c = tooltip.charAt(i);
-			sb.append(c);
-			len++;
-			if (len >= 60 && Character.isWhitespace(c)) {
-				len = 0;
-				sb.append('\n');
-			}
-		}
-		Tooltip tp = new Tooltip(sb.toString());
-		tp.setFont(TOOLTIP_FONT);
-		return tp;
-	}
-
-	/**
-	 Places tooltip on n
-
-	 @param n Node to place tooltip on
-	 */
-	private void placeTooltip(@NotNull Node n) {
-		Tooltip.install(n, getTooltip());
-	}
-
-
 	private static class ChooseNewPropertyTypeDialog extends StageDialog<VBox> {
 
 		private final ComboBox<PropertyType> comboBoxType = new ComboBox<>();
@@ -571,27 +531,6 @@ public class ConfigPropertyEditor extends HBox {
 		@Nullable
 		public PropertyType getSelectedType() {
 			return wasCancelled() ? null : comboBoxType.getValue();
-		}
-	}
-
-	private class MenuButtonPopup extends Popup {
-		public MenuButtonPopup(@NotNull String text) {
-			Label lbl = new Label(text);
-			StackPane container = new StackPane(lbl);
-			container.setBackground(new Background(new BackgroundFill(
-					Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
-			));
-			lbl.setFont(Font.font(15));
-			lbl.setTextFill(Color.WHITE);
-			container.setPadding(new Insets(4));
-			this.getContent().add(container);
-		}
-
-		public void showPopup() {
-			Control ownerNode = menuButtonOptions;
-			Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight());
-			this.setAutoHide(true);
-			show(ownerNode, p.getX(), p.getY());
 		}
 	}
 
