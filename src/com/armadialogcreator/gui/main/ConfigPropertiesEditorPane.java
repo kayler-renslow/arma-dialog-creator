@@ -1,11 +1,9 @@
 package com.armadialogcreator.gui.main;
 
-import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigClassSpecification;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyCategory;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.gui.fxcontrol.PlaceholderTitledPane;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.ReadOnlyIterable;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -52,6 +50,29 @@ public class ConfigPropertiesEditorPane extends StackPane {
 		PlaceholderTitledPane optional = getPropertiesTitledPane(bundle.getString("optional"), ConfigPropertyCategory.Optional);
 		PlaceholderTitledPane events = getPropertiesTitledPane(bundle.getString("events"), ConfigPropertyCategory.Event);
 
+		ReadOnlyIterable<ConfigPropertyLookupConstant> lookupIterable = configClass.iterateLookupProperties();
+		if (lookupIterable != null) {
+			for (ConfigPropertyLookupConstant constant : lookupIterable) {
+				ConfigPropertyCategory propertyCat = configClass.getPropertyCategory(constant);
+				switch (propertyCat) {
+					case Basic: //fall
+					case Optional: {
+						optional.addContentChild(new ConfigPropertyPlaceholder(configClass, constant));
+						break;
+					}
+					case Event: {
+						break;
+					}
+					case User: {
+						break;
+					}
+					case Required: {
+						optional.addContentChild(new ConfigPropertyPlaceholder(configClass, constant));
+						break;
+					}
+				}
+			}
+		}
 		for (ConfigProperty p : configClass.iterateProperties()) {
 			ConfigPropertyCategory propertyCat = configClass.getPropertyCategory(p);
 			switch (propertyCat) {

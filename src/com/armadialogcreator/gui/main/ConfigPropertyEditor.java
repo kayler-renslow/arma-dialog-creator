@@ -35,8 +35,14 @@ import java.util.function.Consumer;
 import static com.armadialogcreator.gui.main.ConfigPropertyValueEditors.*;
 
 /**
+ A type of {@link ConfigPropertyDisplayBox} in which the user can edit an existing {@link ConfigProperty}.
+ This editor allows for changing the {@link ConfigProperty#getBoundMacro()},
+ whether a {@link ConfigProperty} is inherited ({@link ConfigClass#propertyIsInherited(String)}),
+ and features specialized value editors for the {@link ConfigProperty#getValue()}.
+
  @author Kayler
- @since 11/20/2016 */
+ @since 11/20/2016
+ @see ConfigPropertyValueEditor*/
 public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 	private enum EditMode {
 		MACRO, DEFAULT

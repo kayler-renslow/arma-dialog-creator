@@ -106,16 +106,6 @@ public class ConfigProperty extends ConfigPropertyBase {
 	}
 
 	@Override
-	public boolean nameEquals(@NotNull ConfigPropertyKey key) {
-		return this.name.equals(key.getPropertyName());
-	}
-
-	@Override
-	public boolean nameEquals(@NotNull String name) {
-		return this.name.equals(name);
-	}
-
-	@Override
 	@NotNull
 	public UpdateListenerGroup<ConfigPropertyUpdate> getPropertyUpdateGroup() {
 		return updateGroup;

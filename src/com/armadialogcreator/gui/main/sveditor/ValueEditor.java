@@ -9,12 +9,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- Created by Kayler on 07/13/2016.
+ A specialized {@link SerializableValue} GUI editor that edits only one {@link PropertyType}
+ @author K
+ @since 07/13/2016
+ @see #getEditor(PropertyType, Env)
  */
 public interface ValueEditor<V extends SerializableValue> {
 
 	/**
-	 Tells the editor to submit whatever data it has as a value. However, this method does <b>not</b> guarantee the value is actually updated. Any time the value isn't updated, the user should be
+	 Tells the editor to submit whatever data it has as a value.
+	 However, this method does <b>not</b> guarantee the value is actually updated. Any time the value isn't updated, the user should be
 	 notified.
 	 */
 	void submitCurrentData();

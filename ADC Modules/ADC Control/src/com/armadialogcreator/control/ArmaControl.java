@@ -228,7 +228,7 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	}
 
 	@Override
-	public @NotNull ConfigPropertyCategory getPropertyCategory(@NotNull ConfigProperty property) {
+	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property) {
 		ReadOnlyList<ConfigPropertyLookupConstant> plist = armaControlLookup.specProvider.getOptionalProperties();
 		for (ConfigPropertyLookupConstant c : plist) {
 			if (property.nameEquals(c)) {

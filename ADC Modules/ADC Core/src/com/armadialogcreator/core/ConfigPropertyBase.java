@@ -98,14 +98,6 @@ public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 		return getValue().getPropertyType();
 	}
 
-	public boolean nameEquals(@NotNull ConfigPropertyKey key) {
-		return this.getName().equals(key.getPropertyName());
-	}
-
-	public boolean nameEquals(@NotNull String name) {
-		return this.getName().equals(name);
-	}
-
 	@NotNull
 	public abstract UpdateListenerGroup<ConfigPropertyUpdate> getPropertyUpdateGroup();
 

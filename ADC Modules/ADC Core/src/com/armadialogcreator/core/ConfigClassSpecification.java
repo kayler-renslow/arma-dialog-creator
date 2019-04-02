@@ -10,11 +10,12 @@ import org.jetbrains.annotations.Nullable;
  @since 02/11/2019 */
 public interface ConfigClassSpecification {
 	/**
-	 Get the category of a {@link ConfigProperty}
+	 Get the category of a {@link ConfigPropertyKey}
 
+	 @param property the prop
 	 @return the category
 	 */
-	@NotNull ConfigPropertyCategory getPropertyCategory(@NotNull ConfigProperty property);
+	ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property);
 
 	/**
 	 Iterate all {@link ConfigProperty} instances owned by this specification

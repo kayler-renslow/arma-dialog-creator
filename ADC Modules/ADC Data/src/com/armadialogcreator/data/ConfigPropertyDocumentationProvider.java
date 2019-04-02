@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigClassSpecification;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
 import com.armadialogcreator.lang.Lang;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +13,13 @@ import java.util.MissingResourceException;
  @author K
  @since 4/2/19 */
 public class ConfigPropertyDocumentationProvider {
+	/**
+	 Gets {@link ConfigProperty} documentation for a specific {@link ConfigClass}.
+
+	 @param cc the class which provides context to the property
+	 @param key the key for which to get documentation for
+	 @return the documentation, or empty string if nothing was present
+	 */
 	@NotNull
 	public static String getDocumentation(@NotNull ConfigClass cc, @NotNull ConfigPropertyKey key) {
 		String path;

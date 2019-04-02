@@ -1,13 +1,16 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.core.PropertyType;
 import javafx.scene.Node;
 import org.jetbrains.annotations.NotNull;
 
 /**
+ A {@link ConfigPropertyValueEditor} is used to edit a {@link ConfigProperty#getValue()}. An editor
+ can only be used to edit one {@link PropertyType}.
+
  @author Kayler
+ @see ConfigPropertyValueEditors
  @since 11/20/2016 */
 interface ConfigPropertyValueEditor {
 
@@ -18,7 +21,11 @@ interface ConfigPropertyValueEditor {
 	/** @return the JavaFX Node that the editor is placed on. The entire editor should be contained within this node. */
 	@NotNull Node getRootNode();
 
-	/** @return the {@link PropertyType} type that will be used to match {@link Macro} instances */
+	/**
+	 Get the {@link PropertyType} that this editor can edit.
+
+	 @return the allowed property type
+	 */
 	@NotNull PropertyType getAcceptedPropertyType();
 
 	/**

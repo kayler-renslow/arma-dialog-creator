@@ -146,6 +146,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		classNameObserver = new NotNullValueObserver<>(className);
 	}
 
+	@Override
 	@NotNull
 	public String getClassName() {
 		return classNameObserver.getValue();
@@ -402,8 +403,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	@Override
-	@NotNull
-	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigProperty property) {
+	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property) {
 		return ConfigPropertyCategory.Basic;
 	}
 
@@ -445,7 +445,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			return null;
 		}
 		for (ConfigPropertyLookupConstant key : iterable) {
-			if (key.getPropertyName().equalsIgnoreCase(name)) {
+			if (key.nameEquals(name)) {
 				return key;
 			}
 		}
