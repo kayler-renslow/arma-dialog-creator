@@ -17,8 +17,8 @@ import java.util.Map;
  @author K
  @since 3/7/19 */
 @ApplicationSingleton
-public class DefaultValueProviderSheetRegistry implements Registry<String, DefaultValueSheet> {
-	public static final DefaultValueProviderSheetRegistry instance = new DefaultValueProviderSheetRegistry();
+public class DefaultValueSheetRegistry implements Registry<String, DefaultValueSheet> {
+	public static final DefaultValueSheetRegistry instance = new DefaultValueSheetRegistry();
 
 	static {
 		ApplicationManager.instance.addStateSubscriber(instance);

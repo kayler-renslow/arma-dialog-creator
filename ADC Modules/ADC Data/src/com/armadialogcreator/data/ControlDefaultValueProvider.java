@@ -13,12 +13,7 @@ import java.util.Map;
  @since 3/31/19 */
 public class ControlDefaultValueProvider {
 	public static void addDefaultValuesFromSystemSheet(@NotNull ArmaControl control) {
-		DefaultValueProviderSheetRegistry registry = DefaultValueProviderSheetRegistry.instance;
-		String name = registry.getSystemSheetName("Control." + control.getControlType().name());
-		DefaultValueSheet sheet = registry.get(name, DataLevel.System);
-		if (sheet == null) {
-			throw new IllegalStateException(name);
-		}
+		DefaultValueSheet sheet = getSystemSheet(control);
 		addDefaultValues(control, sheet);
 	}
 
@@ -33,5 +28,35 @@ public class ControlDefaultValueProvider {
 					entry.getValue().toNewSerializableValue(lookup.getPropertyType(), env)
 			);
 		}
+	}
+
+	public static void addPropertyWithSystemDefaultValue(@NotNull ArmaControl control, @NotNull String property) {
+		addPropertyWithDefaultValue(control, getSystemSheet(control), property);
+	}
+
+	public static void addPropertyWithDefaultValue(@NotNull ArmaControl control, @NotNull DefaultValueSheet sheet,
+												   @NotNull String property) {
+		Env env = ExpressionEnvManager.instance.getEnv();
+		DefaultValueSheet.Property dproperty = sheet.getProperties().get(property);
+		if (dproperty != null) {
+			ConfigPropertyLookupConstant lookup = control.getLookup(property);
+			if (lookup == null) {
+				return;
+			}
+			control.addProperty(property,
+					dproperty.toNewSerializableValue(lookup.getPropertyType(), env)
+			);
+		}
+	}
+
+	@NotNull
+	private static DefaultValueSheet getSystemSheet(@NotNull ArmaControl control) {
+		DefaultValueSheetRegistry registry = DefaultValueSheetRegistry.instance;
+		String name = registry.getSystemSheetName("Control." + control.getControlType().name());
+		DefaultValueSheet sheet = registry.get(name, DataLevel.System);
+		if (sheet == null) {
+			throw new IllegalStateException(name);
+		}
+		return sheet;
 	}
 }

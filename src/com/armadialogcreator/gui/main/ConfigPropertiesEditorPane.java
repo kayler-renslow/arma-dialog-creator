@@ -29,6 +29,7 @@ public class ConfigPropertiesEditorPane extends StackPane {
 	private boolean listenersAreValid = true;
 
 	private final Map<String, ConfigPropertyEditor> propertyEditors = new HashMap<>();
+	private final Map<String, ConfigPropertyPlaceholder> propertyPlaceholders = new HashMap<>();
 
 	private final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 

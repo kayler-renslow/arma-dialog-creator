@@ -76,7 +76,7 @@ public final class ArmaDialogCreator extends Application implements ApplicationS
 					"com.armadialogcreator.data.SettingsManager",
 					"com.armadialogcreator.data.ApplicationProperties",
 					"com.armadialogcreator.ADCGuiManager",
-					"com.armadialogcreator.data.DefaultValueProviderSheetRegistry",
+					"com.armadialogcreator.data.DefaultValueSheetRegistry",
 			};
 
 			ClassLoader loader = ArmaDialogCreator.class.getClassLoader();
