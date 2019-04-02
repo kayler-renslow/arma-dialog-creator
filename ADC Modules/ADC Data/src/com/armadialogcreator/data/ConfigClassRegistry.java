@@ -2,6 +2,9 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,6 +55,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	public void applicationDataInitializing() {
 		systemClasses.loadSystemConfigClasses();
 		ApplicationDataManager.getInstance().getDataList().add(applicationClasses);
+		applicationClasses.doJobs();
 	}
 
 	@Override
@@ -71,6 +75,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 				this.projectClasses = (ProjectClasses) data;
 			}
 		}
+		projectClasses.doJobs();
 	}
 
 	@Override
@@ -85,6 +90,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 				this.workspaceClasses = (WorkspaceClasses) data;
 			}
 		}
+		workspaceClasses.doJobs();
 	}
 
 	@Override
@@ -208,6 +214,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		protected final DataLevel myLevel;
 		private final ListObserver<ConfigClass> classes = new ListObserver<>(new LinkedList<>());
 		protected final ConfigClassRegistry registry;
+		private final List<ConfigClassJob> jobs = new ArrayList<>();
 
 		protected Base(@NotNull ConfigClassRegistry registry, @NotNull DataLevel myLevel) {
 			this.registry = registry;
@@ -281,7 +288,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void loadFromConfigurable(@NotNull Configurable config) {
 			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("config-class")) {
-					//todo
+					classes.add(fromConfigurable(nested));
 				}
 			}
 		}
@@ -290,7 +297,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", getLevel().name());
 			for (ConfigClass configClass : classes) {
-				//todo
+				config.addNestedConfigurable(toConfigurable(configClass));
 			}
 		}
 
@@ -315,9 +322,67 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			return list;
 		}
 
+		void doJobs() {
+			for (ConfigClassJob job : jobs) {
+				job.doWork();
+			}
+			jobs.clear();
+		}
+
 		@NotNull
 		public Configurable toConfigurable(@NotNull ConfigClass configClass) {
-			return Configurable.EMPTY;
+			Configurable.Simple conf = new Configurable.Simple("config-class");
+			conf.addAttribute("name", configClass.getClassName());
+			if (configClass.isExtending()) {
+				conf.addAttribute("extend", configClass.getExtendClassName());
+			}
+			for (ConfigProperty property : configClass.iterateProperties()) {
+				if (!configClass.propertyIsInherited(property.getName())) {
+					Configurable.Simple propertyConf = new Configurable.Simple("property");
+					conf.addNestedConfigurable(propertyConf);
+					propertyConf.addAttribute("name", property.getName());
+					if (property.isBoundToMacro()) {
+						propertyConf.addAttribute("macro", property.getBoundMacro().getKey());
+					}
+					propertyConf.addNestedConfigurable(new SerializableValueConfigurable(property.getValue()));
+
+				}
+			}
+			return conf;
+		}
+
+		@NotNull
+		public ConfigClass fromConfigurable(@NotNull Configurable configurable) {
+			String name = configurable.getAttributeValue("name");
+			if (name == null) {
+				throw new IllegalStateException();
+			}
+			String extend = configurable.getAttributeValue("extend");
+			ConfigClass configClass = new ConfigClass(name);
+			if (extend != null) {
+				jobs.add(new ExtendConfigClassJob(configClass, extend));
+			}
+			for (Configurable nested : configurable.getNestedConfigurables()) {
+				String propertyName = nested.getAttributeValue("name");
+				String macro = nested.getAttributeValue("macro");
+
+				if (propertyName == null) {
+					throw new IllegalStateException();
+				}
+				if (macro != null) {
+					jobs.add(new SetMacroJob(configClass, propertyName, macro));
+				}
+				Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
+				if (svConf == null) {
+					throw new IllegalStateException();
+				}
+				SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
+						svConf,
+						ExpressionEnvManager.instance.getEnv()
+				);
+				configClass.addProperty(propertyName, sv);
+			}
+			return configClass;
 		}
 	}
 
@@ -370,6 +435,52 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		@Override
 		DataLevel getLevel() {
 			return DataLevel.Project;
+		}
+	}
+
+	private interface ConfigClassJob {
+		void doWork();
+	}
+
+	private static class ExtendConfigClassJob implements ConfigClassJob {
+
+		private final ConfigClass cc;
+		private final String extendClass;
+
+		public ExtendConfigClassJob(@NotNull ConfigClass cc, @NotNull String extendClass) {
+			this.cc = cc;
+			this.extendClass = extendClass;
+		}
+
+		@Override
+		public void doWork() {
+			ConfigClass extend = ConfigClassRegistry.instance.findConfigClassByName(extendClass);
+			if (extend == null) {
+				throw new IllegalStateException();
+			}
+			cc.extendConfigClass(extend);
+		}
+	}
+
+	private static class SetMacroJob implements ConfigClassJob {
+
+		private final ConfigClass cc;
+		private final String property;
+		private final String macro;
+
+		public SetMacroJob(@NotNull ConfigClass cc, @NotNull String property, @NotNull String macro) {
+			this.cc = cc;
+			this.property = property;
+			this.macro = macro;
+		}
+
+		@Override
+		public void doWork() {
+			Macro macro = MacroRegistry.instance.findMacroByName(this.macro);
+			if (macro == null) {
+				throw new IllegalStateException();
+			}
+			cc.findProperty(property).bindToMacro(macro);
 		}
 	}
 

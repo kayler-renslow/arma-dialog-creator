@@ -421,9 +421,13 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	@Override
-	public @Nullable String getExtendClassName() {
+	@NotNull
+	public String getExtendClassName() {
 		ConfigClass extendClass = getExtendClass();
-		return extendClass == null ? null : extendClass.getClassName();
+		if (extendClass == null) {
+			throw new IllegalStateException();
+		}
+		return extendClass.getClassName();
 	}
 
 	@Override
