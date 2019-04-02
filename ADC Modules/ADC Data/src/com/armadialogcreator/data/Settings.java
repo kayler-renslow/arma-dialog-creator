@@ -80,7 +80,7 @@ public class Settings {
 		map.forEach((s, setting) -> {
 			Configurable conf = toConfigurable(s, setting);
 			if (conf == null) {
-				conf = new Configurable.Simple(s + "=(NULL)");
+				conf = new Configurable.Simple(s + "=null");
 			}
 			list.add(new KeyValue<>(s, conf));
 		});

@@ -10,10 +10,7 @@ import com.armadialogcreator.util.KeyValue;
 import com.armadialogcreator.util.KeyValueString;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.TreeItem;
-import javafx.scene.control.TreeView;
+import javafx.scene.control.*;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -79,6 +76,12 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 		private TreeItem<String> appendTreeItem(@NotNull TreeItem<String> parent, @NotNull Configurable c) {
 			TreeItem<String> child = new TreeItem<>(c.getConfigurableName());
 			parent.getChildren().add(child);
+
+			if (c.getNestedConfigurableCount() == 0 && c.getConfigurableBody().isEmpty() && c.getConfigurableAttributeCount() == 0) {
+				Label lbl = new Label("(EMPTY) ");
+				child.setGraphic(lbl);
+				return child;
+			}
 
 			{
 				TreeItem<String> viewAsXml = new TreeItem<>("As XML");
