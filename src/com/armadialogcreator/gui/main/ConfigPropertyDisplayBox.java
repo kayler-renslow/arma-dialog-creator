@@ -38,7 +38,6 @@ public class ConfigPropertyDisplayBox extends HBox {
 		setAlignment(Pos.TOP_LEFT);
 		setMaxWidth(Double.MAX_VALUE);
 
-		//		placeTooltip(menuButtonOptions);
 		menuButtonOptions.setText(configPropertyKey.getPropertyName());
 		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
 

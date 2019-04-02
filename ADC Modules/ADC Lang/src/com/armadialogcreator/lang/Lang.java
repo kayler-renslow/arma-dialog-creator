@@ -56,6 +56,12 @@ public interface Lang {
 		return getBundle("LookupBundle");
 	}
 
+	/** @return {@link #getBundle(String)} with bundleName="configPropertyLookupBundles." +name */
+	@NotNull
+	static ResourceBundle ConfigPropertyLookupBundle(@NotNull String name) {
+		return getBundle("configPropertyLookupBundles." + name);
+	}
+
 	interface Application {
 		String APPLICATION_NAME = "Arma Dialog Creator";
 		String VERSION = "2019.1.0";
