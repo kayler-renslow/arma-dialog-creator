@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,8 +45,10 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 					new VBox(5), "Registry Viewer for " + registry.getClass().getName(),
 					true, true, false
 			);
+			setStageSize(720, 720);
 
 			TreeView<String> treeView = new TreeView<>();
+			VBox.setVgrow(treeView, Priority.ALWAYS);
 
 			myRootElement.getChildren().add(treeView);
 
@@ -92,12 +95,15 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 			}
 
 			{
-				TreeItem<String> body = new TreeItem<>("Body");
-				Button b = new Button("View");
-				b.setOnAction(event -> {
-					new SimpleInfoDialog.AsTextArea(ArmaDialogCreator.getPrimaryStage(), "Body", c.getConfigurableBody()).show();
-				});
-				body.setGraphic(b);
+				boolean bodyEmpty = c.getConfigurableBody().isEmpty();
+				TreeItem<String> body = new TreeItem<>("Body" + (bodyEmpty ? " (EMPTY)" : ""));
+				if (!bodyEmpty) {
+					Button b = new Button("View");
+					b.setOnAction(event -> {
+						new SimpleInfoDialog.AsTextArea(ArmaDialogCreator.getPrimaryStage(), "Body", c.getConfigurableBody()).show();
+					});
+					body.setGraphic(b);
+				}
 
 				child.getChildren().add(body);
 			}
