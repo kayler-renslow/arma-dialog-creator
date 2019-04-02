@@ -1,15 +1,14 @@
 package com.armadialogcreator.gui;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import com.armadialogcreator.gui.fxcontrol.MenuItemEventHandler;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
 import org.jetbrains.annotations.NotNull;
-
-import java.lang.reflect.Field;
 
 /**
  Misc utilities for JavaFX
@@ -17,6 +16,39 @@ import java.lang.reflect.Field;
  @author Kayler
  @since 05/31/2016 */
 public class FXUtil {
+
+	public static <E extends MenuItem> E addOnAction(@NotNull E item, @NotNull MenuItemEventHandler<E> eventHandler) {
+		item.setOnAction(eventHandler);
+		eventHandler.setMenuItem(item);
+		return item;
+	}
+
+	public static <E extends MenuItem> E addOnAction(@NotNull E item, @NotNull EventHandler<ActionEvent> eventHandler) {
+		item.setOnAction(eventHandler);
+		return item;
+	}
+
+	/**
+	 Makes a tooltip that inserts newline characters when the tooltip text becomes to long
+
+	 @param tooltip the text
+	 @return the tooltip
+	 */
+	@NotNull
+	public static Tooltip getMultilineTooltip(@NotNull String tooltip) {
+		StringBuilder sb = new StringBuilder(tooltip.length());
+		int len = 0;
+		for (int i = 0; i < tooltip.length(); i++) {
+			char c = tooltip.charAt(i);
+			sb.append(c);
+			len++;
+			if (len >= 60 && Character.isWhitespace(c)) {
+				len = 0;
+				sb.append('\n');
+			}
+		}
+		return new Tooltip(sb.toString());
+	}
 
 	/**
 	 Wait until <code>parent.isVisible()</code> is true and then run the given Runnable
@@ -44,26 +76,4 @@ public class FXUtil {
 		thread.start();
 	}
 
-	/**
-	 As of Java 8, setting the tooltip show delay isn't possible. Until an official implementation, this is one way to configure the tooltip show delay
-
-	 @param tooltip tooltip to change delay of
-	 @param delayMillis milliseconds before the tooltip can appear
-	 */
-	public static void hackTooltipStartTiming(Tooltip tooltip, double delayMillis) {
-		try {
-			Field fieldBehavior = tooltip.getClass().getDeclaredField("BEHAVIOR");
-			fieldBehavior.setAccessible(true);
-			Object objBehavior = fieldBehavior.get(tooltip);
-
-			Field fieldTimer = objBehavior.getClass().getDeclaredField("activationTimer");
-			fieldTimer.setAccessible(true);
-			Timeline objTimer = (Timeline) fieldTimer.get(objBehavior);
-
-			objTimer.getKeyFrames().clear();
-			objTimer.getKeyFrames().add(new KeyFrame(new Duration(delayMillis)));
-		} catch (Exception e) {
-			e.printStackTrace(System.out);
-		}
-	}
 }

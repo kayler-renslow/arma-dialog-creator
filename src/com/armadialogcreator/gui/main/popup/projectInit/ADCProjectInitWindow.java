@@ -14,7 +14,6 @@ import com.armadialogcreator.gui.WizardStageDialog;
 import com.armadialogcreator.gui.WizardStep;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
 import com.armadialogcreator.gui.fxcontrol.FileChooserPane;
-import com.armadialogcreator.gui.fxcontrol.MenuUtil;
 import com.armadialogcreator.gui.main.ADCWindow;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.gui.main.actions.mainMenu.help.CheckForUpdateAction;

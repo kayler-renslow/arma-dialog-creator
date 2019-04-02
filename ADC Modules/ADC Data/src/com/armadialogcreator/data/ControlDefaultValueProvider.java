@@ -30,25 +30,6 @@ public class ControlDefaultValueProvider {
 		}
 	}
 
-	public static void addPropertyWithSystemDefaultValue(@NotNull ArmaControl control, @NotNull String property) {
-		addPropertyWithDefaultValue(control, getSystemSheet(control), property);
-	}
-
-	public static void addPropertyWithDefaultValue(@NotNull ArmaControl control, @NotNull DefaultValueSheet sheet,
-												   @NotNull String property) {
-		Env env = ExpressionEnvManager.instance.getEnv();
-		DefaultValueSheet.Property dproperty = sheet.getProperties().get(property);
-		if (dproperty != null) {
-			ConfigPropertyLookupConstant lookup = control.getLookup(property);
-			if (lookup == null) {
-				return;
-			}
-			control.addProperty(property,
-					dproperty.toNewSerializableValue(lookup.getPropertyType(), env)
-			);
-		}
-	}
-
 	@NotNull
 	private static DefaultValueSheet getSystemSheet(@NotNull ArmaControl control) {
 		DefaultValueSheetRegistry registry = DefaultValueSheetRegistry.instance;
