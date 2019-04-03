@@ -350,7 +350,6 @@ public class ConfigPropertiesConfigPopup extends StagePopupUndecorated<VBox> {
 			control.getClassNameObserver().addListener(classNameListener);
 			//control.getExtendClassReadOnlyObserver().addListener(controlClassExtendListener);
 			//control.getDisplay().getBackgroundControls().getUpdateGroup().addListener(backgroundControlListener);
-			editorPane.link();
 		} else {
 			control.getRenderer().getBackgroundColorObserver().removeListener(backgroundColorListener);
 			control.getClassNameObserver().removeListener(classNameListener);

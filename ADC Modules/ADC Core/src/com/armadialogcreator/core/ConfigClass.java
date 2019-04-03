@@ -360,9 +360,6 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	public void addProperty(@NotNull String propertyName, @NotNull SerializableValue value) {
-		if (properties.findPropertyNullable(propertyName) != null) {
-			throw new MissingConfigPropertyKeyException(propertyName);
-		}
 		overrideProperty(propertyName, value);
 	}
 

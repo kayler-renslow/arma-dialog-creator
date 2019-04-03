@@ -16,6 +16,7 @@ import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.util.AColorConstant;
 import com.armadialogcreator.util.ApplicationSingleton;
+import com.armadialogcreator.util.NotNullValueObserver;
 import javafx.scene.control.TreeView;
 import javafx.stage.Stage;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,8 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 	static {
 		ApplicationManager.instance.addStateSubscriber(instance);
 	}
+
+	public final NotNullValueObserver<Boolean> darkThemeObserver = new NotNullValueObserver<>(false);
 
 	@Override
 	public void projectReady(@NotNull Project project) {
@@ -47,6 +50,8 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 			ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
 			colors.editorBg = projectSettings.EditorBackgroundSetting.get().toJavaFXColor();
 			colors.grid = projectSettings.EditorGridColorSetting.get().toJavaFXColor();
+
+			canvasView.updateCanvas();
 
 			canvasView.setCanvasContextMenu(new CanvasContextMenu());
 		});
@@ -69,6 +74,7 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 		Stage stage = ArmaDialogCreator.getPrimaryStage();
 		ProjectSettings projectSettings = SettingsManager.instance.getProjectSettings();
 		if (useDarkTheme.isTrue()) {
+			darkThemeObserver.updateValue(true);
 			projectSettings.EditorBackgroundSetting.set(
 					new AColorConstant(UICanvasEditorColors.DARK_THEME_EDITOR_BG)
 			);
@@ -77,6 +83,7 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 			);
 			stage.getScene().getStylesheets().add(darkTheme);
 		} else {
+			darkThemeObserver.updateValue(false);
 			stage.getScene().getStylesheets().remove(darkTheme);
 			projectSettings.EditorBackgroundSetting.set(
 					new AColorConstant(UICanvasEditorColors.DEFAULT_EDITOR_BG)
@@ -88,6 +95,9 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 
 		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
 		if (mainWindow.isShowing()) {
+			UICanvasEditorColors colors = mainWindow.getCanvasView().getColors();
+			colors.editorBg = projectSettings.EditorBackgroundSetting.get().toJavaFXColor();
+			colors.grid = projectSettings.EditorGridColorSetting.get().toJavaFXColor();
 			mainWindow.getCanvasView().updateCanvas();
 		}
 	}

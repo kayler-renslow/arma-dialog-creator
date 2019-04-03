@@ -17,16 +17,4 @@ public interface NotNullValueListener<V> extends ObserverListener {
 	 */
 	void valueUpdated(@NotNull NotNullValueObserver<V> observer, @NotNull V oldValue, @NotNull V newValue);
 
-	/**
-	 Have the {@link NotNullValueObserver} automatically check if this listener has expired.
-	 If the listener has been expired, the {@link NotNullValueObserver} will remove it automatically.
-	 The time that it is removed is entirely up to the {@link NotNullValueObserver}.<p>
-	 <p>
-	 Default return value is false.
-
-	 @return true if expired, false if not expired
-	 */
-	default boolean hasExpired() {
-		return false;
-	}
 }

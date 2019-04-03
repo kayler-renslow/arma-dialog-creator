@@ -4,7 +4,6 @@ import javafx.beans.InvalidationListener;
 import javafx.beans.Observable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -48,13 +47,7 @@ public class NotNullValueObserver<V> implements Observable, Observer<NotNullValu
 		V oldValue = this.value;
 		this.value = newValue;
 
-		Iterator<NotNullValueListener<V>> iter = valueListeners.iterator();
-		while (iter.hasNext()) {
-			NotNullValueListener<V> listener = iter.next();
-			if (listener.hasExpired()) {
-				iter.remove();
-				continue;
-			}
+		for (NotNullValueListener<V> listener : valueListeners) {
 			listener.valueUpdated(this, oldValue, this.value);
 		}
 

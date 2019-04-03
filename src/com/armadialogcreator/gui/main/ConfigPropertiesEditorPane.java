@@ -114,20 +114,12 @@ public class ConfigPropertiesEditorPane extends StackPane {
 
 	/**
 	 Tell all editors to stop listening to the {@link ConfigProperty} values again.
-	 Invoking is ideal when the pane is no longer needed. Invoking {@link #link()} after invoking this
-	 may create issues.
+	 Invoking is ideal when the pane is no longer needed.
 	 */
 	public void unlink() {
 		listenersAreValid = false;
 		for (Map.Entry<String, ConfigPropertyEditor> editor : propertyEditors.entrySet()) {
 			editor.getValue().unlink();
-		}
-	}
-
-	/** Tell all editors to listen to the {@link ConfigProperty} values. */
-	public void link() {
-		for (Map.Entry<String, ConfigPropertyEditor> editor : propertyEditors.entrySet()) {
-			editor.getValue().link();
 		}
 	}
 

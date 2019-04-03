@@ -388,14 +388,6 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 		configProperty.getPropertyUpdateGroup().removeListener(this.configPropertyUpdateListener);
 	}
 
-	public void link() {
-		propertyValueEditor.initListeners();
-		propertyValueEditor.setToValueFromProperty();
-		configClass.getClassUpdateGroup().addListener(this.configClassUpdateListener);
-		configProperty.getPropertyUpdateGroup().addListener(this.configPropertyUpdateListener);
-		updateEditModeFromProperty();
-	}
-
 	@NotNull
 	public ConfigPropertyValueEditor getPropertyValueEditor() {
 		return propertyValueEditor;
