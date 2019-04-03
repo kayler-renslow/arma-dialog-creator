@@ -73,9 +73,10 @@ public class CheckMenuButton<E> extends StackPane {
 	@NotNull
 	private CustomMenuItem createCheckBoxMenuItem(E item) {
 		CheckBox checkBox = new CheckBox(item.toString());
+		checkBox.getStyleClass().add("check-box-menu-button");
 		CustomMenuItem menuItem = new CustomMenuItem(checkBox, false);
 		menuItem.setUserData(item);
-		checkBox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+		checkBox.selectedProperty().addListener(new ChangeListener<>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean checked) {
 				if (checked) {

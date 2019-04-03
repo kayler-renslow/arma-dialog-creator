@@ -5,9 +5,7 @@ import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVRaw;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.core.sv.SerializableValueConversionException;
-import com.armadialogcreator.data.ConfigPropertyDocumentationProvider;
 import com.armadialogcreator.data.ExpressionEnvManager;
-import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.sveditor.ConvertValueDialog;
@@ -24,8 +22,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,11 +43,8 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 	private enum EditMode {
 		MACRO, DEFAULT
 	}
-
-	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
 	private static final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 
-	private final ConfigClass configClass;
 	private final ConfigProperty configProperty;
 	private boolean propertyIsInherited;
 
@@ -66,7 +59,7 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 	private EditMode currentEditMode;
 
 	public ConfigPropertyEditor(@NotNull ConfigClass configClass, @NotNull ConfigProperty property) {
-		super(property);
+		super(configClass, property);
 		this.configClass = configClass;
 		this.configProperty = property;
 
@@ -75,21 +68,22 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 	}
 
 	private void init() {
-		String doc = ConfigPropertyDocumentationProvider.getDocumentation(configClass, configProperty);
-		Tooltip tooltip = FXUtil.getMultilineTooltip(doc);
-		tooltip.setFont(TOOLTIP_FONT);
-		Tooltip.install(menuButtonOptions, tooltip);
-
 		final MenuItem miDisplayType = new MenuItem(bundle.getString("display_type"));
 		final MenuItem miDefaultEditor = new MenuItem(bundle.getString("use_default_editor"));
 		final MenuItem miResetToInitial = new MenuItem(bundle.getString("reset_to_initial"));
 		final MenuItem miConvert = new MenuItem(bundle.getString("convert_value"));
 		final MenuItem miMacro = new MenuItem(bundle.getString("set_to_macro"));
 		inheritanceMenuItem = new MenuItem("inheritanceMenuItem");
-		final MenuItem miClearValue = new MenuItem(bundle.getString("clear_value"));
+		final MenuItem miRemove = new MenuItem(bundle.getString("remove"));
 		final CheckMenuItem miRaw = new CheckMenuItem(bundle.getString("raw"));
+		final MenuItem miShowDoc = new MenuItem(bundle.getString("show_documentation"));
+		miShowDoc.setOnAction(event -> {
+			new MenuButtonPopup(getDocumentation()).showPopup();
+		});
+
 		menuButtonOptions.setText(configProperty.getName());
 		menuButtonOptions.getItems().setAll(
+				miShowDoc,
 				miDisplayType,
 				miDefaultEditor,
 				new SeparatorMenuItem(),
@@ -99,7 +93,7 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 				inheritanceMenuItem,
 				new SeparatorMenuItem(),
 				miRaw,
-				miClearValue
+				miRemove
 		);
 
 		if (SerializableValue.getTypesCanConvertTo(configProperty.getPropertyType()).size() == 1) {
@@ -136,7 +130,7 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 			miDefaultEditor.setDisable(propertyIsInherited);
 			miResetToInitial.setDisable(propertyIsInherited);
 			miMacro.setDisable(propertyIsInherited);
-			miClearValue.setDisable(propertyIsInherited);
+			miRemove.setDisable(propertyIsInherited);
 			miRaw.setDisable(propertyIsInherited);
 			miConvert.setDisable(propertyIsInherited);
 
@@ -244,19 +238,18 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 				propertyInheritUpdate.accept(null);
 			}
 		});
-		miClearValue.setOnAction(new EventHandler<>() {
+		miRemove.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
 						ArmaDialogCreator.getPrimaryStage(),
-						bundle.getString("ClearValuePopup.popup_title"),
-						bundle.getString("ClearValuePopup.body"), true, true, false
+						bundle.getString("RemovePropertyPopup.popup_title"),
+						bundle.getString("RemovePropertyPopup.body"), true, true, false
 				);
 				dialog.setResizable(false);
 				ResourceBundle appBundle = Lang.ApplicationBundle();
 				dialog.getFooter().getBtnCancel().setText(appBundle.getString("Confirmation.no"));
 				dialog.getFooter().getBtnOk().setText(appBundle.getString("Confirmation.yes"));
-				dialog.setStageSize(300, 120);
 				dialog.show();
 				if (dialog.wasCancelled()) {
 					return;

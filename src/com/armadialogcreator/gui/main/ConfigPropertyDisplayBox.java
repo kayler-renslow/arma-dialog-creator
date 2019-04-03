@@ -1,16 +1,21 @@
 package com.armadialogcreator.gui.main;
 
+import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
+import com.armadialogcreator.data.ConfigPropertyDocumentationProvider;
+import com.armadialogcreator.gui.FXUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuButton;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Popup;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,16 +28,21 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 4/2/2019 */
 public class ConfigPropertyDisplayBox extends HBox {
+	private static final Font TOOLTIP_FONT = Font.font(Font.getDefault().getFamily(), FontWeight.BOLD, 20d);
+
 	/** The {@link ConfigPropertyKey} that was passed through constructor */
 	protected final ConfigPropertyKey configPropertyKey;
+	/** The {@link ConfigClass} that was passed through constructor */
+	protected ConfigClass configClass;
 
 	/** The root pane for where to put things after the "=" label node */
 	protected final StackPane contentStackPane = new StackPane();
 	/** The {@link MenuButton} that comes before the "=" label node */
 	protected final MenuButton menuButtonOptions = new MenuButton();
 
-	public ConfigPropertyDisplayBox(@NotNull ConfigPropertyKey property) {
+	public ConfigPropertyDisplayBox(@NotNull ConfigClass configClass, @NotNull ConfigPropertyKey property) {
 		super(5);
+		this.configClass = configClass;
 		this.configPropertyKey = property;
 
 		setAlignment(Pos.CENTER_LEFT);
@@ -42,6 +52,10 @@ public class ConfigPropertyDisplayBox extends HBox {
 		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
 
 		getChildren().addAll(menuButtonOptions, new Label("="), contentStackPane);
+
+		Tooltip tooltip = FXUtil.getMultilineTooltip(getDocumentation());
+		tooltip.setFont(TOOLTIP_FONT);
+		Tooltip.install(menuButtonOptions, tooltip);
 	}
 
 	/**
@@ -52,6 +66,11 @@ public class ConfigPropertyDisplayBox extends HBox {
 	public void hide(boolean hidden) {
 		setVisible(!hidden);
 		setManaged(!hidden);
+	}
+
+	@NotNull
+	protected String getDocumentation() {
+		return ConfigPropertyDocumentationProvider.getDocumentation(configClass, configPropertyKey);
 	}
 
 	/**

@@ -10,3 +10,7 @@
 .text-field{
 	-fx-prompt-text-fill: #636363;
 }
+
+.check-box-menu-button {
+    -fx-text-fill: white;
+}
