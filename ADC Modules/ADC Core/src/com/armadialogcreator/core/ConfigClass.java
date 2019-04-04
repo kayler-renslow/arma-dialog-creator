@@ -20,9 +20,6 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	private final MapObserverListener<String, ConfigProperty> extendPropertiesSetListener = new MapObserverListener<>() {
 		@Override
 		public void onChanged(@NotNull MapObserver<String, ConfigProperty> list, @NotNull MapObserverChange<String, ConfigProperty> change) {
-			if (properties.isImmutable()) {
-				return;
-			}
 			switch (change.getChangeType()) {
 				case Put: {
 					ConfigProperty added = change.getPut().getValue();
@@ -80,9 +77,6 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	private final MapObserverListener<String, ConfigClass> extendNestedClassesSetListener = new MapObserverListener<>() {
 		@Override
 		public void onChanged(@NotNull MapObserver<String, ConfigClass> list, @NotNull MapObserverChange<String, ConfigClass> change) {
-			if (properties.isImmutable()) {
-				return;
-			}
 			switch (change.getChangeType()) {
 				case Put: {
 					ConfigClass added = change.getPut().getValue();
@@ -277,7 +271,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			throw new ConfigClassInheritanceException();
 		}
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
-		if (myProperty != null) {
+		if (myProperty == null) {
 			ConfigProperty parentProperty = extending.properties.findPropertyNullable(propertyName);
 			if (parentProperty == null) {
 				return false;
@@ -289,14 +283,14 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			if (proxy != null) {
 				proxy.setConfigProperty(parentProperty);
 			}
+			return true;
 		}
-		return true;
+		return false;
 	}
 
-	public void overrideProperty(@NotNull String propertyName, @NotNull SerializableValue initialValue) {
-		if (properties.isImmutable()) {
-			return;
-		}
+	/** @return the overridden {@link ConfigProperty} instance */
+	@NotNull
+	public ConfigProperty overrideProperty(@NotNull String propertyName, @NotNull SerializableValue initialValue) {
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
 		if (myProperty != null) {
 			boolean removed = propertiesInheritedOwnedByParent.remove(myProperty);
@@ -312,7 +306,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			}
 			// update the value
 			myProperty.setValue(initialValue);
-			return;
+			return myProperty;
 		}
 		ConfigProperty property = new ConfigProperty(propertyName, initialValue);
 		properties.putProperty(property);
@@ -321,6 +315,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		if (proxy != null) {
 			proxy.setConfigProperty(property);
 		}
+		return property;
 	}
 
 	@NotNull
@@ -351,16 +346,10 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return properties.findPropertyNullable(key);
 	}
 
-	protected void makePropertySetImmutable() {
-		properties.makeImmutable();
-	}
-
-	public boolean propertiesIsImmutable() {
-		return properties.isImmutable();
-	}
-
-	public void addProperty(@NotNull String propertyName, @NotNull SerializableValue value) {
-		overrideProperty(propertyName, value);
+	/** @return the added {@link ConfigProperty} instance */
+	@NotNull
+	public ConfigProperty addProperty(@NotNull String propertyName, @NotNull SerializableValue value) {
+		return overrideProperty(propertyName, value);
 	}
 
 	public void removeProperty(@NotNull String propertyName) {
@@ -399,6 +388,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return proxy;
 	}
 
+	@NotNull
 	@Override
 	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property) {
 		return ConfigPropertyCategory.Basic;

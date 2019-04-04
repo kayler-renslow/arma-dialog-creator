@@ -339,6 +339,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			for (ConfigProperty property : configClass.iterateProperties()) {
 				if (!configClass.propertyIsInherited(property.getName())) {
 					Configurable.Simple propertyConf = new Configurable.Simple("property");
+					propertyConf.addAttribute("priority", property.priority() + "");
 					conf.addNestedConfigurable(propertyConf);
 					propertyConf.addAttribute("name", property.getName());
 					if (property.isBoundToMacro()) {
@@ -365,6 +366,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			for (Configurable nested : configurable.getNestedConfigurables()) {
 				String propertyName = nested.getAttributeValue("name");
 				String macro = nested.getAttributeValue("macro");
+				String priorityStr = nested.getAttributeValue("priority");
 
 				if (propertyName == null) {
 					throw new IllegalStateException();
@@ -380,7 +382,14 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 						svConf,
 						ExpressionEnvManager.instance.getEnv()
 				);
-				configClass.addProperty(propertyName, sv);
+				ConfigProperty property = configClass.addProperty(propertyName, sv);
+				if (priorityStr != null && priorityStr.length() > 0) {
+					try {
+						property.setPriority(Integer.parseInt(priorityStr));
+					} catch (NumberFormatException ignore) {
+
+					}
+				}
 			}
 			return configClass;
 		}

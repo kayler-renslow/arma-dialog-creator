@@ -15,6 +15,7 @@ public interface ConfigClassSpecification {
 	 @param property the prop
 	 @return the category
 	 */
+	@NotNull
 	ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property);
 
 	/**

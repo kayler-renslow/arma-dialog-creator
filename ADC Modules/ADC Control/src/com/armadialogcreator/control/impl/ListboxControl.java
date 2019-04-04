@@ -71,8 +71,8 @@ public class ListboxControl extends ArmaControl {
 											ConfigPropertyLookup.BLINKING_PERIOD
 									},
 									//events
-									ControlPropertyEventLookup.allWithControlScope(),
-									ControlPropertyEventLookup.allWithListboxScope()
+									ConfigPropertyEventLookup.allWithControlScope(),
+									ConfigPropertyEventLookup.allWithListboxScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

@@ -17,39 +17,19 @@ import java.util.Map;
 public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigProperty>> {
 	private final MapObserver<String, ConfigProperty> map = new MapObserver<>(new HashMap<>());
 	private final ReadOnlyMap<String, ConfigProperty> propertiesRO = new ReadOnlyMap<>(map);
-	private boolean immutable = false;
 
-	public final void makeImmutable() {
-		this.immutable = true;
-	}
-
-	public final boolean isImmutable() {
-		return immutable;
-	}
 
 	public final boolean putPropertyIfAbsent(@NotNull ConfigProperty p) {
-		if (immutable) {
-			noMutateException();
-			return false;
-		}
 		ConfigProperty property = map.putIfAbsent(p.getName().toLowerCase(), p);
 		return property == p;
 	}
 
 	@Nullable
 	public final ConfigProperty putProperty(@NotNull ConfigProperty property) {
-		if (immutable) {
-			noMutateException();
-			return null;
-		}
 		return map.put(property.getName().toLowerCase(), property);
 	}
 
 	public final void replaceProperty(@NotNull ConfigProperty newProperty) {
-		if (immutable) {
-			noMutateException();
-			return;
-		}
 		ConfigProperty old = map.replace(newProperty.getName().toLowerCase(), newProperty);
 		if (old != null) {
 			old.invalidate();
@@ -62,9 +42,6 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 
 	@Nullable
 	public final ConfigProperty removeProperty(@NotNull String name) {
-		if (immutable) {
-			noMutateException();
-		}
 		ConfigProperty removed = map.remove(name.toLowerCase());
 		if (removed != null) {
 			removed.invalidate();
@@ -73,9 +50,6 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	}
 
 	public final void clearProperties() {
-		if (immutable) {
-			noMutateException();
-		}
 		for (Map.Entry<String, ConfigProperty> entry : map.entrySet()) {
 			entry.getValue().invalidate();
 		}
@@ -140,16 +114,12 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	@NotNull
 	@Override
 	public final Iterator<Map.Entry<String, ConfigProperty>> iterator() {
-		return immutable ? propertiesRO.entrySet().iterator() : map.entrySet().iterator();
+		return map.entrySet().iterator();
 	}
 
 	@NotNull
 	public final Iterable<ConfigProperty> iterable() {
-		return immutable ? new IteratorIterable<>(propertiesRO.values().iterator()) : new IteratorIterable<>(map.values().iterator());
-	}
-
-	private void noMutateException() {
-		throw new IllegalStateException("can't mutate immutable set");
+		return new IteratorIterable<>(map.values().iterator());
 	}
 
 	public void addAllProperties(@NotNull ConfigPropertySet set) {

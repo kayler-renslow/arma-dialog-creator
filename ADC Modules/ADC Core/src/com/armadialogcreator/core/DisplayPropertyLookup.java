@@ -21,6 +21,7 @@ public enum DisplayPropertyLookup implements ConfigPropertyLookupConstant {
 	private final PropertyType propertyType;
 	private final String about;
 	private final int propertyId;
+	private final ConfigPropertyKey key;
 
 	DisplayPropertyLookup(int propertyId, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull String about, @NotNull ConfigPropertyValueOption... options) {
 		if (PropertiesLookupDataVerifier.usedIds.contains(propertyId)) {
@@ -35,7 +36,7 @@ public enum DisplayPropertyLookup implements ConfigPropertyLookupConstant {
 		this.propertyType = propertyType;
 		this.about = about;
 		this.options = options.length == 0 ? ReadOnlyArray.EMPTY : new ReadOnlyArray<>(options);
-		;
+		key = new ConfigPropertyKey.Simple(propertyName);
 	}
 
 	@Override
@@ -55,6 +56,12 @@ public enum DisplayPropertyLookup implements ConfigPropertyLookupConstant {
 		return propertyName;
 	}
 
+	@Override
+	@NotNull
+	public ConfigPropertyKey getHashSafeKey() {
+		return key;
+	}
+
 	@NotNull
 	@Override
 	public PropertyType getPropertyType() {
@@ -64,6 +71,11 @@ public enum DisplayPropertyLookup implements ConfigPropertyLookupConstant {
 	@Override
 	public int getPropertyId() {
 		return propertyId;
+	}
+
+	@Override
+	public boolean isEvent() {
+		return false;
 	}
 
 	@NotNull

@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.fxcontrol;
 
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -72,5 +73,10 @@ public class PlaceholderTitledPane extends TitledPane {
 	@Nullable
 	public ScrollPane getScrollPane() {
 		return scrollPane;
+	}
+
+	@NotNull
+	public ObservableList<Node> getContentChildren() {
+		return userContentPane.getChildren();
 	}
 }

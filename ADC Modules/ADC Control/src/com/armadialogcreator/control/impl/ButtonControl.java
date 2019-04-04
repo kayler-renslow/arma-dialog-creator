@@ -73,8 +73,8 @@ public class ButtonControl extends ArmaControl {
 											ConfigPropertyLookup.BLINKING_PERIOD,
 											ConfigPropertyLookup.COLOR_FOCUSED2
 									},
-									ControlPropertyEventLookup.allWithControlScope(),
-									ControlPropertyEventLookup.allWithButtonScope()
+									ConfigPropertyEventLookup.allWithControlScope(),
+									ConfigPropertyEventLookup.allWithButtonScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

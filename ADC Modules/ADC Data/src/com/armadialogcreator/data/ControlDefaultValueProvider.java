@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
@@ -24,9 +25,10 @@ public class ControlDefaultValueProvider {
 			if (lookup == null) {
 				continue;
 			}
-			control.addProperty(entry.getKey(),
+			ConfigProperty configProperty = control.addProperty(entry.getKey(),
 					entry.getValue().toNewSerializableValue(lookup.getPropertyType(), env)
 			);
+			configProperty.setPriority(lookup.priority());
 		}
 	}
 

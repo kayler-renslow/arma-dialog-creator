@@ -111,8 +111,8 @@ public class ShortcutButtonControl extends ArmaControl {
 											ConfigPropertyLookup.TOOLTIP_COLOR_TEXT,
 											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
 									},
-									ControlPropertyEventLookup.allWithControlScope(),
-									ControlPropertyEventLookup.allWithButtonScope()
+									ConfigPropertyEventLookup.allWithControlScope(),
+									ConfigPropertyEventLookup.allWithButtonScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

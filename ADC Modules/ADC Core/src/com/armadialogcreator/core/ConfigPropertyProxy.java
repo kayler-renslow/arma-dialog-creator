@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
  @since 3/5/19 */
 public class ConfigPropertyProxy extends ConfigPropertyBase {
 
-	private final String propertyName;
 	private final NotNullValueObserver<SerializableValue> observer;
 	private SerializableValue valueWhenPropertyAbsent;
 	@Nullable
@@ -27,7 +26,7 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 
 
 	public ConfigPropertyProxy(@NotNull String propertyName, @NotNull SerializableValue valueWhenPropertyAbsent) {
-		this.propertyName = propertyName;
+		super(propertyName);
 		this.observer = new NotNullValueObserver<>(valueWhenPropertyAbsent);
 		this.valueWhenPropertyAbsent = valueWhenPropertyAbsent;
 	}
@@ -88,12 +87,6 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 	}
 
 	@Override
-	@NotNull
-	public String getName() {
-		return propertyName;
-	}
-
-	@Override
 	public void setValue(@NotNull SerializableValue value) {
 		observer.updateValue(value);
 		if (configProperty != null) {
@@ -123,10 +116,5 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 		if (configProperty != null) {
 			configProperty.invalidate();
 		}
-	}
-
-	@Override
-	public int hashCode() {
-		return propertyName.hashCode();
 	}
 }

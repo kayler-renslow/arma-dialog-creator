@@ -65,7 +65,7 @@ public class StaticControl extends ArmaControl {
 											ConfigPropertyLookup.TILE_H
 									},
 									//events
-									ControlPropertyEventLookup.allWithControlScope()
+									ConfigPropertyEventLookup.allWithControlScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

@@ -11,17 +11,13 @@ public class ImmutableConfigProperty {
 	private final SerializableValue value;
 	private final Macro macro;
 	private final String name;
+	private final int priority;
 
 	public ImmutableConfigProperty(@NotNull ConfigProperty property) {
 		this.value = property.getValue();
 		this.macro = property.getBoundMacro();
 		this.name = property.getName();
-	}
-
-	public ImmutableConfigProperty(@NotNull String name, @NotNull SerializableValue value, @Nullable Macro macro) {
-		this.value = value;
-		this.macro = macro;
-		this.name = name;
+		this.priority = property.priority();
 	}
 
 	@NotNull
@@ -44,5 +40,10 @@ public class ImmutableConfigProperty {
 		ConfigProperty property = new ConfigProperty(name, value);
 		property.bindToMacro(macro);
 		return property;
+	}
+
+	@NotNull
+	public ConfigPropertyKey getAsKey() {
+		return new ConfigPropertyKey.Simple(name, priority);
 	}
 }

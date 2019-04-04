@@ -72,8 +72,8 @@ public class ComboControl extends ArmaControl {
 											ConfigPropertyLookup.BLINKING_PERIOD
 									},
 									//events
-									ControlPropertyEventLookup.allWithControlScope(),
-									ControlPropertyEventLookup.allWithComboScope()
+									ConfigPropertyEventLookup.allWithControlScope(),
+									ConfigPropertyEventLookup.allWithComboScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

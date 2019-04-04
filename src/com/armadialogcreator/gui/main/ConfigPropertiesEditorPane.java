@@ -4,6 +4,10 @@ import com.armadialogcreator.core.*;
 import com.armadialogcreator.gui.fxcontrol.PlaceholderTitledPane;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyIterable;
+import com.armadialogcreator.util.UpdateGroupListener;
+import com.armadialogcreator.util.UpdateListenerGroup;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.Accordion;
@@ -24,12 +28,13 @@ import java.util.*;
 public class ConfigPropertiesEditorPane extends StackPane {
 	private final Accordion accordion = new Accordion();
 	private final ConfigClass configClass;
-	private boolean listenersAreValid = true;
 
-	private final Map<String, ConfigPropertyEditor> propertyEditors = new HashMap<>();
-	private final Map<String, ConfigPropertyPlaceholder> propertyPlaceholders = new HashMap<>();
+	private final Map<ConfigPropertyKey, ConfigPropertyEditor> propertyEditors = new HashMap<>();
+	private final Map<ConfigPropertyKey, ConfigPropertyPlaceholder> propertyPlaceholders = new HashMap<>();
 
 	private final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
+	private final UpdateGroupListener<ConfigClassUpdate> configClassUpdateListener;
+	private final PlaceholderTitledPane required, optional, events;
 
 	/**
 	 Creates the accordion for editing all owned {@link ConfigClass#iterateProperties()} instances.
@@ -46,63 +51,79 @@ public class ConfigPropertiesEditorPane extends StackPane {
 
 		this.configClass = configClass;
 
-		PlaceholderTitledPane required = getPropertiesTitledPane(bundle.getString("required"), ConfigPropertyCategory.Required);
-		PlaceholderTitledPane optional = getPropertiesTitledPane(bundle.getString("optional"), ConfigPropertyCategory.Optional);
-		PlaceholderTitledPane events = getPropertiesTitledPane(bundle.getString("events"), ConfigPropertyCategory.Event);
+		required = getPropertiesTitledPane(bundle.getString("required"));
+		optional = getPropertiesTitledPane(bundle.getString("optional"));
+		events = getPropertiesTitledPane(bundle.getString("events"));
+
+		configClassUpdateListener = new UpdateGroupListener<>() {
+			@Override
+			public void update(@NotNull UpdateListenerGroup<ConfigClassUpdate> group, @NotNull ConfigClassUpdate data) {
+				switch (data.getType()) {
+					case AddProperty: {
+						ConfigClassUpdate.AddPropertyUpdate update = (ConfigClassUpdate.AddPropertyUpdate) data;
+						ConfigPropertyKey addedPropertyKey = update.getAddedProperty().getAsKey();
+						ConfigPropertyPlaceholder placeholder = propertyPlaceholders.remove(addedPropertyKey);
+						if (placeholder != null) {
+							placeholder.unlink();
+							PlaceholderTitledPane titledPane = getTitledPane(addedPropertyKey);
+							titledPane.removeContentChild(placeholder);
+							sortTitlePane(titledPane);
+						}
+						ConfigPropertyEditor existingEditor = propertyEditors.remove(addedPropertyKey);
+						if (existingEditor != null) {
+							existingEditor.unlink();
+						}
+						ConfigProperty property = configClass.findProperty(addedPropertyKey);
+						PlaceholderTitledPane titledPane = addPropertyEditorToTitlePane(property);
+						sortTitlePane(titledPane);
+						break;
+					}
+					case RemoveProperty: {
+						ConfigClassUpdate.RemovePropertyUpdate update = (ConfigClassUpdate.RemovePropertyUpdate) data;
+						ConfigPropertyKey removedPropertyKey = update.getRemovedProperty().getAsKey();
+						ConfigPropertyEditor existingEditor = propertyEditors.remove(removedPropertyKey);
+						if (existingEditor != null) {
+							existingEditor.unlink();
+							PlaceholderTitledPane titledPane = getTitledPane(removedPropertyKey);
+							titledPane.removeContentChild(existingEditor);
+							sortTitlePane(titledPane);
+						}
+						ConfigPropertyLookupConstant lookup = configClass.getLookup(removedPropertyKey.getPropertyName());
+						if (lookup != null) {
+							ConfigPropertyPlaceholder existingPlaceholder = propertyPlaceholders.get(lookup.getHashSafeKey());
+							if (existingPlaceholder == null) {
+								PlaceholderTitledPane titlePane = addPropertyPlaceholderToTitlePane(lookup);
+								sortTitlePane(titlePane);
+							}
+						}
+						break;
+					}
+				}
+			}
+		};
+		configClass.getClassUpdateGroup().addListener(configClassUpdateListener);
+
+		for (ConfigProperty p : configClass.iterateProperties()) {
+			addPropertyEditorToTitlePane(p);
+		}
 
 		ReadOnlyIterable<ConfigPropertyLookupConstant> lookupIterable = configClass.iterateLookupProperties();
 		if (lookupIterable != null) {
 			for (ConfigPropertyLookupConstant constant : lookupIterable) {
-				ConfigPropertyCategory propertyCat = configClass.getPropertyCategory(constant);
-				switch (propertyCat) {
-					case Basic: //fall
-					case Optional: {
-						optional.addContentChild(new ConfigPropertyPlaceholder(configClass, constant));
-						break;
-					}
-					case Event: {
-						break;
-					}
-					case User: {
-						break;
-					}
-					case Required: {
-						optional.addContentChild(new ConfigPropertyPlaceholder(configClass, constant));
-						break;
-					}
+				if (propertyEditors.get(constant.getHashSafeKey()) != null) {
+					continue;
 				}
-			}
-		}
-		for (ConfigProperty p : configClass.iterateProperties()) {
-			ConfigPropertyCategory propertyCat = configClass.getPropertyCategory(p);
-			switch (propertyCat) {
-				case Basic: //fall
-				case Optional: {
-					optional.addContentChild(getConfigPropertyEditorNode(p));
-					break;
-				}
-				case Event: {
-					break;
-				}
-				case User: {
-					break;
-				}
-				case Required: {
-					required.addContentChild(getConfigPropertyEditorNode(p));
-					break;
-				}
+				addPropertyPlaceholderToTitlePane(constant);
 			}
 		}
 
-		accordion.getPanes().add(
-				required
-		);
-		accordion.getPanes().add(
-				optional
-		);
-		accordion.getPanes().add(
-				events
-		);
+		sortTitlePane(required);
+		sortTitlePane(optional);
+		sortTitlePane(events);
+
+		accordion.getPanes().add(required);
+		accordion.getPanes().add(optional);
+		accordion.getPanes().add(events);
 		accordion.getPanes().add(getNestedClassesTitledPane());
 
 		accordion.setExpandedPane(accordion.getPanes().get(0));
@@ -112,28 +133,85 @@ public class ConfigPropertiesEditorPane extends StackPane {
 		accordion.setMaxWidth(Double.MAX_VALUE);
 	}
 
+	private void sortTitlePane(@NotNull PlaceholderTitledPane titledPane) {
+		ObservableList<Node> children = titledPane.getContentChildren();
+		FXCollections.sort(children, (node, node2) -> {
+			boolean n1 = node instanceof ConfigPropertyDisplayBox;
+			boolean n2 = node2 instanceof ConfigPropertyDisplayBox;
+			if (n1 && n2) {
+				ConfigPropertyDisplayBox box = (ConfigPropertyDisplayBox) node;
+				ConfigPropertyDisplayBox box2 = (ConfigPropertyDisplayBox) node2;
+
+				return ConfigPropertyKey.PRIORITY_SORT.compare(box.configPropertyKey, box2.configPropertyKey);
+			}
+			if (n1) {
+				return -1;
+			}
+			return 1;
+		});
+	}
+
+	@NotNull
+	private PlaceholderTitledPane addPropertyEditorToTitlePane(@NotNull ConfigProperty p) {
+		PlaceholderTitledPane titledPane = getTitledPane(p);
+		ConfigPropertyEditor node = getConfigPropertyEditorNode(p);
+		titledPane.addContentChild(node);
+		propertyEditors.put(p, node);
+		return titledPane;
+	}
+
+	@NotNull
+	private PlaceholderTitledPane addPropertyPlaceholderToTitlePane(@NotNull ConfigPropertyLookupConstant p) {
+		PlaceholderTitledPane titledPane = getTitledPane(p.getHashSafeKey());
+		ConfigPropertyPlaceholder placeholder = new ConfigPropertyPlaceholder(configClass, p);
+		titledPane.addContentChild(placeholder);
+		propertyPlaceholders.put(p.getHashSafeKey(), placeholder);
+		return titledPane;
+	}
+
+	@NotNull
+	private PlaceholderTitledPane getTitledPane(@NotNull ConfigPropertyKey key) {
+		ConfigPropertyCategory propertyCat = configClass.getPropertyCategory(key);
+		switch (propertyCat) {
+			case Basic: //fall
+			case Optional: {
+				return optional;
+			}
+			case Event: {
+				return events;
+			}
+			case User: {
+				break;
+			}
+			case Required: {
+				return required;
+			}
+		}
+		return optional;
+	}
+
 	/**
 	 Tell all editors to stop listening to the {@link ConfigProperty} values again.
 	 Invoking is ideal when the pane is no longer needed.
 	 */
 	public void unlink() {
-		listenersAreValid = false;
-		for (Map.Entry<String, ConfigPropertyEditor> editor : propertyEditors.entrySet()) {
+		for (Map.Entry<ConfigPropertyKey, ConfigPropertyEditor> editor : propertyEditors.entrySet()) {
 			editor.getValue().unlink();
 		}
+		configClass.getClassUpdateGroup().removeListener(configClassUpdateListener);
 	}
 
 	/** Show only the editors with property names containing <code>name</code>. If length of <code>name</code>.trim() is 0 (), will show all editors */
 	public void showPropertiesWithNameContaining(@NotNull String name) {
 		name = name.trim().toLowerCase();
-		for (Map.Entry<String, ConfigPropertyEditor> entry : propertyEditors.entrySet()) {
-			entry.getValue().hide(name.length() > 0 && !entry.getKey().contains(name));
+		for (Map.Entry<ConfigPropertyKey, ConfigPropertyEditor> entry : propertyEditors.entrySet()) {
+			entry.getValue().hide(name.length() > 0 && !entry.getKey().getPropertyName().contains(name));
 		}
 	}
 
 	/** Show only editors with properties that aren't inherited ({@link ConfigClassSpecification#propertyIsInherited(String)}) */
 	public void hideInheritedProperties(boolean hide) {
-		for (Map.Entry<String, ConfigPropertyEditor> entry : propertyEditors.entrySet()) {
+		for (Map.Entry<ConfigPropertyKey, ConfigPropertyEditor> entry : propertyEditors.entrySet()) {
 			entry.getValue().hideIfInherited(hide);
 		}
 	}
@@ -149,7 +227,7 @@ public class ConfigPropertiesEditorPane extends StackPane {
 	public List<String> getMissingProperties() {
 		List<String> properties = new ArrayList<>(propertyEditors.size());
 		for (ConfigProperty p : configClass.iterateProperties()) {
-			if (propertyEditors.containsKey(p.getName())) {
+			if (propertyEditors.containsKey(p)) {
 				continue;
 			}
 			ConfigPropertyCategory category = configClass.getPropertyCategory(p);
@@ -268,7 +346,7 @@ public class ConfigPropertiesEditorPane extends StackPane {
 
 	/** @return a titled pane for the accordion that holds all properties of a certain {@link ConfigPropertyCategory} */
 	@NotNull
-	private PlaceholderTitledPane getPropertiesTitledPane(@NotNull String title, @NotNull ConfigPropertyCategory category) {
+	private PlaceholderTitledPane getPropertiesTitledPane(@NotNull String title) {
 		final VBox vb = new VBox(10);
 		vb.setFillWidth(true);
 		vb.setPadding(new Insets(5));
@@ -286,9 +364,9 @@ public class ConfigPropertiesEditorPane extends StackPane {
 
 	/** @return the a Node that has a label and an {@link ConfigPropertyEditor} in a form-like layout (lbl:container) */
 	@NotNull
-	private Node getConfigPropertyEditorNode(@NotNull ConfigProperty property) {
+	private ConfigPropertyEditor getConfigPropertyEditorNode(@NotNull ConfigProperty property) {
 		ConfigPropertyEditor editor = new ConfigPropertyEditor(configClass, property);
-		propertyEditors.put(property.getName(), editor);
+		propertyEditors.put(property, editor);
 		editor.setUserData(property);
 		return editor;
 	}

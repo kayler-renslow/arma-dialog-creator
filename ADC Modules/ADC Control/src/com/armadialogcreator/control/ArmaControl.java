@@ -227,11 +227,15 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 		return new ReadOnlyIterable<>(new DoubleIterable<>(getRequiredProperties(), getOptionalProperties()));
 	}
 
+	@NotNull
 	@Override
 	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property) {
 		ReadOnlyList<ConfigPropertyLookupConstant> plist = armaControlLookup.specProvider.getOptionalProperties();
 		for (ConfigPropertyLookupConstant c : plist) {
 			if (property.nameEquals(c)) {
+				if (c.isEvent()) {
+					return ConfigPropertyCategory.Event;
+				}
 				return ConfigPropertyCategory.Optional;
 			}
 		}
@@ -239,6 +243,9 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 		plist = armaControlLookup.specProvider.getRequiredProperties();
 		for (ConfigPropertyLookupConstant c : plist) {
 			if (property.nameEquals(c)) {
+				if (c.isEvent()) {
+					return ConfigPropertyCategory.Event;
+				}
 				return ConfigPropertyCategory.Required;
 			}
 		}

@@ -13,6 +13,13 @@ import org.jetbrains.annotations.Nullable;
  @since 03/05/2019 */
 public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 
+	protected final String name;
+	protected int priority = Integer.MAX_VALUE;
+
+	public ConfigPropertyBase(@NotNull String propertyName) {
+		this.name = propertyName;
+	}
+
 	@NotNull
 	public abstract NotNullValueObserver<SerializableValue> getValueObserver();
 
@@ -29,12 +36,14 @@ public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 	public abstract Macro getBoundMacro();
 
 	@NotNull
-	public abstract String getName();
+	public String getName() {
+		return name;
+	}
 
 	@Override
 	@NotNull
 	public String getPropertyName() {
-		return getName();
+		return name;
 	}
 
 	public abstract void setValue(@NotNull SerializableValue value);
@@ -90,12 +99,24 @@ public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 
 	@Override
 	public int hashCode() {
-		return getName().hashCode();
+		return name.hashCode();
 	}
 
 	@NotNull
 	public PropertyType getPropertyType() {
 		return getValue().getPropertyType();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == this) {
+			return true;
+		}
+		if (!(obj instanceof ConfigPropertyBase)) {
+			return false;
+		}
+		ConfigPropertyBase other = (ConfigPropertyBase) obj;
+		return this.nameEquals(other);
 	}
 
 	@NotNull
@@ -105,5 +126,14 @@ public abstract class ConfigPropertyBase implements ConfigPropertyKey {
 		clearMacro();
 		getValueObserver().invalidate();
 		getPropertyUpdateGroup().clearListeners();
+	}
+
+	@Override
+	public int priority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
 	}
 }

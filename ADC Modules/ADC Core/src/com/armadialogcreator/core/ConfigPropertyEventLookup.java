@@ -6,11 +6,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 
 /**
- A place to store all event control properties
+ A place to store all event config properties
 
  @author Kayler
  @since 08/21/2016. */
-public enum ControlPropertyEventLookup {
+public enum ConfigPropertyEventLookup {
 	EventOnLoad(ConfigPropertyLookup.EVENT_ON_LOAD, 1, "Display, Control"),
 	EventOnUnload(ConfigPropertyLookup.EVENT_ON_UNLOAD, 1, "Display"),
 	EventOnChildDestroyed(ConfigPropertyLookup.EVENT_ON_CHILD_DESTROYED, 1, "Display"),
@@ -69,7 +69,7 @@ public enum ControlPropertyEventLookup {
 	@NotNull
 	public final String scope;
 
-	ControlPropertyEventLookup(@NotNull ConfigPropertyLookup lookup, int priority, @NotNull String scope) {
+	ConfigPropertyEventLookup(@NotNull ConfigPropertyLookup lookup, int priority, @NotNull String scope) {
 		this.lookup = lookup;
 		this.priority = priority;
 		this.scope = scope;
@@ -79,10 +79,10 @@ public enum ControlPropertyEventLookup {
 		return priority < 0 ? "unknown" : priority + "";
 	}
 
-	/** Return the {@link ControlPropertyEventLookup} instance that is associated with the given lookup. If no correlation exists, will return null. */
+	/** Return the {@link ConfigPropertyEventLookup} instance that is associated with the given lookup. If no correlation exists, will return null. */
 	@Nullable
-	public static ControlPropertyEventLookup getEventProperty(ConfigPropertyLookupConstant lookup) {
-		for (ControlPropertyEventLookup eventLookup : values()) {
+	public static ConfigPropertyEventLookup getEventProperty(ConfigPropertyLookupConstant lookup) {
+		for (ConfigPropertyEventLookup eventLookup : values()) {
 			if (eventLookup.lookup == lookup) {
 				return eventLookup;
 			}
@@ -103,7 +103,7 @@ public enum ControlPropertyEventLookup {
 	@NotNull
 	private static ConfigPropertyLookup[] allWith(@NotNull String s) {
 		ArrayList<ConfigPropertyLookup> lookups = new ArrayList<>(values().length);
-		for (ControlPropertyEventLookup lookup : values()) {
+		for (ConfigPropertyEventLookup lookup : values()) {
 			if (lookup.scope.toLowerCase().contains(s)) {
 				lookups.add(lookup.lookup);
 			}

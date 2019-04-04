@@ -29,7 +29,7 @@ public class ConfigPropertyPlaceholder extends ConfigPropertyDisplayBox {
 	private static final ResourceBundle bundle = Lang.getBundle("ConfigPropertyEditorBundle");
 
 	private final Label lbl = new Label(bundle.getString("initialize"));
-	private final NotNullValueListener<Boolean> darkThemeListener = new NotNullValueListener<Boolean>() {
+	private final NotNullValueListener<Boolean> darkThemeListener = new NotNullValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull NotNullValueObserver<Boolean> observer, @NotNull Boolean oldValue, @NotNull Boolean newValue) {
 			setLabelBackground(newValue);

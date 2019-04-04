@@ -26,6 +26,17 @@ public interface ConfigPropertyLookupConstant extends ConfigPropertyKey {
 	String getPropertyName();
 
 	/**
+	 >>>READ<<< This method exists so that the hashcode's of the property names are preserved.
+	 If an enum implements this interface, we can't override the enum's hashcode. If we have a method
+	 that returns a {@link ConfigPropertyKey} instance, then we can get the correct hashcode without needing
+	 to switch from enums.
+
+	 @return the key
+	 */
+	@NotNull
+	ConfigPropertyKey getHashSafeKey();
+
+	/**
 	 @return the {@link PropertyType} associated with the property. This is the <b>initial</b> {@link PropertyType}.
 	 */
 	@NotNull
@@ -37,12 +48,10 @@ public interface ConfigPropertyLookupConstant extends ConfigPropertyKey {
 	 */
 	int getPropertyId();
 
-	/** @return the sort priority for {@link #PRIORITY_SORT}. By default, returns {@link Integer#MAX_VALUE} */
-	default int priority() {
-		return Integer.MAX_VALUE;
-	}
+	/** @return true if this property is an event property, false otherwise */
+	boolean isEvent();
 
-	Comparator<ConfigPropertyLookupConstant> PRIORITY_SORT = new Comparator<ConfigPropertyLookupConstant>() {
+	Comparator<ConfigPropertyLookupConstant> PRIORITY_SORT = new Comparator<>() {
 		@Override
 		public int compare(ConfigPropertyLookupConstant o1, ConfigPropertyLookupConstant o2) {
 			if (o1.priority() == o2.priority()) {

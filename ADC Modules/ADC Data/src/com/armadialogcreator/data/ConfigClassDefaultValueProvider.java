@@ -1,6 +1,7 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
@@ -19,9 +20,10 @@ public class ConfigClassDefaultValueProvider {
 			if (lookup == null) {
 				return;
 			}
-			configClass.addProperty(property,
+			ConfigProperty configProperty = configClass.addProperty(property,
 					dproperty.toNewSerializableValue(lookup.getPropertyType(), env)
 			);
+			configProperty.setPriority(lookup.priority());
 		}
 	}
 }

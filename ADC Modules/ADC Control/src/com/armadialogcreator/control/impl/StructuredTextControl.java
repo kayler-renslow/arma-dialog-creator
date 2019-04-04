@@ -55,8 +55,8 @@ public class StructuredTextControl extends ArmaControl {
 											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
 											ConfigPropertyLookup.BLINKING_PERIOD
 									},
-									ControlPropertyEventLookup.allWithControlScope(),
-									ControlPropertyEventLookup.allWithSliderScope()
+									ConfigPropertyEventLookup.allWithControlScope(),
+									ConfigPropertyEventLookup.allWithSliderScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

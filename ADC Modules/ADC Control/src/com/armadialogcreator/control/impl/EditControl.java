@@ -64,7 +64,7 @@ public class EditControl extends ArmaControl {
 											ConfigPropertyLookup.TOOLTIP_COLOR_BOX,
 											ConfigPropertyLookup.BLINKING_PERIOD
 									},
-									ControlPropertyEventLookup.allWithControlScope()
+									ConfigPropertyEventLookup.allWithControlScope()
 							),
 							ConfigPropertyLookupConstant.PRIORITY_SORT
 					)

@@ -2,16 +2,18 @@ package com.armadialogcreator.util;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  Created by Kayler on 07/05/2016.
  */
 public class UpdateListenerGroup<T> {
-	private final LinkedList<UpdateGroupListener<T>> updateListeners = new LinkedList<>();
+	private final List<UpdateGroupListener<T>> updateListeners = new LinkedList<>();
 	private final LinkedList<UpdateListenerGroup<T>> chain = new LinkedList<>();
-	private final LinkedList<UpdateGroupListener<T>> newListeners = new LinkedList<>();
+	private final List<UpdateGroupListener<T>> newListeners = new ArrayList<>();
+	private final List<UpdateGroupListener<T>> removeListeners = new ArrayList<>();
 	private boolean iterating = false; //prevent CoModificationException
 
 	public void clearListeners() {
@@ -42,27 +44,31 @@ public class UpdateListenerGroup<T> {
 	}
 
 	public boolean removeListener(@NotNull UpdateGroupListener<T> listener) {
+		if (iterating) {
+			int ind = updateListeners.indexOf(listener);
+			if (ind < 0) {
+				return false;
+			}
+			UpdateGroupListener<T> existing = updateListeners.get(ind);
+			removeListeners.add(existing);
+			return true;
+		}
 		return updateListeners.remove(listener);
 	}
 
 	public void update(@NotNull T data) {
 		iterating = true;
-		Iterator<UpdateGroupListener<T>> iter = updateListeners.iterator();
-		while (iter.hasNext()) {
-			UpdateGroupListener<T> updateListener = iter.next();
-			if (updateListener.hasExpired()) {
-				iter.remove();
-				continue;
-			}
+		for (UpdateGroupListener<T> updateListener : updateListeners) {
 			updateListener.update(this, data);
 		}
 		for (UpdateListenerGroup<T> group : chain) {
 			group.update(data);
 		}
 		iterating = false;
-		while (newListeners.size() > 0) {
-			updateListeners.add(newListeners.pop());
-		}
+		updateListeners.addAll(newListeners);
+		updateListeners.removeAll(removeListeners);
+		removeListeners.clear();
+		newListeners.clear();
 	}
 
 

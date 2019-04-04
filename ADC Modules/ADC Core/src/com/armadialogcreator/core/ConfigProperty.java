@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
  @author K
  @since 01/03/2019 */
 public class ConfigProperty extends ConfigPropertyBase {
-	private final String name;
 	private Macro boundMacro;
 	private final NotNullValueObserver<SerializableValue> valueObserver;
 	private final NotNullValueListener<SerializableValue> macroValueListener = new NotNullValueListener<>() {
@@ -23,7 +22,7 @@ public class ConfigProperty extends ConfigPropertyBase {
 	private final UpdateListenerGroup<ConfigPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
 
 	public ConfigProperty(@NotNull String name, @NotNull SerializableValue initialValue) {
-		this.name = name;
+		super(name);
 		this.valueObserver = new NotNullValueObserver<>(initialValue);
 	}
 
@@ -110,4 +109,6 @@ public class ConfigProperty extends ConfigPropertyBase {
 	public UpdateListenerGroup<ConfigPropertyUpdate> getPropertyUpdateGroup() {
 		return updateGroup;
 	}
+
+
 }
