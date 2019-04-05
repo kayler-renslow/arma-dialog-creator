@@ -39,6 +39,7 @@ public class ConfigPropertyDisplayBox extends HBox {
 	protected final StackPane contentStackPane = new StackPane();
 	/** The {@link MenuButton} that comes before the "=" label node */
 	protected final MenuButton menuButtonOptions = new MenuButton();
+	private final Label lblEq = new Label("=");
 
 	public ConfigPropertyDisplayBox(@NotNull ConfigClass configClass, @NotNull ConfigPropertyKey property) {
 		super(5);
@@ -51,11 +52,16 @@ public class ConfigPropertyDisplayBox extends HBox {
 		menuButtonOptions.setText(configPropertyKey.getPropertyName());
 		HBox.setHgrow(menuButtonOptions, Priority.ALWAYS);
 
-		getChildren().addAll(menuButtonOptions, new Label("="), contentStackPane);
+		getChildren().addAll(menuButtonOptions, lblEq, contentStackPane);
 
 		Tooltip tooltip = FXUtil.getMultilineTooltip(getDocumentation());
 		tooltip.setFont(TOOLTIP_FONT);
 		Tooltip.install(menuButtonOptions, tooltip);
+	}
+
+	protected void hideEqualSign() {
+		lblEq.setVisible(false);
+		lblEq.setManaged(false);
 	}
 
 	/**

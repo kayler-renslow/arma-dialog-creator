@@ -93,6 +93,8 @@ public class ConfigPropertyPlaceholder extends ConfigPropertyDisplayBox {
 		contentStackPane.setOnMousePressed(event -> {
 			initializeProperty();
 		});
+
+		hideEqualSign();
 	}
 
 	private void initializeProperty() {
