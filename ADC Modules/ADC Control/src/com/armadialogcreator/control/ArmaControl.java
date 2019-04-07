@@ -258,4 +258,10 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	public String getConfigPropertyDocumentationBundle() {
 		return controlType.name();
 	}
+
+	@Override
+	@NotNull
+	public ReadOnlyArray<ControlStyle> getAllowedStyles() {
+		return armaControlLookup.specProvider.getAllowedStyles();
+	}
 }

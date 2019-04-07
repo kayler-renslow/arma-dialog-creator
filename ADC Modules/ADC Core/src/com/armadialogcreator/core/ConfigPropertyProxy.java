@@ -19,7 +19,7 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 	private final NotNullValueListener<SerializableValue> valueListener = new NotNullValueListener<>() {
 		@Override
 		public void valueUpdated(@NotNull NotNullValueObserver<SerializableValue> valueObserver, @NotNull SerializableValue oldValue, @NotNull SerializableValue newValue) {
-			valueObserver.updateValue(newValue);
+			ConfigPropertyProxy.this.observer.updateValue(newValue);
 		}
 	};
 	private final UpdateListenerGroup<ConfigPropertyUpdate> updateGroup = new UpdateListenerGroup<>();
@@ -37,6 +37,8 @@ public class ConfigPropertyProxy extends ConfigPropertyBase {
 			property.addValueListener(valueListener);
 		} else if (this.configProperty != null) {
 			configProperty.removeValueListener(valueListener);
+		}
+		if (property == null) {
 			observer.updateValue(valueWhenPropertyAbsent);
 		}
 		this.configProperty = property;

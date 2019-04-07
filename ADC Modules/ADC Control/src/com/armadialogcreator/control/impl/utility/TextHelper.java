@@ -3,6 +3,7 @@ package com.armadialogcreator.control.impl.utility;
 import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SerializableValue;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
@@ -23,7 +24,7 @@ public class TextHelper {
 	 */
 	@NotNull
 	public static String getText(@Nullable SerializableValue newValue) {
-		if (newValue == null) {
+		if (newValue == null || newValue == SVNull.instance) {
 			return "";
 		} else {
 			String tostring = newValue.toString();

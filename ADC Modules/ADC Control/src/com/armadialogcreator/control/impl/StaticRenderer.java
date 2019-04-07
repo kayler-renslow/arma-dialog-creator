@@ -103,13 +103,11 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	}
 
 	private void checkAndSetRenderType() {
-		switch (renderTypeForStyle) {
-			case ImageOrTexture: {
-				pictureOrTextureHelper.updateAsync(textPropertyValue, mode -> {
-					updateTintedImage();
-					return null;
-				});
-			}
+		if (renderTypeForStyle == RenderType.ImageOrTexture) {
+			pictureOrTextureHelper.updateAsync(textPropertyValue, mode -> {
+				updateTintedImage();
+				return null;
+			});
 		}
 		renderType = renderTypeForStyle;
 
@@ -320,6 +318,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 			SVControlStyleGroup group = (SVControlStyleGroup) value;
 			for (ControlStyle style : group.getStyleArray()) {
 				if (style == ControlStyle.TILE_PICTURE) {
+					System.out.println("StaticRenderer.getRenderTypeFromStyle style=" + style);
 					return RenderType.ImageOrTexture;
 				}
 				if (style == ControlStyle.PICTURE) {

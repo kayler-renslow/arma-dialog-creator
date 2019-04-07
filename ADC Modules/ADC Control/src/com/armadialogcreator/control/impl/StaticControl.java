@@ -4,7 +4,10 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.ConfigPropertyEventLookup;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ConfigPropertyLookupConstant;
+import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyArray;
@@ -27,7 +30,7 @@ public class StaticControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaControlSpecRequirement {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {

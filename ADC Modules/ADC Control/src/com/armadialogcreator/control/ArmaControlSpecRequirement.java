@@ -1,14 +1,17 @@
 package com.armadialogcreator.control;
 
+import com.armadialogcreator.core.AllowedStyleProvider;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
+import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
 import org.jetbrains.annotations.NotNull;
 
 /**
  Created by Kayler on 07/07/2016.
  */
-public interface ArmaControlSpecRequirement {
+public interface ArmaControlSpecRequirement extends AllowedStyleProvider {
 	ArmaControlSpecRequirement BASE = new ArmaControlSpecRequirement() {
 	};
 
@@ -55,4 +58,9 @@ public interface ArmaControlSpecRequirement {
 		return neww;
 	}
 
+	@Override
+	@NotNull
+	default ReadOnlyArray<ControlStyle> getAllowedStyles() {
+		return ReadOnlyArray.EMPTY;
+	}
 }

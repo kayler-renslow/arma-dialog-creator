@@ -3,7 +3,6 @@ package com.armadialogcreator.core;
 import com.armadialogcreator.util.IteratorIterable;
 import com.armadialogcreator.util.MapObserver;
 import com.armadialogcreator.util.MapObserverListener;
-import com.armadialogcreator.util.ReadOnlyMap;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,8 +15,6 @@ import java.util.Map;
  @since 01/03/2019 */
 public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigProperty>> {
 	private final MapObserver<String, ConfigProperty> map = new MapObserver<>(new HashMap<>());
-	private final ReadOnlyMap<String, ConfigProperty> propertiesRO = new ReadOnlyMap<>(map);
-
 
 	public final boolean putPropertyIfAbsent(@NotNull ConfigProperty p) {
 		ConfigProperty property = map.putIfAbsent(p.getName().toLowerCase(), p);

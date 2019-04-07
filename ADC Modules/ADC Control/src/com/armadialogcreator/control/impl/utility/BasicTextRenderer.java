@@ -86,7 +86,6 @@ public class BasicTextRenderer {
 
 		if (text != null) {
 			renderer.addValueListener(text, SVString.newEmptyString(), (observer, oldValue, newValue) -> {
-
 				setText(TextHelper.getText(newValue));
 				callback.textUpdate(newValue);
 						renderer.requestRender();
