@@ -8,6 +8,7 @@ import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.view.ViewShowGridAction;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +18,7 @@ import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 
 import java.util.ResourceBundle;
 
@@ -30,11 +32,15 @@ public class CanvasContextMenu extends ContextMenu {
 	public CanvasContextMenu() {
 
 	ResourceBundle bundle = Lang.getBundle("MainMenuBarBundle");
+		MenuItem create_control = addOnAction(bundle.getString("create_control"), new CreateNewControlAction());
+		MenuItem create_macro = addOnAction(bundle.getString("create_macro"), new CreateMacroAction());
+		create_macro.setGraphic(new ImageView(ADCIcons.ICON_HASH_MINIPLUS));
+		MenuItem create_control_class = addOnAction(bundle.getString("create_control_class"), new CreateNewCustomControlAction());
 		Menu menuCreate = new Menu(
 				bundle.getString("create"), null,
-				addOnAction(bundle.getString("create_control"), new CreateNewControlAction()),
-				addOnAction(bundle.getString("create_macro"), new CreateMacroAction()),
-				addOnAction(bundle.getString("create_control_class"), new CreateNewCustomControlAction())
+				create_control,
+				create_macro,
+				create_control_class
 		);
 		getItems().add(menuCreate);
 

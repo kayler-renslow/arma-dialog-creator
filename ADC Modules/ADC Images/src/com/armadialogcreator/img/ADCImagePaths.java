@@ -30,6 +30,8 @@ public abstract class ADCImagePaths {
 	public static final String ICON_DOWN_ARROW_OUT = getIcon("down_arrow_out.png");
 	public static final String ICON_UP_ARROW_OUT = getIcon("up_arrow_out.png");
 	public static final String ICON_AUTO_SIZE = getIcon("autosize.png");
+	public static final String ICON_HASH = getIcon("hash.png");
+	public static final String ICON_HASH_MINIPLUS = getIcon("hash_miniplus.png");
 
 	public static final String ICON_BRACKETS = getIcon("brackets.png");
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";

@@ -24,6 +24,8 @@ public class ADCIcons {
 	public static final Image ICON_DOWN_ARROW_OUT = new Image(ADCImagePaths.ICON_DOWN_ARROW_OUT);
 	public static final Image ICON_UP_ARROW_OUT = new Image(ADCImagePaths.ICON_UP_ARROW_OUT);
 	public static final Image ICON_BRACKETS = new Image(ADCImagePaths.ICON_BRACKETS);
+	public static final Image ICON_HASH = new Image(ADCImagePaths.ICON_HASH);
+	public static final Image ICON_HASH_MINIPLUS = new Image(ADCImagePaths.ICON_HASH_MINIPLUS);
 
 	public static final Image ICON_AUTO_SIZE = new Image(ADCImagePaths.ICON_AUTO_SIZE);
 }

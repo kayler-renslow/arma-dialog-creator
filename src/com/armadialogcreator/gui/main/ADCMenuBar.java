@@ -137,6 +137,10 @@ class ADCMenuBar extends MenuBar {
 
 	/*create*/
 	final MenuItem create_macro = addOnAction(new MenuItem(bundle.getString("create_macro")), new CreateMacroAction());
+
+	{
+		create_macro.setGraphic(new ImageView(ADCIcons.ICON_HASH_MINIPLUS));
+	}
 	final MenuItem create_control_class = addOnAction(new MenuItem(bundle.getString("create_control_class")), new CreateNewCustomControlAction());
 	final MenuItem create_new_control = addOnAction(new MenuItem(bundle.getString("create_control")), new CreateNewControlAction());
 	final MenuItem create_new_folder = addOnAction(
