@@ -8,11 +8,13 @@ import com.armadialogcreator.canvas.UICanvasConfiguration;
 import com.armadialogcreator.canvas.UICanvasEditorColors;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.control.FolderUINode;
 import com.armadialogcreator.data.*;
 import com.armadialogcreator.gui.CanvasContextMenu;
 import com.armadialogcreator.gui.main.ADCMainWindow;
 import com.armadialogcreator.gui.main.CanvasView;
 import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
 import com.armadialogcreator.gui.styles.ADCStyleSheets;
 import com.armadialogcreator.util.AColorConstant;
 import com.armadialogcreator.util.ApplicationSingleton;
@@ -115,6 +117,16 @@ public class ADCGuiManager implements ApplicationStateSubscriber {
 			canvasView.getBackgroundControlTreeView().addChildDataToRoot(new ControlTreeItemEntry(control));
 		} else {
 			canvasView.getMainControlTreeView().addChildDataToRoot(new ControlTreeItemEntry(control));
+		}
+	}
+
+	public void addFolderToTreeView(@NotNull FolderUINode folder, boolean background) {
+		ADCMainWindow mainWindow = ArmaDialogCreator.getMainWindow();
+		CanvasView canvasView = mainWindow.getCanvasView();
+		if (background) {
+			canvasView.getBackgroundControlTreeView().addChildDataToRoot(new FolderTreeItemEntry(folder));
+		} else {
+			canvasView.getMainControlTreeView().addChildDataToRoot(new FolderTreeItemEntry(folder));
 		}
 	}
 

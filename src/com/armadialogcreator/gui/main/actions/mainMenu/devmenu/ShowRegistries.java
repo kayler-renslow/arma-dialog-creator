@@ -50,6 +50,11 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 			myRootElement.getChildren().add(treeView);
 
 			TreeItem<String> root = new TreeItem<>();
+
+			TreeItem<String> tiCount = new TreeItem<>("Entry Count: " + registry.getEntryCount());
+			root.getChildren().add(tiCount);
+			root.getChildren().add(new TreeItem<>("------------"));
+
 			Map<DataLevel, List<KeyValue<String, Configurable>>> map = registry.copyAllToConfigurableMap();
 			for (DataLevel level : DataLevel.values()) {
 				TreeItem<String> levelTi = new TreeItem<>(level.name());

@@ -1,5 +1,6 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
+import com.armadialogcreator.ADCGuiManager;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.FolderUINode;
 import com.armadialogcreator.data.EditorManager;
@@ -44,6 +45,7 @@ public class CreateNewFolderAction implements EventHandler<ActionEvent> {
 		} else {
 			display.getControlNodes().addChild(folder);
 		}
+		ADCGuiManager.instance.addFolderToTreeView(folder, background);
 	}
 
 	private static class NewFolderDialog extends NameTextFieldDialog {
