@@ -15,6 +15,7 @@ import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
+import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowDisplay;
 import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowRegistries;
 import com.armadialogcreator.gui.main.actions.mainMenu.edit.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.file.*;
@@ -211,7 +212,8 @@ class ADCMenuBar extends MenuBar {
 
 	/*dev menu*/
 	final MenuItem dev_registries = addOnAction(new MenuItem("Show Registries"), new ShowRegistries());
-	final Menu menuDev = new Menu("Dev", null, dev_registries);
+	final MenuItem dev_showDisplay = addOnAction(new MenuItem("Show Display"), new ShowDisplay());
+	final Menu menuDev = new Menu("Dev", null, dev_registries, dev_showDisplay);
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);

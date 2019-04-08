@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControl extends RequirementsConfigClass implements UINode {
+public class ArmaControl extends RequirementsConfigClass implements NamedUINode {
 	/** Type of the control */
 	private ControlType controlType = ControlType.Static;
 
@@ -274,5 +274,11 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 	@NotNull
 	public ReadOnlyArray<ControlStyle> getAllowedStyles() {
 		return armaControlLookup.specProvider.getAllowedStyles();
+	}
+
+	@Override
+	@NotNull
+	public NotNullValueObserver<String> getUINodeName() {
+		return getClassNameObserver();
 	}
 }

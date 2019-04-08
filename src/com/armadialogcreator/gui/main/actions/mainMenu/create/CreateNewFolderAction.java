@@ -1,5 +1,8 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.create;
 
+import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.control.FolderUINode;
+import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.gui.main.popup.NameTextFieldDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.event.ActionEvent;
@@ -34,13 +37,13 @@ public class CreateNewFolderAction implements EventHandler<ActionEvent> {
 
 		String folderName = dialog.getInputText();
 		boolean background = dialog.isBackground();
-/*
-		CanvasView canvasView = ArmaDialogCreator.getCanvasView();
-
-		EditableTreeView treeView = background ? canvasView.getBackgroundControlTreeView() :
-				canvasView.getMainControlTreeView();
-		treeView.addChildDataToRoot(new FolderTreeItemEntry(folderName));
-*/
+		FolderUINode folder = new FolderUINode(folderName == null ? "" : folderName);
+		ArmaDisplay display = EditorManager.instance.getEditingDisplay();
+		if (background) {
+			display.getBackgroundControlNodes().addChild(folder);
+		} else {
+			display.getControlNodes().addChild(folder);
+		}
 	}
 
 	private static class NewFolderDialog extends NameTextFieldDialog {

@@ -5,12 +5,12 @@ import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.data.*;
 import com.armadialogcreator.gui.StageDialog;
-import com.armadialogcreator.gui.main.popup.SimpleInfoDialog;
 import com.armadialogcreator.util.KeyValue;
-import com.armadialogcreator.util.KeyValueString;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.control.*;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -64,7 +64,7 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 					levelTi.getChildren().add(tiName);
 
 					Configurable value = item.getValue();
-					appendTreeItem(tiName, value);
+					TreeItemConfigurabeHelper.appendTreeItem(tiName, value);
 				}
 			}
 
@@ -72,67 +72,7 @@ public class ShowRegistries implements EventHandler<ActionEvent> {
 			treeView.setShowRoot(false);
 		}
 
-		@NotNull
-		private TreeItem<String> appendTreeItem(@NotNull TreeItem<String> parent, @NotNull Configurable c) {
-			TreeItem<String> child = new TreeItem<>(c.getConfigurableName());
-			parent.getChildren().add(child);
 
-			if (c.getNestedConfigurableCount() == 0 && c.getConfigurableBody().isEmpty() && c.getConfigurableAttributeCount() == 0) {
-				Label lbl = new Label("(EMPTY) ");
-				child.setGraphic(lbl);
-				return child;
-			}
-
-			{
-				TreeItem<String> viewAsXml = new TreeItem<>("As XML");
-				child.getChildren().add(viewAsXml);
-				Button b = new Button("View");
-				b.setOnAction(event -> {
-					new SimpleInfoDialog.AsTextArea(
-							ArmaDialogCreator.getPrimaryStage(),
-							"XML",
-							Configurable.toFormattedString(c, 1)
-					).show();
-				});
-				viewAsXml.setGraphic(b);
-			}
-
-			{
-				boolean bodyEmpty = c.getConfigurableBody().isEmpty();
-				TreeItem<String> body = new TreeItem<>("Body" + (bodyEmpty ? " (EMPTY)" : ""));
-				if (!bodyEmpty) {
-					Button b = new Button("View");
-					b.setOnAction(event -> {
-						new SimpleInfoDialog.AsTextArea(ArmaDialogCreator.getPrimaryStage(), "Body", c.getConfigurableBody()).show();
-					});
-					body.setGraphic(b);
-				}
-
-				child.getChildren().add(body);
-			}
-
-			{
-				TreeItem<String> attributes = new TreeItem<>("Attributes");
-				child.getChildren().add(attributes);
-
-				for (KeyValueString kv : c.getConfigurableAttributes()) {
-					TreeItem<String> item = new TreeItem<>(kv.getKey() + "=" + kv.getValue());
-					attributes.getChildren().add(item);
-				}
-			}
-
-			{
-				TreeItem<String> nested = new TreeItem<>("Nested Configurables");
-				child.getChildren().add(nested);
-
-				for (Configurable nestedConf : c.getNestedConfigurables()) {
-					appendTreeItem(nested, nestedConf);
-				}
-			}
-
-
-			return child;
-		}
 	}
 
 	private static class ChooseRegistryDialog extends StageDialog<VBox> {
