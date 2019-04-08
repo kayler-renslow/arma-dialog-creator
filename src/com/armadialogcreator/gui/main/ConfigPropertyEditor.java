@@ -11,10 +11,7 @@ import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.sveditor.ConvertValueDialog;
 import com.armadialogcreator.gui.main.sveditor.MacroGetterButton;
 import com.armadialogcreator.lang.Lang;
-import com.armadialogcreator.util.UpdateGroupListener;
-import com.armadialogcreator.util.UpdateListenerGroup;
-import com.armadialogcreator.util.ValueListener;
-import com.armadialogcreator.util.ValueObserver;
+import com.armadialogcreator.util.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -78,7 +75,7 @@ public class ConfigPropertyEditor extends ConfigPropertyDisplayBox {
 		final CheckMenuItem miRaw = new CheckMenuItem(bundle.getString("raw"));
 		final MenuItem miShowDoc = new MenuItem(bundle.getString("show_documentation"));
 		miShowDoc.setOnAction(event -> {
-			new MenuButtonPopup(getDocumentation()).showPopup();
+			new MenuButtonPopup(TextUtil.getMultilineText(getDocumentation(), 60)).showPopup();
 		});
 
 		menuButtonOptions.setText(configProperty.getName());

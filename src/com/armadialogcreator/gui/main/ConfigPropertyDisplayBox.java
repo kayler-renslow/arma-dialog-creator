@@ -83,11 +83,22 @@ public class ConfigPropertyDisplayBox extends HBox {
 	 A popup that is automatically bound to {@link #menuButtonOptions} when shown.
 	 */
 	protected class MenuButtonPopup extends Popup {
+
+		private final int lineCount;
+		private final Label lbl;
+
 		/**
 		 @param text the text to place in popup
 		 */
 		public MenuButtonPopup(@NotNull String text) {
-			Label lbl = new Label(text);
+			lbl = new Label(text);
+			int lineCount = 0;
+			for (int i = 0; i < text.length(); i++) {
+				if (text.charAt(i) == '\n') {
+					lineCount++;
+				}
+			}
+			this.lineCount = lineCount;
 			StackPane container = new StackPane(lbl);
 			container.setBackground(new Background(new BackgroundFill(
 					Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
@@ -100,9 +111,10 @@ public class ConfigPropertyDisplayBox extends HBox {
 
 		public void showPopup() {
 			Control ownerNode = menuButtonOptions;
-			Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight());
+			Point2D p = ownerNode.localToScreen(0, -ownerNode.getHeight() / 2);
 			this.setAutoHide(true);
 			show(ownerNode, p.getX(), p.getY());
+			this.setY(p.getY() - lbl.getHeight());
 		}
 	}
 

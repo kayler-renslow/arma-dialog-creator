@@ -61,6 +61,11 @@ public class ConfigPropertyDocumentationProvider {
 		} catch (MissingResourceException ignore) {
 
 		}
-		return "";
+		try {
+			return Lang.ConfigPropertyLookupBundle("_DefaultBundle").getString("no_documentation");
+		} catch (MissingResourceException ignore) {
+
+		}
+		return "No Documentation.";
 	}
 }

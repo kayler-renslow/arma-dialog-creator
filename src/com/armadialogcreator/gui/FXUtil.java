@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui;
 
 import com.armadialogcreator.gui.fxcontrol.MenuItemEventHandler;
+import com.armadialogcreator.util.TextUtil;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -36,18 +37,7 @@ public class FXUtil {
 	 */
 	@NotNull
 	public static Tooltip getMultilineTooltip(@NotNull String tooltip) {
-		StringBuilder sb = new StringBuilder(tooltip.length());
-		int len = 0;
-		for (int i = 0; i < tooltip.length(); i++) {
-			char c = tooltip.charAt(i);
-			sb.append(c);
-			len++;
-			if (len >= 60 && Character.isWhitespace(c)) {
-				len = 0;
-				sb.append('\n');
-			}
-		}
-		return new Tooltip(sb.toString());
+		return new Tooltip(TextUtil.getMultilineText(tooltip, 60));
 	}
 
 	/**

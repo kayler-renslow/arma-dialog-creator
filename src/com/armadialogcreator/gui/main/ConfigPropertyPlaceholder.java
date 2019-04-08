@@ -8,6 +8,7 @@ import com.armadialogcreator.gui.main.popup.SimpleValueEditorDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.NotNullValueListener;
 import com.armadialogcreator.util.NotNullValueObserver;
+import com.armadialogcreator.util.TextUtil;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -44,7 +45,7 @@ public class ConfigPropertyPlaceholder extends ConfigPropertyDisplayBox {
 		MenuItem miInitialize = new MenuItem(bundle.getString("initialize"));
 		MenuItem miShowDoc = new MenuItem(bundle.getString("show_documentation"));
 		miShowDoc.setOnAction(event -> {
-			new MenuButtonPopup(getDocumentation()).showPopup();
+			new MenuButtonPopup(TextUtil.getMultilineText(getDocumentation(), 60)).showPopup();
 		});
 		miInitialize.setOnAction(event -> {
 			initializeProperty();
