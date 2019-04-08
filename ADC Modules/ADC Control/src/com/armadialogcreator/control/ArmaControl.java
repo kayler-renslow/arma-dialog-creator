@@ -5,6 +5,7 @@ import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVExpression;
+import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -52,6 +53,16 @@ public class ArmaControl extends RequirementsConfigClass implements UINode {
 		} catch (Exception e) {
 			e.printStackTrace(System.out);
 			throw new RuntimeException("Class " + rendererClass.getName() + " couldn't be instantiated.");
+		}
+
+		ConfigPropertyLookup typeName = ConfigPropertyLookup.TYPE;
+		ConfigProperty type = findPropertyNullable(typeName);
+		if (type == null) {
+			ConfigProperty property = addProperty(typeName.getPropertyName(), new SVInteger(lookup.controlType.getTypeId()));
+			property.setPriority(typeName.priority());
+		} else {
+			type.setValue(lookup.controlType.getTypeId());
+			type.setPriority(typeName.priority());
 		}
 	}
 
