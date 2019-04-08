@@ -84,7 +84,6 @@ public class ConfigPropertyDisplayBox extends HBox {
 	 */
 	protected class MenuButtonPopup extends Popup {
 
-		private final int lineCount;
 		private final Label lbl;
 
 		/**
@@ -92,13 +91,6 @@ public class ConfigPropertyDisplayBox extends HBox {
 		 */
 		public MenuButtonPopup(@NotNull String text) {
 			lbl = new Label(text);
-			int lineCount = 0;
-			for (int i = 0; i < text.length(); i++) {
-				if (text.charAt(i) == '\n') {
-					lineCount++;
-				}
-			}
-			this.lineCount = lineCount;
 			StackPane container = new StackPane(lbl);
 			container.setBackground(new Background(new BackgroundFill(
 					Color.DODGERBLUE, CornerRadii.EMPTY, Insets.EMPTY)
