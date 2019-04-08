@@ -11,6 +11,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -85,6 +86,7 @@ public class EditorComponentTreeView extends EditableTreeView<ArmaControl, UINod
 		rootUINode = node;
 		TreeItem<UINodeTreeItemData> root = getRoot();
 		rootUINode.getUserData().put(TREE_ITEM_KEY, root);
+		root.setValue(new RootUINodeTreeItemData(node));
 
 		addAllChildNodes(node, root);
 	}
@@ -160,5 +162,17 @@ public class EditorComponentTreeView extends EditableTreeView<ArmaControl, UINod
 	protected void removeChild(@NotNull TreeItem<UINodeTreeItemData> parent, @NotNull TreeItem<UINodeTreeItemData> toRemove) {
 		super.removeChild(parent, toRemove);
 		TREE_ITEM_KEY.put(toRemove.getValue().getNode().getUserData(), null);
+	}
+
+	private static class RootUINodeTreeItemData extends UINodeTreeItemData {
+
+		public RootUINodeTreeItemData(@NotNull UINode node) {
+			super("", null, node);
+		}
+
+		@Override
+		public void duplicate(@NotNull TreeView<? extends UINodeTreeItemData> treeView) {
+
+		}
 	}
 }

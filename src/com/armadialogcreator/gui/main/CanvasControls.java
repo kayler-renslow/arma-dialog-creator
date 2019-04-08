@@ -117,6 +117,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 			UINodeTreeItemData uiNodeTreeItemData = item.getValue();
 			UINodeTreeItemData parentUiNodeTreeItemData = item.getParent().getValue();
 			if (uiNodeTreeItemData == null || parentUiNodeTreeItemData == null) {
+				System.out.println("CanvasControls.initializeUI uiNodeTreeItemData=" + uiNodeTreeItemData);
+				System.out.println("CanvasControls.initializeUI parentUiNodeTreeItemData=" + parentUiNodeTreeItemData);
 				throw new IllegalStateException();
 			}
 			UINode node = uiNodeTreeItemData.getNode();
@@ -224,7 +226,10 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 				throw new IllegalStateException();
 			}
 			UINode node = uiNodeTreeItemData.getNode();
-			UINode parentNode = siblingUiNodeTreeItemData.getNode();
+			UINode parentNode = node.getParentNode();
+			if (parentNode == null) {
+				throw new IllegalStateException();
+			}
 			parentNode.moveChild(node, siblingNode, newIndex);
 
 			//the selection index needs to be updated
