@@ -93,7 +93,10 @@ public abstract class SimpleBaseUINode implements UINode {
 
 	@Override
 	public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-		children.remove(child);
+		boolean remove = children.remove(child);
+		if (!remove) {
+			throw new IllegalArgumentException();
+		}
 		updateGroup.update(new UINodeChange.MoveChild(child, this, newParent, destIndex, true));
 		newParent.acceptMovedChild(child, this, destIndex);
 	}

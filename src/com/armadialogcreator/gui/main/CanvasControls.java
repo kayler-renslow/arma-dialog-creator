@@ -6,9 +6,8 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.gui.fxcontrol.DownArrowMenu;
-import com.armadialogcreator.gui.main.treeview.ControlGroupTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
-import com.armadialogcreator.gui.main.treeview.FolderTreeItemEntry;
+import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
@@ -25,7 +24,7 @@ import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  Holds the step configuration controls and the tree view for editor components.
@@ -100,8 +99,8 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 		final double vertSpacing = 5;
 
-		Function<EditorComponentTreeView, Void> funcMoveUpHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveUpHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
@@ -112,18 +111,26 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 					0
 			);
 			if (index == newIndex) {
-				return null;
+				return;
 			}
 			treeView.moveTreeItem(item, item.getParent(), newIndex);
+			UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+			UINodeTreeItemData parentUiNodeTreeItemData = item.getParent().getValue();
+			if (uiNodeTreeItemData == null || parentUiNodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode node = uiNodeTreeItemData.getNode();
+			UINode parentNode = parentUiNodeTreeItemData.getNode();
+			parentNode.moveChild(node, parentNode, newIndex);
 
 			//the selection index needs to be updated
 			treeView.getSelectionModel().clearSelection();
 			treeView.getSelectionModel().select(item);
-			return null;
+			return;
 		};
 
-		Function<EditorComponentTreeView, Void> funcMoveDownHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveDownHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
@@ -134,98 +141,171 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 					item.getParent().getChildren().size() - 1
 			);
 			if (index == newIndex) {
-				return null;
+				return;
 			}
 			treeView.moveTreeItem(item, item.getParent(), newIndex);
 
+			treeView.moveTreeItem(item, item.getParent(), newIndex);
+			UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+			UINodeTreeItemData parentUiNodeTreeItemData = item.getParent().getValue();
+			if (uiNodeTreeItemData == null || parentUiNodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode node = uiNodeTreeItemData.getNode();
+			UINode parentNode = parentUiNodeTreeItemData.getNode();
+			parentNode.moveChild(node, parentNode, newIndex);
+
 			//the selection index needs to be updated
 			treeView.getSelectionModel().clearSelection();
 			treeView.getSelectionModel().select(item);
-			return null;
+			return;
 		};
 
-		Function<EditorComponentTreeView, Void> funcMoveDownIntoHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveDownIntoHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
-			TreeItem nextSibling = item.nextSibling();
+			TreeItem<UINodeTreeItemData> nextSibling = item.nextSibling();
 			if (nextSibling == null) {
-				return null;
+				return;
 			}
-			if (!(nextSibling.getValue() instanceof ControlGroupTreeItemEntry) && !(nextSibling.getValue() instanceof FolderTreeItemEntry)) {
-				return null;
+			UINodeTreeItemData siblingUiNodeTreeItemData = nextSibling.getValue();
+			if (siblingUiNodeTreeItemData == null) {
+				return;
+			}
+			UINode siblingNode = siblingUiNodeTreeItemData.getNode();
+			if (!siblingNode.canHaveChildren()) {
+				return;
 			}
 			treeView.moveTreeItem(item, nextSibling, 0);
 
+			UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+			if (uiNodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode node = uiNodeTreeItemData.getNode();
+			UINode parentNode = node.getParentNode();
+			if (parentNode == null) {
+				throw new IllegalStateException();
+			}
+			parentNode.moveChild(node, siblingNode, 0);
+
 			//the selection index needs to be updated
 			treeView.getSelectionModel().clearSelection();
 			treeView.getSelectionModel().select(item);
-			return null;
+			return;
 		};
 
-		Function<EditorComponentTreeView, Void> funcMoveUpIntoHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveUpIntoHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
-			TreeItem prevSibling = item.previousSibling();
+			TreeItem<UINodeTreeItemData> prevSibling = item.previousSibling();
 			if (prevSibling == null) {
-				return null;
+				return;
 			}
-			if (!(prevSibling.getValue() instanceof ControlGroupTreeItemEntry) && !(prevSibling.getValue() instanceof FolderTreeItemEntry)) {
-				return null;
+			UINodeTreeItemData siblingUiNodeTreeItemData = prevSibling.getValue();
+			if (siblingUiNodeTreeItemData == null) {
+				return;
 			}
-			treeView.moveTreeItem(item, prevSibling, prevSibling.getChildren().size());
+			UINode siblingNode = siblingUiNodeTreeItemData.getNode();
+			if (!siblingNode.canHaveChildren()) {
+				return;
+			}
+			final int newIndex = prevSibling.getChildren().size();
+			treeView.moveTreeItem(item, prevSibling, newIndex);
+
+			UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+			if (uiNodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode node = uiNodeTreeItemData.getNode();
+			UINode parentNode = siblingUiNodeTreeItemData.getNode();
+			parentNode.moveChild(node, siblingNode, newIndex);
 
 			//the selection index needs to be updated
 			treeView.getSelectionModel().clearSelection();
 			treeView.getSelectionModel().select(item);
-			return null;
+			return;
 		};
 
-		Function<EditorComponentTreeView, Void> funcMoveDownOutHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveDownOutHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
 			if (item.getParent() == treeView.getRoot()) {
-				return null;
+				return;
 			}
-			TreeItem newParent = item.getParent().getParent();
-			if (newParent == treeView.getRoot() || newParent.getValue() instanceof ControlGroupTreeItemEntry || newParent.getValue() instanceof FolderTreeItemEntry) {
-				treeView.moveTreeItem(item, newParent, newParent.getChildren().size());
+			TreeItem<UINodeTreeItemData> newParent = item.getParent().getParent();
+			UINodeTreeItemData newParentUINodeTreeItemData = newParent.getValue();
+			if (newParentUINodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode newParentNode = newParentUINodeTreeItemData.getNode();
+			if (newParent == treeView.getRoot() || newParentNode.canHaveChildren()) {
+				final int newIndex = newParent.getChildren().size();
+				treeView.moveTreeItem(item, newParent, newIndex);
+
+				UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+				if (uiNodeTreeItemData == null) {
+					throw new IllegalStateException();
+				}
+				UINode node = uiNodeTreeItemData.getNode();
+				UINode parentNode = node.getParentNode();
+				if (parentNode == null) {
+					throw new IllegalStateException();
+				}
+				parentNode.moveChild(node, newParentNode, newIndex);
 
 				//the selection index needs to be updated
 				treeView.getSelectionModel().clearSelection();
 				treeView.getSelectionModel().select(item);
 			}
 
-			return null;
+			return;
 		};
 
-		Function<EditorComponentTreeView, Void> funcMoveUpOutHandler = treeView -> {
-			TreeItem item = treeView.getSelectionModel().getSelectedItem();
+		Consumer<EditorComponentTreeView> funcMoveUpOutHandler = treeView -> {
+			TreeItem<UINodeTreeItemData> item = treeView.getSelectionModel().getSelectedItem();
 			if (item == null) {
 				//the button should be disabled when there is nothing selected
 				throw new IllegalStateException("item shouldn't be null");
 			}
 			if (item.getParent() == treeView.getRoot()) {
-				return null;
+				return;
 			}
-			TreeItem newParent = item.getParent().getParent();
-			if (newParent == treeView.getRoot() || newParent.getValue() instanceof ControlGroupTreeItemEntry || newParent.getValue() instanceof FolderTreeItemEntry) {
+			TreeItem<UINodeTreeItemData> newParent = item.getParent().getParent();
+			UINodeTreeItemData newParentUINodeTreeItemData = newParent.getValue();
+			if (newParentUINodeTreeItemData == null) {
+				throw new IllegalStateException();
+			}
+			UINode newParentNode = newParentUINodeTreeItemData.getNode();
+			if (newParent == treeView.getRoot() || newParentNode.canHaveChildren()) {
 				treeView.moveTreeItem(item, newParent, 0);
 
+				UINodeTreeItemData uiNodeTreeItemData = item.getValue();
+				if (uiNodeTreeItemData == null) {
+					throw new IllegalStateException();
+				}
+				UINode node = uiNodeTreeItemData.getNode();
+				UINode parentNode = node.getParentNode();
+				if (parentNode == null) {
+					throw new IllegalStateException();
+				}
+				parentNode.moveChild(node, newParentNode, 0);
+
 				//the selection index needs to be updated
 				treeView.getSelectionModel().clearSelection();
 				treeView.getSelectionModel().select(item);
 			}
 
-			return null;
+			return;
 		};
 
 		//buttons for moving bg controls up/down hierarchy
@@ -233,14 +313,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		{
 			btnBgControlMoveUp = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW));
 			btnBgControlMoveUp.setOnAction(event -> {
-				funcMoveUpHandler.apply(treeViewBg);
+				funcMoveUpHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveUp.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
 			btnBgControlMoveDown = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW));
 			btnBgControlMoveDown.setOnAction(event -> {
-				funcMoveDownHandler.apply(treeViewBg);
+				funcMoveDownHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveDown.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
@@ -248,14 +328,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 			btnBgControlMoveUpInto = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_INTO));
 			btnBgControlMoveUpInto.setOnAction(event -> {
-				funcMoveUpIntoHandler.apply(treeViewBg);
+				funcMoveUpIntoHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveUpInto.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
 
 			btnBgControlMoveDownInto = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_INTO));
 			btnBgControlMoveDownInto.setOnAction(event -> {
-				funcMoveDownIntoHandler.apply(treeViewBg);
+				funcMoveDownIntoHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveDownInto.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
@@ -263,14 +343,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 			btnBgControlMoveUpOut = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_OUT));
 			btnBgControlMoveUpOut.setOnAction(event -> {
-				funcMoveUpOutHandler.apply(treeViewBg);
+				funcMoveUpOutHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveUpOut.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
 
 			btnBgControlMoveDownOut = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_OUT));
 			btnBgControlMoveDownOut.setOnAction(event -> {
-				funcMoveDownOutHandler.apply(treeViewBg);
+				funcMoveDownOutHandler.accept(treeViewBg);
 			});
 			btnBgControlMoveDownOut.setDisable(treeViewBg.getSelectionModel().isEmpty());
 			btnBgControlMoveDownOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_out")));
@@ -309,14 +389,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 		{
 			btnControlMoveUp = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW));
 			btnControlMoveUp.setOnAction(event -> {
-				funcMoveUpHandler.apply(treeViewMain);
+				funcMoveUpHandler.accept(treeViewMain);
 			});
 			btnControlMoveUp.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUp.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up")));
 
 			btnControlMoveDown = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW));
 			btnControlMoveDown.setOnAction(event -> {
-				funcMoveDownHandler.apply(treeViewMain);
+				funcMoveDownHandler.accept(treeViewMain);
 			});
 			btnControlMoveDown.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveDown.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down")));
@@ -324,14 +404,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 			btnControlMoveUpInto = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_INTO));
 			btnControlMoveUpInto.setOnAction(event -> {
-				funcMoveUpIntoHandler.apply(treeViewMain);
+				funcMoveUpIntoHandler.accept(treeViewMain);
 			});
 			btnControlMoveUpInto.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUpInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_into")));
 
 			btnControlMoveDownInto = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_INTO));
 			btnControlMoveDownInto.setOnAction(event -> {
-				funcMoveDownIntoHandler.apply(treeViewMain);
+				funcMoveDownIntoHandler.accept(treeViewMain);
 			});
 			btnControlMoveDownInto.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveDownInto.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_into")));
@@ -339,14 +419,14 @@ class CanvasControls extends VBox implements UICanvasConfiguration {
 
 			btnControlMoveUpOut = new Button("", new ImageView(ADCIcons.ICON_UP_ARROW_OUT));
 			btnControlMoveUpOut.setOnAction(event -> {
-				funcMoveUpOutHandler.apply(treeViewMain);
+				funcMoveUpOutHandler.accept(treeViewMain);
 			});
 			btnControlMoveUpOut.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveUpOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_up_out")));
 
 			btnControlMoveDownOut = new Button("", new ImageView(ADCIcons.ICON_DOWN_ARROW_OUT));
 			btnControlMoveDownOut.setOnAction(event -> {
-				funcMoveDownOutHandler.apply(treeViewMain);
+				funcMoveDownOutHandler.accept(treeViewMain);
 			});
 			btnControlMoveDownOut.setDisable(treeViewMain.getSelectionModel().isEmpty());
 			btnControlMoveDownOut.setTooltip(new Tooltip(bundle.getString("CanvasControls.move_down_out")));

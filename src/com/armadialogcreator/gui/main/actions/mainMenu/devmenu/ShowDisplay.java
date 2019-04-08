@@ -59,8 +59,10 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 
 		private void appendTreeItem(@NotNull TreeItem<String> parent, @NotNull UINode node) {
 			TreeItem<String> nodeItem = getTreeItem(parent, node);
+			TreeItem<String> childrenTreeItem = new TreeItem<>("Child UINodes");
+			nodeItem.getChildren().add(childrenTreeItem);
 			for (UINode child : node.iterateChildNodes()) {
-				appendTreeItem(nodeItem, child);
+				appendTreeItem(childrenTreeItem, child);
 			}
 		}
 

@@ -23,6 +23,11 @@ public abstract class UINodeTreeItemData extends TreeItemData {
 		return node;
 	}
 
+	@Override
+	public boolean canHaveChildren() {
+		return node.canHaveChildren();
+	}
+
 	/**
 	 Invoked when this entry is requested to be duplicated. The request doesn't have to be satisfied.
 

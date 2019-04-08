@@ -104,7 +104,10 @@ public class ArmaControlGroup extends ArmaControl {
 
 	@Override
 	public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-		children.remove(child);
+		boolean remove = children.remove(child);
+		if (!remove) {
+			throw new IllegalArgumentException();
+		}
 		updateGroup.update(new UINodeChange.MoveChild(child, this, newParent, destIndex, true));
 		newParent.acceptMovedChild(child, this, destIndex);
 	}
@@ -119,6 +122,11 @@ public class ArmaControlGroup extends ArmaControl {
 		children.add(destIndex, child);
 		child.setParentNode(this);
 		updateGroup.update(new UINodeChange.MoveChild(child, oldParent, this, destIndex, false));
+	}
+
+	@Override
+	public boolean canHaveChildren() {
+		return true;
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {

@@ -449,7 +449,9 @@ public class UICanvasEditor extends UICanvas {
 			}
 		} else {
 			if (hasDoubleClickedCtrl) {
-				doubleClickUpdateGroup.update(selection.getFirst());
+				if (selection.getFirst() != null) {
+					doubleClickUpdateGroup.update(selection.getFirst());
+				}
 			}
 		}
 	}

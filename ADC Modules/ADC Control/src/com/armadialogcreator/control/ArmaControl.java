@@ -152,33 +152,33 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 
 	@Override
 	public void addChild(@NotNull UINode node) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void addChild(@NotNull UINode node, int index) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public boolean removeChild(@NotNull UINode node) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	@Nullable
 	public UINode removeChild(int index) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
 	public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
-		throw new UnsupportedOperationException();
+		throw new IllegalStateException();
 	}
 
 	@Override
@@ -280,5 +280,10 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 	@NotNull
 	public NotNullValueObserver<String> getUINodeName() {
 		return getClassNameObserver();
+	}
+
+	@Override
+	public boolean canHaveChildren() {
+		return false;
 	}
 }
