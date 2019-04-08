@@ -3,11 +3,15 @@ package com.armadialogcreator.gui.main.treeview;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.ControlTypeGroup;
 import com.armadialogcreator.gui.fxcontrol.BorderedImageView;
+import com.armadialogcreator.gui.fxcontrol.OverlayImageView;
 import com.armadialogcreator.gui.fxcontrol.treeView.TreeViewMenuItemBuilder;
+import com.armadialogcreator.gui.main.ArmaControlIconPool;
+import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ResourceBundle;
@@ -21,7 +25,7 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 
 	public EditorTreeViewContextMenu(@NotNull EditorComponentTreeView treeView) {
 		ResourceBundle bundle = Lang.ApplicationBundle();
-		MenuItem newFolder = new MenuItem(bundle.getString("ContextMenu.ComponentTreeView.new_folder"), EditorComponentTreeView.createFolderIcon());
+		MenuItem newFolder = new MenuItem(bundle.getString("ContextMenu.ComponentTreeView.new_folder"), new ImageView(ADCIcons.ICON_FOLDER_MINIPLUS));
 		getItems().add(newFolder);
 		/*
 		TreeViewMenuItemBuilder.setNewFolderAction(treeView, new TreeItemDataCreator<ArmaControl, UINodeTreeItemData>() {
@@ -45,7 +49,13 @@ public class EditorTreeViewContextMenu extends ContextMenu {
 				if (!controlType.betaSupported()) {
 					continue;
 				}
-				menuItemType = new MenuItem(controlType.fullDisplayText(), new BorderedImageView(controlType.getIconPath()));
+				menuItemType = new MenuItem(controlType.fullDisplayText());
+				menuItemType.setGraphic(
+						OverlayImageView.withBorderedImageView(
+								new BorderedImageView(ArmaControlIconPool.getIcon(controlType)),
+								ADCIcons.ICON_MINIPLUS
+						)
+				);
 				if (controlType.isDeprecated()) {
 					menuItemType.getStyleClass().add("deprecated-menu-item");
 				}

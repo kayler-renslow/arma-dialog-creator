@@ -9,6 +9,7 @@ import javafx.scene.image.Image;
 public class ADCIcons {
 	public static final Image ICON_ADC = new Image(ADCImagePaths.ICON_APP);
 	public static final Image ICON_FOLDER = new Image(ADCImagePaths.ICON_FOLDER);
+	public static final Image ICON_FOLDER_MINIPLUS = new Image(ADCImagePaths.ICON_FOLDER_MINIPLUS);
 	public static final Image ICON_UNDO = new Image(ADCImagePaths.ICON_UNDO);
 	public static final Image ICON_REDO = new Image(ADCImagePaths.ICON_REDO);
 	public static final Image ICON_GEAR = new Image(ADCImagePaths.ICON_GEAR);
@@ -26,6 +27,7 @@ public class ADCIcons {
 	public static final Image ICON_BRACKETS = new Image(ADCImagePaths.ICON_BRACKETS);
 	public static final Image ICON_HASH = new Image(ADCImagePaths.ICON_HASH);
 	public static final Image ICON_HASH_MINIPLUS = new Image(ADCImagePaths.ICON_HASH_MINIPLUS);
+	public static final Image ICON_MINIPLUS = new Image(ADCImagePaths.ICON_MINIPLUS);
 
 	public static final Image ICON_AUTO_SIZE = new Image(ADCImagePaths.ICON_AUTO_SIZE);
 }

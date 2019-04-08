@@ -6,13 +6,11 @@ import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlGroup;
 import com.armadialogcreator.control.FolderUINode;
 import com.armadialogcreator.gui.fxcontrol.treeView.EditableTreeView;
-import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.util.Key;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TreeItem;
-import javafx.scene.image.ImageView;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -162,9 +160,5 @@ public class EditorComponentTreeView extends EditableTreeView<ArmaControl, UINod
 	protected void removeChild(@NotNull TreeItem<UINodeTreeItemData> parent, @NotNull TreeItem<UINodeTreeItemData> toRemove) {
 		super.removeChild(parent, toRemove);
 		TREE_ITEM_KEY.put(toRemove.getValue().getNode().getUserData(), null);
-	}
-
-	static ImageView createFolderIcon() {
-		return new ImageView(ADCIcons.ICON_FOLDER);
 	}
 }

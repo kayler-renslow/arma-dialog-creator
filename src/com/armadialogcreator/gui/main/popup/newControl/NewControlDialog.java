@@ -11,6 +11,7 @@ import com.armadialogcreator.gui.fxcontrol.CBMBMenuItem;
 import com.armadialogcreator.gui.fxcontrol.ComboBoxMenuButton;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.InputField;
+import com.armadialogcreator.gui.main.ArmaControlIconPool;
 import com.armadialogcreator.gui.main.BrowserUtil;
 import com.armadialogcreator.lang.Lang;
 import javafx.scene.control.CheckBox;
@@ -46,7 +47,7 @@ public class NewControlDialog extends StageDialog<GridPane> {
 				if (group != controlType.getGroup()) {
 					continue;
 				}
-				groupMenu.getCBMBMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(controlType.getIconPath())));
+				groupMenu.getCBMBMenuItems().add(new CBMBMenuItem<>(controlType, new BorderedImageView(ArmaControlIconPool.getIcon(controlType))));
 			}
 			if (groupMenu.getItems().size() > 0) {
 				menuButtonControlType.addGroup(groupMenu);

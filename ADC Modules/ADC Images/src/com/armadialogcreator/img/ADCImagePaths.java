@@ -13,6 +13,7 @@ public abstract class ADCImagePaths {
 	public static final String BG_3 = pathPrefix + "backgroundImages/image3.jpg";
 
 	public static final String ICON_FOLDER = getIcon("folder.png");
+	public static final String ICON_FOLDER_MINIPLUS = getIcon("folder_miniplus.png");
 	public static final String ICON_APP = getIcon("app.png");
 	public static final String ICON_UNDO = getIcon("undo.png");
 	public static final String ICON_REDO = getIcon("redo.png");
@@ -32,6 +33,7 @@ public abstract class ADCImagePaths {
 	public static final String ICON_AUTO_SIZE = getIcon("autosize.png");
 	public static final String ICON_HASH = getIcon("hash.png");
 	public static final String ICON_HASH_MINIPLUS = getIcon("hash_miniplus.png");
+	public static final String ICON_MINIPLUS = getIcon("miniplus.png");
 
 	public static final String ICON_BRACKETS = getIcon("brackets.png");
 	public static final String PRELOAD_SCREEN = pathPrefix + "preload_screen.png";

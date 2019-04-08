@@ -148,6 +148,9 @@ class ADCMenuBar extends MenuBar {
 			new CreateNewFolderAction()
 	);
 
+	{
+		create_new_folder.setGraphic(new ImageView(ADCIcons.ICON_FOLDER_MINIPLUS));
+	}
 	/*help*/
 	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
 	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("help_about")), event -> new AboutDialog().show());
