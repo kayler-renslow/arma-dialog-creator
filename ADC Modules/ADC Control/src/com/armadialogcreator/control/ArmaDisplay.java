@@ -1,6 +1,9 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.canvas.CanvasComponent;
+import com.armadialogcreator.canvas.DeepUINodeIterable;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.canvas.UINodeChange;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DoubleIterable;
 import com.armadialogcreator.util.Key;
@@ -15,64 +18,16 @@ import org.jetbrains.annotations.Nullable;
  @since 06/14/2016. */
 public class ArmaDisplay implements UINode {
 	private static final Key<Boolean> KEY_NODE_IS_IN_BACKGROUND = new Key<>("ArmaDisplay.nodeInBackground", false);
-	//private final DisplayProperty iddProperty = DisplayPropertyLookup.IDD.getIntProperty(-1);
-
 	private final SimpleBaseUINode controlNodes = new ControlsNode(this, false);
 	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this, true);
 	private final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
-
-	//private final ObservableSet<DisplayProperty> displayProperties = FXCollections.observableSet();
 	private final UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup = new UpdateListenerGroup<>();
 
 	public ArmaDisplay() {
-		//displayProperties.add(iddProperty);
-/*
-		displayProperties.addListener(new SetChangeListener<DisplayProperty>() {
-			@Override
-			public void onChanged(Change<? extends DisplayProperty> change) {
-				if (change.wasRemoved() && change.getElementRemoved().getPropertyLookup() == DisplayPropertyLookup.IDD) {
-					throw new IllegalStateException("can't remove idd from display");
-				}
-			}
-		});
-*/
 		controlNodes.updateGroup.chain(updateGroup);
 		bgControlNodes.updateGroup.chain(updateGroup);
 	}
 
-	/*
-		@NotNull
-		public DisplayProperty getIddProperty() {
-			return iddProperty;
-		}
-
-		@Nullable
-		public DisplayProperty getProperty(@NotNull DisplayPropertyLookup propertyLookup) {
-			for (DisplayProperty displayProperty : displayProperties) {
-				if (propertyLookup == displayProperty.getPropertyLookup()) {
-					return displayProperty;
-				}
-			}
-			return null;
-		}
-
-		/** @return true if the display/dialog is allowed to move. If it isn't, return false. */
-/*	public boolean movingEnabled() {
-		DisplayProperty property = getProperty(DisplayPropertyLookup.MOVING_ENABLE);
-		return property != null && property.getBooleanValue();
-	}
-
-	/** @return true if the display/dialog has user interaction. If no interaction is allowed, return false. */
-/*	public boolean simulationEnabled() {
-		DisplayProperty property = getProperty(DisplayPropertyLookup.ENABLE_SIMULATION);
-		return property != null && property.getBooleanValue();
-	}
-
-	@NotNull
-	public ObservableSet<DisplayProperty> getDisplayProperties() {
-		return displayProperties;
-	}
-*/
 	@NotNull
 	public UINode getControlNodes() {
 		return controlNodes;
@@ -81,19 +36,6 @@ public class ArmaDisplay implements UINode {
 	@NotNull
 	public UINode getBackgroundControlNodes() {
 		return bgControlNodes;
-	}
-
-	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		for (UINode node : bgControlNodes.deepIterateChildren()) {
-			if (node instanceof ArmaControl) {
-				((ArmaControl) node).resolutionUpdate(newResolution);
-			}
-		}
-		for (UINode node : controlNodes.deepIterateChildren()) {
-			if (node instanceof ArmaControl) {
-				((ArmaControl) node).resolutionUpdate(newResolution);
-			}
-		}
 	}
 
 	@Override
@@ -168,7 +110,7 @@ public class ArmaDisplay implements UINode {
 	@Override
 	@NotNull
 	public DeepUINodeIterable deepIterateChildren() {
-		return new DeepUINodeIterable(iterateChildNodes());
+		return new DeepUINodeIterable(new DoubleIterable<>(controlNodes.deepIterateChildren(), bgControlNodes.deepIterateChildren()));
 	}
 
 	@Override

@@ -66,10 +66,6 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 		}
 	}
 
-	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		renderer.resolutionUpdate(newResolution);
-	}
-
 	@NotNull
 	public ArmaDisplay getDisplay() {
 		return display;

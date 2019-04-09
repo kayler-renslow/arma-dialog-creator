@@ -43,6 +43,7 @@ public class DeepUINodeIterable implements Iterable<UINode> {
 					iterStack.pop();
 					depth--;
 				}
+				depth = depth < 0 ? 0 : depth;
 				checked = true;
 			}
 		}

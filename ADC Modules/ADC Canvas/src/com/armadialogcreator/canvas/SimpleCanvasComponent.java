@@ -41,6 +41,11 @@ public class SimpleCanvasComponent implements CanvasComponent {
 	}
 
 	@Override
+	public void resolutionUpdate(@NotNull Resolution newResolution) {
+
+	}
+
+	@Override
 	public void setEnabled(boolean enabled) {
 		this.isEnabled = enabled;
 	}

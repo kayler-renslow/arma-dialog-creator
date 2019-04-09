@@ -25,6 +25,8 @@ public interface CanvasComponent extends Region {
 	/** Return true if the component is enabled (user can click on it or move it with mouse), false otherwise. */
 	boolean isEnabled();
 
+	void resolutionUpdate(@NotNull Resolution newResolution);
+
 	/**
 	 Set whether the component is enabled or not.
 

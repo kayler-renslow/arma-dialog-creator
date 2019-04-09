@@ -370,7 +370,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@Nullable
 	public ConfigPropertyProxy getPropertyProxy(@NotNull String propertyName) {
-		return propertyProxies.get(propertyName);
+		return propertyProxies.get(propertyName.toLowerCase());
 	}
 
 	@NotNull
@@ -380,7 +380,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@NotNull
 	public ConfigPropertyProxy createPropertyProxy(@NotNull String propertyName, @NotNull SerializableValue valueWhenPropertyAbsent) {
-		ConfigPropertyProxy proxy = propertyProxies.computeIfAbsent(propertyName, s -> {
+		ConfigPropertyProxy proxy = propertyProxies.computeIfAbsent(propertyName.toLowerCase(), s -> {
 			return new ConfigPropertyProxy(s, valueWhenPropertyAbsent);
 		});
 		ConfigProperty property = properties.findPropertyNullable(propertyName);

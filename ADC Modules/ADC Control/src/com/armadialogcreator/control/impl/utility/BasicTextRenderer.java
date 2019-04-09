@@ -5,8 +5,8 @@ import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaControlRenderer;
-import com.armadialogcreator.core.ConfigProperty;
 import com.armadialogcreator.core.ConfigPropertyKey;
+import com.armadialogcreator.core.ConfigPropertyProxy;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.core.sv.*;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -44,7 +44,7 @@ public class BasicTextRenderer {
 	private final UpdateCallback callback;
 
 	private Color textColor = Color.BLACK;
-	private ConfigProperty sizeExProperty;
+	private ConfigPropertyProxy sizeExProperty;
 
 	private TextShadow textShadow = TextShadow.None;
 
@@ -100,7 +100,6 @@ public class BasicTextRenderer {
 					}
 				}
 		);
-
 		if (shadow != null) {
 			renderer.addValueListener(shadow, SVNull.instance, (observer, oldValue, newValue) -> {
 				textShadow = TextShadow.getTextShadow(newValue);
@@ -152,6 +151,7 @@ public class BasicTextRenderer {
 			);
 		}
 		if (sizeEx != null) {
+			sizeExProperty = renderer.getMyControl().createPropertyProxy(sizeEx, SVNull.instance);
 			renderer.addValueListener(sizeEx, SVNull.instance, (observer, oldValue, newValue) -> {
 						if (newValue instanceof SVExpression) {
 							SVExpression ex = (SVExpression) newValue;

@@ -73,6 +73,12 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 					canvas.setWidth(newResolution.getScreenWidth());
 					canvas.setHeight(newResolution.getScreenHeight());
 				}
+				for (UINode node : UICanvas.this.rootNode.deepIterateChildren()) {
+					CanvasComponent component = node.getComponent();
+					if (component != null) {
+						component.resolutionUpdate(newResolution);
+					}
+				}
 				requestPaint();
 			}
 		});

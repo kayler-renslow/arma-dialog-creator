@@ -434,6 +434,7 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 		//enable observer is already handled
 	}
 
+	@Override
 	public void resolutionUpdate(@NotNull Resolution newResolution) {
 		if (xProperty.getValue() instanceof SVNumericValue) {
 			setXSilent((SVNumericValue) xProperty.getValue());

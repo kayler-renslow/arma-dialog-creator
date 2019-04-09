@@ -1,7 +1,6 @@
 package com.armadialogcreator.control;
 
 import com.armadialogcreator.canvas.DeepUINodeIterable;
-import com.armadialogcreator.canvas.Resolution;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.canvas.UINodeChange;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
@@ -33,16 +32,6 @@ public class ArmaControlGroup extends ArmaControl {
 							@NotNull Env env,
 							@NotNull ArmaDisplay display) {
 		super(name, lookup, resolution, env, display);
-	}
-
-	@Override
-	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		super.resolutionUpdate(newResolution);
-		for (UINode node : new DeepUINodeIterable(children)) {
-			if (node instanceof ArmaControl) {
-				((ArmaControl) node).resolutionUpdate(newResolution);
-			}
-		}
 	}
 
 	@Override
