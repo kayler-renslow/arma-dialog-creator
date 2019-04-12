@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.treeview;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.gui.DefaultComponentContextMenu;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.fxcontrol.inputfield.IdentifierChecker;
 import com.armadialogcreator.gui.fxcontrol.inputfield.StringChecker;
@@ -27,7 +28,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 		CheckMenuItem checkMenuItemEnable = new CheckMenuItem(bundle.getString("ContextMenu.ControlEdit.enable"));
 		checkMenuItemEnable.setSelected(entryClicked.isEnabled());
-		checkMenuItemEnable.setOnAction(new EventHandler<ActionEvent>() {
+		checkMenuItemEnable.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				entryClicked.setEnabled(checkMenuItemEnable.isSelected());
@@ -37,16 +38,16 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 
 
 		MenuItem miConfigProperties = new MenuItem(bundle.getString("ContextMenu.DefaultComponent.configure"));
-		miConfigProperties.setOnAction(new EventHandler<ActionEvent>() {
+		miConfigProperties.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
-				//DefaultComponentContextMenu.showControlPropertiesPopup(entryClicked.getMyArmaControl());
+				DefaultComponentContextMenu.showControlPropertiesPopup(entryClicked.getMyArmaControl());
 			}
 		});
 		getItems().add(miConfigProperties);
 
 		MenuItem miRename = new MenuItem(bundle.getString("ContextMenu.DefaultComponent.rename"));
-		miRename.setOnAction(new EventHandler<ActionEvent>() {
+		miRename.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				NameInputFieldDialog<IdentifierChecker, String> dialog = new NameInputFieldDialog<>(
@@ -73,7 +74,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		ResourceBundle bundle = Lang.ApplicationBundle();
 
 		MenuItem miRename = new MenuItem(bundle.getString("ContextMenu.DefaultComponent.rename"));
-		miRename.setOnAction(new EventHandler<ActionEvent>() {
+		miRename.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				NameInputFieldDialog<StringChecker, String> dialog = new NameInputFieldDialog<>(
@@ -97,7 +98,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 
 	private void addCommon(@NotNull EditorComponentTreeView treeView, @NotNull UINodeTreeItemData entryClicked, ResourceBundle bundle) {
 		MenuItem miClearSelection = new MenuItem(bundle.getString("ContextMenu.ControlEdit.clear_selection"));
-		miClearSelection.setOnAction(new EventHandler<ActionEvent>() {
+		miClearSelection.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				treeView.getSelectionModel().clearSelection();
@@ -106,7 +107,7 @@ public class EditorTreeViewEditContextMenu extends ContextMenu {
 		getItems().add(miClearSelection);
 
 		MenuItem menuItemRemove = new MenuItem(bundle.getString("ContextMenu.ControlEdit.remove"));
-		menuItemRemove.setOnAction(new EventHandler<ActionEvent>() {
+		menuItemRemove.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				SimpleResponseDialog dialog = new SimpleResponseDialog(
