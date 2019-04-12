@@ -4,6 +4,7 @@ import com.armadialogcreator.canvas.CanvasComponent;
 import com.armadialogcreator.canvas.DeepUINodeIterable;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.canvas.UINodeChange;
+import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DoubleIterable;
 import com.armadialogcreator.util.Key;
@@ -16,7 +17,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 06/14/2016. */
-public class ArmaDisplay implements UINode {
+public class ArmaDisplay extends ConfigClass implements UINode {
 	private static final Key<Boolean> KEY_NODE_IS_IN_BACKGROUND = new Key<>("ArmaDisplay.nodeInBackground", false);
 	private final SimpleBaseUINode controlNodes = new ControlsNode(this, false);
 	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this, true);
@@ -24,6 +25,11 @@ public class ArmaDisplay implements UINode {
 	private final UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup = new UpdateListenerGroup<>();
 
 	public ArmaDisplay() {
+		this("MyDisplay");
+	}
+
+	public ArmaDisplay(@NotNull String displayName) {
+		super(displayName);
 		controlNodes.updateGroup.chain(updateGroup);
 		bgControlNodes.updateGroup.chain(updateGroup);
 	}
