@@ -2,25 +2,9 @@
   <library name="org.fxmisc.richtext:richtextfx:0.9.1" type="repository">
     <properties maven-id="org.fxmisc.richtext:richtextfx:0.9.1" />
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.9.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/reactfx-2.0-M5.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/undofx-2.1.0.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/flowless-0.6.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/wellbehavedfx-0.3.3.jar!/" />
     </CLASSES>
-    <JAVADOC>
-      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.9.1-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/reactfx-2.0-M5-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/undofx-2.1.0-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/flowless-0.6-javadoc.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/wellbehavedfx-0.3.3-javadoc.jar!/" />
-    </JAVADOC>
-    <SOURCES>
-      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.9.1-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/reactfx-2.0-M5-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/undofx-2.1.0-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/flowless-0.6-sources.jar!/" />
-      <root url="jar://$PROJECT_DIR$/lib/wellbehavedfx-0.3.3-sources.jar!/" />
-    </SOURCES>
+    <JAVADOC />
+    <SOURCES />
   </library>
 </component>

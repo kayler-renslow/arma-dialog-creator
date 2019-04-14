@@ -1,8 +1,6 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.core.stringtable.*;
-import com.armadialogcreator.data.SimpleStringTable;
-import com.armadialogcreator.data.SimpleStringTableKey;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.w3c.dom.Element;
