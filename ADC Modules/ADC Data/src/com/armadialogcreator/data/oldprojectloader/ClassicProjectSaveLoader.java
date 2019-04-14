@@ -42,6 +42,7 @@ public class ClassicProjectSaveLoader {
 						// todo
 						continue;
 					}
+
 					if (type.equals("background")) {
 
 					} else {

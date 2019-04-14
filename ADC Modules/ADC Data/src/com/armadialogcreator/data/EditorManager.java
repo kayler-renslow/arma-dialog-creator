@@ -33,10 +33,6 @@ public class EditorManager implements ApplicationStateSubscriber {
 		return resolution;
 	}
 
-	public int getBackgroundARGB() {
-		return 0;
-	}
-
 	public int getBackgroundImage() {
 		return 0;
 	}
