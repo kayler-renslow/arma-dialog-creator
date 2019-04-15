@@ -23,13 +23,29 @@ public class ClassicProjectSaveLoader {
 	}
 
 	private void loadDisplay() {
-		Configurable display = root.getConfigurable("display");
-		if (display == null) {
+		Configurable rtDisplayConf = root.getConfigurable("display");
+		if (rtDisplayConf == null) {
 			return;
 		}
+		Configurable displayConf = new Configurable.Simple("display");
+		Configurable bgControlsConf, mainControlsConf, ccDisplayConf;
+		{
+			Configurable controlsConf = new Configurable.Simple("controls");
+			displayConf.addNestedConfigurable(controlsConf);
+
+			bgControlsConf = new Configurable.Simple("background");
+			mainControlsConf = new Configurable.Simple("main");
+			controlsConf.addNestedConfigurable(bgControlsConf);
+			controlsConf.addNestedConfigurable(mainControlsConf);
+		}
+		{
+			ccDisplayConf = new Configurable.Simple("properties");
+			displayConf.addNestedConfigurable(ccDisplayConf);
+		}
+
 		ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
 
-		for (Configurable nested : display.getNestedConfigurables()) {
+		for (Configurable nested : rtDisplayConf.getNestedConfigurables()) {
 			switch (nested.getConfigurableName()) {
 				case "display-property": {
 					String sid = nested.getAttributeValue("id");
@@ -52,11 +68,11 @@ public class ClassicProjectSaveLoader {
 					if (type == null) {
 						continue;
 					}
-
+					Configurable addTo;
 					if (type.equals("background")) {
-
+						addTo = bgControlsConf;
 					} else {
-						
+						addTo = mainControlsConf;
 					}
 					for (Configurable controlConf : nested.getNestedConfigurables()) {
 						if (controlConf.getConfigurableName().equals("control")) {
@@ -65,7 +81,7 @@ public class ClassicProjectSaveLoader {
 								continue;
 							}
 							projectClasses.loadFromConfigurable(c.getConfigurable("config-class"));
-
+							addTo.addNestedConfigurable(c.getConfigurable("UINode"));
 						}
 					}
 					break;

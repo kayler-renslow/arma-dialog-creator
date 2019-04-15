@@ -1,8 +1,6 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationManager;
-import com.armadialogcreator.application.ApplicationStateSubscriber;
-import com.armadialogcreator.application.Project;
+import com.armadialogcreator.application.*;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.util.ApplicationSingleton;
@@ -41,10 +39,33 @@ public class EditorManager implements ApplicationStateSubscriber {
 	@Override
 	public void projectInitializing(@NotNull Project project) {
 		editingDisplay = new ArmaDisplay();
+		project.getDataList().add(new EditorProjectData());
 	}
 
 	@Override
 	public void projectClosed(@NotNull Project project) {
 
+	}
+
+	public void loadDisplayFromConfigurable(@NotNull Configurable c) {
+
+	}
+
+	private static class EditorProjectData implements ProjectData {
+
+		@Override
+		public @NotNull String getDataID() {
+			return "EditorManagerData";
+		}
+
+		@Override
+		public void loadFromConfigurable(@NotNull Configurable config) {
+			EditorManager.instance.loadDisplayFromConfigurable(config);
+		}
+
+		@Override
+		public void exportToConfigurable(@NotNull Configurable configurable) {
+			// todo
+		}
 	}
 }
