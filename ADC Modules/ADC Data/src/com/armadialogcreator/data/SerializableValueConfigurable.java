@@ -16,7 +16,7 @@ import java.util.List;
  @since 01/06/2019 */
 public class SerializableValueConfigurable implements Configurable {
 	public static final String CONFIGURABLE_NAME = "sv";
-	private static final String PROPERTY_TYPE_ATTR_NAME = "type";
+	public static final String PROPERTY_TYPE_ATTR_NAME = "type";
 
 	private final SerializableValue sv;
 
@@ -79,9 +79,6 @@ public class SerializableValueConfigurable implements Configurable {
 
 	@NotNull
 	public static SerializableValue createFromConfigurable(@NotNull Configurable svConfigurable, @NotNull Env env) throws SerializableValueConstructionException {
-		if (!svConfigurable.getConfigurableName().equals(CONFIGURABLE_NAME)) {
-			throw new IllegalArgumentException();
-		}
 		String propertyTypeIdText = svConfigurable.getAttributeValue(PROPERTY_TYPE_ATTR_NAME);
 		if (propertyTypeIdText == null) {
 			throw new SerializableValueConstructionException();
