@@ -29,9 +29,9 @@ public class UINodeConfigurable implements Configurable {
 
 		CanvasComponent component = node.getComponent();
 		if (component != null) {
-			componentConf.addAttribute("class", component.getClass().getName());
-			componentConf.addAttribute("enabled", component.isEnabled() ? "true" : "false");
-			componentConf.addAttribute("ghost", component.isGhost() ? "true" : "false");
+			// componentConf.addAttribute("class", component.getClass().getName());
+			componentConf.addAttribute("enabled", component.isEnabled());
+			componentConf.addAttribute("ghost", component.isGhost());
 			if (savePositionInfo) {
 				componentConf.addAttribute("x1", component.getX1() + "");
 				componentConf.addAttribute("y1", component.getY1() + "");

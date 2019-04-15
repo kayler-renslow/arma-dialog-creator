@@ -1,11 +1,11 @@
 package com.armadialogcreator.data.oldprojectloader;
 
 import com.armadialogcreator.application.Configurable;
-import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.data.ExpressionEnvManager;
 import com.armadialogcreator.data.SerializableValueConfigurable;
 import com.armadialogcreator.expression.Env;
@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
  @since 4/11/19 */
 public class ClassicProjectSaveLoader {
 	private final Configurable root;
-	private final Configurable.Simple configClassesToLoad = new Configurable.Simple("config-classes");
 
 	public ClassicProjectSaveLoader(@NotNull Configurable root) {
 		this.root = root;
@@ -28,6 +27,8 @@ public class ClassicProjectSaveLoader {
 		if (display == null) {
 			return;
 		}
+		ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
+
 		for (Configurable nested : display.getNestedConfigurables()) {
 			switch (nested.getConfigurableName()) {
 				case "display-property": {
@@ -49,14 +50,23 @@ public class ClassicProjectSaveLoader {
 				case "display-controls": {
 					String type = nested.getAttributeValue("type");
 					if (type == null) {
-						// todo
 						continue;
 					}
 
 					if (type.equals("background")) {
 
 					} else {
+						
+					}
+					for (Configurable controlConf : nested.getNestedConfigurables()) {
+						if (controlConf.getConfigurableName().equals("control")) {
+							Configurable c = convertControl(controlConf);
+							if (c == null) {
+								continue;
+							}
+							projectClasses.loadFromConfigurable(c.getConfigurable("config-class"));
 
+						}
 					}
 					break;
 				}
@@ -69,15 +79,18 @@ public class ClassicProjectSaveLoader {
 
 	@Nullable
 	private Configurable convertControl(@NotNull Configurable c) {
-		Configurable con = new Configurable.Simple("config-class");
+		Configurable ret = new Configurable.Simple("");
+		Configurable ccConf = new Configurable.Simple("config-class");
+		ret.addNestedConfigurable(ccConf);
+		Configurable uinodeConf = new Configurable.Simple("UINode");
 		String className = c.getAttributeValue("class-name");
 		if (className == null) {
 			return null;
 		}
-		con.addAttribute("name", className);
+		ccConf.addAttribute("name", className);
 		String extendClass = c.getAttributeValue("extend-class");
 		if (extendClass != null) {
-			con.addAttribute("extend", extendClass);
+			ccConf.addAttribute("extend", extendClass);
 		}
 		String controlId = c.getAttributeValue("control-id");
 		if (controlId == null) {
@@ -89,7 +102,7 @@ public class ClassicProjectSaveLoader {
 		} catch (NumberFormatException e) {
 			return null;
 		}
-		ArmaControlLookup controlLookup = ArmaControlLookup.findByControlType(type);
+		ccConf.addAttribute("control-type", type.getTypeId() + "");
 		Env env = ExpressionEnvManager.instance.getEnv();
 		for (Configurable nested : c.getNestedConfigurables()) {
 			if (nested.getConfigurableName().equals("property")) {
@@ -130,10 +143,34 @@ public class ClassicProjectSaveLoader {
 			{ //set extend class
 				String extend = c.getAttributeValue("extend-class");
 				if (extend != null) {
-					con.addAttribute("extend", extend);
+					ccConf.addAttribute("extend", extend);
+				}
+			}
+			{
+				uinodeConf.addAttribute("UINodeName", className);
+				{
+					boolean ghost, enabled;
+					{
+						String ghostAtt = c.getAttributeValue("ghost");
+						String enabledAtt = c.getAttributeValue("enabled");
+						if (ghostAtt != null) {
+							ghost = ghostAtt.equals("t");
+						} else {
+							ghost = false;
+						}
+						if (enabledAtt != null) {
+							enabled = enabledAtt.equals("t");
+						} else {
+							enabled = true;
+						}
+					}
+
+					Configurable componentConf = new Configurable.Simple("component");
+					componentConf.addAttribute("ghost", ghost);
+					componentConf.addAttribute("enabled", enabled);
 				}
 			}
 		}
-		return con;
+		return ret;
 	}
 }

@@ -29,6 +29,14 @@ public interface Configurable {
 
 	void addAttribute(@NotNull String key, @NotNull String value);
 
+	default void addAttribute(@NotNull String key, boolean b) {
+		addAttribute(key, b ? "true" : "false");
+	}
+
+	default void addAttribute(@NotNull String key, int i) {
+		addAttribute(key, i + "");
+	}
+
 	/** An XML safe name (<get_name_result></get_name_result>). If empty string, <b>no data</b> will be saved to file. */
 	@NotNull
 	@NonNls
