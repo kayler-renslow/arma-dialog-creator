@@ -5,6 +5,7 @@ import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ApplicationSingleton;
@@ -108,28 +109,38 @@ public class EditorManager implements ApplicationStateSubscriber {
 							display
 					);
 					projectClasses.addClass(control);
-					ConfigClassRegistry.instance.doNotSaveToFile(control);
 					ConfigClassConfigurable.fromConfigurable(c, control, configClassJob -> {
 						jobs.add(configClassJob);
 					});
 				}
 			}
-			Configurable controls = config.getConfigurable("controls");
-			if (controls != null) {
-				ArmaDisplay d = EditorManager.instance.editingDisplay;
-				Configurable bgConf = controls.getConfigurable("background");
-				if (bgConf != null) {
-					loadControls(bgConf, d.getBackgroundControlNodes());
-				}
-				Configurable mainConf = controls.getConfigurable("main");
-				if (mainConf != null) {
-					loadControls(mainConf, d.getControlNodes());
-				}
+			Configurable nodes = config.getConfigurableNotNull("nodes");
+			ArmaDisplay d = EditorManager.instance.editingDisplay;
+			Configurable bgConf = nodes.getConfigurable("background");
+			if (bgConf != null) {
+				loadNodes(bgConf, d.getBackgroundControlNodes());
+			}
+			Configurable mainConf = nodes.getConfigurable("main");
+			if (mainConf != null) {
+				loadNodes(mainConf, d.getControlNodes());
 			}
 		}
 
-		private void loadControls(@NotNull Configurable conf, @NotNull UINode root) {
-			// todo
+		private void loadNodes(@NotNull Configurable conf, @NotNull UINode root) {
+			ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
+			for (Configurable nested : conf.getNestedConfigurables()) {
+				//todo have way of detecting what type of node is in the configurable, rather than assuming all are controls
+				String nodeName = UINodeConfigurable.getUINodeNameFromConfigurable(nested);
+				if (nodeName == null) {
+					continue;
+				}
+				ConfigClass cc = projectClasses.findConfigClassByName(nodeName);
+				if (!(cc instanceof ArmaControl)) {
+					continue;
+				}
+				ArmaControl control = (ArmaControl) cc;
+				root.addChild(control);
+			}
 		}
 
 		@Override
@@ -142,7 +153,9 @@ public class EditorManager implements ApplicationStateSubscriber {
 				return; //nothing was loaded
 			}
 			for (ConfigClassJob job : jobs) {
-				job.doWork();
+				if (job instanceof ConfigClassJob.ExtendConfigClassJob) {
+					job.doWork();
+				}
 			}
 			jobs = null; //help GC
 		}

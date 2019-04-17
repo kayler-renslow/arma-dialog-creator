@@ -57,6 +57,15 @@ public interface Configurable {
 		return null;
 	}
 
+	@NotNull
+	default Configurable getConfigurableNotNull(@NotNull String name) {
+		Configurable c = getConfigurable(name);
+		if (c == null) {
+			throw new IllegalStateException();
+		}
+		return c;
+	}
+
 	@Nullable
 	default String getAttributeValue(@NotNull String key) {
 		for (KeyValueString kv : getConfigurableAttributes()) {
@@ -65,6 +74,15 @@ public interface Configurable {
 			}
 		}
 		return null;
+	}
+
+	@NotNull
+	default String getAttributeValueNotNull(@NotNull String key) {
+		String s = getAttributeValue(key);
+		if (s == null) {
+			throw new IllegalStateException(key);
+		}
+		return s;
 	}
 
 	class Simple implements Configurable {

@@ -294,15 +294,9 @@ public class MacroRegistry implements Registry<String, Macro> {
 		public void loadFromConfigurable(@NotNull Configurable config) {
 			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("macro")) {
-					String key = nested.getAttributeValue("key");
+					String key = nested.getAttributeValueNotNull("key");
 					String comment = nested.getAttributeValue("comment");
-					Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
-					if (key == null) {
-						throw new IllegalStateException();
-					}
-					if (svConf == null) {
-						throw new IllegalStateException();
-					}
+					Configurable svConf = nested.getConfigurableNotNull(SerializableValueConfigurable.CONFIGURABLE_NAME);
 					SerializableValue value = SerializableValueConfigurable.createFromConfigurable(svConf, ExpressionEnvManager.instance.getEnv());
 					Macro m = Macro.newMacro(key, value);
 					m.setComment(comment);

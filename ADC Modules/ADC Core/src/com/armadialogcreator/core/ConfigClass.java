@@ -206,26 +206,26 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return false;
 	}
 
-	public void extendConfigClass(@NotNull ConfigClass configClass) {
-		if (configClass == this) {
+	public void extendConfigClass(@NotNull ConfigClass extendConfigClass) {
+		if (extendConfigClass == this) {
 			throw new IllegalArgumentException();
 		}
-		if (extendClassObserver.getValue() == configClass) {
+		if (extendClassObserver.getValue() == extendConfigClass) {
 			return;
 		}
-		if (hasInheritanceLoop(configClass)) {
+		if (hasInheritanceLoop(extendConfigClass)) {
 			throw new ConfigClassInheritanceException();
+		}
+		for (ConfigProperty p : propertiesInheritedOwnedByParent) {
+			properties.removeProperty(p);
 		}
 		propertiesInheritedOwnedByParent.clear();
 		nestedClassesInheritedOwnedByParent.clear();
-		for (Map.Entry<String, ConfigProperty> entry : configClass.properties) {
+		for (Map.Entry<String, ConfigProperty> entry : extendConfigClass.properties) {
 			ConfigProperty property = entry.getValue();
-			boolean wasAbsent = properties.putPropertyIfAbsent(property);
-			if (wasAbsent) {
-				propertiesInheritedOwnedByParent.add(property);
-			}
+			doInheritProperty(property.getName(), extendConfigClass);
 		}
-		for (Map.Entry<String, ConfigClass> entry : configClass.nestedClasses.entrySet()) {
+		for (Map.Entry<String, ConfigClass> entry : extendConfigClass.nestedClasses.entrySet()) {
 			ConfigClass c = entry.getValue();
 			ConfigClass newVal = nestedClasses.putIfAbsent(c.getClassName(), c);
 			if (newVal == c) { //was absent
@@ -234,11 +234,11 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			}
 		}
 
-		configClass.properties.addPropertiesSetListener(extendPropertiesSetListener);
-		configClass.nestedClasses.addListener(extendNestedClassesSetListener);
+		extendConfigClass.properties.addPropertiesSetListener(extendPropertiesSetListener);
+		extendConfigClass.nestedClasses.addListener(extendNestedClassesSetListener);
 
-		extendClassObserver.updateValue(configClass);
-		classUpdateGroup.update(new ConfigClassUpdate.ExtendClassUpdate(null, configClass));
+		extendClassObserver.updateValue(extendConfigClass);
+		classUpdateGroup.update(new ConfigClassUpdate.ExtendClassUpdate(null, extendConfigClass));
 	}
 
 	public void clearExtendConfigClass() {
@@ -270,6 +270,10 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		if (extending == null) {
 			throw new ConfigClassInheritanceException();
 		}
+		return doInheritProperty(propertyName, extending);
+	}
+
+	private boolean doInheritProperty(@NotNull String propertyName, @NotNull ConfigClass extending) {
 		ConfigProperty myProperty = properties.findPropertyNullable(propertyName);
 		if (myProperty == null) {
 			ConfigProperty parentProperty = extending.properties.findPropertyNullable(propertyName);

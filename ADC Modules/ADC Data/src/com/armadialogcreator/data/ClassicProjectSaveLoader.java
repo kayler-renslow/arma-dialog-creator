@@ -1,11 +1,13 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.Configurable;
-import com.armadialogcreator.core.*;
-import com.armadialogcreator.core.sv.SerializableValue;
+import com.armadialogcreator.core.DisplayPropertyLookup;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  @author K
@@ -29,16 +31,16 @@ public class ClassicProjectSaveLoader {
 		Configurable displayConf = new Configurable.Simple("display");
 		Configurable bgControlsConf, mainControlsConf, ccDisplayConf, ctrlCfgClassesConf;
 		{
-			Configurable controlsConf = new Configurable.Simple("controls");
-			displayConf.addNestedConfigurable(controlsConf);
+			Configurable nodesConf = new Configurable.Simple("nodes");
+			displayConf.addNestedConfigurable(nodesConf);
 
 			ctrlCfgClassesConf = new Configurable.Simple("control-config-classes");
 			displayConf.addNestedConfigurable(ctrlCfgClassesConf);
 
 			bgControlsConf = new Configurable.Simple("background");
 			mainControlsConf = new Configurable.Simple("main");
-			controlsConf.addNestedConfigurable(bgControlsConf);
-			controlsConf.addNestedConfigurable(mainControlsConf);
+			nodesConf.addNestedConfigurable(bgControlsConf);
+			nodesConf.addNestedConfigurable(mainControlsConf);
 		}
 		{
 			ccDisplayConf = new Configurable.Simple("config-class");
@@ -54,7 +56,7 @@ public class ClassicProjectSaveLoader {
 						continue;
 					}
 					DisplayPropertyLookup dispLookup = DisplayPropertyLookup.findById(Integer.parseInt(sid));
-					Configurable newDispPropConf = convertPropertyConf(nestedDispConf, dispLookup, env);
+					Configurable newDispPropConf = ClassicSaveLoaderUtil.convertPropertyLookupConf(nestedDispConf, dispLookup, env);
 					ccDisplayConf.addNestedConfigurable(newDispPropConf);
 					break;
 				}
@@ -110,83 +112,61 @@ public class ClassicProjectSaveLoader {
 		if (controlId == null) {
 			return null;
 		}
-		ControlType type;
-		try {
-			type = ControlType.findById(Integer.parseInt(controlId));
-		} catch (NumberFormatException e) {
-			return null;
-		}
 		ccConf.addAttribute("control-type", controlId);
 		Env env = ExpressionEnvManager.instance.getEnv();
-		for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {
-			if (ctrlPropConf.getConfigurableName().equals("property")) {
-				String pid = ctrlPropConf.getAttributeValue("id");
-				if (pid == null) {
-					continue;
-				}
-				ConfigPropertyLookup propertyLookup = ConfigPropertyLookup.findById(Integer.parseInt(pid));
-				Configurable propertyConf = convertPropertyConf(ctrlPropConf, propertyLookup, env);
-				{ //set macro
-					String macroName = ctrlPropConf.getAttributeValue("macro-key");
-					if (macroName != null) {
-						propertyConf.addAttribute("macro", macroName);
-					}
-				}
-				ccConf.addNestedConfigurable(propertyConf);
-			}
-			{
-				uinodeConf.addAttribute("UINodeName", className);
-				{
-					boolean ghost, enabled;
-					{
-						String ghostAtt = ctrlConf.getAttributeValue("ghost");
-						String enabledAtt = ctrlConf.getAttributeValue("enabled");
-						if (ghostAtt != null) {
-							ghost = ghostAtt.equals("t");
-						} else {
-							ghost = false;
-						}
-						if (enabledAtt != null) {
-							enabled = enabledAtt.equals("t");
-						} else {
-							enabled = true;
-						}
-					}
+		{ //load properties
 
-					Configurable componentConf = new Configurable.Simple("component");
-					componentConf.addAttribute("ghost", ghost);
-					componentConf.addAttribute("enabled", enabled);
+			// Make initial capacity of arraylist nested count / 2 because in worst case, all properties are inherited,
+			// which means there would be a <property> and <inherit-property> tag for every property
+			// (worst case number of tags = property count * 2).
+			List<Integer> inheritedProperties = new ArrayList<>(ctrlConf.getNestedConfigurableCount() / 2);
+			for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {
+				if (ctrlPropConf.getConfigurableName().equals("inherit-property")) {
+					String pid = ctrlPropConf.getAttributeValue("id");
+					if (pid == null) {
+						continue;
+					}
+					inheritedProperties.add(Integer.parseInt(pid));
 				}
+			}
+			for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {
+				if (ctrlPropConf.getConfigurableName().equals("property")) {
+					Configurable propertyConf = ClassicSaveLoaderUtil.convertConfigPropertyConf(
+							ctrlPropConf, env, integer -> {
+								return inheritedProperties.contains(integer);
+							}
+					);
+					if (propertyConf == null) {
+						continue;
+					}
+					ccConf.addNestedConfigurable(propertyConf);
+				}
+			}
+		}
+		{ //load UINode
+			uinodeConf.addAttribute("UINodeName", className);
+			{
+				boolean ghost, enabled;
+				{
+					String ghostAtt = ctrlConf.getAttributeValue("ghost");
+					String enabledAtt = ctrlConf.getAttributeValue("enabled");
+					if (ghostAtt != null) {
+						ghost = ghostAtt.equals("t");
+					} else {
+						ghost = false;
+					}
+					if (enabledAtt != null) {
+						enabled = enabledAtt.equals("t");
+					} else {
+						enabled = true;
+					}
+				}
+
+				Configurable componentConf = new Configurable.Simple("component");
+				componentConf.addAttribute("ghost", ghost);
+				componentConf.addAttribute("enabled", enabled);
 			}
 		}
 		return ret;
-	}
-
-	@NotNull
-	private Configurable convertPropertyConf(@NotNull Configurable propConf, @NotNull ConfigPropertyLookupConstant c, @NotNull Env env) {
-		Configurable retPropertyConf = new Configurable.Simple("property");
-		{ //set property name and value
-
-			retPropertyConf.addAttribute("name", c.getPropertyName());
-			retPropertyConf.addAttribute("priority", c.priority() + "");
-
-			{ //set property value configurable
-				String ptype = propConf.getAttributeValue("ptype");
-				PropertyType propertyType;
-				if (ptype == null) {
-					propertyType = c.getPropertyType();
-				} else {
-					propertyType = PropertyType.findById(Integer.parseInt(ptype));
-				}
-				String[] vals = new String[propConf.getNestedConfigurableCount()];
-				int i = 0;
-				for (Configurable vConfg : propConf.getNestedConfigurables()) {
-					vals[i++] = vConfg.getConfigurableBody();
-				}
-				SerializableValue sv = SerializableValue.constructNew(env, propertyType, vals);
-				retPropertyConf.addNestedConfigurable(new SerializableValueConfigurable(sv));
-			}
-		}
-		return retPropertyConf;
 	}
 }

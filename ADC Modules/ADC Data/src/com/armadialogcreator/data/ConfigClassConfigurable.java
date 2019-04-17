@@ -21,10 +21,7 @@ public class ConfigClassConfigurable implements Configurable {
 	@NotNull
 	public static ConfigClass fromConfigurable(@NotNull Configurable configurable, @Nullable ConfigClass configClass,
 											   @NotNull Consumer<ConfigClassJob> jobConsumer) {
-		String name = configurable.getAttributeValue("name");
-		if (name == null) {
-			throw new IllegalStateException();
-		}
+		String name = configurable.getAttributeValueNotNull("name");
 		String extend = configurable.getAttributeValue("extend");
 		if (configClass == null) {
 			configClass = new ConfigClass(name);
@@ -35,31 +32,29 @@ public class ConfigClassConfigurable implements Configurable {
 			jobConsumer.accept(new ExtendConfigClassJob(configClass, extend));
 		}
 		for (Configurable nested : configurable.getNestedConfigurables()) {
-			String propertyName = nested.getAttributeValue("name");
-			String macro = nested.getAttributeValue("macro");
-			String priorityStr = nested.getAttributeValue("priority");
+			if (nested.getConfigurableName().equals("property")) {
+				String propertyName = nested.getAttributeValueNotNull("name");
+				String macro = nested.getAttributeValue("macro");
+				String priorityStr = nested.getAttributeValue("priority");
 
-			if (propertyName == null) {
-				throw new IllegalStateException();
-			}
-			if (macro != null) {
-				jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
-			}
-			Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
-			if (svConf == null) {
-				throw new IllegalStateException();
-			}
-			SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
-					svConf,
-					ExpressionEnvManager.instance.getEnv()
-			);
-			ConfigProperty property = configClass.addProperty(propertyName, sv);
-			if (priorityStr != null && priorityStr.length() > 0) {
-				try {
-					property.setPriority(Integer.parseInt(priorityStr));
-				} catch (NumberFormatException ignore) {
-
+				if (macro != null) {
+					jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
 				}
+				Configurable svConf = nested.getConfigurableNotNull(SerializableValueConfigurable.CONFIGURABLE_NAME);
+				SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
+						svConf,
+						ExpressionEnvManager.instance.getEnv()
+				);
+				ConfigProperty property = configClass.addProperty(propertyName, sv);
+				if (priorityStr != null && priorityStr.length() > 0) {
+					try {
+						property.setPriority(Integer.parseInt(priorityStr));
+					} catch (NumberFormatException ignore) {
+
+					}
+				}
+			} else if (nested.getConfigurableName().equals("comment")) {
+				configClass.setUserComment(nested.getConfigurableBody());
 			}
 		}
 		return configClass;
@@ -73,7 +68,7 @@ public class ConfigClassConfigurable implements Configurable {
 		if (configClass.isExtending()) {
 			atts.add(new KeyValueString("extend", configClass.getExtendClassName()));
 		}
-		nestedConfs = new ArrayList<>(configClass.getNonInheritedPropertyCount());
+		nestedConfs = new ArrayList<>(configClass.getNonInheritedPropertyCount() + 1);
 		for (ConfigProperty property : configClass.iterateProperties()) {
 			if (!configClass.propertyIsInherited(property.getName())) {
 				Configurable.Simple propertyConf = new Configurable.Simple("property");
@@ -86,6 +81,10 @@ public class ConfigClassConfigurable implements Configurable {
 				propertyConf.addNestedConfigurable(new SerializableValueConfigurable(property.getValue()));
 
 			}
+		}
+		String userComment = configClass.getUserComment();
+		if (userComment != null) {
+			nestedConfs.add(new Simple("comment", userComment));
 		}
 	}
 

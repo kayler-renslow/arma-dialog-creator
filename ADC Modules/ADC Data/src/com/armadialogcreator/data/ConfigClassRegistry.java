@@ -1,6 +1,7 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -29,7 +30,6 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	private ApplicationClasses applicationClasses = new ApplicationClasses(this);
 	@NotNull
 	private final SystemClasses systemClasses = new SystemClasses(this);
-	private final Set<ConfigClass> doNotSave = new HashSet<>();
 
 	/** @return a {@link ConfigClass} instance from the given name. Will return null if className couldn't be matched */
 	@Nullable
@@ -211,10 +211,6 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		return map;
 	}
 
-	public void doNotSaveToFile(@NotNull ConfigClass configClass) {
-		doNotSave.add(configClass);
-	}
-
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;
@@ -306,7 +302,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", getLevel().name());
 			for (ConfigClass configClass : classes) {
-				if (registry.doNotSave.contains(configClass)) {
+				if (configClass instanceof ArmaControl) {
 					continue;
 				}
 				config.addNestedConfigurable(new ConfigClassConfigurable(configClass));

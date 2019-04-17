@@ -186,10 +186,7 @@ public class DefaultValueSheetRegistry implements Registry<String, DefaultValueS
 			Configurable sheets = config.getConfigurable("sheets");
 			if (sheets != null) {
 				for (Configurable sheet : sheets.getNestedConfigurables()) {
-					String name = sheet.getAttributeValue("name");
-					if (name == null) {
-						throw new IllegalStateException();
-					}
+					String name = sheet.getAttributeValueNotNull("name");
 					DefaultValueSheet valueSheet = new DefaultValueSheet(name);
 					this.sheets.add(valueSheet);
 					valueSheet.setFromConfigurable(sheet);
@@ -199,10 +196,7 @@ public class DefaultValueSheetRegistry implements Registry<String, DefaultValueS
 			Configurable extSheets = config.getConfigurable("ext-sheets");
 			if (extSheets != null) {
 				for (Configurable extSheet : extSheets.getNestedConfigurables()) {
-					String name = extSheet.getAttributeValue("name");
-					if (name == null) {
-						throw new IllegalStateException();
-					}
+					String name = extSheet.getAttributeValueNotNull("name");
 					externalSheetsToLoadLater.put(name, extSheet.getConfigurableBody());
 				}
 			}
@@ -271,21 +265,12 @@ public class DefaultValueSheetRegistry implements Registry<String, DefaultValueS
 			if (prefixConf == null) {
 				throw new IllegalStateException();
 			}
-			String prefixValue = prefixConf.getAttributeValue("value");
-			String prefixName = prefixConf.getAttributeValue("name");
-			if (prefixName == null || prefixValue == null) {
-				throw new IllegalStateException();
-			}
+			String prefixValue = prefixConf.getAttributeValueNotNull("value");
+			String prefixName = prefixConf.getAttributeValueNotNull("name");
 
-			Configurable sheets = root.getConfigurable("sheets");
-			if (sheets == null) {
-				throw new IllegalStateException();
-			}
+			Configurable sheets = root.getConfigurableNotNull("sheets");
 			for (Configurable sheet : sheets.getNestedConfigurables()) {
-				String name = sheet.getAttributeValue("name");
-				if (name == null) {
-					throw new IllegalStateException();
-				}
+				String name = sheet.getAttributeValueNotNull("name");
 				DefaultValueSheet valueSheet = new DefaultValueSheet(name);
 				String displayName = sheet.getAttributeValue("display-name");
 				valueSheet.setDisplayName(displayName == null ? "" : displayName);

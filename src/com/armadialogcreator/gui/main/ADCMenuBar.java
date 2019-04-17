@@ -14,10 +14,7 @@ import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
-import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.OpenClassicSave;
-import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowDisplay;
-import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowRegistries;
-import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowXmlAsConfigurable;
+import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.edit.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.file.*;
 import com.armadialogcreator.gui.main.actions.mainMenu.help.CheckForUpdateAction;
@@ -80,6 +77,7 @@ class ADCMenuBar extends MenuBar {
 	/*screen*/
 	final ChoiceBox<UIScale> choiceBoxUiScale = new ChoiceBox<>();
 	final Label lblUiScale = new Label(bundle.getString("view_ui_scale"), choiceBoxUiScale);
+
 	{
 		lblUiScale.setContentDisplay(ContentDisplay.RIGHT);
 		choiceBoxUiScale.getItems().addAll(ArmaUIScale.values());
@@ -143,6 +141,7 @@ class ADCMenuBar extends MenuBar {
 	{
 		create_macro.setGraphic(new ImageView(ADCIcons.ICON_HASH_MINIPLUS));
 	}
+
 	final MenuItem create_control_class = addOnAction(new MenuItem(bundle.getString("create_control_class")), new CreateNewCustomControlAction());
 	final MenuItem create_new_control = addOnAction(new MenuItem(bundle.getString("create_control")), new CreateNewControlAction());
 	final MenuItem create_new_folder = addOnAction(
@@ -153,6 +152,7 @@ class ADCMenuBar extends MenuBar {
 	{
 		create_new_folder.setGraphic(new ImageView(ADCIcons.ICON_FOLDER_MINIPLUS));
 	}
+
 	/*help*/
 	final MenuItem help_wiki = addOnAction(new MenuItem(bundle.getString("help_wiki")), new WikiUrlAction());
 	final MenuItem help_about = addOnAction(new MenuItem(bundle.getString("help_about")), event -> new AboutDialog().show());
@@ -215,8 +215,19 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem dev_registries = addOnAction(new MenuItem("Show Registries"), new ShowRegistries());
 	final MenuItem dev_showDisplay = addOnAction(new MenuItem("Show Display"), new ShowDisplay());
 	final MenuItem dev_showXml = addOnAction(new MenuItem("Show Xml As Configurable"), new ShowXmlAsConfigurable());
-	final MenuItem dev_openClassicSave = addOnAction(new MenuItem("Open Classic Save"), new OpenClassicSave());
-	final Menu menuDev = new Menu("Dev", null, dev_registries, dev_showDisplay, dev_showXml, dev_openClassicSave);
+	final MenuItem dev_openClassicProjectSave = addOnAction(new MenuItem("Open Classic Project Save"), new OpenClassicProjectSave());
+	final MenuItem dev_syncTreeView = addOnAction(new MenuItem("Sync Control Tree Views"), new SyncControlTreeViews());
+	final MenuItem dev_openWorkspaceSave = addOnAction(new MenuItem("Open Workspace Save"), new OpenClassicWorkspaceSave());
+	final Menu menuDev = new Menu("Dev", null,
+			dev_registries,
+			dev_showDisplay,
+			dev_showXml,
+			new Menu("Classic Saves", null,
+					dev_openClassicProjectSave,
+					dev_openWorkspaceSave
+			),
+			dev_syncTreeView
+	);
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);

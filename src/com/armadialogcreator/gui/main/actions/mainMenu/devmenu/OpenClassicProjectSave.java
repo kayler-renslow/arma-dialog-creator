@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.devmenu;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.application.ADCFile;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.application.XmlConfigurableLoader;
@@ -15,7 +16,7 @@ import java.io.File;
 /**
  @author kayler
  @since 4/16/19 */
-public class OpenClassicSave implements EventHandler<ActionEvent> {
+public class OpenClassicProjectSave implements EventHandler<ActionEvent> {
 	@Override
 	public void handle(ActionEvent event) {
 		FileChooser chooser = new FileChooser();
@@ -28,7 +29,7 @@ public class OpenClassicSave implements EventHandler<ActionEvent> {
 			ClassicProjectSaveLoader loader = new ClassicProjectSaveLoader(conf);
 			loader.load();
 		} catch (XmlParseException e) {
-			return;
+			ExceptionHandler.error(e);
 		}
 
 	}

@@ -124,7 +124,7 @@ public class DefaultValueSheet {
 
 		@NotNull
 		protected static Property newFromConfigurable(@NotNull Configurable c) {
-			String name = c.getAttributeValue("name");
+			String name = c.getAttributeValueNotNull("name");
 			String[] values = null;
 			Iterable<Configurable> nestedConfigs = c.getNestedConfigurables();
 			Map<String, String> atts = new HashMap<>();
@@ -140,7 +140,7 @@ public class DefaultValueSheet {
 						break;
 					}
 					case "a": {
-						String attName = nested.getAttributeValue("name");
+						String attName = nested.getAttributeValueNotNull("name");
 						atts.put(attName, nested.getConfigurableBody());
 						break;
 					}

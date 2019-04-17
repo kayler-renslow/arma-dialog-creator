@@ -7,6 +7,7 @@ import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.util.DoubleIterable;
 import com.armadialogcreator.util.KeyValueString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,42 @@ import java.util.List;
  @author K
  @since 4/8/19 */
 public class UINodeConfigurable implements Configurable {
+
+	@NotNull
+	public static List<Configurable> fromConfigurable(@NotNull Configurable c, @NotNull UINode node, boolean loadPositionInfo) {
+		List<Configurable> childConfs = new ArrayList<>(c.getNestedConfigurableCount());
+		Configurable component = c.getConfigurable("component");
+		CanvasComponent nodeComponent = node.getComponent();
+		if (component == null) {
+			if (nodeComponent != null) {
+				throw new IllegalArgumentException();
+			}
+		} else {
+			if (nodeComponent == null) {
+				throw new IllegalArgumentException();
+			}
+			String enabledAtt = component.getAttributeValueNotNull("enabled");
+			nodeComponent.setEnabled(enabledAtt.equals("true"));
+			String ghostAtt = component.getAttributeValueNotNull("ghost");
+			nodeComponent.setGhost(ghostAtt.equals("true"));
+			if (loadPositionInfo) {
+				String x1Att = component.getAttributeValueNotNull("x1");
+				String y1Att = component.getAttributeValueNotNull("y1");
+				String x2Att = component.getAttributeValueNotNull("x2");
+				String y2Att = component.getAttributeValueNotNull("y2");
+				nodeComponent.setX1(Integer.parseInt(x1Att));
+				nodeComponent.setX2(Integer.parseInt(x2Att));
+				nodeComponent.setY1(Integer.parseInt(y1Att));
+				nodeComponent.setY2(Integer.parseInt(y2Att));
+			}
+		}
+		return childConfs;
+	}
+
+	@Nullable
+	public static String getUINodeNameFromConfigurable(@NotNull Configurable c) {
+		return c.getAttributeValue("UINodeName");
+	}
 
 	private final UINode node;
 	private boolean savePositionInfo;

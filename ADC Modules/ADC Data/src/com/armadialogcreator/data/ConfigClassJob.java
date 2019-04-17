@@ -24,7 +24,7 @@ public interface ConfigClassJob {
 		public void doWork() {
 			ConfigClass extend = ConfigClassRegistry.instance.findConfigClassByName(extendClass);
 			if (extend == null) {
-				throw new IllegalStateException();
+				throw new IllegalStateException(cc.getClassName() + ":" + extendClass);
 			}
 			cc.extendConfigClass(extend);
 		}
