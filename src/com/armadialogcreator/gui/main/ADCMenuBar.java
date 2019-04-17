@@ -10,11 +10,11 @@ import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.SettingsChangeSaveDirAction;
-import com.armadialogcreator.gui.main.actions.mainMenu.TestAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateMacroAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewCustomControlAction;
 import com.armadialogcreator.gui.main.actions.mainMenu.create.CreateNewFolderAction;
+import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.OpenClassicSave;
 import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowDisplay;
 import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowRegistries;
 import com.armadialogcreator.gui.main.actions.mainMenu.devmenu.ShowXmlAsConfigurable;
@@ -215,13 +215,11 @@ class ADCMenuBar extends MenuBar {
 	final MenuItem dev_registries = addOnAction(new MenuItem("Show Registries"), new ShowRegistries());
 	final MenuItem dev_showDisplay = addOnAction(new MenuItem("Show Display"), new ShowDisplay());
 	final MenuItem dev_showXml = addOnAction(new MenuItem("Show Xml As Configurable"), new ShowXmlAsConfigurable());
-	final Menu menuDev = new Menu("Dev", null, dev_registries, dev_showDisplay, dev_showXml);
+	final MenuItem dev_openClassicSave = addOnAction(new MenuItem("Open Classic Save"), new OpenClassicSave());
+	final Menu menuDev = new Menu("Dev", null, dev_registries, dev_showDisplay, dev_showXml, dev_openClassicSave);
 
 	ADCMenuBar() {
 		this.getMenus().addAll(menuFile, menuEdit, menuView, menuSettings, menuCreate, menuHelp);
-		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
-			this.getMenus().add(new Menu("Debug", null, addOnAction(new MenuItem("Debug Menu"), new TestAction())));
-		}
 
 		view_showGrid.getParentMenu().showingProperty().addListener(new ChangeListener<>() {
 			@Override
@@ -230,7 +228,7 @@ class ADCMenuBar extends MenuBar {
 			}
 		});
 
-		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMenu)) {
+		if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMode)) {
 			getMenus().add(menuDev);
 		}
 

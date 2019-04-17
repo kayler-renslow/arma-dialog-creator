@@ -181,7 +181,7 @@ public class ExpressionEvaluatorPopup extends StagePopup<VBox> {
 					} else {
 						returnValueString = bundle.getString("CodeArea.error");
 						consoleString = e.getMessage();
-						if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.ShowDebugFeatures)) {
+						if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMode)) {
 							e.printStackTrace(System.out);
 						}
 					}

@@ -2,6 +2,7 @@ package com.armadialogcreator;
 
 import com.armadialogcreator.gui.main.popup.SimpleErrorDialog;
 import javafx.application.Platform;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.stage.WindowEvent;
@@ -68,6 +69,13 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 						t,
 						lblMsg
 				);
+				if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMode)) {
+					Button btnExit = new Button("Exit W/ No Save");
+					btnExit.setOnAction(event -> {
+						System.exit(0);
+					});
+					errorDialog.getFooter().getRightContainer().getChildren().add(btnExit);
+				}
 				errorDialog.show();
 			}
 		});

@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ExceptionHandler;
+import com.armadialogcreator.gui.GenericResponseFooter;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.lang.Lang;
 import javafx.beans.value.ChangeListener;
@@ -14,6 +15,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ResourceBundle;
@@ -78,6 +80,12 @@ public class SimpleErrorDialog<B extends Node> extends StageDialog<VBox> {
 				}
 			});
 		}
+	}
+
+	@Override
+	@NotNull
+	public GenericResponseFooter getFooter() {
+		return super.getFooter();
 	}
 
 	@Override
