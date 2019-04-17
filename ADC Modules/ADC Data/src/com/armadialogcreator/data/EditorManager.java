@@ -1,8 +1,12 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ScreenDimension;
 import org.jetbrains.annotations.NotNull;
@@ -65,7 +69,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 	}
 
 	private static class EditorProjectData implements ProjectData {
-		private List<ConfigClassRegistry.ConfigClassJob> jobs;
+		private List<ConfigClassJob> jobs;
 
 		@Override
 		@NotNull
@@ -79,16 +83,53 @@ public class EditorManager implements ApplicationStateSubscriber {
 			Configurable ccConf = config.getConfigurable("config-class");
 			if (ccConf != null) {
 				ArmaDisplay armaDisplay = new ArmaDisplay("");
-				ConfigClassRegistry.fromConfigurable(ccConf, armaDisplay, configClassJob -> {
+				ConfigClassConfigurable.fromConfigurable(ccConf, armaDisplay, configClassJob -> {
 					jobs.add(configClassJob);
 				});
 				EditorManager.instance.editingDisplay = armaDisplay;
 			}
+			Configurable configClasses = config.getConfigurable("control-config-classes");
+			if (configClasses != null) {
+				ArmaDisplay display = EditorManager.instance.editingDisplay;
+				ArmaResolution resolution = EditorManager.instance.resolution;
+				Env env = ExpressionEnvManager.instance.getEnv();
+				ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
+				for (Configurable c : configClasses.getNestedConfigurables()) {
+					String controlId = c.getAttributeValue("control-type");
+					if (controlId == null) {
+						continue;
+					}
+					ControlType type = ControlType.findById(Integer.parseInt(controlId));
+					ArmaControl control = ArmaControl.createControl(
+							type,
+							"",
+							resolution,
+							env,
+							display
+					);
+					projectClasses.addClass(control);
+					ConfigClassRegistry.instance.doNotSaveToFile(control);
+					ConfigClassConfigurable.fromConfigurable(c, control, configClassJob -> {
+						jobs.add(configClassJob);
+					});
+				}
+			}
 			Configurable controls = config.getConfigurable("controls");
 			if (controls != null) {
+				ArmaDisplay d = EditorManager.instance.editingDisplay;
 				Configurable bgConf = controls.getConfigurable("background");
+				if (bgConf != null) {
+					loadControls(bgConf, d.getBackgroundControlNodes());
+				}
 				Configurable mainConf = controls.getConfigurable("main");
+				if (mainConf != null) {
+					loadControls(mainConf, d.getControlNodes());
+				}
 			}
+		}
+
+		private void loadControls(@NotNull Configurable conf, @NotNull UINode root) {
+			// todo
 		}
 
 		@Override
@@ -100,7 +141,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 			if (jobs == null) {
 				return; //nothing was loaded
 			}
-			for (ConfigClassRegistry.ConfigClassJob job : jobs) {
+			for (ConfigClassJob job : jobs) {
 				job.doWork();
 			}
 			jobs = null; //help GC

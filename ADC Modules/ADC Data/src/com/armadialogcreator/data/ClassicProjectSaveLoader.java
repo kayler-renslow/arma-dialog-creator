@@ -27,12 +27,13 @@ public class ClassicProjectSaveLoader {
 			return;
 		}
 		Configurable displayConf = new Configurable.Simple("display");
-		Configurable bgControlsConf, mainControlsConf, ccDisplayConf, configClassesConf;
+		Configurable bgControlsConf, mainControlsConf, ccDisplayConf, ctrlCfgClassesConf;
 		{
 			Configurable controlsConf = new Configurable.Simple("controls");
 			displayConf.addNestedConfigurable(controlsConf);
 
-			configClassesConf = new Configurable.Simple("");
+			ctrlCfgClassesConf = new Configurable.Simple("control-config-classes");
+			displayConf.addNestedConfigurable(ctrlCfgClassesConf);
 
 			bgControlsConf = new Configurable.Simple("background");
 			mainControlsConf = new Configurable.Simple("main");
@@ -77,13 +78,12 @@ public class ClassicProjectSaveLoader {
 							continue;
 						}
 
-						configClassesConf.addNestedConfigurable(c.getConfigurable("config-class"));
+						ctrlCfgClassesConf.addNestedConfigurable(c.getConfigurable("config-class"));
 						addTo.addNestedConfigurable(c.getConfigurable("UINode"));
 					}
 					break;
 				}
 			}
-			ConfigClassRegistry.instance.getProjectClasses().loadFromConfigurable(configClassesConf);
 			EditorManager.instance.loadDisplayFromConfigurable(displayConf);
 		}
 	}
@@ -116,7 +116,7 @@ public class ClassicProjectSaveLoader {
 		} catch (NumberFormatException e) {
 			return null;
 		}
-		ccConf.addAttribute("control-type", type.getTypeId() + "");
+		ccConf.addAttribute("control-type", controlId);
 		Env env = ExpressionEnvManager.instance.getEnv();
 		for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {
 			if (ctrlPropConf.getConfigurableName().equals("property")) {

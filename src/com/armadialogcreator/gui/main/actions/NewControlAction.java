@@ -62,6 +62,7 @@ public class NewControlAction {
 		}
 
 		ConfigClassRegistry.instance.getProjectClasses().addClass(control);
+		ConfigClassRegistry.instance.doNotSaveToFile(control);
 
 		return control;
 	}

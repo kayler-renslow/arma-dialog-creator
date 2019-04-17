@@ -2,15 +2,11 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.ConfigClass;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.Macro;
-import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.function.Consumer;
 
 /**
  @author K
@@ -33,6 +29,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	private ApplicationClasses applicationClasses = new ApplicationClasses(this);
 	@NotNull
 	private final SystemClasses systemClasses = new SystemClasses(this);
+	private final Set<ConfigClass> doNotSave = new HashSet<>();
 
 	/** @return a {@link ConfigClass} instance from the given name. Will return null if className couldn't be matched */
 	@Nullable
@@ -214,51 +211,8 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		return map;
 	}
 
-	@NotNull
-	public static ConfigClass fromConfigurable(@NotNull Configurable configurable, @Nullable ConfigClass configClass,
-											   @NotNull Consumer<ConfigClassJob> jobConsumer) {
-		String name = configurable.getAttributeValue("name");
-		if (name == null) {
-			throw new IllegalStateException();
-		}
-		String extend = configurable.getAttributeValue("extend");
-		if (configClass == null) {
-			configClass = new ConfigClass(name);
-		} else {
-			configClass.setClassName(name);
-		}
-		if (extend != null) {
-			jobConsumer.accept(new ExtendConfigClassJob(configClass, extend));
-		}
-		for (Configurable nested : configurable.getNestedConfigurables()) {
-			String propertyName = nested.getAttributeValue("name");
-			String macro = nested.getAttributeValue("macro");
-			String priorityStr = nested.getAttributeValue("priority");
-
-			if (propertyName == null) {
-				throw new IllegalStateException();
-			}
-			if (macro != null) {
-				jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
-			}
-			Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
-			if (svConf == null) {
-				throw new IllegalStateException();
-			}
-			SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
-					svConf,
-					ExpressionEnvManager.instance.getEnv()
-			);
-			ConfigProperty property = configClass.addProperty(propertyName, sv);
-			if (priorityStr != null && priorityStr.length() > 0) {
-				try {
-					property.setPriority(Integer.parseInt(priorityStr));
-				} catch (NumberFormatException ignore) {
-
-				}
-			}
-		}
-		return configClass;
+	public void doNotSaveToFile(@NotNull ConfigClass configClass) {
+		doNotSave.add(configClass);
 	}
 
 	private static abstract class Base implements ADCData {
@@ -341,7 +295,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			jobs = new ArrayList<>();
 			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("config-class")) {
-					classes.add(fromConfigurable(nested, null, job -> {
+					classes.add(ConfigClassConfigurable.fromConfigurable(nested, null, job -> {
 						jobs.add(job);
 					}));
 				}
@@ -352,6 +306,9 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", getLevel().name());
 			for (ConfigClass configClass : classes) {
+				if (registry.doNotSave.contains(configClass)) {
+					continue;
+				}
 				config.addNestedConfigurable(new ConfigClassConfigurable(configClass));
 			}
 		}
@@ -440,51 +397,4 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			return DataLevel.Project;
 		}
 	}
-
-	public interface ConfigClassJob {
-		void doWork();
-	}
-
-	private static class ExtendConfigClassJob implements ConfigClassJob {
-
-		private final ConfigClass cc;
-		private final String extendClass;
-
-		public ExtendConfigClassJob(@NotNull ConfigClass cc, @NotNull String extendClass) {
-			this.cc = cc;
-			this.extendClass = extendClass;
-		}
-
-		@Override
-		public void doWork() {
-			ConfigClass extend = ConfigClassRegistry.instance.findConfigClassByName(extendClass);
-			if (extend == null) {
-				throw new IllegalStateException();
-			}
-			cc.extendConfigClass(extend);
-		}
-	}
-
-	private static class SetMacroJob implements ConfigClassJob {
-
-		private final ConfigClass cc;
-		private final String property;
-		private final String macro;
-
-		public SetMacroJob(@NotNull ConfigClass cc, @NotNull String property, @NotNull String macro) {
-			this.cc = cc;
-			this.property = property;
-			this.macro = macro;
-		}
-
-		@Override
-		public void doWork() {
-			Macro macro = MacroRegistry.instance.findMacroByName(this.macro);
-			if (macro == null) {
-				throw new IllegalStateException();
-			}
-			cc.findProperty(property).bindToMacro(macro);
-		}
-	}
-
 }
