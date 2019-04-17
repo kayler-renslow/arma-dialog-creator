@@ -18,17 +18,17 @@ public class ProjectExporter {
 	private static final String CONTROLS = "Controls";
 //
 //	/**
-//	 Exports the whole {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
+	//	 Exports the whole {@link ClassicProjectExportConfiguration#getProject()} to the configuration's specified files.
 //
 //	 @param configuration config to use
 //	 @see #exportDisplayAndMacros(Writer, Writer)
 //	 */
-//	public static void exportProject(@NotNull ProjectExportConfiguration configuration) throws IOException {
+	//	public static void exportProject(@NotNull ClassicProjectExportConfiguration configuration) throws IOException {
 //		new ProjectExporter(configuration).exportProject();
 //	}
 //
 //	/**
-//	 Exports the {@link ProjectExportConfiguration#getProject()} to the given output streams. This method will only
+	//	 Exports the {@link ClassicProjectExportConfiguration#getProject()} to the given output streams. This method will only
 //	 export the {@link Project#getEditingDisplay()}, {@link Project#getMacroRegistry()}, and
 //	 {@link Project#getProjectCustomControlClassRegistry()}.
 //	 The streams will not be closed once this method finishes!
@@ -38,7 +38,7 @@ public class ProjectExporter {
 //	 @param macrosWriter writer to use for writing {@link Project#getMacroRegistry()}, or null to write to same
 //	 file as <code>displayOutputStream</code>
 //	 */
-//	public static void exportDisplayAndMacros(@NotNull ProjectExportConfiguration configuration,
+	//	public static void exportDisplayAndMacros(@NotNull ClassicProjectExportConfiguration configuration,
 //											  @NotNull Writer displayWriter,
 //											  @Nullable Writer macrosWriter) throws IOException {
 //		new ProjectExporter(configuration).exportDisplayAndMacros(displayWriter, macrosWriter);
@@ -50,18 +50,18 @@ public class ProjectExporter {
 //	 @param configuration config to use
 //	 @param writer stream to use
 //	 */
-//	public static void exportWorkspaceCustomControls(@NotNull ProjectExportConfiguration configuration,
+	//	public static void exportWorkspaceCustomControls(@NotNull ClassicProjectExportConfiguration configuration,
 //													 @NotNull Writer writer) throws IOException {
 //		new ProjectExporter(configuration).exportWorkspaceCustomControls(writer);
 //	}
 //
 //	@NotNull
-//	public static String getMacrosFileName(@NotNull ProjectExportConfiguration configuration) {
+	//	public static String getMacrosFileName(@NotNull ClassicProjectExportConfiguration configuration) {
 //		return configuration.getExportClassName() + "_Macros" + configuration.getHeaderFileType().getExtension();
 //	}
 //
 //	@NotNull
-//	public static String getDisplayFileName(@NotNull ProjectExportConfiguration configuration) {
+	//	public static String getDisplayFileName(@NotNull ClassicProjectExportConfiguration configuration) {
 //		return configuration.getExportClassName() + configuration.getHeaderFileType().getExtension();
 //	}
 
@@ -96,7 +96,7 @@ public class ProjectExporter {
 		return (type.getPropertyValuesSize() > 1) ? "{" + ret + "}" : ret.toString();
 	}
 //
-//	public static void exportControlClass(@NotNull ProjectExportConfiguration configuration, @NotNull ControlClassOld controlClass, @NotNull Writer writer) throws IOException {
+	//	public static void exportControlClass(@NotNull ClassicProjectExportConfiguration configuration, @NotNull ControlClassOld controlClass, @NotNull Writer writer) throws IOException {
 //		ProjectExporter exporter = new ProjectExporter(configuration);
 //		BufferedIndentedStringBuilder builder = getBuilder(writer);
 //		exporter.writeControlClass(builder, controlClass, null);
@@ -117,21 +117,21 @@ public class ProjectExporter {
 //	}
 //
 //	private final Project project;
-//	private final ProjectExportConfiguration conf;
+	//	private final ClassicProjectExportConfiguration conf;
 //	private final ResourceBundle bundle = Lang.ApplicationBundle();
 //
 //	private BufferedIndentedStringBuilder displayStringBuilder;
 //
 //	private BufferedIndentedStringBuilder macrosStringBuilder;
 //
-//	public ProjectExporter(@NotNull ProjectExportConfiguration configuration) {
+	//	public ProjectExporter(@NotNull ClassicProjectExportConfiguration configuration) {
 //		this.conf = configuration;
 //		this.project = configuration.getProject();
 //
 //	}
 //
 //	/**
-//	 Exports the {@link ProjectExportConfiguration#getProject()} to the configuration's specified files.
+	//	 Exports the {@link ClassicProjectExportConfiguration#getProject()} to the configuration's specified files.
 //	 <p>
 //	 This invokes {@link #exportDisplayAndMacros(Writer, Writer)} and {@link #exportWorkspaceCustomControls()}
 //	 */
@@ -172,7 +172,7 @@ public class ProjectExporter {
 //	}
 //
 //	/**
-//	 Exports the {@link ProjectExportConfiguration#getProject()} to the given output streams.
+	//	 Exports the {@link ClassicProjectExportConfiguration#getProject()} to the given output streams.
 //	 The streams will not be closed once this method finishes!
 //
 //	 @param displayWriter stream to use for writing the {@link Project#getEditingDisplay()}

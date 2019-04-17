@@ -48,7 +48,11 @@ public class EditorManager implements ApplicationStateSubscriber {
 	}
 
 	public void loadDisplayFromConfigurable(@NotNull Configurable c) {
-
+		Configurable controls = c.getConfigurable("controls");
+		if (controls != null) {
+			Configurable bgConf = controls.getConfigurable("background");
+			Configurable mainConf = controls.getConfigurable("main");
+		}
 	}
 
 	private static class EditorProjectData implements ProjectData {

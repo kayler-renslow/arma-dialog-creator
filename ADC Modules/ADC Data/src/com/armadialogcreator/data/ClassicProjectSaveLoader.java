@@ -41,7 +41,9 @@ public class ClassicProjectSaveLoader {
 		}
 		{
 			ccDisplayConf = new Configurable.Simple("config-class");
-			displayConf.addNestedConfigurable(ccDisplayConf);
+			configClassesConf.addNestedConfigurable(ccDisplayConf);
+
+			//root.getConfigurable("export-configuration")
 		}
 
 		Env env = ExpressionEnvManager.instance.getEnv();
@@ -77,13 +79,12 @@ public class ClassicProjectSaveLoader {
 							continue;
 						}
 
-						configClassesConf.addNestedConfigurable(c.getConfigurable("config-class"));
+						ccDisplayConf.addNestedConfigurable(c.getConfigurable("config-class"));
 						addTo.addNestedConfigurable(c.getConfigurable("UINode"));
 					}
 					break;
 				}
 			}
-			System.out.println(Configurable.toFormattedString(configClassesConf, 1));
 			ConfigClassRegistry.instance.getProjectClasses().loadFromConfigurable(configClassesConf);
 			EditorManager.instance.loadDisplayFromConfigurable(displayConf);
 		}
@@ -123,7 +124,6 @@ public class ClassicProjectSaveLoader {
 			if (ctrlPropConf.getConfigurableName().equals("property")) {
 				String pid = ctrlPropConf.getAttributeValue("id");
 				if (pid == null) {
-					System.out.println("ClassicProjectSaveLoader.convertControl");
 					continue;
 				}
 				ConfigPropertyLookup propertyLookup = ConfigPropertyLookup.findById(Integer.parseInt(pid));

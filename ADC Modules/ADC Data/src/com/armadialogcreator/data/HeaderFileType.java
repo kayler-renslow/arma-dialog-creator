@@ -1,4 +1,4 @@
-package com.armadialogcreator.data.export;
+package com.armadialogcreator.data;
 
 import org.jetbrains.annotations.NotNull;
 

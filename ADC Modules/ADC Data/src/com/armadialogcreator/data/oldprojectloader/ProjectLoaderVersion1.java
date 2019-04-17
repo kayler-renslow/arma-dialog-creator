@@ -77,7 +77,7 @@ public class ProjectLoaderVersion1 {
 	//		if (configAttributeElementList.size() == 0) {
 	//			return;
 	//		}
-	//		final ProjectExportConfiguration exportConfiguration = project.getExportConfiguration();
+	//		final ClassicProjectExportConfiguration exportConfiguration = project.getExportConfiguration();
 	//		for (Element configAttributeElement : configAttributeElementList) {
 	//			String attributeName = configAttributeElement.getAttribute("name");
 	//			switch (attributeName) {

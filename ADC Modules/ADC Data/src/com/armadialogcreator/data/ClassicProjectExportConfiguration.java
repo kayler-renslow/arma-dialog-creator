@@ -1,10 +1,16 @@
-package com.armadialogcreator.data.export;
+package com.armadialogcreator.data;
+
+import com.armadialogcreator.application.Project;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 /**
  Created by Kayler on 09/13/2016.
  */
-public class ProjectExportConfiguration {
-/*
+public class ClassicProjectExportConfiguration {
+
 	private static final String DEFAULT_CLASS_NAME = "MyDialog";
 	private static final String DEFAULT_EXPORT_CONFIG_NAME = "Default";
 	private static final String UNSET_EXPORT_CONFIG_NAME = "Untitled config";
@@ -18,7 +24,7 @@ public class ProjectExportConfiguration {
 	private String exportConfigName;
 	private String customControlClassesExportFileName;
 
-	public ProjectExportConfiguration(
+	public ClassicProjectExportConfiguration(
 			@NotNull String exportClassName,
 			@NotNull File exportDirectory,
 			@NotNull Project project,
@@ -29,7 +35,7 @@ public class ProjectExportConfiguration {
 		this(exportClassName, exportDirectory, project, placeAdcNotice, exportMacrosToFile, fileType, null);
 	}
 
-	public ProjectExportConfiguration(
+	public ClassicProjectExportConfiguration(
 			@NotNull String exportClassName,
 			@NotNull File exportDirectory,
 			@NotNull Project project,
@@ -67,7 +73,7 @@ public class ProjectExportConfiguration {
 	}
 
 	/** @return the directory to which to export the project to */
-/*	@NotNull
+	@NotNull
 	public File getExportDirectory() {
 		return exportDirectory;
 	}
@@ -78,7 +84,7 @@ public class ProjectExportConfiguration {
 	}
 
 	/** @return the file name that a {@link Project}'s {@link CustomControlClass} instances will be written to. */
-/*	@NotNull
+	@NotNull
 	public String getCustomClassesExportFileName() {
 		return customControlClassesExportFileName;
 	}
@@ -88,7 +94,7 @@ public class ProjectExportConfiguration {
 	}
 
 	/** @return the dialog's export class name */
-/*	@NotNull
+	@NotNull
 	public String getExportClassName() {
 		return exportClassName;
 	}
@@ -116,7 +122,7 @@ public class ProjectExportConfiguration {
 
 	 @throws IllegalArgumentException when exportDirectory isn't a directory
 	 */
-/*	public void setExportDirectory(@NotNull File exportDirectory) {
+	public void setExportDirectory(@NotNull File exportDirectory) {
 		if (!exportDirectory.isDirectory()) {
 			throw new IllegalArgumentException("exportDirectory ('" + exportDirectory.getPath() + "') is not a directory");
 		}
@@ -136,8 +142,8 @@ public class ProjectExportConfiguration {
 	}
 
 	@NotNull
-	public static ProjectExportConfiguration newDefaultConfiguration(@NotNull Project project) {
-		return new ProjectExportConfiguration(
+	public static ClassicProjectExportConfiguration newDefaultConfiguration(@NotNull Project project) {
+		return new ClassicProjectExportConfiguration(
 				DEFAULT_CLASS_NAME,
 				project.getProjectSaveDirectory(),
 				project,
@@ -149,8 +155,8 @@ public class ProjectExportConfiguration {
 	}
 
 	@NotNull
-	public ProjectExportConfiguration copy() {
-		return new ProjectExportConfiguration(this.exportClassName, exportDirectory, project, placeAdcNotice, exportMacrosToFile, fileType, exportConfigName);
+	public ClassicProjectExportConfiguration copy() {
+		return new ClassicProjectExportConfiguration(this.exportClassName, exportDirectory, project, placeAdcNotice, exportMacrosToFile, fileType, exportConfigName);
 	}
 
 	@Override
@@ -158,11 +164,11 @@ public class ProjectExportConfiguration {
 		if (this == o) {
 			return true;
 		}
-		if (!(o instanceof ProjectExportConfiguration)) {
+		if (!(o instanceof ClassicProjectExportConfiguration)) {
 			return false;
 		}
 
-		ProjectExportConfiguration that = (ProjectExportConfiguration) o;
+		ClassicProjectExportConfiguration that = (ClassicProjectExportConfiguration) o;
 
 		if (placeAdcNotice != that.placeAdcNotice) {
 			return false;
@@ -181,5 +187,5 @@ public class ProjectExportConfiguration {
 		}
 		return fileType == that.fileType;
 	}
-*/
+
 }

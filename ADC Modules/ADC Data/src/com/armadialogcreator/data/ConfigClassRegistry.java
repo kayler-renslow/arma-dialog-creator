@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  @author K
@@ -209,6 +210,49 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		return map;
 	}
 
+	@NotNull
+	public static ConfigClass fromConfigurable(@NotNull Configurable configurable,
+											   @NotNull Consumer<ConfigClassJob> jobConsumer) {
+		String name = configurable.getAttributeValue("name");
+		if (name == null) {
+			throw new IllegalStateException();
+		}
+		String extend = configurable.getAttributeValue("extend");
+		ConfigClass configClass = new ConfigClass(name);
+		if (extend != null) {
+			jobConsumer.accept(new ExtendConfigClassJob(configClass, extend));
+		}
+		for (Configurable nested : configurable.getNestedConfigurables()) {
+			String propertyName = nested.getAttributeValue("name");
+			String macro = nested.getAttributeValue("macro");
+			String priorityStr = nested.getAttributeValue("priority");
+
+			if (propertyName == null) {
+				throw new IllegalStateException();
+			}
+			if (macro != null) {
+				jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
+			}
+			Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
+			if (svConf == null) {
+				throw new IllegalStateException();
+			}
+			SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
+					svConf,
+					ExpressionEnvManager.instance.getEnv()
+			);
+			ConfigProperty property = configClass.addProperty(propertyName, sv);
+			if (priorityStr != null && priorityStr.length() > 0) {
+				try {
+					property.setPriority(Integer.parseInt(priorityStr));
+				} catch (NumberFormatException ignore) {
+
+				}
+			}
+		}
+		return configClass;
+	}
+
 	private static abstract class Base implements ADCData {
 
 		protected final DataLevel myLevel;
@@ -288,7 +332,9 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void loadFromConfigurable(@NotNull Configurable config) {
 			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("config-class")) {
-					classes.add(fromConfigurable(nested));
+					classes.add(fromConfigurable(nested, job -> {
+						jobs.add(job);
+					}));
 				}
 			}
 		}
@@ -330,7 +376,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		}
 
 		@NotNull
-		public Configurable toConfigurable(@NotNull ConfigClass configClass) {
+		public static Configurable toConfigurable(@NotNull ConfigClass configClass) {
 			Configurable.Simple conf = new Configurable.Simple("config-class");
 			conf.addAttribute("name", configClass.getClassName());
 			if (configClass.isExtending()) {
@@ -350,48 +396,6 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 				}
 			}
 			return conf;
-		}
-
-		@NotNull
-		public ConfigClass fromConfigurable(@NotNull Configurable configurable) {
-			String name = configurable.getAttributeValue("name");
-			if (name == null) {
-				throw new IllegalStateException();
-			}
-			String extend = configurable.getAttributeValue("extend");
-			ConfigClass configClass = new ConfigClass(name);
-			if (extend != null) {
-				jobs.add(new ExtendConfigClassJob(configClass, extend));
-			}
-			for (Configurable nested : configurable.getNestedConfigurables()) {
-				String propertyName = nested.getAttributeValue("name");
-				String macro = nested.getAttributeValue("macro");
-				String priorityStr = nested.getAttributeValue("priority");
-
-				if (propertyName == null) {
-					throw new IllegalStateException();
-				}
-				if (macro != null) {
-					jobs.add(new SetMacroJob(configClass, propertyName, macro));
-				}
-				Configurable svConf = nested.getConfigurable(SerializableValueConfigurable.CONFIGURABLE_NAME);
-				if (svConf == null) {
-					throw new IllegalStateException();
-				}
-				SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
-						svConf,
-						ExpressionEnvManager.instance.getEnv()
-				);
-				ConfigProperty property = configClass.addProperty(propertyName, sv);
-				if (priorityStr != null && priorityStr.length() > 0) {
-					try {
-						property.setPriority(Integer.parseInt(priorityStr));
-					} catch (NumberFormatException ignore) {
-
-					}
-				}
-			}
-			return configClass;
 		}
 	}
 
@@ -447,7 +451,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		}
 	}
 
-	private interface ConfigClassJob {
+	public interface ConfigClassJob {
 		void doWork();
 	}
 
