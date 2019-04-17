@@ -132,4 +132,8 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	public final void removePropertiesSetListener(@NotNull MapObserverListener<String, ConfigProperty> listener) {
 		map.removeListener(listener);
 	}
+
+	public int size() {
+		return map.size();
+	}
 }

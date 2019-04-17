@@ -41,9 +41,7 @@ public class ClassicProjectSaveLoader {
 		}
 		{
 			ccDisplayConf = new Configurable.Simple("config-class");
-			configClassesConf.addNestedConfigurable(ccDisplayConf);
-
-			//root.getConfigurable("export-configuration")
+			ccDisplayConf.addAttribute("name", "MyDialog");
 		}
 
 		Env env = ExpressionEnvManager.instance.getEnv();
@@ -79,7 +77,7 @@ public class ClassicProjectSaveLoader {
 							continue;
 						}
 
-						ccDisplayConf.addNestedConfigurable(c.getConfigurable("config-class"));
+						configClassesConf.addNestedConfigurable(c.getConfigurable("config-class"));
 						addTo.addNestedConfigurable(c.getConfigurable("UINode"));
 					}
 					break;

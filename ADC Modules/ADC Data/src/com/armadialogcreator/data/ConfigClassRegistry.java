@@ -56,6 +56,10 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	public void applicationDataInitializing() {
 		systemClasses.loadSystemConfigClasses();
 		ApplicationDataManager.getInstance().getDataList().add(applicationClasses);
+	}
+
+	@Override
+	public void applicationDataLoaded() {
 		applicationClasses.doJobs();
 	}
 
@@ -211,14 +215,18 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	}
 
 	@NotNull
-	public static ConfigClass fromConfigurable(@NotNull Configurable configurable,
+	public static ConfigClass fromConfigurable(@NotNull Configurable configurable, @Nullable ConfigClass configClass,
 											   @NotNull Consumer<ConfigClassJob> jobConsumer) {
 		String name = configurable.getAttributeValue("name");
 		if (name == null) {
 			throw new IllegalStateException();
 		}
 		String extend = configurable.getAttributeValue("extend");
-		ConfigClass configClass = new ConfigClass(name);
+		if (configClass == null) {
+			configClass = new ConfigClass(name);
+		} else {
+			configClass.setClassName(name);
+		}
 		if (extend != null) {
 			jobConsumer.accept(new ExtendConfigClassJob(configClass, extend));
 		}
@@ -258,7 +266,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		protected final DataLevel myLevel;
 		private final ListObserver<ConfigClass> classes = new ListObserver<>(new LinkedList<>());
 		protected final ConfigClassRegistry registry;
-		private final List<ConfigClassJob> jobs = new ArrayList<>();
+		private List<ConfigClassJob> jobs;
 
 		protected Base(@NotNull ConfigClassRegistry registry, @NotNull DataLevel myLevel) {
 			this.registry = registry;
@@ -330,9 +338,10 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
+			jobs = new ArrayList<>();
 			for (Configurable nested : config.getNestedConfigurables()) {
 				if (nested.getConfigurableName().equals("config-class")) {
-					classes.add(fromConfigurable(nested, job -> {
+					classes.add(fromConfigurable(nested, null, job -> {
 						jobs.add(job);
 					}));
 				}
@@ -343,7 +352,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", getLevel().name());
 			for (ConfigClass configClass : classes) {
-				config.addNestedConfigurable(toConfigurable(configClass));
+				config.addNestedConfigurable(new ConfigClassConfigurable(configClass));
 			}
 		}
 
@@ -363,39 +372,20 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public List<KeyValue<String, Configurable>> toKeyValueList() {
 			List<KeyValue<String, Configurable>> list = new ArrayList<>();
 			for (ConfigClass cc : classes) {
-				list.add(new KeyValue<>(cc.getClassName(), toConfigurable(cc)));
+				list.add(new KeyValue<>(cc.getClassName(), new ConfigClassConfigurable(cc)));
 			}
 			return list;
 		}
 
 		void doJobs() {
+			if (jobs == null) {
+				// nothing was loaded
+				return;
+			}
 			for (ConfigClassJob job : jobs) {
 				job.doWork();
 			}
-			jobs.clear();
-		}
-
-		@NotNull
-		public static Configurable toConfigurable(@NotNull ConfigClass configClass) {
-			Configurable.Simple conf = new Configurable.Simple("config-class");
-			conf.addAttribute("name", configClass.getClassName());
-			if (configClass.isExtending()) {
-				conf.addAttribute("extend", configClass.getExtendClassName());
-			}
-			for (ConfigProperty property : configClass.iterateProperties()) {
-				if (!configClass.propertyIsInherited(property.getName())) {
-					Configurable.Simple propertyConf = new Configurable.Simple("property");
-					propertyConf.addAttribute("priority", property.priority() + "");
-					conf.addNestedConfigurable(propertyConf);
-					propertyConf.addAttribute("name", property.getName());
-					if (property.isBoundToMacro()) {
-						propertyConf.addAttribute("macro", property.getBoundMacro().getKey());
-					}
-					propertyConf.addNestedConfigurable(new SerializableValueConfigurable(property.getValue()));
-
-				}
-			}
-			return conf;
+			jobs = null; //help GC
 		}
 	}
 

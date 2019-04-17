@@ -20,9 +20,9 @@ public interface ConfigPropertyKey {
 		return this.getPropertyName().equalsIgnoreCase(name);
 	}
 
-	/** @return the sort priority for {@link #PRIORITY_SORT}. By default, returns {@link Integer#MAX_VALUE} */
+	/** @return the sort priority for {@link #PRIORITY_SORT}. By default, returns 100 */
 	default int priority() {
-		return Integer.MAX_VALUE;
+		return 100;
 	}
 
 	Comparator<ConfigPropertyKey> PRIORITY_SORT = new Comparator<>() {

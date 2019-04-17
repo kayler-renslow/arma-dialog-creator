@@ -3,6 +3,7 @@ package com.armadialogcreator.gui.main.actions.mainMenu.devmenu;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.ArmaDisplay;
+import com.armadialogcreator.data.ConfigClassConfigurable;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.data.UINodeConfigurable;
 import com.armadialogcreator.gui.StageDialog;
@@ -42,9 +43,11 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 			ArmaDisplay display = EditorManager.instance.getEditingDisplay();
 			TreeItem<String> bgControls = new TreeItem<>("Background Controls");
 			TreeItem<String> controls = new TreeItem<>("Controls");
+			TreeItem<String> configClass = new TreeItem<>("Config Class");
 
 			root.getChildren().add(bgControls);
 			root.getChildren().add(controls);
+			root.getChildren().add(configClass);
 
 			for (UINode node : display.getControlNodes().iterateChildNodes()) {
 				appendTreeItem(controls, node);
@@ -52,6 +55,8 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 			for (UINode node : display.getBackgroundControlNodes().iterateChildNodes()) {
 				appendTreeItem(bgControls, node);
 			}
+
+			TreeItemConfigurabeHelper.appendTreeItem(configClass, new ConfigClassConfigurable(display));
 
 			treeView.setRoot(root);
 			treeView.setShowRoot(false);

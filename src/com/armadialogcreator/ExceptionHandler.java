@@ -70,7 +70,7 @@ public final class ExceptionHandler implements Thread.UncaughtExceptionHandler {
 						lblMsg
 				);
 				if (ArmaDialogCreator.containsUnnamedLaunchParameter(ProgramArgument.DevMode)) {
-					Button btnExit = new Button("Exit W/ No Save");
+					Button btnExit = new Button("Exit With No Save");
 					btnExit.setOnAction(event -> {
 						System.exit(0);
 					});

@@ -234,7 +234,7 @@ public enum ConfigPropertyLookup implements ConfigPropertyLookupConstant {
 	}
 
 	ConfigPropertyLookup(int propertyId, boolean isEvent, @NotNull String propertyName, @NotNull PropertyType propertyType, @NotNull ConfigPropertyValueOption... options) {
-		this(propertyId, Integer.MAX_VALUE, isEvent, propertyName, propertyType, options);
+		this(propertyId, 100, isEvent, propertyName, propertyType, options);
 	}
 
 	@Override

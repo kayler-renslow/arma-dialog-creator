@@ -483,4 +483,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	public DataContext getUserData() {
 		return userData;
 	}
+
+	public int getNonInheritedPropertyCount() {
+		return properties.size() - propertiesInheritedOwnedByParent.size();
+	}
 }

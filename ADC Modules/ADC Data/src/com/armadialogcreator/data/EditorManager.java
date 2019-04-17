@@ -7,6 +7,9 @@ import com.armadialogcreator.util.ApplicationSingleton;
 import com.armadialogcreator.util.ScreenDimension;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  @author K
  @since 02/09/2019 */
@@ -38,8 +41,16 @@ public class EditorManager implements ApplicationStateSubscriber {
 
 	@Override
 	public void projectInitializing(@NotNull Project project) {
-		editingDisplay = new ArmaDisplay();
 		project.getDataList().add(new EditorProjectData());
+	}
+
+	@Override
+	public void projectDataLoaded(@NotNull Project project) {
+		for (ProjectData pd : project.getDataList()) {
+			if (pd instanceof EditorProjectData) {
+				((EditorProjectData) pd).doJobs();
+			}
+		}
 	}
 
 	@Override
@@ -48,28 +59,51 @@ public class EditorManager implements ApplicationStateSubscriber {
 	}
 
 	public void loadDisplayFromConfigurable(@NotNull Configurable c) {
-		Configurable controls = c.getConfigurable("controls");
-		if (controls != null) {
-			Configurable bgConf = controls.getConfigurable("background");
-			Configurable mainConf = controls.getConfigurable("main");
-		}
+		EditorProjectData data = new EditorProjectData();
+		data.loadFromConfigurable(c);
+		data.doJobs();
 	}
 
 	private static class EditorProjectData implements ProjectData {
+		private List<ConfigClassRegistry.ConfigClassJob> jobs;
 
 		@Override
-		public @NotNull String getDataID() {
+		@NotNull
+		public String getDataID() {
 			return "EditorManagerData";
 		}
 
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
-			EditorManager.instance.loadDisplayFromConfigurable(config);
+			jobs = new ArrayList<>();
+			Configurable ccConf = config.getConfigurable("config-class");
+			if (ccConf != null) {
+				ArmaDisplay armaDisplay = new ArmaDisplay("");
+				ConfigClassRegistry.fromConfigurable(ccConf, armaDisplay, configClassJob -> {
+					jobs.add(configClassJob);
+				});
+				EditorManager.instance.editingDisplay = armaDisplay;
+			}
+			Configurable controls = config.getConfigurable("controls");
+			if (controls != null) {
+				Configurable bgConf = controls.getConfigurable("background");
+				Configurable mainConf = controls.getConfigurable("main");
+			}
 		}
 
 		@Override
 		public void exportToConfigurable(@NotNull Configurable configurable) {
 			// todo
+		}
+
+		public void doJobs() {
+			if (jobs == null) {
+				return; //nothing was loaded
+			}
+			for (ConfigClassRegistry.ConfigClassJob job : jobs) {
+				job.doWork();
+			}
+			jobs = null; //help GC
 		}
 	}
 }
