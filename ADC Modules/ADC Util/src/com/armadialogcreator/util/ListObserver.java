@@ -303,17 +303,27 @@ public class ListObserver<E> implements List<E>, Observer<ListObserverListener<E
 
 	@Override
 	public boolean addAll(@NotNull @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends E> c) {
-		throw new UnsupportedOperationException();
+		for (E e : c) {
+			add(e);
+		}
+		return true;
 	}
 
 	@Override
 	public boolean addAll(int index, @NotNull @Flow(sourceIsContainer = true, targetIsContainer = true) Collection<? extends E> c) {
-		throw new UnsupportedOperationException();
+		for (E e : c) {
+			add(e);
+		}
+		return true;
 	}
 
 	@Override
 	public boolean removeAll(@NotNull Collection<?> c) {
-		throw new UnsupportedOperationException();
+		boolean changed = false;
+		for (Object e : c) {
+			changed = changed || remove(e);
+		}
+		return true;
 	}
 
 	@Override

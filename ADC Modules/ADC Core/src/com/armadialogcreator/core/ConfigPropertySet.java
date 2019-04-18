@@ -27,7 +27,8 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 	}
 
 	public final void replaceProperty(@NotNull ConfigProperty newProperty) {
-		ConfigProperty old = map.replace(newProperty.getName().toLowerCase(), newProperty);
+		String lower = newProperty.getName().toLowerCase();
+		ConfigProperty old = map.put(lower, newProperty);
 		if (old != null) {
 			old.invalidate();
 		}

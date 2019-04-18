@@ -3,10 +3,12 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.core.DisplayPropertyLookup;
 import com.armadialogcreator.core.PropertyType;
+import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,8 +24,28 @@ public class ClassicProjectSaveLoader {
 	}
 
 	public void load() {
+		loadStringTable();
 		loadMacros();
 		loadDisplay();
+	}
+
+	private void loadStringTable() {
+		Configurable stringtableConf = root.getConfigurable("stringtable");
+		if (stringtableConf == null) {
+			return;
+		}
+		String body = stringtableConf.getConfigurableBody();
+		File f = new File(body);
+		if (!f.exists()) {
+			return;
+		}
+		StringTable stringTable = null;
+		try {
+			stringTable = new DefaultStringTableXmlParser(f).createStringTableInstance();
+		} catch (Exception ignore) {
+			return;
+		}
+		StringTableManager.instance.setStringTable(stringTable);
 	}
 
 	private void loadMacros() {

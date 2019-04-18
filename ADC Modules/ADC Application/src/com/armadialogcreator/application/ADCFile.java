@@ -47,7 +47,7 @@ public abstract class ADCFile {
 
 	/** @return the relative path to whatever this file is anchored to */
 	@NotNull
-	public abstract String getPath();
+	public abstract String getRelPath();
 
 	/** @return a File instance for this path such that {@link File#getAbsolutePath()} resolves to the correct file */
 	@NotNull
@@ -70,6 +70,29 @@ public abstract class ADCFile {
 	public abstract ADCFile getFileInOwnerDirectory(@NotNull String name);
 
 	private ADCFile() {
+	}
+
+	/** Gets an {@link ADCFile} instance by relativizing the given {@link File} */
+	@NotNull
+	public static ADCFile toADCFile(@NotNull FileType type, @NotNull File file) {
+		switch (type) {
+			case Application: {
+				return new ApplicationPathFile(file);
+			}
+			case Workspace: {
+				return new WorkspacePathFile(file);
+			}
+			case Project: {
+				return new ProjectPathFile(file);
+			}
+			case Absolute: {
+				return new AbsFile(file);
+			}
+			case Jar: {
+				throw new UnsupportedOperationException();
+			}
+		}
+		throw new IllegalArgumentException();
 	}
 
 	/** @see #getSpecialPath() */
@@ -153,7 +176,7 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
-		public String getPath() {
+		public String getRelPath() {
 			return relativePath;
 		}
 
@@ -214,7 +237,7 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
-		public String getPath() {
+		public String getRelPath() {
 			return relativePath;
 		}
 
@@ -287,7 +310,7 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
-		public String getPath() {
+		public String getRelPath() {
 			return relativePath;
 		}
 
@@ -379,7 +402,7 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
-		public String getPath() {
+		public String getRelPath() {
 			return f.getPath();
 		}
 
@@ -426,7 +449,7 @@ public abstract class ADCFile {
 
 		@Override
 		@NotNull
-		public String getPath() {
+		public String getRelPath() {
 			return path;
 		}
 

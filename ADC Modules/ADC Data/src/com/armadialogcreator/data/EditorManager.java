@@ -96,10 +96,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 				Env env = ExpressionEnvManager.instance.getEnv();
 				ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
 				for (Configurable c : configClasses.getNestedConfigurables()) {
-					String controlId = c.getAttributeValue("control-type");
-					if (controlId == null) {
-						continue;
-					}
+					String controlId = c.getAttributeValueNotNull("control-type");
 					ControlType type = ControlType.findById(Integer.parseInt(controlId));
 					ArmaControl control = ArmaControl.createControl(
 							type,
@@ -136,7 +133,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 				}
 				ConfigClass cc = projectClasses.findConfigClassByName(nodeName);
 				if (!(cc instanceof ArmaControl)) {
-					continue;
+					throw new IllegalStateException();
 				}
 				ArmaControl control = (ArmaControl) cc;
 				root.addChild(control);

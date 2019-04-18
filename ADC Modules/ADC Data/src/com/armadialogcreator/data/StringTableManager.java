@@ -1,13 +1,12 @@
 package com.armadialogcreator.data;
 
-import com.armadialogcreator.application.ApplicationManager;
-import com.armadialogcreator.application.ApplicationStateSubscriber;
-import com.armadialogcreator.application.Project;
-import com.armadialogcreator.application.Workspace;
+import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.util.ApplicationSingleton;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.File;
 
 /**
  @author K
@@ -22,28 +21,58 @@ public class StringTableManager implements ApplicationStateSubscriber {
 
 	private StringTable stringTable;
 
+	public void setStringTable(@Nullable StringTable stringTable) {
+		this.stringTable = stringTable;
+		MacroRegistry.instance.getWorkspaceMacros().bindStringTable(stringTable);
+	}
+
 	@Nullable
 	public StringTable getStringTable() {
 		return stringTable;
 	}
 
 	@Override
-	public void projectInitializing(@NotNull Project project) {
-
-	}
-
-	@Override
-	public void projectClosed(@NotNull Project project) {
-
+	public void projectDataLoaded(@NotNull Project project) {
+		setStringTable(stringTable);
 	}
 
 	@Override
 	public void workspaceInitializing(@NotNull Workspace workspace) {
-
+		workspace.getDataList().add(new StringTableWorkspaceData());
 	}
 
-	@Override
-	public void workspaceClosed(@NotNull Workspace workspace) {
+	private static class StringTableWorkspaceData implements WorkspaceData {
 
+		@Override
+		@NotNull
+		public String getDataID() {
+			return "string-table";
+		}
+
+		@Override
+		public void loadFromConfigurable(@NotNull Configurable config) {
+			String f = config.getAttributeValueNotNull("f");
+			StringTableManager tableManager = StringTableManager.instance;
+			if (f.length() == 0) {
+				tableManager.setStringTable(null);
+			} else {
+				ADCFile adcFile = ADCFile.toADCFile(ADCFile.FileType.Workspace, new File(f));
+				try {
+					tableManager.setStringTable(new DefaultStringTableXmlParser(adcFile.toFile()).createStringTableInstance());
+				} catch (Exception e) {
+					tableManager.setStringTable(null);
+				}
+			}
+
+		}
+
+		@Override
+		public void exportToConfigurable(@NotNull Configurable configurable) {
+			StringTable stringTable = StringTableManager.instance.stringTable;
+			if (stringTable != null) {
+				ADCFile file = ADCFile.toADCFile(ADCFile.FileType.Workspace, stringTable.getFile());
+				configurable.addAttribute("f", file.getRelPath());
+			}
+		}
 	}
 }

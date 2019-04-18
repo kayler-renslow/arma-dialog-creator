@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.core.Macro;
+import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,7 @@ public class MacroRegistry implements Registry<String, Macro> {
 	@NotNull
 	private final SystemMacros systemMacros = new SystemMacros();
 
-	/** @return a {@link Macro} instance from the given name. Will return null if className couldn't be matched */
+	/** @return a {@link Macro} instance from the given name. Will return null if macroKey couldn't be matched */
 	@Nullable
 	public Macro findMacroByName(@NotNull String macroKey) {
 		Macro m = projectMacros.findMacroByName(macroKey);
@@ -276,9 +277,9 @@ public class MacroRegistry implements Registry<String, Macro> {
 		}
 
 		@Nullable
-		public Macro findMacroByName(@NotNull String className) {
+		public Macro findMacroByName(@NotNull String macroName) {
 			for (Macro c : macros) {
-				if (c.getKey().equals(className)) {
+				if (c.getKey().equals(macroName)) {
 					return c;
 				}
 			}
@@ -364,10 +365,27 @@ public class MacroRegistry implements Registry<String, Macro> {
 
 	public static class WorkspaceMacros extends Base implements WorkspaceData {
 
+		private StringTable stringTable;
+
 		protected WorkspaceMacros() {
 			super(DataLevel.Workspace);
 		}
 
+		public void bindStringTable(@Nullable StringTable stringTable) {
+			this.stringTable = stringTable;
+		}
+
+		@Override
+		public @Nullable Macro findMacroByName(@NotNull String macroName) {
+			Macro m = super.findMacroByName(macroName);
+			if (m != null) {
+				return m;
+			}
+			if (stringTable != null) {
+				return stringTable.getKeyById(macroName);
+			}
+			return null;
+		}
 	}
 
 	public static class ProjectMacros extends Base implements ProjectData {

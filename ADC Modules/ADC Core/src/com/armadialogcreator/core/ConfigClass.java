@@ -489,6 +489,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	public int getNonInheritedPropertyCount() {
+		System.out.println("ConfigClass.getNonInheritedPropertyCount properties.size()=" + properties.size());
+		System.out.println("ConfigClass.getNonInheritedPropertyCount propertiesInheritedOwnedByParent.s=" + propertiesInheritedOwnedByParent.size());
 		return properties.size() - propertiesInheritedOwnedByParent.size();
 	}
 }
