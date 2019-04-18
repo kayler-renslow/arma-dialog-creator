@@ -46,7 +46,7 @@ public interface ConfigClassJob {
 		public void doWork() {
 			Macro macro = MacroRegistry.instance.findMacroByName(this.macro);
 			if (macro == null) {
-				throw new IllegalStateException();
+				throw new IllegalStateException(this.macro);
 			}
 			cc.findProperty(property).bindToMacro(macro);
 		}

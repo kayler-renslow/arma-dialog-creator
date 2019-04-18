@@ -223,8 +223,8 @@ class ADCMenuBar extends MenuBar {
 			dev_showDisplay,
 			dev_showXml,
 			new Menu("Classic Saves", null,
-					dev_openClassicProjectSave,
-					dev_openWorkspaceSave
+					dev_openWorkspaceSave,
+					dev_openClassicProjectSave
 			),
 			dev_syncTreeView
 	);

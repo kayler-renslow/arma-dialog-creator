@@ -138,15 +138,23 @@ public class ClassicSaveLoaderUtil {
 				} else {
 					propertyType = PropertyType.findById(Integer.parseInt(ptype));
 				}
-				String[] vals = new String[lookupPropConf.getNestedConfigurableCount()];
-				int i = 0;
-				for (Configurable vConfg : lookupPropConf.getNestedConfigurables()) {
-					vals[i++] = vConfg.getConfigurableBody();
-				}
-				SerializableValue sv = SerializableValue.constructNew(env, propertyType, vals);
-				retPropertyConf.addNestedConfigurable(new SerializableValueConfigurable(sv));
+				SerializableValueConfigurable svConf = getSVConfFromVNestedConfs(lookupPropConf, propertyType, env);
+				retPropertyConf.addNestedConfigurable(svConf);
 			}
 		}
 		return retPropertyConf;
+	}
+
+	@NotNull
+	public static SerializableValueConfigurable getSVConfFromVNestedConfs(@NotNull Configurable vOwner,
+																		  @NotNull PropertyType propertyType,
+																		  @NotNull Env env) {
+		String[] vals = new String[vOwner.getNestedConfigurableCount()];
+		int i = 0;
+		for (Configurable vConfg : vOwner.getNestedConfigurables()) {
+			vals[i++] = vConfg.getConfigurableBody();
+		}
+		SerializableValue sv = SerializableValue.constructNew(env, propertyType, vals);
+		return new SerializableValueConfigurable(sv);
 	}
 }

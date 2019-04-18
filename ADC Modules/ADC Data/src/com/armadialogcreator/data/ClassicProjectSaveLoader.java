@@ -2,6 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.core.DisplayPropertyLookup;
+import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -14,20 +15,38 @@ import java.util.List;
  @since 4/11/19 */
 public class ClassicProjectSaveLoader {
 	private final Configurable root;
+	private final Env env = ExpressionEnvManager.instance.getEnv();
 
 	public ClassicProjectSaveLoader(@NotNull Configurable root) {
 		this.root = root;
 	}
 
 	public void load() {
+		loadMacros();
 		loadDisplay();
 	}
 
-	private void loadDisplay() {
-		Configurable rtDisplayConf = root.getConfigurable("display");
-		if (rtDisplayConf == null) {
-			return;
+	private void loadMacros() {
+		Configurable macrosConf = root.getConfigurableNotNull("macros");
+		Configurable.Simple convertedMacrosConf = new Configurable.Simple("");
+		for (Configurable c : macrosConf.getNestedConfigurables()) {
+			String comment = c.getAttributeValue("comment");
+			String key = c.getAttributeValueNotNull("key");
+			String ptypeAtt = c.getAttributeValueNotNull("property-type-id");
+			Configurable.Simple macroConf = new Configurable.Simple("macro");
+			macroConf.addAttribute("key", key);
+			if (comment != null && comment.length() > 0) {
+				macroConf.addAttribute("comment", comment);
+			}
+			PropertyType propertyType = PropertyType.findById(Integer.parseInt(ptypeAtt));
+			SerializableValueConfigurable svConf = ClassicSaveLoaderUtil.getSVConfFromVNestedConfs(c, propertyType, env);
+			macroConf.addNestedConfigurable(svConf);
 		}
+		MacroRegistry.instance.getWorkspaceMacros().loadFromConfigurable(convertedMacrosConf);
+	}
+
+	private void loadDisplay() {
+		Configurable rtDisplayConf = root.getConfigurableNotNull("display");
 		Configurable displayConf = new Configurable.Simple("display");
 		Configurable bgControlsConf, mainControlsConf, ccDisplayConf, ctrlCfgClassesConf;
 		{
@@ -47,7 +66,6 @@ public class ClassicProjectSaveLoader {
 			ccDisplayConf.addAttribute("name", "MyDialog");
 		}
 
-		Env env = ExpressionEnvManager.instance.getEnv();
 		for (Configurable nestedDispConf : rtDisplayConf.getNestedConfigurables()) {
 			switch (nestedDispConf.getConfigurableName()) {
 				case "display-property": {
@@ -113,7 +131,6 @@ public class ClassicProjectSaveLoader {
 			return null;
 		}
 		ccConf.addAttribute("control-type", controlId);
-		Env env = ExpressionEnvManager.instance.getEnv();
 		{ //load properties
 
 			// Make initial capacity of arraylist nested count / 2 because in worst case, all properties are inherited,

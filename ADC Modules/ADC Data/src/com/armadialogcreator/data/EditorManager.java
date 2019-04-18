@@ -153,9 +153,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 				return; //nothing was loaded
 			}
 			for (ConfigClassJob job : jobs) {
-				if (job instanceof ConfigClassJob.ExtendConfigClassJob) {
-					job.doWork();
-				}
+				job.doWork();
 			}
 			jobs = null; //help GC
 		}

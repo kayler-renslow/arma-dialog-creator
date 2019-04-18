@@ -17,9 +17,7 @@ public final class SVRaw extends SerializableValue {
 	public static final StringArrayConverter<SVRaw> CONVERTER = new StringArrayConverter<>() {
 		@Override
 		public SVRaw convert(@NotNull Env env, @NotNull String[] values) {
-			//This converter is a placeholder to adhere to PropertyType specifications
-			//and shouldn't ever be used. Reason is because it doesn't allow for passing in a revert type (type to convert Raw back into)
-			throw new IllegalStateException();
+			return new SVRaw(values[0], null);
 		}
 	};
 	private final String s;
@@ -42,7 +40,7 @@ public final class SVRaw extends SerializableValue {
 	}
 
 	/**
-	 @return the {@link PropertyType} that the value can convert into, or null if can't convert into anything
+	 @return the {@link PropertyType} that the value can convert into, or null if a substitute type wasn't provided
 	 */
 	@Nullable
 	public PropertyType getSubstituteType() {
