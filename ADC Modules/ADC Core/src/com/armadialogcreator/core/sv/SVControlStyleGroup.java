@@ -111,7 +111,6 @@ public class SVControlStyleGroup extends SerializableValue {
 						styles.add(ControlStyle.findByValue(num));
 					}
 				} catch (IllegalArgumentException ignore) { //will catch number format exception
-					ignore.printStackTrace(System.out);
 				}
 			}
 			if (styles.isEmpty()) {

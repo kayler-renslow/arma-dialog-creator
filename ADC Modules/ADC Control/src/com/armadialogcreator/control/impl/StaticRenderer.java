@@ -30,7 +30,7 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	}
 
 	private BlinkControlHandler blinkControlHandler;
-	private SerializableValue stylePropertyValue;
+	private SVControlStyleGroup stylePropertyValue;
 	private SerializableValue textPropertyValue;
 
 	private BasicTextRenderer textRenderer;
@@ -243,12 +243,10 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 
 	@Override
 	public void styleUpdate(@Nullable SerializableValue newValue) {
-		stylePropertyValue = newValue;
-		newValue = MiscHelpers.getGroup(this.env, newValue, myControl);
-		if (newValue != null) {
-			SVControlStyleGroup group = (SVControlStyleGroup) newValue;
-			keepImageAspectRatio = group.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
-			tileImage = group.hasStyle(ControlStyle.TILE_PICTURE);
+		stylePropertyValue = MiscHelpers.getGroup(this.env, newValue, myControl);
+		if (stylePropertyValue != null) {
+			keepImageAspectRatio = stylePropertyValue.hasStyle(ControlStyle.KEEP_ASPECT_RATIO);
+			tileImage = stylePropertyValue.hasStyle(ControlStyle.TILE_PICTURE);
 
 		}
 		renderTypeForStyle = getRenderTypeFromStyle();
@@ -309,27 +307,21 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 	 */
 	@NotNull
 	private RenderType getRenderTypeFromStyle() {
-		SerializableValue value = stylePropertyValue;
-		if (value == null) {
+		if (stylePropertyValue == null) {
 			return RenderType.Error;
 		}
-		value = MiscHelpers.getGroup(this.env, value, this.myControl);
-		if (value != null) {
-			SVControlStyleGroup group = (SVControlStyleGroup) value;
-			for (ControlStyle style : group.getStyleArray()) {
-				if (style == ControlStyle.TILE_PICTURE) {
-					System.out.println("StaticRenderer.getRenderTypeFromStyle style=" + style);
-					return RenderType.ImageOrTexture;
-				}
-				if (style == ControlStyle.PICTURE) {
-					return RenderType.ImageOrTexture;
-				}
-				if (style == ControlStyle.LINE) {
-					return RenderType.Line;
-				}
-				if (style == ControlStyle.FRAME) {
-					return RenderType.Frame;
-				}
+		for (ControlStyle style : stylePropertyValue.getStyleArray()) {
+			if (style == ControlStyle.TILE_PICTURE) {
+				return RenderType.ImageOrTexture;
+			}
+			if (style == ControlStyle.PICTURE) {
+				return RenderType.ImageOrTexture;
+			}
+			if (style == ControlStyle.LINE) {
+				return RenderType.Line;
+			}
+			if (style == ControlStyle.FRAME) {
+				return RenderType.Frame;
 			}
 		}
 		return RenderType.Text;

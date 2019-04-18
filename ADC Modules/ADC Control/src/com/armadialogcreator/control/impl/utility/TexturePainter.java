@@ -2,7 +2,6 @@ package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.canvas.Graphics;
 import com.armadialogcreator.control.Texture;
-import com.armadialogcreator.util.ColorUtil;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -51,10 +50,10 @@ public class TexturePainter {
 			} else {
 				color = Color.color(tc.getRed(), tc.getGreen(), tc.getBlue(), tc.getAlpha());
 			}
-			g.setStroke(ColorUtil.toARGB(color));
+			g.setStroke(color);
 			g.fillRectangle(x1, y1, x2, y2);
 		} else {
-			g.setStroke(ColorUtil.toARGB(Color.PINK));
+			g.setStroke(Color.PINK);
 			g.fillRectangle(x1, y1, x2, y2);
 		}
 	}
