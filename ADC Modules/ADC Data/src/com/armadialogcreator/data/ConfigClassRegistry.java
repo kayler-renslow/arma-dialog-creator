@@ -1,7 +1,7 @@
 package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
-import com.armadialogcreator.control.ArmaControl;
+import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.util.*;
@@ -98,7 +98,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 
 	@Override
 	public void workspaceClosed(@NotNull Workspace workspace) {
-		this.workspaceClasses.getClasses().invalidate();
+		this.workspaceClasses.getClasses().invalidate(); //todo invalidate individual classes rather than just list itself
 	}
 
 	/**
@@ -309,7 +309,8 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public void exportToConfigurable(@NotNull Configurable config) {
 			config.addAttribute("level", getLevel().name());
 			for (ConfigClass configClass : classes) {
-				if (configClass instanceof ArmaControl) {
+				if (configClass instanceof UINode) {
+					//let the EditorManager manage these when saved to file
 					continue;
 				}
 				config.addNestedConfigurable(new ConfigClassConfigurable(configClass));

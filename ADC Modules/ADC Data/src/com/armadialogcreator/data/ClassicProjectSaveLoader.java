@@ -122,7 +122,7 @@ public class ClassicProjectSaveLoader {
 					break;
 				}
 			}
-			EditorManager.instance.loadDisplayFromConfigurable(displayConf);
+			EditorManager.instance.immediatelyLoadDisplayFromConfigurable(displayConf);
 		}
 	}
 

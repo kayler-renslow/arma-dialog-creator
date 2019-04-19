@@ -4,6 +4,7 @@ import com.armadialogcreator.application.Configurable;
 import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.XmlUtil;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -48,6 +49,30 @@ public class XMLNodeConfigurable implements Configurable {
 				};
 			}
 		};
+	}
+
+	@Override
+	@Nullable
+	public Configurable getConfigurable(@NotNull String name) {
+		Iterable<Element> iter = XmlUtil.iterateChildElements(XMLNodeConfigurable.this.element);
+		for (Element e : iter) {
+			if (e.getTagName().equals(name)) {
+				return new XMLNodeConfigurable(e);
+			}
+		}
+		return null;
+	}
+
+	@Override
+	@Nullable
+	public String getAttributeValue(@NotNull String key) {
+		Iterable<Attr> iter = XmlUtil.iterateAttributes(element.getAttributes());
+		for (Attr attr : iter) {
+			if (attr.getName().equals(key)) {
+				return attr.getValue();
+			}
+		}
+		return null;
 	}
 
 	@Override

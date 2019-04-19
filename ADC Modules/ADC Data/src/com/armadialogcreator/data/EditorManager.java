@@ -2,9 +2,7 @@ package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.canvas.UINode;
-import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaDisplay;
-import com.armadialogcreator.control.ArmaResolution;
+import com.armadialogcreator.control.*;
 import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.expression.Env;
@@ -63,7 +61,7 @@ public class EditorManager implements ApplicationStateSubscriber {
 
 	}
 
-	public void loadDisplayFromConfigurable(@NotNull Configurable c) {
+	public void immediatelyLoadDisplayFromConfigurable(@NotNull Configurable c) {
 		EditorProjectData data = new EditorProjectData();
 		data.loadFromConfigurable(c);
 		data.doJobs();
@@ -123,20 +121,47 @@ public class EditorManager implements ApplicationStateSubscriber {
 			}
 		}
 
-		private void loadNodes(@NotNull Configurable conf, @NotNull UINode root) {
+		private void loadNodes(@NotNull Configurable conf, @NotNull UINode parent) {
 			ConfigClassRegistry.ProjectClasses projectClasses = ConfigClassRegistry.instance.getProjectClasses();
 			for (Configurable nested : conf.getNestedConfigurables()) {
-				//todo have way of detecting what type of node is in the configurable, rather than assuming all are controls
+				String nodeType = nested.getAttributeValueNotNull("nt");
 				String nodeName = UINodeConfigurable.getUINodeNameFromConfigurable(nested);
-				if (nodeName == null) {
-					continue;
+				switch (nodeType) {
+					case "control": {
+						if (nodeName == null) {
+							throw new IllegalStateException();
+						}
+						ConfigClass cc = projectClasses.findConfigClassByName(nodeName);
+						if (!(cc instanceof ArmaControl)) {
+							throw new IllegalStateException(nodeName);
+						}
+						ArmaControl control = (ArmaControl) cc;
+						parent.addChild(control);
+						loadNodes(nested, control);
+						break;
+					}
+					case "folder": {
+						if (nodeName == null) {
+							throw new IllegalStateException();
+						}
+						FolderUINode folder = new FolderUINode(nodeName);
+						parent.addChild(folder);
+						loadNodes(nested, folder);
+						break;
+					}
+					case "collection": {
+						if (nodeName == null) {
+							throw new IllegalStateException();
+						}
+						CollectionUINode collection = new CollectionUINode(nodeName);
+						parent.addChild(collection);
+						loadNodes(nested, collection);
+						break;
+					}
+					default: {
+						continue;
+					}
 				}
-				ConfigClass cc = projectClasses.findConfigClassByName(nodeName);
-				if (!(cc instanceof ArmaControl)) {
-					throw new IllegalStateException();
-				}
-				ArmaControl control = (ArmaControl) cc;
-				root.addChild(control);
 			}
 		}
 
