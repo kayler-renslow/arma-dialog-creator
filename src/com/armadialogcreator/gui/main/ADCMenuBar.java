@@ -1,11 +1,17 @@
 package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.ExceptionHandler;
 import com.armadialogcreator.ProgramArgument;
+import com.armadialogcreator.application.ADCFile;
+import com.armadialogcreator.application.Configurable;
+import com.armadialogcreator.application.XmlConfigurableLoader;
 import com.armadialogcreator.canvas.UIScale;
 import com.armadialogcreator.control.ArmaUIScale;
 import com.armadialogcreator.core.stringtable.KnownLanguage;
 import com.armadialogcreator.core.stringtable.Language;
+import com.armadialogcreator.data.ClassicProjectSaveLoader;
+import com.armadialogcreator.data.ClassicWorkspaceSaveLoader;
 import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.fxcontrol.PresetCheckMenuItem;
 import com.armadialogcreator.gui.main.actions.mainMenu.EditStringTableAction;
@@ -24,11 +30,13 @@ import com.armadialogcreator.gui.main.popup.AboutDialog;
 import com.armadialogcreator.gui.main.popup.ExpressionEvaluatorPopup;
 import com.armadialogcreator.img.icons.ADCIcons;
 import com.armadialogcreator.lang.Lang;
+import com.armadialogcreator.util.XmlParseException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 
+import java.io.File;
 import java.util.ResourceBundle;
 
 import static com.armadialogcreator.gui.FXUtil.addOnAction;
@@ -224,7 +232,23 @@ class ADCMenuBar extends MenuBar {
 			dev_showXml,
 			new Menu("Classic Saves", null,
 					dev_openWorkspaceSave,
-					dev_openClassicProjectSave
+					dev_openClassicProjectSave,
+					addOnAction(new MenuItem("Open My Save"), event -> {
+						try {
+							Configurable conf = XmlConfigurableLoader.load(ADCFile.toADCFile(new File("/home/bumbi/Arma Dialog Creator/Arma Dialog Creator/.adc/custom_controls.xml")));
+							ClassicWorkspaceSaveLoader loader = new ClassicWorkspaceSaveLoader(conf);
+							loader.load();
+						} catch (XmlParseException e) {
+							ExceptionHandler.error(e);
+						}
+						try {
+							Configurable conf = XmlConfigurableLoader.load(ADCFile.toADCFile(new File("/home/bumbi/Arma Dialog Creator/Arma Dialog Creator/VehicleShopMenu/project.xml")));
+							ClassicProjectSaveLoader loader = new ClassicProjectSaveLoader(conf);
+							loader.load();
+						} catch (XmlParseException e) {
+							ExceptionHandler.error(e);
+						}
+					})
 			),
 			dev_syncTreeView
 	);

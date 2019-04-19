@@ -6,7 +6,6 @@ import com.armadialogcreator.core.PropertyType;
 import com.armadialogcreator.core.stringtable.StringTable;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -116,9 +115,6 @@ public class ClassicProjectSaveLoader {
 							continue;
 						}
 						Configurable c = convertControl(ctrlConf);
-						if (c == null) {
-							continue;
-						}
 
 						ctrlCfgClassesConf.addNestedConfigurable(c.getConfigurable("config-class"));
 						addTo.addNestedConfigurable(c.getConfigurable("UINode"));
@@ -130,17 +126,14 @@ public class ClassicProjectSaveLoader {
 		}
 	}
 
-	@Nullable
+	@NotNull
 	private Configurable convertControl(@NotNull Configurable ctrlConf) {
 		Configurable ret = new Configurable.Simple("");
 		Configurable ccConf = new Configurable.Simple("config-class");
 		ret.addNestedConfigurable(ccConf);
 		Configurable uinodeConf = new Configurable.Simple("UINode");
 		ret.addNestedConfigurable(uinodeConf);
-		String className = ctrlConf.getAttributeValue("class-name");
-		if (className == null) {
-			return null;
-		}
+		String className = ctrlConf.getAttributeValueNotNull("class-name");
 		ccConf.addAttribute("name", className);
 		{ //set extend class
 			String extend = ctrlConf.getAttributeValue("extend-class");
@@ -148,10 +141,7 @@ public class ClassicProjectSaveLoader {
 				ccConf.addAttribute("extend", extend);
 			}
 		}
-		String controlId = ctrlConf.getAttributeValue("control-id");
-		if (controlId == null) {
-			return null;
-		}
+		String controlId = ctrlConf.getAttributeValueNotNull("control-id");
 		ccConf.addAttribute("control-type", controlId);
 		{ //load properties
 

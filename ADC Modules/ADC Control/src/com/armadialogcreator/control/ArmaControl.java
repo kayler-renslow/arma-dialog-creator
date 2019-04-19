@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
  @since 05/20/2016. */
 public class ArmaControl extends RequirementsConfigClass implements NamedUINode {
 	/** Type of the control */
-	private ControlType controlType = ControlType.Static;
+	private final ControlType controlType;
 
 	/** Renderer of the control for the canvas */
 	protected ArmaControlRenderer renderer;
@@ -46,6 +46,7 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 		super(name);
 		this.armaControlLookup = lookup;
 		this.display = display;
+		controlType = armaControlLookup.controlType;
 
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
 		try {

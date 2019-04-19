@@ -73,6 +73,8 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 
 		private TreeItem<String> getTreeItem(@NotNull TreeItem<String> parent, @NotNull UINode node) {
 			UINodeConfigurable configurable = new UINodeConfigurable(node, false);
+			String ccName = node.getComponent() != null ? node.getComponent().getClass().getName() : "NULL";
+			configurable.addAttribute("component-class", ccName);
 			return TreeItemConfigurabeHelper.appendTreeItem(parent, configurable);
 		}
 	}

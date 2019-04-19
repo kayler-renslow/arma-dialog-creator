@@ -456,7 +456,8 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@Nullable
 	public ConfigClass findNestedClassNullable(@NotNull String className) {
-		return nestedClasses.get(className);
+		System.err.println("ConfigClass.findNestedClassNullable WARNING -------- TEMP CODE");
+		return new ConfigClass("temp");//nestedClasses.get(className);
 	}
 
 	@Override
