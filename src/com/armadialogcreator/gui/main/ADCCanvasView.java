@@ -6,7 +6,6 @@ import com.armadialogcreator.control.ArmaControlRenderer;
 import com.armadialogcreator.data.EditorManager;
 import com.armadialogcreator.gui.CanvasContextMenu;
 import com.armadialogcreator.gui.DefaultComponentContextMenu;
-import com.armadialogcreator.gui.main.treeview.ControlTreeItemEntry;
 import com.armadialogcreator.gui.main.treeview.EditorComponentTreeView;
 import com.armadialogcreator.gui.main.treeview.UINodeTreeItemData;
 import com.armadialogcreator.gui.notification.NotificationPane;
@@ -28,9 +27,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.ImagePattern;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  Used to hold the canvas editor itself and canvas controls (tree view, step, etc). This class is also used to update the editor when need be.
@@ -107,13 +103,7 @@ class ADCCanvasView extends HBox implements CanvasView {
 					return;
 				}
 				selectFromCanvas = true;
-				List<ArmaControl> controlList = new ArrayList<>(uiCanvasEditor.getSelection().getSelected().size());
-				for (UINode control : uiCanvasEditor.getSelection().getSelected()) {
-					if (control instanceof ArmaControl) {
-						controlList.add((ArmaControl) control);
-					}
-				}
-				treeView.setSelectedControls(controlList);
+				treeView.setSelectedNodes(uiCanvasEditor.getSelection().getSelected());
 				selectFromCanvas = false;
 			}
 		});
@@ -127,11 +117,8 @@ class ADCCanvasView extends HBox implements CanvasView {
 				Selection selection = uiCanvasEditor.getSelection();
 				selection.clearSelected();
 				for (TreeItem<? extends UINodeTreeItemData> treeItem : c.getList()) {
-					if (treeItem.getValue() instanceof ControlTreeItemEntry) {
-						ControlTreeItemEntry treeItemEntry = (ControlTreeItemEntry) treeItem.getValue();
-						if (treeItemEntry.isEnabled()) {
-							selection.addToSelection(treeItemEntry.getMyArmaControl());
-						}
+					if (treeItem.getValue() != null) {
+						selection.addToSelection(treeItem.getValue().getNode());
 					}
 				}
 				selectFromTreeView = false;

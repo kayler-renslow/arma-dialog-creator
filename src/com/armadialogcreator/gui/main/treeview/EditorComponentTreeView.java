@@ -59,20 +59,15 @@ public class EditorComponentTreeView extends EditableTreeView<ArmaControl, UINod
 	/**
 	 Sets the selection such that only the given controls are selected
 
-	 @param controlList list of controls to select
+	 @param nodeList list of controls to select
 	 */
-	public void setSelectedControls(@NotNull List<ArmaControl> controlList) {
+	public void setSelectedNodes(@NotNull List<UINode> nodeList) {
 		getSelectionModel().clearSelection();
 
-		for (ArmaControl control : controlList) {
-			if (control.getRootNode() != rootUINode) {
-				continue;
-			}
-			TreeItem<UINodeTreeItemData> tiFromKey = TREE_ITEM_KEY.get(control.getUserData());
+		for (UINode node : nodeList) {
+			TreeItem<UINodeTreeItemData> tiFromKey = TREE_ITEM_KEY.get(node.getUserData());
 			if (tiFromKey != null) {
 				getSelectionModel().select(tiFromKey);
-			} else {
-				throw new IllegalStateException("couldn't get control's tree item for " + control.getClassName());
 			}
 		}
 	}
