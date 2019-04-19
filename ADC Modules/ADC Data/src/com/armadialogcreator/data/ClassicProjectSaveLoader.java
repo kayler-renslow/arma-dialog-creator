@@ -174,6 +174,7 @@ public class ClassicProjectSaveLoader {
 		}
 		{ //load UINode
 			uinodeConf.addAttribute("UINodeName", className);
+			uinodeConf.addAttribute("nt", "control");
 			{
 				boolean ghost, enabled;
 				{
