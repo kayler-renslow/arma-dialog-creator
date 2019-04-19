@@ -182,4 +182,9 @@ public class ColorUtil {
 		int b = (int) (bi(argb) / 4.0 * 3);
 		return ColorUtil.toARGB(r, g, b, ai(argb));
 	}
+
+	@NotNull
+	public static Color opaque(@NotNull Color color) {
+		return Color.color(color.getRed(), color.getGreen(), color.getBlue(), 1);
+	}
 }

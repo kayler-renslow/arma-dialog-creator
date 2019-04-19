@@ -116,7 +116,7 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 	@Override
 	@NotNull
 	public DeepUINodeIterable deepIterateChildren() {
-		return new DeepUINodeIterable(new DoubleIterable<>(controlNodes.deepIterateChildren(), bgControlNodes.deepIterateChildren()));
+		return new DeepUINodeIterable(new DoubleIterable<>(bgControlNodes.deepIterateChildren(), controlNodes.deepIterateChildren()));
 	}
 
 	@Override
