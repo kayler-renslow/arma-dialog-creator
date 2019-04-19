@@ -733,7 +733,6 @@ public class UICanvasEditor extends UICanvas {
 			if (node.getComponent().isEnabled()) {
 				if (node.getComponent().containsPoint(mousex, mousey)) {
 					mouseOverNode = node;
-					break;
 				}
 			}
 		}
