@@ -3,6 +3,7 @@ package com.armadialogcreator.data;
 import com.armadialogcreator.application.*;
 import com.armadialogcreator.control.ArmaControl;
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.Macro;
 import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -288,8 +289,9 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 
 		/**
 		 Loads config classes from a root configurable.
-		 NOTE: any invocation of this method must have a {@link #doJobs()} called immediately after.
-		 Failing to do so will leave extended classes and macros unset.
+		 NOTE: any invocation of this method must have a {@link #doJobs()} as soon as dependent
+		 {@link Macro} and extended {@link ConfigClass} are loaded. Failing to do so will leave extended classes and
+		 macros unset.
 		 */
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
