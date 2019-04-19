@@ -119,7 +119,6 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		if (preview) {
 			blinkControlHandler.paint(g);
 		}
-
 		switch (renderType) {
 			case Text: {
 				super.paint(g);

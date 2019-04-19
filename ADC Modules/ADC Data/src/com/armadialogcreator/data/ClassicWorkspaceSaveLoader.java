@@ -32,5 +32,6 @@ public class ClassicWorkspaceSaveLoader {
 			}
 		}
 		ConfigClassRegistry.instance.getWorkspaceClasses().loadFromConfigurable(configClassesConf);
+		ConfigClassRegistry.instance.getWorkspaceClasses().doJobs();
 	}
 }

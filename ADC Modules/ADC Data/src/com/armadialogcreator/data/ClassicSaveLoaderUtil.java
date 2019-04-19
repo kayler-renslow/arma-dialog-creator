@@ -88,6 +88,10 @@ public class ClassicSaveLoaderUtil {
 		collectProperties.accept(reqPropsConf);
 
 		configClassConf.addAttribute("name", classSpecConf.getAttributeValueNotNull("name"));
+		String extend = classSpecConf.getAttributeValue("extend");
+		if (extend != null) {
+			configClassConf.addAttribute("extend", extend);
+		}
 	}
 
 	@Nullable

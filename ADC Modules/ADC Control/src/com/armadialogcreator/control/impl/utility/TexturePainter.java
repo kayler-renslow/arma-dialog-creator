@@ -50,11 +50,11 @@ public class TexturePainter {
 			} else {
 				color = Color.color(tc.getRed(), tc.getGreen(), tc.getBlue(), tc.getAlpha());
 			}
-			g.setStroke(color);
-			g.fillRectangle(x1, y1, x2, y2);
+			g.setFill(color);
+			g.fillRectangle(x1, y1, x2 - x1, y2 - y1);
 		} else {
-			g.setStroke(Color.PINK);
-			g.fillRectangle(x1, y1, x2, y2);
+			g.setFill(Color.PINK);
+			g.fillRectangle(x1, y1, x2 - x1, y2 - y1);
 		}
 	}
 }

@@ -286,6 +286,11 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			return classes;
 		}
 
+		/**
+		 Loads config classes from a root configurable.
+		 NOTE: any invocation of this method must have a {@link #doJobs()} called immediately after.
+		 Failing to do so will leave extended classes and macros unset.
+		 */
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
 			jobs = new ArrayList<>();
@@ -330,7 +335,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 			return list;
 		}
 
-		void doJobs() {
+		public void doJobs() {
 			if (jobs == null) {
 				// nothing was loaded
 				return;
