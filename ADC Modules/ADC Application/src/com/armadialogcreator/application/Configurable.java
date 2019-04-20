@@ -116,7 +116,7 @@ public interface Configurable {
 
 		@Override
 		public int getNestedConfigurableCount() {
-			return atts.size();
+			return nested.size();
 		}
 
 		@Override
@@ -127,7 +127,7 @@ public interface Configurable {
 
 		@Override
 		public int getConfigurableAttributeCount() {
-			return nested.size();
+			return atts.size();
 		}
 
 		@Override
@@ -221,28 +221,33 @@ public interface Configurable {
 			sb.append(kv.getValue());
 			sb.append('"');
 		}
-		sb.append('>');
 		String body = c.getConfigurableBody().trim();
-		if (body.length() > 0) {
-			sb.append(c.getConfigurableBody());
-		}
-		Iterator<Configurable> iterator = c.getNestedConfigurables().iterator();
-		if (iterator.hasNext()) {
-			sb.incrementTabCount();
-			sb.appendNewLine();
-			while (iterator.hasNext()) {
-				toFormattedString(iterator.next(), sb);
-				if (iterator.hasNext()) {
-					sb.appendNewLine();
-				} else {
-					sb.decrementTabCount();
-					sb.appendNewLine();
+		if (body.length() <= 0 && c.getNestedConfigurableCount() == 0) {
+			sb.append('/');
+			sb.append('>');
+		} else {
+			sb.append('>');
+			if (body.length() > 0) {
+				sb.append(c.getConfigurableBody());
+			}
+			Iterator<Configurable> iterator = c.getNestedConfigurables().iterator();
+			if (iterator.hasNext()) {
+				sb.incrementTabCount();
+				sb.appendNewLine();
+				while (iterator.hasNext()) {
+					toFormattedString(iterator.next(), sb);
+					if (iterator.hasNext()) {
+						sb.appendNewLine();
+					} else {
+						sb.decrementTabCount();
+						sb.appendNewLine();
+					}
 				}
 			}
+			sb.append('<');
+			sb.append('/');
+			sb.append(c.getConfigurableName());
+			sb.append('>');
 		}
-		sb.append('<');
-		sb.append('/');
-		sb.append(c.getConfigurableName());
-		sb.append('>');
 	}
 }
