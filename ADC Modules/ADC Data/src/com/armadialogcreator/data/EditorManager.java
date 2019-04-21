@@ -78,7 +78,6 @@ public class EditorManager implements ApplicationStateSubscriber {
 
 		@Override
 		public void loadFromConfigurable(@NotNull Configurable config) {
-			System.out.println("EditorProjectData.loadFromConfigurable Configurable.toFormattedString(config, 1)=" + Configurable.toFormattedString(config, 1));
 			jobs = new ArrayList<>();
 			Configurable ccConf = config.getConfigurable("config-class");
 			if (ccConf != null) {
@@ -114,12 +113,10 @@ public class EditorManager implements ApplicationStateSubscriber {
 			ArmaDisplay d = EditorManager.instance.editingDisplay;
 			Configurable bgConf = nodes.getConfigurable("background");
 			if (bgConf != null) {
-				System.out.println("EditorProjectData.loadFromConfigurable 1");
 				loadNodes(bgConf, d.getBackgroundControlNodes());
 			}
 			Configurable mainConf = nodes.getConfigurable("main");
 			if (mainConf != null) {
-				System.out.println("EditorProjectData.loadFromConfigurable 2");
 				loadNodes(mainConf, d.getControlNodes());
 			}
 		}
