@@ -283,4 +283,9 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 	public boolean canHaveChildren() {
 		return false;
 	}
+
+	@Override
+	public String toString() {
+		return "ArmaControl{" + getClassName() + "}";
+	}
 }

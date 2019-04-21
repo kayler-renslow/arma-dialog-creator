@@ -23,6 +23,7 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 	private final SimpleBaseUINode bgControlNodes = new ControlsNode(this, true);
 	private final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup = new UpdateListenerGroup<>();
+	private final DataContext userData = new DataContext();
 
 	public ArmaDisplay() {
 		this("MyDisplay");
@@ -47,7 +48,7 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 	@Override
 	@NotNull
 	public Iterable<? extends UINode> iterateChildNodes() {
-		return new DoubleIterable<>(controlNodes.children, bgControlNodes.children);
+		return new DoubleIterable<>(bgControlNodes.children, controlNodes.children);
 	}
 
 	@Override
@@ -87,10 +88,7 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 
 	@Override
 	public boolean removeChild(@NotNull UINode node) {
-		if (!bgControlNodes.removeChild(node)) {
-			return controlNodes.removeChild(node);
-		}
-		return false;
+		return controlNodes.removeChild(node);
 	}
 
 	@Override
@@ -101,10 +99,6 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 
 	@Override
 	public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-		if (bgControlNodes.containsChildNode(child)) {
-			bgControlNodes.moveChild(child, newParent, destIndex);
-			return;
-		}
 		controlNodes.moveChild(child, newParent, destIndex);
 	}
 
@@ -151,7 +145,7 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 	@Override
 	@NotNull
 	public DataContext getUserData() {
-		return controlNodes.getUserData();
+		return userData;
 	}
 
 	@Override

@@ -122,8 +122,8 @@ public class ClassicProjectSaveLoader {
 					break;
 				}
 			}
-			EditorManager.instance.immediatelyLoadDisplayFromConfigurable(displayConf);
 		}
+		EditorManager.instance.immediatelyLoadDisplayFromConfigurable(displayConf);
 	}
 
 	@NotNull

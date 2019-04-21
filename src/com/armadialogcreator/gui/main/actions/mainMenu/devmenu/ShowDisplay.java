@@ -1,6 +1,7 @@
 package com.armadialogcreator.gui.main.actions.mainMenu.devmenu;
 
 import com.armadialogcreator.ArmaDialogCreator;
+import com.armadialogcreator.canvas.NamedUINode;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.data.ConfigClassConfigurable;
@@ -50,9 +51,13 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 			root.getChildren().add(configClass);
 
 			for (UINode node : display.getControlNodes().iterateChildNodes()) {
+				NamedUINode n = (NamedUINode) node;
+				System.out.println("DisplayViewer.DisplayViewer ----------- n.getUINodeName()=" + n.getUINodeName().getValue());
 				appendTreeItem(controls, node);
 			}
 			for (UINode node : display.getBackgroundControlNodes().iterateChildNodes()) {
+				NamedUINode n = (NamedUINode) node;
+				System.out.println("DisplayViewer.DisplayViewer n.getUINodeName()=" + n.getUINodeName().getValue());
 				appendTreeItem(bgControls, node);
 			}
 
