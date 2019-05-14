@@ -445,6 +445,28 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return null;
 	}
 
+	public void addNestedClass(@NotNull ConfigClass configClass) {
+		if (configClass.ownerClass != null) {
+			throw new IllegalArgumentException();
+		}
+		ConfigClass put = nestedClasses.put(configClass.getClassName(), configClass);
+		if (put != null) {
+			put.ownerClass = null;
+			put.invalidate();
+		}
+		configClass.ownerClass = this;
+		Iterator<ConfigClass> iterator = nestedClassesInheritedOwnedByParent.iterator();
+		while (iterator.hasNext()) {
+			ConfigClass cc = iterator.next();
+			if (cc.getClassName().equals(configClass.getClassName())) {
+				iterator.remove();
+				return;
+			}
+		}
+		classUpdateGroup.update(new ConfigClassUpdate.AddNestedClassUpdate(configClass));
+	}
+
+
 	@NotNull
 	public ConfigClass findNestedClass(@NotNull String className) {
 		ConfigClass c = findNestedClassNullable(className);
@@ -456,8 +478,7 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@Nullable
 	public ConfigClass findNestedClassNullable(@NotNull String className) {
-		System.err.println("ConfigClass.findNestedClassNullable WARNING -------- TEMP CODE");
-		return new ConfigClass("temp");//nestedClasses.get(className);
+		return nestedClasses.get(className);
 	}
 
 	@Override
@@ -493,5 +514,9 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	public int getNonInheritedPropertyCount() {
 		return properties.size() - propertiesInheritedOwnedByParent.size();
+	}
+
+	public void invalidate() {
+		throw new UnsupportedOperationException(); // todo
 	}
 }
