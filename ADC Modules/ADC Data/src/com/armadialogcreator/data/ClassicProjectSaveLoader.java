@@ -26,6 +26,55 @@ public class ClassicProjectSaveLoader {
 		loadStringTable();
 		loadMacros();
 		loadDisplay();
+		loadCustomControls();
+		// todo load export configuration
+	}
+
+	private void loadCustomControls() {
+		for (Configurable c : root.getNestedConfigurables()) {
+			if (c.getConfigurableName().equals("custom-controls")) {
+				Env env = ExpressionEnvManager.instance.getEnv();
+				Configurable configClassesConf = new Configurable.Simple("");
+				for (Configurable c1 : c.getNestedConfigurables()) {
+					if (c1.getConfigurableName().equals("custom-control")) {
+						Configurable configClassConf = ClassicSaveLoaderUtil.convertCustomControlClassConf(c1, env);
+						configClassesConf.addNestedConfigurable(configClassConf);
+					}
+				}
+				ConfigClassRegistry.instance.getProjectClasses().loadFromConfigurable(configClassesConf);
+				ConfigClassRegistry.instance.getProjectClasses().doJobs();
+			}
+		}
+	}
+
+	private void loadExportConfiguration() {
+		Configurable exportConfigConf = root.getConfigurable("export-config");
+		if (exportConfigConf == null) {
+			return;
+		}
+		for (Configurable nested : exportConfigConf.getNestedConfigurables()) {
+			switch (nested.getAttributeValueNotNull("name")) {
+				case "export-class-name": {
+					EditorManager.instance.getEditingDisplay().setClassName(nested.getConfigurableBody());
+					break;
+				}
+				case "export-location": {
+					break;
+				}
+				case "place-adc-notice": {
+					break;
+				}
+				case "export-macros-to-file": {
+					break;
+				}
+				case "export-file-type-ext": {
+					break;
+				}
+				default: {
+					break;
+				}
+			}
+		}
 	}
 
 	private void loadStringTable() {
