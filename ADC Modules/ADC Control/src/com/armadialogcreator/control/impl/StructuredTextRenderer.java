@@ -100,7 +100,7 @@ public class StructuredTextRenderer extends ArmaControlRenderer {
 		});
 
 		{
-			ConfigClass attributes = myControl.findNestedClass(StructuredTextControl.NestedClassName_Attributes);
+			ConfigClass attributes = myControl.findNestedClass(StructuredTextAttributesControlSpec.CLASS_NAME);
 			addValueListener(attributes, ConfigPropertyLookup.COLOR__HEX, SVNull.instance, (observer, oldValue, newValue) -> {
 				Color c = null;
 				if (newValue instanceof SVColor) {

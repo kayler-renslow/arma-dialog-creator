@@ -102,7 +102,7 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 		});
 
 		{
-			ConfigClass comboScrollBar = myControl.findNestedClass(ComboControl.NestedClassName_ComboScrollBar);
+			ConfigClass comboScrollBar = myControl.findNestedClass(ComboScrollbarControlSpec.CLASS_NAME);
 
 			scrollbarRenderer = new ScrollbarRenderer(comboScrollBar, this,
 					ConfigPropertyLookup.THUMB, ConfigPropertyLookup.ARROW_FULL,

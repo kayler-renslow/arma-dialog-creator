@@ -9,17 +9,16 @@ import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
+import com.armadialogcreator.util.ReadOnlyMap;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  @author Kayler
  @since 7/5/2017 */
 public class ShortcutButtonControl extends ArmaControl {
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
-
-	public static final String NestedClassName_HitZone = "HitZone";
-	public static final String NestedClassName_ShortcutPos = "ShortcutPos";
-	public static final String NestedClassName_TextPos = "TextPos";
 
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 								 @NotNull ArmaDisplay display) {
@@ -28,36 +27,16 @@ public class ShortcutButtonControl extends ArmaControl {
 	}
 
 	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
-		/*
-				@NotNull
-				public ReadOnlyMap<String, ReadOnlySet<ImmutableConfigProperty>> getRequiredNestedClasses() {
-					return new ReadOnlyList<>(
-							Arrays.asList(
-									new ControlClassSpecification(
-											NestedClassName_HitZone, Arrays.asList(
-											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-											new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
-											new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
-											new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
-									), ControlPropertySpecification.EMPTY),
-									new ControlClassSpecification(
-											NestedClassName_ShortcutPos, Arrays.asList(
-											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-											new ControlPropertySpecification(ConfigPropertyLookup.LEFT),
-											new ControlPropertySpecification(ConfigPropertyLookup.W),
-											new ControlPropertySpecification(ConfigPropertyLookup.H)
-									), ControlPropertySpecification.EMPTY),
-									new ControlClassSpecification(
-											NestedClassName_TextPos, Arrays.asList(
-											new ControlPropertySpecification(ConfigPropertyLookup.TOP),
-											new ControlPropertySpecification(ConfigPropertyLookup.RIGHT),
-											new ControlPropertySpecification(ConfigPropertyLookup.BOTTOM),
-											new ControlPropertySpecification(ConfigPropertyLookup.LEFT)
-									), ControlPropertySpecification.EMPTY)
-							)
-					);
-				}
-		*/
+		@Override
+		public @NotNull ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
+			HashMap<String, ArmaControlSpecRequirement> map = new HashMap<>();
+			ReadOnlyMap<String, ArmaControlSpecRequirement> ret = new ReadOnlyMap<>(map);
+			map.put(HitZoneControlSpec.CLASS_NAME, HitZoneControlSpec.instance);
+			map.put(ShortcutPosControlSpec.CLASS_NAME, ShortcutPosControlSpec.instance);
+			map.put(TextPosControlSpec.CLASS_NAME, TextPosControlSpec.instance);
+			return ret;
+		}
+
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {

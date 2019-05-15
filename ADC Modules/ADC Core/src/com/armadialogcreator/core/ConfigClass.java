@@ -517,6 +517,6 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	public void invalidate() {
-		throw new UnsupportedOperationException(); // todo
+		//throw new UnsupportedOperationException(); // todo
 	}
 }

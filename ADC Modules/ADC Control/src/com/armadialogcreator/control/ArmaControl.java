@@ -48,6 +48,11 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 		this.display = display;
 		controlType = armaControlLookup.controlType;
 
+		ReadOnlyMap<String, ArmaControlSpecRequirement> nestedClasses = lookup.specProvider.getNestedConfigClasses();
+		nestedClasses.forEach((className, spec) -> {
+			addNestedClass(new ConfigClass(name));
+		});
+
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
 		try {
 			this.renderer = rendererClass.getConstructor(ArmaControl.class, ArmaResolution.class, Env.class).newInstance(this, resolution, env);

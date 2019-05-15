@@ -117,7 +117,7 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 
 
 		{
-			ConfigClass scrollBar = myControl.findNestedClass(ListboxControl.NestedClassName_ListScrollBar);
+			ConfigClass scrollBar = myControl.findNestedClass(ListScrollbarControlSpec.CLASS_NAME);
 
 			scrollbarRenderer = new ScrollbarRenderer(scrollBar, this,
 					ConfigPropertyLookup.THUMB, ConfigPropertyLookup.ARROW_FULL,

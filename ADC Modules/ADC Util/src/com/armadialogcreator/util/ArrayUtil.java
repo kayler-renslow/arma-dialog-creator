@@ -28,4 +28,9 @@ public class ArrayUtil {
 		Arrays.sort(ret, comparator);
 		return ret;
 	}
+
+	public static <E> E[] sort(E[] array, Comparator<E> comp) {
+		Arrays.sort(array, comp);
+		return array;
+	}
 }

@@ -10,7 +10,10 @@ import com.armadialogcreator.expression.Env;
 import com.armadialogcreator.util.ArrayUtil;
 import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
+import com.armadialogcreator.util.ReadOnlyMap;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  @author Kayler
@@ -19,7 +22,6 @@ public class ComboControl extends ArmaControl {
 
 	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
 
-	public static final String NestedClassName_ComboScrollBar = "ComboScrollBar";
 
 	public ComboControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						@NotNull ArmaDisplay display) {
@@ -80,24 +82,14 @@ public class ComboControl extends ArmaControl {
 			);
 		}
 
-		/*
-				@Override
-				@NotNull
-				public ReadOnlyList<ControlClassSpecification> getRequiredNestedClasses() {
-					return new ReadOnlyList<>(
-							Arrays.asList(
-									new ControlClassSpecification(
-											NestedClassName_ComboScrollBar, Arrays.asList(
-											new ControlPropertySpecification(ConfigPropertyLookup.COLOR),
-											new ControlPropertySpecification(ConfigPropertyLookup.THUMB),
-											new ControlPropertySpecification(ConfigPropertyLookup.ARROW_FULL),
-											new ControlPropertySpecification(ConfigPropertyLookup.ARROW_EMPTY),
-											new ControlPropertySpecification(ConfigPropertyLookup.BORDER)
-									), ControlPropertySpecification.EMPTY)
-							)
-					);
-				}
-		*/
+		@Override
+		public @NotNull ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
+			HashMap<String, ArmaControlSpecRequirement> map = new HashMap<>();
+			ReadOnlyMap<String, ArmaControlSpecRequirement> ret = new ReadOnlyMap<>(map);
+			map.put(ComboScrollbarControlSpec.CLASS_NAME, ComboScrollbarControlSpec.instance);
+			return ret;
+		}
+
 		@NotNull
 		@Override
 		public ReadOnlyArray<ControlStyle> getAllowedStyles() {

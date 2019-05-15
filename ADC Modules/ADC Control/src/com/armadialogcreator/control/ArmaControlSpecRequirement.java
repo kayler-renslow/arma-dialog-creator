@@ -6,7 +6,10 @@ import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.ControlStyle;
 import com.armadialogcreator.util.ReadOnlyArray;
 import com.armadialogcreator.util.ReadOnlyList;
+import com.armadialogcreator.util.ReadOnlyMap;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.HashMap;
 
 /**
  Created by Kayler on 07/07/2016.
@@ -40,6 +43,11 @@ public interface ArmaControlSpecRequirement extends AllowedStyleProvider {
 	@NotNull
 	default ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 		return defaultOptionalPropertiesReadOnly;
+	}
+
+	@NotNull
+	default ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
+		return new ReadOnlyMap<>(new HashMap<>());
 	}
 
 	static ConfigPropertyLookup[] mergeArrays(@NotNull ConfigPropertyLookup[]... arrays) {

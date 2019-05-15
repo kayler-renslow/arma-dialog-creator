@@ -157,7 +157,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		);
 
 		//nested classes
-		ConfigClass hitZone = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_HitZone);
+		ConfigClass hitZone = myControl.findNestedClass(HitZoneControlSpec.CLASS_NAME);
 		{
 			addValueListener(hitZone, ConfigPropertyLookup.TOP, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -185,7 +185,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ConfigClass textPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_TextPos);
+		ConfigClass textPos = myControl.findNestedClass(TextPosControlSpec.CLASS_NAME);
 		{
 			addValueListener(textPos, ConfigPropertyLookup.TOP, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
@@ -213,7 +213,7 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 			});
 		}
 
-		ConfigClass shortcutPos = myControl.findNestedClass(ShortcutButtonControl.NestedClassName_ShortcutPos);
+		ConfigClass shortcutPos = myControl.findNestedClass(ShortcutPosControlSpec.CLASS_NAME);
 		{
 			addValueListener(shortcutPos, ConfigPropertyLookup.TOP, SVNull.instance, (observer, oldValue, newValue) -> {
 				if (newValue instanceof SVNumericValue) {
