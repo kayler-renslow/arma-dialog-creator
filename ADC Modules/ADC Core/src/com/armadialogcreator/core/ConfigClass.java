@@ -446,6 +446,9 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 	}
 
 	public void addNestedClass(@NotNull ConfigClass configClass) {
+		if (configClass == this || configClass.getClassName().equals(getClassName())) {
+			throw new IllegalArgumentException();
+		}
 		if (configClass.ownerClass != null) {
 			throw new IllegalArgumentException();
 		}
@@ -518,5 +521,14 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	public void invalidate() {
 		//throw new UnsupportedOperationException(); // todo
+	}
+
+	@Override
+	public String toString() {
+		return "ConfigClass{" +
+				"className=" + classNameObserver.getValue() +
+				", extendClass=" + extendClassObserver.getValue() +
+				", ownerClass=" + ownerClass +
+				'}';
 	}
 }

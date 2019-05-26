@@ -96,9 +96,10 @@ public class EditorManager implements ApplicationStateSubscriber {
 				for (Configurable c : configClasses.getNestedConfigurables()) {
 					String controlId = c.getAttributeValueNotNull("control-type");
 					ControlType type = ControlType.findById(Integer.parseInt(controlId));
+					String name = c.getAttributeValueNotNull("name");
 					ArmaControl control = ArmaControl.createControl(
 							type,
-							"",
+							name,
 							resolution,
 							env,
 							display

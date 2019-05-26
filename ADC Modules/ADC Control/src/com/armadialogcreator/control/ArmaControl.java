@@ -50,7 +50,7 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 
 		ReadOnlyMap<String, ArmaControlSpecRequirement> nestedClasses = lookup.specProvider.getNestedConfigClasses();
 		nestedClasses.forEach((className, spec) -> {
-			addNestedClass(new ConfigClass(name));
+			addNestedClass(new ConfigClass(className));
 		});
 
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
