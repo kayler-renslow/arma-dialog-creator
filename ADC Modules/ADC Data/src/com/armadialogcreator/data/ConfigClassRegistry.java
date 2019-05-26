@@ -313,7 +313,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 					//let the EditorManager manage these when saved to file
 					continue;
 				}
-				config.addNestedConfigurable(new ConfigClassConfigurable(configClass));
+				config.addNestedConfigurable(new ConfigClassConfigurable(configClass, false));
 			}
 		}
 
@@ -333,7 +333,7 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 		public List<KeyValue<String, Configurable>> toKeyValueList() {
 			List<KeyValue<String, Configurable>> list = new ArrayList<>();
 			for (ConfigClass cc : classes) {
-				list.add(new KeyValue<>(cc.getClassName(), new ConfigClassConfigurable(cc)));
+				list.add(new KeyValue<>(cc.getClassName(), new ConfigClassConfigurable(cc, true)));
 			}
 			return list;
 		}

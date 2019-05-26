@@ -32,29 +32,39 @@ public class ConfigClassConfigurable implements Configurable {
 			jobConsumer.accept(new ExtendConfigClassJob(configClass, extend));
 		}
 		for (Configurable nested : configurable.getNestedConfigurables()) {
-			if (nested.getConfigurableName().equals("property")) {
-				String propertyName = nested.getAttributeValueNotNull("name");
-				String macro = nested.getAttributeValue("macro");
-				String priorityStr = nested.getAttributeValue("priority");
+			switch (nested.getConfigurableName()) {
+				case "property": {
+					String propertyName = nested.getAttributeValueNotNull("name");
+					String macro = nested.getAttributeValue("macro");
+					String priorityStr = nested.getAttributeValue("priority");
 
-				if (macro != null) {
-					jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
-				}
-				Configurable svConf = nested.getConfigurableNotNull(SerializableValueConfigurable.CONFIGURABLE_NAME);
-				SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
-						svConf,
-						ExpressionEnvManager.instance.getEnv()
-				);
-				ConfigProperty property = configClass.addProperty(propertyName, sv);
-				if (priorityStr != null && priorityStr.length() > 0) {
-					try {
-						property.setPriority(Integer.parseInt(priorityStr));
-					} catch (NumberFormatException ignore) {
-
+					if (macro != null) {
+						jobConsumer.accept(new SetMacroJob(configClass, propertyName, macro));
 					}
+					Configurable svConf = nested.getConfigurableNotNull(SerializableValueConfigurable.CONFIGURABLE_NAME);
+					SerializableValue sv = SerializableValueConfigurable.createFromConfigurable(
+							svConf,
+							ExpressionEnvManager.instance.getEnv()
+					);
+					ConfigProperty property = configClass.addProperty(propertyName, sv);
+					if (priorityStr != null && priorityStr.length() > 0) {
+						try {
+							property.setPriority(Integer.parseInt(priorityStr));
+						} catch (NumberFormatException ignore) {
+
+						}
+					}
+					break;
 				}
-			} else if (nested.getConfigurableName().equals("comment")) {
-				configClass.setUserComment(nested.getConfigurableBody());
+				case "comment": {
+					configClass.setUserComment(nested.getConfigurableBody());
+					break;
+				}
+				case "nested-class": {
+					ConfigClass myNested = fromConfigurable(nested, null, jobConsumer);
+					configClass.addNestedClass(myNested);
+					break;
+				}
 			}
 		}
 		return configClass;
@@ -63,14 +73,15 @@ public class ConfigClassConfigurable implements Configurable {
 	private final List<KeyValueString> atts = new ArrayList<>(2);
 	private final List<Configurable> nestedConfs;
 
-	public ConfigClassConfigurable(@NotNull ConfigClass configClass) {
+	public ConfigClassConfigurable(@NotNull ConfigClass configClass, boolean appendInherited) {
 		atts.add(new KeyValueString("name", configClass.getClassName()));
 		if (configClass.isExtending()) {
 			atts.add(new KeyValueString("extend", configClass.getExtendClassName()));
 		}
-		nestedConfs = new ArrayList<>(configClass.getNonInheritedPropertyCount() + 1);
+		nestedConfs = new ArrayList<>(configClass.getNonInheritedPropertyCount() + configClass.getNestedClassesCount() + 1);
 		for (ConfigProperty property : configClass.iterateProperties()) {
-			if (!configClass.propertyIsInherited(property.getName())) {
+			final boolean propertyIsInherited = configClass.propertyIsInherited(property.getName());
+			if (appendInherited || !propertyIsInherited) {
 				Configurable.Simple propertyConf = new Configurable.Simple("property");
 				propertyConf.addAttribute("priority", property.priority() + "");
 				nestedConfs.add(propertyConf);
@@ -79,12 +90,22 @@ public class ConfigClassConfigurable implements Configurable {
 					propertyConf.addAttribute("macro", property.getBoundMacro().getKey());
 				}
 				propertyConf.addNestedConfigurable(new SerializableValueConfigurable(property.getValue()));
-
+				if (appendInherited) {
+					propertyConf.addAttribute("inherited", propertyIsInherited);
+				}
 			}
 		}
 		String userComment = configClass.getUserComment();
 		if (userComment != null) {
 			nestedConfs.add(new Simple("comment", userComment));
+		}
+		for (ConfigClass nested : configClass.iterateNestedClasses()) {
+			final boolean nestedIsInherited = configClass.nestedConfigClassIsInherited(nested.getClassName());
+			if (appendInherited || !nestedIsInherited) {
+				ConfigClassConfigurable c = new ConfigClassConfigurable(nested, appendInherited);
+				nestedConfs.add(c);
+				c.addAttribute("inherited", nestedIsInherited);
+			}
 		}
 	}
 

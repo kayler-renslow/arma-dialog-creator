@@ -61,7 +61,7 @@ public class ShowDisplay implements EventHandler<ActionEvent> {
 				appendTreeItem(bgControls, node);
 			}
 
-			TreeItemConfigurabeHelper.appendTreeItem(configClass, new ConfigClassConfigurable(display));
+			TreeItemConfigurabeHelper.appendTreeItem(configClass, new ConfigClassConfigurable(display, true));
 
 			treeView.setRoot(root);
 			treeView.setShowRoot(false);

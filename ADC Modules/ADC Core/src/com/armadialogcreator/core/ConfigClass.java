@@ -146,6 +146,34 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return classNameObserver.getValue();
 	}
 
+	@Override
+	public @NotNull Iterable<ConfigClass> iterateNestedClasses() {
+		return new Iterable<>() {
+			@NotNull
+			@Override
+			public Iterator<ConfigClass> iterator() {
+				return new Iterator<>() {
+					final Iterator<Map.Entry<String, ConfigClass>> iterator = nestedClasses.entrySet().iterator();
+
+					@Override
+					public boolean hasNext() {
+						return iterator.hasNext();
+					}
+
+					@Override
+					public ConfigClass next() {
+						return iterator.next().getValue();
+					}
+				};
+			}
+		};
+	}
+
+	@Override
+	public int getNestedClassesCount() {
+		return nestedClasses.size();
+	}
+
 	public void setClassName(@NotNull String name) {
 		classNameObserver.updateValue(name);
 	}
@@ -413,6 +441,19 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean nestedConfigClassIsInherited(@NotNull String className) {
+		ConfigClass configClass = nestedClasses.get(className);
+		if (configClass == null) {
+			return false;
+		}
+		ConfigClass extendClass = getExtendClass();
+		if (extendClass == null) {
+			return false;
+		}
+		return configClass.ownerClass == extendClass;
 	}
 
 	@Override

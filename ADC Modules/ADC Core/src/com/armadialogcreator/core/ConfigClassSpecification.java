@@ -65,4 +65,14 @@ public interface ConfigClassSpecification {
 	/** @return the class name of this specification */
 	@NotNull
 	String getClassName();
+
+	/** @return how many nested class instances there are */
+	int getNestedClassesCount();
+
+	/** @return an iterable for iterating all nested config classes */
+	@NotNull
+	Iterable<ConfigClass> iterateNestedClasses();
+
+	/** @return true if the given nested class name is inherited by this, false if not */
+	boolean nestedConfigClassIsInherited(@NotNull String className);
 }
