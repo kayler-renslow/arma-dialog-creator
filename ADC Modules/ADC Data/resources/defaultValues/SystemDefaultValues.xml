@@ -5,10 +5,15 @@
 	<sheets>
 		<sheet name="#Control.Button" display-name="ADC Button">$data$/Button.xml</sheet>
 		<sheet name="#Control.Combo" display-name="ADC Combo">$data$/Combo.xml</sheet>
+		<sheet name="#Control.Combo.ComboScrollBar" display-name="ADC ComboScrollBar">$data$/Combo/ComboScrollBar.xml</sheet>
 		<sheet name="#Control.Edit" display-name="ADC Edit">$data$/Edit.xml</sheet>
 		<sheet name="#Control.ListBox" display-name="ADC List Box">$data$/ListBox.xml</sheet>
+		<sheet name="#Control.ListBox.ListScrollBar" display-name="ADC ListScrollBar">$data$/ListBox/ListScrollBar.xml</sheet>
 		<sheet name="#Control.Progress" display-name="ADC Progress">$data$/Progress.xml</sheet>
 		<sheet name="#Control.ShortcutButton" display-name="ADC Shortcut Button">$data$/ShortcutButton.xml</sheet>
+		<sheet name="#Control.ShortcutButton.HitZone" display-name="ADC Shortcut Button HitZone">$data$/ShortcutButton/HitZone.xml</sheet>
+		<sheet name="#Control.ShortcutButton.ShortcutPos" display-name="ADC Shortcut Button ShortcutPos">$data$/ShortcutButton/ShortcutPos.xml</sheet>
+		<sheet name="#Control.ShortcutButton.TextPos" display-name="ADC Shortcut Button TextPos">$data$/ShortcutButton/TextPos.xml</sheet>
 		<sheet name="#Control.Static" display-name="ADC Static">$data$/Static.xml</sheet>
 		<sheet name="#Control.StructuredText" display-name="ADC Structured Text">$data$/StructuredText.xml</sheet>
 		<sheet name="#Control.XSlider" display-name="ADC XSlider">$data$/XSlider.xml</sheet>

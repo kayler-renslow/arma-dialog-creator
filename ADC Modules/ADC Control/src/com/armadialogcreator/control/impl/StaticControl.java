@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.ConfigPropertyEventLookup;
@@ -21,7 +21,7 @@ import org.jetbrains.annotations.NotNull;
  @since 05/25/2016. */
 public class StaticControl extends ArmaControl {
 
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public StaticControl(@NotNull String name, int idc, @NotNull ArmaResolution resolution, @NotNull Env env,
 						 @NotNull ArmaDisplay display) {
@@ -30,7 +30,7 @@ public class StaticControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.IDC).setValue(idc);
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement {
+	private static class SpecReq implements ArmaConfigClassSpec {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
@@ -53,7 +53,7 @@ public class StaticControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.MOVING,
 											ConfigPropertyLookup.SHADOW,

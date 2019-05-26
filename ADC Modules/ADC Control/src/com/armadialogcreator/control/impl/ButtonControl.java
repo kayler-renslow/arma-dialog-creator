@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 11/21/2016 */
 public class ButtonControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public ButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						 @NotNull ArmaDisplay display) {
@@ -23,7 +23,7 @@ public class ButtonControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.CENTER.getStyleGroup());
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
@@ -61,7 +61,7 @@ public class ButtonControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.DEFAULT,
 											ConfigPropertyLookup.ACTION,

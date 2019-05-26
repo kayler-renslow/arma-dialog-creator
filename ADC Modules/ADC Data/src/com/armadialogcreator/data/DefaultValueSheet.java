@@ -7,6 +7,7 @@ import com.armadialogcreator.core.sv.SerializableValueConstructionException;
 import com.armadialogcreator.expression.Env;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -150,6 +151,15 @@ public class DefaultValueSheet {
 				throw new IllegalStateException();
 			}
 			return new Property(name, values, atts);
+		}
+
+		@Override
+		public String toString() {
+			return "Property{" +
+					"name='" + propertyName + '\'' +
+					", values=" + Arrays.toString(values) +
+					", attributes=" + attributes +
+					'}';
 		}
 	}
 }

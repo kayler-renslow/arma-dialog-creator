@@ -26,7 +26,7 @@ import java.util.LinkedList;
 public class ArmaControlGroup extends ArmaControl {
 	private final ListObserver<UINode> children = new ListObserver<>(new LinkedList<>());
 
-	public static final ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public static final ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public ArmaControlGroup(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 							@NotNull Env env,
@@ -118,7 +118,7 @@ public class ArmaControlGroup extends ArmaControl {
 		return true;
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 
 		@NotNull
 		@Override

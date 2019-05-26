@@ -3,7 +3,10 @@ package com.armadialogcreator.control;
 import com.armadialogcreator.canvas.*;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
-import com.armadialogcreator.core.*;
+import com.armadialogcreator.core.ConfigProperty;
+import com.armadialogcreator.core.ConfigPropertyLookup;
+import com.armadialogcreator.core.ControlStyle;
+import com.armadialogcreator.core.ControlType;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
@@ -19,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControl extends RequirementsConfigClass implements NamedUINode {
+public class ArmaControl extends ArmaConfigClassSpecWrapper implements NamedUINode {
 	/** Type of the control */
 	private final ControlType controlType;
 
@@ -43,14 +46,15 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 	protected ArmaControl(@NotNull String name, @NotNull ArmaControlLookup lookup, @NotNull ArmaResolution resolution,
 						  @NotNull Env env,
 						  @NotNull ArmaDisplay display) {
-		super(name);
+		super(name, lookup.specProvider);
 		this.armaControlLookup = lookup;
 		this.display = display;
 		controlType = armaControlLookup.controlType;
 
-		ReadOnlyMap<String, ArmaControlSpecRequirement> nestedClasses = lookup.specProvider.getNestedConfigClasses();
+		ReadOnlyMap<String, ArmaConfigClassSpec> nestedClasses = lookup.specProvider.getNestedConfigClasses();
 		nestedClasses.forEach((className, spec) -> {
-			addNestedClass(new ConfigClass(className));
+			ArmaConfigClassSpecWrapper configClass = new ArmaConfigClassSpecWrapper(className, spec);
+			addNestedClass(configClass);
 		});
 
 		Class<? extends ArmaControlRenderer> rendererClass = ArmaControlLookup.findByControlType(controlType).renderer;
@@ -220,50 +224,6 @@ public class ArmaControl extends RequirementsConfigClass implements NamedUINode 
 
 	public boolean isBackgroundControl() {
 		return display.controlIsBackgroundControl(this);
-	}
-
-	@Override
-	@NotNull
-	public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
-		return armaControlLookup.specProvider.getRequiredProperties();
-	}
-
-	@Override
-	@NotNull
-	public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
-		return armaControlLookup.specProvider.getOptionalProperties();
-	}
-
-	@Override
-	@Nullable
-	public ReadOnlyIterable<ConfigPropertyLookupConstant> iterateLookupProperties() {
-		return new ReadOnlyIterable<>(new DoubleIterable<>(getRequiredProperties(), getOptionalProperties()));
-	}
-
-	@NotNull
-	@Override
-	public ConfigPropertyCategory getPropertyCategory(@NotNull ConfigPropertyKey property) {
-		ReadOnlyList<ConfigPropertyLookupConstant> plist = armaControlLookup.specProvider.getOptionalProperties();
-		for (ConfigPropertyLookupConstant c : plist) {
-			if (property.nameEquals(c)) {
-				if (c.isEvent()) {
-					return ConfigPropertyCategory.Event;
-				}
-				return ConfigPropertyCategory.Optional;
-			}
-		}
-
-		plist = armaControlLookup.specProvider.getRequiredProperties();
-		for (ConfigPropertyLookupConstant c : plist) {
-			if (property.nameEquals(c)) {
-				if (c.isEvent()) {
-					return ConfigPropertyCategory.Event;
-				}
-				return ConfigPropertyCategory.Required;
-			}
-		}
-
-		return super.getPropertyCategory(property);
 	}
 
 	@Override

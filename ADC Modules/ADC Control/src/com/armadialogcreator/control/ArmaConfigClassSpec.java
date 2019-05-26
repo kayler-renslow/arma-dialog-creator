@@ -9,13 +9,14 @@ import com.armadialogcreator.util.ReadOnlyList;
 import com.armadialogcreator.util.ReadOnlyMap;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  Created by Kayler on 07/07/2016.
  */
-public interface ArmaControlSpecRequirement extends AllowedStyleProvider {
-	ArmaControlSpecRequirement BASE = new ArmaControlSpecRequirement() {
+public interface ArmaConfigClassSpec extends AllowedStyleProvider {
+	ArmaConfigClassSpec BASE = new ArmaConfigClassSpec() {
 	};
 
 	/** Returns a new array of the properties that are required for all controls */
@@ -45,8 +46,21 @@ public interface ArmaControlSpecRequirement extends AllowedStyleProvider {
 		return defaultOptionalPropertiesReadOnly;
 	}
 
+	/** @return a new list of {@link #getRequiredProperties()} and {@link #getOptionalProperties()} concatenated together */
 	@NotNull
-	default ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
+	default ReadOnlyList<ConfigPropertyLookupConstant> getAllProperties() {
+		int size = getOptionalProperties().size() + getRequiredProperties().size();
+		if (size > 0) {
+			ArrayList<ConfigPropertyLookupConstant> props = new ArrayList<>(size);
+			props.addAll(getOptionalProperties());
+			props.addAll(getRequiredProperties());
+			return new ReadOnlyList<>(props);
+		}
+		return getRequiredProperties();
+	}
+
+	@NotNull
+	default ReadOnlyMap<String, ArmaConfigClassSpec> getNestedConfigClasses() {
 		return new ReadOnlyMap<>(new HashMap<>());
 	}
 

@@ -1,6 +1,6 @@
 package com.armadialogcreator.control.impl;
 
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.core.ConfigPropertyLookup;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.util.ArrayUtil;
@@ -10,10 +10,18 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author K
  @since 5/14/19 */
-public class ListScrollbarControlSpec implements ArmaControlSpecRequirement {
+public class ListScrollbarControlSpec implements ArmaConfigClassSpec {
 	public static final String CLASS_NAME = "ListScrollBar";
 
 	public static final ListScrollbarControlSpec instance = new ListScrollbarControlSpec();
+
+	private final ReadOnlyList<ConfigPropertyLookupConstant> propertiesMergedCache = ArmaConfigClassSpec.super.getAllProperties();
+
+	@Override
+	@NotNull
+	public ReadOnlyList<ConfigPropertyLookupConstant> getAllProperties() {
+		return propertiesMergedCache;
+	}
 
 	@Override
 	@NotNull

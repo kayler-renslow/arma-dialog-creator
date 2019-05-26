@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  @author Kayler
  @since 07/28/2017 */
 public class StructuredTextControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public StructuredTextControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 								 @NotNull ArmaDisplay display) {
@@ -26,13 +26,13 @@ public class StructuredTextControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.TEXT,
 											ConfigPropertyLookup.SIZE
@@ -48,7 +48,7 @@ public class StructuredTextControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.COLOR_BACKGROUND,
 											ConfigPropertyLookup.TOOLTIP,
@@ -66,9 +66,9 @@ public class StructuredTextControl extends ArmaControl {
 		}
 
 		@Override
-		public @NotNull ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
-			HashMap<String, ArmaControlSpecRequirement> map = new HashMap<>();
-			ReadOnlyMap<String, ArmaControlSpecRequirement> ret = new ReadOnlyMap<>(map);
+		public @NotNull ReadOnlyMap<String, ArmaConfigClassSpec> getNestedConfigClasses() {
+			HashMap<String, ArmaConfigClassSpec> map = new HashMap<>();
+			ReadOnlyMap<String, ArmaConfigClassSpec> ret = new ReadOnlyMap<>(map);
 			map.put(StructuredTextAttributesControlSpec.CLASS_NAME, StructuredTextAttributesControlSpec.instance);
 			return ret;
 		}

@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -15,20 +15,20 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 07/08/2017 */
 public class EditControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public EditControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 					   @NotNull ArmaDisplay display) {
 		super(name, ArmaControlLookup.Edit, resolution, env, display);
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.COLOR_BACKGROUND,
 											ConfigPropertyLookup.TEXT,
@@ -50,7 +50,7 @@ public class EditControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.SHADOW,
 											ConfigPropertyLookup.CAN_MODIFY,

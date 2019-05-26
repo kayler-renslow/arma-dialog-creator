@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -20,7 +20,7 @@ import java.util.HashMap;
  @since 07/27/2017 */
 public class ListboxControl extends ArmaControl {
 
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public ListboxControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						  @NotNull ArmaDisplay display) {
@@ -31,7 +31,7 @@ public class ListboxControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.MAX_HISTORY_DELAY).setValue(new SVDouble(0));
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
@@ -58,7 +58,7 @@ public class ListboxControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.COLOR_SELECT_BACKGROUND,
 											ConfigPropertyLookup.COLOR_SELECT_BACKGROUND2,
@@ -81,9 +81,9 @@ public class ListboxControl extends ArmaControl {
 		}
 
 		@Override
-		public @NotNull ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
-			HashMap<String, ArmaControlSpecRequirement> map = new HashMap<>();
-			ReadOnlyMap<String, ArmaControlSpecRequirement> ret = new ReadOnlyMap<>(map);
+		public @NotNull ReadOnlyMap<String, ArmaConfigClassSpec> getNestedConfigClasses() {
+			HashMap<String, ArmaConfigClassSpec> map = new HashMap<>();
+			ReadOnlyMap<String, ArmaConfigClassSpec> ret = new ReadOnlyMap<>(map);
 			map.put(ListScrollbarControlSpec.CLASS_NAME, ListScrollbarControlSpec.instance);
 			return ret;
 		}

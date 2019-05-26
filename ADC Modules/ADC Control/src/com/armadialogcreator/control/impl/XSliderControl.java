@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
  @author Kayler
  @since 07/08/2017 */
 public class XSliderControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public XSliderControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 						  @NotNull ArmaDisplay display) {
@@ -23,13 +23,13 @@ public class XSliderControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.SL_HORZ.getStyleGroup());
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@NotNull
 		@Override
 		public ReadOnlyList<ConfigPropertyLookupConstant> getRequiredProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultRequiredProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.COLOR,
 											ConfigPropertyLookup.COLOR_ACTIVE,
@@ -49,7 +49,7 @@ public class XSliderControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.TOOLTIP,
 											ConfigPropertyLookup.TOOLTIP_COLOR_SHADE,

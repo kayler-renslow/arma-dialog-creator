@@ -1,7 +1,7 @@
 package com.armadialogcreator.control.impl;
 
+import com.armadialogcreator.control.ArmaConfigClassSpec;
 import com.armadialogcreator.control.ArmaControl;
-import com.armadialogcreator.control.ArmaControlSpecRequirement;
 import com.armadialogcreator.control.ArmaDisplay;
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.core.*;
@@ -18,7 +18,7 @@ import java.util.HashMap;
  @author Kayler
  @since 7/5/2017 */
 public class ShortcutButtonControl extends ArmaControl {
-	public final static ArmaControlSpecRequirement SPEC_PROVIDER = new SpecReq();
+	public final static ArmaConfigClassSpec SPEC_PROVIDER = new SpecReq();
 
 	public ShortcutButtonControl(@NotNull String name, @NotNull ArmaResolution resolution, @NotNull Env env,
 								 @NotNull ArmaDisplay display) {
@@ -26,11 +26,11 @@ public class ShortcutButtonControl extends ArmaControl {
 		findProperty(ConfigPropertyLookup.STYLE).setValue(ControlStyle.NONE.getStyleGroup());
 	}
 
-	private static class SpecReq implements ArmaControlSpecRequirement, AllowedStyleProvider {
+	private static class SpecReq implements ArmaConfigClassSpec, AllowedStyleProvider {
 		@Override
-		public @NotNull ReadOnlyMap<String, ArmaControlSpecRequirement> getNestedConfigClasses() {
-			HashMap<String, ArmaControlSpecRequirement> map = new HashMap<>();
-			ReadOnlyMap<String, ArmaControlSpecRequirement> ret = new ReadOnlyMap<>(map);
+		public @NotNull ReadOnlyMap<String, ArmaConfigClassSpec> getNestedConfigClasses() {
+			HashMap<String, ArmaConfigClassSpec> map = new HashMap<>();
+			ReadOnlyMap<String, ArmaConfigClassSpec> ret = new ReadOnlyMap<>(map);
 			map.put(HitZoneControlSpec.CLASS_NAME, HitZoneControlSpec.instance);
 			map.put(ShortcutPosControlSpec.CLASS_NAME, ShortcutPosControlSpec.instance);
 			map.put(TextPosControlSpec.CLASS_NAME, TextPosControlSpec.instance);
@@ -76,7 +76,7 @@ public class ShortcutButtonControl extends ArmaControl {
 		public ReadOnlyList<ConfigPropertyLookupConstant> getOptionalProperties() {
 			return new ReadOnlyList<>(
 					ArrayUtil.mergeAndSort(ConfigPropertyLookupConstant.class, defaultOptionalProperties,
-							ArmaControlSpecRequirement.mergeArrays(
+							ArmaConfigClassSpec.mergeArrays(
 									new ConfigPropertyLookup[]{
 											ConfigPropertyLookup.DEFAULT,
 											ConfigPropertyLookup.ACTION,
