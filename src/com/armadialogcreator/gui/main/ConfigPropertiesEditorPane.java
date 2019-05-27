@@ -2,6 +2,7 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.core.*;
 import com.armadialogcreator.gui.fxcontrol.PlaceholderTitledPane;
+import com.armadialogcreator.gui.main.popup.EditConfigClassDialog;
 import com.armadialogcreator.lang.Lang;
 import com.armadialogcreator.util.ReadOnlyIterable;
 import com.armadialogcreator.util.UpdateGroupListener;
@@ -10,10 +11,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Accordion;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
@@ -241,11 +239,9 @@ public class ConfigPropertiesEditorPane extends StackPane {
 
 	@NotNull
 	private TitledPane getNestedClassesTitledPane() {
-		/*
-		VBox vboxClassCategories = new VBox(10);
-		vboxClassCategories.setPadding(new Insets(5));
-
-		Function<ConfigClass, Node> funcGetClassNode = cc -> {
+		VBox vboxNestedClasses = new VBox(10);
+		vboxNestedClasses.setPadding(new Insets(5));
+		for (ConfigClass cc : configClass.iterateNestedClasses()) {
 			MenuButton menuButton = new MenuButton(cc.getClassName());
 
 			MenuItem miEdit = new MenuItem(bundle.getString("edit_nested_class"));
@@ -255,91 +251,20 @@ public class ConfigPropertiesEditorPane extends StackPane {
 				EditConfigClassDialog dialog = new EditConfigClassDialog(cc);
 				dialog.show();
 			});
-
-			configClass.getClassUpdateGroup().addListener(new UpdateGroupListener<>() {
-				@Override
-				public void update(@NotNull UpdateListenerGroup<ConfigClassUpdate> group, @NotNull ConfigClassUpdate data) {
-
-				}
-
-				@Override
-				public boolean hasExpired() {
-					return !listenersAreValid;
-				}
-			});
-
 			menuButton.setUserData(cc);
 
-			return menuButton;
-		};
-
-		//add required nested
-		vboxClassCategories.getChildren().add(new Label(bundle.getString("required_nested_classes")));
-		{
-			VBox vboxRequired = new VBox(5);
-			final boolean hasRequiredClasses = configClass.getRequiredNestedClasses().size() > 0;
-			Label lblNoRequiredClasses = new Label(bundle.getString("no_classes"));
-			if (hasRequiredClasses) {
-				for (ConfigClass nested : configClass.getRequiredNestedClasses()) {
-					vboxRequired.getChildren().add(funcGetClassNode.apply(nested));
-				}
-			} else {
-				vboxRequired.getChildren().add(lblNoRequiredClasses);
-			}
-
-			vboxClassCategories.getChildren().add(vboxRequired);
+			vboxNestedClasses.getChildren().add(menuButton);
 		}
 
-		vboxClassCategories.getChildren().add(new Separator(Orientation.HORIZONTAL));
-
-		//add optional nested
-		vboxClassCategories.getChildren().add(new Label(bundle.getString("optional_nested_classes")));
-		{
-			final boolean hasOptionalClasses = configClass.getOptionalNestedClasses().size() > 0;
-			Label lblNoOptionalClasses = new Label(bundle.getString("no_classes"));
-			VBox vboxOptional = new VBox(5);
-			if (hasOptionalClasses) {
-				for (ConfigClass nested : configClass.getOptionalNestedClasses()) {
-					vboxOptional.getChildren().add(funcGetClassNode.apply(nested));
-				}
-			} else {
-				vboxOptional.getChildren().add(lblNoOptionalClasses);
-			}
-
-			vboxClassCategories.getChildren().add(vboxOptional);
-
-			configClass.getClassUpdateGroup().addListener(new UpdateGroupListener<>() {
-				@Override
-				public void update(@NotNull UpdateListenerGroup<ConfigClassUpdate> group, @NotNull ConfigClassUpdate data) {
-					if (data instanceof ControlClassTemporaryNestedClassUpdate) {
-						ControlClassTemporaryNestedClassUpdate update = (ControlClassTemporaryNestedClassUpdate) data;
-						if (update.isAdded()) {
-							if (!hasOptionalClasses) {
-								vboxOptional.getChildren().remove(lblNoOptionalClasses);
-							}
-							vboxOptional.getChildren().add(funcGetClassNode.apply(update.getNestedClass()));
-						} else {
-							if (!hasOptionalClasses) {
-								vboxOptional.getChildren().setAll(lblNoOptionalClasses);
-							}
-							vboxOptional.getChildren().removeIf(node -> node.getUserData() == update.getNestedClass());
-						}
-					}
-				}
-
-				@Override
-				public boolean hasExpired() {
-					return !listenersAreValid;
-				}
-			});
-		}
-
-		ScrollPane scrollPane = new ScrollPane(vboxClassCategories);
-		scrollPane.setFitToWidth(true);
-*/
-		TitledPane tp = new TitledPane(bundle.getString("nested_classes"), new Label("temporary label")/*scrollPane*/);
+		PlaceholderTitledPane tp = new PlaceholderTitledPane(
+				bundle.getString("nested_classes"),
+				new Label(bundle.getString("no_classes")),
+				vboxNestedClasses,
+				true
+		);
+		tp.getScrollPane().setFitToWidth(true);
 		tp.setAnimated(false);
-		//vboxClassCategories.setFillWidth(true);
+		vboxNestedClasses.setFillWidth(true);
 
 		return tp;
 	}

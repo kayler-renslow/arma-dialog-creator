@@ -33,9 +33,14 @@ public class PlaceholderTitledPane extends TitledPane {
 		} else {
 			setContent(this.contentPane);
 		}
-		hasPlaceholder = true;
-		this.contentPane.getChildren().add(placeholder);
 		this.contentPane.setAlignment(Pos.CENTER);
+		if (userContentPane.getChildren().isEmpty()) {
+			hasPlaceholder = true;
+			this.contentPane.getChildren().add(placeholder);
+		} else {
+			hasPlaceholder = false;
+			this.contentPane.getChildren().add(userContentPane);
+		}
 	}
 
 	public void addContentChild(@NotNull Node node) {

@@ -3,6 +3,7 @@ package com.armadialogcreator.gui.main.popup;
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.application.DataLevel;
 import com.armadialogcreator.core.ConfigClass;
+import com.armadialogcreator.core.ConfigClassSpecification;
 import com.armadialogcreator.data.ConfigClassRegistry;
 import com.armadialogcreator.gui.SimpleResponseDialog;
 import com.armadialogcreator.gui.StageDialog;
@@ -22,6 +23,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Stack;
 
 /**
  Dialog window that allows for editing a ({@link ConfigClass}) directly.
@@ -121,6 +123,26 @@ public class EditConfigClassDialog extends StageDialog<VBox> {
 
 
 			myRootElement.getChildren().add(hboxHeader);
+
+			{ //owner path
+				StringBuilder ownerPath = new StringBuilder();
+				Stack<String> pathStack = new Stack<>();
+				ConfigClassSpecification cursor = configClass;
+				while (cursor != null) {
+					pathStack.push(configClass.getClassName());
+					cursor = cursor.getOwnerClass();
+				}
+				while (!pathStack.isEmpty()) {
+					String parentClassName = pathStack.pop();
+					ownerPath.append(parentClassName);
+					if (!pathStack.isEmpty()) {
+						ownerPath.append(' ');
+						ownerPath.append('>');
+						ownerPath.append(' ');
+					}
+				}
+				myRootElement.getChildren().add(new Label(ownerPath.toString()));
+			}
 		}
 
 
