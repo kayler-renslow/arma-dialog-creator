@@ -192,19 +192,32 @@ public class ClassicProjectSaveLoader {
 		}
 		String controlId = ctrlConf.getAttributeValueNotNull("control-id");
 		ccConf.addAttribute("control-type", controlId);
-		{ //load properties
+		{ //load properties and nested classes
 
 			// Make initial capacity of arraylist nested count / 2 because in worst case, all properties are inherited,
 			// which means there would be a <property> and <inherit-property> tag for every property
 			// (worst case number of tags = property count * 2).
 			List<Integer> inheritedProperties = new ArrayList<>(ctrlConf.getNestedConfigurableCount() / 2);
-			for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {
-				if (ctrlPropConf.getConfigurableName().equals("inherit-property")) {
-					String pid = ctrlPropConf.getAttributeValue("id");
-					if (pid == null) {
-						continue;
+
+			// figure out which properties are inherited and add nested config classes at the same time
+			for (Configurable ctrlNestedConf : ctrlConf.getNestedConfigurables()) {
+				switch (ctrlNestedConf.getConfigurableName()) {
+					case "inherit-property": {
+						String pid = ctrlNestedConf.getAttributeValue("id");
+						if (pid == null) {
+							continue;
+						}
+						inheritedProperties.add(Integer.parseInt(pid));
+						break;
 					}
-					inheritedProperties.add(Integer.parseInt(pid));
+					case "nested-required": //fall
+					case "nested-optional": {
+						for (Configurable classSpecConf : ctrlNestedConf.getNestedConfigurables()) {
+							Configurable newClassSpecConf = ClassicSaveLoaderUtil.convertClassSpecConf(classSpecConf, env);
+							ccConf.addNestedConfigurable(newClassSpecConf);
+						}
+						break;
+					}
 				}
 			}
 			for (Configurable ctrlPropConf : ctrlConf.getNestedConfigurables()) {

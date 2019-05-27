@@ -21,7 +21,6 @@ import java.util.function.Function;
 public class ClassicSaveLoaderUtil {
 	@NotNull
 	public static Configurable convertCustomControlClassConf(@NotNull Configurable cccConf, @NotNull Env env) {
-		Configurable retConfigClass = new Configurable.Simple("config-class");
 		/* CLASSIC FORMAT
 		<custom-control>
 			<class-spec ...
@@ -29,7 +28,7 @@ public class ClassicSaveLoaderUtil {
 			<comment>...
 		*/
 		Configurable classSpecConf = cccConf.getConfigurableNotNull("class-spec");
-		convertClassSpecConf(classSpecConf, retConfigClass, env);
+		Configurable retConfigClass = convertClassSpecConf(classSpecConf, env);
 		Configurable commentConf = cccConf.getConfigurable("comment");
 		if (commentConf != null) {
 			retConfigClass.addNestedConfigurable(commentConf);
@@ -38,8 +37,9 @@ public class ClassicSaveLoaderUtil {
 		return retConfigClass;
 	}
 
-	private static void convertClassSpecConf(@NotNull Configurable classSpecConf, @NotNull Configurable configClassConf,
-											 @NotNull Env env) {
+	@NotNull
+	public static Configurable convertClassSpecConf(@NotNull Configurable classSpecConf, @NotNull Env env) {
+		Configurable configClassConf = new Configurable.Simple("config-class");
 		/* CLASSIC FORMAT
 		<class-spec name="RscStructuredText">
 			<optional-properties>
@@ -92,6 +92,8 @@ public class ClassicSaveLoaderUtil {
 		if (extend != null) {
 			configClassConf.addAttribute("extend", extend);
 		}
+
+		return configClassConf;
 	}
 
 	@Nullable

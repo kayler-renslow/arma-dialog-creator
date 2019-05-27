@@ -60,7 +60,7 @@ public class ConfigClassConfigurable implements Configurable {
 					configClass.setUserComment(nested.getConfigurableBody());
 					break;
 				}
-				case "nested-class": {
+				case "config-class": {
 					ConfigClass myNested = fromConfigurable(nested, null, jobConsumer);
 					configClass.addNestedClass(myNested);
 					break;
