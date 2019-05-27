@@ -263,6 +263,7 @@ public class ConfigPropertiesEditorPane extends StackPane {
 				true
 		);
 		tp.getScrollPane().setFitToWidth(true);
+		tp.getScrollPane().setFitToHeight(true);
 		tp.setAnimated(false);
 		vboxNestedClasses.setFillWidth(true);
 
@@ -280,6 +281,7 @@ public class ConfigPropertiesEditorPane extends StackPane {
 		final ScrollPane scrollPane = tp.getScrollPane();
 		if (scrollPane != null) {
 			scrollPane.setFitToWidth(true);
+			scrollPane.setFitToHeight(true);
 			scrollPane.setStyle("-fx-background-color:transparent");
 		}
 		tp.setAnimated(false);

@@ -27,8 +27,9 @@ public class PlaceholderTitledPane extends TitledPane {
 		super(title, null);
 		this.userContentPane = contentPane;
 		this.contentPane = new StackPane();
+		this.placeholder = placeholder;
 		if (useScrollPane) {
-			this.scrollPane = new ScrollPane(contentPane);
+			this.scrollPane = new ScrollPane(this.contentPane);
 			setContent(this.scrollPane);
 		} else {
 			setContent(this.contentPane);
