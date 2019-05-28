@@ -137,6 +137,12 @@ public class ApplicationManager {
 			if (workspace.sameAs(newWorkspace)) {
 				return;
 			}
+
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.workspaceClosing(workspace);
+			}
+			stateUpdateGroup.update(ApplicationState.WorkspaceClosing);
+
 			workspace.getDataList().invalidate();
 			for (ApplicationStateSubscriber sub : subs) {
 				sub.workspaceClosed(workspace);
@@ -177,6 +183,12 @@ public class ApplicationManager {
 
 	public void loadProject(@NotNull ProjectDescriptor descriptor) throws ADCDataLoadException {
 		if (project != null) {
+
+			for (ApplicationStateSubscriber sub : subs) {
+				sub.projectClosing(project);
+			}
+			stateUpdateGroup.update(ApplicationState.ProjectClosing);
+
 			project.getDataList().invalidate();
 			for (ApplicationStateSubscriber sub : subs) {
 				sub.projectClosed(project);
