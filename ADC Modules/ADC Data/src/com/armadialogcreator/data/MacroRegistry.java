@@ -79,6 +79,13 @@ public class MacroRegistry implements Registry<String, Macro> {
 	}
 
 	@Override
+	public void projectClosing(@NotNull Project project) {
+		for (Macro m : projectMacros.getMacros()) {
+			m.invalidate();
+		}
+	}
+
+	@Override
 	public void projectClosed(@NotNull Project project) {
 		projectMacros.getMacros().invalidate();
 	}
@@ -95,6 +102,13 @@ public class MacroRegistry implements Registry<String, Macro> {
 				this.workspaceMacros = (WorkspaceMacros) d; //update to new macros
 				break;
 			}
+		}
+	}
+
+	@Override
+	public void workspaceClosing(@NotNull Workspace workspace) {
+		for (Macro m : workspaceMacros.getMacros()) {
+			m.invalidate();
 		}
 	}
 

@@ -2,6 +2,7 @@ package com.armadialogcreator.core;
 
 import com.armadialogcreator.core.sv.SerializableValue;
 import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.util.DataInvalidator;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 07/05/2016. */
-public interface Macro {
+public interface Macro extends DataInvalidator {
 
 	/** Get the key */
 	@NotNull
@@ -61,8 +62,6 @@ public interface Macro {
 	static Macro newMacro(@NotNull String key, @NotNull SerializableValue value) {
 		return new BasicMacro<>(key, value);
 	}
-
-	void invalidate();
 
 	@NotNull
 	DataContext getUserData();

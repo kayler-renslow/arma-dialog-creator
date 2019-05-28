@@ -88,6 +88,13 @@ public class FileDependencyRegistry implements Registry<File, FileDependency> {
 	}
 
 	@Override
+	public void projectClosing(@NotNull Project project) {
+		for (FileDependency fd : projectDependencies.getDependencyList()) {
+			fd.invalidate();
+		}
+	}
+
+	@Override
 	public void projectClosed(@NotNull Project project) {
 		projectDependencies.getDependencyList().invalidate();
 	}
@@ -100,6 +107,13 @@ public class FileDependencyRegistry implements Registry<File, FileDependency> {
 				this.workspaceDependencies = (WorkspaceDependencies) d;
 				break;
 			}
+		}
+	}
+
+	@Override
+	public void workspaceClosing(@NotNull Workspace workspace) {
+		for (FileDependency fd : workspaceDependencies.getDependencyList()) {
+			fd.invalidate();
 		}
 	}
 

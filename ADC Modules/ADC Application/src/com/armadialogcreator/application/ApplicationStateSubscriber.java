@@ -83,6 +83,15 @@ public interface ApplicationStateSubscriber {
 
 	/**
 	 Default implementation does nothing.
+
+	 @see ApplicationState#ProjectClosing
+	 */
+	default void projectClosing(@NotNull Project project) {
+
+	}
+
+	/**
+	 Default implementation does nothing.
 	 @see ApplicationState#ProjectClosed
 	 */
 	default void projectClosed(@NotNull Project project) {
@@ -118,6 +127,15 @@ public interface ApplicationStateSubscriber {
 	 @see ApplicationState#WorkspaceClosed
 	 */
 	default void workspaceClosed(@NotNull Workspace workspace) {
+
+	}
+
+	/**
+	 Default implementation does nothing.
+
+	 @see ApplicationState#WorkspaceClosing
+	 */
+	default void workspaceClosing(@NotNull Workspace workspace) {
 
 	}
 }

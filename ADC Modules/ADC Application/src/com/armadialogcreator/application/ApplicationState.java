@@ -43,6 +43,12 @@ public enum ApplicationState {
 	 */
 	ProjectReady,
 	/**
+	 Called whenever a project is being prepared to close.
+	 This state can be called when the application is exiting or the user is just loading a new workspace.
+	 This state should be used to decouple data and get ready for project level data to be garbage collected by Java.
+	 */
+	ProjectClosing,
+	/**
 	 Called whenever a project is closed.
 	 This state can be called when the application is exiting or the user is just loading a new project.
 	 */
@@ -59,6 +65,14 @@ public enum ApplicationState {
 	 Called whenever a workspace's {@link Workspace#getDataList()} is fully loaded and ready.
 	 */
 	WorkspaceReady,
+
+	/**
+	 Called whenever a workspace is being prepared to close.
+	 This state can be called when
+	 This state should be used to decouple data and get ready for workspace level data to be garbage collected by Java.
+	 */
+	WorkspaceClosing,
+
 	/**
 	 Called whenever a workspace is closed.
 	 This state can be called when the application is exiting or the user is just loading a new workspace.

@@ -10,7 +10,7 @@ import java.util.*;
 /**
  @author K
  @since 01/03/2019 */
-public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvider {
+public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvider, DataInvalidator {
 
 	private final NotNullValueObserver<String> classNameObserver;
 	private final ValueObserver<ConfigClass> extendClassObserver = new ValueObserver<>();
@@ -560,8 +560,9 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 		return properties.size() - propertiesInheritedOwnedByParent.size();
 	}
 
+	@Override
 	public void invalidate() {
-		//throw new UnsupportedOperationException(); // todo
+		throw new UnsupportedOperationException("todo");
 	}
 
 	@Override

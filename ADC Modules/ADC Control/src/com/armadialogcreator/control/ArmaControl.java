@@ -253,4 +253,10 @@ public class ArmaControl extends ArmaConfigClassSpecWrapper implements NamedUINo
 	public String toString() {
 		return "ArmaControl{" + getClassName() + "}";
 	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		renderer.invalidate();
+	}
 }

@@ -1,5 +1,6 @@
 package com.armadialogcreator.data;
 
+import com.armadialogcreator.util.DataInvalidator;
 import com.armadialogcreator.util.KeyValueString;
 import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +27,7 @@ import java.util.Arrays;
 
  @author Kayler
  @since 07/19/2016. */
-public class FileDependency {
+public class FileDependency implements DataInvalidator {
 	private KeyValueString[] properties;
 	private final NotNullValueObserver<File> originalFile;
 	private final NotNullValueObserver<File> remappedFile;
@@ -153,5 +154,11 @@ public class FileDependency {
 	@NotNull
 	public File getRemappedFile() {
 		return remappedFile.getValue();
+	}
+
+	@Override
+	public void invalidate() {
+		originalFile.invalidate();
+		remappedFile.invalidate();
 	}
 }

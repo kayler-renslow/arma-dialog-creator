@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.util.DataInvalidator;
 import com.armadialogcreator.util.EmptyIterable;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  @author K
  @since 02/06/2019 */
-public interface UINode {
+public interface UINode extends DataInvalidator {
 
 	/** @return an iterable that iterates all children in an order that doesn't need to matter */
 	@NotNull Iterable<? extends UINode> iterateChildNodes();
@@ -157,6 +158,11 @@ public interface UINode {
 	@NotNull UpdateListenerGroup<UINodeChange> getUpdateGroup();
 
 	UINode EMPTY = new UINode() {
+		@Override
+		public void invalidate() {
+
+		}
+
 		@Override
 		@NotNull
 		public Iterable<? extends UINode> iterateChildNodes() {

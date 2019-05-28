@@ -158,6 +158,17 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 		return KEY_NODE_IS_IN_BACKGROUND.get(control.getUserData(), false);
 	}
 
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		for (UINode node : bgControlNodes.deepIterateChildren()) {
+			node.invalidate();
+		}
+		for (UINode node : controlNodes.deepIterateChildren()) {
+			node.invalidate();
+		}
+	}
+
 	private static class ControlsNode extends SimpleBaseUINode {
 		private final ArmaDisplay display;
 		private final boolean background;
@@ -229,6 +240,11 @@ public class ArmaDisplay extends ConfigClass implements UINode {
 		@NotNull
 		public UINode deepCopy() {
 			return new ControlsNode(display, background);
+		}
+
+		@Override
+		public void invalidate() {
+
 		}
 	}
 

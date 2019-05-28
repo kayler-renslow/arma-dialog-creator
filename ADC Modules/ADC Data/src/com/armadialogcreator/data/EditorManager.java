@@ -57,8 +57,8 @@ public class EditorManager implements ApplicationStateSubscriber {
 	}
 
 	@Override
-	public void projectClosed(@NotNull Project project) {
-
+	public void projectClosing(@NotNull Project project) {
+		editingDisplay.invalidate();
 	}
 
 	public void immediatelyLoadDisplayFromConfigurable(@NotNull Configurable c) {

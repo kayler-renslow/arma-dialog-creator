@@ -82,6 +82,20 @@ public class ConfigClassRegistry implements Registry<String, ConfigClass> {
 	}
 
 	@Override
+	public void projectClosing(@NotNull Project project) {
+		for (ConfigClass cc : projectClasses.getClasses()) {
+			cc.invalidate();
+		}
+	}
+
+	@Override
+	public void workspaceClosing(@NotNull Workspace workspace) {
+		for (ConfigClass cc : workspaceClasses.getClasses()) {
+			cc.invalidate();
+		}
+	}
+
+	@Override
 	public void projectClosed(@NotNull Project project) {
 		this.projectClasses.getClasses().invalidate();
 	}
