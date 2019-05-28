@@ -213,4 +213,10 @@ public class ListboxRenderer extends ArmaControlRenderer implements BasicTextRen
 	private int getRowPixelHeight() {
 		return textRenderer.getTextLineHeight() + (int) Math.max(0, this.rowHeight * resolution.getViewportHeight());
 	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		scrollbarRenderer.invalidate();
+	}
 }

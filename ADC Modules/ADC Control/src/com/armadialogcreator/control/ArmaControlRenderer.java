@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 
  @author Kayler
  @since 05/20/2016. */
-public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent {
+public class ArmaControlRenderer extends SimpleCanvasComponent implements ViewportCanvasComponent, DataInvalidator {
 	public static final UpdateListenerGroup<UpdateListenerGroup.NoData> UNIVERSAL_RENDER_GROUP = new UpdateListenerGroup<>();
 
 	protected final ArmaControl myControl;
@@ -613,6 +613,11 @@ public class ArmaControlRenderer extends SimpleCanvasComponent implements Viewpo
 	 */
 	public void paintError(@NotNull Graphics g, @NotNull Color color) {
 		paintError(g, color, getX1(), getY1(), getWidth(), getHeight());
+	}
+
+	@Override
+	public void invalidate() {
+
 	}
 
 }

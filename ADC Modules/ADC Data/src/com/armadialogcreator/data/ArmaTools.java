@@ -1,6 +1,5 @@
-package com.armadialogcreator.arma.util;
+package com.armadialogcreator.data;
 
-import javafx.concurrent.Task;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -56,7 +55,7 @@ public class ArmaTools {
 	 This method can also convert a .jpg or .png into a .paa (just pass the .jpg as toConvert and make saveTo's path end with .paa).
 	 Besides .paa, this method can also convert .tga into another file format mentioned earlier.<br>
 	 This conversion is done by invoking Arma 3 Tools's ImageToPAA.exe<br>
-	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a {@link Task} if using with JavaFX.
+	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a new thread.
 
 	 @param arma3ToolsDirectory the directory of Arma 3 Tools installation (should be something like "Program Files x32\Steam\steamapps\common\Arma 3 Tools\")
 	 @param toConvert the image file to convert (.paa,.png, .jpg). The image file must exist, or an IOException will be thrown
@@ -86,7 +85,7 @@ public class ArmaTools {
 	/**
 	 Utilizes "BankRev.exe", which extracts PBO's. It should be noted that this will extract the entire PBO, which could
 	 take a lot of disk memory and time.<br>
-	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a {@link Task} if using with JavaFX.
+	 This method will freeze the current Thread for up to timeout milliseconds, so run this on a new thread.
 
 	 @param arma3ToolsDirectory the directory of Arma 3 Tools installation (should be something like "Program Files x32\Steam\steamapps\common\Arma 3 Tools\")
 	 @param pboToExtract the .pbo file to extract

@@ -11,6 +11,7 @@ module ADC.Data {
 	requires ADC.Canvas;
 
 	requires annotations;
+	requires java.desktop;
 	exports com.armadialogcreator.data;
 
 	opens com.armadialogcreator.data.defaultValues;

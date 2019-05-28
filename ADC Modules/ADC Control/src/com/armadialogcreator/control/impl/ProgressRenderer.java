@@ -60,7 +60,6 @@ public class ProgressRenderer extends ArmaControlRenderer {
 		addValueListener(ConfigPropertyLookup.TEXTURE, SVNull.instance, (observer, oldValue, newValue) -> {
 			textureHelper.updateAsync(newValue, mode -> {
 				updateTintedTexture();
-				return null;
 			});
 		});
 
@@ -147,5 +146,11 @@ public class ProgressRenderer extends ArmaControlRenderer {
 	public void setBackgroundColor(@NotNull Color color) {
 		super.setBackgroundColor(color);
 		this.border.setColor(color);
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		textureHelper.invalidate();
 	}
 }

@@ -269,4 +269,12 @@ public class ComboRenderer extends ArmaControlRenderer implements BasicTextRende
 			menuDown = false;
 		}
 	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		arrowEmpty_combo.invalidate();
+		arrowFull_combo.invalidate();
+		scrollbarRenderer.invalidate();
+	}
 }

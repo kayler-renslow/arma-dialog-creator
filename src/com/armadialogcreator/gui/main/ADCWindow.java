@@ -2,7 +2,7 @@ package com.armadialogcreator.gui.main;
 
 import com.armadialogcreator.control.ArmaResolution;
 import com.armadialogcreator.data.EditorManager;
-import com.armadialogcreator.data.olddata.ImagesTool;
+import com.armadialogcreator.data.ImagesTool;
 import com.armadialogcreator.gui.FXUtil;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberDialog;
 import com.armadialogcreator.gui.main.popup.ConvertingImageSubscriberNotificationCreator;

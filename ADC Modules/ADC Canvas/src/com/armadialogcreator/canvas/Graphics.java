@@ -140,7 +140,7 @@ public class Graphics {
 
 			int yy = y + row * boxHeight;
 			for (int box = 0; box < numBoxes || (box == numBoxes && remainderWidth > 0); box++) {
-				setStroke(ColorUtil.toARGB((box + row) % 2 == 0 ? color1 : color2));
+				setStroke((box + row) % 2 == 0 ? color1 : color2);
 				int xx = x + box * boxWidth;
 				fillRectangle(
 						xx, yy,

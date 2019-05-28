@@ -1,23 +1,25 @@
 package com.armadialogcreator.control.impl.utility;
 
 import com.armadialogcreator.control.ArmaControlRenderer;
+import com.armadialogcreator.control.ImagePool;
 import com.armadialogcreator.control.Texture;
 import com.armadialogcreator.control.TextureParser;
 import com.armadialogcreator.core.sv.SVNull;
 import com.armadialogcreator.core.sv.SerializableValue;
-import javafx.application.Platform;
+import com.armadialogcreator.util.DataInvalidator;
+import com.armadialogcreator.util.ImageReference;
 import javafx.scene.image.Image;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Function;
+import java.util.function.Consumer;
 
 /**
  Utility class to combine the use cases of a property that supports textures and images.
 
  @author Kayler
  @since 07/06/2017 */
-public class ImageOrTextureHelper {
+public class ImageOrTextureHelper implements DataInvalidator {
 	public enum Mode {
 		/** The property has an image */
 		Image,
@@ -33,7 +35,7 @@ public class ImageOrTextureHelper {
 
 	private final ArmaControlRenderer renderer;
 	private volatile Texture texture;
-	private volatile Image image;
+	private volatile ImageReference image;
 	private volatile Mode mode = Mode.ImageError;
 	private SerializableValue value;
 
@@ -66,8 +68,8 @@ public class ImageOrTextureHelper {
 	 @param value the value to update the helper with
 	 @param completionCallback function to use when this method's internal functionality is complete, or null if don't care
 	 */
-	public void updateAsync(@Nullable SerializableValue value, @Nullable Function<Mode, Void> completionCallback) {
-		this.value = value == SVNull.instance ? null : value;
+	public void updateAsync(@Nullable SerializableValue value, @Nullable Consumer<Mode> completionCallback) {
+		this.value = value == null ? SVNull.instance : value;
 		if (value != null) {
 			String textValue = value.toString();
 			if (textValue.length() > 0 && textValue.charAt(0) == '#') {
@@ -79,14 +81,11 @@ public class ImageOrTextureHelper {
 				} catch (IllegalArgumentException ignore) {
 					mode = Mode.TextureError;
 				}
-				Platform.runLater(() -> {
-					if (completionCallback != null) {
-						completionCallback.apply(mode);
-					}
+				if (completionCallback != null) {
+					completionCallback.accept(mode);
+				}
 
-					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
-					renderer.requestRender();
-				});
+				renderer.requestRender();
 				return;
 			}
 		}
@@ -94,27 +93,22 @@ public class ImageOrTextureHelper {
 		texture = null;
 		mode = Mode.LoadingImage;
 
-		//		ImageHelper.getImageAsync(value, image -> {
-		//			synchronized (ImageOrTextureHelper.this) {
-		//				//synchronized so that the mode and image to paint are set at the same time
-		//				if (image == null) {
-		//					this.image = null;
-		//					mode = Mode.ImageError;
-		//				} else {
-		//					this.image = image;
-		//					mode = Mode.Image;
-		//				}
-		//				Platform.runLater(() -> {
-		//					if (completionCallback != null) {
-		//						completionCallback.apply(mode);
-		//					}
-		//
-		//					//run this in the Platform.runLater to guarantee that the render request happens AFTER the completion callback
-		//					renderer.requestRender();
-		//				});
-		//			}
-		//			return null;
-		//		});
+		ImagePool.getImageAsync(this.value, image -> {
+			if (this.image != null) {
+				this.image.decrementRefCount();
+			}
+			this.image = image;
+			if (image == null) {
+				mode = Mode.ImageError;
+			} else {
+				image.incrementRefCount();
+				mode = Mode.Image;
+			}
+			if (completionCallback != null) {
+				completionCallback.accept(mode);
+			}
+			renderer.requestRender();
+		});
 	}
 
 
@@ -149,12 +143,22 @@ public class ImageOrTextureHelper {
 	 */
 	@Nullable
 	public synchronized Image getImage() {
-		return image;
+		if (image == null) {
+			return null;
+		}
+		return image.getImage();
 	}
 
 	/** @return the last value passed through {@link #updateAsync(SerializableValue)} */
 	@Nullable
 	public SerializableValue getValue() {
 		return value;
+	}
+
+	@Override
+	public void invalidate() {
+		if (this.image != null) {
+			this.image.decrementRefCount();
+		}
 	}
 }

@@ -2,8 +2,8 @@ package com.armadialogcreator.gui.main.popup;
 
 import com.armadialogcreator.ArmaDialogCreator;
 import com.armadialogcreator.HelpUrls;
-import com.armadialogcreator.arma.util.ArmaTools;
 import com.armadialogcreator.data.ApplicationSettings;
+import com.armadialogcreator.data.ArmaTools;
 import com.armadialogcreator.data.SettingsManager;
 import com.armadialogcreator.gui.StageDialog;
 import com.armadialogcreator.gui.main.BrowserUtil;

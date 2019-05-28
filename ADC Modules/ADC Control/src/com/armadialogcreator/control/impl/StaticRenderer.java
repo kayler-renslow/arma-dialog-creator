@@ -106,7 +106,6 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		if (renderTypeForStyle == RenderType.ImageOrTexture) {
 			pictureOrTextureHelper.updateAsync(textPropertyValue, mode -> {
 				updateTintedImage();
-				return null;
 			});
 		}
 		renderType = renderTypeForStyle;
@@ -326,4 +325,9 @@ public class StaticRenderer extends ArmaControlRenderer implements BasicTextRend
 		return RenderType.Text;
 	}
 
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		pictureOrTextureHelper.invalidate();
+	}
 }

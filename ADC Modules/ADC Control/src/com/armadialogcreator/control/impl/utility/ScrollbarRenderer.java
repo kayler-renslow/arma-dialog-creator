@@ -6,6 +6,7 @@ import com.armadialogcreator.core.ConfigClass;
 import com.armadialogcreator.core.ConfigPropertyLookupConstant;
 import com.armadialogcreator.core.sv.SVColor;
 import com.armadialogcreator.core.sv.SVNull;
+import com.armadialogcreator.util.DataInvalidator;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +15,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  @author Kayler
  @since 07/24/2017 */
-public class ScrollbarRenderer {
+public class ScrollbarRenderer implements DataInvalidator {
 	private final ImageOrTextureHelper thumb, arrowFull, arrowEmpty, border;
 	private final TintedImageHelperRenderer tintedThumb = new TintedImageHelperRenderer();
 	private final TintedImageHelperRenderer tintedArrowTop = new TintedImageHelperRenderer();
@@ -51,7 +52,6 @@ public class ScrollbarRenderer {
 				} else {
 					tintedThumb.updateImage(null); //help garbage collection
 				}
-				return null;
 			});
 		});
 		renderer.addValueListener(controlClass, arrowFull, SVNull.instance, (observer, oldValue, newValue) -> {
@@ -64,7 +64,6 @@ public class ScrollbarRenderer {
 					tintedArrowTop.updateImage(img, true);
 					tintedArrowBottom.updateImage(img, true);
 				}
-				return null;
 			});
 		});
 		renderer.addValueListener(controlClass, border, SVNull.instance, (observer, oldValue, newValue) -> {
@@ -74,7 +73,6 @@ public class ScrollbarRenderer {
 				} else {
 					tintedBorder.updateImage(null); //help garbage collection
 				}
-				return null;
 			});
 		});
 
@@ -145,4 +143,11 @@ public class ScrollbarRenderer {
 		}
 	}
 
+	@Override
+	public void invalidate() {
+		thumb.invalidate();
+		arrowEmpty.invalidate();
+		arrowFull.invalidate();
+		border.invalidate();
+	}
 }

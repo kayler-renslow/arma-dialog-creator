@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
  This value is used more as a placeholder value for when a null {@link SerializableValue} isn't allowed.
  */
 public final class SVNull extends SerializableValue {
+	@NotNull
 	public static final SVNull instance = new SVNull();
 
 	private SVNull() {

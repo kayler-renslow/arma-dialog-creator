@@ -1,9 +1,6 @@
-package com.armadialogcreator.data.olddata;
+package com.armadialogcreator.data;
 
 import com.armadialogcreator.application.Workspace;
-import com.armadialogcreator.arma.util.ArmaTools;
-import com.armadialogcreator.data.FileDependency;
-import com.armadialogcreator.data.FileDependencyRegistry;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -333,10 +330,10 @@ public class ImagesTool {
 			return destination.getName();
 		}
 
-		/** @return <code>ApplicationProperty.A3_TOOLS_DIR.getValue()</code> */
+		/** @return <code>SettingsManager.instance.getApplicationSettings().ArmaToolsSetting</code> */
 		@Override
 		public @Nullable File arma3ToolsDirectory() {
-			return ApplicationProperty.A3_TOOLS_DIR.getValue();
+			return SettingsManager.instance.getApplicationSettings().ArmaToolsSetting.get();
 		}
 
 		/** empty implementation */

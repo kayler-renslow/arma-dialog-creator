@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author K
  @since 01/04/2019 */
-public interface Observer<L extends ObserverListener> {
+public interface Observer<L extends ObserverListener> extends DataInvalidator {
 	/** Adds a listener to the observer */
 	void addListener(@NotNull L listener);
 
@@ -19,6 +19,7 @@ public interface Observer<L extends ObserverListener> {
 	void clearListeners();
 
 	/** Invokes {@link ObserverListener#observerInvalidated()} on each listener and then subsequently {@link #clearListeners()} */
+	@Override
 	default void invalidate() {
 		for (L l : getListeners()) {
 			l.observerInvalidated();

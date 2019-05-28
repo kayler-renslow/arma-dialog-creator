@@ -70,7 +70,6 @@ public class XSliderRenderer extends ArmaControlRenderer {
 			arrowEmpty.updateAsync(newValue, mode -> {
 				tintedLeftArrow.updateImage(arrowEmpty.getImage());
 				tintedRightArrow.updateImage(arrowEmpty.getImage());
-				return null;
 			});
 		});
 
@@ -81,14 +80,12 @@ public class XSliderRenderer extends ArmaControlRenderer {
 		addValueListener(ConfigPropertyLookup.BORDER, SVNull.instance, (observer, oldValue, newValue) -> {
 			border.updateAsync(newValue, mode -> {
 				tintedBorder.updateImage(border.getImage());
-				return null;
 			});
 		});
 
 		addValueListener(ConfigPropertyLookup.THUMB, SVNull.instance, (observer, oldValue, newValue) -> {
 			thumb.updateAsync(newValue, mode -> {
 				tintedThumb.updateImage(thumb.getImage());
-				return null;
 			});
 		});
 
@@ -320,5 +317,14 @@ public class XSliderRenderer extends ArmaControlRenderer {
 
 	private int getArrowSize() {
 		return getHeight();
+	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		arrowEmpty.invalidate();
+		arrowFull.invalidate();
+		border.invalidate();
+		thumb.invalidate();
 	}
 }

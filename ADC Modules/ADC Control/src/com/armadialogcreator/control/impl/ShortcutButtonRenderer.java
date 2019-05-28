@@ -415,4 +415,16 @@ public class ShortcutButtonRenderer extends ArmaControlRenderer implements Basic
 		}
 		return false;
 	}
+
+	@Override
+	public void invalidate() {
+		super.invalidate();
+		animTextureNormal.invalidate();
+		animTextureDisabled.invalidate();
+		animTextureOver.invalidate();
+		animTexturePressed.invalidate();
+		animTextureFocused.invalidate();
+		animTextureDefault.invalidate();
+		textureNoShortcut.invalidate();
+	}
 }
