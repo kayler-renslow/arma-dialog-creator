@@ -44,6 +44,21 @@ class StringTableSearchField extends SearchTextField {
 							}
 							break;
 						}
+						case '~': {
+							//find keys with number of languages >= to integer following ~
+							int num = 0;
+							try {
+								num = Integer.parseInt(searchTextAfter);
+							} catch (NumberFormatException ignore) {
+
+							}
+							for (StringTableKeyDescriptor descriptor : allItems) {
+								if (descriptor.getKey().getLanguageTokenMap().size() >= num) {
+									lvMatch.getItems().add(descriptor);
+								}
+							}
+							break;
+						}
 						case '!': { //check if key does **not** have language
 							searchTextAfter = searchTextAfter.toLowerCase();
 							for (StringTableKeyDescriptor descriptor : allItems) {

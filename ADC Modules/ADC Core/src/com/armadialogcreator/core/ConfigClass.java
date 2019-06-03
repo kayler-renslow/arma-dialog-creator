@@ -562,7 +562,9 @@ public class ConfigClass implements ConfigClassSpecification, AllowedStyleProvid
 
 	@Override
 	public void invalidate() {
-		throw new UnsupportedOperationException("todo");
+		classNameObserver.invalidate();
+		properties.invalidate();
+		extendClassObserver.invalidate();
 	}
 
 	@Override

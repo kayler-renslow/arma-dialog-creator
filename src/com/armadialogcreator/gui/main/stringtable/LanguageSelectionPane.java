@@ -95,7 +95,9 @@ class LanguageSelectionPane extends FlowPane {
 				}
 				case Replace: {
 					MapObserverChangeReplace<Language, String> replace = change.getReplace();
-					Hyperlink hyperlink = links.get(replace.getKey());
+					Hyperlink hyperlink = links.computeIfAbsent(replace.getKey(), (language) -> {
+						return createHyperlink(language);
+					});
 					hyperlink.setText(replace.getNewValue());
 					break;
 				}
@@ -113,16 +115,23 @@ class LanguageSelectionPane extends FlowPane {
 		if (links.containsKey(language)) {
 			return;
 		}
+		Hyperlink hyperlinkLanguage = createHyperlink(language);
+
+		getChildren().add(hyperlinkLanguage);
+	}
+
+	@NotNull
+	private Hyperlink createHyperlink(@NotNull Language language) {
 		Hyperlink hyperlinkLanguage = new Hyperlink(language.getName());
-		hyperlinkLanguage.setOnAction(new EventHandler<ActionEvent>() {
+		hyperlinkLanguage.setOnAction(new EventHandler<>() {
 			@Override
 			public void handle(ActionEvent event) {
 				hyperlinkLanguage.setVisited(false);
 				chosenLanguageObserver.updateValue(language);
 			}
 		});
-
-		getChildren().add(hyperlinkLanguage);
+		hyperlinkLanguage.setUserData(language);
+		return hyperlinkLanguage;
 	}
 
 	private void removeLanguage(@NotNull Language language) {

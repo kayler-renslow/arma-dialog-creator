@@ -25,4 +25,9 @@ public class CollectionUINode extends StructureUINode implements NamedUINode {
 	public NotNullValueObserver<String> getUINodeName() {
 		return collectionNameObserver;
 	}
+
+	@Override
+	public void invalidate() {
+		collectionNameObserver.invalidate();
+	}
 }

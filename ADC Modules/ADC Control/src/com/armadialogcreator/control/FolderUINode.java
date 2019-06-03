@@ -33,4 +33,9 @@ public class FolderUINode extends StructureUINode implements NamedUINode {
 	public NotNullValueObserver<String> getUINodeName() {
 		return folderNameObserver;
 	}
+
+	@Override
+	public void invalidate() {
+		folderNameObserver.invalidate();
+	}
 }

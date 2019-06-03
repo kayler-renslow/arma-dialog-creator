@@ -1,8 +1,8 @@
 <component name="libraryTable">
   <library name="org.fxmisc.richtext:richtextfx:0.9.1" type="repository">
-    <properties maven-id="org.fxmisc.richtext:richtextfx:0.9.3" />
+    <properties maven-id="org.fxmisc.richtext:richtextfx:0.10.1" />
     <CLASSES>
-      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.9.3.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/richtextfx-0.10.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/reactfx-2.0-M5.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/undofx-2.1.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/flowless-0.6.jar!/" />

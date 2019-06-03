@@ -81,7 +81,7 @@ public class DefaultStringTableXmlParser extends XmlReader implements StringTabl
 
 			if (id.length() > 0) {
 				MapObserver<Language, String> map = new MapObserver<>(new HashMap<>());
-				for (Element valueElement : XmlUtil.iterateChildElements(element)) {
+				for (Element valueElement : XmlUtil.iterateChildElements(keyElement)) {
 					Language language;
 					String langName = valueElement.getTagName();
 					try {

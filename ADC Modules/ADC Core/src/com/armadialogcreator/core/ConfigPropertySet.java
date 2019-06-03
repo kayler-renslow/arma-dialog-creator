@@ -1,5 +1,6 @@
 package com.armadialogcreator.core;
 
+import com.armadialogcreator.util.DataInvalidator;
 import com.armadialogcreator.util.IteratorIterable;
 import com.armadialogcreator.util.MapObserver;
 import com.armadialogcreator.util.MapObserverListener;
@@ -13,7 +14,7 @@ import java.util.Map;
 /**
  @author K
  @since 01/03/2019 */
-public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigProperty>> {
+public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigProperty>>, DataInvalidator {
 	private final MapObserver<String, ConfigProperty> map = new MapObserver<>(new HashMap<>());
 
 	public final boolean putPropertyIfAbsent(@NotNull ConfigProperty p) {
@@ -136,5 +137,10 @@ public class ConfigPropertySet implements Iterable<Map.Entry<String, ConfigPrope
 
 	public int size() {
 		return map.size();
+	}
+
+	@Override
+	public void invalidate() {
+
 	}
 }
