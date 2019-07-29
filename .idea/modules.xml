@@ -13,6 +13,7 @@
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC JavaFX/ADC JavaFX.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC JavaFX/ADC JavaFX.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Lang/ADC Lang.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Lang/ADC Lang.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Launcher/ADC Launcher.iml" filepath="$PROJECT_DIR$/ADC Launcher/ADC Launcher.iml" />
+      <module fileurl="file://$PROJECT_DIR$/ADC Modules/ADC Layout/ADC Layout.iml" filepath="$PROJECT_DIR$/ADC Modules/ADC Layout/ADC Layout.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" filepath="$PROJECT_DIR$/ADC Release Automation/ADC Release Automation.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Standalone Progress Window/ADC Standalone Progress Window.iml" filepath="$PROJECT_DIR$/ADC Standalone Progress Window/ADC Standalone Progress Window.iml" />
       <module fileurl="file://$PROJECT_DIR$/ADC Updater/ADC Updater.iml" filepath="$PROJECT_DIR$/ADC Updater/ADC Updater.iml" />
