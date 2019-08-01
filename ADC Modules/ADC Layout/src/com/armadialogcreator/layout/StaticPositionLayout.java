@@ -4,19 +4,24 @@ import com.armadialogcreator.util.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
+ A type of {@link Layout} where every {@link LayoutNode} manages it's own position. Margin and padding inside a {@link Bounds} has
+ no effect. Each position is basically static and is completely unmanaged by the layout.
+
  @author Kayler
  @since 7/30/19. */
-public class ScreenPositionLayout implements Layout {
+public class StaticPositionLayout implements Layout {
 
-	public static final ScreenPositionLayout SHARED = new ScreenPositionLayout();
+	/**
+	 A {@link StaticPositionLayout} instance that can be shared across all {@link LayoutNode} instances if need be
+	 since it doesn't make much sense to have multiple {@link StaticPositionLayout} instances
+	 */
+	public static final StaticPositionLayout SHARED = new StaticPositionLayout();
 
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 
-	public ScreenPositionLayout() {
+	public StaticPositionLayout() {
 		children.addListener(new LayoutChildrenListener(this));
 	}
 
@@ -38,8 +43,7 @@ public class ScreenPositionLayout implements Layout {
 	}
 
 	public void setHeight(@NotNull LayoutNode node, double height) {
-		Bounds bounds = node.getBounds();
-		bounds.setHeight(height);
+		node.getBounds().setHeight(height);
 	}
 
 	@Override
