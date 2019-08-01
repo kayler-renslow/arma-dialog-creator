@@ -52,7 +52,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	protected Keys keys = new Keys();
 
 	/** All components added */
-	protected final ObservableList<CanvasComponent> components = FXCollections.observableArrayList(new ArrayList<>());
+	private final List<CanvasComponent> components = new ArrayList<>();
 
 	private volatile boolean needPaint = false;
 	/** A synchronization lock for {@link #needPaint} to help prevent data races */
@@ -93,12 +93,6 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		this.setOnMouseReleased(mouseEvent);
 		this.setOnMouseMoved(mouseEvent);
 		this.setOnMouseDragged(mouseEvent);
-		components.addListener(new ListChangeListener<CanvasComponent>() {
-			@Override
-			public void onChanged(Change<? extends CanvasComponent> c) {
-				requestPaint();
-			}
-		});
 
 		//do this last
 		this.rootNode = rootNode;
@@ -141,6 +135,8 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	/** Adds a component to the canvas and repaints the canvas */
 	public void addComponent(@NotNull CanvasComponent component) {
 		this.components.add(component);
+		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
+		requestPaint();
 	}
 
 	/**
@@ -150,7 +146,10 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	 @return true if the component was removed, false if nothing was removed
 	 */
 	public boolean removeComponent(@NotNull CanvasComponent component) {
-		return this.components.remove(component);
+		boolean ret = this.components.remove(component);
+		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
+		requestPaint();
+		return ret;
 	}
 
 	/**
@@ -207,7 +206,6 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	 Before the paint, the components are sorted with {@link CanvasComponent#RENDER_PRIORITY_COMPARATOR}
 	 */
 	protected void paintComponents() {
-		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
 		for (CanvasComponent component : components) {
 			paintComponent(component);
 		}

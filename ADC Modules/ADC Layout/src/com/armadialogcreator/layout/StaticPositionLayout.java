@@ -14,7 +14,7 @@ import java.util.ArrayList;
 public class StaticPositionLayout implements Layout {
 
 	/**
-	 A {@link StaticPositionLayout} instance that can be shared across all {@link LayoutNode} instances if need be
+	 A {@link StaticPositionLayout} instance that can be shared aacrosscross all {@link LayoutNode} instances if need be
 	 since it doesn't make much sense to have multiple {@link StaticPositionLayout} instances
 	 */
 	public static final StaticPositionLayout SHARED = new StaticPositionLayout();

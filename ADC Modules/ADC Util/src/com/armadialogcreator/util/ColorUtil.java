@@ -3,10 +3,20 @@ package com.armadialogcreator.util;
 import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 /**
  @author K
  @since 02/16/2019 */
 public class ColorUtil {
+	private static final Random rand = new Random();
+
+	public static Color randomColor() {
+		return ColorUtil.toColor(
+				ColorUtil.darken(ColorUtil.opaqueARGB(+rand.nextInt()))
+		);
+	}
+
 	public static int multiplyAlphaARGB(int argb, double value) {
 		return toARGB(ri(argb), gi(argb), bi(argb), (int) (ai(argb) * value));
 	}

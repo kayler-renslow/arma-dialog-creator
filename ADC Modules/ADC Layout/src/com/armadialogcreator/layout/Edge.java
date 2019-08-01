@@ -1,4 +1,4 @@
-package com.armadialogcreator.canvas;
+package com.armadialogcreator.layout;
 
 /**
  Created by Kayler on 05/14/2016.

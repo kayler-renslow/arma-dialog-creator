@@ -4,4 +4,6 @@
 module ADC.Layout {
 	requires annotations;
 	requires ADC.Util;
+
+	exports com.armadialogcreator.layout;
 }

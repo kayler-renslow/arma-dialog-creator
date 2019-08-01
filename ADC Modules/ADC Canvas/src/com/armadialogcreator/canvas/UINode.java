@@ -1,5 +1,7 @@
 package com.armadialogcreator.canvas;
 
+import com.armadialogcreator.layout.Bounds;
+import com.armadialogcreator.layout.LayoutNode;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DataInvalidator;
 import com.armadialogcreator.util.EmptyIterable;
@@ -10,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  @author K
  @since 02/06/2019 */
-public interface UINode extends DataInvalidator {
+public interface UINode extends DataInvalidator, LayoutNode {
 
 	/** @return an iterable that iterates all children in an order that doesn't need to matter */
 	@NotNull Iterable<? extends UINode> iterateChildNodes();
@@ -31,6 +33,7 @@ public interface UINode extends DataInvalidator {
 	 Appends the provided node to the end of the children of this node.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
 	void addChild(@NotNull UINode node);
@@ -39,6 +42,7 @@ public interface UINode extends DataInvalidator {
 	 Appends the provided node at the specified index.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
 	void addChild(@NotNull UINode node, int index);
@@ -48,8 +52,8 @@ public interface UINode extends DataInvalidator {
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>null</code>
 
-	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 @return true if the node was removed, false if it wasn't in the children
+	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
 	boolean removeChild(@NotNull UINode node);
 
@@ -58,8 +62,8 @@ public interface UINode extends DataInvalidator {
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>null</code>
 
-	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 @return the node that was removed, or null if no node was removed
+	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
 	@Nullable
 	UINode removeChild(int index);
@@ -67,7 +71,8 @@ public interface UINode extends DataInvalidator {
 	/**
 	 Moves the provided node to a new parent's children at an index.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
-	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
+
+	 @throws IllegalStateException    when {@link #canHaveChildren()} returns false
 	 @throws IllegalArgumentException when the child is not owned by this node
 	 */
 	void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex);
@@ -76,6 +81,7 @@ public interface UINode extends DataInvalidator {
 	 Takes the moved child from the old parent and places it in this node's children.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 @see #moveChild(UINode, UINode, int) use this method to start a move.
 	 */
@@ -157,7 +163,42 @@ public interface UINode extends DataInvalidator {
 
 	@NotNull UpdateListenerGroup<UINodeChange> getUpdateGroup();
 
-	UINode EMPTY = new UINode() {
+	/** Return true if the node is enabled (user can click on it or move it with mouse), false otherwise. */
+	boolean isEnabled();
+
+	void resolutionUpdate(@NotNull Resolution newResolution);
+
+	/**
+	 Set whether is enabled or not.
+
+	 @see #setGhost(boolean)
+	 */
+	void setEnabled(boolean enabled);
+
+	/**
+	 Returns true if is invisible and is disabled, false otherwise
+	 */
+	boolean isGhost();
+
+	/**
+	 Sets the visibility and enable values. A ghost is not visible and is not enabled.
+	 */
+	void setGhost(boolean ghost);
+
+	class Empty implements UINode {
+		private Bounds bounds;
+
+		@Override
+		public void assignBounds(@NotNull Bounds bounds) {
+			this.bounds = bounds;
+		}
+
+		@Override
+		@NotNull
+		public Bounds getBounds() {
+			return bounds;
+		}
+
 		@Override
 		public void invalidate() {
 
@@ -260,5 +301,32 @@ public interface UINode extends DataInvalidator {
 		public UpdateListenerGroup<UINodeChange> getUpdateGroup() {
 			return new UpdateListenerGroup<>();
 		}
-	};
+
+		@Override
+		public boolean isEnabled() {
+			return false;
+		}
+
+		@Override
+		public void resolutionUpdate(@NotNull Resolution newResolution) {
+
+		}
+
+		@Override
+		public void setEnabled(boolean enabled) {
+
+		}
+
+		@Override
+		public boolean isGhost() {
+			return false;
+		}
+
+		@Override
+		public void setGhost(boolean ghost) {
+
+		}
+	}
+
+	;
 }

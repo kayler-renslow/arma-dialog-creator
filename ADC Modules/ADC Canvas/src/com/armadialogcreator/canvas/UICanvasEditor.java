@@ -1,5 +1,6 @@
 package com.armadialogcreator.canvas;
 
+import com.armadialogcreator.layout.Edge;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;

@@ -9,5 +9,6 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="ADC Util" />
     <orderEntry type="module" module-name="ADC JavaFX" />
+    <orderEntry type="module" module-name="ADC Layout" />
   </component>
 </module>

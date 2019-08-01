@@ -157,4 +157,112 @@ public class Bounds {
 		this.padding = padding;
 		recomputeLayout();
 	}
+
+	public double getRightX() {
+		return this.x + this.width;
+	}
+
+	public double getBottomY() {
+		return this.y + this.height;
+	}
+
+	public double getArea() {
+		return getWidth() * getHeight();
+	}
+
+	public double getCenterX() {
+		return x + (getRightX() - x) / 2;
+	}
+
+	public double getCenterY() {
+		return this.y + (getBottomY() - this.y) / 2;
+	}
+	/** @return a string that contains information on the position */
+	@NotNull
+	public String getPositionInformation() {
+		return String.format("x:%f, y:%f, width:%f, height:%f, area:%f", this.x, this.y, getWidth(), getHeight(), getArea());
+	}
+
+	/**
+	 Use this method to check if a given point is inside the bounds.
+
+	 @return true if the point is inside the bounds, false otherwise
+	 */
+	public boolean containsPoint(double x, double y) {
+		if (this.x <= x && this.y <= y) {
+			if (getRightX() >= x && getBottomY() >= y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/** Check to see if this Bounds is strictly bigger than the given Bounds and if the given Bounds is inside this one */
+	public boolean contains(@NotNull Bounds b) {
+		if (this.x < b.x && this.y < b.y) {
+			if (getRightX() > b.getRightX() && getBottomY() > b.getBottomY()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 Gets the edge(s) that the given point is closest to.
+
+	 @param x x coord relative to this's position
+	 @param y y coord relative to this's position
+	 @param leeway how close the point needs to be to get the edge (strictly positive)
+	 @return the edge the point is closest to
+	 */
+	@NotNull
+	public Edge getEdgeForPoint(double x, double y, double leeway) {
+		boolean top = false;
+		boolean right = false;
+		boolean bottom = false;
+		boolean left = false;
+
+		if (y >= this.y - leeway && y <= this.y + leeway) {
+			top = true;
+		}
+		if (x >= getRightX() - leeway && x <= getRightX() + leeway) {
+			right = true;
+		}
+		if (y >= getBottomY() - leeway && y <= getBottomY() + leeway) {
+			bottom = true;
+		}
+		if (x >= x - leeway && x <= this.x + leeway) {
+			left = true;
+		}
+
+		if (top && left) {
+			return Edge.TopLeft;
+		}
+		if (top && right) {
+			return Edge.TopRight;
+		}
+		if (bottom && left) {
+			return Edge.BottomLeft;
+		}
+		if (bottom && right) {
+			return Edge.BottomRight;
+		}
+
+		boolean xinside = x > this.x && x < getRightX();
+		if (top && xinside) {
+			return Edge.Top;
+		}
+		if (bottom && xinside) {
+			return Edge.Bottom;
+		}
+
+		boolean yinside = y > this.y && y < getBottomY();
+		if (right && yinside) {
+			return Edge.Right;
+		}
+		if (left && yinside) {
+			return Edge.Left;
+		}
+		return Edge.None;
+	}
 }
