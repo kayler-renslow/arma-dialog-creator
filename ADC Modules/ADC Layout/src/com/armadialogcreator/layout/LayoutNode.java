@@ -5,32 +5,19 @@ import org.jetbrains.annotations.NotNull;
 /**
  @author Kayler
  @since 7/23/19. */
-public abstract class LayoutNode {
-	private final Bounds bounds = new Bounds(this);
-	@NotNull Layout layout = ScreenPositionLayout.SHARED;
+public interface LayoutNode {
 
-	void setLayout(@NotNull Layout layout){
-		this.layout = layout;
-	}
 
+	/**
+	 Assigns this node a {@link Bounds} instance. This method is invoked when this {@link LayoutNode} is added to a {@link Layout}'s
+	 children via {@link Layout#getChildren()}
+
+	 @param bounds the bounds assigned to this node
+	 */
+	void assignBounds(@NotNull Bounds bounds);
+
+	/** @return the {@link Bounds} instance passed through {@link #assignBounds(Bounds)} */
 	@NotNull
-	public Bounds getBounds() {
-		return bounds;
-	}
+	Bounds getBounds();
 
-	public double getWidth() {
-		return bounds.getWidth();
-	}
-
-	public double getHeight() {
-		return bounds.getHeight();
-	}
-
-	public double getX() {
-		return 0;
-	}
-
-	double getY() {
-		return 0;
-	}
 }
