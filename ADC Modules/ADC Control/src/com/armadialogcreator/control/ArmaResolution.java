@@ -57,6 +57,7 @@ public class ArmaResolution implements Resolution {
 	}
 
 	/** Set the screen dimension (must be 16:9 ratio) */
+	@Override
 	public void setScreenDimension(@NotNull ScreenDimension dimension) {
 		this.screenWidth = dimension.width;
 		this.screenHeight = dimension.height;
@@ -64,6 +65,7 @@ public class ArmaResolution implements Resolution {
 	}
 
 	/** Set the ui scale constant */
+	@Override
 	public void setUIScale(@NotNull UIScale uiScale) {
 		this.uiScale = uiScale;
 		recalc();

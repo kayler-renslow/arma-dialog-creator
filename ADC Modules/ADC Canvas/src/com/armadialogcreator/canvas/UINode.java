@@ -95,12 +95,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	DeepUINodeIterable deepIterateChildren();
 
 	/**
-	 @return a {@link CanvasComponent} instance that will render what this node looks like,
-	 or null if this node is purely structural
-	 */
-	@Nullable CanvasComponent getComponent();
-
-	/**
 	 @return the top level node, or null if this node doesn't belong to a tree.
 	 If this node is the top level node, <code>this</code> will be returned
 	 */
@@ -148,15 +142,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 */
 	default boolean canHaveChildren() {
 		return true;
-	}
-
-	@Nullable
-	default UINode getFirstNonStructureAncestorNode() {
-		UINode node = getParentNode();
-		while (node != null && node.getComponent() == null && node != node.getRootNode()) {
-			node = node.getParentNode();
-		}
-		return node;
 	}
 
 	@NotNull DataContext getUserData();
@@ -265,12 +250,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 		@NotNull
 		public DeepUINodeIterable deepIterateChildren() {
 			return new DeepUINodeIterable(new EmptyIterable<>());
-		}
-
-		@Override
-		@Nullable
-		public CanvasComponent getComponent() {
-			return null;
 		}
 
 		@Override
