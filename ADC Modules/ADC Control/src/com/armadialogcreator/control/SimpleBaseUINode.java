@@ -1,6 +1,5 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.canvas.CanvasComponent;
 import com.armadialogcreator.canvas.DeepUINodeIterable;
 import com.armadialogcreator.canvas.UINode;
 import com.armadialogcreator.canvas.UINodeChange;
@@ -119,11 +118,6 @@ public abstract class SimpleBaseUINode implements UINode {
 		return userData;
 	}
 
-	@Override
-	@Nullable
-	public CanvasComponent getComponent() {
-		return null;
-	}
 
 	@Override
 	@Nullable

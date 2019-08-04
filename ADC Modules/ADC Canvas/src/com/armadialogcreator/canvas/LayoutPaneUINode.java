@@ -5,8 +5,8 @@ import com.armadialogcreator.layout.Layout;
 import com.armadialogcreator.layout.LayoutNode;
 import com.armadialogcreator.layout.StaticPositionLayout;
 import com.armadialogcreator.util.DataContext;
+import com.armadialogcreator.util.NotNullValueObserver;
 import com.armadialogcreator.util.UpdateListenerGroup;
-import javafx.scene.chart.PieChart;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +15,7 @@ import java.util.Iterator;
 /**
  @author Kayler
  @since 8/1/19. */
-public class LayoutPaneUINode implements UINode {
+public class LayoutPaneUINode implements NamedUINode {
 	private @NotNull Layout layout = StaticPositionLayout.SHARED;
 	private UINode parentNode = null;
 	private boolean enabled, ghost;
@@ -23,6 +23,7 @@ public class LayoutPaneUINode implements UINode {
 	private final UpdateListenerGroup<UpdateListenerGroup.NoData> renderGroup = new UpdateListenerGroup<>();
 	private final UpdateListenerGroup<UINodeChange> nodeChangeGroup = new UpdateListenerGroup<>();
 	private final DataContext userData = new DataContext();
+	private final NotNullValueObserver<String> nodeNameObserver = new NotNullValueObserver<>(layout.getName());
 
 	@NotNull
 	public Layout getLayout() {
@@ -57,35 +58,45 @@ public class LayoutPaneUINode implements UINode {
 	@Override
 	public void addChild(@NotNull UINode node) {
 		layout.getChildren().add(node);
+		nodeChangeGroup.update(new UINodeChange.AddChild(node));
 	}
 
 	@Override
 	public void addChild(@NotNull UINode node, int index) {
 		layout.getChildren().add(index, node);
+		nodeChangeGroup.update(new UINodeChange.AddChild(node, index));
 	}
 
 	@Override
 	public boolean removeChild(@NotNull UINode node) {
-		return layout.getChildren().remove(node);
+		boolean ret = layout.getChildren().remove(node);
+		if (ret) {
+			nodeChangeGroup.update(new UINodeChange.RemoveChild(node));
+		}
+		return ret;
 	}
 
 	@Override
 	@Nullable
 	public UINode removeChild(int index) {
-		return (UINode) layout.getChildren().remove(index);
+		UINode remove = (UINode) layout.getChildren().remove(index);
+		if (remove != null) {
+			nodeChangeGroup.update(new UINodeChange.RemoveChild(remove));
+		}
+		return remove;
 	}
 
 	@Override
 	public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-		if (!(newParent instanceof LayoutPaneUINode)) {
-			return;
-		}
-		LayoutPaneUINode layoutPane = (LayoutPaneUINode) newParent;
-		layout.getChildren().move(child, layoutPane.layout.getChildren(), destIndex);
+		layout.getChildren().remove(child);
+		nodeChangeGroup.update(new UINodeChange.MoveChild(child, this, newParent, destIndex, true));
+		newParent.acceptMovedChild(child, this, destIndex);
 	}
 
 	@Override
 	public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
+		nodeChangeGroup.update(new UINodeChange.MoveChild(child, this, oldParent, destIndex, false));
+		layout.getChildren().add(child);
 	}
 
 	@Override
@@ -124,11 +135,6 @@ public class LayoutPaneUINode implements UINode {
 	}
 
 	@Override
-	public void resolutionUpdate(@NotNull Resolution newResolution) {
-		throw new UnsupportedOperationException("todo");
-	}
-
-	@Override
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
 	}
@@ -156,6 +162,12 @@ public class LayoutPaneUINode implements UINode {
 	@Override
 	public void invalidate() {
 		layout.invalidate();
+		nodeNameObserver.invalidate();
+	}
+
+	@Override
+	public @NotNull NotNullValueObserver<String> getUINodeName() {
+		return nodeNameObserver;
 	}
 
 	private class MyUINodeIterable implements Iterable<UINode>, Iterator<UINode> {

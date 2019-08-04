@@ -75,8 +75,6 @@ public class UICanvasEditor extends UICanvas {
 
 		setConfig(configuration);
 
-		gc.setTextBaseline(VPos.CENTER);
-
 		absRegionComponent = new ArmaAbsoluteBoxComponent(colors.absRegion, resolution);
 		selection.selected.addListener(new ListChangeListener<UINode>() {
 			@Override
@@ -167,7 +165,7 @@ public class UICanvasEditor extends UICanvas {
 			gc.save();
 			gc.setStroke(colors.selection);
 			gc.setLineWidth(2);
-			gc.strokeRectangle(selection);
+			gc.strokeRectangle(selection.x1, selection.y1, selection.getWidth(), selection.getHeight());
 			gc.restore();
 		}
 	}
@@ -179,10 +177,7 @@ public class UICanvasEditor extends UICanvas {
 		Iterator<UINode> iter = selection.getSelected().iterator();
 		while (iter.hasNext()) {
 			UINode node = iter.next();
-			if (node.getComponent() == null) {
-				continue;
-			}
-			if (node.getComponent().isGhost()) {
+			if (node.isGhost()) {
 				iter.remove();
 				continue;
 			}
@@ -594,6 +589,14 @@ public class UICanvasEditor extends UICanvas {
 		void selectTo(int x, int y) {
 			this.x2 = x;
 			this.y2 = y;
+		}
+
+		public int getWidth() {
+			return Math.abs(x2 - x1);
+		}
+
+		public int getHeight() {
+			return Math.abs(y2 - y1);
 		}
 	}
 

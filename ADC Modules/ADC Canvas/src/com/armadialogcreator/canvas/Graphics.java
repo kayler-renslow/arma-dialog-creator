@@ -1,6 +1,7 @@
 package com.armadialogcreator.canvas;
 
 import com.armadialogcreator.util.ColorUtil;
+import com.armadialogcreator.util.ReadOnlyIterable;
 import javafx.geometry.VPos;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
@@ -28,6 +29,10 @@ public class Graphics {
 
 	/**
 	 Use this function to paint something after the initial {@link UICanvas#paint()} is invoked.
+	 For each consumer in {@link #getPaintLast()}, they will all be painted on the same
+	 {@link Graphics#save()} and {@link Graphics#restore()} rather than each Consumer getting
+	 it's own save and restore. This means that if you change the fill color via {@link Graphics#setFill(Paint)}
+	 , it will be changed for ALL consumers in {@link #getPaintLast()} until it gets changed again.
 
 	 @param paint the function to use to paint. The returned value of the function is ignored
 	 */
@@ -35,15 +40,29 @@ public class Graphics {
 		paintLast.add(paint);
 	}
 
-	@NotNull
-	protected List<Consumer<Graphics>> getPaintLast() {
-		return paintLast;
+	/**
+	 Runs all consumers and clears {@link #getPaintLast()}
+
+	 @see #paintLast(Consumer)
+	 */
+	public void doPaintLast() {
+		for (Consumer<Graphics> c : paintLast) {
+			c.accept(this);
+		}
+		paintLast.clear();
 	}
 
+	@NotNull
+	protected ReadOnlyIterable<Consumer<Graphics>> getPaintLast() {
+		return new ReadOnlyIterable<>(paintLast);
+	}
+
+	/** @see GraphicsContext#restore() */
 	public void save() {
 		gc.save();
 	}
 
+	/** @see GraphicsContext#save() */
 	public void restore() {
 		gc.restore();
 	}
@@ -54,14 +73,6 @@ public class Graphics {
 
 	public void setStroke(int argb) {
 		gc.setStroke(ColorUtil.toColor(argb));
-	}
-
-	public void fillRectangle(@NotNull Region r) {
-		fillRectangle(r.getLeftX(), r.getTopY(), r.getWidth(), r.getHeight());
-	}
-
-	public void strokeRectangle(@NotNull Region r) {
-		strokeRectangle(r.getLeftX(), r.getTopY(), r.getWidth(), r.getHeight());
 	}
 
 	public void fillRectangle(int x, int y, int w, int h) {
@@ -169,31 +180,38 @@ public class Graphics {
 		g.paintCheckerboard(x, y, w, h, color1, color2, numBoxes);
 	}
 
+	/** @see GraphicsContext#setGlobalAlpha(double) */
 	public void setGlobalAlpha(double globalAlpha) {
 		gc.setGlobalAlpha(globalAlpha);
 	}
 
+	/** @see GraphicsContext#getGlobalAlpha() */
 	public double getGlobalAlpha() {
 		return gc.getGlobalAlpha();
 	}
 
+	/** @see GraphicsContext#clip() */
 	public void clip() {
 		gc.clip();
 	}
 
+	/** @see GraphicsContext#rect(double, double, double, double) */
 	public void rect(int x, int y, int w, int h) {
 		gc.rect(x, y, w, h);
 	}
 
+	/** @see GraphicsContext#beginPath() */
 	public void beginPath() {
 		gc.beginPath();
 	}
 
+	/** @see GraphicsContext#closePath() */
 	public void closePath() {
 		gc.closePath();
 	}
 
-	public void setLineWidth(int thickness) {
+	/** @see GraphicsContext#setLineWidth(double) */
+	public void setLineWidth(double thickness) {
 		gc.setLineWidth(thickness);
 	}
 

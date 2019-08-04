@@ -5,7 +5,7 @@ module ADC.Canvas {
 	requires ADC.JavaFX;
 	requires annotations;
 	requires ADC.Util;
-	requires ADC.Layout;
+	requires transitive ADC.Layout;
 
 	exports com.armadialogcreator.canvas;
 }

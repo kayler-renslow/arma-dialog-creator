@@ -11,5 +11,6 @@ public interface Layout extends DataInvalidator {
 	void recomputePositions();
 
 	@NotNull ListObserver<LayoutNode> getChildren();
+	@NotNull String getName();
 
 }

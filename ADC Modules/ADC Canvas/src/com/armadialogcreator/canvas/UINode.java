@@ -33,6 +33,8 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 Appends the provided node to the end of the children of this node.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+	 <p>
+	 This method will create a {@link UINodeChange.AddChild} change inside {@link #getUpdateGroup()}
 
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
@@ -42,6 +44,8 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 Appends the provided node at the specified index.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+	 <p>
+	 This method will create a {@link UINodeChange.AddChild} change inside {@link #getUpdateGroup()}
 
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 */
@@ -51,6 +55,9 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 Removes the provided node from the direct children of this node.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>null</code>
+	 <p>
+	 This method will create a {@link UINodeChange.RemoveChild} change inside {@link #getUpdateGroup()}
+	 if a child was actually removed (this returns true)
 
 	 @return true if the node was removed, false if it wasn't in the children
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
@@ -61,6 +68,9 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 Removes the node at the specified index from the direct children of this node.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>null</code>
+	 <p>
+	 This method will create a {@link UINodeChange.RemoveChild} change inside {@link #getUpdateGroup()}
+	 if a child was actually removed (this returns true).
 
 	 @return the node that was removed, or null if no node was removed
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
@@ -71,6 +81,9 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	/**
 	 Moves the provided node to a new parent's children at an index.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
+	 <p>
+	 This method will create a {@link UINodeChange.MoveChild} change inside {@link #getUpdateGroup()}
+	 and {@link UINodeChange.MoveChild#isEntryUpdate()} will return true.
 
 	 @throws IllegalStateException    when {@link #canHaveChildren()} returns false
 	 @throws IllegalArgumentException when the child is not owned by this node
@@ -81,6 +94,9 @@ public interface UINode extends DataInvalidator, LayoutNode {
 	 Takes the moved child from the old parent and places it in this node's children.
 	 In this method, the {@link #getRootNode()} is also updated for the child and it's descendants as well.
 	 The new {@link #getRootNode()} will become <code>this</code>
+
+	 This method will create a {@link UINodeChange.MoveChild} change inside {@link #getUpdateGroup()}
+	 and {@link UINodeChange.MoveChild#isEntryUpdate()} will return false.
 
 	 @throws IllegalStateException when {@link #canHaveChildren()} returns false
 	 @see #moveChild(UINode, UINode, int) use this method to start a move.
@@ -150,8 +166,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 
 	/** Return true if the node is enabled (user can click on it or move it with mouse), false otherwise. */
 	boolean isEnabled();
-
-	void resolutionUpdate(@NotNull Resolution newResolution);
 
 	/**
 	 Set whether is enabled or not.
@@ -284,11 +298,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 		@Override
 		public boolean isEnabled() {
 			return false;
-		}
-
-		@Override
-		public void resolutionUpdate(@NotNull Resolution newResolution) {
-
 		}
 
 		@Override

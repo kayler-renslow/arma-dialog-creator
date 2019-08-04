@@ -12,5 +12,6 @@
     <orderEntry type="module" module-name="ADC Util" />
     <orderEntry type="module" module-name="ADC Expression" />
     <orderEntry type="library" name="openjfx-javafx-11.0.2" level="application" />
+    <orderEntry type="module" module-name="ADC Layout" />
   </component>
 </module>

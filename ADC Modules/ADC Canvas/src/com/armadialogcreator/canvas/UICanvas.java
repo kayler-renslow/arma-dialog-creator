@@ -51,9 +51,6 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	protected Keys keys = new Keys();
 
-	/** All components added */
-	private final List<CanvasComponent> components = new ArrayList<>();
-
 	private volatile boolean needPaint = false;
 	/** A synchronization lock for {@link #needPaint} to help prevent data races */
 	private final Object needPaintLock = new Object();
@@ -66,22 +63,18 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	public UICanvas(@NotNull Resolution resolution, @NotNull UINode rootNode) {
 		this.resolution = resolution;
-		resolution.getUpdateGroup().addListener(new UpdateGroupListener<Resolution>() {
+		resolution.getUpdateGroup().addListener(new UpdateGroupListener<>() {
 			@Override
 			public void update(@NotNull UpdateListenerGroup<Resolution> group, @NotNull Resolution newResolution) {
 				if (getCanvasHeight() != newResolution.getScreenHeight() || getCanvasWidth() != newResolution.getScreenWidth()) {
 					canvas.setWidth(newResolution.getScreenWidth());
 					canvas.setHeight(newResolution.getScreenHeight());
 				}
-				for (UINode node : UICanvas.this.rootNode.deepIterateChildren()) {
-					CanvasComponent component = node.getComponent();
-					if (component != null) {
-						component.resolutionUpdate(newResolution);
-					}
-				}
 				requestPaint();
 			}
 		});
+
+		gc.setTextBaseline(VPos.TOP);
 
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
 		this.gc = new Graphics(canvas.getGraphicsContext2D());
@@ -132,44 +125,18 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		}
 	}
 
-	/** Adds a component to the canvas and repaints the canvas */
-	public void addComponent(@NotNull CanvasComponent component) {
-		this.components.add(component);
-		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
-		requestPaint();
-	}
-
-	/**
-	 Removes the given component from the canvas render and user interaction.
-
-	 @param component component to remove
-	 @return true if the component was removed, false if nothing was removed
-	 */
-	public boolean removeComponent(@NotNull CanvasComponent component) {
-		boolean ret = this.components.remove(component);
-		this.components.sort(CanvasComponent.RENDER_PRIORITY_COMPARATOR);
-		requestPaint();
-		return ret;
-	}
-
 	/**
 	 Paint the canvas. Order of painting is:
 	 <ol>
 	 <li>background</li>
 	 <li>{@link #getRootNode()}</li>
-	 <li>components inserted via {@link #addComponent(CanvasComponent)}</li>
 	 </ol>
 	 */
 	protected void paint() {
-		gc.setTextBaseline(VPos.TOP); //we actually need to run this with each call for some reason
 		gc.save();
 		paintBackground();
 		paintRootNode();
-		paintComponents();
-		for (Consumer<Graphics> f : gc.getPaintLast()) {
-			f.accept(gc);
-		}
-		gc.getPaintLast().clear();
+		gc.doPaintLast();
 		gc.restore();
 	}
 
@@ -197,17 +164,6 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	private void paintNodes(@NotNull UINode node) {
 		for (UINode child : node.deepIterateChildren()) {
 			paintNode(child);
-		}
-	}
-
-	/**
-	 Paints all components. Each component will get an individual render space
-	 (GraphicsContext attributes will not bleed through each component).
-	 Before the paint, the components are sorted with {@link CanvasComponent#RENDER_PRIORITY_COMPARATOR}
-	 */
-	protected void paintComponents() {
-		for (CanvasComponent component : components) {
-			paintComponent(component);
 		}
 	}
 
@@ -292,6 +248,13 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	protected void mouseMoved(int mousex, int mousey) {
 	}
 
+	protected double toPercentageX(int pixelX) {
+		return pixelX / canvas.getWidth();
+	}
+
+	protected double toPercentageY(int pixelY) {
+		return pixelY / canvas.getHeight();
+	}
 
 	/**
 	 This should be called when any mouse event occurs (press, release, drag, move, etc)
