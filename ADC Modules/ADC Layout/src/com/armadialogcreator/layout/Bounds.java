@@ -1,186 +1,120 @@
 package com.armadialogcreator.layout;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  Specifies how a node is structured within a layout.
 
  @author Kayler
  @since 7/23/19. */
-public class Bounds {
-	private Insets margin = Insets.NONE;
-	private Insets padding = Insets.NONE;
-
-	private double minWidth, width, maxWidth;
-	private double minHeight, height, maxHeight;
-	private double x, y;
-	private final LayoutNode node;
-	private final Layout layout;
-
-	Bounds(@NotNull LayoutNode node, @NotNull Layout layout) {
-		this.node = node;
-		this.layout = layout;
-	}
-
-	/** @return the layout for which this bounds belongs to */
-	@NotNull
-	public Layout getLayout() {
-		return layout;
-	}
-
-	/**
-	 Sets the width for the node
-
-	 @param width the new width for the node
-	 */
-	void setWidth(double width) {
-		this.width = width;
-	}
-
-	/**
-	 Sets the height for the node
-
-	 @param height the new height for the node
-	 */
-	void setHeight(double height) {
-		this.height = height;
-	}
+public interface Bounds {
 
 	/** @return the x position of the node */
-	public double getX() {
-		return x;
-	}
+	double getX();
+
+	/** @return the left x position of the node (same as {@link #getX()}) */
+	double getLeftX();
 
 	/**
 	 Sets the x position of the node
 
 	 @param x the x position
 	 */
-	void setX(double x) {
-		this.x = x;
-	}
+	void setX(double x);
 
 	/**
 	 @return the y position of the node
 	 */
-	public double getY() {
-		return y;
-	}
+	double getY();
+
+	/**
+	 @return the top y position of the node (same as {@link #getY()})
+	 */
+	double getTopY();
 
 	/**
 	 Sets the y position of the node
 
 	 @param y the y position
 	 */
-	void setY(double y) {
-		this.y = y;
-	}
+	void setY(double y);
 
 	/** @return the width of the node */
-	public double getWidth() {
-		return this.width;
-	}
+	double getWidth();
+
+	/** @see #getWidth() */
+	void setWidth(double width);
 
 	/** @return the height of the node */
-	public double getHeight() {
-		return this.height;
-	}
+	double getHeight();
+
+	/** @see #getHeight() */
+	void setHeight(double height);
 
 	/** @return the minimum width of the node */
-	public double getMinWidth() {
-		return minWidth;
-	}
+	double getMinWidth();
 
-	private void recomputeLayout() {
-		this.layout.recomputePositions();
-	}
 
 	/** @see #getMinWidth() */
-	public void setMinWidth(double minWidth) {
-		this.minWidth = minWidth;
-		recomputeLayout();
-	}
+	void setMinWidth(double minWidth);
 
 	/** @return the maximum width of the node */
-	public double getMaxWidth() {
-		return maxWidth;
-	}
+	double getMaxWidth();
 
 	/** @see #getMaxWidth() */
-	public void setMaxWidth(double maxWidth) {
-		this.maxWidth = maxWidth;
-		recomputeLayout();
-	}
+	void setMaxWidth(double maxWidth);
 
 	/** @return the minimum height of the node */
-	public double getMinHeight() {
-		return minHeight;
-	}
+	double getMinHeight();
 
 	/** @see #getMinHeight() */
-	public void setMinHeight(double minHeight) {
-		this.minHeight = minHeight;
-		recomputeLayout();
-	}
+	void setMinHeight(double minHeight);
 
 	/** @return the maximum height of the node */
-	public double getMaxHeight() {
-		return maxHeight;
-	}
+	double getMaxHeight();
 
 	/** @see #getMaxHeight() */
-	public void setMaxHeight(double maxHeight) {
-		this.maxHeight = maxHeight;
-		recomputeLayout();
-	}
+	void setMaxHeight(double maxHeight);
 
 	/** @return the margin of this bounds */
 	@NotNull
-	public Insets getMargin() {
-		return margin;
-	}
+	Insets getMargin();
 
-	/** @see #getMargin()  */
-	public void setMargin(@NotNull Insets margin) {
-		this.margin = margin;
-		recomputeLayout();
-	}
+	/** @see #getMargin() */
+	void setMargin(@NotNull Insets margin);
 
 	/** @return the padding of this bounds */
 	@NotNull
-	public Insets getPadding() {
-		return padding;
-	}
+	Insets getPadding();
 
 	/** @see #getPadding() */
-	public void setPadding(@NotNull Insets padding) {
-		this.padding = padding;
-		recomputeLayout();
+	void setPadding(@NotNull Insets padding);
+
+	default double getRightX() {
+		return getX() + getWidth();
 	}
 
-	public double getRightX() {
-		return this.x + this.width;
+	default double getBottomY() {
+		return getY() + getHeight();
 	}
 
-	public double getBottomY() {
-		return this.y + this.height;
-	}
-
-	public double getArea() {
+	default double getArea() {
 		return getWidth() * getHeight();
 	}
 
-	public double getCenterX() {
-		return x + (getRightX() - x) / 2;
+	default double getCenterX() {
+		return getX() + (getRightX() - getX()) / 2;
 	}
 
-	public double getCenterY() {
-		return this.y + (getBottomY() - this.y) / 2;
+	default double getCenterY() {
+		return this.getY() + (getBottomY() - this.getY()) / 2;
 	}
+
 	/** @return a string that contains information on the position */
 	@NotNull
-	public String getPositionInformation() {
-		return String.format("x:%f, y:%f, width:%f, height:%f, area:%f", this.x, this.y, getWidth(), getHeight(), getArea());
+	default String getPositionInformation() {
+		return String.format("x:%f, y:%f, width:%f, height:%f, area:%f", this.getX(), this.getY(), getWidth(), getHeight(), getArea());
 	}
 
 	/**
@@ -188,8 +122,8 @@ public class Bounds {
 
 	 @return true if the point is inside the bounds, false otherwise
 	 */
-	public boolean containsPoint(double x, double y) {
-		if (this.x <= x && this.y <= y) {
+	default boolean containsPoint(double x, double y) {
+		if (this.getX() <= x && this.getY() <= y) {
 			if (getRightX() >= x && getBottomY() >= y) {
 				return true;
 			}
@@ -198,8 +132,8 @@ public class Bounds {
 	}
 
 	/** Check to see if this Bounds is strictly bigger than the given Bounds and if the given Bounds is inside this one */
-	public boolean contains(@NotNull Bounds b) {
-		if (this.x < b.x && this.y < b.y) {
+	default boolean contains(@NotNull Bounds b) {
+		if (this.getX() < b.getX() && this.getY() < b.getY()) {
 			if (getRightX() > b.getRightX() && getBottomY() > b.getBottomY()) {
 				return true;
 			}
@@ -210,28 +144,30 @@ public class Bounds {
 	/**
 	 Gets the edge(s) that the given point is closest to.
 
-	 @param x x coord relative to this's position
-	 @param y y coord relative to this's position
+	 @param xpos x coord relative to this's position
+	 @param ypos y coord relative to this's position
 	 @param leeway how close the point needs to be to get the edge (strictly positive)
-	 @return the edge the point is closest to
+	 @return the edge the point is closest to, or null if not close to an edge
 	 */
-	@NotNull
-	public Edge getEdgeForPoint(double x, double y, double leeway) {
+	@Nullable
+	default Edge getEdgeForPoint(double xpos, double ypos, double leeway) {
 		boolean top = false;
 		boolean right = false;
 		boolean bottom = false;
 		boolean left = false;
+		final double y = getY();
+		final double x = getX();
 
-		if (y >= this.y - leeway && y <= this.y + leeway) {
+		if (ypos >= y - leeway && ypos <= y + leeway) {
 			top = true;
 		}
-		if (x >= getRightX() - leeway && x <= getRightX() + leeway) {
+		if (xpos >= getRightX() - leeway && xpos <= getRightX() + leeway) {
 			right = true;
 		}
-		if (y >= getBottomY() - leeway && y <= getBottomY() + leeway) {
+		if (ypos >= getBottomY() - leeway && ypos <= getBottomY() + leeway) {
 			bottom = true;
 		}
-		if (x >= x - leeway && x <= this.x + leeway) {
+		if (xpos >= xpos - leeway && xpos <= x + leeway) {
 			left = true;
 		}
 
@@ -248,7 +184,7 @@ public class Bounds {
 			return Edge.BottomRight;
 		}
 
-		boolean xinside = x > this.x && x < getRightX();
+		boolean xinside = xpos > x && xpos < getRightX();
 		if (top && xinside) {
 			return Edge.Top;
 		}
@@ -256,13 +192,14 @@ public class Bounds {
 			return Edge.Bottom;
 		}
 
-		boolean yinside = y > this.y && y < getBottomY();
+		boolean yinside = ypos > y && ypos < getBottomY();
 		if (right && yinside) {
 			return Edge.Right;
 		}
 		if (left && yinside) {
 			return Edge.Left;
 		}
-		return Edge.None;
+		return null;
 	}
+
 }

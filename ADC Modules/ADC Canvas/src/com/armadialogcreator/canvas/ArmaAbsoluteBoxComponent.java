@@ -28,12 +28,12 @@ class ArmaAbsoluteBoxComponent {
 	public void paint(@NotNull Graphics graphics) {
 		graphics.save();
 		graphics.setStroke(backgroundColor);
-		graphics.strokeRectangle(
-				resolution.getViewportX(),
-				resolution.getViewportY(),
-				resolution.getViewportWidth(),
-				resolution.getViewportHeight()
-		);
+		//		graphics.strokeRectangle(
+		//				resolution.getViewportX(),
+		//				resolution.getViewportY(),
+		//				resolution.getViewportWidth(),
+		//				resolution.getViewportHeight()
+		//		);
 		graphics.restore();
 	}
 

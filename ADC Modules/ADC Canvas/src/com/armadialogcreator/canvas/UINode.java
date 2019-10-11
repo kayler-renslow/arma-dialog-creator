@@ -1,10 +1,8 @@
 package com.armadialogcreator.canvas;
 
-import com.armadialogcreator.layout.Bounds;
 import com.armadialogcreator.layout.LayoutNode;
 import com.armadialogcreator.util.DataContext;
 import com.armadialogcreator.util.DataInvalidator;
-import com.armadialogcreator.util.EmptyIterable;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -16,9 +14,6 @@ public interface UINode extends DataInvalidator, LayoutNode {
 
 	/** @return an iterable that iterates all children in an order that doesn't need to matter */
 	@NotNull Iterable<? extends UINode> iterateChildNodes();
-
-	/** @return the update group for when a re-render is requested for this node */
-	@NotNull UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup();
 
 	/** @return how many children this node has */
 	int getChildCount();
@@ -164,157 +159,4 @@ public interface UINode extends DataInvalidator, LayoutNode {
 
 	@NotNull UpdateListenerGroup<UINodeChange> getUpdateGroup();
 
-	/** Return true if the node is enabled (user can click on it or move it with mouse), false otherwise. */
-	boolean isEnabled();
-
-	/**
-	 Set whether is enabled or not.
-
-	 @see #setGhost(boolean)
-	 */
-	void setEnabled(boolean enabled);
-
-	/**
-	 Returns true if is invisible and is disabled, false otherwise
-	 */
-	boolean isGhost();
-
-	/**
-	 Sets the visibility and enable values. A ghost is not visible and is not enabled.
-	 */
-	void setGhost(boolean ghost);
-
-	class Empty implements UINode {
-		private Bounds bounds;
-
-		@Override
-		public void assignBounds(@NotNull Bounds bounds) {
-			this.bounds = bounds;
-		}
-
-		@Override
-		@NotNull
-		public Bounds getBounds() {
-			return bounds;
-		}
-
-		@Override
-		public void invalidate() {
-
-		}
-
-		@Override
-		@NotNull
-		public Iterable<? extends UINode> iterateChildNodes() {
-			return new EmptyIterable<>();
-		}
-
-		@Override
-		@NotNull
-		public UpdateListenerGroup<UpdateListenerGroup.NoData> renderUpdateGroup() {
-			return new UpdateListenerGroup<>();
-		}
-
-		@Override
-		public int getChildCount() {
-			return 0;
-		}
-
-		@Override
-		public int indexOf(@NotNull UINode child) {
-			return -1;
-		}
-
-		@Override
-		public boolean containsChildNode(@NotNull UINode node) {
-			return false;
-		}
-
-		@Override
-		public void addChild(@NotNull UINode node) {
-
-		}
-
-		@Override
-		public void addChild(@NotNull UINode node, int index) {
-
-		}
-
-		@Override
-		public boolean removeChild(@NotNull UINode node) {
-			return false;
-		}
-
-		@Override
-		public @Nullable UINode removeChild(int index) {
-			return null;
-		}
-
-		@Override
-		public void moveChild(@NotNull UINode child, @NotNull UINode newParent, int destIndex) {
-
-		}
-
-		@Override
-		public void acceptMovedChild(@NotNull UINode child, @NotNull UINode oldParent, int destIndex) {
-
-		}
-
-		@Override
-		@NotNull
-		public DeepUINodeIterable deepIterateChildren() {
-			return new DeepUINodeIterable(new EmptyIterable<>());
-		}
-
-		@Override
-		@Nullable
-		public UINode getParentNode() {
-			return null;
-		}
-
-		@Override
-		public void setParentNode(@Nullable UINode newParent) {
-
-		}
-
-		@Override
-		@NotNull
-		public UINode deepCopy() {
-			return this;
-		}
-
-		@Override
-		@NotNull
-		public DataContext getUserData() {
-			return new DataContext();
-		}
-
-		@Override
-		@NotNull
-		public UpdateListenerGroup<UINodeChange> getUpdateGroup() {
-			return new UpdateListenerGroup<>();
-		}
-
-		@Override
-		public boolean isEnabled() {
-			return false;
-		}
-
-		@Override
-		public void setEnabled(boolean enabled) {
-
-		}
-
-		@Override
-		public boolean isGhost() {
-			return false;
-		}
-
-		@Override
-		public void setGhost(boolean ghost) {
-
-		}
-	}
-
-	;
 }

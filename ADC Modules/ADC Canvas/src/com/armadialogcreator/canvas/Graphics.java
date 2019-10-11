@@ -1,5 +1,6 @@
 package com.armadialogcreator.canvas;
 
+import com.armadialogcreator.layout.Bounds;
 import com.armadialogcreator.util.ColorUtil;
 import com.armadialogcreator.util.ReadOnlyIterable;
 import javafx.geometry.VPos;
@@ -22,9 +23,11 @@ import java.util.function.Consumer;
 public class Graphics {
 	private final List<Consumer<Graphics>> paintLast = new ArrayList<>();
 	private final GraphicsContext gc;
+	private final Resolution resolution;
 
-	public Graphics(@NotNull GraphicsContext gc) {
+	public Graphics(@NotNull GraphicsContext gc, @NotNull Resolution resolution) {
 		this.gc = gc;
+		this.resolution = resolution;
 	}
 
 	/**
@@ -75,8 +78,24 @@ public class Graphics {
 		gc.setStroke(ColorUtil.toColor(argb));
 	}
 
+	public void fillRectangle(@NotNull Bounds bounds) {
+		final int x = (int) (bounds.getX() * resolution.getScreenWidth());
+		final int y = (int) (bounds.getY() * resolution.getScreenHeight());
+		final int w = (int) (bounds.getWidth() * resolution.getScreenWidth());
+		final int h = (int) (bounds.getHeight() * resolution.getScreenHeight());
+		this.fillRectangle(x, y, w, h);
+	}
+
 	public void fillRectangle(int x, int y, int w, int h) {
 		gc_fillRectangleCrisp(x, y, w, h);
+	}
+
+	public void strokeRectangle(@NotNull Bounds bounds) {
+		final int x = (int) (bounds.getX() * resolution.getScreenWidth());
+		final int y = (int) (bounds.getY() * resolution.getScreenHeight());
+		final int w = (int) (bounds.getWidth() * resolution.getScreenWidth());
+		final int h = (int) (bounds.getHeight() * resolution.getScreenHeight());
+		this.strokeRectangle(x, y, w, h);
 	}
 
 	public void strokeRectangle(int x, int y, int w, int h) {

@@ -1,12 +1,13 @@
 package com.armadialogcreator.canvas;
 
+import com.armadialogcreator.layout.Bounds;
 import com.armadialogcreator.layout.Edge;
+import com.armadialogcreator.layout.SimpleBounds;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Point2D;
-import javafx.geometry.VPos;
 import javafx.scene.Cursor;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.effect.DropShadow;
@@ -43,14 +44,14 @@ public class UICanvasEditor extends UICanvas {
 
 	private KeyMap keyMap = new KeyMap();
 
-	/** Component that is ready to be scaled, null if none is ready to be scaled */
-	private UINode scaleNode;
+	/** {@link RenderAnchorPoint} that is ready to be scaled, null if none is ready to be scaled */
+	private RenderAnchorPoint scalePoint;
 	/** Edge that the scaling will be conducted, or Edge.None is no scaling is being done */
-	private Edge scaleEdge = Edge.None;
-	/** Component that the mouse is over, or null if not over any component */
-	private UINode mouseOverNode;
+	private @Nullable Edge scaleEdge = null;
+	/** {@link RenderAnchorPoint} that the mouse is over, or null if not over any */
+	private RenderAnchorPoint mouseOverPoint;
 	/** Component that the component context menu was created on, or null if the component context menu isn't open */
-	private UINode contextMenuControl;
+	private RenderAnchorPoint contextMenuPoint;
 
 	private UICanvasConfiguration calc;
 
@@ -67,26 +68,19 @@ public class UICanvasEditor extends UICanvas {
 	private boolean waitingForZXRelease = false;
 	private long zxPressStartTimeMillis;
 
-	private final UpdateListenerGroup<UINode> doubleClickUpdateGroup = new UpdateListenerGroup<>();
+	private final UpdateListenerGroup<RenderAnchorPoint> doubleClickUpdateGroup = new UpdateListenerGroup<>();
 	private Effect selectionEffect;
 
-	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull UINode rootNode) {
-		super(resolution, rootNode);
+	public UICanvasEditor(@NotNull Resolution resolution, @NotNull UICanvasConfiguration configuration, @NotNull UIRenderer rootRenderer) {
+		super(resolution, rootRenderer);
 
 		setConfig(configuration);
 
 		absRegionComponent = new ArmaAbsoluteBoxComponent(colors.absRegion, resolution);
-		selection.selected.addListener(new ListChangeListener<UINode>() {
+		selection.selected.addListener(new ListChangeListener<>() {
 			@Override
-			public void onChanged(Change<? extends UINode> c) {
+			public void onChanged(Change<? extends RenderAnchorPoint> c) {
 				requestPaint();
-			}
-		});
-
-		getTimer().getRunnables().add(new Runnable() {
-			@Override
-			public void run() {
-				prepaint();
 			}
 		});
 
@@ -102,7 +96,7 @@ public class UICanvasEditor extends UICanvas {
 	 If the passed value is null, nothing was double clicked
 	 */
 	@NotNull
-	public UpdateListenerGroup<UINode> getDoubleClickUpdateGroup() {
+	public UpdateListenerGroup<RenderAnchorPoint> getDoubleClickUpdateGroup() {
 		return doubleClickUpdateGroup;
 	}
 
@@ -132,8 +126,8 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	@Nullable
-	public UINode getMouseOverNode() {
-		return mouseOverNode;
+	public RenderAnchorPoint getMouseOverPoint() {
+		return mouseOverPoint;
 	}
 
 
@@ -144,20 +138,6 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 
-	private void prepaint() {
-		if (scaleNode != null) {
-			if (scaleNode.getRootNode() == null) {
-				scaleNode = null;
-			}
-		}
-		if (mouseOverNode != null) {
-			if (mouseOverNode.getRootNode() == null) {
-				mouseOverNode = null;
-			}
-		}
-		selection.getSelected().removeIf(next -> next.getRootNode() != this.getRootNode());
-	}
-
 	/** Paint the canvas */
 	protected void paint() {
 		super.paint();
@@ -165,68 +145,67 @@ public class UICanvasEditor extends UICanvas {
 			gc.save();
 			gc.setStroke(colors.selection);
 			gc.setLineWidth(2);
-			gc.strokeRectangle(selection.x1, selection.y1, selection.getWidth(), selection.getHeight());
+			gc.strokeRectangle(selection.bounds);
 			gc.restore();
 		}
 	}
 
 	@Override
-	protected void paintRootNode() {
-		super.paintRootNode();
+	protected void paintRootRenderer() {
+		if (isSelectingArea()) {
+			for (RenderAnchorPoint rap : selection.getSelected()) {
+				paintRendererAsSelected(rap.getRenderer());
+			}
+		}
+
+		super.paintRootRenderer();
+
 		gc.save();
-		Iterator<UINode> iter = selection.getSelected().iterator();
+		Iterator<RenderAnchorPoint> iter = selection.getSelected().iterator();
 		while (iter.hasNext()) {
-			UINode node = iter.next();
-			if (node.isGhost()) {
+			RenderAnchorPoint rap = iter.next();
+			if (rap.getRenderer().isGhost()) {
 				iter.remove();
 				continue;
 			}
-			gc.setStroke(node.getComponent().getBackgroundColor());
-			gc.strokeRectangle(node.getComponent());
+			gc.setStroke(rap.getRenderer().getBackgroundColor());
+			gc.strokeRectangle(rap.bounds);
 		}
 		gc.restore();
 	}
 
-	@Override
-	protected void paintNode(@NotNull UINode node) {
-		if (node.getComponent() == null) {
+	private void paintRendererAsSelected(@NotNull UIRenderer rend) {
+		if (!rend.isEnabled()) {
 			return;
 		}
-		if (isSelectingArea() && !node.getComponent().isEnabled()) {
-			return;
+		gc.save();
+		Color selectedBorderColor = colors.selection;
+		int centerx = toPixelsX(rend.getBounds().getCenterX());
+		int centery = toPixelsY(rend.getBounds().getCenterY());
+		boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
+		boolean noVert = keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT);
+		if (noHoriz) {
+			gc.setStroke(selectedBorderColor);
+			gc.setLineWidth(4);
+			gc.strokeLine(centerx, 0, centerx, getCanvasHeight());
 		}
-		boolean selected = selection.isSelected(node);
-		if (selected) {
-			gc.save();
-			Color selectedBorderColor = colors.selection;
-			int centerx = node.getComponent().getCenterX();
-			int centery = node.getComponent().getCenterY();
-			boolean noHoriz = keys.keyIsDown(keyMap.PREVENT_HORIZONTAL_MOVEMENT);
-			boolean noVert = keys.keyIsDown(keyMap.PREVENT_VERTICAL_MOVEMENT);
-			if (noHoriz) {
-				gc.setStroke(selectedBorderColor);
-				gc.setLineWidth(4);
-				gc.strokeLine(centerx, 0, centerx, getCanvasHeight());
-			}
-			if (noVert) {
-				gc.setStroke(selectedBorderColor);
-				gc.setLineWidth(4);
-				gc.strokeLine(0, centery, getCanvasWidth(), centery);
-			}
-			//draw selection 'shadow'
-			gc.setLineDashes(1, 1);
-			gc.setLineDashOffset(5);
-			int offset = 4 + (node.getComponent().getBorder() != null ? node.getComponent().getBorder().getThickness() : 0);
-			int leftX = node.getComponent().getLeftX();
-			int width = node.getComponent().getWidth();
-			int topY = node.getComponent().getTopY();
-			int height = node.getComponent().getHeight();
-			gc.setEffect(selectionEffect);
-			gc.setFill(colors.selection);
-			gc.fillRectNoAA(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
-			gc.restore();
+		if (noVert) {
+			gc.setStroke(selectedBorderColor);
+			gc.setLineWidth(4);
+			gc.strokeLine(0, centery, getCanvasWidth(), centery);
 		}
-		super.paintNode(node);
+		//draw selection 'shadow'
+		gc.setLineDashes(1, 1);
+		gc.setLineDashOffset(5);
+		int offset = 4 + (rend.getBorder() != null ? rend.getBorder().getThickness() : 0);
+		int leftX = toPixelsX(rend.getBounds().getLeftX());
+		int width = toPixelsX(rend.getBounds().getWidth());
+		int topY = toPixelsY(rend.getBounds().getTopY());
+		int height = toPixelsY(rend.getBounds().getHeight());
+		gc.setEffect(selectionEffect);
+		gc.setFill(colors.selection);
+		gc.fillRectNoAA(leftX - offset, topY - offset, width + offset + offset, height + offset + offset);
+		gc.restore();
 	}
 
 	private boolean isSelectingArea() {
@@ -237,12 +216,14 @@ public class UICanvasEditor extends UICanvas {
 	 This is called when the mouse listener is invoked and a mouse press was the event.
 	 This method should be the only one dealing with adding and removing nodes from the selection, other than mouseMove which adds to the selection via the selection box
 
-	 @param mousex x position of mouse relative to canvas
-	 @param mousey y position of mouse relative to canvas
+	 @param mouseXPixels x position of mouse relative to canvas
+	 @param mouseYPixels y position of mouse relative to canvas
 	 @param mb mouse button that was pressed
 	 */
 	@Override
-	protected void mousePressed(int mousex, int mousey, @NotNull MouseButton mb) {
+	protected void mousePressed(int mouseXPixels, int mouseYPixels, @NotNull MouseButton mb) {
+		final double mousex = toPercentageX(mouseXPixels);
+		final double mousey = toPercentageY(mouseYPixels);
 		if (getContextMenu() != null) {
 			getContextMenu().hide();
 		}
@@ -253,74 +234,65 @@ public class UICanvasEditor extends UICanvas {
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
 
-		if (scaleNode != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
-			selection.removeAllAndAdd(scaleNode);
+		if (scalePoint != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
+			selection.removeAllAndAdd(scalePoint);
 			return;
 		}
-		if (selection.numSelected() == 0 && mouseOverNode != null) { //nothing is selected, however, mouse is over a component so we need to select that
-			selection.addToSelection(mouseOverNode);
+		if (selection.numSelected() == 0 && mouseOverPoint != null) { //nothing is selected, however, mouse is over a component so we need to select that
+			selection.addToSelection(mouseOverPoint);
 			return;
 		}
-		if (selection.numSelected() == 0 && mouseOverNode == null && mb == MouseButton.SECONDARY) { //nothing is selected and right clicking the canvas
+		if (selection.numSelected() == 0 && mouseOverPoint == null && mb == MouseButton.SECONDARY) { //nothing is selected and right clicking the canvas
 			selection.clearSelected();
 			return;
 		}
 		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
 			{
-				UINode node;
+				RenderAnchorPoint rap;
 				for (int i = 0; i < selection.numSelected(); i++) {
-					node = selection.getSelected().get(i);
-					if (node.getComponent() == null) {
-						continue;
-					}
-					if (node.getComponent().containsPoint(mousex, mousey)) {
-						selection.removeAllAndAdd(node); //only 1 can be selected
+					rap = selection.getSelected().get(i);
+					if (rap.bounds.containsPoint(mousex, mousey)) {
+						selection.removeAllAndAdd(rap); //only 1 can be selected
 						return;
 					}
 				}
 			}
-			for (UINode node : rootNode.deepIterateChildren()) {
-				if (node.getComponent() == null) {
+			for (RenderAnchorPoint rap : rootRenderer.iterateAnchorPoints()) {
+				if (!rap.getRenderer().isEnabled()) {
 					continue;
 				}
-				if (!node.getComponent().isEnabled()) {
-					continue;
-				}
-				if (node.getComponent().containsPoint(mousex, mousey)) {
-					selection.removeAllAndAdd(node);
+				if (rap.bounds.containsPoint(mousex, mousey)) {
+					selection.removeAllAndAdd(rap);
 					continue; //continue to make sure we right click on front most component
 				}
 			}
 			selection.clearSelected();
 			return;
 		}
-		if (mouseOverNode != null) {
+		if (mouseOverPoint != null) {
 			if (keys.isCtrlDown()) {
-				selection.toggleFromSelection(mouseOverNode);
+				selection.toggleFromSelection(mouseOverPoint);
 				return;
 			} else {
 				if (selection.numSelected() > 0) {
-					if (selection.isSelected(mouseOverNode)) {
+					if (selection.isSelected(mouseOverPoint)) {
 						if (hasDoubleClickedCtrl && selection.numSelected() > 1) {
-							selection.removeAllAndAdd(mouseOverNode);
+							selection.removeAllAndAdd(mouseOverPoint);
 							hasDoubleClickedCtrl = false;//don't open configure node properties
 						}
 						return;
 					}
 					if (!keys.spaceDown()) { //if space is down, mouse over component should be selected
-						UINode node;
+						RenderAnchorPoint rap;
 						for (int i = 0; i < selection.numSelected(); i++) {
-							node = selection.getSelected().get(i);
-							if (node.getComponent() == null) {
-								continue;
-							}
-							if (node.getComponent().containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
+							rap = selection.getSelected().get(i);
+							if (rap.bounds.containsPoint(mousex, mousey)) { //allow this one to stay selected despite the mouse not being over it
 								return;
 							}
 						}
 					}
 				}
-				selection.removeAllAndAdd(mouseOverNode);
+				selection.removeAllAndAdd(mouseOverPoint);
 				return;
 			}
 		}
@@ -341,11 +313,11 @@ public class UICanvasEditor extends UICanvas {
 		this.mouseButtonDown = MouseButton.NONE;
 		selection.setSelecting(false);
 		setContextMenu(null, mousex, mousey);
-		contextMenuControl = null;
+		contextMenuPoint = null;
 		if (mb == MouseButton.SECONDARY) {
 			if (menuCreator != null && selection.getFirst() != null) {
-				contextMenuControl = selection.getFirst();
-				setContextMenu(menuCreator.initialize(contextMenuControl.getComponent()), mousex, mousey);
+				contextMenuPoint = selection.getFirst();
+				setContextMenu(menuCreator.initialize(contextMenuPoint), mousex, mousey);
 				showContextMenu();
 			} else if (canvasContextMenu != null) {
 				setContextMenu(canvasContextMenu, mousex, mousey);
@@ -366,17 +338,17 @@ public class UICanvasEditor extends UICanvas {
 	 @param mousex x position of mouse relative to canvas
 	 @param mousey y position of mouse relative to canvas
 	 */
-	private boolean basicMouseMovement(int mousex, int mousey) {
+	private boolean basicMouseMovement(double mousex, double mousey) {
 		updateContextMenu();
-		mouseOverNode = null;
+		mouseOverPoint = null;
 
-		for (UINode node : rootNode.deepIterateChildren()) {
-			if (node.getComponent() == null) {
-				continue;
+		for (RenderAnchorPoint rap : rootRenderer.iterateAnchorPoints()) {
+			if (rap.bounds.containsPoint(mousex, mousey)) {
+				mouseOverPoint = rap;
 			}
-			if (node.isEnabled()) {
-				if (node.getBounds().containsPoint(mousex, mousey)) {
-					mouseOverNode = node;
+			if (rap.getRenderer().isEnabled()) {
+				if (rap.bounds.containsPoint(mousex, mousey)) {
+					mouseOverPoint = rap;
 				}
 			}
 		}
@@ -390,13 +362,10 @@ public class UICanvasEditor extends UICanvas {
 		if (selection.isSelecting()) {
 			selection.selectTo(mousex, mousey);
 			selection.clearSelected();
-			for (UINode node : rootNode.deepIterateChildren()) {
-				if (node.getComponent() == null) {
-					continue;
-				}
-				if (node.isEnabled()) {
-					if (selection.contains(node.getComponent())) {
-						selection.addToSelection(node);
+			for (RenderAnchorPoint rap : rootRenderer.iterateAnchorPoints()) {
+				if (rap.getRenderer().isEnabled()) {
+					if (selection.isSelected(rap)) {
+						selection.addToSelection(rap);
 					}
 				}
 			}
@@ -409,9 +378,9 @@ public class UICanvasEditor extends UICanvas {
 		ContextMenu cm = getContextMenu();
 
 		if (cm != null && cm.isShowing()) {
-			if (mouseOverNode != contextMenuControl && cm != canvasContextMenu) {
+			if (mouseOverPoint != contextMenuPoint && cm != canvasContextMenu) {
 				cm.hide();
-			} else if (cm == canvasContextMenu && mouseOverNode != null) {
+			} else if (cm == canvasContextMenu && mouseOverPoint != null) {
 				cm.hide();
 			}
 		}
@@ -444,7 +413,7 @@ public class UICanvasEditor extends UICanvas {
 	}
 
 	private void changeCursorToScale(Edge edge) {
-		if (edge == Edge.None) {
+		if (edge == null) {
 			changeCursorToDefault();
 			return;
 		}
@@ -479,14 +448,11 @@ public class UICanvasEditor extends UICanvas {
 				waitingForZXRelease = true;
 			} else if (waitingForZXRelease && movementStop) {
 				if (zxPressStartTimeMillis + 500 <= System.currentTimeMillis()) {
-					for (UINode node : selection.getSelected()) {
-						if (node.getComponent() == null) {
-							continue;
-						}
-						node.setEnabled(false);
+					for (RenderAnchorPoint rap : selection.getSelected()) {
+						rap.getRenderer().setEnabled(false);
 					}
 					selection.clearSelected();
-					mouseOverNode = scaleNode = null;
+					mouseOverPoint = scalePoint = null;
 					changeCursorToDefault();
 					waitingForZXRelease = false;
 				}
@@ -503,20 +469,22 @@ public class UICanvasEditor extends UICanvas {
 	 @author Kayler
 	 Created on 05/13/2016.
 	 */
-	private static class CanvasSelection implements Selection {
-		private final ObservableList<UINode> selected = FXCollections.observableList(new LinkedList<>());
+	private static class CanvasSelection implements Selection<RenderAnchorPoint> {
+		private final ObservableList<RenderAnchorPoint> selected = FXCollections.observableList(new LinkedList<>());
+		public final Bounds bounds = new SelectionBounds(this);
+		// selection.x1, selection.y1, selection.getWidth(), selection.getHeight()
 		private boolean isSelecting;
-		private int x1, x2;
-		private int y1, y2;
+		private double x1, x2;
+		private double y1, y2;
 
 		@Override
-		public @NotNull ObservableList<UINode> getSelected() {
+		public @NotNull ObservableList<RenderAnchorPoint> getSelected() {
 			return selected;
 		}
 
 		@Nullable
 		@Override
-		public UINode getFirst() {
+		public RenderAnchorPoint getFirst() {
 			if (selected.size() == 0) {
 				return null;
 			}
@@ -524,28 +492,28 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		@Override
-		public void toggleFromSelection(@NotNull UINode node) {
-			if (isSelected(node)) {
-				selected.remove(node);
+		public void toggleFromSelection(@NotNull RenderAnchorPoint rap) {
+			if (isSelected(rap)) {
+				selected.remove(rap);
 			} else {
-				this.selected.add(node);
+				this.selected.add(rap);
 			}
 		}
 
 		@Override
-		public void addToSelection(@NotNull UINode node) {
-			if (!isSelected(node)) {
-				this.selected.add(node);
+		public void addToSelection(@NotNull RenderAnchorPoint rap) {
+			if (!isSelected(rap)) {
+				this.selected.add(rap);
 			}
 		}
 
 		@Override
-		public boolean isSelected(@Nullable UINode node) {
-			if (node == null) {
+		public boolean isSelected(@Nullable RenderAnchorPoint rap) {
+			if (rap == null) {
 				return false;
 			}
-			for (UINode c : selected) {
-				if (c == node) {
+			for (RenderAnchorPoint r : selected) {
+				if (r == rap) {
 					return true;
 				}
 			}
@@ -553,8 +521,8 @@ public class UICanvasEditor extends UICanvas {
 		}
 
 		@Override
-		public boolean removeFromSelection(@NotNull UINode node) {
-			return this.selected.remove(node);
+		public boolean removeFromSelection(@NotNull RenderAnchorPoint rap) {
+			return this.selected.remove(rap);
 		}
 
 		@Override
@@ -575,31 +543,60 @@ public class UICanvasEditor extends UICanvas {
 			this.isSelecting = selecting;
 		}
 
-		void removeAllAndAdd(@NotNull UINode toAdd) {
+		void removeAllAndAdd(@NotNull RenderAnchorPoint toAdd) {
 			clearSelected();
 			this.selected.add(toAdd);
 		}
 
-		void beginSelecting(int x, int y) {
+		void beginSelecting(double x, double y) {
 			this.x1 = this.x2 = x;
 			this.y1 = this.y2 = y;
 			this.isSelecting = true;
 		}
 
-		void selectTo(int x, int y) {
+		void selectTo(double x, double y) {
 			this.x2 = x;
 			this.y2 = y;
 		}
 
-		public int getWidth() {
+		public double getWidth() {
 			return Math.abs(x2 - x1);
 		}
 
-		public int getHeight() {
+		public double getHeight() {
 			return Math.abs(y2 - y1);
 		}
 	}
 
+	private static class SelectionBounds extends SimpleBounds {
+
+		private final CanvasSelection selection;
+
+		public SelectionBounds(@NotNull CanvasSelection selection) {
+			super(null);
+			this.selection = selection;
+		}
+
+		@Override
+		public double getX() {
+			return selection.x1;
+		}
+
+		@Override
+		public double getY() {
+			return selection.y1;
+		}
+
+		@Override
+		public double getWidth() {
+			return selection.getWidth();
+		}
+
+		@Override
+		public double getHeight() {
+			return selection.getHeight();
+		}
+	}
 
 	private static class KeyMap {
 		String SCALE_SQUARE = "s";

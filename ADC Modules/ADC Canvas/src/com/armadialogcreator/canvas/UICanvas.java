@@ -3,9 +3,6 @@ package com.armadialogcreator.canvas;
 import com.armadialogcreator.util.UpdateGroupListener;
 import com.armadialogcreator.util.UpdateListenerGroup;
 import javafx.animation.AnimationTimer;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.geometry.VPos;
@@ -20,12 +17,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 /**
  @author Kayler
  @since 05/11/2016. */
-public abstract class UICanvas<N extends UINode> extends AnchorPane {
+public abstract class UICanvas<R extends UIRenderer> extends AnchorPane {
 
 	/** javafx Canvas */
 	protected final Canvas canvas;
@@ -38,7 +34,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 
 	protected final Resolution resolution;
 
-	protected UINode rootNode;
+	protected UIRenderer rootRenderer;
 
 	/** Background image of the canvas */
 	protected ImagePattern backgroundImage = null;
@@ -61,7 +57,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		requestPaint();
 	};
 
-	public UICanvas(@NotNull Resolution resolution, @NotNull UINode rootNode) {
+	protected @NotNull RenderMode renderMode = RenderMode.Basic;
+
+	public UICanvas(@NotNull Resolution resolution, @NotNull UIRenderer rootRenderer) {
 		this.resolution = resolution;
 		resolution.getUpdateGroup().addListener(new UpdateGroupListener<>() {
 			@Override
@@ -74,10 +72,10 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 			}
 		});
 
-		gc.setTextBaseline(VPos.TOP);
 
 		this.canvas = new Canvas(resolution.getScreenWidth(), resolution.getScreenHeight());
-		this.gc = new Graphics(canvas.getGraphicsContext2D());
+		this.gc = new Graphics(canvas.getGraphicsContext2D(), resolution);
+		gc.setTextBaseline(VPos.TOP);
 
 		this.getChildren().add(this.canvas);
 		UICanvas.CanvasMouseEvent mouseEvent = new UICanvas.CanvasMouseEvent(this);
@@ -88,7 +86,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		this.setOnMouseDragged(mouseEvent);
 
 		//do this last
-		this.rootNode = rootNode;
+		this.rootRenderer = rootRenderer;
 		setUINodeListeners(true);
 
 		timer = new CanvasAnimationTimer();
@@ -97,8 +95,8 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	}
 
 	@NotNull
-	public UINode getRootNode() {
-		return rootNode;
+	public UIRenderer getRootRenderer() {
+		return rootRenderer;
 	}
 
 	public int getCanvasWidth() {
@@ -109,9 +107,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		return (int) this.canvas.getHeight();
 	}
 
-	public void setRootNode(@NotNull UINode rootNode) {
+	public void setRootRenderer(@NotNull UIRenderer rootRenderer) {
 		setUINodeListeners(false);
-		this.rootNode = rootNode;
+		this.rootRenderer = rootRenderer;
 		setUINodeListeners(true);
 		requestPaint();
 	}
@@ -119,9 +117,9 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	@SuppressWarnings("unchecked")
 	private void setUINodeListeners(boolean add) {
 		if (add) {
-			this.rootNode.renderUpdateGroup().addListener(renderUpdateGroupListener);
+			this.rootRenderer.getRenderUpdateGroup().addListener(renderUpdateGroupListener);
 		} else {
-			this.rootNode.renderUpdateGroup().removeListener(renderUpdateGroupListener);
+			this.rootRenderer.getRenderUpdateGroup().removeListener(renderUpdateGroupListener);
 		}
 	}
 
@@ -129,13 +127,14 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	 Paint the canvas. Order of painting is:
 	 <ol>
 	 <li>background</li>
-	 <li>{@link #getRootNode()}</li>
+	 <li>{@link #getRootRenderer()} </li>
 	 </ol>
 	 */
 	protected void paint() {
 		gc.save();
 		paintBackground();
-		paintRootNode();
+
+		paintRootRenderer();
 		gc.doPaintLast();
 		gc.restore();
 	}
@@ -154,17 +153,21 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	}
 
 	/**
-	 Paints all nodes in {@link #getRootNode()} and will iterate each child's child as well.
+	 Paints all nodes in {@link #getRootRenderer()} and will iterate each child's child as well.
 	 Each component will get an individual render space (GraphicsContext attributes will not bleed through each component).
 	 */
-	protected void paintRootNode() {
-		paintNodes(rootNode);
-	}
+	protected void paintRootRenderer() {
+		gc.save();
+		rootRenderer.paintBackground(gc, renderMode);
+		gc.restore();
 
-	private void paintNodes(@NotNull UINode node) {
-		for (UINode child : node.deepIterateChildren()) {
-			paintNode(child);
-		}
+		gc.save();
+		rootRenderer.paint(gc, renderMode);
+		gc.restore();
+
+		gc.save();
+		rootRenderer.paintAfter(gc, renderMode);
+		gc.restore();
 	}
 
 	protected void paintBackground() {
@@ -177,21 +180,6 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		gc.fillRectNoAA(0, 0, this.canvas.getWidth(), this.canvas.getHeight());
 	}
 
-	protected void paintNode(@NotNull UINode node) {
-		if (node.getComponent() == null) {
-			return;
-		}
-		paintComponent(node.getComponent());
-	}
-
-	protected void paintComponent(@NotNull CanvasComponent component) {
-		if (component.isGhost()) {
-			return;
-		}
-		gc.save();
-		component.paint(gc);
-		gc.restore();
-	}
 
 	/** Sets canvas background image and automatically repaints */
 	public void setCanvasBackgroundImage(@Nullable ImagePattern background) {
@@ -246,6 +234,14 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 	 @param mousey y position of mouse relative to canvas
 	 */
 	protected void mouseMoved(int mousex, int mousey) {
+	}
+
+	protected int toPixelsX(double percentX) {
+		return (int) (percentX * canvas.getWidth());
+	}
+
+	protected int toPixelsY(double percentY) {
+		return (int) (percentY * canvas.getHeight());
 	}
 
 	protected double toPercentageX(int pixelX) {
@@ -317,7 +313,7 @@ public abstract class UICanvas<N extends UINode> extends AnchorPane {
 		return canvas;
 	}
 
-	/** Clear any listeners attached to {@link #rootNode} */
+	/** Clear any listeners attached to {@link #rootRenderer} */
 	public void clearListeners() {
 		setUINodeListeners(false);
 	}

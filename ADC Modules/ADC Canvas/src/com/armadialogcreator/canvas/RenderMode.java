@@ -6,9 +6,9 @@ package com.armadialogcreator.canvas;
 public enum RenderMode {
 	/** Paints only solid blocks with no detail (fastest) */
 	Solid,
-	/** Paints what the {@link CanvasComponent} would look like in {@link #Preview}, but has no user interaction */
+	/** Paints what the {@link UIRenderer} would look like in {@link #Preview}, but has no user interaction */
 	Basic,
-	/** Paints all details and the mouse interacts with the {@link CanvasComponent} */
+	/** Paints all details and the mouse interacts with the {@link UIRenderer} */
 	Preview,
 	/** Does same thing as {@link #Preview}, but button presses and event scripts are simulated */
 	Simulation

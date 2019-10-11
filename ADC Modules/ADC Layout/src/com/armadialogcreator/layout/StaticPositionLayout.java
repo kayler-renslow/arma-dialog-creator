@@ -1,6 +1,6 @@
 package com.armadialogcreator.layout;
 
-import com.armadialogcreator.util.*;
+import com.armadialogcreator.util.ListObserver;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -12,12 +12,6 @@ import java.util.ArrayList;
  @author Kayler
  @since 7/30/19. */
 public class StaticPositionLayout implements Layout {
-
-	/**
-	 A {@link StaticPositionLayout} instance that can be shared aacrosscross all {@link LayoutNode} instances if need be
-	 since it doesn't make much sense to have multiple {@link StaticPositionLayout} instances
-	 */
-	public static final StaticPositionLayout SHARED = new StaticPositionLayout();
 
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 
@@ -52,4 +46,13 @@ public class StaticPositionLayout implements Layout {
 		return children;
 	}
 
+	@Override
+	public @NotNull String getName() {
+		return "Static Position Layout";
+	}
+
+	@Override
+	public void invalidate() {
+		children.invalidate();
+	}
 }

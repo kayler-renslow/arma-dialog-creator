@@ -20,23 +20,35 @@ class LayoutChildrenListener implements ListObserverListener<LayoutNode> {
 		switch (change.getChangeType()) {
 			case Add: {
 				ListObserverChangeAdd<LayoutNode> added = change.getAdded();
-				added.getAdded().assignBounds(new Bounds(added.getAdded(), layout));
+				LayoutNode addedNode = added.getAdded();
+				addedNode.assignBounds(addedNode.getBounds().copy(this.layout));
 				break;
 			}
 			case Set: {
 				ListObserverChangeSet<LayoutNode> set = change.getSet();
-				set.getNew().assignBounds(new Bounds(set.getNew(), layout));
+				LayoutNode setNode = set.getNew();
+				set.getOld().assignBounds(set.getOld().getBounds().copy(null));
+				setNode.assignBounds(setNode.getBounds().copy(this.layout));
 				break;
 			}
 			case Move: {
 				ListObserverChangeMove<LayoutNode> moved = change.getMoved();
 				if (!moved.isSourceListChange()) {
-					moved.getMoved().assignBounds(new Bounds(moved.getMoved(), layout));
+					LayoutNode movedNode = moved.getMoved();
+					movedNode.assignBounds(movedNode.getBounds().copy(this.layout));
 				}
 				break;
 			}
-			case Clear: //fall
+			case Clear: {
+				for (LayoutNode n : list) {
+					n.assignBounds(n.getBounds().copy(null));
+				}
+				break;
+			}
 			case Remove: {
+				ListObserverChangeRemove<LayoutNode> removed = change.getRemoved();
+				LayoutNode removedNode = removed.getRemoved();
+				removedNode.assignBounds(removedNode.getBounds().copy(null));
 				break;
 			}
 		}

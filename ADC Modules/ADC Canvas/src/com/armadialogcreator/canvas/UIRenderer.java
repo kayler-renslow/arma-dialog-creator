@@ -1,15 +1,49 @@
 package com.armadialogcreator.canvas;
 
-import javafx.scene.input.MouseButton;
+import com.armadialogcreator.layout.Bounds;
+import com.armadialogcreator.util.UpdateListenerGroup;
+import javafx.scene.paint.Color;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.function.Consumer;
 
 /**
  @author Kayler
  @since 8/3/19. */
-public interface UIRenderer {
+public interface UIRenderer extends MouseEventHandler {
+	@NotNull
+	Iterable<RenderAnchorPoint> iterateAnchorPoints();
+
+	/** @return this renderer's {@link RenderAnchorPoint} */
+	@NotNull RenderAnchorPoint getAnchorPoint();
+
+	@NotNull Bounds getBounds();
+
+	/** Return true if the node is enabled (user can click on it or move it with mouse), false otherwise. */
+	boolean isEnabled();
+
+	/**
+	 Set whether is enabled or not.
+
+	 @see #setGhost(boolean)
+	 */
+	void setEnabled(boolean enabled);
+
+	/**
+	 Returns true if is invisible and is disabled, false otherwise
+	 */
+	boolean isGhost();
+
+	/**
+	 Sets the visibility and enable values. A ghost is not visible and is not enabled.
+	 */
+	void setGhost(boolean ghost);
+
+	/** @return the update group for when a re-render is requested for this renderer */
+	@NotNull UpdateListenerGroup<UpdateListenerGroup.NoData> getRenderUpdateGroup();
+
+	@Nullable Border getBorder();
+
+	@NotNull Color getBackgroundColor();
 
 	/**
 	 Called before any {@link #paint(Graphics, RenderMode)}

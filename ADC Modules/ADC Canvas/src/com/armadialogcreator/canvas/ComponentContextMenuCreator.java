@@ -8,5 +8,5 @@ import org.jetbrains.annotations.NotNull;
  */
 public interface ComponentContextMenuCreator {
 	@NotNull
-	ContextMenu initialize(CanvasComponent component);
+	ContextMenu initialize(@NotNull RenderAnchorPoint anchorPoint);
 }
