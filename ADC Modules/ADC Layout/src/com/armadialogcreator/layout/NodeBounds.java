@@ -14,7 +14,7 @@ public class NodeBounds implements Bounds {
 
 	protected double minWidth, width, maxWidth;
 	protected double minHeight, height, maxHeight;
-	private double x, y;
+	protected double x, y;
 	private final @NotNull LayoutNode node;
 	private final @Nullable Layout layout;
 
@@ -62,6 +62,7 @@ public class NodeBounds implements Bounds {
 	@Override
 	public void setWidth(double width) {
 		this.width = width;
+		this.recomputePositionFromLayout();
 	}
 
 	/**
@@ -71,10 +72,8 @@ public class NodeBounds implements Bounds {
 	 */
 	@Override
 	public void setHeight(double height) {
-		if (height > this.maxHeight) {
-			return;
-		}
 		this.height = height;
+		this.recomputePositionFromLayout();
 	}
 
 	/** @return the x position of the node */
@@ -90,13 +89,13 @@ public class NodeBounds implements Bounds {
 	}
 
 	/**
-	 Sets the x position of the node
+	 Invoking this method will have no effect
 
 	 @param x the x position
 	 */
 	@Override
 	public void setX(double x) {
-		this.x = x;
+		//do nothing
 	}
 
 	/**
@@ -116,13 +115,13 @@ public class NodeBounds implements Bounds {
 	}
 
 	/**
-	 Sets the y position of the node
+	 Invoking this method will have no effect
 
 	 @param y the y position
 	 */
 	@Override
 	public void setY(double y) {
-		this.y = y;
+		// do nothing
 	}
 
 	/** @return the width of the node */

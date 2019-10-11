@@ -16,11 +16,11 @@ import java.util.Map;
 public class BorderLayout implements Layout {
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 	private final Map<Alignment, StackLayout> map = new HashMap<>(5);
-	private final StackLayout top = new StackLayout();
-	private final StackLayout right = new StackLayout();
-	private final StackLayout bottom = new StackLayout();
-	private final StackLayout left = new StackLayout();
-	private final StackLayout center = new StackLayout();
+	private final StackLayout top = new StackLayout(this);
+	private final StackLayout right = new StackLayout(this);
+	private final StackLayout bottom = new StackLayout(this);
+	private final StackLayout left = new StackLayout(this);
+	private final StackLayout center = new StackLayout(this);
 	private final Bounds layoutBounds;
 	private final NotNullValueObserver<Alignment> alignment = new NotNullValueObserver<>(Alignment.Center);
 
@@ -36,11 +36,14 @@ public class BorderLayout implements Layout {
 		map.put(Alignment.LeftCenter, left);
 
 		// remove listeners so that the stack layouts don't assign bounds
-		top.getChildren().clearListeners();
-		right.getChildren().clearListeners();
-		bottom.getChildren().clearListeners();
-		left.getChildren().clearListeners();
-		center.getChildren().clearListeners();
+		top.setParentLayout(this);
+		right.setParentLayout(this);
+		bottom.setParentLayout(this);
+		left.setParentLayout(this);
+		center.setParentLayout(this);
+
+		top.getLayoutBounds().setX(layoutBounds.getX());
+		// todo assign the stack pane bounds and then we don't need to calc the positions :set stackpane bounds
 
 
 		children.addListener((list, change) -> {
@@ -107,52 +110,7 @@ public class BorderLayout implements Layout {
 
 	@Override
 	public void recomputePositions() {
-		map.forEach((alignment, stackLayout) -> {
-			switch (alignment) {
-				case TopCenter: {
-					final double lcx = layoutBounds.getCenterX();
-					final double mh = 0.25 * layoutBounds.getHeight();
-					final double mw = layoutBounds.getWidth();
-					for (LayoutNode node : stackLayout.getChildren()) {
-						NodeBounds nodeBounds = node.getBounds();
-						nodeBounds.maxWidth = mw;
-						nodeBounds.setX(lcx - nodeBounds.getWidth() / 2);
-
-
-						nodeBounds.maxHeight = mh;
-						nodeBounds.setY(0);
-					}
-					break;
-				}
-				case RightCenter: {
-					final double mh = layoutBounds.getHeight();
-					final double x = 0.75 * layoutBounds.getWidth();
-					final double mw = 0.25 * layoutBounds.getWidth();
-					for (LayoutNode node : stackLayout.getChildren()) {
-						NodeBounds nodeBounds = node.getBounds();
-						nodeBounds.maxWidth = mw;
-						nodeBounds.setX(x);
-
-
-						nodeBounds.maxHeight = mh;
-						nodeBounds.setY(nodeBounds.getHeight());
-					}
-					break;
-				}
-				case BottomCenter: {
-					break;
-				}
-				case LeftCenter: {
-					break;
-				}
-				case Center: {
-					break;
-				}
-				default: {
-					throw new IllegalStateException(); // ?
-				}
-			}
-		});
+		// todo see :set stackpane bounds
 	}
 
 	@Override

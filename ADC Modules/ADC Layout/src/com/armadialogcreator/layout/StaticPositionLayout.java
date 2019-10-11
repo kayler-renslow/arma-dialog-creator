@@ -1,6 +1,7 @@
 package com.armadialogcreator.layout;
 
 import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class StaticPositionLayout implements Layout {
 
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 	private final Bounds layoutBounds = new SimpleBounds();
+	private final NotNullValueObserver<Alignment> alignment = new NotNullValueObserver<>(Alignment.Center);
 
 	public StaticPositionLayout() {
 		children.addListener(new LayoutChildrenListener(this));
@@ -34,11 +36,11 @@ public class StaticPositionLayout implements Layout {
 	}
 
 	public void setX(@NotNull LayoutNode node, double x) {
-		node.getBounds().setX(x);
+		node.getBounds().x = x;
 	}
 
 	public void setY(@NotNull LayoutNode node, double y) {
-		node.getBounds().setY(y);
+		node.getBounds().y = y;
 	}
 
 	public void setWidth(@NotNull LayoutNode node, double width) {
@@ -56,13 +58,21 @@ public class StaticPositionLayout implements Layout {
 	}
 
 	@Override
-	public @NotNull String getName() {
+	@NotNull
+	public String getName() {
 		return "Static Position Layout";
 	}
 
 	@Override
-	public @NotNull Bounds getLayoutBounds() {
+	@NotNull
+	public Bounds getLayoutBounds() {
 		return layoutBounds;
+	}
+
+	@Override
+	@NotNull
+	public NotNullValueObserver<Alignment> getAlignment() {
+		return alignment;
 	}
 
 	@Override
