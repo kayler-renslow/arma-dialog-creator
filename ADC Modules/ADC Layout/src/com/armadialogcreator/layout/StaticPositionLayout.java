@@ -14,9 +14,18 @@ import java.util.ArrayList;
 public class StaticPositionLayout implements Layout {
 
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
+	private final Bounds layoutBounds = new SimpleBounds();
 
 	public StaticPositionLayout() {
 		children.addListener(new LayoutChildrenListener(this));
+		layoutBounds.setWidth(100);
+		layoutBounds.setMinWidth(100);
+		layoutBounds.setMaxWidth(100);
+		layoutBounds.setHeight(100);
+		layoutBounds.setMaxHeight(100);
+		layoutBounds.setMinHeight(100);
+		layoutBounds.setX(0);
+		layoutBounds.setY(0);
 	}
 
 	@Override
@@ -49,6 +58,11 @@ public class StaticPositionLayout implements Layout {
 	@Override
 	public @NotNull String getName() {
 		return "Static Position Layout";
+	}
+
+	@Override
+	public @NotNull Bounds getLayoutBounds() {
+		return layoutBounds;
 	}
 
 	@Override

@@ -237,19 +237,19 @@ public abstract class UICanvas<R extends UIRenderer> extends AnchorPane {
 	}
 
 	protected int toPixelsX(double percentX) {
-		return (int) (percentX * canvas.getWidth());
+		return (int) (percentX / 100 * canvas.getWidth());
 	}
 
 	protected int toPixelsY(double percentY) {
-		return (int) (percentY * canvas.getHeight());
+		return (int) (percentY / 100 * canvas.getHeight());
 	}
 
 	protected double toPercentageX(int pixelX) {
-		return pixelX / canvas.getWidth();
+		return pixelX / canvas.getWidth() * 100;
 	}
 
 	protected double toPercentageY(int pixelY) {
-		return pixelY / canvas.getHeight();
+		return pixelY / canvas.getHeight() * 100;
 	}
 
 	/**

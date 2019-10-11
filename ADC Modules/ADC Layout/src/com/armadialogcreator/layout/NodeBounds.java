@@ -12,8 +12,8 @@ public class NodeBounds implements Bounds {
 	private @NotNull Insets margin = Insets.NONE;
 	private @NotNull Insets padding = Insets.NONE;
 
-	private double minWidth, width, maxWidth;
-	private double minHeight, height, maxHeight;
+	protected double minWidth, width, maxWidth;
+	protected double minHeight, height, maxHeight;
 	private double x, y;
 	private final @NotNull LayoutNode node;
 	private final @Nullable Layout layout;
@@ -71,6 +71,9 @@ public class NodeBounds implements Bounds {
 	 */
 	@Override
 	public void setHeight(double height) {
+		if (height > this.maxHeight) {
+			return;
+		}
 		this.height = height;
 	}
 
@@ -125,13 +128,19 @@ public class NodeBounds implements Bounds {
 	/** @return the width of the node */
 	@Override
 	public double getWidth() {
+		if (width > maxWidth) {
+			return maxWidth;
+		}
 		return this.width;
 	}
 
 	/** @return the height of the node */
 	@Override
 	public double getHeight() {
-		return this.height;
+		if (height > maxHeight) {
+			return maxHeight;
+		}
+		return height;
 	}
 
 	/** @return the minimum width of the node */

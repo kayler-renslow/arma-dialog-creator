@@ -1,7 +1,6 @@
 package com.armadialogcreator.layout;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  Specifies how a {@link LayoutNode} is structured within a layout.
@@ -15,10 +14,8 @@ public class SimpleBounds implements Bounds {
 	private double minWidth, width, maxWidth;
 	private double minHeight, height, maxHeight;
 	private double x, y;
-	private final @Nullable Layout layout;
 
-	public SimpleBounds(@Nullable Layout layout) {
-		this.layout = layout;
+	public SimpleBounds() {
 	}
 
 	/**
@@ -107,17 +104,11 @@ public class SimpleBounds implements Bounds {
 		return minWidth;
 	}
 
-	private void recomputePositionFromLayout() {
-		if (this.layout != null) {
-			this.layout.recomputePositions();
-		}
-	}
 
 	/** @see #getMinWidth() */
 	@Override
 	public void setMinWidth(double minWidth) {
 		this.minWidth = minWidth;
-		recomputePositionFromLayout();
 	}
 
 	/** @return the maximum width of the node */
@@ -130,7 +121,6 @@ public class SimpleBounds implements Bounds {
 	@Override
 	public void setMaxWidth(double maxWidth) {
 		this.maxWidth = maxWidth;
-		recomputePositionFromLayout();
 	}
 
 	/** @return the minimum height of the node */
@@ -143,7 +133,6 @@ public class SimpleBounds implements Bounds {
 	@Override
 	public void setMinHeight(double minHeight) {
 		this.minHeight = minHeight;
-		recomputePositionFromLayout();
 	}
 
 	/** @return the maximum height of the node */
@@ -156,7 +145,6 @@ public class SimpleBounds implements Bounds {
 	@Override
 	public void setMaxHeight(double maxHeight) {
 		this.maxHeight = maxHeight;
-		recomputePositionFromLayout();
 	}
 
 	/** @return the margin of this bounds */
@@ -170,7 +158,6 @@ public class SimpleBounds implements Bounds {
 	@Override
 	public void setMargin(@NotNull Insets margin) {
 		this.margin = margin;
-		recomputePositionFromLayout();
 	}
 
 	/** @return the padding of this bounds */
@@ -184,7 +171,6 @@ public class SimpleBounds implements Bounds {
 	@Override
 	public void setPadding(@NotNull Insets padding) {
 		this.padding = padding;
-		recomputePositionFromLayout();
 	}
 
 	@Override
@@ -207,11 +193,4 @@ public class SimpleBounds implements Bounds {
 		return this.y + (getBottomY() - this.y) / 2;
 	}
 
-	/**
-	 @return a new instance with the attributes copied and assign the optional new layout.
-	 */
-	@NotNull
-	public SimpleBounds copy(@Nullable Layout newLayout) {
-		return new SimpleBounds(newLayout);
-	}
 }

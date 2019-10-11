@@ -79,10 +79,10 @@ public class Graphics {
 	}
 
 	public void fillRectangle(@NotNull Bounds bounds) {
-		final int x = (int) (bounds.getX() * resolution.getScreenWidth());
-		final int y = (int) (bounds.getY() * resolution.getScreenHeight());
-		final int w = (int) (bounds.getWidth() * resolution.getScreenWidth());
-		final int h = (int) (bounds.getHeight() * resolution.getScreenHeight());
+		final int x = (int) (bounds.getX() / 100 * resolution.getScreenWidth());
+		final int y = (int) (bounds.getY() / 100 * resolution.getScreenHeight());
+		final int w = (int) (bounds.getWidth() / 100 * resolution.getScreenWidth());
+		final int h = (int) (bounds.getHeight() / 100 * resolution.getScreenHeight());
 		this.fillRectangle(x, y, w, h);
 	}
 
@@ -91,10 +91,10 @@ public class Graphics {
 	}
 
 	public void strokeRectangle(@NotNull Bounds bounds) {
-		final int x = (int) (bounds.getX() * resolution.getScreenWidth());
-		final int y = (int) (bounds.getY() * resolution.getScreenHeight());
-		final int w = (int) (bounds.getWidth() * resolution.getScreenWidth());
-		final int h = (int) (bounds.getHeight() * resolution.getScreenHeight());
+		final int x = (int) (bounds.getX() / 100 * resolution.getScreenWidth());
+		final int y = (int) (bounds.getY() / 100 * resolution.getScreenHeight());
+		final int w = (int) (bounds.getWidth() / 100 * resolution.getScreenWidth());
+		final int h = (int) (bounds.getHeight() / 100 * resolution.getScreenHeight());
 		this.strokeRectangle(x, y, w, h);
 	}
 
