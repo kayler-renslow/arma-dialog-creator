@@ -15,12 +15,8 @@ import java.util.Map;
  @since 7/23/19. */
 public class BorderLayout implements Layout {
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
-	private final Map<Alignment, StackLayout> map = new HashMap<>(5);
-	private final StackLayout top = new StackLayout(this);
-	private final StackLayout right = new StackLayout(this);
-	private final StackLayout bottom = new StackLayout(this);
-	private final StackLayout left = new StackLayout(this);
-	private final StackLayout center = new StackLayout(this);
+	private final Map<Alignment, InnerLayout> map = new HashMap<>(5);
+	private final InnerLayout top, right, bottom, left, center = new InnerLayout(this);
 	private final Bounds layoutBounds;
 	private final NotNullValueObserver<Alignment> alignment = new NotNullValueObserver<>(Alignment.Center);
 
@@ -29,18 +25,17 @@ public class BorderLayout implements Layout {
 		this.layoutBounds = layoutBounds;
 		children.addListener(new LayoutChildrenListener(this));
 
+		top = new InnerLayout(this, );
+		right = new InnerLayout(this);
+		bottom = new InnerLayout(this);
+		left = new InnerLayout(this);
+		center = new InnerLayout(this);
+
 		map.put(Alignment.Center, center);
 		map.put(Alignment.TopCenter, top);
 		map.put(Alignment.RightCenter, right);
 		map.put(Alignment.BottomCenter, bottom);
 		map.put(Alignment.LeftCenter, left);
-
-		// remove listeners so that the stack layouts don't assign bounds
-		top.setParentLayout(this);
-		right.setParentLayout(this);
-		bottom.setParentLayout(this);
-		left.setParentLayout(this);
-		center.setParentLayout(this);
 
 		top.getLayoutBounds().setX(layoutBounds.getX());
 		// todo assign the stack pane bounds and then we don't need to calc the positions :set stackpane bounds

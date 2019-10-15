@@ -1,5 +1,6 @@
 package com.armadialogcreator.layout;
 
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,6 +16,7 @@ public interface Bounds {
 
 	/** @return the left x position of the node (same as {@link #getX()}) */
 	double getLeftX();
+
 
 	/**
 	 Sets the x position of the node
@@ -201,5 +203,13 @@ public interface Bounds {
 		}
 		return null;
 	}
+
+	@NotNull NotNullValueObserver<Double> getXObserver();
+
+	@NotNull NotNullValueObserver<Double> getYObserver();
+
+	@NotNull NotNullValueObserver<Double> getWidthObserver();
+
+	@NotNull NotNullValueObserver<Double> getHeightObserver();
 
 }

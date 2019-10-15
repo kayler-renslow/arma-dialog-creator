@@ -1,8 +1,8 @@
 package com.armadialogcreator.layout;
 
 import com.armadialogcreator.util.ListObserver;
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 
@@ -12,8 +12,8 @@ import java.util.ArrayList;
 public class StackLayout implements Layout{
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 
-	public StackLayout(@Nullable Layout parentLayout) {
-		children.addListener(new LayoutChildrenListener(parentLayout != null ? parentLayout : this));
+	public StackLayout() {
+		children.addListener(new LayoutChildrenListener(this));
 	}
 
 	@Override
@@ -28,6 +28,16 @@ public class StackLayout implements Layout{
 
 	@Override
 	public @NotNull String getName() {
+		return null;
+	}
+
+	@Override
+	public @NotNull Bounds getLayoutBounds() {
+		return null;
+	}
+
+	@Override
+	public @NotNull NotNullValueObserver<Alignment> getAlignment() {
 		return null;
 	}
 
