@@ -10,7 +10,7 @@ import com.armadialogcreator.expression.Env;
 
  @author Kayler
  @since 07/04/2016. */
-public class ControlGroupRenderer extends ArmaControlRenderer {
+public class controlGroupRenderer extends ArmaControlRenderer {
 
 	public ControlGroupRenderer(ArmaControl control, ArmaResolution resolution, Env env) {
 		super(control, resolution, env);

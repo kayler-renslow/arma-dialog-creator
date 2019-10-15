@@ -1,12 +1,12 @@
 package com.armadialogcreator.control;
 
-import com.armadialogcreator.canvas.*;
+import com.armadialogcreator.canvas.DeepUINodeIterable;
+import com.armadialogcreator.canvas.NamedUINode;
+import com.armadialogcreator.canvas.UINode;
+import com.armadialogcreator.canvas.UINodeChange;
 import com.armadialogcreator.control.impl.ArmaControlLookup;
 import com.armadialogcreator.control.impl.StaticControl;
-import com.armadialogcreator.core.ConfigProperty;
-import com.armadialogcreator.core.ConfigPropertyLookup;
-import com.armadialogcreator.core.ControlStyle;
-import com.armadialogcreator.core.ControlType;
+import com.armadialogcreator.core.*;
 import com.armadialogcreator.core.sv.SVExpression;
 import com.armadialogcreator.core.sv.SVInteger;
 import com.armadialogcreator.expression.Env;
@@ -33,6 +33,8 @@ public class ArmaControl extends ArmaConfigClassSpecWrapper implements NamedUINo
 	protected final ArmaDisplay display;
 	private final ArmaControlLookup armaControlLookup;
 	protected final UpdateListenerGroup<UINodeChange> updateGroup = new UpdateListenerGroup<>();
+
+	protected final ConfigPropertyProxy xProperty, yProperty, wProperty, hProperty;
 
 	/**
 	 Create a control where the position is to be determined
