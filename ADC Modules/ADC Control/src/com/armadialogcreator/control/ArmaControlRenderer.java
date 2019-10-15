@@ -150,15 +150,6 @@ public class ArmaControlRenderer implements UIRenderer, DataInvalidator {
 		return false;
 	}
 
-	@Override
-	public @NotNull Iterable<RenderAnchorPoint> iterateAnchorPoints() {
-		return null;
-	}
-
-	@Override
-	public @NotNull RenderAnchorPoint getAnchorPoint() {
-		return null;
-	}
 
 	@Override
 	public @NotNull Bounds getBounds() {

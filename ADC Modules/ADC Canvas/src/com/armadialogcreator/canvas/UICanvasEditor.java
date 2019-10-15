@@ -234,41 +234,6 @@ public class UICanvasEditor extends UICanvas {
 		selection.setSelecting(false);
 		this.mouseButtonDown = mb;
 
-		if (scalePoint != null && mb == MouseButton.PRIMARY) { //only select component that is being scaled to prevent multiple scaling
-			selection.removeAllAndAdd(scalePoint);
-			return;
-		}
-		if (selection.numSelected() == 0 && mouseOverPoint != null) { //nothing is selected, however, mouse is over a component so we need to select that
-			selection.addToSelection(mouseOverPoint);
-			return;
-		}
-		if (selection.numSelected() == 0 && mouseOverPoint == null && mb == MouseButton.SECONDARY) { //nothing is selected and right clicking the canvas
-			selection.clearSelected();
-			return;
-		}
-		if (selection.numSelected() > 0 && mb == MouseButton.SECONDARY) { //check to see if right click is over a selected component
-			{
-				RenderAnchorPoint rap;
-				for (int i = 0; i < selection.numSelected(); i++) {
-					rap = selection.getSelected().get(i);
-					if (rap.bounds.containsPoint(mousex, mousey)) {
-						selection.removeAllAndAdd(rap); //only 1 can be selected
-						return;
-					}
-				}
-			}
-			for (RenderAnchorPoint rap : rootRenderer.iterateAnchorPoints()) {
-				if (!rap.getRenderer().isEnabled()) {
-					continue;
-				}
-				if (rap.bounds.containsPoint(mousex, mousey)) {
-					selection.removeAllAndAdd(rap);
-					continue; //continue to make sure we right click on front most component
-				}
-			}
-			selection.clearSelected();
-			return;
-		}
 		if (mouseOverPoint != null) {
 			if (keys.isCtrlDown()) {
 				selection.toggleFromSelection(mouseOverPoint);
@@ -296,9 +261,6 @@ public class UICanvasEditor extends UICanvas {
 				return;
 			}
 		}
-
-		selection.clearSelected();
-		selection.beginSelecting(mousex, mousey);
 	}
 
 

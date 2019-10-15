@@ -10,11 +10,6 @@ import org.jetbrains.annotations.Nullable;
  @author Kayler
  @since 8/3/19. */
 public interface UIRenderer extends MouseEventHandler {
-	@NotNull
-	Iterable<RenderAnchorPoint> iterateAnchorPoints();
-
-	/** @return this renderer's {@link RenderAnchorPoint} */
-	@NotNull RenderAnchorPoint getAnchorPoint();
 
 	@NotNull Bounds getBounds();
 
