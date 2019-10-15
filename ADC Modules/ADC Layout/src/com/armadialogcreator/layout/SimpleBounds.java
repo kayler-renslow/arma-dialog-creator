@@ -1,5 +1,6 @@
 package com.armadialogcreator.layout;
 
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,93 +11,17 @@ import org.jetbrains.annotations.NotNull;
 public class SimpleBounds implements Bounds {
 	private @NotNull Insets margin = Insets.NONE;
 	private @NotNull Insets padding = Insets.NONE;
+	private final NotNullValueObserver<Double> xObs = new NotNullValueObserver<>(0d);
+	private final NotNullValueObserver<Double> yObs = new NotNullValueObserver<>(0d);
+	private final NotNullValueObserver<Double> widthObs = new NotNullValueObserver<>(0d);
+	private final NotNullValueObserver<Double> heightObs = new NotNullValueObserver<>(0d);
 
-	private double minWidth, width, maxWidth;
-	private double minHeight, height, maxHeight;
-	private double x, y;
+	private double minWidth, maxWidth;
+	private double minHeight, maxHeight;
 
 	public SimpleBounds() {
 	}
 
-	/**
-	 Sets the width for the node
-
-	 @param width the new width for the node
-	 */
-	@Override
-	public void setWidth(double width) {
-		this.width = width;
-	}
-
-	/**
-	 Sets the height for the node
-
-	 @param height the new height for the node
-	 */
-	@Override
-	public void setHeight(double height) {
-		this.height = height;
-	}
-
-	/** @return the x position of the node */
-	@Override
-	public double getX() {
-		return x;
-	}
-
-	/** @return the left x position of the node (same as {@link #getX()}) */
-	@Override
-	public double getLeftX() {
-		return x;
-	}
-
-	/**
-	 Sets the x position of the node
-
-	 @param x the x position
-	 */
-	@Override
-	public void setX(double x) {
-		this.x = x;
-	}
-
-	/**
-	 @return the y position of the node
-	 */
-	@Override
-	public double getY() {
-		return y;
-	}
-
-	/**
-	 @return the top y position of the node (same as {@link #getY()})
-	 */
-	@Override
-	public double getTopY() {
-		return y;
-	}
-
-	/**
-	 Sets the y position of the node
-
-	 @param y the y position
-	 */
-	@Override
-	public void setY(double y) {
-		this.y = y;
-	}
-
-	/** @return the width of the node */
-	@Override
-	public double getWidth() {
-		return this.width;
-	}
-
-	/** @return the height of the node */
-	@Override
-	public double getHeight() {
-		return this.height;
-	}
 
 	/** @return the minimum width of the node */
 	@Override
@@ -173,24 +98,29 @@ public class SimpleBounds implements Bounds {
 		this.padding = padding;
 	}
 
+
 	@Override
-	public double getRightX() {
-		return this.x + this.width;
+	@NotNull
+	public NotNullValueObserver<Double> getXObserver() {
+		return xObs;
 	}
 
 	@Override
-	public double getBottomY() {
-		return this.y + this.height;
+	@NotNull
+	public NotNullValueObserver<Double> getYObserver() {
+		return yObs;
 	}
 
 	@Override
-	public double getCenterX() {
-		return x + (getRightX() - x) / 2;
+	@NotNull
+	public NotNullValueObserver<Double> getWidthObserver() {
+		return widthObs;
 	}
 
 	@Override
-	public double getCenterY() {
-		return this.y + (getBottomY() - this.y) / 2;
+	@NotNull
+	public NotNullValueObserver<Double> getHeightObserver() {
+		return heightObs;
 	}
 
 }

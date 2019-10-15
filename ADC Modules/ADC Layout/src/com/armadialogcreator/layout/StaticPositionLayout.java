@@ -35,21 +35,6 @@ public class StaticPositionLayout implements Layout {
 		// do nothing
 	}
 
-	public void setX(@NotNull LayoutNode node, double x) {
-		node.getBounds().x = x;
-	}
-
-	public void setY(@NotNull LayoutNode node, double y) {
-		node.getBounds().y = y;
-	}
-
-	public void setWidth(@NotNull LayoutNode node, double width) {
-		node.getBounds().setWidth(width);
-	}
-
-	public void setHeight(@NotNull LayoutNode node, double height) {
-		node.getBounds().setHeight(height);
-	}
 
 	@Override
 	@NotNull

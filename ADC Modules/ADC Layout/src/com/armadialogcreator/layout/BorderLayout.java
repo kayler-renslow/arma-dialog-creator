@@ -16,29 +16,49 @@ import java.util.Map;
 public class BorderLayout implements Layout {
 	private final ListObserver<LayoutNode> children = new ListObserver<>(new ArrayList<>());
 	private final Map<Alignment, InnerLayout> map = new HashMap<>(5);
-	private final InnerLayout top, right, bottom, left, center = new InnerLayout(this);
+	private final InnerLayout top, right, bottom, left, center;
 	private final Bounds layoutBounds;
 	private final NotNullValueObserver<Alignment> alignment = new NotNullValueObserver<>(Alignment.Center);
 
+	private static final double percentage = 0.25;
+	private static final double remainderPercentage = 0.50; // 1 - 0.25 * 2
 
 	public BorderLayout(@NotNull Bounds layoutBounds) {
 		this.layoutBounds = layoutBounds;
 		children.addListener(new LayoutChildrenListener(this));
 
-		top = new InnerLayout(this, );
+		top = new InnerLayout(this);
 		right = new InnerLayout(this);
 		bottom = new InnerLayout(this);
 		left = new InnerLayout(this);
 		center = new InnerLayout(this);
+
+		final Bounds myBounds = BorderLayout.this.getLayoutBounds();
+
+		top.setComputeHeight(aDouble -> computeInnerHeightTopBot());
+
+		right.setComputeHeight(aDouble -> computeInnerHeightLeftRight());
+		right.setComputeWidth(aDouble -> computeInnerWidthLeftRight());
+
+		bottom.setComputeY(borderLayoutYPos -> {
+			return myBounds.getBottomY() - computeInnerHeightTopBot();
+		});
+		bottom.setComputeHeight(aDouble -> computeInnerHeightTopBot());
+
+
+		left.setComputeHeight(aDouble -> computeInnerHeightLeftRight());
+		left.setComputeWidth(aDouble -> computeInnerWidthLeftRight());
+
+		center.setComputeX(aDouble -> getLayoutBounds().getX() * percentage);
+		center.setComputeY(aDouble -> getLayoutBounds().getY() * percentage);
+		center.setComputeWidth(aDouble -> remainderPercentage * getLayoutBounds().getWidth());
+		center.setComputeHeight(aDouble -> remainderPercentage * getLayoutBounds().getHeight());
 
 		map.put(Alignment.Center, center);
 		map.put(Alignment.TopCenter, top);
 		map.put(Alignment.RightCenter, right);
 		map.put(Alignment.BottomCenter, bottom);
 		map.put(Alignment.LeftCenter, left);
-
-		top.getLayoutBounds().setX(layoutBounds.getX());
-		// todo assign the stack pane bounds and then we don't need to calc the positions :set stackpane bounds
 
 
 		children.addListener((list, change) -> {
@@ -52,7 +72,7 @@ public class BorderLayout implements Layout {
 				LayoutNode oldNode = change.getSet().getOld();
 				LayoutNode newNode = change.getSet().getNew();
 
-				StackLayout removedFrom = removeNodeFromAny(oldNode);
+				InnerLayout removedFrom = removeNodeFromAny(oldNode);
 				if (removedFrom != null) {
 					removedFrom.getChildren().add(newNode);
 				} else {
@@ -78,8 +98,20 @@ public class BorderLayout implements Layout {
 		});
 	}
 
+	private double computeInnerHeightLeftRight() {
+		return getLayoutBounds().getHeight() * remainderPercentage;
+	}
+
+	private double computeInnerHeightTopBot() {
+		return getLayoutBounds().getHeight() * percentage;
+	}
+
+	private double computeInnerWidthLeftRight() {
+		return getLayoutBounds().getWidth() * percentage;
+	}
+
 	@Nullable
-	private StackLayout removeNodeFromAny(LayoutNode removedNode) {
+	private InnerLayout removeNodeFromAny(LayoutNode removedNode) {
 		boolean removed = top.getChildren().remove(removedNode);
 		if (removed) {
 			return top;
@@ -141,4 +173,5 @@ public class BorderLayout implements Layout {
 	public NotNullValueObserver<Alignment> getAlignment() {
 		return alignment;
 	}
+
 }

@@ -12,47 +12,74 @@ import org.jetbrains.annotations.Nullable;
 public interface Bounds {
 
 	/** @return the x position of the node */
-	double getX();
+	default double getX() {
+		return getXObserver().getValue();
+	}
 
 	/** @return the left x position of the node (same as {@link #getX()}) */
-	double getLeftX();
-
+	default double getLeftX() {
+		return getXObserver().getValue();
+	}
 
 	/**
 	 Sets the x position of the node
 
 	 @param x the x position
 	 */
-	void setX(double x);
+	default void setX(double x) {
+		this.getXObserver().updateValue(x);
+	}
 
 	/**
 	 @return the y position of the node
 	 */
-	double getY();
+	default double getY() {
+		return getYObserver().getValue();
+	}
 
 	/**
 	 @return the top y position of the node (same as {@link #getY()})
 	 */
-	double getTopY();
+	default double getTopY() {
+		return getYObserver().getValue();
+	}
 
 	/**
 	 Sets the y position of the node
 
 	 @param y the y position
 	 */
-	void setY(double y);
+	default void setY(double y) {
+		this.getYObserver().updateValue(y);
+	}
+
+	/**
+	 Sets the width for the node
+
+	 @param width the new width for the node
+	 */
+	default void setWidth(double width) {
+		this.getWidthObserver().updateValue(width);
+	}
 
 	/** @return the width of the node */
-	double getWidth();
+	default double getWidth() {
+		return this.getWidthObserver().getValue();
+	}
 
-	/** @see #getWidth() */
-	void setWidth(double width);
+	/**
+	 Sets the height for the node
+
+	 @param height the new height for the node
+	 */
+	default void setHeight(double height) {
+		this.getHeightObserver().updateValue(height);
+	}
 
 	/** @return the height of the node */
-	double getHeight();
-
-	/** @see #getHeight() */
-	void setHeight(double height);
+	default double getHeight() {
+		return this.getHeightObserver().getValue();
+	}
 
 	/** @return the minimum width of the node */
 	double getMinWidth();
@@ -79,6 +106,12 @@ public interface Bounds {
 	/** @see #getMaxHeight() */
 	void setMaxHeight(double maxHeight);
 
+
+	default double getArea() {
+		return getWidth() * getHeight();
+	}
+
+
 	/** @return the margin of this bounds */
 	@NotNull
 	Insets getMargin();
@@ -93,24 +126,23 @@ public interface Bounds {
 	/** @see #getPadding() */
 	void setPadding(@NotNull Insets padding);
 
+
 	default double getRightX() {
-		return getX() + getWidth();
+		return this.getX() + this.getWidth();
 	}
 
 	default double getBottomY() {
-		return getY() + getHeight();
-	}
-
-	default double getArea() {
-		return getWidth() * getHeight();
+		return this.getY() + this.getHeight();
 	}
 
 	default double getCenterX() {
-		return getX() + (getRightX() - getX()) / 2;
+		final double x = getX();
+		return x + (getRightX() - x) / 2;
 	}
 
 	default double getCenterY() {
-		return this.getY() + (getBottomY() - this.getY()) / 2;
+		final double y = getY();
+		return y + (getBottomY() - y) / 2;
 	}
 
 	/** @return a string that contains information on the position */

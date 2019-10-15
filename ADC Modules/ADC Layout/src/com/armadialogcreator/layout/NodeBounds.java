@@ -1,5 +1,6 @@
 package com.armadialogcreator.layout;
 
+import com.armadialogcreator.util.NotNullValueObserver;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -12,16 +13,29 @@ public class NodeBounds implements Bounds {
 	private @NotNull Insets margin = Insets.NONE;
 	private @NotNull Insets padding = Insets.NONE;
 
-	protected double minWidth, width, maxWidth;
-	protected double minHeight, height, maxHeight;
-	protected double x, y;
+	protected double minWidth, maxWidth;
+	protected double minHeight, maxHeight;
 	private final @NotNull LayoutNode node;
 	private final @Nullable Layout layout;
 
 	NodeBounds(@NotNull LayoutNode node, @Nullable Layout layout) {
 		this.node = node;
 		this.layout = layout;
+
+		this.getXObserver().addListener((observer, oldValue, newValue) -> {
+			recomputePositionFromLayout();
+		});
+		this.getYObserver().addListener((observer, oldValue, newValue) -> {
+			recomputePositionFromLayout();
+		});
+		this.getWidthObserver().addListener((observer, oldValue, newValue) -> {
+			recomputePositionFromLayout();
+		});
+		this.getHeightObserver().addListener((observer, oldValue, newValue) -> {
+			recomputePositionFromLayout();
+		});
 	}
+
 
 	/**
 	 Creates a new instance from an existing instance. The following attributes will be copied from the
@@ -48,110 +62,21 @@ public class NodeBounds implements Bounds {
 		this.padding = copy.padding;
 		this.minHeight = copy.minHeight;
 		this.minWidth = copy.minWidth;
-		this.width = copy.width;
-		this.height = copy.height;
+		this.setWidth(copy.getWidth());
+		this.setHeight(copy.getHeight());
 		this.maxHeight = copy.maxHeight;
 		this.maxWidth = copy.maxWidth;
-	}
-
-	/**
-	 Sets the width for the node
-
-	 @param width the new width for the node
-	 */
-	@Override
-	public void setWidth(double width) {
-		this.width = width;
-		this.recomputePositionFromLayout();
-	}
-
-	/**
-	 Sets the height for the node
-
-	 @param height the new height for the node
-	 */
-	@Override
-	public void setHeight(double height) {
-		this.height = height;
-		this.recomputePositionFromLayout();
-	}
-
-	/** @return the x position of the node */
-	@Override
-	public double getX() {
-		return x;
-	}
-
-	/** @return the left x position of the node (same as {@link #getX()}) */
-	@Override
-	public double getLeftX() {
-		return x;
-	}
-
-	/**
-	 Invoking this method will have no effect
-
-	 @param x the x position
-	 */
-	@Override
-	public void setX(double x) {
-		//do nothing
-	}
-
-	/**
-	 @return the y position of the node
-	 */
-	@Override
-	public double getY() {
-		return y;
-	}
-
-	/**
-	 @return the top y position of the node (same as {@link #getY()})
-	 */
-	@Override
-	public double getTopY() {
-		return y;
-	}
-
-	/**
-	 Invoking this method will have no effect
-
-	 @param y the y position
-	 */
-	@Override
-	public void setY(double y) {
-		// do nothing
-	}
-
-	/** @return the width of the node */
-	@Override
-	public double getWidth() {
-		if (width > maxWidth) {
-			return maxWidth;
-		}
-		return this.width;
-	}
-
-	/** @return the height of the node */
-	@Override
-	public double getHeight() {
-		if (height > maxHeight) {
-			return maxHeight;
-		}
-		return height;
-	}
-
-	/** @return the minimum width of the node */
-	@Override
-	public double getMinWidth() {
-		return minWidth;
 	}
 
 	private void recomputePositionFromLayout() {
 		if (this.layout != null) {
 			this.layout.recomputePositions();
 		}
+	}
+
+	@Override
+	public double getMinWidth() {
+		return this.minWidth;
 	}
 
 	/** @see #getMinWidth() */
@@ -229,23 +154,23 @@ public class NodeBounds implements Bounds {
 	}
 
 	@Override
-	public double getRightX() {
-		return this.x + this.width;
+	public @NotNull NotNullValueObserver<Double> getXObserver() {
+		return null;
 	}
 
 	@Override
-	public double getBottomY() {
-		return this.y + this.height;
+	public @NotNull NotNullValueObserver<Double> getYObserver() {
+		return null;
 	}
 
 	@Override
-	public double getCenterX() {
-		return x + (getRightX() - x) / 2;
+	public @NotNull NotNullValueObserver<Double> getWidthObserver() {
+		return null;
 	}
 
 	@Override
-	public double getCenterY() {
-		return this.y + (getBottomY() - this.y) / 2;
+	public @NotNull NotNullValueObserver<Double> getHeightObserver() {
+		return null;
 	}
 
 	@NotNull
